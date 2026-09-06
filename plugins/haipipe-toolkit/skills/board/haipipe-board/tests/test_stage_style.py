@@ -12,7 +12,7 @@ from src.stage_contract import replace_managed, replace_managed_style
 
 
 class StageStyleOwnershipTest(unittest.TestCase):
-    def test_style_from_materializes_in_page_writing_style(self):
+    def test_style_from_materializes_in_contract_and_legacy_style(self):
         with tempfile.TemporaryDirectory() as tmp:
             board = Path(tmp)
             venue = board / "STYLE.md"
@@ -26,8 +26,7 @@ class StageStyleOwnershipTest(unittest.TestCase):
             style = render_style_block(board, page, {}, digest)
 
             self.assertIn("### Venue", contract)
-            self.assertNotIn("### Writing Style", contract)
-            self.assertIn("materialized from this source in `## Writing Style`", contract)
+            self.assertIn("English only. One sentence per line.", contract)
             self.assertIn("**Inherited requirements from `STYLE.md`**", style)
             self.assertIn("English only. One sentence per line.", style)
 
@@ -82,6 +81,38 @@ class StageStyleOwnershipTest(unittest.TestCase):
             self.assertIn("### Venue", contract_section)
             self.assertNotIn("### Writing Style", contract_section)
             self.assertIn("### Provides\nOutput.", contract_section)
+
+    def test_sync_does_not_create_a_page_writing_style_section(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            board = Path(tmp)
+            (board / "STYLE.md").write_text(
+                "# Venue\n\n## Writing Style\nUse the venue's reader language.\n",
+                encoding="utf-8",
+            )
+            stage = board / "S-Main-1-test.md"
+            stage.write_text(
+                "# S Main 1 · Test\n"
+                "state: 🔴 OPEN\n"
+                "owner: CC\n"
+                "style-from: STYLE.md\n\n"
+                "## Opening\nA stage.\n\n"
+                "## Stage Contract\n\n"
+                "### Provides\nOutput.\n\n"
+                "## Content\nStage output.\n",
+                encoding="utf-8",
+            )
+            page = {
+                "id": "S-Main-1",
+                "file": stage.name,
+                "requires": "",
+                "style_from": "STYLE.md",
+            }
+
+            sync_face(board, page, {})
+            synced = stage.read_text(encoding="utf-8")
+
+            self.assertNotRegex(synced, r"(?m)^## Writing Style\s*$")
+            self.assertIn("Use the venue's reader language.", synced)
 
 
 if __name__ == "__main__":

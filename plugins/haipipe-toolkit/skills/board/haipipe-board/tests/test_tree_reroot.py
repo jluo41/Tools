@@ -60,6 +60,24 @@ class TreeRerootTest(unittest.TestCase):
         self.assertIn('href="../board/index.html"', moved)
         self.assertIn('href="../board/_assets/board.css?v=abc"', moved)
 
+    def test_nested_page_relative_link_keeps_its_source_folder(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            board = Path(tmp) / "block"
+            page = board / "j03_inquiry" / "t01_question"
+            page.mkdir(parents=True)
+            (page / "landscape.md").write_text("# Landscape\n")
+            (board / "board-wide.md").write_text("# Board wide\n")
+
+            html = (
+                '<a href="landscape.md">page local</a>'
+                '<a href="board-wide.md">board local</a>'
+            )
+            moved = tree_reroot(html, "../../", page, board)
+
+            self.assertIn(
+                'href="../../j03_inquiry/t01_question/landscape.md"', moved)
+            self.assertIn('href="../../board-wide.md"', moved)
+
 
 if __name__ == "__main__":
     unittest.main()

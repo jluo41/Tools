@@ -1,10 +1,10 @@
-"""Task Block Board adapter.
+"""BJTR Block Board adapter.
 
 The Task family owns Block, Job, Task, Run, and P-B-E-R semantics.  The Board
 family owns presentation, navigation, and Board-level aggregation.  This
 module is the narrow seam between them:
 
-    Block Board -> Job group -> Task Page
+    Task/Discovery Block Board -> Job group -> Task Page
 
 Run remains an execution address and never becomes a Board Page.
 """
@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 
 
-KIND = "task-block"
+KINDS = {"task-block", "discovery-block"}
 _BLOCK = re.compile(r"^(b\d{2})(?:_|$)", re.I)
 _JOB = re.compile(r"^(j\d{2})(?:_|$)", re.I)
 _TASK = re.compile(r"^(t\d{2})_(?P<name>[a-z0-9][a-z0-9_]*)$", re.I)
@@ -27,7 +27,7 @@ def _words(value):
     return re.sub(r"[_-]+", " ", value).strip()
 
 
-def page_info(board_dir, page):
+def page_info(board_dir, page, family="task"):
     """Describe one canonical Task Page, or return ``None``.
 
     Detection is structural.  The Page must be the same-stem Markdown file in
@@ -35,6 +35,8 @@ def page_info(board_dir, page):
     addresses when present, but a legacy Job name does not make the Page
     disappear.
     """
+    if family not in {"task", "discovery"}:
+        raise ValueError(f"unsupported BJTR Page family: {family}")
     board_dir = Path(board_dir)
     page = Path(page)
     try:
@@ -65,8 +67,8 @@ def page_info(board_dir, page):
     task_number = int(task_id[1:])
     return {
         "id": page_id,
-        "kind": "task",
-        "family": "task",
+        "kind": family,
+        "family": family,
         "group": group,
         "group_token": job_token,
         "job": job_name,

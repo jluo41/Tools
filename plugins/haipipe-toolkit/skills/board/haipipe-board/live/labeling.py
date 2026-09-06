@@ -661,6 +661,15 @@ def render(
     split_key = js_string("labeling-split:" + identity)
 
     root = state["root"]
+    imported_summary = _read_json(root / "corpus" / "imported_label_summary.json")
+    imported_source = imported_summary.get("source") if isinstance(
+        imported_summary.get("source"), dict) else {}
+    imported_primary = imported_summary.get("primary_label") if isinstance(
+        imported_summary.get("primary_label"), dict) else {}
+    imported_severity = imported_summary.get("severity_label") if isinstance(
+        imported_summary.get("severity_label"), dict) else {}
+    imported_expert = imported_summary.get("expert_label") if isinstance(
+        imported_summary.get("expert_label"), dict) else {}
     run_tickets = sorted((root / "runs").glob("*.yaml")) \
         if (root / "runs").is_dir() else []
     run_results = sorted(p for p in (root / "results").iterdir() if p.is_dir()) \
@@ -699,6 +708,50 @@ def render(
     def metric(label: str, value: str) -> str:
         return '<div class=metric><span>%s</span><b>%s</b></div>' % (
             html.escape(label), value)
+
+    def imported_label_rows(section: dict) -> str:
+        values = section.get("values") if isinstance(section, dict) else None
+        if not isinstance(values, dict) or not values:
+            return '<div class=empty>No imported label counts are readable.</div>'
+        return "".join(
+            '<div class=metric><span>%s</span><b>%s</b></div>' %
+            (html.escape(str(label)), html.escape(str(count)))
+            for label, count in values.items()
+        )
+
+    imported_summary_box = (
+        '<div class="grid" style="margin-top:10px">'
+        '<div class=box><h3>Imported label source · read-only</h3>'
+        '<p><b>%s</b> · %s conversation items · %s annotation rows · %s raters/item</p>'
+        '%s%s%s'
+        '</div>'
+        '<div class=box><h3>Source-preserving label roles</h3>'
+        '<p class=mut>These are observations from DICES, not local human gold.</p>'
+        '<p><b>Q_overall</b> · %s</p>'
+        '<p><b>degree_of_harm</b> · %s</p>'
+        '<p><b>safety_gold</b> · %s</p>'
+        '</div></div>' % (
+            html.escape(str(imported_source.get("name") or "external dataset")),
+            html.escape(str(imported_summary.get("items") or "—")),
+            html.escape(str(imported_summary.get("annotation_rows") or "—")),
+            html.escape(str(imported_summary.get("rater_count_per_item") or "—")),
+            metric("primary field", html.escape(str(imported_primary.get("field") or "—"))),
+            metric("severity field", html.escape(str(imported_severity.get("field") or "—"))),
+            metric("expert field", html.escape(str(imported_expert.get("field") or "—"))),
+            html.escape(" · ".join(
+                f"{label}={count}" for label, count in
+                (imported_primary.get("values") or {}).items()
+            ) or "not available"),
+            html.escape(" · ".join(
+                f"{label}={count}" for label, count in
+                (imported_severity.get("values") or {}).items()
+            ) or "not available"),
+            html.escape(" · ".join(
+                f"{label}={count}" for label, count in
+                (imported_expert.get("values") or {}).items()
+            ) or "not available"),
+        )
+    )
 
     round_rows = "".join(
         '<div class=round><span>%s</span><b class="%s">%s</b></div>' % (
@@ -774,6 +827,14 @@ def render(
    <div class=box><h3>Final corpus</h3>
     {metric('D_star.jsonl', present(state['dstar'].is_file(), 'materialized'))}
     {metric('manifest.yaml', present(state['dstar_manifest'].is_file(), 'observed'))}
+   </div>
+  </div>
+  {imported_summary_box}
+  <div class=box style="margin-top:10px"><h3>Imported label counts</h3>
+   <div class="grid four">
+    <div><p class=mut>Q_overall · {html.escape(str(imported_primary.get('meaning') or ''))}</p>{imported_label_rows(imported_primary)}</div>
+    <div><p class=mut>degree_of_harm · {html.escape(str(imported_severity.get('meaning') or ''))}</p>{imported_label_rows(imported_severity)}</div>
+    <div><p class=mut>safety_gold · {html.escape(str(imported_expert.get('meaning') or ''))}</p>{imported_label_rows(imported_expert)}</div>
    </div>
   </div>
   <div class=guard>Protected item text, sealed ids, and private judgments never render in this general workspace.</div>

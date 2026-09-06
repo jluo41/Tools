@@ -1,8 +1,4 @@
-"""QC8 · index shape (QB2): add a question, add a group, archive.
-
-Moved out of serve.py on 2026-07-31 under the gate_live.py response-identical gate.
-QC3's Law: a refactor moves code, features never ride along.
-"""
+"""Create and archive generic Board Groups and Pages."""
 
 import base64
 import datetime as dt
@@ -33,57 +29,33 @@ def _slugify(t):
     return "-".join(s.split("-")[:5])[:48] or "question"
 
 
-# The skeleton the ＋ button writes. Opening, Writing Style, Aims, and States
-# are required; Files is optional but strongly advised; everything else is
-# optional. There is no separate Boundary section: Opening states the scope.
-#
-# Advised sections are written OUT, so declining one is a deletion rather than an
-# omission. Optional ones are listed in a comment instead: an author cannot choose
-# a section they never learn exists (JL 260726, after a new page arrived with no
-# Outline and nothing said one was available), and a comment is dropped at render,
-# so the page never shows a box opened onto nothing.
+# The ＋ button writes only the current Page Face. The Outline projection and
+# process records are produced from ``outline/``; this source does not duplicate
+# either one as a Page section.
 Q_STUB = """# {title}
 state: 🔴 OPEN
 owner: JL
 
 ## Opening
-{title}: restate this as one plain question a zero-background reader understands.
+Replace this paragraph with the subject, the stake, and the exact boundary of this Page.
 
-Then one paragraph on what this page covers, why it is hard, what breaks while it stays open, and which neighbouring page owns anything excluded. This file is a stub from the index page's ＋ button;
-writing standard: ref/writing-rules.md (English only, no em-dashes).
+**Where this Page sits:** Name the closest upstream or neighbouring Page and what it owns.
 
-## Writing Style
-English only. One sentence per source line. Use plain declaratives, name evidence, and keep each section within the role defined by the page contract.
+**Why it matters:** State the consequence in reader language.
 
-<!-- Optional sections, in the order they render. Uncomment the ones this page
-     earns and delete this comment; empty beats wrong, so leave out what you
-     cannot fill (grammar: ref/page-template.md, layout: QA4).
+## Content
 
-## Outline      optional ascii narrative map. The current plan in outline/
-                renders here as the Outline table; draw remains in studio/draw/.
-## Content      ### is a division that folds, #### is one paragraph inside it.
-## Law          rules this page has settled.
-## Lesson       traps hit, with the concrete failure attached.
-## Glossary     words an outsider would stumble on: `term: explanation`.
-## Discussion   loose threads, `> JL:` and `>> CC0726:`.
--->
+### 1 · First division
+
+#### 1.1 · First paragraph
+(State the job this paragraph must perform.)
+Write the first supported claim here.
 
 ## Aims
-### C1 · First Content division
-- A1.1 · Name the durable target this page is trying to establish.
+### A1 · First division
+- ⬜ A1.1 · Name the durable target this Page must establish.
   **Done when:** One sentence saying exactly how this Aim is judged met.
-  **Plan:** Optional next move; delete this line when the Aim needs no plan.
-
-## States
-### C1 · First Content division
-- ⬜ A1.1 · Not started; the question was just opened.
-
-## Files
-- `path/to/thing`
-  Its role in this question, and where you start when this question changes.
-
-## Log
-{stamp} · Opened from the index page (＋ Question)
+  **Now:** The Page has been created and its content is not yet established.
 """
 
 
@@ -221,7 +193,7 @@ def structure_op(board, p):
         if f.exists():
             return None, f"{f.relative_to(board).as_posix()} already exists"
         home.mkdir(parents=True, exist_ok=True)
-        f.write_text(Q_STUB.format(title=title, stamp=_now_stamp()), encoding="utf-8")
+        f.write_text(Q_STUB.format(title=title), encoding="utf-8")
         at = block_end(hi)                  # list it at the end of its group
         while at > hi + 1 and not lines[at - 1].strip():
             at -= 1
@@ -238,23 +210,38 @@ def structure_op(board, p):
             return None, f"not found: {name}"
         arch = board / "_archive"
         arch.mkdir(exist_ok=True)
-        dest = arch / name.rsplit("/", 1)[-1]   # nested pages flatten here
-        if dest.exists():
-            dest = arch / f"{f.stem}-{time.strftime('%y%m%d%H%M%S')}.md"
-        note = f"{_now_stamp()} · Archived from the index page (moved to _archive/)"
-        t = f.read_text(encoding="utf-8")
-        mm = re.search(r"^## Log\s*$", t, re.M)
-        if mm:                              # Log is newest-first: insert right below
-            t = t[:mm.end()] + "\n" + note + t[mm.end():]
+        source_home = f.parent if f.parent != board and f.parent.name == f.stem else None
+        dest_home = arch / f.stem
+        if dest_home.exists():
+            dest_home = arch / f"{f.stem}-{time.strftime('%y%m%d%H%M%S')}"
+        stamp = dt.datetime.now().strftime("%y%m%d %H%M")
+        log_dir = (source_home or f.parent) / "outline"
+        log_file = log_dir / f"{f.stem}-log.md"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        record = f"### {stamp} · Archived from the Board index\n"
+        if log_file.is_file():
+            old = log_file.read_text(encoding="utf-8")
+            head = re.search(r"^###\s+", old, re.M)
+            if head:
+                old = old[:head.start()] + record + "\n" + old[head.start():]
+            else:
+                old = old.rstrip() + "\n\n" + record
         else:
-            t = t.rstrip("\n") + "\n\n## Log\n" + note + "\n"
-        f.write_text(t, encoding="utf-8")
-        shutil.move(str(f), str(dest))
+            old = (f"# {f.stem} · log\n"
+                   f"page: {f.stem}\n"
+                   "kind: log · authored · append-only, newest first\n\n"
+                   + record)
+        log_file.write_text(old.rstrip() + "\n", encoding="utf-8")
+        if source_home:
+            shutil.move(str(source_home), str(dest_home))
+        else:
+            dest_home.mkdir(parents=True)
+            shutil.move(str(f), str(dest_home / f.name))
         base = name.rsplit("/", 1)[-1]          # Pages lists bare filenames
         lines[ps:pend] = [ln for ln in lines[ps:pend]
                           if ln.strip() not in (name, base)]
         write()
-        return {"file": name, "to": f"_archive/{dest.name}"}, None
+        return {"file": name, "to": f"_archive/{dest_home.name}/{f.name}"}, None
 
     if op == "archive_group":
         g = (p.get("group") or "").strip()

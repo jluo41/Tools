@@ -17,11 +17,12 @@ from src.outline_version import (  # noqa: E402
 
 
 class OutlineVersionTest(unittest.TestCase):
-    def test_numeric_major_and_revision_order(self):
+    def test_generation_shape_and_evidence_order(self):
         names = [
             "Q1-outline-v5.0.md",
-            "Q1-outline-v5.2.md",
-            "Q1-outline-v5.10.md",
+            "Q1-outline-v5.0.2.md",
+            "Q1-outline-v5.1.md",
+            "Q1-outline-v5.1.4.md",
             "Q1-outline-v6.0.md",
         ]
         ordered = sorted((Path(name) for name in names), key=version_key)
@@ -29,8 +30,9 @@ class OutlineVersionTest(unittest.TestCase):
             [path.name for path in ordered],
             [
                 "Q1-outline-v5.0.md",
-                "Q1-outline-v5.2.md",
-                "Q1-outline-v5.10.md",
+                "Q1-outline-v5.0.2.md",
+                "Q1-outline-v5.1.md",
+                "Q1-outline-v5.1.4.md",
                 "Q1-outline-v6.0.md",
             ],
         )
@@ -54,33 +56,43 @@ class OutlineVersionTest(unittest.TestCase):
             self.assertEqual(latest.name, "Q1-outline-v5.1.md")
             self.assertEqual(version_tag(latest), "v5.1")
 
-    def test_version_policy_requires_approval_only_on_integer_major(self):
+    def test_version_policy_distinguishes_shape_and_evidence(self):
         cases = (
             ("Q1-outline-v0.6.md", "approved: ⬜\n", []),
             ("Q1-outline-v1.0.md", "approved: ✅ JL · in channel\n", []),
             (
                 "Q1-outline-v1.0.md",
                 "approved: ⬜\n",
-                ["v1.0: a frozen .0 baseline requires explicit channel approval"],
+                ["v1.0: a generation baseline requires explicit channel approval"],
             ),
             (
                 "Q1-outline-v0.6.md",
                 "approved: ✅\n",
-                ["v0.6: a pre-approval revision cannot be approved; promote it to v1.0"],
+                ["v0.6: a v0 plan cannot be approved; promote the selected state to v1.0"],
             ),
             (
                 "Q1-outline-v1.2.md",
                 "approved: ✅\n",
-                ["v1.2: a working minor cannot be approved; promote it to v2.0"],
+                [],
+            ),
+            (
+                "Q1-outline-v1.2.1.md",
+                "shape-base: v1.2\napproved: ✅ inherited from v1.2 · JL\n",
+                [],
+            ),
+            (
+                "Q1-outline-v1.2.1.md",
+                "approved: ⬜\n",
+                [
+                    "v1.2.1: an evidence revision must inherit the approved v1.2 Shape",
+                    "v1.2.1: evidence revision must declare shape-base: v1.2",
+                ],
             ),
         )
         for name, text, expected in cases:
             with self.subTest(name=name):
                 self.assertEqual(version_policy_issues(Path(name), text), expected)
 
-
-if __name__ == "__main__":
-    unittest.main()
 
     def test_integer_only_latest_plan_is_legacy_input(self):
         self.assertEqual(

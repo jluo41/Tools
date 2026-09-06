@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the Activity readout: updates counted from `## Log`.
-
-These replaced six timer tests on 260816. Those tests protected a browser
-focus-timer that wrote SQLite spans nobody read back, and they asserted things
-the panel never printed: how seconds split across midnight, which heartbeat a
-capped gap was allocated to, whether a late idle request honoured its deadline.
-JL had already ruled on 260726 that the unit is UPDATES rather than time, so the
-one behaviour on this route that a reader can actually see — counting dated
-`## Log` lines — was the one behaviour with no test at all.
-"""
+"""Regression tests for Activity counts from Page outline log records."""
 
 import datetime as dt
 import sys
@@ -26,7 +17,7 @@ from live import activity  # noqa: E402
 
 
 def stamp(days_ago):
-    """A `## Log` date written the way a page writes it: YYMMDD."""
+    """A Page log date in YYMMDD form."""
     return (dt.date.today() - dt.timedelta(days=days_ago)).strftime("%y%m%d")
 
 
@@ -53,9 +44,17 @@ class ActivityCountsTest(unittest.TestCase):
         self.temp.cleanup()
 
     def page(self, name, log_lines):
-        (self.board / name).write_text(
-            "# A page\n\nstate: 🟡 PARTIAL\n\n## Log\n" +
-            "".join(f"- {line}\n" for line in log_lines),
+        stem = Path(name).stem
+        home = self.board / stem
+        (home / "outline").mkdir(parents=True)
+        (home / name).write_text(
+            "# A page\n\nstate: 🟡 PARTIAL\n\n## Opening\nA current Page.\n",
+            encoding="utf-8",
+        )
+        (home / "outline" / f"{stem}-log.md").write_text(
+            f"# {stem} · log\npage: {stem}\n"
+            "kind: log · authored · append-only, newest first\n\n"
+            + "".join(f"### {line}\n" for line in log_lines),
             encoding="utf-8",
         )
 
@@ -79,17 +78,26 @@ class ActivityCountsTest(unittest.TestCase):
                                   "no date here, so not counted"])
         self.assertEqual(self.stats()["totals"]["updates"], 1)
 
-    def test_only_the_log_section_is_read(self):
-        """A dated line outside `## Log` is prose, and prose is not a change."""
+    def test_page_prose_is_not_counted(self):
+        self.page("QD8-test.md", [f"{stamp(0)} · the one real update"])
+        page = self.board / "QD8-test" / "QD8-test.md"
+        page.write_text(
+            page.read_text(encoding="utf-8")
+            + f"\n{stamp(0)} · dated prose, not a log record\n",
+            encoding="utf-8",
+        )
+        self.assertEqual(self.stats()["totals"]["updates"], 1)
+
+    def test_flat_page_log_remains_a_compatibility_fallback(self):
         (self.board / "QD8-test.md").write_text(
-            f"# A page\n\n## States\n- {stamp(0)} · status prose, not a change\n"
-            f"\n## Log\n- {stamp(0)} · the one real update\n",
+            "# A historical page\n\n"
+            f"## Log\n- {stamp(0)} · historical update\n",
             encoding="utf-8",
         )
         self.assertEqual(self.stats()["totals"]["updates"], 1)
 
     def test_the_route_takes_no_op_but_stats(self):
-        """The timer's start/pulse/stop went with the SQLite store (260816)."""
+        """The read-only endpoint accepts only the stats operation."""
         self.page("QD8-test.md", [f"{stamp(0)} · a thing"])
         for op in ("start", "pulse", "stop"):
             result, error = self.handler.activity(

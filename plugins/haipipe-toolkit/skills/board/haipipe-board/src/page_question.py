@@ -221,10 +221,13 @@ def _outline_grid(page_src):
 
     The Outline plugin still owns its richer plan card and Evidence lens.  This
     projection is intentionally a real table for a Section reader: C/P rows
-    give narrative hierarchy; B rows carry a compact evidence identity,
-    Supporting Runs, and a local Run. Item status remains encoded by the
-    Evidence chip colour and is named in its popover; a separate Status column
-    would repeat that state while stealing width from the plan.
+    give narrative hierarchy; B rows carry their routed Feedback, a compact
+    evidence identity, Supporting Runs, and a local Run. Item status remains
+    encoded by the Evidence chip colour and its title; a separate Status column
+    would repeat that state while stealing width from the plan.  Every chip is
+    a deep link into the Outline plugin: Feedback lands on its Context record,
+    an Evidence chip lands on its Evidence Workspace item card, and a Run lands
+    on its Runs-lens card.  The compact table never opens a popover of its own.
     """
     from live.outline import _latest_plan, _typed_item_review
 
@@ -356,7 +359,8 @@ def _outline_grid(page_src):
                 )
             focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item_id)
             return (
-                '<a class="%s" href="%s&amp;lens=workspace&amp;focus=%s&amp;run=%s" '
+                '<a class="%s" href="%s&amp;lens=workspace&amp;seg=runs&amp;focus=%s&amp;run=%s" '
+                'data-outline-lens="workspace" data-outline-seg="runs" '
                 'data-outline-focus="%s" data-outline-run="%s" title="%s">%s</a>' %
                 (esc(class_name), outline_url, esc(focus), esc(readable),
                  esc(focus), esc(readable), esc(title), esc(text))
@@ -419,47 +423,87 @@ def _outline_grid(page_src):
     def evidence_cell(address):
         items = typed["by_target"].get(address, [])
         if not items:
-            empty = "<span class=mut>—</span>"
+            reason = typed.get("none_by_target", {}).get(address, "")
+            if reason:
+                empty = ('<span class="mut outline-evidence-none" title="%s">none</span>'
+                         % esc(reason))
+            else:
+                empty = ('<span class="warn outline-evidence-missing" '
+                         'title="No per-Bullet Evidence decision">missing</span>')
             return empty, empty, empty
         evidence_parts = []
         for item in items:
             visible_label = wall_label(
                 item["id"], item["type"], item["name"], item.get("label", "")
             )
-            popover_id = "outline-item-%s" % re.sub(r"[^A-Za-z0-9_-]", "-", item["id"])
-            detail_rows = (
-                ("Label", item.get("label") or "legacy fallback"),
-                ("Name", item["name"]),
-                ("Target", item["target"]),
-                ("Expected", item["expected"]),
-                ("Acceptance", item["acceptance"]),
-                ("Supporting Runs", item["supporting_runs"]),
-                ("Local Input", item["local_input"]),
-                ("Local Run", item["local_run"]),
-                ("Result", item["result"]),
-            )
-            detail = "".join(
-                '<p><b>%s</b><span>%s</span></p>' % (esc(label), esc(value))
-                for label, value in detail_rows
-            )
+            # The chip is a route, not a card.  Its full contract (id, name,
+            # type, sources, acceptance, routes, Result) lives once, on the
+            # Evidence Workspace item card; the compact Page only names and
+            # colours it, then hands the reader to that exact card.
+            focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item["id"])
             evidence_parts.append(
-                '<button type="button" class="outline-evidence %s" '
-                'popovertarget="%s" aria-label="%s · %s · %s" title="%s · %s">'
-                '<b>%s</b></button>'
-                '<div id="%s" popover class="chipcard outline-item-card %s">'
-                '<div class="cch"><b>%s</b><span class="cck">%s · %s</span></div>'
-                '<div class="outline-item-detail">%s</div></div>' %
-                (_outline_status_class(item["status"]), esc(popover_id),
-                 esc(item["id"]), esc(item["type"]), esc(item["name"]),
-                 esc(item["id"]), esc(item["type"]), esc(visible_label),
-                 esc(popover_id),
-                 _outline_status_class(item["status"]), esc(item["id"]),
-                 esc(item["type"]), esc(item["status"]), detail)
+                '<a class="outline-evidence %s" '
+                'href="%s&amp;lens=workspace&amp;seg=items&amp;focus=%s" '
+                'data-outline-lens="workspace" data-outline-seg="items" '
+                'data-outline-focus="%s" aria-label="%s · %s · %s" '
+                'title="%s · %s · %s"><b>%s</b></a>' %
+                (_outline_status_class(item["status"]), outline_url, esc(focus),
+                 esc(focus), esc(item["id"]), esc(item["type"]), esc(item["name"]),
+                 esc(item["id"]), esc(item["type"]), esc(item["status"]),
+                 esc(visible_label))
             )
         evidence = "".join(evidence_parts)
         supporting = "".join(supporting_cell(item) for item in items)
         local = "".join(local_cell(item) for item in items)
         return evidence, supporting, local
+
+    # ``Routed:`` is the plan's authoritative feedback-to-Bullet binding.  The
+    # main Outline table shows only its compact row id; the Feedback panel keeps
+    # the reviewer's complete words and provenance.
+    feedback_by_target = {}
+    scan_c, scan_p, scan_address = "", "", ""
+    for raw in text.splitlines():
+        if raw.startswith("## ") and not re.match(r"^## C\d+\b", raw):
+            break
+        c = re.match(r"^## (C\d+)\s*·", raw)
+        if c:
+            scan_c, scan_p, scan_address = c.group(1), "", ""
+            continue
+        p = re.match(r"^### (C\d+\.P\d+)\s*·", raw)
+        if p:
+            scan_p, scan_address = p.group(1), ""
+            continue
+        bullet = re.match(r"^- (?:[BS](\d+)\s*·\s*)?(.*)$", raw)
+        if bullet and scan_c and scan_p:
+            bullet_no = bullet.group(1) or ""
+            scan_address = f"{scan_p}.B{bullet_no}" if bullet_no else ""
+            continue
+        routed = re.match(r"^\s+Routed:\s*(.+?)\s*$", raw)
+        if routed and scan_address:
+            feedback_by_target.setdefault(scan_address, []).append(routed.group(1))
+
+    def feedback_cell(address):
+        routes = feedback_by_target.get(address, [])
+        if not routes:
+            return '<span class="outline-feedback-empty">—</span>'
+        chips = []
+        for route in routes:
+            tokens = route.split()
+            round_id = tokens[0] if tokens and re.match(r"^RD\d+", tokens[0]) else ""
+            labels = tokens[1:] if round_id else tokens
+            for label in labels:
+                focus = "feedback-" + re.sub(r"[^A-Za-z0-9_-]", "-", label)
+                title = "%s %s" % (round_id, label) if round_id else label
+                chips.append(
+                    '<a class="outline-feedback" '
+                    'href="%s&amp;lens=fb&amp;focus=%s" data-outline-lens="fb" '
+                    'data-outline-focus="%s" title="%s">%s</a>' %
+                    (outline_url, esc(focus), esc(focus), esc(title), esc(label))
+                )
+            if not labels:
+                chips.append('<span class="outline-feedback" title="%s">%s</span>' %
+                             (esc(route), esc(route)))
+        return "".join(chips)
 
     rows, current_c, current_p = [], "", ""
     for raw in text.splitlines():
@@ -468,7 +512,7 @@ def _outline_grid(page_src):
         c = re.match(r"^## (C\d+)\s*·\s*(.+)$", raw)
         if c:
             current_c, current_p = c.group(1), ""
-            rows.append('<tr class="outline-grid-division"><th colspan="5">'
+            rows.append('<tr class="outline-grid-division"><th colspan="6">'
                         '<code>%s</code> %s</th></tr>' %
                         (esc(current_c), esc(c.group(2).strip())))
             continue
@@ -476,7 +520,7 @@ def _outline_grid(page_src):
         if p:
             current_p = p.group(1)
             rows.append('<tr class="outline-grid-paragraph"><th scope="row"><code>%s</code></th>'
-                        '<td colspan="4">%s</td></tr>' %
+                        '<td colspan="5">%s</td></tr>' %
                         (esc(current_p), esc(p.group(2).strip())))
             continue
         bullet = re.match(r"^- (?:[BS](\d+)\s*·\s*)?(.*)$", raw)
@@ -486,15 +530,16 @@ def _outline_grid(page_src):
                      str(sum(1 for row in rows if "outline-grid-bullet" in row) + 1))
         address = f"{current_p}.B{bullet_no}"
         headline = bullet.group(2).strip()
+        feedback = feedback_cell(address)
         evidence, supporting, local = evidence_cell(address)
         rows.append('<tr class="outline-grid-bullet"><th scope="row"><code>%s</code></th>'
-                    '<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
-                    (esc(address), esc(headline), evidence, supporting, local))
+                    '<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
+                    (esc(address), esc(headline), feedback, evidence, supporting, local))
 
     if not rows:
-        rows.append('<tr><td colspan="5" class="mut">No C/P/B plan rows yet.</td></tr>')
+        rows.append('<tr><td colspan="6" class="mut">No C/P/B plan rows yet.</td></tr>')
     return (f'{meta}<div class="outline-grid-wrap"><table class="outline-grid">'
-            '<thead><tr><th>Address</th><th>Planned move</th><th>Evidence</th>'
+            '<thead><tr><th>Address</th><th>Planned move</th><th>Feedback</th><th>Evidence</th>'
             '<th>Supporting Runs</th><th>Local Run</th></tr></thead><tbody>'
             f'{"".join(rows)}</tbody></table></div>')
 
@@ -1353,7 +1398,9 @@ def _render_question(q, prv, nxt):
             # synced mirror, and the head should say so before the prose does
             ('<span class="kind">SKILL</span>' if q.get("kind") == "skill" else
              ('<span class="kind">AGENT</span>' if q.get("kind") == "agent" else
-              ('<span class="kind">TASK</span>' if q.get("kind") == "task" else "")))
+              ('<span class="kind">TASK</span>' if q.get("kind") == "task" else
+               ('<span class="kind">DISCOVERY</span>'
+                if q.get("kind") == "discovery" else ""))))
         )
         # 文件名做成链接：点它直接看这一题的原始 markdown（serve.py 把它当纯文本发）
         + f'<a class="src" href="{esc(q.get("file",""))}" target="_blank"'

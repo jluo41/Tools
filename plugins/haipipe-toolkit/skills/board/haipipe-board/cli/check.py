@@ -53,8 +53,9 @@ from src.common import (ALIAS, NUMBERED_GROUP, STN, AIM_STATE_RE,  # noqa: E402
 from src.dialect_task_block import page_info as task_page_info  # noqa: E402
 from src.page_context import audit_related_rows  # noqa: E402
 from src.outline_version import latest_outline  # noqa: E402
+from src.item_table import bullets as typed_evidence_bullets, evidence_none_targets  # noqa: E402
 from src.parse import parse_dir  # noqa: E402
-from src.topic_entry_contract import check_topic_entries  # noqa: E402
+from legacy.topic_entry_contract import check_topic_entries  # noqa: E402
 from src.page_evidence import check_page_evidence  # noqa: E402
 from src.feedback import rounds as _rounds, parse_round, register_path, register_ids  # noqa: E402
 
@@ -290,7 +291,9 @@ def check_board(d, rep):
     links = declared_links(text)
     kind = board_kind(d)
     task_block = kind == "task-block"
-    if kind and kind != "task-block":
+    discovery_block = kind == "discovery-block"
+    block_board = task_block or discovery_block
+    if kind and kind not in {"task-block", "discovery-block"}:
         rep.add(ERROR, "unknown-board-kind", "board.md",
                 f"board-kind {kind!r} has no Board container contract")
 
@@ -367,7 +370,7 @@ def check_board(d, rep):
                         "dead entry makes every citation under it unverifiable")
 
     pages = {
-        (p.relative_to(d).as_posix() if task_block and task_page_info(d, p)
+        (p.relative_to(d).as_posix() if block_board and task_page_info(d, p)
          else p.name): p
         for p in page_files(d)
     }
@@ -376,7 +379,7 @@ def check_board(d, rep):
     # runtime board reported all of its own pages as not-in-pages (260820).
     listed = re.findall(
         r"^((?:[QS]|[A-Z]{1,2}\d|Agent-|Meeting-|Design-)[^\s/]*\.md)\s*$", text, re.M)
-    if task_block:
+    if block_board:
         listed += re.findall(
             r"^([^\s]+/t\d{2}_[a-z0-9_]+/t\d{2}_[a-z0-9_]+\.md)\s*$",
             text,
@@ -390,26 +393,31 @@ def check_board(d, rep):
         # A Task Block's tree is the membership authority.  Its ## Pages may
         # contain group prose only; once it lists any Task explicitly, the
         # ordinary complete-registry warning applies.
-        if name not in listed and (not task_block or any("/t" in x for x in listed)):
+        if name not in listed and (not block_board or any("/t" in x for x in listed)):
             rep.add(WARN, "not-in-pages", name,
                     "on disk but not in ## Pages, so it renders under the ⚠️ group")
-    if not task_block:
+    if not block_board:
         check_group_order(d, text, rep)
     seen = {}
     for name in sorted(pages):
-        if task_block:
+        if block_board:
             info = task_page_info(d, pages[name])
             if info:
                 source = pages[name].read_text(encoding="utf-8", errors="replace")
-                if not re.search(r"(?m)^folder-kind:\s*task\s*$", source):
-                    rep.add(ERROR, "task-page-folder-kind", name,
-                            "a Task Block Page must declare `folder-kind: task`")
-                if not re.search(r"(?m)^task:\s*\.\s*$", source):
-                    rep.add(ERROR, "task-page-self", name,
-                            "a Task Page must declare `task: .` so both faces share one address")
-                if re.search(r"(?m)^page-type:\s*task\s*$", source):
-                    rep.add(WARN, "task-page-legacy-type", name,
-                            "`page-type: task` is a legacy key; `folder-kind: task` owns new Pages")
+                if discovery_block:
+                    if not re.search(r"(?m)^folder-kind:\s*discovery\s*$", source):
+                        rep.add(ERROR, "discovery-page-folder-kind", name,
+                                "a Discovery Block Page must declare `folder-kind: discovery`")
+                else:
+                    if not re.search(r"(?m)^folder-kind:\s*task\s*$", source):
+                        rep.add(ERROR, "task-page-folder-kind", name,
+                                "a Task Block Page must declare `folder-kind: task`")
+                    if not re.search(r"(?m)^task:\s*\.\s*$", source):
+                        rep.add(ERROR, "task-page-self", name,
+                                "a Task Page must declare `task: .` so both faces share one address")
+                    if re.search(r"(?m)^page-type:\s*task\s*$", source):
+                        rep.add(WARN, "task-page-legacy-type", name,
+                                "`page-type: task` is a legacy key; `folder-kind: task` owns new Pages")
                 continue
         m = re.match(r"([QS][A-Za-z0-9]*\d+[a-z]?)", name)
         if not m and not SEMANTIC_SECTION_PAGE.fullmatch(name):
@@ -930,13 +938,22 @@ def check_content_attribution(text, name, rep):
 _NUM_RE = re.compile(r"\d{1,3}(?:,\d{3})+|\b\d+\.\d+\b|\b\d+(?:\.\d+)?\s*(?:million|thousand|billion|percent|%)")
 
 
-def _latest_plan_approved(path):
-    """-> True when the page's newest outline-v<N>.md carries `approved: ✅`."""
+def _latest_approved_plan(path):
+    """Return the newest plan only when it carries ``approved: ✅``."""
     o = path.parent / "outline"
     plan = latest_outline(o, path.stem)
     if plan is None:
-        return False
-    return bool(re.search(r"(?m)^approved:\s*✅", plan.read_text(encoding="utf-8", errors="replace")))
+        return None
+    approved = bool(re.search(
+        r"(?m)^approved:\s*✅",
+        plan.read_text(encoding="utf-8", errors="replace"),
+    ))
+    return plan if approved else None
+
+
+def _latest_plan_approved(path):
+    """Compatibility predicate for the approved-plan gate."""
+    return _latest_approved_plan(path) is not None
 
 
 def check_section_sentences(text, path, name, rep):
@@ -949,8 +966,14 @@ def check_section_sentences(text, path, name, rep):
     pages written before the rule stay silent until their next CONTENT/WRITE."""
     if path is None or not re.search(r"(?m)^page-type:\s*section\b", text[:800]):
         return
-    if not _latest_plan_approved(path):
+    plan = _latest_approved_plan(path)
+    if plan is None:
         return
+    plan_text = plan.read_text(encoding="utf-8", errors="replace")
+    item_types = collections.defaultdict(set)
+    for _item, target, _head, item_type, _expected, _acceptance, _folded in typed_evidence_bullets(plan_text):
+        item_types[target].add(item_type)
+    no_evidence = evidence_none_targets(plan_text)
     spans = re.findall(r"(?ms)^## Content\b[^\n]*\n(.*?)(?=^## |\Z)", text)
     if not spans:
         return
@@ -973,8 +996,24 @@ def check_section_sentences(text, path, name, rep):
             rep.add(WARN, "sentence-without-realizes", "%s:%d" % (name, base + i),
                     "a Section sentence drafted from an approved plan names its slot: "
                     "end it with `<!-- realizes: C<n>.P<m>.B<k> -->` (haipipe-page-content §①)")
+        realization = re.search(r"<!--\s*realizes:\s*(C\d+\.P\d+\.B\d+)\s*-->", st)
+        target = realization.group(1) if realization else ""
+        has_citation = bool(re.search(r"\\cite(?:p|t)?\*?(?:\[[^\]]*\])*\{[^}]+\}", core))
+        if target and has_citation and "CITE" not in item_types.get(target, set()):
+            detail = ("explicitly declares Evidence none" if target in no_evidence
+                      else "has no CITE Evidence Item")
+            rep.add(WARN, "citation-without-bullet-evidence", "%s:%d" % (name, base + i),
+                    "%s carries a citation but %s; return that Bullet to OUTLINE/SHAPE"
+                    % (target, detail))
         probe = re.sub(r"\[[^\]]*\]|\\cite[pt]?\{[^}]*\}", "", core)
-        if _NUM_RE.search(probe):
+        has_value = bool(_NUM_RE.search(probe))
+        if target and has_value and "VALUE" not in item_types.get(target, set()):
+            detail = ("explicitly declares Evidence none" if target in no_evidence
+                      else "has no VALUE Evidence Item")
+            rep.add(WARN, "value-without-bullet-evidence", "%s:%d" % (name, base + i),
+                    "%s carries a concrete value but %s; return that Bullet to OUTLINE/SHAPE"
+                    % (target, detail))
+        if has_value:
             j, has_lane = i + 1, False
             while j < len(lines) and lines[j].strip().startswith(">"):
                 if re.match(r"^>\s*Value:", lines[j].strip()):
@@ -1573,13 +1612,18 @@ def check_state_mirrors_aims(aims_text, states_text, name, rep):
 
 
 def check_division_figures(text, name, rep):
-    """Every Content division opens with a caption line and a fenced figure.
+    """Non-manuscript Content divisions open with a caption and figure.
 
     QB4 §3.3.1: caption, figure, short intro, in that order, before any prose.
     The figure is drawn with /diagram-ascii; the caption is `**Name**: what
     this diagram shows.` (JL 260801). Both are easy to forget on a new
     division, and neither failure reports itself at render.
     """
+    # A manuscript Section owns displays through Bullet-local DISPLAY Evidence.
+    # It does not owe one figure per subsection; that generic Board-page rule
+    # would contradict an explicit one-display or no-display outline contract.
+    if re.search(r"(?m)^page-type:\s*section\s*$", text):
+        return
     content = section_text(text, "Content") or ""
     # `### §1 Demonstration` and `### 6.1 · x` are divisions too. Matching only
     # `### <digit> · ` made every §-numbered part INVISIBLE to this check, so

@@ -590,7 +590,8 @@ WHERE A MESSAGE LANDS (haipipe-plugin-studio/ref/chat.md §🗺):
   an open question            ### D<nn> · … (Ask · Options · We lean · Decide) in outline/<stem>-discussion.md
                               id = highest D<nn> on the board + 1 (discussion AND log files)
   a wording change            the sentence replaced + `> ✎ ~old~ *new* · CC · YYMMDD HHMM` (CONTENT)
-  a plan change               outline/<stem>-outline-v<N>.<k>.md; next working vN.<k+1> if vN.0 is approved ✅ (OUTLINE)
+  a Shape change              outline/<stem>-outline-v<G>.<S+1>.md; reset evidence to zero (OUTLINE)
+  an evidence/Run fold        outline/<stem>-outline-v<G>.<S>.<E+1>.md; preserve Shape (EVIDENCE)
   a ruling by the person      transcribe it with the quote and time; never decide a tick
   a fact the page lacks       a typed record in outline/<stem>-evidence-items.md;
                               SHAPE sets expectation; SURVEY plans supports + input + local Run
@@ -611,8 +612,9 @@ under it) and the strip in your reply:
   02 EVIDENCE /haipipe-page-evidence
     LAND     /haipipe-page-evidence   validate/execute supports, freeze one input, execute one
                                       local Run, and bind its ready VALUE/CITE/DISPLAY Result
-    EMBED    /haipipe-page-evidence   interpret ready local Results into next working plan vN.<k+1>, never
-                                      restructure; back to SHAPE
+    EMBED    /haipipe-page-evidence   interpret ready local Results into the next
+                                      v<G>.<S>.<E+1> evidence revision, never restructure
+                                      or change Shape; v0 returns to SHAPE, G>=1 routes CONTENT
   03 CONTENT /haipipe-page-content    WRITE: Draft → Revise → Build → Pre-check; normally one
                                       Page Division Writing Run per commissioned division
   04 CHECK   dispatch haipipe-page-check-agent (a fresh judge); whole-Page, read-only Quality Check
@@ -625,8 +627,9 @@ WALLS: generated files (-feedback, -requirement, -evidence) are regenerated with
 their cli/*.py, never hand-edited · _runs/, runs/ and a QA file in `state: working`
 are never written · approved: accepted: read: verified: are a person's · a signed
 lane is never deleted · a sentence is never rewritten without its ✎ record ·
-Content states the present (no dates, no names as authority) · a ✅ vN.0 plan changes
-only as the next working vN.<k+1> revision. Before a write, say the address and the row above you are using.
+Content states the present (no dates, no names as authority) · every G>=1 plan version
+is either the next bounded Shape v<G>.<S+1> (evidence resets to zero) or the next
+evidence fold v<G>.<S>.<E+1>. Before a write, say the address and the row above you are using.
 Per message load ONE skill's ⚡ Brief (the row names it) and announce it.
 A `>` line under a sentence is a lane addressed to whoever works on that sentence;
 read it as a request about the sentence above, not as quoted prose.

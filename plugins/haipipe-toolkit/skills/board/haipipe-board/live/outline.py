@@ -38,6 +38,7 @@ from src.item_table import (
     LADDER as ITEM_LADDER,
     bullets as typed_bullets,
     cycle_now as item_cycle,
+    evidence_none_targets,
     item_status,
     read_items,
     repo_root,
@@ -408,6 +409,8 @@ object.evfig{{height:32vh}}
  text-transform:uppercase;letter-spacing:.04em;padding-top:3px}}
 .fbroute{{margin:3px 0;padding-left:9px;border-left:2px solid var(--line);
  color:var(--mut);font-size:12.5px;line-height:1.5}}
+.rec.record-focus{{outline:2px solid var(--acc);outline-offset:4px;border-radius:9px;
+ scroll-margin-top:12px}}
 .lens .card pre{{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}}
 .workspace-frame{{display:block;width:100%;height:calc(100vh - 150px);
  min-height:560px;border:1px solid var(--line);border-radius:10px;background:var(--card)}}
@@ -434,6 +437,24 @@ code{{font:12px ui-monospace,Menlo,monospace}}
 <script>
 var SPACE_FOR={{div:'bullet',prog:'bullet',workspace:'evidence',ctx:'context',
  req:'context',disc:'context',fb:'context',files:'context',log:'context',skills:'context'}};
+var params=new URLSearchParams(location.search), requested=params.get('lens')||'',
+    requestedSeg=params.get('seg')||'',
+    requestedFocus=params.get('focus')||'', requestedRun=params.get('run')||'';
+if(!requested&&(requestedSeg||requestedFocus||requestedRun))requested='workspace';
+/* The compact Page names the Evidence Workspace segment outright (`seg=items`
+   for an Evidence chip, `seg=runs` for a Run token).  An older link without it
+   still lands: a named Run means the Runs lens, anything else the item cards. */
+if(!requestedSeg&&(requestedFocus||requestedRun))requestedSeg=requestedRun?'runs':'items';
+function workspaceSource(frame){{
+  var src=frame.dataset.src||'';
+  if(requestedSeg)src+=(src.indexOf('?')<0?'?':'&')+'seg='
+                       +encodeURIComponent(requestedSeg);
+  if(requestedFocus)src+=(src.indexOf('?')<0?'?':'&')+'focus='
+                         +encodeURIComponent(requestedFocus);
+  if(requestedRun)src+=(src.indexOf('?')<0?'?':'&')+'run='
+                       +encodeURIComponent(requestedRun);
+  return src;
+}}
 function showLens(c){{
     document.querySelectorAll('.lens-chip').forEach(function(x){{
       x.classList.remove('on');}});
@@ -443,14 +464,7 @@ function showLens(c){{
     var lens=document.getElementById('lens-'+c.dataset.lens);
     lens.classList.add('show');
     if(c.dataset.lens==='workspace'){{
-      var frame=lens.querySelector('iframe'), src=frame.dataset.src||'';
-      var focus='',run='';
-      try{{focus=localStorage.getItem('board-outline-evidence-focus')||'';
-          run=localStorage.getItem('board-outline-evidence-run')||'';
-          localStorage.removeItem('board-outline-evidence-focus');
-          localStorage.removeItem('board-outline-evidence-run');}}catch(e){{}}
-      if(focus)src+=(src.indexOf('?')<0?'?':'&')+'seg=items&focus='+encodeURIComponent(focus);
-      if(run)src+=(src.indexOf('?')<0?'?':'&')+'run='+encodeURIComponent(run);
+      var frame=lens.querySelector('iframe'),src=workspaceSource(frame);
       if(src)frame.setAttribute('src',src);
     }} else {{
       var nested=lens.querySelector('iframe');
@@ -471,13 +485,7 @@ function activateLens(name){{
     if(lens){{document.querySelectorAll('.lens').forEach(function(x){{x.classList.remove('show');}});
       lens.classList.add('show');
       if(name==='workspace'){{
-        var frame=lens.querySelector('iframe'),src=frame.dataset.src||'',focus='',run='';
-        try{{focus=localStorage.getItem('board-outline-evidence-focus')||'';
-            run=localStorage.getItem('board-outline-evidence-run')||'';
-            localStorage.removeItem('board-outline-evidence-focus');
-            localStorage.removeItem('board-outline-evidence-run');}}catch(e){{}}
-        if(focus)src+=(src.indexOf('?')<0?'?':'&')+'seg=items&focus='+encodeURIComponent(focus);
-        if(run)src+=(src.indexOf('?')<0?'?':'&')+'run='+encodeURIComponent(run);
+        var frame=lens.querySelector('iframe'),src=workspaceSource(frame);
         if(src)frame.setAttribute('src',src);
       }}
     }}
@@ -497,18 +505,17 @@ document.querySelectorAll('a.badge').forEach(function(a){{
     if(el)el.scrollIntoView({{behavior:'smooth'}});
   }});
 }});
-var params=new URLSearchParams(location.search), requested=params.get('lens')||'',
-    focus=params.get('focus')||'', run=params.get('run')||'';
-try{{requested=localStorage.getItem('board-outline-lens')||requested;
-    localStorage.removeItem('board-outline-lens');
-    if(focus)localStorage.setItem('board-outline-evidence-focus',focus);
-    if(run)localStorage.setItem('board-outline-evidence-run',run);}}catch(e){{}}
 if(requested)activateLens(requested);
-window.addEventListener('storage',function(ev){{
-  if(ev.key!=='board-outline-lens'||!ev.newValue)return;
-  activateLens(ev.newValue);
-  try{{localStorage.removeItem('board-outline-lens');}}catch(e){{}}
-}});
+if(requestedFocus&&requested!=='workspace')setTimeout(function(){{
+  var target=document.getElementById(requestedFocus);
+  if(!target)return;
+  document.querySelectorAll('.record-focus').forEach(function(x){{
+    x.classList.remove('record-focus');}});
+  target.classList.add('record-focus');
+  target.setAttribute('tabindex','-1');
+  target.focus({{preventScroll:true}});
+  target.scrollIntoView({{block:'center'}});
+}},0);
 </script>
 </body></html>"""
 
@@ -794,7 +801,7 @@ def _outline_cycle_strip(cycle):
 
 
 # ---------------------------------------------------------------- the plan
-# The OUTLINE phase's own file, `<page>/outline/<stem>-outline-v<N>.md`
+# The OUTLINE phase's own file, `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`
 # (haipipe-plugin-outline §🗂, JL 260817). It is AUTHORED, frozen once its
 # `approved:` line is ticked, and progress is NEVER written back into it.
 # So this card renders two things side by side: what the plan SAID, and what
@@ -881,6 +888,7 @@ def _typed_item_review(page_src, plan, plan_text, approved):
     return {
         "items": values,
         "by_target": by_target,
+        "none_by_target": evidence_none_targets(plan_text),
         "counts": counts,
         "types": types,
         "decided": decided,
@@ -1959,8 +1967,10 @@ def _rec_html(rec, kind):
 def _feedback_rec_html(rec):
     """Feedback reads as request → next action; provenance stays available."""
     pill = _pill(rec)
-    h = ['<div class="rec feedback"><div class=rh><span class=rid>%s</span>'
-         '<span class=rt>%s</span>' % (_e(rec["id"]), _inl(rec["head"]))]
+    focus_id = "feedback-" + re.sub(r"[^A-Za-z0-9_-]", "-", rec["id"])
+    h = ['<div class="rec feedback" id="%s" data-record-id="%s">'
+         '<div class=rh><span class=rid>%s</span><span class=rt>%s</span>' %
+         (_e(focus_id), _e(rec["id"]), _e(rec["id"]), _inl(rec["head"]))]
     if pill:
         h.append('<span class="pill %s">%s</span>' % (pill[1], _e(pill[2])))
     h.append("</div>")

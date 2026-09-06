@@ -55,7 +55,7 @@ nav button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
  padding:0 3px;border-radius:4px}
 #items h2{font-size:15px;margin:14px 0 4px}
 #items h3{font-size:13.5px;margin:12px 0 3px}
-#items .run-focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:9px}
+#items .run-focus,#runs .run-focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:9px;scroll-margin-top:12px}
 #items ul{margin:4px 0;padding-left:22px}
 .evsummary{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 12px}
 .evsummary span{font-size:11.5px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:1px 7px}
@@ -78,12 +78,13 @@ nav button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
 .runmap-label{font:600 10px -apple-system,sans-serif;color:var(--mut);text-transform:uppercase;letter-spacing:.035em;padding-top:3px}
 .lineage-list{display:flex;flex-wrap:wrap;gap:5px;min-width:0}.lineage-chip{appearance:none;display:inline-flex;align-items:center;gap:5px;max-width:100%;border:1px solid var(--line);border-radius:999px;padding:2px 7px;color:var(--fg);text-decoration:none;background:var(--card);font:11px/1.35 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}.lineage-chip:hover,.lineage-chip:focus-visible{border-color:var(--acc);outline:none}
 .lineage-chip:before{content:'';width:6px;height:6px;border-radius:50%;background:var(--mut);flex:none}.lineage-chip.ready:before{background:var(--ok)}.lineage-chip.warn:before{background:var(--warn)}.lineage-chip.planned:before{background:var(--mut)}.lineage-chip code{background:none!important;padding:0!important;font-size:11.5px!important;color:inherit}.lineage-chip small{color:var(--mut);font-size:9.5px;white-space:nowrap}
-.run-popover{width:min(560px,calc(100vw - 28px));box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:0;background:var(--bg);color:var(--fg);box-shadow:0 18px 55px rgba(0,0,0,.22)}.run-popover::backdrop{background:rgba(0,0,0,.22)}
-.run-popover-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;padding:13px 14px 10px;border-bottom:1px solid var(--line)}.run-popover-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.run-popover-title code{font-size:14px!important;background:none!important;padding:0!important}.run-availability{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}.run-close{appearance:none;border:0;background:transparent;color:var(--mut);font-size:20px;line-height:1;cursor:pointer;padding:2px 5px;border-radius:6px}.run-close:hover{background:var(--card);color:var(--fg)}
+.run-popover{width:min(560px,calc(100vw - 28px));max-height:calc(100dvh - 24px);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:0;background:var(--bg);color:var(--fg);box-shadow:0 18px 55px rgba(0,0,0,.22)}.run-popover::backdrop{background:rgba(0,0,0,.22)}
+html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fallback-open="1"]{display:block;position:fixed;z-index:1000;top:10vh;left:50%;transform:translateX(-50%);max-height:80vh;overflow:auto}
+.run-popover-head{position:sticky;top:0;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;padding:13px 14px 10px;border-bottom:1px solid var(--line);background:var(--bg)}.run-popover-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.run-popover-title code{font-size:14px!important;background:none!important;padding:0!important}.run-availability{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}.run-close{appearance:none;border:0;background:transparent;color:var(--mut);font-size:20px;line-height:1;cursor:pointer;padding:2px 5px;border-radius:6px}.run-close:hover{background:var(--card);color:var(--fg)}
 .run-popover-body{padding:10px 14px 14px}.run-fact{display:grid;grid-template-columns:6.7em minmax(0,1fr);gap:8px;padding:5px 0;font-size:12.5px;line-height:1.5}.run-fact b{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.035em;color:var(--mut);padding-top:3px}.run-fact span{overflow-wrap:anywhere}.run-fact.primary{padding-top:0;padding-bottom:9px}.run-fact.primary span{color:var(--fg)}.run-popover-path{display:grid;grid-template-columns:6.7em minmax(0,1fr);gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:12px}.run-popover-path b{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.035em;color:var(--mut);padding-top:2px}.run-popover-path code{display:block;background:none!important;padding:0!important;white-space:normal;overflow-wrap:anywhere;word-break:break-word;color:var(--fg);user-select:text}.run-popover-path .missing{color:var(--mut)}
 .runmap-local{display:flex;align-items:center;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding:4px 10px;color:var(--mut);font-size:11.5px;overflow-wrap:anywhere}.runmap-local b{font-size:9.5px;text-transform:uppercase;letter-spacing:.035em}.runmap-card details{border-top:1px solid var(--line);padding:4px 10px 6px;color:var(--mut);font-size:11.5px}.runmap-card summary{cursor:pointer;font-size:11px}.run-detail{display:grid;grid-template-columns:9.5em minmax(0,1fr);gap:6px;padding:4px 0}.run-detail>code{background:none!important;padding:0!important;color:var(--fg)}.run-detail-links{display:grid;gap:3px;min-width:0}.run-path{display:grid;grid-template-columns:3.5em minmax(0,1fr);gap:6px;align-items:start;color:var(--fg);text-decoration:none;min-width:0}.run-path b{font-size:10px;text-transform:uppercase;color:var(--mut)}.run-path code{background:none!important;padding:0!important;white-space:normal;overflow-wrap:anywhere;word-break:break-word}.run-detail .missing{color:var(--mut)}
 .related-summary{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}.related-summary span{border:1px solid var(--line);border-radius:999px;padding:1px 7px;color:var(--mut);font-size:11.5px}.related-summary .all{color:var(--acc);border-color:var(--acc);font-weight:650}.related-evidence-group{margin:14px 0 18px}.related-group-head{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin:0 0 6px;padding:0 2px}.related-group-head .evid{background:var(--card)}.related-group-title{font-weight:650}.related-group-count{color:var(--mut);font-size:11.5px}
-.related-run-card{border:1px solid var(--line);border-radius:9px;margin:8px 0;background:var(--bg);overflow:hidden}.related-run-head{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;padding:9px 10px 7px}.related-run-layer{font:650 9.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--acc);border:1px solid var(--acc);border-radius:999px;padding:0 6px}.related-run-head code{font-size:12.5px!important;background:none!important;padding:0!important}.related-run-head .run-availability{margin-left:auto}.related-run-action{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--warn)}
+.related-run-card{border:1px solid var(--line);border-radius:9px;margin:8px 0;background:var(--bg);overflow:hidden}.related-run-head{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;padding:9px 10px 7px}.related-run-layer{font:650 9.5px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--acc);border:1px solid var(--acc);border-radius:999px;padding:0 6px}.related-run-head code{font-size:12.5px!important;background:none!important;padding:0!important}.related-run-head .run-availability{margin-left:auto}.related-run-action{font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--warn)}.related-run-head .run-availability b,.related-run-action b{font:600 8px -apple-system,sans-serif;letter-spacing:.04em;color:var(--mut);margin-right:4px}
 .related-run-body{border-top:1px solid var(--line);padding:6px 10px}.related-run-body .run-fact{padding:4px 0}.related-evidence-list{display:flex;gap:5px;flex-wrap:wrap}.related-evidence{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--acc);border-radius:5px;padding:1px 6px;font:650 10.5px ui-monospace,Menlo,monospace;cursor:pointer}.related-evidence:hover,.related-evidence:focus-visible{border-color:var(--acc);outline:none}.related-run-card details{border-top:1px solid var(--line);padding:5px 10px 7px;color:var(--mut);font-size:11.5px}.related-run-card summary{cursor:pointer}.related-run-card .run-popover-path:first-child{border-top:0}
 @media(max-width:560px){#items,#runs{padding:10px 10px 18px}.runmap-head{grid-template-columns:auto minmax(0,1fr) auto}.runmap-addr{display:none}.runmap-line{grid-template-columns:1fr}.runmap-label{padding:0}.lineage-list{gap:4px}.run-detail{grid-template-columns:1fr;gap:1px}.run-path{grid-template-columns:3.2em minmax(0,1fr)}.related-run-head .run-availability{width:100%;margin-left:0}}
 .ghost{color:var(--mut);padding:24px 0;font-size:13.5px}
@@ -861,15 +862,20 @@ def _related_run_card(run: dict[str, object], evidence_ref: dict[str, str]) -> s
         evidence_ref["id"], _run_key(str(run["address"]), local=bool(run["local"]))
     )).strip("-")
     layer = "Local · Page" if run["local"] else "Supporting · %s" % run["family"]
-    return ('<article class=related-run-card id="related-run-%s">'
+    return ('<article class=related-run-card id="related-run-%s" '
+            'data-evidence-id="%s" data-run-address="%s" data-run-kind="%s">'
             '<div class=related-run-head><span class=related-run-layer>%s</span>'
-            '<code>%s</code><span class=run-availability>%s</span>'
-            '<span class=related-run-action>%s</span></div>'
+            '<code>%s</code><span class=run-availability><b>Availability</b>%s</span>'
+            '<span class=related-run-action><b>Next</b>%s</span></div>'
             '<div class=related-run-body>'
             '<div class="run-fact primary"><b>%s</b><span>%s</span></div>'
             '<div class=run-fact><b>Evidence Items</b><span class=related-evidence-list>%s</span></div>'
             '</div><details><summary>Run &amp; Result paths</summary>%s</details></article>') % (
-                html.escape(safe_id, quote=True), html.escape(layer),
+                html.escape(safe_id, quote=True),
+                html.escape(str(evidence_ref["id"]), quote=True),
+                html.escape(str(run["address"]), quote=True),
+                "local" if run["local"] else "supporting",
+                html.escape(layer),
                 html.escape(str(run["address"])), html.escape(str(run["availability"])),
                 html.escape(str(run["next_action"])), purpose_label,
                 html.escape(purpose), ref_html, "".join(path_rows),
@@ -1031,19 +1037,61 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
       target.scrollIntoView({{block: 'start', behavior: 'smooth'}});
     }});
   }}
+  /* Safari versions without the Popover API still need the Run inspector.
+     Keep native popovers where available and use one small, explicit fallback
+     for both a tap and an automatic deep-link open. */
+  var hasPopover = typeof HTMLElement !== 'undefined'
+                && typeof HTMLElement.prototype.showPopover === 'function';
+  if (!hasPopover) document.documentElement.classList.add('no-popover');
+  function openRunPanel(panel) {{
+    if (!panel) return;
+    if (hasPopover) {{
+      try {{ panel.showPopover(); return; }} catch (e) {{
+        hasPopover = false;
+        document.documentElement.classList.add('no-popover');
+      }}
+    }}
+    panel.setAttribute('data-fallback-open', '1');
+  }}
+  function closeRunPanel(panel) {{
+    if (!panel) return;
+    if (hasPopover && typeof panel.hidePopover === 'function') {{
+      try {{ panel.hidePopover(); return; }} catch (e) {{}}
+    }}
+    panel.removeAttribute('data-fallback-open');
+  }}
+  var runButtons = document.querySelectorAll('.lineage-chip[popovertarget]');
+  for (var rb = 0; rb < runButtons.length; rb++) {{
+    runButtons[rb].addEventListener('click', function (event) {{
+      event.preventDefault();
+      var owner = this.closest('[data-evidence-id]');
+      var matched = focusRelatedRun(
+        this.getAttribute('data-run-address') || '',
+        this.getAttribute('data-run-kind') === 'local',
+        owner ? owner.getAttribute('data-evidence-id') || '' : ''
+      );
+      if (!matched)
+        openRunPanel(document.getElementById(this.getAttribute('popovertarget')));
+    }});
+  }}
+  var closeButtons = document.querySelectorAll('.run-close[popovertarget]');
+  for (var cb = 0; cb < closeButtons.length; cb++) {{
+    closeButtons[cb].addEventListener('click', function (event) {{
+      event.preventDefault();
+      event.stopPropagation();
+      closeRunPanel(document.getElementById(this.getAttribute('popovertarget')));
+    }});
+  }}
+  document.addEventListener('keydown', function (event) {{
+    if (hasPopover || event.key !== 'Escape') return;
+    var open = document.querySelector('.run-popover[data-fallback-open="1"]');
+    if (open) closeRunPanel(open);
+  }});
   var params = new URLSearchParams(location.search),
       requestedSeg = params.get('seg') || '',
       requestedFocus = params.get('focus') || '',
       requestedRun = params.get('run') || '';
   if (params.get('embed') === '1') document.documentElement.classList.add('embedded');
-  try {{
-    requestedSeg = localStorage.getItem('board-outline-evidence-seg') || requestedSeg;
-    requestedFocus = localStorage.getItem('board-outline-evidence-focus') || requestedFocus;
-    requestedRun = localStorage.getItem('board-outline-evidence-run') || requestedRun;
-    localStorage.removeItem('board-outline-evidence-seg');
-    localStorage.removeItem('board-outline-evidence-focus');
-    localStorage.removeItem('board-outline-evidence-run');
-  }} catch (e) {{}}
   /* Old Outline links remain valid after By bullet and Run links merge. */
   if (requestedSeg === 'runlinks' || requestedSeg === 'bybullet') requestedSeg = 'items';
   if (requestedSeg) {{
@@ -1065,8 +1113,35 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
                       + (match[4] ? '.r' + match[4] : '');
     return text.toLowerCase();
   }}
+  function focusRelatedRun(address, local, evidenceId) {{
+    var runsButton = document.querySelector('nav button[data-seg="runs"]');
+    if (runsButton) show('runs', runsButton);
+    var cards = document.querySelectorAll('#runs .related-run-card[data-run-address]');
+    var wanted = runKey(address, local), target = null;
+    for (var i = 0; i < cards.length; i++) {{
+      var cardLocal = cards[i].getAttribute('data-run-kind') === 'local';
+      if (cardLocal !== local) continue;
+      if (evidenceId && cards[i].getAttribute('data-evidence-id') !== evidenceId) continue;
+      if (runKey(cards[i].getAttribute('data-run-address') || '', cardLocal) !== wanted) continue;
+      target = cards[i];
+      break;
+    }}
+    if (!target) return false;
+    document.querySelectorAll('.run-focus').forEach(function (x) {{
+      x.classList.remove('run-focus');}});
+    target.classList.add('run-focus');
+    target.setAttribute('tabindex', '-1');
+    target.focus({{preventScroll: true}});
+    target.scrollIntoView({{block: 'center', behavior: 'smooth'}});
+    return true;
+  }}
   if (requestedFocus) {{
     setTimeout(function () {{
+      if (requestedRun) {{
+        var evidenceId = requestedFocus.replace(/^run-/, '');
+        var local = !/^b/i.test((requestedRun || '').replace(/^\\s+/, ''));
+        if (focusRelatedRun(requestedRun, local, evidenceId)) return;
+      }}
       var target = document.getElementById(requestedFocus);
       if (target) {{
         target.classList.add('run-focus');
@@ -1080,7 +1155,7 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
             var local = buttons[i].getAttribute('data-run-kind') === 'local';
             if (runKey(address, local) !== runKey(requestedRun, local)) continue;
             var panel = document.getElementById(buttons[i].getAttribute('popovertarget'));
-            if (panel && panel.showPopover) panel.showPopover();
+            openRunPanel(panel);
             buttons[i].focus();
             break;
           }}

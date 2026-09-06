@@ -209,21 +209,23 @@ def parse_dir(d):
     """Parse a Board folder according to its explicit Board kind.
 
     On a generic Board, Q/S and named Page files bind by path; ``## Pages``
-    controls presentation only. On ``board-kind: task-block``, the canonical
-    jNN/tNN tree supplies membership and default order, Job folders become
-    Groups, and explicit ordering uses Board-relative Page paths.
+    controls presentation only. On a ``task-block`` or ``discovery-block``,
+    the canonical jNN/tNN tree supplies membership and default order, Job
+    folders become Groups, and explicit ordering uses Board-relative paths.
     """
     bp = d / "board.md"
     board = re.sub(r"^\[BOARD\]\s*\n", "",
                    bp.read_text(encoding="utf-8") if bp.exists() else "")
     meta = parse_board(board)
-    task_block = meta.get("board_kind") == "task-block"
+    block_kind = meta.get("board_kind")
+    block_board = block_kind in {"task-block", "discovery-block"}
+    block_family = "discovery" if block_kind == "discovery-block" else "task"
     # 文件名前缀就是这题的编号：Q1 / QA1 / QAa1 / Q0s1。组是大写字母（可带一个
     # 小写子组字母，QAa/QAb 这样把一个组一分为二）或「数字+小写」（Q0s 这类
     # 排在字母组之前的前置组），数字是组内序号。
     disk, dupes = {}, []
     for p in page_files(d):
-        task_info = task_page_info(d, p) if task_block else None
+        task_info = task_page_info(d, p, block_family) if block_board else None
         qm = re.match(r"Q([0-9][a-z]|[A-Z]*[a-z]?)(\d+)([a-z]?)", p.stem)
         # A NAMED Q family (JL 260727): `Q-Skill-haipipe-board.md`. Same idea as
         # the named S families, and for the same reason: a skill page is
@@ -428,7 +430,8 @@ def parse_dir(d):
             disk[disk_key] = (key, page_id, p, kind, family,
                               default_group, group_key)
     pages_txt = sec(split_sections(board), "Pages")
-    if not disk and not re.search(r"^doc:", pages_txt, re.M):
+    if (not disk and not block_board
+            and not re.search(r"^doc:", pages_txt, re.M)):
         return parse_file(board)        # legacy: everything in one board.md
 
     order, seen, warn, group, gintro, group_heads = [], set(), dupes, "", {}, []
@@ -453,7 +456,7 @@ def parse_dir(d):
             name = ln.lstrip("-*· ").strip()
             key_name = name if name in disk else ""
             ambiguous = False
-            if not key_name and task_block and "/" not in name:
+            if not key_name and block_board and "/" not in name:
                 matches = [key for key, entry in disk.items()
                            if entry[2].name == name]
                 if len(matches) == 1:
@@ -484,7 +487,7 @@ def parse_dir(d):
             if listed:
                 warn.append(f"{name} is not listed in board.md's ## Pages")
             auto_group = default_group
-            if task_block and group_key:
+            if block_board and group_key:
                 auto_group = next(
                     (head for head in group_heads
                      if task_group_token(head) == group_key.casefold()),

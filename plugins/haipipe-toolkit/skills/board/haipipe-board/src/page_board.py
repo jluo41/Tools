@@ -623,8 +623,10 @@ def render(meta, qs):
     # reported a denominator one too large. A meeting page decides nothing: what
     # was ruled in the room is routed to the page that owns it, and that page
     # carries the count.
-    task_board = meta.get("board_kind") == "task-block"
-    qonly = ([q for q in qs if q.get("kind") == "task"] if task_board else
+    block_kind = meta.get("board_kind")
+    task_board = block_kind in {"task-block", "discovery-block"}
+    block_page_kind = "discovery" if block_kind == "discovery-block" else "task"
+    qonly = ([q for q in qs if q.get("kind") == block_page_kind] if task_board else
              [q for q in qs
               if q.get("kind") not in ("doc", "stage", "skill", "agent", "meeting", "task")])
     sonly = [q for q in qs if q.get("kind") == "stage"]
@@ -685,7 +687,9 @@ def render(meta, qs):
         ixrow("map", "🗺 Board Map")
     if rf:
         ixrow("related", "🗂 Related Folders")
-    ixrow("pages", "📄 All Tasks" if task_board else "📄 All Pages", str(n))
+    block_pages_label = ("📄 All Discovery Tasks" if block_kind == "discovery-block"
+                         else "📄 All Tasks")
+    ixrow("pages", block_pages_label if task_board else "📄 All Pages", str(n))
     if not minimal_index:
         ixrow("status", "🩺 Section Matrix",
               f"{len([q for q in qs if q.get('kind') != 'doc'])} × 7")
@@ -719,10 +723,13 @@ def render(meta, qs):
     stagebar = (" · " + " · ".join(stagebits)) if stagebits else ""
     heading = ('<div class="board-heading"><span class="board-mark" aria-hidden="true">'
                + MARK_SVG + f'</span><h1 class="h1">{esc(meta["title"])}</h1></div>')
-    pages = (f'<h3 class="sec" id="qlist">{"ALL TASKS" if task_board else "ALL PAGES"}'
+    all_pages_label = ("ALL DISCOVERY TASKS" if block_kind == "discovery-block"
+                       else "ALL TASKS")
+    pages = (f'<h3 class="sec" id="qlist">{all_pages_label if task_board else "ALL PAGES"}'
              '<span class="hint">click a row → open it · <a href="#all">show all</a></span></h3>'
              f'<div class="idx">{idx}</div>')
-    progress_label = "tasks closed" if task_board else "questions settled"
+    progress_label = (("discovery tasks closed" if block_kind == "discovery-block"
+                       else "tasks closed") if task_board else "questions settled")
     overview = (heading + pages if minimal_index else
                 heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
                 f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
@@ -777,7 +784,7 @@ ACTIVITY_HTML = """<section class="activity" id="activity" aria-labelledby="acti
   <div><span class="act-kicker">ACTIVITY</span><h2 id="activity-title">When, then where</h2></div>
   <span class="act-status" id="activity-status">waiting for the board server</span>
 </div>
-<p class="act-note">One update is one dated line in one page's <code>## Log</code>. The count is read from the Markdown itself, so it sees every change any tool made, not only the ones a browser watched.</p>
+<p class="act-note">One update is one dated record in a Page's outline log. The count is read from Markdown, so it sees changes made through any tool.</p>
 <div id="activity-body"><p class="act-empty">Open this board through <code>serve.py</code> to count updates. The dashboard is an enhancement; the board remains complete without it.</p></div>
 </section>"""
 
@@ -926,8 +933,33 @@ _TREE_SOURCE_URL = re.compile(
     r'(?P<attr>href|src|data)="(?!https?:|mailto:|data:|#|/)(?P<url>[^"]+)"')
 
 
-def tree_reroot(html, up, src_dir=None):
-    """Move Board-root-relative href/src/data URLs under a split page."""
+def tree_reroot(html, up, src_dir=None, board_root=None):
+    """Move authored href/src/data URLs under a split page.
+
+    Renderer-owned paths are Board-root-relative, while ordinary Markdown
+    links are relative to the Page source file.  A split Page therefore needs
+    both origins: resolve an existing Page-relative target back to the Board
+    root before applying the hop from generated HTML to source.  Without that
+    projection, ``[Landscape](landscape.md)`` on a nested Task/Discovery Page
+    incorrectly becomes ``../../landscape.md`` instead of retaining the Page
+    folder in the generated URL.
+    """
+    source_dir = Path(src_dir).resolve() if src_dir is not None else None
+    source_root = Path(board_root).resolve() if board_root is not None else None
+
+    def sourced_url(url, bare):
+        if source_dir is None or source_root is None:
+            return None
+        candidate = (source_dir / unquote(bare)).resolve()
+        if not candidate.exists():
+            return None
+        try:
+            rel = candidate.relative_to(source_root).as_posix()
+        except ValueError:
+            return None
+        suffix = url[len(bare):]
+        return up + quote(rel, safe="/:") + suffix
+
     def fix(m):
         url = m.group("url")
         bare = url.split("#", 1)[0].split("?", 1)[0]
@@ -945,11 +977,15 @@ def tree_reroot(html, up, src_dir=None):
             # deck a slide page's embed points at, JL 260805 on QA4) does
             # exist there, and it needs the hop exactly like a png. The
             # filesystem is the one witness that tells them apart.
-            if src_dir is not None and (src_dir / unquote(bare)).exists():
-                return f'{m.group("attr")}="{up}{url}"'
+            authored = sourced_url(url, bare)
+            if authored is not None:
+                return f'{m.group("attr")}="{authored}"'
             return m.group(0)
         if "_assets/" in bare:          # TREE_TPL owns shared asset paths
             return m.group(0)
+        authored = sourced_url(url, bare)
+        if authored is not None:
+            return f'{m.group("attr")}="{authored}"'
         return f'{m.group("attr")}="{up}{url}"'
     return _TREE_SOURCE_URL.sub(fix, html)
 
@@ -1199,12 +1235,14 @@ def render_tree(meta, qs, out_dir, only=None):
     for q in qs:
         groups.setdefault(q.get("group") or "", []).append(q)
 
-    def shell(title, body, root, crumb="", sidebar=""):
+    def shell(title, body, root, crumb="", sidebar="", source_dir=None):
         # `root` is already the hop from this file up to board/, and the board
         # FOLDER is one further up.
         up = root + "../"
-        body = tree_reroot(body, up, out_dir.parent)
-        popcards = tree_reroot("\n".join(bd.CARDS), up, out_dir.parent)
+        authored_from = source_dir or out_dir.parent
+        body = tree_reroot(body, up, authored_from, out_dir.parent)
+        popcards = tree_reroot(
+            "\n".join(bd.CARDS), up, authored_from, out_dir.parent)
         return TREE_TPL.format(
             title=esc(title), body=body, root=root, crumb=crumb,
             sidebar=sidebar, popcards=popcards,
@@ -1258,8 +1296,9 @@ def render_tree(meta, qs, out_dir, only=None):
         # 20 characters, and with a dozen board tabs open the titles all begin
         # with the same kind of phrase; the id is the one token that tells them
         # apart, and it is what JL says out loud when naming a page.
+        source_dir = out_dir.parent / Path(q.get("file") or "").parent
         f.write_text(scrub_cjk_comments(shell(f'{q["id"]} · {q["title"]}', card, "../", crumb,
-                                      tree_sidebar(meta, qs, "../"))),
+                                      tree_sidebar(meta, qs, "../"), source_dir)),
                      encoding="utf-8")
         written.append(f)
 
@@ -1293,7 +1332,7 @@ def render_tree(meta, qs, out_dir, only=None):
         rest = _gi_body(gi)
         why = (f'<details class="gwhy"><summary>why this group exists</summary>'
                f'<div class="gwhy-b">{rest}</div></details>') if rest else ""
-        task_group = meta.get("board_kind") == "task-block"
+        task_group = meta.get("board_kind") in {"task-block", "discovery-block"}
         done = sum(1 for m in members
                    if m["state"].startswith("✅") and m.get("kind") not in ("skill", "agent"))
         counted = [m for m in members if m.get("kind") not in ("skill", "agent")]
@@ -1330,13 +1369,18 @@ def render_tree(meta, qs, out_dir, only=None):
     heading = (f'<div class="board-heading">'
                f'<span class="board-mark" aria-hidden="true">{MARK_SVG}</span>'
                f'<h1 class="h1">{esc(meta["title"])}</h1></div>')
-    task_board = meta.get("board_kind") == "task-block"
-    pages = (f'<h3 class="sec" id="qlist">{"ALL TASKS" if task_board else "ALL PAGES"}</h3>'
+    block_kind = meta.get("board_kind")
+    task_board = block_kind in {"task-block", "discovery-block"}
+    all_pages_label = ("ALL DISCOVERY TASKS" if block_kind == "discovery-block"
+                       else "ALL TASKS")
+    pages = (f'<h3 class="sec" id="qlist">{all_pages_label if task_board else "ALL PAGES"}</h3>'
              f'<div class="idx">{"".join(rows)}</div>')
-    task_pages = [q for q in qs if q.get("kind") == "task"]
+    block_page_kind = "discovery" if block_kind == "discovery-block" else "task"
+    task_pages = [q for q in qs if q.get("kind") == block_page_kind]
     task_done = sum(1 for q in task_pages if q["state"].startswith("✅"))
     task_progress = (
-        f'<p class="bar">{task_done}/{len(task_pages)} tasks closed</p>'
+        f'<p class="bar">{task_done}/{len(task_pages)} '
+        f'{"discovery tasks" if block_kind == "discovery-block" else "tasks"} closed</p>'
         if task_board else ""
     )
     body = (heading + pages if pages_only_index(meta) else

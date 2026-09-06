@@ -102,7 +102,8 @@ S_DISPLAY_UNIT = re.compile(
 NUMTOK = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+")
 
 # ---------------------------------------------------- register bindings --
-# An evidence page's `### E<n> ·` division (ref/topic-entry-contract.md)
+# An archived evidence page's `### E<n> ·` division
+# (ref/legacy/topic-entry-contract.md).
 # binds a consumer row's stake to evidence with backticked TOKENS, not prose:
 # a bibliography key on the outward route (the citation binding), bank
 # provenance paths on the inward one (the value binding). Only these two
@@ -116,7 +117,7 @@ BANK_PATH = re.compile(r"^(?:tasks|discoveries)/\S+$")
 
 
 # The contract's own slot names, mapped to the keys this parser reads. The two
-# disagreed and neither side complained: `ref/topic-entry-contract.md` specifies
+# disagreed and neither side complained: the legacy topic-entry contract specifies
 # `#### consumer trace` while this parser split on `### ` and looked up
 # `q-consumer`, so a record written exactly to the contract parsed to an empty
 # `asks`, every `[Q-…]` on its page rendered `unowned`, and nothing anywhere

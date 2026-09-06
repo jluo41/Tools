@@ -111,7 +111,7 @@ def main():
         legacy = legacy_integer_issue(plan)
         if legacy:
             fails.append(f"version-policy: {legacy}")
-        gaps += check_coverage(page, txt)
+        fails += [f"coverage: {m}" for m in check_coverage(page, txt)]
         print(f"plan         {plan.name} · approved {tick} · checks {'✅ 0 ❌' if not fails else f'❌ {len(fails)}'} · coverage gaps {len(gaps)}")
         for f in fails[:20]:
             print("   ❌", f)

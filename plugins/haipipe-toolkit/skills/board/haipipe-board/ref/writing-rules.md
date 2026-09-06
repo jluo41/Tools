@@ -1,130 +1,137 @@
-# Writing rules: how to write so it reads like human language
+# Page writing rules
 
-JL's words: **"If it is not easy to read, writing that much is rubbish."**
-A board's entire value is that a second person can read it. Unreadable means unwritten. This rule sits above structure and layout.
+This file governs Page prose. `board-form.md` owns structure;
+`haipipe-page` owns section meaning and evaluation order.
 
-`board-form.md` owns the board's shape. This file owns **how the words inside each section are written.** Everything is in English (JL 260724: board markdown, generated pages, and artifacts are English).
+## Write for a new reader
 
-## The section shapes decided this session (260724)
+- Use plain English and concrete nouns.
+- Define a necessary specialist term at first use or in `## Glossary`.
+- Do not invent a label when the source already has a stable name.
+- Give counts, paths, versions, or named evidence instead of “basically done.”
+- Remove scaffolding phrases that could fit another Page after swapping nouns.
+- Keep history, attribution, and retirement stories in
+  `outline/<stem>-log.md`, not current Page prose.
 
-These are not style preferences. `build.py` renders each section a specific way, so writing against the shape produces a broken page. The worked example is QB4 (`../../../diagrams/BoardSkillBoard-260722/3-QPs-page-structure/QPs1-overall/QPs1-overall.md`).
+## Keep each section in one role
 
-- `## Opening` = one lead sentence, then one plain paragraph
-  The first paragraph is the actual question, written as a question, and stays in Opening. Everything before the FIRST BLANK LINE is what a reader sees without clicking, and it is 4 to 5 sentences, about five lines on screen, target roughly 450 characters, hard ceiling 520, which is what `check.py` enforces, measured on the render (JL 260801). Inside that ceiling it is **one flowing, page-specific rationale** with no required order of beats. Stop when a cold reader can say why the question deserves attention and what this page owns. Scope, difficulty, failure, downstream effect, and a success consequence are diagnostic prompts, not sentence slots; use only the ones that reveal this page's real stake. build.py labels that drawer "More details" as a collapsed row inside Opening for Q and S (it read "Why this matters" until JL renamed it on 260801). Do NOT use the old bullet form. There is no separate `## Boundary`; name the neighbouring page in this paragraph when it owns excluded work.
-  A bare internal address such as `C1`, `E3`, or a Run id does not explain itself and must not carry the Opening. State the plain-English subject first; retain an address only as a secondary handle with a compact name, for example `primary total-MME association (Claim1.TotalMME)`.
-  A manuscript `page-type: section` has the stricter reader surface: only this paragraph renders under `🚪 Opening`. Its page-owned prose rules live as authored W records in `outline/<stem>-requirement.md`, after the generated venue V records, and both appear in the Outline plugin's `📏 Requirement` lens. The product Page carries no `### Writing Style`. Post-paragraph notes and Stage Contract remain source-side instructions for drafting and CHECK and do not render in the manuscript review page.
-- `## Outline` = generated authoritative projections only
-  The page renders a peer-level `🧭 Outline` row after `🚪 Opening`. It reads the current plan from `outline/<stem>-outline-v<N>.md` as `▤ Outline table`; that table is never copied into the Page. A Page Type may place one generated executive projection from its authoritative Content rows first and fold the generic plan table beneath it; Narrative uses this for its Section-control table. Never author an `## Outline` or `## Diagram` map in the Page. A real drawing remains in `studio/draw/` and opens through the Draw split.
-- S `## Content` = the stage's real product, and nothing else (JL 260725)
-  On a manuscript page Content IS the section: its parts, paragraphs, and prose. Keep four kinds of material out of it. Required Inputs and Venue go under `## Stage Contract`; generated venue constraints and authored page-writing rules share `outline/<stem>-requirement.md` as separate V and W blocks. Settled flags and corrections go to an Aim's `Now:` line. Intended outcomes go to `## Aims`; a temporary next move may appear as that Aim's optional `Plan`. build.py labels the section with the stage's name (`📚 Content · Main 7 §6 Results`), so if the name does not describe what a reader finds here, this section is carrying something that belongs elsewhere. That label comes from the page title, so when the artifact has its own number and it is offset from the board index, title the page `S Main 7 · §6 Results` and both numbers are stated instead of competing.
-- `## Content` = two heading levels, and the number carries the depth (JL 260725)
-  `###` is a division: a part that holds content of its own and folds on its own. `####` is one paragraph inside it, always, with no third level. Read the depth off the numbering (`§6` against `§6.1`), not off the heading level, because the page folds exactly one level and a deeper tree would collapse a whole section into one box. Write a division only when it holds something: a flat section carries one `### §1 Introduction` over its paragraphs, a subsectioned one starts at `### §6.1`, and no page opens a box onto nothing. The payoff is a shape you can check without reading: the subsection count is the number of `###` headings whose number contains a dot.
-- `#### heading` then a full-line `(…)` = the paragraph and its job
-  A paragraph heading carries no icon; 🔹 belongs to a group title, which is a full-line `**bold**` that really does lead a run of items. Do not use bold for a paragraph: build.py used to flatten `####` into bold and every paragraph came out claiming to be a group title. The optional `(…)` line directly under the heading is what that paragraph does, it renders in grey italic and stays on stage as a scan hook, and only the line immediately after the heading is read that way. Keep it to about 80 to 120 characters: past that it reads as prose and stops being scannable.
-- S `## Stage Contract` = the stage's ONE contract, and there is no second name for it
-  Everything a stage must honour goes in this section: what it requires, the venue's constraints, what it provides. JL 260801 collapsed the old `### Stage Record` into it, because two names for one obligation meant nobody could say which held what. A legacy `### Stage Record` under `## Content` still renders: build.py lifts it into the Stage Contract as its opening lines. Write nothing new under that heading.
-- `## Aims` = durable targets linked to Content
-  Mirror the relevant Content division: `A3.1` is an Aim for division 3, and its group is `### A3 · <that division's name>`, carrying the division's number, name and emoji (JL 260801, the letter fixed to `A` on 260802; `C<n>` still resolves). Use `P1` only when a target crosses divisions. Write `Done when` as a testable result and add `Plan` only when a temporary next move is worth preserving. A checkbox Aim (`- [ ]` with an emoji lead) is the first-class form (JL 260815); write id Aims only when a page's progress must be machine-tracked, and then keep States mirroring the ids.
-- Each Aim's `Now:` line = its one factual current state
-  Use `⬜` not started, `🔨` being worked on now, `🧠` waiting on a person or
-  on something outside this page, `✅` met with the evidence named, or `❄️`
-  on ice. A current fact never keeps an earlier now beside it. Put the reason
-  for a transition in `outline/<stem>-log.md`.
-- Other items (in `## Law`, `## Lesson`, and dated Log records) = `- ICON heading` then a folded explanation
-  Only the heading shows on stage, with a caret; the explanation opens on click. Start every item heading with an author-chosen emoji icon (build.py never guesses one). The first indented line is a one-sentence summary; the lines after it are the long explanation. Write the explanation as a real paragraph (what it means, what happened, what we understand so far, why it ended up this way), not a clause. Length is free here because it is folded. A `## Glossary` entry takes the same `- ICON` row, with the TERM in bold and its definition after a colon (JL 260802), because the term is what the reader arrived looking for.
+| Section | Reader question |
+|---|---|
+| Opening | What is this Page, why does it matter, and what does it own? |
+| Outline | How is the Page planned and supported? Generated from `outline/`. |
+| Content | What does the Page establish? |
+| Aims | What must become true, how is it tested, and what is true now? |
 
-## Hard rules
+Move a sentence when it answers another section's question. Opening is
+orientation, not a miniature Content section. Content is substance, not a
+status report. Aims are durable targets, not a temporary task list.
 
-- **Content is numbered all the way down** (JL 260801)
-  A division is `### 3 · Content`, a group is `**3.2 · Group title**`, a paragraph is `#### 3.2.1 · Its heading`; an ungrouped division runs `#### 3.1 ·` straight through, so the number's depth says whether a group exists. The index makes a long division navigable and citable: `1.2.3` is something a person can point at, and a bare heading is not.
+## Write a focused Opening
 
-- **`More details` is a list of labelled parts, never one block of prose** (JL 260801)
-  Each part starts with a bold label saying what it answers, then its sentences, with a blank line between. The paragraph on stage is read straight through; `More details` is opened by someone hunting one specific thing, and a block of prose gives them no label to scan for.
+The visible Opening is one flowing, Page-specific paragraph. It should let a
+new reader name the subject, the stake, and this Page's boundary without
+opening another record.
 
-- **A change is finished when it is ON THE RENDERED PAGE** (JL 260801)
-  Do not stop mid-way to ask for approval. Write the source, propagate the rule to `ref/page-template.md` and `haipipe-page` so new pages inherit it, run `check.py`, then confirm the RENDER, not the markdown. Source-is-correct is not page-is-correct: a stopped watcher and a shut `<details>` each produce a correct file and a wrong page. A half-applied change is worse than either finishing or not starting.
+- Target roughly 450 visible characters and never exceed the checker ceiling.
+- Use ordinary subject language before internal ids or Run addresses.
+- Put optional supporting detail after the first blank line.
+- Use labelled parts in More details; do not add one undifferentiated block.
+- Do not add a separate Boundary section.
 
+A manuscript Section uses its stricter Page-owner contract. Its reader Opening
+contains only the paragraph; requirements remain in the Outline workspace.
 
-- **No em-dashes** (JL 260724, ruled emphatically)
-  Never use the em-dash in prose. Use a colon when expanding on what came before, a semicolon or a new sentence for two linked clauses, parentheses or commas for an aside. This is a rewrite per sentence, never a blind find-and-replace: each dash needs the mark its own sentence calls for.
-- **One sentence per source line** (JL 260725)
-  The renderer gives every plain prose line its own row on the page, so a hard wrap in the middle of a sentence becomes a broken line the reader sees. Write each sentence as one source line and let the browser soft-wrap it; start a new line only at a sentence boundary. This also gives each sentence a clean anchor for comments and future sentence-level apparatus.
-- **Sound like a person, not a model**
-  Plain declaratives. Cut the AI tells: "it is worth noting", "plays a crucial role", "in the realm of", "delve into", "a testament to", empty tricolons, and sentences that restate the previous sentence with grander words. Say the thing once, concretely, and stop.
-- **Do not turn review questions into a prose template**
-  A rubric may ask about value, difficulty, failure, downstream effect, and acceptance. That does not authorize five matching sentences or a fixed order. Repeating `This page ...`, `The hard part ...`, `Without ...`, and `It succeeds when ...` across a batch is form filling, even when every sentence is individually clear. Speak about the subject, use the beats the page actually needs, and stop. Apply the noun-substitution test: if changing a few nouns makes the paragraph fit another page, it says too little about this one.
-- **No coined words**
-  Every phrase is either a source-document term or is defined in `## Glossary`. Real damage done before: inventing "outward anchoring", "first act", "three-set gate", words that appear zero times in any source. The reader trusts them as jargon, goes to look them up, and finds nothing. When unsure, use the source word even if it is plain.
-- **An ASCII figure must survive being copied**
-  Never draw two trees side by side. The column boundary is whitespace, it disappears the moment anyone pastes the figure into chat or an email, and the right column's rows then read as branches of the left one, so the figure states a structure that does not exist. Real case: a two-column comparison of the Introduction and Results heading trees came back pasted as one tree in which the Results subsections held the Introduction's paragraphs. Stack the trees, one complete tree at a time. Columns are safe only for short parallel lists where a wrong reading is obvious at a glance.
-- **No author notes to self**
-  Do not write explanations of the markup or the tooling into the page (for example a note about why an ascii figure is left-anchored). The reader needs the content, not the reasoning behind how it was typeset.
-- **A short heading is a phrase, not a sentence**
-  The complete question belongs in `## Opening`. Keep the `# title` and every item heading short. A Page title targets three to five visible words and never exceeds six (JL 260827); acronyms, identifiers, and hyphenated compounds count as one word, and a colon does not create a second allowance.
-- **Give numbers**
-  "Basically done" and "works well" say nothing. Write "2 of 7 questions are clear", "agreement fell from 0.93 to 0.67".
-- **Each question is self-contained**
-  A reader should not have to open another question to follow this one. To reference another question, name its id and say what it covers.
-- **`## Topic` answers "what is this project"**
-  The harshest first cold-read note: "it explains the format of a recipe but never says what the dish is." Identify JL, CC, and the colleagues involved, then state what real problem is being solved.
-- **Keep sentence review where it belongs**
-  Sentence-local `> Comment WHO` and `> ✎` lines are the durable review trail; do not erase them. A person's remark is written `> Comment JL …` (JL 260802); the older `> JL:` still renders, and `check.py` warns on it inside Content.
-- **The page says what IS; the Log keeps the story** (JL 260815)
-  Write the title, Opening, and Content for someone who arrived today: the current contract, in plain words, standing on its own.
-  Decision dates, people's names, ruling references, retired mechanisms, and what the old way did are history, and history's home is `outline/<stem>-log.md` (and the board's Pipeline), where a reader goes when they want the story.
-  The test: if a sentence needs a date or a name to stay true, it is a Log line, not Content.
-  The commonest leak is the attribution parenthetical: a prose sentence ending in `(JL 260816)` is jargon to a cold reader (JL 260816, on QPf9's render); state the rule plainly and let Law or Log carry who ruled it and when. `check.py` warns on the Opening form; in Content the writer catches it.
-- **Clear out stale text**
-  When the board changes, old descriptions elsewhere become wrong. Real case: QA4 said "side by side" long after the layout had been stacked. A zero-background reader catches these self-contradictions on the first pass.
-
-## Zero-background review (the convergence test)
-
-Reading it yourself in the same conversation is useless: you know too much that never made it onto the page. Open a fresh agent.
-
-Its brief:
-
-**The zero-background reviewer prompt**: what to paste to a fresh agent so the page is read cold.
-
-```
-You have never seen this project, attended any meeting, read any code, or met JL, CC, or their colleagues.
-Read only the markdown files I give you, nothing else.
-Report only four things. Do not praise, do not summarise what reads well:
-  1. Which sentence is unreadable. Quote it, and say whether it is unclear reference,
-     a missing premise, or three things packed into one sentence.
-  2. Which word is undefined. List it, note the file it first appears in and whether
-     that file's ## Glossary defines it.
-  3. What premise is missing. Something you must know to follow these files that the
-     files never state.
-  4. Which paragraph is interchangeable or templated. Name the other page it could fit,
-     the repeated sentence stem or rhetorical sequence, and the smallest specific rewrite.
-Then rate each question: clear / half / unreadable.
-"half" = you can restate what it asks, but not why it matters or what counts as done.
-```
-
-Fix what it reports, then it is done.
-
-For a batch, read the changed sections consecutively in Board order after the page-by-page pass. A page that is clear alone still fails readability when the batch reveals a reusable form-letter voice.
-
-**Convergence test:** no question is "unreadable", every "half" reason is either handled or written down as a known gap, and no changed paragraph remains interchangeable after noun substitution.
-
-## A heading is a lookup key
-
-Governs every skill's H1, a contract's `##` headings, and every page's `###`
-Content divisions. Five tests, each mechanical:
+## Number Content for navigation
 
 ```text
-① states the LAW, not the topic   `One key claims a page`, never `Page Types`
-② no count                        a number in a heading rots (`Five Page Phases`)
-③ no date                         a heading carrying a date is a record, not a law
-④ no self-reference               the heading names the SUBJECT, never this document
-⑤ a clause after the comma        it earns its place only by ruling out a real
-                                   mistake the first half leaves open: `Write for
-                                   the render, not the source` keeps it; `A heading
-                                   is a lookup key, not a sentence` loses it
+### 3 · Division
+**3.1 · Group**
+#### 3.1.1 · Paragraph
+(the job this paragraph performs)
 ```
 
-Test ⑤ catches machine prose: its tell is a comma followed by a qualifying
-phrase, commonest as the negative restatement. Grep it with
-`grep -n '^#\+ .*, '` and ask of each hit what mistake the clause prevents. A
-skill's H1 says what the skill DOES for its reader, as a verb phrase
-(`judge one version and name its next authority`).
+The number carries depth. A Page has one foldable Content-division level; do
+not create a deeper heading tree. Use a bold group title only when it leads a
+real list. A paragraph heading does not carry an icon.
+
+Each Content division begins with a captioned face diagram when its Page-owner
+contract requires one. A caption precedes the fence and states what the figure
+shows. A figure row is a label and value, not a prose sentence. Keep ASCII
+figures narrow and copy-safe; stack trees instead of drawing ambiguous columns.
+
+## Trace prose to the plan
+
+When the Page-owner contract uses Bullet realization, one normal prose
+paragraph realizes one Bullet. Put the exact backlink on the paragraph's last
+source line:
+
+```html
+<!-- realizes: C<n>.P<m>.B<k> -->
+```
+
+One paragraph cannot realize two Bullets. Several paragraphs may repeat the
+same backlink. Headings, diagrams, machinery, and ruling tables are not prose
+realization units.
+
+## Write one Aim as one row
+
+```markdown
+- 🔨 A2.1 · <durable target>
+  **Done when:** <observable test>
+  **Now:** <one current fact>
+  **Plan:** <optional immediate route>
+```
+
+The tick and `Now:` describe the same current state. Keep only the latest fact;
+record transition reasons in `outline/<stem>-log.md`. Use `Plan` only when an
+immediate route is worth preserving.
+
+A blocking human choice belongs under `### Decision Now`. Give each option its
+own line, name its consequence, state what is blocked, and provide a default
+when nothing blocks. Once answered, remove the pending row and record the
+ruling in its durable owner.
+
+## Preserve sentence-level records
+
+Write one prose sentence per source line. The browser soft-wraps it. A hard
+line break creates a second address and can detach the apparatus below it.
+
+- `> Comment WHO …` records a sentence-local comment.
+- `> ✎ …` records a sentence-local edit.
+- `> Card <words>: …` attaches a panel to exact words in that sentence.
+
+Never erase a human comment or edit record. A Page-wide issue belongs in Aims
+or an Outline record rather than under an arbitrary sentence.
+
+## Avoid machine-shaped prose
+
+- No em dash.
+- No empty intensifiers or ceremonial transitions.
+- No fixed rhetorical checklist repeated across Pages.
+- No author notes explaining the markup.
+- No clause-packed figure rows.
+- No heading that is a full sentence.
+
+Titles use three to five visible words and never exceed six. A heading is a
+lookup key: it states the rule or purpose, contains no date, and does not refer
+to “this document.”
+
+## Finish on the rendered Page
+
+A source edit is incomplete until the Board is rebuilt and the render has been
+read. Check both structure and prose:
+
+```bash
+python3 <skill>/cli/build.py <board-folder>
+python3 <skill>/cli/check.py <board-folder> --strict
+```
+
+Then use a fresh-context reviewer. Ask it to report only:
+
+1. an unreadable sentence and its failure type;
+2. an undefined term;
+3. a missing premise;
+4. an interchangeable or templated paragraph.
+
+The Page is ready when no part is unreadable, every remaining gap is explicit,
+and the changed prose cannot be reused on another Page by replacing nouns.

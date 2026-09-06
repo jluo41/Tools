@@ -47,6 +47,7 @@ _REC_RE = re.compile(
 _LABEL_RE = re.compile(r"^-\s+\*\*([^*]+?)\*\*\s*[:：]\s*(.*)$")
 _WALL_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]{0,11}$")
 _EVIDENCE_RE = re.compile(rf"^\s*Evidence:\s*({_ITEM_ID})\s*·\s*(.+)$")
+_NO_EVIDENCE_RE = re.compile(r"^\s*Evidence:\s*none\s*·\s*(\S.*)$", re.I)
 _GLOBAL_RUN_RE = re.compile(r"^b(\d+)\.?j(\d+)\.?t(\d+)\.?r(\d+)$")
 _PAPER_RUN_RE = re.compile(r"^[pP]\.?j(\d+)\.?t(\d+)\.?r(\d+)$")
 _TASK_RE = re.compile(r"^b\d+\.?j\d+\.?t\d+(?:\.?r\d+)?$")
@@ -166,24 +167,48 @@ def _current_result_status(runtime: Path | None, *, result_files: set[str]) -> t
     if complete and artifacts and not fake_worker:
         return "complete", str(runtime.parent)
 
-    # A migrated task may carry a byte-preserved, aggregate-only historical
-    # Result beneath the corresponding current Run.  It is deliberately not
-    # promoted to the current Run receipt: the current runtime can remain
-    # ``planned`` while the historical envelope is exposed as an available
-    # Supporting Result.  Admission is opt-in and machine-checkable so merely
-    # having an ``old/`` directory never makes evidence usable.
-    historical = runtime.parent / "old" / "result.yaml"
-    if historical.is_file():
+    # A migrated task may carry one or more byte-preserved, aggregate-only
+    # historical Results beneath the corresponding current Run.  A runtime
+    # declares the preferred sidecar through ``historical_sidecar`` (and may
+    # inventory more through ``historical_sidecars``).  ``old/`` remains a
+    # compatibility fallback, but a declared sidecar wins so a later, fuller
+    # migration such as ``old-v0618/`` is not hidden by an earlier snapshot.
+    declared = []
+    singular = re.search(r"^historical_sidecar:\s*(.+?)\s*$", text, re.M)
+    if singular:
+        declared.append(singular.group(1).strip().strip('"'))
+    plural = re.search(
+        r"^historical_sidecars:\s*\n((?:[ \t]+-[^\n]+\n?)*)", text, re.M,
+    )
+    if plural:
+        declared.extend(
+            match.group(1).strip().strip('"')
+            for match in re.finditer(r"^[ \t]+-\s*(.+?)\s*$", plural.group(1), re.M)
+        )
+    sidecars = []
+    for stored in declared:
+        candidate = runtime.parent / stored
+        sidecar = candidate.parent if candidate.name.lower() == "manifest.md" else candidate
+        if sidecar not in sidecars:
+            sidecars.append(sidecar)
+    fallback = runtime.parent / "old"
+    if fallback not in sidecars:
+        sidecars.append(fallback)
+
+    for sidecar in sidecars:
+        historical = sidecar / "result.yaml"
+        if not historical.is_file():
+            continue
         historical_text = historical.read_text(encoding="utf-8", errors="replace")
-        historical_complete = bool(
-            re.search(r"^status:\s*complete\s*$", historical_text, re.M)
+        historical_usable = bool(
+            re.search(r"^status:\s*(?:complete|partial)\s*$", historical_text, re.M)
         )
         supporting_eligible = bool(
             re.search(r"^supporting_eligible:\s*true\s*$", historical_text, re.M)
         )
-        tables = runtime.parent / "old" / "tables"
+        tables = sidecar / "tables"
         aggregate_artifacts = bool(tables.is_dir() and any(tables.glob("*.csv")))
-        if historical_complete and supporting_eligible and aggregate_artifacts:
+        if historical_usable and supporting_eligible and aggregate_artifacts:
             return "historical", str(historical.parent)
     return "rerun", ""
 
@@ -492,6 +517,13 @@ def read_items(page_md: Path) -> dict:
             })
             rows[item_id] = cur
             continue
+        if re.match(r"^#{2,}\s+", line):
+            # Any other Markdown section ends the active record.  Retired or
+            # explanatory subsections may use the same field labels; letting
+            # those lines bleed into the preceding active item silently
+            # rewrites its target, type contract, and Run graph.
+            cur = None
+            continue
         if cur is None:
             continue
         m = _LABEL_RE.match(line)
@@ -608,6 +640,36 @@ def bullets(plan_text: str):
                 item_id, target, head, item_id.split("-", 2)[1],
                 expected.strip(), acceptance, folded,
             )
+
+
+def evidence_none_targets(plan_text: str) -> dict[str, str]:
+    """Return Bullet addresses that explicitly declare no material evidence.
+
+    ``Evidence: none`` is not an Evidence Item and therefore never enters the
+    Evidence Item ledger.  Keeping the declaration visible to renderers lets
+    them distinguish an intentional source-free reader move from a missing
+    SHAPE decision.
+    """
+    lines = plan_text.splitlines()
+    c = p = b = 0
+    found: dict[str, str] = {}
+    for line in lines:
+        match = re.match(r"^## C(\d+)\b", line)
+        if match:
+            c, p, b = int(match.group(1)), 0, 0
+            continue
+        match = re.match(r"^### C(\d+)\.P(\d+)\b", line)
+        if match:
+            c, p, b = int(match.group(1)), int(match.group(2)), 0
+            continue
+        match = re.match(r"^- (?:\[[ xX]\] )?[BS](\d+)\s*·", line)
+        if match:
+            b = int(match.group(1))
+            continue
+        match = _NO_EVIDENCE_RE.match(line)
+        if match and c and p and b:
+            found[f"C{c}.P{p}.B{b}"] = match.group(1).strip()
+    return found
 
 
 def item_status(row, folded: bool, page_accepted: bool, plan_mtime: float,

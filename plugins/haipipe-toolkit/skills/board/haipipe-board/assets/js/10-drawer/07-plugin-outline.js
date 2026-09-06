@@ -44,9 +44,11 @@
       .catch(function (e) { err && err(String(e)); });
   }
 
-  /* A Run in the compact Page table belongs to the detailed Outline
-     workspace.  Keep one public plugin: select Outline, open its Evidence
-     Workspace lens, and focus the owning Evidence Item. */
+  /* A compact Outline token belongs to a precise element inside the detailed
+     Outline workspace. Run tokens land on the actual Runs element; Evidence
+     chips land on their Evidence Workspace item card; Feedback tokens land on
+     their Context Workspace record. Keep the complete route in one URL so an
+     already-open Outline frame cannot consume partial state. */
   document.addEventListener('click', function (event) {
     var link = event.target.closest && event.target.closest('a[data-outline-focus]');
     if (!link) return;
@@ -56,22 +58,35 @@
             || (window.boardPlugins && window.boardPlugins.livePage());
     var focus = link.getAttribute('data-outline-focus') || '';
     var run = link.getAttribute('data-outline-run') || '';
+    var lens = link.getAttribute('data-outline-lens') || (run ? 'workspace' : 'div');
+    /* The Evidence Workspace segment is part of the destination, not a guess
+       made later from whether a Run was named: items for an Evidence chip,
+       runs for a Run token. */
+    var seg = link.getAttribute('data-outline-seg') || '';
     var url = outlineUrl(page);
     if (!url) return;
     event.preventDefault();
-    try {
-      localStorage.setItem('board-outline-evidence-focus', focus);
-      localStorage.setItem('board-outline-evidence-run', run);
-      localStorage.setItem('board-outline-lens', 'workspace');
-    } catch (e) {}
+    /* This link is not Page navigation.  The later generic same-site router
+       would otherwise also consume the same click, swap the Page frame to the
+       /_board/outline response, and make the shell re-aim Outline at its
+       default URL.  That second route erases lens/focus/run on both touch and
+       mouse input. */
+    event.stopImmediatePropagation();
+    /* Carry the whole request in ONE value.  The old localStorage hand-off
+       could be consumed by the already-open Outline frame just before the
+       shell rebuilt that frame; the replacement then opened at its default
+       Bullet Workspace with no Run left to focus. */
+    var direct = url + '&lens=' + encodeURIComponent(lens);
+    if (seg) direct += '&seg=' + encodeURIComponent(seg);
+    if (focus) direct += '&focus=' + encodeURIComponent(focus);
+    if (run) direct += '&run=' + encodeURIComponent(run);
     try {
       if (parent !== window && typeof parent.__boardShowTab === 'function') {
-        parent.__boardShowTab('outline');
+        parent.__boardShowTab('outline', direct);
         return;
       }
     } catch (e) {}
-    window.location.assign(url + '&lens=workspace&focus=' + encodeURIComponent(focus)
-                         + '&run=' + encodeURIComponent(run));
+    window.location.assign(direct);
   });
 
   if (window.boardPlugins) {

@@ -29,6 +29,7 @@ approved: {tick}
   Accept: preview, caption claim, and frozen intake exist
 - B3 · no item here
   Note: nothing owed
+  Evidence: none · transition only; no citation, value, or display
 """
 
 ITEMS = """# QT2 · evidence items
@@ -298,6 +299,31 @@ class ItemTableTest(unittest.TestCase):
             ("E02-CITE-guideline-anchor", "C1.P1.B2", "CITE", False),
             ("E03-DISPLAY-effect-forest", "C1.P1.B2", "DISPLAY", False),
         ], got)
+
+    def test_explicit_none_is_visible_but_not_an_evidence_item(self):
+        plan = PLAN.format(tick="⬜")
+        self.assertEqual(
+            {"C1.P1.B3": "transition only; no citation, value, or display"},
+            it.evidence_none_targets(plan),
+        )
+        self.assertEqual(3, len(list(it.bullets(plan))))
+
+    def test_retired_subsection_cannot_bleed_fields_into_active_item(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = _page(directory)
+            path = it.items_path(page)
+            text = path.read_text(encoding="utf-8")
+            marker = "### E03-DISPLAY-effect-forest"
+            retired = (
+                "#### E99-VALUE-retired · retired basket\n"
+                "- **Target**: C9.P9.B9\n"
+                "- **Expected**: VALUE · stale aggregate\n"
+                "- **Acceptance**: retired\n\n"
+            )
+            path.write_text(text.replace(marker, retired + marker), encoding="utf-8")
+            row = it.read_items(page)["E02-CITE-guideline-anchor"]
+            self.assertEqual("C1.P1.B2", row["target"])
+            self.assertEqual("CITE · verified guideline claim and locator", row["expected"])
 
     def test_status_and_cycle_specified_planned_ready_folded(self):
         with tempfile.TemporaryDirectory() as directory:

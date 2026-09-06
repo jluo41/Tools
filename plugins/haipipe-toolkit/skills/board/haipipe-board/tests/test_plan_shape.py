@@ -5,7 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.plan_shape import check, type_outline
+from src.plan_shape import check, check_coverage, type_outline
+from cli.check import Report, check_section_sentences
 
 
 HERE = Path(__file__).resolve().parent.parent
@@ -115,6 +116,132 @@ class ResolvedSectionShapeTest(unittest.TestCase):
             )
             findings = check(page, "## C1 · Result found\n", SKILLS_ROOT)
             self.assertTrue(any("different Page Face owners" in item for item in findings))
+
+    def test_decimal_plan_requires_one_evidence_decision_per_bullet(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "Q-section.md"
+            page.write_text("# Fixture\n", encoding="utf-8")
+            plan = (
+                "# Q · outline v0.1\noutline-version: v0.1\n\n"
+                "## C1 · One\n### C1.P1 · Move\n"
+                "- B1 · Make a transition now\n  Note: no source needed\n"
+            )
+            self.assertIn(
+                "C1.P1.B1 has no explicit Evidence declaration",
+                check_coverage(page, plan),
+            )
+
+    def test_explicit_none_closes_a_source_free_bullet(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "Q-section.md"
+            page.write_text("# Fixture\n", encoding="utf-8")
+            plan = (
+                "# Q · outline v0.1\noutline-version: v0.1\n\n"
+                "## C1 · One\n### C1.P1 · Move\n"
+                "- B1 · Make a transition now\n  Note: no source needed\n"
+                "  Evidence: none · transition only; no citation, value, or display\n"
+            )
+            self.assertEqual([], check_coverage(page, plan))
+
+    def test_sibling_item_reference_does_not_close_a_bullet(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "Q-section.md"
+            page.write_text("# Fixture\n", encoding="utf-8")
+            outline = page.parent / "outline"
+            outline.mkdir()
+            (outline / "Q-section-evidence-items.md").write_text(
+                "### E01-CITE-source · C1.P1.B1 · source\n",
+                encoding="utf-8",
+            )
+            plan = (
+                "# Q · outline v0.1\noutline-version: v0.1\n\n"
+                "## C1 · One\n### C1.P1 · Move\n"
+                "- B1 · State the supported external claim\n"
+                "  Evidence: E01-CITE-source · verified source\n"
+                "  Accept: source resolves\n"
+                "- B2 · Explain a second external claim\n"
+                "  Note: use E01's source without creating another item\n"
+            )
+            self.assertIn(
+                "C1.P1.B2 has no explicit Evidence declaration",
+                check_coverage(page, plan),
+            )
+
+    def test_none_cannot_mix_with_a_typed_item(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "Q-section.md"
+            page.write_text("# Fixture\n", encoding="utf-8")
+            outline = page.parent / "outline"
+            outline.mkdir()
+            (outline / "Q-section-evidence-items.md").write_text(
+                "### E01-CITE-source · C1.P1.B1 · source\n",
+                encoding="utf-8",
+            )
+            plan = (
+                "# Q · outline v0.1\noutline-version: v0.1\n\n"
+                "## C1 · One\n### C1.P1 · Move\n"
+                "- B1 · State an external claim\n  Note: claim\n"
+                "  Evidence: none · transition only\n"
+                "  Evidence: E01-CITE-source · verified source\n"
+                "  Accept: source resolves\n"
+            )
+            self.assertIn(
+                "C1.P1.B1 mixes Evidence none with typed Evidence Items",
+                check_coverage(page, plan),
+            )
+
+    def test_content_citation_cannot_realize_an_explicit_none_bullet(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            page = folder / "Q-section.md"
+            page.write_text("# Fixture\npage-type: section\n", encoding="utf-8")
+            outline = folder / "outline"
+            outline.mkdir()
+            (outline / "Q-section-outline-v1.0.md").write_text(
+                "# Q · outline v1.0\noutline-version: v1.0\napproved: ✅ JL\n\n"
+                "## C1 · One\n### C1.P1 · Move\n"
+                "- B1 · Make a transition now\n  Note: transition\n"
+                "  Evidence: none · transition only\n",
+                encoding="utf-8",
+            )
+            content = (
+                "# Fixture\npage-type: section\n\n## Content\n"
+                "This transition cites prior work \\citep{source}. "
+                "<!-- realizes: C1.P1.B1 -->\n"
+            )
+            report = Report()
+            check_section_sentences(content, page, page.name, report)
+            self.assertTrue(any(
+                code == "citation-without-bullet-evidence"
+                for _level, code, _where, _message in report.rows
+            ))
+
+    def test_content_value_requires_value_item_on_the_same_bullet(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            page = folder / "Q-section.md"
+            page.write_text("# Fixture\npage-type: section\n", encoding="utf-8")
+            outline = folder / "outline"
+            outline.mkdir()
+            (outline / "Q-section-outline-v1.0.md").write_text(
+                "# Q · outline v1.0\noutline-version: v1.0\napproved: ✅ JL\n\n"
+                "## C1 · One\n### C1.P1 · Move\n"
+                "- B1 · State an external source\n  Note: citation only\n"
+                "  Evidence: E01-CITE-source · source claim\n"
+                "  Accept: source resolves\n",
+                encoding="utf-8",
+            )
+            content = (
+                "# Fixture\npage-type: section\n\n## Content\n"
+                "The estimate was 9.34 MME. <!-- realizes: C1.P1.B1 -->\n"
+                "> Value: E99\n"
+            )
+            report = Report()
+            check_section_sentences(content, page, page.name, report)
+            self.assertTrue(any(
+                code == "value-without-bullet-evidence"
+                for _level, code, _where, _message in report.rows
+            ))
 
 
 if __name__ == "__main__":

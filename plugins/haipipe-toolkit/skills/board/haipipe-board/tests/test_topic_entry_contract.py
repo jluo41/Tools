@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.topic_entry_contract import check_topic_entries
+from legacy.topic_entry_contract import check_topic_entries
 
 
 class _Report:

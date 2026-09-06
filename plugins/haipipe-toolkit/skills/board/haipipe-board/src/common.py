@@ -6,8 +6,8 @@ import re
 from pathlib import Path
 
 
-EVIDENCE_LANES = frozenset({"bibex", "display", "pagex", "materials"})
-LEGACY_EVIDENCE_LANES = frozenset({"probe"})
+EVIDENCE_LANES = frozenset({"bibex", "display", "materials"})
+LEGACY_EVIDENCE_LANES = frozenset({"probe", "pagex"})
 DELIVERY_LANES = frozenset({"latex", "word", "slide", "render"})
 OUTLINE_LANES = frozenset({"skill"})
 STUDIO_LANES = frozenset({"chat", "draw"})
@@ -462,7 +462,7 @@ def page_files(d):
     Pages.
     """
     prefixes = tuple("QSABCDEFGHIJKLMNOPRTUVWXYZ") + ("Agent", "Meeting", "Design")
-    if board_kind(d) == "task-block":
+    if board_kind(d) in {"task-block", "discovery-block"}:
         prefixes += ("t",)
     for prefix in prefixes:
         for p in sorted(d.rglob(f"{prefix}*.md")):

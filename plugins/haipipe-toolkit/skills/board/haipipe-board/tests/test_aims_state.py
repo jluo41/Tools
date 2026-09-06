@@ -75,12 +75,16 @@ class AimsStateTest(unittest.TestCase):
         self.assertTrue(sec(page["sec"], "Now").startswith("### C1"))
         self.assertIn("📍 States", render_question(page, None, None))
 
-    def test_new_page_generators_emit_plural_states(self):
+    def test_current_page_generators_keep_status_inside_aims(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
-        for rel in ("live/structure.py", "cli/stage.py", "cli/skillpage.py", "cli/meetingpage.py"):
+        for rel in ("live/structure.py", "cli/stage.py", "cli/skillpage.py"):
             text = (root / rel).read_text(encoding="utf-8")
-            self.assertIn("## States", text, rel)
-            self.assertNotIn("## State\n", text, rel)
+            self.assertIn("**Now:**", text, rel)
+            for heading in ("States", "Files", "Discussion", "Log"):
+                self.assertNotRegex(text, rf'(?m)^## {heading}\s*$', rel)
+
+        self.assertFalse((root / "cli" / "meetingpage.py").exists())
+        self.assertTrue((root / "legacy" / "meetingpage.py").is_file())
 
     def test_public_paper_door_routes_the_six_current_page_types(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir

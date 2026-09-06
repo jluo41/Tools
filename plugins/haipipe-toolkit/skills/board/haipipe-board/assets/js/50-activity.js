@@ -3,12 +3,8 @@
    above still explains the measurement when this script or serve.py is
    absent. One POST on load, one more whenever the page reports a write.
 
-   The FOCUS TIMER that used to live here was deleted on 260816 (JL: keep the
-   log tracker, drop the rest). It wrote browser spans into a SQLite file at
-   `.haipipe-board/activity.sqlite3` that nothing ever read back, and it was
-   also, accidentally, what fetched this readout: every heartbeat returned the
-   stats and the panel drew them. So the display had to be given a request of
-   its own before the timer could go, which is this. */
+   Activity is derived from Page outline log records. The browser keeps no
+   activity state of its own. */
 (function () {
   function escAct(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -23,12 +19,7 @@
     s.className = 'act-status' + (cls ? ' ' + cls : '');
   }
 
-  /* ── the dashboard counts UPDATES, not time (QD8 -> QC2, JL 260726) ──────
-     "I don't care about the time. What I care is about the numbers of
-     updates." One update = one dated line in one page's ## Log. That unit is
-     written by whoever did the work in whatever tool, so it sees the days a
-     browser timer structurally could not: most work on these boards arrives
-     through Claude Code, and the timer only ever watched a tab. */
+  /* One dated Page log record is one update. */
   function sampleData() {
     var title = (document.querySelector('.h1') || {}).textContent || 'This board';
     var path = boardDirPath().replace(/^\//, '');
@@ -85,7 +76,7 @@
     if (!body) return;
     var data = raw;
     if (!data || !data.totals || Number(data.totals.updates || 0) < 1) data = sampleData();
-    status(data.sample ? 'layout preview · no logs read' : 'counting · ## Log',
+    status(data.sample ? 'layout preview · no logs read' : 'counting · Page logs',
       data.sample ? 'sample' : 'live');
     var t = data.totals, dayMax = Math.max.apply(null, data.days.map(function (d) {
       return Number(d.updates || 0);
@@ -139,12 +130,12 @@
       '<span class="act-legend"><i></i>all boards <i class="changed"></i>this board</span></div>' +
       '<div class="act-days">' + days + '</div></div>' +
       '<div class="act-block"><div class="act-block-head"><b>Across boards</b>' +
-      '<span class="act-legend">top 6 · every ## Log line ever</span></div><div class="act-tree">' +
+      '<span class="act-legend">top 6 · every dated Page log record</span></div><div class="act-tree">' +
       boards + '</div></div>' +
       '<div class="act-block"><div class="act-block-head"><b>This board: Group → Page</b>' +
       '<span class="act-legend">' + Number(data.current.updates || 0) +
       ' updates</span></div><div class="act-tree">' + groups + '</div></div>' +
-      (data.sample ? '<p class="act-empty">Preview data shows the layout only. It disappears once any page carries a dated ## Log line.</p>' : '');
+      (data.sample ? '<p class="act-empty">Preview data shows the layout only. It disappears once a Page has a dated outline log record.</p>' : '');
   }
 
 

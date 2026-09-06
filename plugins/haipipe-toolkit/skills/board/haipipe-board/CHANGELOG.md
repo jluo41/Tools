@@ -1,3 +1,126 @@
+## 0.170.1 · 2026-09-06
+
+- Align current Board examples, chat guidance, glossary references, and parser
+  comments with `v<G>.<S>[.<E>]`; retain old notation only in history and
+  explicit legacy-migration examples.
+
+## 0.170.0 · 2026-09-06
+
+- Parse and order `v<G>.<S>[.<E>]` outline versions while preserving existing
+  two-part versions as evidence-zero shorthand.
+- Validate inherited Shape approval on evidence revisions and recognize the
+  three-part form as current Evidence grammar.
+- Stop applying the generic one-figure-per-division warning to manuscript
+  Section Pages; their Bullet-local DISPLAY contracts govern visual coverage.
+
+## 0.169.0 · 2026-09-06
+
+- Make compact Outline Evidence chips (for example `E2V.DesignCounts`) open
+  the existing Outline plugin at Evidence Workspace → Evidences with the exact
+  item card focused, scrolled into view, and highlighted, replacing the
+  Page-level native popover. The chip keeps its label, status colour,
+  accessible label and title, and the `none` / `missing` cells are unchanged.
+- Carry the Evidence Workspace segment explicitly in the atomic route
+  (`lens=workspace&seg=items|runs&focus=run-<item>[&run=…]`) from the Page
+  anchor through the drawer plugin, the Outline frame, and the nested Evidence
+  frame; the shell's direct-route ownership already keeps it authoritative
+  through Page-load refresh races.
+- Remove the generated compact-page Evidence popover markup and its CSS;
+  citation and display preview popovers elsewhere are untouched.
+- Extend the phone-sized browser regression with an Evidence chip tap that
+  proves Evidence Workspace + Evidences + the focused card + zero visible
+  popover, while retaining the three Run families and the Feedback case.
+
+## 0.168.0 · 2026-09-06
+
+- Make compact Outline Run links land on their exact real Run card in the
+  nested Evidence Workspace's Runs lens. Discovery, Execution, and Page-local
+  routes no longer open an oversized mobile popover during normal navigation.
+- Add clickable compact Feedback ids that open and focus the exact Feedback
+  record in Context Workspace.
+- Prevent both route competitors from erasing precise destinations: stop the
+  generic Page router from handling an Outline deep-link click, and discard or
+  defer stale default plugin aims while an explicit Outline route owns the
+  current Page.
+- Add a phone-sized browser regression covering three Run families and one
+  Feedback decision, plus a fallback-Popover run.
+
+## 0.167.4 · 2026-09-05
+
+- Make compact Page Run links hand one atomic deep-link URL to the Board shell.
+  An already-open Outline frame can no longer consume the Evidence focus just
+  before the shell replaces it and strand the reader back in Bullet Workspace.
+- Keep the direct route inside the same-server `/_board/` boundary and bypass
+  ordinary active-tab rebuild semantics only for that explicit route.
+- Preserve the same URL through the nested Outline-to-Evidence hand-off instead
+  of re-splitting it into browser storage, and add a real mobile browser check
+  for Discovery, Execution, and Page-local Runs with native or fallback popovers.
+
+## 0.167.3 · 2026-09-05
+
+- Re-root ordinary Markdown links from each nested Page source folder when
+  emitting split Board HTML. Discovery and Task Pages can now link to sibling
+  records such as `landscape.md`, `sources.md`, and `results/` without losing
+  their Page-folder prefix or producing dead links.
+- Cover the distinction between Page-relative authored links and
+  Board-root-relative renderer links with a focused regression test.
+
+## 0.167.2 · 2026-09-05
+
+- Classify canonical Block Boards below `discoveries/` as Discovery Boards on
+  the Project-first SPACE Home. Task and Discovery banks now expose one Board
+  per Block instead of collapsing or hiding the bank.
+- Add the explicit `discovery-block` dialect over the shared BJTR projection,
+  preserve `folder-kind: discovery`, show Discovery-specific Page badges and
+  progress labels, and admit the kind in the strict checker.
+- Keep an empty Task Block Board renderable while a flat-legacy runtime awaits
+  canonical Task Page migration, so the Block itself is never hidden.
+
+## 0.167.1 · 2026-09-05
+
+- Show every SPACE Home Board path in full instead of truncating it, wrap long
+  paths on mobile, and promote the path to a high-contrast clickable block.
+
+## 0.167.0 · 2026-09-05
+
+- Replace the long historical operating manual with a compact Board router and
+  current source contract, conditional operations guide, Page template,
+  writing rules, and neutral example.
+- Make every current Page generator keep progress inside each Aim's status and
+  `Now:` field; new Pages no longer author Outline, States, Files, Discussion,
+  or Log sections.
+- Keep stage writing requirements inside the managed Stage Contract on new
+  Pages; synchronize a top-level Writing Style section only as a compatibility
+  path when an older stage Page already carries one.
+- Archive a folded Page as one whole Folder and write its archive record to
+  `outline/<stem>-log.md`, preserving every Page-local plugin artifact.
+- Move one-time Page-shape migrations, the retired Meeting Page generator,
+  the Board-wide Excalidraw seeder, and route-based evidence-topic tooling into
+  an explicit `legacy/` boundary.
+- Reduce PageX to a read-only link viewer for historical renders. Current
+  server mutation routes remain closed and current code cannot create PageX
+  stores, rankings, symlinks, or matches.
+- Read Activity from current Page outline logs, with a narrow fallback for old
+  flat Page logs, and remove the unreferenced `crow3.png` artifact.
+
+## 0.166.1 · 2026-09-05
+
+- Integrate the Project-first SPACE Home rule into the compact 0.166 Board
+  contract and recognize canonical Application `*-DesignBoard` folders as
+  Design Boards inside their owning Project.
+
+## 0.165.0 · 2026-09-05
+
+- Make SPACE Home Project-first: resolve each discovered Board to its nearest
+  `project.yaml`, retain legacy `examples*/<project>/` ownership, and group Board
+  kinds inside each Project rather than splitting one Project across global
+  Task/Paper/Skill sections.
+- Keep non-Project Boards visible in explicit SPACE and Tools/Skills buckets,
+  preserve every existing Board URL, and add mobile two-column summary metrics.
+- Limit legacy Project inference to SPACE-root `examples*` worlds, parse quoted
+  manifest identities without retaining YAML comments, and exclude fixture
+  Boards from the reader-facing Home.
+
 ## 0.163.1 · 2026-09-04
 
 - Remove the stale claim that Outline is collapsed by default; the current
@@ -3563,3 +3686,7 @@ First working version. Board = a folder; `build.py` turns it into one static pag
 - **focus mode is pure CSS** — `:target` + `:has()` show one question full-screen, unbounded (no card border/radius/fill), 38px title, prev/next/index links. Same file serves both reading and projecting; there is no separate `deck.html`.
 
 Known gaps (tracked on the board at `0_utils/diagram/BoardSkillBoard-260722/`): `SKILL.md` is not written (QB1), no fresh-agent acceptance run (QB2), the two older boards are not migrated (QB3), inline comments are half-built (QA6 — the md syntax parses, the CSS does not exist yet).
+## 0.170.1 · 2026-09-06
+
+- Align the Board form/example and plan-shape documentation with
+  `v<G>.<S>[.<E>]`; preserve integer-only forms only as legacy input.

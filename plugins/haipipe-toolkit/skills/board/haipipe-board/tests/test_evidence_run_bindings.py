@@ -15,6 +15,7 @@ SPEC.loader.exec_module(evidence_status)
 from live.evidence import (  # noqa: E402
     _evidence_cards, _md_lite, _related_run_cards, _run_binding_cards, render,
 )
+from src.item_table import _current_result_status  # noqa: E402
 
 
 ITEMS = """# S-Test · evidence items
@@ -31,6 +32,40 @@ page: S-Test
 
 
 class EvidenceRunBindingsTest(unittest.TestCase):
+    def test_declared_versioned_historical_sidecar_is_preferred_and_partial_is_usable(self):
+        with tempfile.TemporaryDirectory() as temp:
+            run = Path(temp) / "run_model"
+            old = run / "old"
+            versioned = run / "old-v0618"
+            old.mkdir(parents=True)
+            (old / "tables").mkdir()
+            (old / "tables" / "stale.csv").write_text("old", encoding="utf-8")
+            (old / "result.yaml").write_text(
+                "status: complete\nsupporting_eligible: true\n", encoding="utf-8"
+            )
+            versioned.mkdir()
+            (versioned / "tables").mkdir()
+            (versioned / "tables" / "main.csv").write_text("new", encoding="utf-8")
+            (versioned / "result.yaml").write_text(
+                "status: partial\nsupporting_eligible: true\n", encoding="utf-8"
+            )
+            runtime = run / "runtime.yaml"
+            runtime.write_text(
+                "status: planned\n"
+                "historical_sidecar: old-v0618/MANIFEST.md\n"
+                "historical_sidecars:\n"
+                "  - old-v0618/MANIFEST.md\n"
+                "  - old/MANIFEST.md\n",
+                encoding="utf-8",
+            )
+
+            status, result = _current_result_status(
+                runtime, result_files={"runtime.yaml", "config_snapshot.do"}
+            )
+
+        self.assertEqual(status, "historical")
+        self.assertEqual(Path(result).name, "old-v0618")
+
     def test_records_supporting_and_local_lineage_without_minting_a_run(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -340,6 +375,43 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
         self.assertNotIn('Ticket', html)
         self.assertNotIn('Receipt', html)
 
+    def test_compact_evidence_chip_focus_lands_on_the_workspace_item_card(self):
+        """A compact `focus=run-<item>` names a real Evidences-lens card.
+
+        The compact Page's Evidence chip routes `lens=workspace&seg=items&
+        focus=run-<id>`; the Evidence Workspace must therefore own one element
+        with exactly that id, and its deep-link script must honour `seg` and a
+        Run-less `focus` by highlighting that card instead of opening a popover.
+        """
+        with tempfile.TemporaryDirectory() as temp:
+            page = Path(temp) / "S-Test" / "S-Test.md"
+            (page.parent / "outline").mkdir(parents=True)
+            page.write_text("# Test\n", encoding="utf-8")
+            (page.parent / "outline" / "S-Test-evidence.md").write_text(
+                """# Evidence
+### E02-VALUE-linked-design-counts · C2.P1.B3 · corpus, linkage, sample, and model summary
+- **Label**: DesignCounts
+- **Type**: VALUE
+- **Expected**: VALUE · corpus size
+- **Acceptance**: one number per fact
+""", encoding="utf-8"
+            )
+            from src.page_question import _outline_grid  # noqa: F401  (route producer)
+            html = render(page, "/examples/Board/board/QA/S-Test.html", "QA/S-Test/S-Test.md")
+
+        self.assertIn('id="run-E02-VALUE-linked-design-counts" '
+                      'data-evidence-id="E02-VALUE-linked-design-counts"', html)
+        self.assertEqual(html.count('id="run-E02-VALUE-linked-design-counts"'), 1)
+        self.assertIn("#items .run-focus", html)
+        self.assertIn("requestedSeg = params.get('seg') || ''", html)
+        self.assertIn("requestedFocus = params.get('focus') || ''", html)
+        self.assertIn("var target = document.getElementById(requestedFocus);", html)
+        self.assertIn("target.classList.add('run-focus');", html)
+        self.assertIn("target.scrollIntoView({block: 'start'});", html)
+        # Only a named Run may reach the bounded inspector; a bare item focus
+        # never opens a panel.
+        self.assertIn("if (requestedRun) {\n          var buttons", html)
+
     def test_evidence_surface_has_one_items_panel_but_no_retired_probe_segment(self):
         with tempfile.TemporaryDirectory() as temp:
             page = Path(temp) / "S-Test" / "S-Test.md"
@@ -371,11 +443,15 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
         self.assertNotIn('data-seg=bybullet', html)
         self.assertIn("requestedSeg === 'runlinks'", html)
         self.assertIn("new URLSearchParams(location.search)", html)
-        self.assertIn("board-outline-evidence-focus", html)
-        self.assertIn("board-outline-evidence-run", html)
+        self.assertNotIn("board-outline-evidence-focus", html)
+        self.assertNotIn("board-outline-evidence-run", html)
         self.assertIn("function runKey(value, local)", html)
+        self.assertIn("function focusRelatedRun(address, local, evidenceId)", html)
+        self.assertIn("show('runs', runsButton)", html)
         self.assertIn("target.classList.add('run-focus')", html)
-        self.assertIn("panel.showPopover()", html)
+        self.assertIn("openRunPanel(panel)", html)
+        self.assertIn("HTMLElement.prototype.showPopover", html)
+        self.assertIn("data-fallback-open", html)
         self.assertNotIn('data-seg=probe', html)
         self.assertNotIn('🚪 Cards', html)
 
@@ -428,6 +504,10 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
         self.assertIn('data; supports “LBP effect”.', html)
         self.assertIn('data-evidence-target="run-E01-VALUE-counts"', html)
         self.assertIn('data-evidence-target="run-E02-VALUE-effect"', html)
+        self.assertIn('data-evidence-id="E01-VALUE-counts"', html)
+        self.assertIn('data-run-address="b03.j01.t01.r01"', html)
+        self.assertIn('data-run-kind="supporting"', html)
+        self.assertIn('data-run-kind="local"', html)
         self.assertIn('E1V.Counts', html)
         self.assertIn('E2V.LBPEffect', html)
         self.assertIn('<b>Run</b><code class=repo-path>/task/runs/r01_data.ps1</code>', html)

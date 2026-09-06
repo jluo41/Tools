@@ -316,7 +316,8 @@ def check_bullet_grammar(plan_text: str):
     mark last — every bullet carries one of the three. EVERY plan, approved or
     not (JL 260819: "remove all the legacy-grammar, I don't want to maintain
     the old things"): an old-grammar plan is rewritten on its next OUTLINE
-    pass, as v<N+1> when a tick froze it. Found on `QC1-visitlbp` 260819: a
+    pass, as the next ``v<G>.<S>[.<E>]`` revision when a tick or evidence
+    fold freezes it. Found on `QC1-visitlbp` 260819: a
     fold pass appended Answered:/Drawn: onto 260817 long-sentence bullets and
     every check stayed green."""
     out, cn, pn, sn = [], 0, 0, 0
@@ -355,15 +356,24 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
     reports `items: n of n`, and nothing recomputed it, so a receipt could
     claim a coverage its own disk did not have.
 
-    Current grammar requires a typed id, expectation, immediate Accept line,
-    and exactly one matching record in ``<stem>-evidence-items.md``. Plans with
-    no ``Evidence:`` line use the legacy icon/card check below during migration.
+    Current decimal-version grammar requires every Bullet to declare either
+    one-or-more typed Evidence Items or exactly one explicit
+    ``Evidence: none · <reason>``. A typed declaration requires an expectation,
+    immediate Accept line, and exactly one matching record in
+    ``<stem>-evidence-items.md``. Integer-only plans retain the legacy icon/card
+    fallback only until their mandatory version migration.
     """
-    if re.search(r"(?m)^\s*Evidence:", plan_text):
+    current_grammar = bool(
+        re.search(r"(?m)^outline-version:\s*v\d+\.\d+(?:\.\d+)?\s*$", plan_text)
+        or re.search(r"(?m)^\s*Evidence:", plan_text)
+    )
+    if current_grammar:
         item_re = re.compile(
             r"^\s*Evidence:\s*(E\d+-(VALUE|CITE|DISPLAY)-[a-z0-9]+(?:-[a-z0-9]+)*)\s*·\s*(.+)$"
         )
+        none_re = re.compile(r"^\s*Evidence:\s*none\s*·\s*(\S.*)$", re.I)
         wanted, out, cn, pn, bn = {}, [], 0, 0, 0
+        bullet_evidence = {}
         lines = plan_text.splitlines()
         for i, line in enumerate(lines):
             m = re.match(r"^## C(\d+)\b", line)
@@ -377,17 +387,41 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
             m = re.match(r"^- [BS](\d+)\s*·", line)
             if m:
                 bn = int(m.group(1))
+                bullet_evidence[f"C{cn}.P{pn}.B{bn}"] = []
                 continue
+            if re.match(r"^\s*Evidence:", line):
+                target = f"C{cn}.P{pn}.B{bn}"
+                if target not in bullet_evidence:
+                    continue
+                no_item = none_re.match(line)
+                if no_item:
+                    bullet_evidence[target].append(("none", no_item.group(1).strip()))
+                    if i + 1 < len(lines) and re.match(r"^\s*Accept:", lines[i + 1]):
+                        out.append(f"{target} declares Evidence none but has an Accept line")
+                    continue
             m = item_re.match(line)
             if not m:
+                if re.match(r"^\s*Evidence:", line):
+                    out.append(f"{target} has an invalid Evidence declaration")
                 continue
             item_id = m.group(1)
             target = f"C{cn}.P{pn}.B{bn}"
+            bullet_evidence[target].append(("item", item_id))
             if item_id in wanted:
                 out.append(f"{item_id} appears more than once in the plan")
             wanted[item_id] = target
             if i + 1 >= len(lines) or not re.match(r"^\s*Accept:\s*\S", lines[i + 1]):
                 out.append(f"{item_id} has no immediate Accept line")
+
+        for target, declarations in bullet_evidence.items():
+            if not declarations:
+                out.append(f"{target} has no explicit Evidence declaration")
+                continue
+            kinds = [kind for kind, _value in declarations]
+            if "none" in kinds and len(declarations) > 1:
+                out.append(f"{target} mixes Evidence none with typed Evidence Items")
+            if kinds.count("none") > 1:
+                out.append(f"{target} declares Evidence none more than once")
 
         table = page_src.parent / "outline" / f"{page_src.stem}-evidence-items.md"
         records = {}

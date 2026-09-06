@@ -21,7 +21,7 @@ sys.path.insert(0, str(HERE))
 from src.parse import parse_dir, split_sections  # noqa: E402
 from src.stage_contract import (END, START, STYLE_END, STYLE_START,  # noqa: E402
                                 contract_digest, contract_status,
-                                managed_span, refs, replace_managed,
+                                managed_span, managed_style_span, refs, replace_managed,
                                 replace_managed_style)
 
 FAMILIES = ("Open", "Seed", "Work", "Venue", "Literature", "Value", "Display", "Main",
@@ -109,7 +109,11 @@ def source_line(board, token, by_id, purpose):
     else:
         lines[-1] += "."
     if purpose == "venue":
-        lines.append("      Writing rules: materialized from this source in `## Writing Style`.")
+        excerpt = source_excerpt(path, source, purpose)
+        lines.append(
+            "      Writing rules: "
+            + (excerpt or "No explicit writing rules are declared in this source.")
+        )
         return lines
     excerpt = source_excerpt(path, source, purpose)
     label = "Provides" if purpose == "requirement" else "Contract"
@@ -202,7 +206,11 @@ def sync_face(board, page, by_id):
     style_block = render_style_block(board, page, by_id, digest)
     text = path.read_text(encoding="utf-8")
     text = replace_managed(text, block)
-    text = replace_managed_style(text, style_block)
+    # Existing stage Pages may own the former top-level style section. Keep
+    # that authored source synchronized, but never create the retired section
+    # on a current Page.
+    if managed_style_span(text) or re.search(r"^## Writing Style\s*$", text, re.M):
+        text = replace_managed_style(text, style_block)
     text = update_hash(text, digest)
     path.write_text(text.rstrip() + "\n", encoding="utf-8")
     return path
@@ -344,9 +352,6 @@ generated from explicit dependencies; its Content remains authored here.
 
 The named stage output and its human gate are covered here; upstream evidence stays in the linked source pages.
 
-## Writing Style
-English only. One sentence per source line. Write the stage product for its named reader, keep Required Inputs and Venue in Stage Contract, and keep prose rules here.
-
 ## Stage Contract
 
 ## Content
@@ -356,19 +361,12 @@ Write the stage substance here.
 
 ## Aims
 ### Stage Output
-- A1.1 · Produce the declared output.
+- ⬜ A1.1 · Produce the declared output.
   **Done when:** The observable artifact exists and meets its acceptance condition.
-- A1.2 · Pass the human gate.
+  **Now:** The stage output has not been authored yet.
+- ⬜ A1.2 · Pass the human gate.
   **Done when:** The decision is recorded before this stage changes to ✅ SETTLED.
-
-## States
-### Stage Output
-- ⬜ A1.1 · Not started; the stage page has just been created.
-- ⬜ A1.2 · Not started; no human ruling has been recorded.
-
-## Files
-- `{path.relative_to(board).as_posix()}`
-  Canonical lifecycle page for this stage.
+  **Now:** No human ruling has been recorded.
 """
     path.write_text(text, encoding="utf-8")
     if args.group:

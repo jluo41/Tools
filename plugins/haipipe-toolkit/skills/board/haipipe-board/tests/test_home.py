@@ -45,6 +45,12 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertIn("grid-template-columns:minmax(0,2.5fr)", page)
             self.assertNotIn("repeat(2,minmax(0,1fr))", page)
             self.assertIn("/project/diagram/01-topic/board/index.html", page)
+            self.assertIn('<span class="meta-label">Full path</span>', page)
+            self.assertIn(
+                'class="path" href="/project/diagram/01-topic/board/index.html"',
+                page)
+            self.assertIn(">project/diagram/01-topic</a>", page)
+            self.assertIn("white-space:normal;overflow-wrap:anywhere", page)
             self.assertEqual(cards[0]["kind"], "Task Board")
 
     def test_home_can_be_branded_for_a_space(self):
@@ -53,7 +59,7 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertIn("JJ-LUO / Physician-SPACE Boards", page)
             self.assertIn("https://physician.jjluo.com", page)
 
-    def test_groups_task_paper_and_skill_boards_with_skill_precedence(self):
+    def test_groups_task_discovery_paper_design_and_skill_boards_with_skill_precedence(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
 
@@ -64,16 +70,157 @@ class SpaceHomeTest(unittest.TestCase):
                 (board / "QA-group" / "QA1-question.md").write_text("# Q\nstate: 🟡 PARTIAL\n")
 
             add_board("project/diagram/01-task", "Task")
+            add_board("examples/Project-A/discoveries/b01_evidence", "Discovery")
             add_board("papers/Paper-A/0-lifecycle", "Paper")
+            add_board("examples/Project-A/applications/App-A/B01-App-DesignBoard",
+                      "Design")
             add_board("Tools/plugins/example/skills/diagrams/01-paper-skill", "Paper Skill")
             cards = {card["title"]: card for card in discover_boards(root)}
             self.assertEqual(cards["Task"]["kind"], "Task Board")
+            self.assertEqual(cards["Discovery"]["kind"], "Discovery Board")
             self.assertEqual(cards["Paper"]["kind"], "Paper Board")
+            self.assertEqual(cards["Design"]["kind"], "Design Board")
             self.assertEqual(cards["Paper Skill"]["kind"], "Skill Board")
             page = render_home(root)
             self.assertIn("📋 Task Boards", page)
+            self.assertIn("🔎 Discovery Boards", page)
             self.assertIn("📄 Paper Boards", page)
+            self.assertIn("🎨 Design Boards", page)
             self.assertIn("🧩 Skill Boards", page)
+
+    def test_canonical_designboard_suffix_wins_except_for_skill_boards(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def add_board(relative, title):
+                board = root / relative
+                board.mkdir(parents=True)
+                (board / "board.md").write_text(f"# {title}\nspine: s\n")
+
+            add_board("examples/Project-A/papers/Paper-A/B01-App-DesignBoard",
+                      "Canonical Design")
+            add_board("examples/Project-A/diagram/B01-App-DesignBoard-backup",
+                      "Backup")
+            add_board("Tools/plugins/demo/skills/diagrams/B01-App-DesignBoard",
+                      "Skill Design")
+            cards = {card["title"]: card["kind"]
+                     for card in discover_boards(root)}
+            self.assertEqual(cards["Canonical Design"], "Design Board")
+            self.assertEqual(cards["Backup"], "Task Board")
+            self.assertEqual(cards["Skill Design"], "Skill Board")
+
+    def test_groups_boards_by_project_before_board_kind(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def add_board(project, relative, title):
+                owner = root / "examples" / project
+                owner.mkdir(parents=True, exist_ok=True)
+                (owner / "project.yaml").write_text(
+                    "schema: haipipe-project/v1\n"
+                    f"id: {project}\nprofile: research\n"
+                    "git_mode: workspace\nstate: active\nmission: test\n")
+                board = owner / relative
+                (board / "QA-group").mkdir(parents=True)
+                (board / "board.md").write_text(
+                    f"# {title}\nspine: Project-owned board\n")
+                (board / "QA-group" / "QA1-question.md").write_text(
+                    "# Q\nstate: 🟡 PARTIAL\n")
+
+            add_board("Project-One", "diagram/01-task", "One Task")
+            add_board("Project-One", "papers/Paper-A/0-paperboard", "One Paper")
+            add_board("Project-Two", "diagram/01-task", "Two Task")
+
+            cards = discover_boards(root)
+            self.assertEqual(
+                {card["project"] for card in cards},
+                {"Project-One", "Project-Two"})
+            one = [card for card in cards if card["project"] == "Project-One"]
+            self.assertEqual({card["kind"] for card in one},
+                             {"Task Board", "Paper Board"})
+
+            page = render_home(root)
+            self.assertEqual(page.count("📁 Project-One"), 1)
+            self.assertEqual(page.count("📁 Project-Two"), 1)
+            self.assertLess(page.index("📁 Project-One"),
+                            page.index("📁 Project-Two"))
+            one_section = page[page.index("📁 Project-One"):
+                               page.index("📁 Project-Two")]
+            self.assertIn("📋 Task Boards", one_section)
+            self.assertIn("📄 Paper Boards", one_section)
+
+    def test_legacy_examples_project_groups_without_a_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            board = root / "examples-nlp" / "Legacy-Project" / "diagram" / "01-topic"
+            (board / "QA-group").mkdir(parents=True)
+            (board / "board.md").write_text("# Legacy\nspine: s\n")
+            (board / "QA-group" / "QA1-question.md").write_text(
+                "# Q\nstate: 🔴 OPEN\n")
+            card = discover_boards(root)[0]
+            self.assertEqual(card["project"], "Legacy-Project")
+            self.assertEqual(card["project_path"],
+                             "examples-nlp/Legacy-Project")
+
+    def test_nested_examples_folder_does_not_create_a_project(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            board = root / "Tools" / "plugins" / "demo" / "examples" / "Fixture" / "diagram" / "01-topic"
+            (board / "QA-group").mkdir(parents=True)
+            (board / "board.md").write_text("# Tool example\nspine: s\n")
+            (board / "QA-group" / "QA1-question.md").write_text(
+                "# Q\nstate: 🔴 OPEN\n")
+            card = discover_boards(root)[0]
+            self.assertEqual(card["project"], "Tools & Skills")
+            self.assertEqual(card["project_scope"], "shared")
+
+    def test_manifest_fields_strip_inline_comments_and_nearest_manifest_wins(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            outer = root / "examples" / "Outer"
+            inner = outer / "papers" / "Inner"
+            outer.mkdir(parents=True)
+            inner.mkdir(parents=True)
+            (outer / "project.yaml").write_text(
+                "id: Outer # outer project\nprofile: research\nstate: active\n")
+            (inner / "project.yaml").write_text(
+                "id: 'Inner # One' # nearest project\n"
+                "profile: hybrid # valid comment\nstate: active\n")
+            board = inner / "diagram" / "01-topic"
+            (board / "QA-group").mkdir(parents=True)
+            (board / "board.md").write_text("# Inner board\nspine: s\n")
+            (board / "QA-group" / "QA1-question.md").write_text(
+                "# Q\nstate: 🔴 OPEN\n")
+            card = discover_boards(root)[0]
+            self.assertEqual(card["project"], "Inner # One")
+            self.assertEqual(card["project_profile"], "hybrid")
+            self.assertEqual(card["project_path"],
+                             "examples/Outer/papers/Inner")
+
+    def test_fixture_boards_are_not_discovered(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for segment in ("_fixture", "fixtures"):
+                board = root / "Tools" / segment / "01-topic"
+                board.mkdir(parents=True)
+                (board / "board.md").write_text("# Fixture\nspine: s\n")
+            self.assertEqual(discover_boards(root), [])
+
+    def test_non_project_space_and_tools_buckets_are_explicit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for relative, title in (("diagram/01-space", "Space"),
+                                    ("Tools/plugins/demo/skills/diagrams/01-tool", "Tool")):
+                board = root / relative
+                (board / "QA-group").mkdir(parents=True)
+                (board / "board.md").write_text(f"# {title}\nspine: s\n")
+                (board / "QA-group" / "QA1-question.md").write_text(
+                    "# Q\nstate: 🔴 OPEN\n")
+            owners = {card["title"]: card["project"]
+                      for card in discover_boards(root)}
+            self.assertEqual(owners,
+                             {"Space": "SPACE / Shared",
+                              "Tool": "Tools & Skills"})
 
 
 class ShortRouteTest(unittest.TestCase):

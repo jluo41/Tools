@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One skill folder -> one Q page on a board (QC5, opened by JL 260726).
+"""Project one skill or agent contract onto a Board Page.
 
     python3 skillpage.py new  <board> <skill-dir> --group QC   # -> Skill-<n>-<slug>.md
     python3 skillpage.py sync <board> <page-id>          # refresh the managed block
@@ -7,19 +7,14 @@
     python3 skillpage.py check <board>                   # report staleness, never write
     python3 skillpage.py plug <board> <page-id> <skill-dir>  # unit snapshot -> outline/skill/ (JL 260815)
 
-WHAT THIS IS A SECOND COPY OF. `stage.py`, deliberately. It already solves
-"generate a page from a source that lives somewhere else, then keep it in sync
-without ever touching what a human typed", and it has held since 260725. A
-second mechanism for the same problem is how the two drift.
-
-THE SPLIT, which is the whole ruling (QC5 §1-§2):
+The generated inventory and authored health ruling have a strict boundary:
 
     DERIVED, and this script owns it     name · version · last_updated ·
     (inside the managed markers)         summary · tools · path ·
-                                         the two ![[embeds]]
+                                         folder tree · contract content
 
     AUTHORED, and this script never      ## Opening · ## Aims ·
-    touches it                           ## States · ## Log
+    touches it                           Aim status and Now facts
 
 `state:` is NOT derived (QC5 §3). A version cannot say whether a skill is
 stable, in flux, or abandoned: 0.1.0 may be finished and 0.9.4 may be mid
@@ -27,9 +22,8 @@ rewrite. `new` seeds 🔴 OPEN like every other page and a person rules on it.
 The version rides after the emoji as readable detail, which the renderer and
 checker already allow.
 
-ZERO COPY. The page embeds `SKILL.md` and `CHANGELOG.md` with `![[...]]`, read
-at BUILD time, so the page cannot go stale between two syncs. Only the derived
-header can, which is what `check` is for (QC5 §4).
+The source contract remains authoritative. Managed spans make any derived copy
+auditable; ``check`` reports drift.
 """
 import argparse
 import hashlib
@@ -46,10 +40,9 @@ sys.path.insert(0, str(HERE))
 # so older boards with Q-Skill-* pages keep syncing.
 from src.common import page_files  # noqa: E402
 
-# Three managed spans, because the derived material belongs in three different
-# sections and one block cannot straddle them (JL 260726: the tree goes in
-# Outline, the skill's content in Content, the changelog in Log).
-PARTS = ("tree", "body", "log")
+# Both current projections live inside Content. Historical Pages may still
+# carry a third managed log span; sync leaves it untouched.
+PARTS = ("tree", "body")
 
 
 def start_of(part):
@@ -322,11 +315,6 @@ def tree_block(board, skill_dir):
     ])
 
 
-CL_HEAD = re.compile(
-    r"^##\s*\[?v?([0-9][0-9.]*)\]?\s*[—\-–·]*\s*(\d{4})-(\d{2})-(\d{2})"
-    r"\s*[—\-–·]*\s*(.*)$")
-
-
 def join_wrapped(lines):
     """Re-join a `**bold**` that the source wrapped across two lines.
 
@@ -434,57 +422,6 @@ def skill_sections(skill_dir):
     return out
 
 
-def log_block(board, skill_dir):
-    """The CHANGELOG CONVERTED into `## Log` lines, not embedded as a file.
-
-    JL 260727: "copy and convert the content of Changelog to the LOG as well."
-    Convert, not embed, and the difference is the whole point. `## Log` has a
-    grammar the board reads: `YYMMDD · what changed`, newest first, with
-    indented continuation lines carried along by `sort_log`. A CHANGELOG entry
-    is the same fact in a different notation, so translating it makes the
-    skill's history first-class board content instead of a foreign document
-    parked inside a page.
-
-    What that buys, and it is not cosmetic: the ACTIVITY dashboard counts one
-    update per dated `## Log` line, so a converted changelog puts every release
-    this skill ever shipped onto the strip and into the Board -> Group -> Page
-    ranking. An embedded file counts as zero.
-    """
-    src = unit(skill_dir)[1]
-    if not src or not src.is_file():
-        return ""
-    lines = src.read_text(encoding="utf-8").split("\n")
-    out, body, head = [], [], None
-
-    def flush():
-        if head is None:
-            return
-        ver, day, title = head
-        out.append(f"{day} · `{ver}` · {title}".rstrip(" ·"))
-        for b in body:
-            out.append("      " + b)
-
-    for ln in lines:
-        m = CL_HEAD.match(ln.strip())
-        if m:
-            flush()
-            ver, yyyy, mm, dd, title = m.groups()
-            head, body = (ver, f"{yyyy[2:]}{mm}{dd}", title.strip(" —-–·")), []
-        elif head is not None and ln.strip():
-            if ln.startswith("## "):          # a dateless heading ends the entry
-                flush()
-                head, body = None, []
-            else:
-                body.append(ln.rstrip())
-    flush()
-    return "\n".join([
-        f"{start_of('log')} {digest(skill_dir)} {rel(board, skill_dir)} -->",
-        "",
-        f"Converted from the skill's own `CHANGELOG.md`: {len(out) and sum(1 for x in out if not x.startswith('      '))} releases.",
-        "",
-    ] + out + ["", end_of("log")])
-
-
 def block(board, skill_dir):
     skill_dir = Path(skill_dir)
     defn, _clog, folder = unit(skill_dir)
@@ -562,19 +499,16 @@ def block(board, skill_dir):
 STUB = """# {name} · v{version}
 state: 🔴 OPEN
 owner: JL
-method: three managed spans sync from the skill folder; everything else is written by hand
+method: two managed Content spans sync from the unit; the health ruling stays authored
 
 ## Opening
 REPLACE THIS PARAGRAPH. Load `haipipe-page-for-skill` and write the three slots it names, in its order, in plain words: ❶ what `{name}` is and what it is FOR, ❷ when you reach for it rather than the ONE sibling you would otherwise pick, named, ❸ where it stands, meaning the one thing to know before trusting it.
 
-NEVER open a skill page with a question. This stub used to seed `{{name}} is a shipped unit: what does it still owe, and is it healthy?`, and on 260802 five pages generated from it all opened with the same rhetorical question in the same four-slot shape, because a skill page DECIDES NOTHING and so has nothing to ask.
-Delete these instructions once the paragraph is written; the FIRST BLANK LINE above is the split, and everything below it is the `More details` drawer, written as labelled parts.
-`Opening` is the lead section's ONE name on every page kind (JL 260731: "just one single Opening"); `Question` survives only as a legacy alias for pages written before the rename.
+Do not open a skill page with a question. A skill page mirrors a unit that ships elsewhere; introduce the unit factually and delete these instructions once written.
 
-## Writing Style
-English only. One sentence per source line. Describe the shipped unit factually and keep generated inventory separate from human health judgment.
+## Content
 
-## Outline
+### Unit structure
 {tree}
 
 **How `{name}` is used**: REPLACE THIS CAPTION with what your figure below actually shows.
@@ -586,22 +520,14 @@ what it writes, and where it hands off. Delete this fence AND the
 caption line above it if the tree is the whole story.
 ```
 
-## Content
+### Unit contract
 {block}
 
 ## Aims
 ### P · Page-level health ruling
-- P1 · Rule this skill's health.
+- ⬜ P1 · Rule this skill's health.
   **Done when:** `state:` records a human judgment: stable, in flux, needs work, or parked.
-
-## States
-### P · Page-level health ruling
-- ⬜ P1 · Page generated {stamp}; nothing ruled yet.
-
-## Log
-{stamp} · page generated from `{base}/` by `skillpage.py new`
-
-{log}
+  **Now:** The Page was generated on {stamp}; no health judgment has been recorded.
 """
 
 
@@ -724,8 +650,7 @@ def cmd_new(a):
     dest.write_text(STUB.format(name=name, version=fm.get("version", "?"),
                                 block=block(board, skill_dir),
                                 tree=tree_block(board, skill_dir),
-                                log=log_block(board, skill_dir),
-                                stamp=stamp, base=rel(board, skill_dir)),
+                                stamp=stamp),
                     encoding="utf-8")
     at = span[1]
     while at > span[0] + 1 and not lines[at - 1].strip():
@@ -752,7 +677,7 @@ def cmd_sync(a):
             print(f"⚠️  {page.name}: its source is gone")
             continue
         text = page.read_text(encoding="utf-8")
-        maker = {"tree": tree_block, "body": block, "log": log_block}
+        maker = {"tree": tree_block, "body": block}
         new, missing = text, []
         for part in PARTS:
             a, b = start_of(part), end_of(part)

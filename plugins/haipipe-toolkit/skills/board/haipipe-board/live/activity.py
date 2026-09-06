@@ -1,11 +1,4 @@
-"""The Activity readout: board updates counted from every page's `## Log`.
-
-Moved out of serve.py on 2026-07-31 under the gate_live.py response-identical gate.
-QC3's Law: a refactor moves code, features never ride along.
-
-The SQLite focus-time store this file was originally built for was deleted on
-260816; what is left reads markdown and keeps no state of its own.
-"""
+"""Read Board update counts from Page outline log records."""
 
 import base64
 import datetime as dt
@@ -29,6 +22,7 @@ from urllib.parse import unquote
 
 from . import base
 from .structure import page_id_of
+from src.common import page_files
 
 
 
@@ -58,35 +52,32 @@ class ActivityMixin:
             return None
 
     @staticmethod
-    def log_pages(board):
-        return [p for p in sorted(board.rglob("*.md"))
-                if p.name[:1] in ("Q", "S")
-                and not any(x.startswith((".", "_"))
-                            for x in p.relative_to(board).parts)]
+    def log_sources(board):
+        """Return ``(Page source, log source, current-record?)`` rows."""
+        sources = []
+        for page in page_files(board):
+            record = page.parent / "outline" / f"{page.stem}-log.md"
+            sources.append((page, record if record.is_file() else page,
+                            record.is_file()))
+        return sources
 
     def log_counts(self, board):
-        """-> {page id: {day: updates}} for one board, from `## Log` only.
-
-        `## Log` is the board's own record of what changed and when, so it is
-        already the honest answer to "was there work here". Nothing else is
-        read: legacy `## Where we are` also carries dated lines, but those are status
-        prose rather than a change record, and counting both would count one
-        change twice.
-        """
-        pages = self.log_pages(board)
-        stamp = tuple((str(p), p.stat().st_mtime_ns) for p in pages)
+        """Return Page update counts from current logs, with a legacy fallback."""
+        sources = self.log_sources(board)
+        stamp = tuple((str(log), log.stat().st_mtime_ns)
+                      for _page, log, _current in sources)
         cached = self._log_cache.get(str(board))
         if cached and cached[0] == stamp:
             return cached[1]
         out = {}
-        for path in pages:
+        for page, path, current in sources:
             try:
                 text = path.read_text(encoding="utf-8")
             except OSError:
                 continue
-            days, inside = {}, False
+            days, inside = {}, current
             for ln in text.split("\n"):
-                if ln.startswith("## "):
+                if not current and ln.startswith("## "):
                     inside = ln[3:].strip().casefold() == "log"
                     continue
                 if not inside:
@@ -98,7 +89,7 @@ class ActivityMixin:
                 if day:
                     days[day] = days.get(day, 0) + 1
             if days:
-                out[page_id_of(path.stem)] = {"days": days, "file": path.name}
+                out[page_id_of(page.stem)] = {"days": days, "file": page.name}
         self._log_cache[str(board)] = (stamp, out)
         return out
 
@@ -161,18 +152,7 @@ class ActivityMixin:
         return path.name
 
     def activity_stats(self, current_board):
-        """Board activity measured in UPDATES, counted from every page's `## Log`.
-
-        JL 260726: "I don't care about the time. What I care is about the
-        numbers of updates." The timer only ever saw a browser, and most work on
-        these boards arrives through Claude Code or an editor, so the thing it
-        measured was never the thing that happened. A Log line is written by
-        whoever did the work, in whatever tool, and it already carries its date,
-        which is why this reads days of history a timer could not have
-        recovered: it is a record rather than an observation.
-
-        One update = one dated line in one page's `## Log`.
-        """
+        """Board activity measured as dated Page log records."""
         today = dt.date.today()
         first = today - dt.timedelta(days=13)
         window = [(first + dt.timedelta(days=i)).isoformat() for i in range(14)]
@@ -257,22 +237,11 @@ class ActivityMixin:
                 "boards": len(boards),
                 "pages": sum(b["pages"] for b in boards),
             },
-            "source": "dated lines in each page's ## Log",
+            "source": "dated records in each Page outline log",
         }
 
     def activity(self, payload):
-        """The Activity readout: how many UPDATES, counted from every `## Log`.
-
-        There is one op and it is the only one there has ever needed to be.
-        Until 260816 this route also carried a browser FOCUS TIMER whose
-        `start`/`pulse`/`stop` ops wrote spans into `.haipipe-board/
-        activity.sqlite3`. Nothing read them back: the two SELECTs against
-        those tables were the timer reading its own rows to write the next
-        one, and `activity_stats` was handed the connection and never touched
-        it. JL 260726 had already ruled the unit is updates rather than time,
-        so the timer had been measuring the wrong thing AND storing it for
-        nobody. It is gone, with its two tables and the beacon that fed them.
-        """
+        """Return read-only update counts for the Board containing the Page."""
         board, brel, err = self.activity_board(payload)
         if err:
             return None, err

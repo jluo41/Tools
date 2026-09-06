@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Re-measure every generated block on a board, in one command.
 
-WHY THIS EXISTS, and it is a defect report on the rest of this folder. Three
-generators write measured blocks onto pages, and `check.py` reports a block
+Some current generators write measured blocks onto Pages, and `check.py` reports a block
 older than its page. Nothing ran the generators. An automated complaint with no
 automated fix is worse than neither: the warning count climbs, people learn to
 scroll past it, and the checker stops being read at all.
@@ -40,15 +39,6 @@ def applicable(board):
     starts getting an evidence block with nobody editing this file.
     """
     jobs = []
-    pages = [p for p in board.rglob("*.md")
-             if "/board/" not in str(p) and "/_archive/" not in str(p)]
-    text = {p: p.read_text(errors="ignore") for p in pages}
-
-    if any(re.search(r"(?m)^route:\s*(outward|inward)\s*$", t) for t in text.values()):
-        jobs.append(("evidence", [sys.executable, str(CLI / "evidence.py"),
-                                  str(board), "--write"],
-                     "evidence roll-up and content"))
-
     # A unit roll-up applies wherever some family has more than one unit page.
     sys.path.insert(0, str(CLI))
     import dash                                                   # noqa: E402

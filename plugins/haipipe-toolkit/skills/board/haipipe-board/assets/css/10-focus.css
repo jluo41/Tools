@@ -108,39 +108,46 @@ body.split .q .qbd .cbody.flat p{font-size:15px;line-height:1.75}
 .outline-cycle.done{color:var(--done)}
 .outline-grid-wrap{max-width:100%;overflow-x:auto;border:1px solid var(--line);
  border-radius:var(--radius-surface);background:var(--card)}
-.outline-grid{width:100%;min-width:720px;table-layout:fixed;border-collapse:collapse;font-size:12px;line-height:1.42}
+.outline-grid{width:100%;min-width:820px;table-layout:fixed;border-collapse:collapse;font-size:12px;line-height:1.42}
 .outline-grid th,.outline-grid td{padding:5px 7px;border-right:1px solid var(--line);
  border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
 .outline-grid th:last-child,.outline-grid td:last-child{border-right:none}
 .outline-grid tbody tr:last-child th,.outline-grid tbody tr:last-child td{border-bottom:none}
 .outline-grid thead th{background:var(--bg);font-weight:700;white-space:nowrap;color:var(--fg)}
-.outline-grid th:nth-child(1){width:11%}
-.outline-grid th:nth-child(2){width:28%}
-.outline-grid th:nth-child(3){width:23%}
-.outline-grid th:nth-child(4),.outline-grid th:nth-child(5){width:19%}
+.outline-grid:not(.narrative-control) th:nth-child(1){width:10%}
+.outline-grid:not(.narrative-control) th:nth-child(2){width:27%}
+.outline-grid:not(.narrative-control) th:nth-child(3){width:12%}
+.outline-grid:not(.narrative-control) th:nth-child(4){width:20%}
+.outline-grid:not(.narrative-control) th:nth-child(5){width:17%}
+.outline-grid:not(.narrative-control) th:nth-child(6){width:14%}
 .outline-grid code{font:600 10.5px ui-monospace,Menlo,monospace;color:var(--accent);white-space:nowrap}
 .outline-grid-division th{background:color-mix(in srgb,var(--accent) 9%,var(--bg));
  color:var(--fg);font-size:12.5px}
 .outline-grid-paragraph th,.outline-grid-paragraph td{background:var(--bg);color:var(--mut);font-weight:600}
 .outline-grid-bullet td:nth-child(2),
+.outline-grid-bullet td:nth-child(3),
 .outline-grid-bullet td:nth-child(4),
-.outline-grid-bullet td:nth-child(5){min-width:0}
+.outline-grid-bullet td:nth-child(5),
+.outline-grid-bullet td:nth-child(6){min-width:0}
+.outline-feedback{display:inline-block;max-width:100%;margin:0 4px 2px 0;padding:0 4px;
+ border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:4px;
+ color:var(--accent);font:650 10px ui-monospace,Menlo,monospace;overflow-wrap:anywhere;
+ text-decoration:none;cursor:pointer}
+.outline-feedback:hover,.outline-feedback:focus-visible{border-color:var(--accent);outline:none;
+ background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.outline-feedback-empty{color:var(--mut)}
 .outline-evidence{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;
  font:10.5px ui-monospace,Menlo,monospace;white-space:nowrap;padding:0 4px;
- margin:0 4px 2px 0;border:1px solid var(--line);border-radius:4px}
+ margin:0 4px 2px 0;border:1px solid var(--line);border-radius:4px;
+ text-decoration:none;cursor:pointer}
 .outline-evidence b{display:block;overflow:hidden;text-overflow:ellipsis;color:currentColor;
  font-weight:750;white-space:nowrap}
-.outline-evidence span{color:var(--fg);font-family:inherit;overflow-wrap:anywhere}
-.outline-evidence[type=button]{width:auto;cursor:pointer;text-align:left;background:transparent;color:inherit}
-.outline-evidence[type=button]:hover,.outline-evidence[type=button]:focus-visible{border-color:var(--accent)}
+.outline-evidence:hover,.outline-evidence:focus-visible{border-color:var(--accent);outline:none;
+ background:color-mix(in srgb,var(--accent) 8%,transparent)}
 .outline-evidence.ok{color:var(--done);border-color:color-mix(in srgb,var(--done) 50%,var(--line))}
 .outline-evidence.warn{color:var(--wip);border-color:color-mix(in srgb,var(--wip) 55%,var(--line))}
 .outline-evidence.mut{color:var(--mut)}
-.outline-item-detail p{display:grid;grid-template-columns:minmax(108px,auto) 1fr;gap:10px;
- margin:0;padding:5px 0;border-bottom:1px solid var(--line)}
-.outline-item-detail p:last-child{border-bottom:0}
-.outline-item-detail b{color:var(--mut);font:600 10.5px ui-monospace,Menlo,monospace}
-.outline-item-detail span{overflow-wrap:anywhere}
+.outline-evidence-none,.outline-evidence-missing{font:600 10.5px ui-monospace,Menlo,monospace}
 .outline-run-link,.outline-run-pending,.outline-run-empty{display:inline-block;font:600 10.5px ui-monospace,Menlo,monospace;white-space:nowrap}
 .outline-run-link{color:var(--accent);text-decoration:none}
 .outline-run-link:hover,.outline-run-link:focus-visible{text-decoration:underline}

@@ -1236,6 +1236,18 @@ def _shell_doc(page_url, index_url):
       + '<div style="max-width:80%;white-space:pre-wrap">' + msg + '</div></body>');
   }
 
+  /* An async default aim must never overwrite a later explicit deep link.
+     Each frame gets a tiny generation counter; an older HEAD response is
+     discarded once a newer route has claimed that frame. */
+  function nextAim(f) {
+    var generation = (parseInt(f.dataset.aimGeneration || '0', 10) || 0) + 1;
+    f.dataset.aimGeneration = String(generation);
+    return generation;
+  }
+  function currentAim(f, generation) {
+    return f.dataset.aimGeneration === String(generation);
+  }
+
   var firstPaint = true;
   function paintTabs() {
     if (openSet === null) loadSet();
@@ -1317,6 +1329,7 @@ def _shell_doc(page_url, index_url):
     var d = defOf(which);
     if (!d) return;
     var f = xframe(which);
+    var generation = nextAim(f);
     var w = pageWin(), page = null;
     try { page = w && w.boardPlugins && w.boardPlugins.livePage(); } catch (e) {}
     var u = '';
@@ -1327,6 +1340,7 @@ def _shell_doc(page_url, index_url):
     }
     if (!u) { invite(); return; }
     fetch(u, { method: 'HEAD' }).then(function (r) {
+      if (!currentAim(f, generation)) return;
       if (!r.ok) { invite(); return; }
       landFrame(f, u);
     }).catch(function () {});
@@ -1359,6 +1373,20 @@ def _shell_doc(page_url, index_url):
     catch (e) { f.setAttribute('src', src); }
   }
 
+  /* Keep a precise Outline deep link authoritative while the Page frame is
+     still finishing its own initial load.  That load schedules reaimTabs();
+     without this ownership check it replaces the just-landed Run/Feedback
+     route with the generic Outline URL a few hundred milliseconds later. */
+  var directOutline = '';
+  function directOutlineOwnsPage() {
+    if (!directOutline) return false;
+    try {
+      var expected = new URL(directOutline, location.href).searchParams.get('file') || '';
+      var w = pageWin(), page = w && w.boardPlugins && w.boardPlugins.livePage();
+      return !!page && expected === (page.getAttribute('data-file') || '');
+    } catch (e) { return false; }
+  }
+
   /* The one follow-the-page entry: re-read this page's own tab set, let
      paintTabs prune and possibly switch, then re-aim whatever survived on
      stage. Guarded until the tab machinery below has finished booting,
@@ -1369,11 +1397,20 @@ def _shell_doc(page_url, index_url):
     loadSet();
     var prev = tab;
     paintTabs();                 // may switch via showTab, which aims itself
+    if (tab === 'outline' && directOutlineOwnsPage()) return;
+    directOutline = '';
     if (!hidden && tab === prev && tab !== 'chat' && tab !== 'draw'
         && tab !== 'studio' && offerable(tab)) aimTab(tab);
   }
 
-  function showTab(which) {
+  function showTab(which, directURL) {
+    /* A compact Page Run owns a precise place inside Outline.  Accept only a
+       same-server Board route, then land it directly instead of rebuilding the
+       currently active plugin and losing its focus/run query in the swap. */
+    var direct = which === 'outline' && typeof directURL === 'string'
+               && directURL.indexOf('/_board/') === 0
+               ? directURL : '';
+    directOutline = which === 'outline' ? direct : '';
     ensureOpen(which);
     if (which === 'studio') {
       var duurl = drawURL();
@@ -1429,7 +1466,7 @@ def _shell_doc(page_url, index_url):
        derived view's refresh — where chat's lit-click means "put away". */
     var d = defOf(which);
     if (!d) return;
-    var rebuild = tab === which && !hidden;
+    var rebuild = tab === which && !hidden && !direct;
     tab = which;
     hidden = false;
     split.classList.remove('hc');
@@ -1440,6 +1477,11 @@ def _shell_doc(page_url, index_url):
     var w = pageWin(), page = null;
     try { page = w && w.boardPlugins && w.boardPlugins.livePage(); } catch (e) {}
     function land(u) { landFrame(f, u); }   // fresh-by-contract, one rule
+    if (direct) {
+      nextAim(f);                 // invalidate any pending default HEAD aim
+      land(direct);
+      return;
+    }
     function build() {
       f.setAttribute('src', noteDoc('⏳ building ' + tabLabel(which) + '…'));
       try {

@@ -107,7 +107,7 @@ from live.labeling import LabelingMixin
 from live.shell import ShellMixin
 from live.export import ExportMixin
 from live.skillmap import SkillmapMixin
-from live.pagex import PagexMixin  # legacy read-only viewer; PageX writes retired
+from legacy.pagex import LegacyPagexViewMixin
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
 from live.outline import OutlineMixin
@@ -138,28 +138,13 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, PagexMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, LegacyPagexViewMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
-    # Logged edits are a SECOND kind of evidence, and a weaker one (QD8, JL
-    # 260726: "we have so many activities in the past few dates, and they are
-    # not recorded"). A timer cannot observe a browser session that already
-    # ended, so every day before the timer shipped is empty while the pages'
-    # own `## Log` sections record hundreds of dated changes.
-    #
-    # A Log line proves that a day had work. It carries NO duration. So it is
-    # COUNTED and never converted into seconds, and it is drawn as its own
-    # series: inventing minutes from a timestamp would make the strip look
-    # complete by making it false, which is the same fabrication the reload
-    # rule already refuses.
-    # A LIST MARKER IS OPTIONAL (260816). Both shapes are written on live
-    # boards — `260803 · EXECUTED` and `- 260806 2215 · [REVISE-CC] swept` —
-    # and only the bare one matched, so the readout was quietly showing 82% of
-    # the updates (1260 counted, 276 dropped across the five skill boards).
-    # Nothing caught it because the tests on this route all tested the focus
-    # timer, which is now deleted, rather than the number the panel prints.
-    LOG_LINE = re.compile(r"^[-*]?\s*(\d{6})(?:\s+\d{3,4})?\s*·")
+    # Current log records are ``### YYMMDD HHMM · ...`` under ``outline/``.
+    # The optional list-marker form keeps historical Page-level logs readable.
+    LOG_LINE = re.compile(r"^(?:#{3,4}\s+|[-*]?\s*)(\d{6})(?:\s+\d{3,4})?\s*·")
     _log_cache = {}
     protocol_version = "HTTP/1.1"      # WebSocket 升级需要 1.1
     # The self-hosted Excalidraw runs in its own container on its own port, and

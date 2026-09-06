@@ -44,6 +44,7 @@ arc: The reader sees the planned move before reading its drafted realization.
   Note: The sentence belongs in Content, not the plan.
   Evidence: E01-VALUE-product · one checked source for the page product
   Accept: the source and its local receipt are named.
+  Routed: RD01 S1-PP1
 """
 
 ITEMS = """# Outline fixture · evidence items
@@ -122,28 +123,51 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertNotIn("Opening -&gt; Outline -&gt; Content", html)
         self.assertIn("Address</th>", html)
         self.assertIn("Planned move</th>", html)
+        self.assertIn("Feedback</th>", html)
         self.assertIn("Evidence</th>", html)
         self.assertIn("Supporting Runs</th>", html)
         self.assertIn("Local Run</th>", html)
         self.assertNotIn("Route</th>", html)
         self.assertNotIn("Status</th>", html)
         self.assertIn("State the page product", html)
+        self.assertIn(
+            'class="outline-feedback" href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=fb&amp;focus=feedback-S1-PP1"',
+            html,
+        )
+        self.assertIn('data-outline-lens="fb"', html)
+        self.assertIn('data-outline-focus="feedback-S1-PP1"', html)
+        self.assertIn('title="RD01 S1-PP1">S1-PP1</a>', html)
         self.assertIn('aria-label="E01-VALUE-product · VALUE · checked product source"', html)
         self.assertIn("<b>E1V.Product</b>", html)
-        self.assertIn('popovertarget="outline-item-E01-VALUE-product"', html)
-        self.assertIn('id="outline-item-E01-VALUE-product" popover', html)
-        for field in (
-            "Label", "Name", "Target", "Expected", "Acceptance", "Supporting Runs",
-            "Local Input", "Local Run", "Result",
-        ):
-            self.assertIn(f"<b>{field}</b>", html)
+        # The Evidence chip is the same kind of precise Outline route as a
+        # Feedback id or a Run token: one URL that names the workspace, the
+        # Evidences segment, and the exact item card.  The compact Page owns
+        # no Evidence popover and duplicates none of the card's fields.
+        self.assertIn(
+            '<a class="outline-evidence mut" '
+            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=workspace'
+            '&amp;seg=items&amp;focus=run-E01-VALUE-product" '
+            'data-outline-lens="workspace" data-outline-seg="items" '
+            'data-outline-focus="run-E01-VALUE-product" '
+            'aria-label="E01-VALUE-product · VALUE · checked product source" '
+            'title="E01-VALUE-product · VALUE · specified"><b>E1V.Product</b></a>',
+            html,
+        )
+        self.assertNotIn("popovertarget=\"outline-item-", html)
+        self.assertNotIn("outline-item-card", html)
+        self.assertNotIn("outline-item-detail", html)
+        self.assertNotIn('<button type="button" class="outline-evidence', html)
+        for field in ("Acceptance", "Local Input", "Supporting Runs"):
+            self.assertNotIn(f"<b>{field}</b>", html)
         self.assertNotIn("PageX Bindings", html)
         self.assertNotIn('href="../runs.html', html)
         self.assertIn(
-            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=workspace&amp;focus=run-E01-VALUE-product&amp;run=b01.j01.t01.r01"',
+            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=workspace&amp;seg=runs&amp;focus=run-E01-VALUE-product&amp;run=b01.j01.t01.r01"',
             html,
         )
         self.assertIn('data-outline-focus="run-E01-VALUE-product"', html)
+        self.assertIn('data-outline-lens="workspace"', html)
+        self.assertIn('data-outline-seg="runs"', html)
         self.assertIn('data-outline-run="b01.j01.t01.r01"', html)
         self.assertIn("b01.j01.t01.r01", html)
         self.assertIn("j01.t01.r01", html)
@@ -181,7 +205,10 @@ class OutlinePageSectionTest(unittest.TestCase):
                     board_body.BASE = prior_base
 
             self.assertIn(f"<b>{visible}</b>", html)
-            self.assertIn(f'popovertarget="outline-item-{item_id}"', html)
+            self.assertIn(f'data-outline-focus="run-{item_id}"', html)
+            self.assertIn(f"seg=items&amp;focus=run-{item_id}\"", html)
+            self.assertNotIn("popovertarget=", html.split("Supporting Runs</th>")[-1]
+                             if "Supporting Runs</th>" in html else html)
 
     def test_outline_shows_authored_run_action_not_derived_receipt_label(self):
         """The grid keeps SURVEY's action even when no concrete Run exists."""

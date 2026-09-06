@@ -115,7 +115,6 @@ def _count(pd: Path, md: Path):
     r["apv"] = 0
     for o in ((pd / "outline").glob("*-outline-v*.md") if (pd / "outline").is_dir() else []):
         if re.search(r"^approved:\s*✅", o.read_text(errors="replace"), re.M): r["apv"] += 1
-    r["px"]  = 1 if evidence_lane_dirs(pd, "pagex") else 0
     r["tex"] = 1 if delivery_lane_dirs(pd, "latex") else 0
     r["doc"] = 1 if delivery_lane_dirs(pd, "word") else 0
     r["ln"]  = t.count("\n") + 1

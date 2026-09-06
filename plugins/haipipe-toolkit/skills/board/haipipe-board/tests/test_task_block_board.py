@@ -9,6 +9,7 @@ from src.parse import parse_dir
 
 
 ENGINE = Path(__file__).resolve().parents[1]
+BOARD_CHECKER = ENGINE / "cli" / "check.py"
 TASK_CHECKER = ENGINE.parents[1] / "task" / "haipipe-task" / "ref" / "check_task_tree.py"
 
 
@@ -139,6 +140,37 @@ def test_generic_board_does_not_adopt_task_pages(tmp_path):
     assert not list(page_files(block))
 
 
+def test_empty_legacy_task_block_keeps_its_board_identity(tmp_path):
+    block = tmp_path / "b01_legacy_runtime"
+    block.mkdir()
+    (block / "board.md").write_text(
+        "# Legacy Runtime Block\n"
+        "board-kind: task-block\n"
+        "spine: Keep the existing flat runtime visible as one Block Board.\n"
+        "close: Migrate each implicit Task Page or explicitly hold it.\n\n"
+        "## Topic\nA legacy task runtime.\n\n"
+        "## Pipeline\nJobs remain visible while their Task Pages await migration.\n\n"
+        "## Pages\n### j01 · Existing flat job\n",
+        encoding="utf-8",
+    )
+
+    meta, pages, warnings = parse_dir(block)
+    result = subprocess.run(
+        [sys.executable, str(ENGINE / "cli" / "build.py"), str(block)],
+        text=True,
+        capture_output=True,
+    )
+
+    assert meta["title"] == "Legacy Runtime Block"
+    assert meta["board_kind"] == "task-block"
+    assert pages == []
+    assert warnings == []
+    assert result.returncode == 0, result.stderr or result.stdout
+    index = (block / "board" / "index.html").read_text(encoding="utf-8")
+    assert "Legacy Runtime Block" in index
+    assert "ALL TASKS" in index
+
+
 def test_task_block_build_emits_job_groups_and_addressed_task_pages(tmp_path):
     block = _board(tmp_path)
     result = subprocess.run(
@@ -155,12 +187,70 @@ def test_task_block_build_emits_job_groups_and_addressed_task_pages(tmp_path):
     assert "0/2 tasks closed" in index
 
 
+def test_discovery_block_uses_the_same_bjtr_projection_without_task_contract_errors(tmp_path):
+    block = _board(tmp_path)
+    (block / "board.md").write_text(
+        (block / "board.md").read_text(encoding="utf-8").replace(
+            "board-kind: task-block", "board-kind: discovery-block"
+        ),
+        encoding="utf-8",
+    )
+    for page in block.glob("j*/t*/t*.md"):
+        page.write_text(
+            page.read_text(encoding="utf-8")
+            .replace("folder-kind: task", "folder-kind: discovery")
+            .replace("task: .\n", ""),
+            encoding="utf-8",
+        )
+
+    meta, pages, warnings = parse_dir(block)
+    check_result = subprocess.run(
+        [sys.executable, str(BOARD_CHECKER), str(block), "--summary"],
+        text=True,
+        capture_output=True,
+    )
+    build_result = subprocess.run(
+        [sys.executable, str(ENGINE / "cli" / "build.py"), str(block)],
+        text=True,
+        capture_output=True,
+    )
+
+    assert meta["board_kind"] == "discovery-block"
+    assert [page["id"] for page in pages] == ["b03j01t01", "b03j02t01"]
+    assert [page["kind"] for page in pages] == ["discovery", "discovery"]
+    assert [page["folder_kind"] for page in pages] == ["discovery", "discovery"]
+    assert not warnings
+    assert check_result.returncode == 0, check_result.stderr or check_result.stdout
+    assert "task-page-folder-kind" not in check_result.stdout
+    assert "task-page-self" not in check_result.stdout
+    assert "discovery-page-folder-kind" not in check_result.stdout
+    assert "unknown-board-kind" not in check_result.stdout
+    assert build_result.returncode == 0, build_result.stderr or build_result.stdout
+    index = (block / "board" / "index.html").read_text(encoding="utf-8")
+    rendered_page = next((block / "board" / "j01").glob("*.html"))
+    page = rendered_page.read_text(encoding="utf-8")
+    assert "ALL DISCOVERY TASKS" in index
+    assert "0/2 discovery tasks closed" in index
+    assert '<span class="kind">DISCOVERY</span>' in page
+
+
 def test_task_tree_checker_requires_explicit_task_block_board_head(tmp_path):
     block = _board(tmp_path)
     assert not [finding for finding in _task_check(block) if finding[0] == "S18"]
 
     (block / "board.md").unlink()
     findings = [finding for finding in _task_check(block) if finding[0] == "S18"]
+    assert findings == [
+        ("S18", block.name, "canonical Block has no board.md Task Block Board head")
+    ]
+
+
+def test_task_tree_checker_requires_a_board_head_for_flat_legacy_blocks(tmp_path):
+    block = tmp_path / "b01_flat_legacy"
+    (block / "j01_existing_job" / "runs").mkdir(parents=True)
+
+    findings = [finding for finding in _task_check(block) if finding[0] == "S18"]
+
     assert findings == [
         ("S18", block.name, "canonical Block has no board.md Task Block Board head")
     ]

@@ -7,7 +7,7 @@ both call `phase_state()` here. Never writes.
 The states, and what each is read from:
 
     🧭 CONTEXT   outline/<stem>-context.md exists as the current preflight projection
-    🧩 OUTLINE   the newest outline/<stem>-outline-v<N>.md and its approved: tick
+    🧩 OUTLINE   newest outline/<stem>-outline-v<G>.<S>[.<E>].md and Shape approval
                  (SHAPE), plus the Evidence Item table's Decide per item (SURVEY)
     🃏 EVIDENCE  the Evidence Item table joined to local Results: ready · folded (LAND,
                  EMBED); legacy pages without a table: card state: lines ·

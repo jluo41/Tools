@@ -152,6 +152,21 @@ class OutlineReviewPacketTest(unittest.TestCase):
             self.assertIn("data-lens=skills", rendered)
             self.assertIn("/SM00-abstract/outline/skill/SM00-abstract-skill.html?embed=1", rendered)
             self.assertIn("/_board/evidence?path=/Board/board.md&amp;file=MAIN/SM00-abstract/SM00-abstract.md&amp;embed=1", rendered)
+            self.assertIn("requestedFocus=params.get('focus')||''", rendered)
+            self.assertIn("requestedRun=params.get('run')||''", rendered)
+            self.assertIn("requestedSeg=params.get('seg')||''", rendered)
+            self.assertIn("function workspaceSource(frame)", rendered)
+            # The Page names the Evidence Workspace segment; an older link
+            # without one still derives it from whether a Run was named.
+            self.assertIn(
+                "if(!requestedSeg&&(requestedFocus||requestedRun))"
+                "requestedSeg=requestedRun?'runs':'items';", rendered)
+            self.assertIn("if(requestedSeg)src+=(src.indexOf('?')<0?'?':'&')+'seg='", rendered)
+            self.assertIn("+encodeURIComponent(requestedSeg);", rendered)
+            self.assertIn("if(requestedFocus)src+=(src.indexOf('?')<0?'?':'&')+'focus='", rendered)
+            self.assertNotIn("(requestedRun?'runs':'items')+'&focus='", rendered)
+            self.assertNotIn("board-outline-evidence-focus", rendered)
+            self.assertNotIn("board-outline-evidence-run", rendered)
             self.assertNotIn("Evidence / Survey", rendered)
             self.assertIn("🗣 Feedback", rendered)
             self.assertIn("📏 Requirement", rendered)
@@ -160,6 +175,9 @@ class OutlineReviewPacketTest(unittest.TestCase):
             self.assertIn("Main ask", rendered)
             self.assertIn("Order, gate &amp; source", rendered)
             self.assertIn("Begin with the physician decision problem", rendered)
+            self.assertIn('id="feedback-S0-PP1"', rendered)
+            self.assertIn('data-record-id="S0-PP1"', rendered)
+            self.assertIn("target.classList.add('record-focus')", rendered)
             self.assertIn("<b>Next</b>Rewrite the opening sentence", rendered)
             self.assertIn("Source &amp; routing", rendered)
             self.assertNotIn("The Round's own words", rendered)

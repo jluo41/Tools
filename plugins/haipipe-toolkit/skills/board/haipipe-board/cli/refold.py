@@ -20,7 +20,7 @@ Each of those belongs to one page, so each moves under that page:
 `QBt3-for-display/display/QBt3-for-display/`. The INNER path is preserved
 exactly, never flattened, because things read it — a display unit is addressed
 by its own folder name, and a QA-probe record names its evidence page by the
-drawer it sits in (`src/topic_entry_contract.py` reads `parts[-2]`). Re-parent,
+drawer it sits in (`legacy/topic_entry_contract.py` reads `parts[-2]`). Re-parent,
 do not rename: renaming is a different decision and belongs to whoever owns that
 contract.
 
