@@ -9,8 +9,8 @@ description: >-
   workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.27.0"
-  last_updated: "2026-09-04"
+  version: "0.28.2"
+  last_updated: "2026-09-06"
   # version history: ./CHANGELOG.md
 ---
 
@@ -89,11 +89,9 @@ OUTLINE/SHAPE ── evidence owed ──▶ OUTLINE/SURVEY
        ▲                                  │ decided graph
        │                                  ▼
        └──────── EVIDENCE/EMBED ◀── EVIDENCE/LAND
-                       │ next working plan vN.<k+1>
-                       └──────────▶ SHAPE re-approval
-                                        │ approved + all make-items folded
-                                        ▼
-                                  CONTENT/WRITE
+                       │ next evidence revision v<G>.<S>.<E+1>
+                       ├─ G=0 ───▶ SHAPE; Content remains closed
+                       └─ G≥1 ───▶ CONTENT/WRITE under inherited Shape approval
                                         │ exact built version
                                         ▼
                                   CHECK/CHECK ──▶ CLOSE
@@ -103,7 +101,8 @@ OUTLINE/SHAPE ── evidence owed ──▶ OUTLINE/SURVEY
 
 The flow is a routing grammar, not a conveyor belt. CONTEXT reopens when its
 authorities change; SHAPE and SURVEY may repeat; LAND works item graphs in
-parallel; EMBED always returns to SHAPE; CONTENT may loop; CHECK may route to
+parallel; EMBED returns a `v0.*` fold to SHAPE and a `G>=1` evidence fold to
+CONTENT; CONTENT may loop; CHECK may route to
 any earlier owning phase.
 
 ## 📊 Canonical workflow table

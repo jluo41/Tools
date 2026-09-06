@@ -89,7 +89,7 @@ being guessed.
    ```text
    context   ─▶ <page>/outline/<stem>-context.md, generated. It points to
                 source authorities and writes no plan, evidence, or Page prose.
-   outline   ─▶ <page>/outline/<stem>-outline-v<N>.md, and NOTHING in the page
+   outline   ─▶ <page>/outline/<stem>-outline-v<G>.<S>[.<E>].md, and NOTHING in the page
                 itself. Leave `approved:` UNTICKED: it is a person's.
    evidence  ─▶ ready local Evidence Item Results and frozen inputs, plus
                 Result bindings in the authored item table. Leave CITE

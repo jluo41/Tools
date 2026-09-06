@@ -1,3 +1,48 @@
+## 0.7.0 · 2026-09-06
+
+- Admit only generation `G>=1` plans to CONTENT; every `v0.*` state remains
+  planning-only.
+- Refresh Content for every Shape or evidence version change. Evidence-only
+  revisions inherit Shape approval and revalidate only affected realizations.
+
+## 0.6.1 · 2026-09-06
+
+- Treat sentence length as a distribution: an 18–24-word median is a readable
+  MISQ house-style center, while 30+ words triggers review rather than an
+  automatic split or writing blocker.
+- Split long sentences only when they stack distinct reader moves or obscure
+  the main claim; preserve coherent longer relations and varied prose rhythm.
+
+## 0.6.0 · 2026-09-06
+
+- Add a formal OUTLINE → CONTENT entry check before any Division Writing Run.
+- Separate hard authority/evidence gates from manuscript-form warnings.
+- Require Section name/structure, paragraph and sentence-slot budgets, expected
+  sentence length, and citation-density units to be reported distinctly.
+- Measure existing and drafted prose with `haipipe-paper-section/cli/section-stats.py`;
+  never present pre-draft estimates as actual prose measurements.
+- Follow only the current Evidence Items' selected Local Result pointers and
+  stop once each checklist row has a supported verdict.
+
+## 0.5.0 · 2026-09-06
+
+- Make one point per Section sentence binding during WRITE.
+- For MISQ, target the outline's 23–26-word center, split routine 30+ word
+  clause stacks, and avoid formulaic connective ladders and AI-style framing.
+
+## 0.4.0 · 2026-09-06
+
+- Forbid paragraph-level and sibling-Bullet evidence inheritance during WRITE.
+  Reused sources still trace through a distinct CITE Item at every realizing
+  Bullet.
+
+## 0.3.0 · 2026-09-06
+
+- Enforce evidence at the realization address: a citation or concrete value in
+  CONTENT must have a CITE or VALUE Evidence Item on that same Bullet.
+- Treat `Evidence: none` as a binding source-free contract and route any later
+  material need back to OUTLINE/SHAPE.
+
 ## 0.2.1 · 2026-09-04
 
 - Route CONTENT through the exact Page Face owner and load a canonical family

@@ -1,3 +1,76 @@
+## 0.31.1 · 2026-09-06
+
+- Allow checked `v0.*` plans to proceed through evidence work in copilot or
+  auto while keeping Content closed until first human approval.
+- Define first approval as promotion of the selected Shape-and-evidence state,
+  not a claim that all Evidence Items are already ready.
+- Open a major redesign as the next generation's unapproved baseline and put
+  direct approval on that exact reviewed version.
+- Require the human Shape tick for Content release in both copilot and auto;
+  auto may defer review only while continuing pre-release evidence work.
+
+## 0.31.0 · 2026-09-06
+
+- Split plan versions into generation, Shape, and optional evidence counters:
+  `v<G>.<S>[.<E>]`, with two-part versions meaning evidence zero.
+- Keep every `v0.*` state outline-only. From `v1.0` onward, refresh Content for
+  every Shape or evidence change.
+- Let evidence folds inherit the current Shape approval; reserve a generation
+  increment for a large structural change after substantial review.
+
+## 0.30.1 · 2026-09-06
+
+- Plan MISQ prose around an 18–24-word median while preserving useful sentence
+  length variation.
+- Treat 30+ words as a review signal: split stacked reader moves, but keep a
+  coherent longer relation when it is clearer.
+
+## 0.30.0 · 2026-09-06
+
+- Make one point per sentence slot explicit for Section outlines.
+- For MISQ, default each paragraph to five or six slots and center the plan at
+  23–26 words per sentence; split compound moves instead of budgeting routine
+  35-word sentences.
+
+## 0.29.0 · 2026-09-06
+
+- Make Evidence ownership explicitly Bullet-local: paragraph/division grouping
+  never supplies evidence and one Bullet cannot inherit a sibling's Item.
+- Preserve efficient reuse below that boundary: distinct claim-level Items may
+  share the same verified source or Supporting Run.
+
+## 0.28.0 · 2026-09-06
+
+- Make evidence coverage a per-Bullet decision: every Bullet now declares one
+  or more typed Evidence Items or an explicit `Evidence: none · <reason>`.
+- Define `none` as a realization contract: that Bullet may contain no citation,
+  empirical value, table, or figure; adding one routes the Bullet back to SHAPE.
+- Make per-page coverage findings a hard `outline-pass.py` failure while the
+  board-wide migration sweep continues to report them as gaps.
+
+## 0.27.0 · 2026-09-06
+
+- Add the Section form audit used before human approval: paragraph jobs and
+  transitions, coherent word/sentence budgeting, citation density and coverage,
+  optional-display discipline, and a check against standalone defensive prose.
+- Define a CITE Evidence Item as one claim-support contract at one Bullet, not
+  one paper, BibTeX record, or `\\cite{}` placement; split independently
+  testable propositions and keep item/source/placement/key counts distinct.
+- Extend the human review packet and receipt with explicit form and citation
+  metrics so an Evidence Item count is never mistaken for citation density.
+
+## 0.26.0 · 2026-09-05
+
+- An older-grammar plan is rewritten as `v0.<k+1>` while no `v1.0` exists
+  (`vN.<k+1>` only under an approved `vN.0`); a legacy integer chain renumbers
+  one to one to `v0.1 … v0.N` first and its old ticks reset to `⬜`
+  (haipipe-plugin-outline 0.38.0, plan-grammar §6).
+- `cli/outline-pass.py` grows a tooth: an integer-only LATEST plan fails with
+  `version-policy: vN: integer-only plan version is legacy; renumber the chain
+  v1…vN to v0.1…v0.N (no v1.0 until a person promotes one)`
+  (`src/outline_version.legacy_integer_issue`, covered by
+  `tests/test_outline_version.py`).
+
 ## 0.25.0 · 2026-09-04
 
 - Make the semantic plan version explicit: an approved baseline is now

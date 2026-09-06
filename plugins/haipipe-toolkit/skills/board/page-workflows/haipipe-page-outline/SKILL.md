@@ -13,8 +13,8 @@ description: >-
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.25.0"
-  last_updated: "2026-09-04"
+  version: "0.31.1"
+  last_updated: "2026-09-06"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -71,7 +71,7 @@ OUTLINE part
   SHAPE    this file    plan + typed item expectation          👤 approved:
   SURVEY   this file    classify supports + Local Input + Local Run    👤 Decide, per item
   LAND     evidence     allocate planned routes, execute → Result     ⚙ every make-item ready
-  EMBED    evidence     fold ready Results into next working plan vN.<k+1> ⚙ back to SHAPE
+  EMBED    evidence     fold Results into v<G>.<S>.<E+1>        ⚙ CONTENT when G≥1
 ```
 
 ## 🧱 Bullet · the Outline's primary unit
@@ -87,7 +87,7 @@ Bullet
 ├── Address       stable C.P.B identity
 ├── Head          planned reader move
 ├── Note          bounded rationale or constraint
-├── Evidence      zero-to-many typed Evidence Items
+├── Evidence      one explicit decision: typed Item(s), or none with reason
 └── Realization   CONTENT-written Page sentence(s), linked with realizes:
 ```
 
@@ -95,6 +95,11 @@ The Bullet is the shared unit across Bullet Workspace and Evidence Workspace.
 SHAPE revises its intended move; SURVEY maps what supports it without changing
 its meaning; LAND and EMBED return ready material; CONTENT alone writes its Page
 prose. Evidence Items serve a Bullet—they do not become competing outline rows.
+Paragraphs and divisions are presentation groups only: they own no Evidence
+Item and confer no evidence on their Bullets. A Bullet may not inherit an
+Evidence Item from a sibling Bullet. When two Bullets depend on the same paper
+or upstream Result, each owns its own claim-level Evidence Item and both items
+may reuse the same source or Supporting Run.
 
 ## ⚡ Brief
 
@@ -107,20 +112,20 @@ READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
          disk) · the owning workflow phase's outline policy · the page · the current plan ·
          the project's Execution/Discovery Run inventories (SURVEY only) ·
          outline/<stem>-context.md · outline/skill/<stem>.md when present
-WRITES   outline/<stem>-outline-v<N>.<k>.md · outline/<stem>-evidence-items.md ·
+WRITES   outline/<stem>-outline-v<G>.<S>[.<E>].md · outline/<stem>-evidence-items.md ·
          outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
          record) · outline/evidence/supporting-runs/<stem>-run-bindings.md
          (generated pointers) · never the page
 CHECKS   ⓪ ARC ① COVERAGE ② ADDRESS ③ VALUE ④ SHAPE, all pass before the
          person is asked (SHAPE); every make-item has an audited Supporting/Local
          Run map, one explicit Local Input, and one decision (SURVEY)
-ENDS     SHAPE: copilot records a person's approved: tick; auto may record the
-         owed review and follow the declared gate policy · SURVEY: every row
+ENDS     SHAPE: the person's approved: tick releases G>=1 Content; copilot or
+         auto may continue checked v0 evidence work while that review is owed · SURVEY: every row
          has an explicit durable make/defer/drop decision
 WALLS    writes no prose · raises no card · executes nothing and lands no Result ·
          mints no Aim · names no division the type refuses · ticks nothing ·
-         changes a ✅ vN.0 plan only as working revision vN.1 · never writes a Status word
-ROUTES   SHAPE → SURVEY (agreed or auto-forwarded, marks owed) · SHAPE → CONTENT
+         keeps v0 planning out of Content · separates Shape and evidence counters · never writes a Status word
+ROUTES   SHAPE → SURVEY (checked v0 or approved G>=1) · SHAPE → CONTENT
          (evidence-aware and allowed forward) · SURVEY → LAND (every item graph classified) ·
          either → SHAPE again · HOLD (copilot waits, or a real input/stop blocks auto)
 RECEIPT  §🧾, one block per pass, `cycle: SHAPE | SURVEY`; field law:
@@ -162,12 +167,17 @@ BOTH sides do; it ends when the shape is agreed, never earlier.
 loop 3 ⇄ 4 until the person ticks approved:
 ```
 
-The first channel approval copies the selected `v0.<k>` plan into frozen
-`v1.0`. After an approved baseline `vN.0`, the same loop uses `vN.1`,
-`vN.2`, … . A later channel approval copies the selected revision into the
-next frozen agreement `v<N+1>.0`; a frozen `.0` is never minted before that
-approval. Mechanical repairs needed to make one proposed revision pass its
-checks stay in place and do not consume another minor number.
+Before Content, Shape proposals use `v0.<S>` and evidence-only folds use
+`v0.<S>.<E>`. Both copilot and auto may survey, land, and fold evidence under
+a checked `v0.*` Shape; neither may write Content. The first channel approval
+promotes the selected Shape-and-evidence state to `v1.0` even when some
+Evidence Items still need LAND. From generation one onward, a bounded Shape change increments `S`
+and resets `E`; it is reviewed and approved at that same version before
+Content follows it. Evidence-only folds increment `E`, declare
+`shape-base: v<G>.<S>`, inherit that Shape approval, and do not request a
+duplicate Shape review. When a substantial review or feedback round calls for
+a large structural reconsideration, open the next generation's unapproved
+baseline; approve that exact version only after reviewing the redesign.
 
 Steps 2 and 4 are the chat's verbs (`propose`, `revise`); step 3 is the person
 on the 🧭 tab. "Draft" and "Brief" are not cycle names: Draft is an internal
@@ -225,6 +235,24 @@ Run by hand, it is the three generators (`cli/requirement.py`,
   the budget; a division V3 refuses fails ④ here and never reaches CONTENT
   part. Terms are defined inline the first time; the plan never quotes the
   sentence it plans.
+- **One sentence slot carries one point.** Do not make one slot define a
+  construct, explain its mechanism, state its boundary, and transition at the
+  same time. Split those jobs into separate Bullets before CONTENT. For an
+  MISQ Section, use five or six sentence slots per paragraph unless the direct
+  venue contract or the paragraph's job requires otherwise; plan for a median
+  around 18–24 words while allowing individual sentences to vary with their
+  jobs. Do not satisfy a word target by assuming routine 35-word sentences.
+- **Make the Section's form coherent before approval.** Resolve the venue's
+  paragraph, word, sentence-length, and citation-density expectations when a
+  venue bank or direct-paper audit supplies them. Give each paragraph one
+  reader job and an explicit transition. A sentence-slot budget must be
+  arithmetically compatible with the word target and expected readable
+  sentence length; a 1,300-word Section cannot silently plan forty 20-word
+  sentences. If the arithmetic exceeds about 30 words per sentence, review
+  whether Bullets stack separable reader moves and add warranted slots when
+  they do. Thirty words is a review signal, not an automatic split or blocker;
+  one coherent relation may remain longer. These are judgment checks even when
+  the CLI cannot yet enforce every one mechanically.
 - **A hole is specified, never answered.** Add
   `Evidence: E<NN>-<TYPE>-<slug> · <expected ready evidence>` and its immediate
   `Accept: <observable checks>` under the bullet. TYPE is `VALUE`, `CITE`, or
@@ -234,14 +262,32 @@ Run by hand, it is the three generators (`cli/requirement.py`,
   LAND's later human gate. `Label` is a stable 1–12 character ASCII
   alphanumeric display name such as `LBPEffect`; it is not inferred from the
   full readable name. SHAPE does not plan or allocate a Run.
+- **One CITE Evidence Item is one claim-support contract at one Bullet.** It is
+  not one paper, one BibTeX entry, or one future `\\cite{}` placement. One item
+  may require several sources, and one verified source may support several
+  items. Split the item when either proposition could be removed, contradicted,
+  accepted, or replaced independently. Most citation-bearing Section bullets
+  therefore own one CITE item; a bullet making two independently checkable
+  external claims must split its bullet or its evidence contracts.
+- **No paragraph-level or sibling inheritance.** “Use E01's source here” is not
+  an evidence decision for a second Bullet. Mint that Bullet's own CITE Item
+  and, during SURVEY, point both items at the same Discovery Supporting Run or
+  verified source set. Reuse acquisition; never reuse the claim contract.
+- **Every Bullet makes its own evidence decision.** Write one or more typed
+  `Evidence:`/`Accept:` pairs, or write exactly
+  `Evidence: none · <why this reader move needs no source material>`. Never
+  leave the decision implicit and never mix `none` with typed items. `none`
+  means CONTENT may realize that Bullet without a citation, empirical value,
+  table, or figure; a transition, research question, paper-owned design move,
+  or roadmap may qualify. If CONTENT later needs any such material, return the
+  Bullet to SHAPE and mint its own typed Evidence Item first.
 - **The fold appends to the bullet that asked** (EMBED's write, read here): a
   landed value becomes `Answered:`, a built unit's README claim becomes
   `Drawn:`, a served Round row becomes `Routed:`; never a new bullet, never an
   edit to the head.
 - **An older-grammar plan is rewritten into the current grammar on this
-  pass**: as the next working minor (`v0.<k+1>` while no `v1.0` exists,
-  `vN.<k+1>` under an approved `vN.0`). It becomes the next `.0` only when a
-  person approves that revision in the channel. A legacy integer chain
+  pass**: a Shape change increments `S` and resets evidence to zero; a pure
+  evidence/Run fold increments `E` under the current Shape. A legacy integer chain
   `v1 … vN` first renumbers one to one to `v0.1 … v0.N` (`ref/plan-grammar.md`
   §6) and its old ticks reset to `⬜`; `outline-pass.py` fails an integer-only
   latest plan.
@@ -255,7 +301,7 @@ Run by hand, it is the three generators (`cli/requirement.py`,
 - **Every open feedback row is served or declined**: `Routed: <RD> <row id>`
   on the bullet that serves it, or `declined: <RD> <row id> · <reason>` in the
   plan head. `check.py` reports `feedback-unserved` on a row with neither.
-- **One log record per pass**: `### YYMMDD HHMM · SHAPE v<N>.<k>: <what changed
+- **One log record per pass**: `### YYMMDD HHMM · SHAPE v<G>.<S>[.<E>]: <what changed
   in one line>` (or `SURVEY: <n> rows …`), the receipt folded under it when
   no run folder holds it.
 
@@ -264,7 +310,9 @@ Run by hand, it is the three generators (`cli/requirement.py`,
 ```text
 ⓪ ARC       arc: present and an argument · adjacent pairs pass the swap test ·
             the heaviest finding has a division
-① COVERAGE  every Evidence line has a typed id, expectation, Accept line, and
+① COVERAGE  every Bullet explicitly declares typed Evidence Item(s) or `none` ·
+            no paragraph-level or sibling-item inheritance ·
+            every typed line has an id, expectation, Accept line, and
             exactly one matching Evidence Item record with a compact Label · every unit on disk is
             cited or retired · every open feedback row is
             served or declined
@@ -278,6 +326,29 @@ Any ❌ is fixed in the plan here; the person is not asked yet. ⓪ is half a
 judgment: `arc:` present is mechanical, whether it argues is this pass's call
 and the person may overturn it at the tick.
 
+Before a Section plan reaches human review, also perform a compact manuscript
+form audit:
+
+```text
+paragraphs       venue-compatible count · one reader job each · transitions named
+length           word target ÷ sentence slots gives a plausible sentence length
+citations        CITE Items · source entries · planned placements · key mentions
+density          planned citation-bearing sentences / all sentence slots, benchmarked when available
+coverage         every citation/value/display-bearing Bullet owns its typed item(s) ·
+                 every remaining Bullet explicitly declares evidence `none`
+tone             no standalone self-protection or "without overclaiming" paragraph
+displays         optional; owed only when a visual is necessary for the reader move
+```
+
+The four citation measures are different units. Evidence Item count is contract
+coverage; it must never be reported as citation density. Before CONTENT exists,
+placements and key mentions are explicitly `planned` or `not yet measurable`.
+After CONTENT exists, every placement must trace through its `realizes:` Bullet
+to a verified CITE item and every citation key must belong to that item's
+verified source set. Put a necessary boundary at the claim it qualifies; route
+a real limitation to Discussion instead of giving defensive prose its own
+Introduction paragraph.
+
 ### 🤝 Human review and approval · present the packet before asking for a decision
 
 When a person says **review**, **check**, **read**, or **approve** an outline,
@@ -286,10 +357,12 @@ four-part packet before seeking a response.  The packet is a compact map of
 the records already on disk, not a second plan and not a prose draft:
 
 1. **Current Shape** — link the current versioned plan, state `approved:`,
-   quote its `arc:`, and show the C/P reader path in a compact map.
+   quote its `arc:`, show the C/P reader path in a compact map, and report the
+   Section form audit when the Page Type is Section.
 2. **Evidence owed** — link the Evidence Item table and report typed/status
-   counts.  Show the items that determine the page's central claim: target,
-   expected evidence, acceptance, and the surveyed source/Run path.
+   counts. For citations, keep CITE Items, source entries, citation placements,
+   and key mentions separate. Show the items that determine the page's central
+   claim: target, expected evidence, acceptance, and the surveyed source/Run path.
 3. **What shaped it** — link and summarize only the feedback rows,
    requirements, and open discussion threads that materially changed a
    division or bullet.  State the exact `Routed:` address or say that no such
@@ -303,7 +376,7 @@ If the packet would be long, preserve all four parts but collapse routine
 items into counts and show only material evidence/feedback rows; offer the
 full linked records rather than omitting the provenance.  The same packet is
 required when revising an already-reviewed outline, with a short “changed
-since v<N>.0” line under Current Shape.
+since v<G>.<S>[.<E>]” line under Current Shape.
 
 ### 🧑 The tick governs the fork; mode governs whether work waits
 
@@ -315,28 +388,38 @@ since v<N>.0” line under Current Shape.
 - **A chat approval is transcribed, never decided**:
   `approved: ✅ JL 260831 0146 · in chat: "ok, good, I approve this outline"`.
   A machine writes `checked:` for itself and nothing more.
-- **Copilot waits; auto may defer review debt.** In `copilot`, an unticked
-  person-reserved gate routes to HOLD. In `auto`, the machine may follow the
-  checked plan while recording `approved:` on the owed ledger. `Decide` is
+- **Copilot waits at release; auto may defer review debt.** A checked `v0.*`
+  plan may proceed through SURVEY, LAND, and EMBED in either mode so evidence
+  can inform the approval decision, but it cannot release CONTENT. In
+  copilot or auto, an unticked person-reserved Content-release gate routes to
+  HOLD once allowable evidence work is exhausted. Auto may record the review
+  as owed, but it may not cross this gate. `Decide` is
   different: it selects `make`, `defer`, or `drop`, so auto must HOLD at
   SURVEY unless the packet already contains an explicit durable decision or
   owner-approved default policy. The machine never converts an owed decision
   into `make`. Deferral is not approval and never supplies durable evidence
   for a Page Face owner's closing gate that requires a person.
-- **A tick promotes rather than previews a major.** Working revisions after
-  approved `vN.0` are `vN.1`, `vN.2`, … . A person's channel approval freezes
-  the selected content as `v<N+1>.0` with the approval quote; all earlier
-  frozen and working files remain as history.
-- **The gate is where the planning loop exits.** EMBED always returns here with
-  the next working minor. In copilot, an approved major with every table row `folded` releases
-  CONTENT and fresh marks send the Page to SURVEY. In auto, the same fork is
-  taken from `checked:` plus the declared gate policy while the missing human
-  act remains owed.
+- **A tick approves the Shape version being reviewed.** The first tick promotes
+  the selected `v0.*` Shape-and-evidence state to `v1.0`; incomplete evidence
+  may still route to SURVEY. Later bounded Shape revisions keep the current
+  generation (`v1.1`, `v1.2`, …). When substantial review calls for a large
+  redesign, open the next generation baseline (for example unapproved `v2.0`)
+  and record direct approval there after review. Evidence revisions inherit,
+  rather than duplicate, the current Shape tick.
+- **The gate is where the planning loop exits.** EMBED returns here with a
+  `v0.*` evidence revision or whenever a Result changes Shape. In copilot, an approved `G>=1` Shape or inherited
+  evidence revision with every `make` item folded and every `defer`/`drop`
+  row durably decided releases CONTENT; every version change then creates a
+  Content-refresh obligation. Fresh marks send the Page to SURVEY. Auto uses
+  the same human approval requirement for CONTENT, although it may continue
+  checked v0 evidence work while first approval is owed.
 
 ## 🔍 SURVEY · map the Run graph for each ready-evidence contract
 
-SURVEY runs only after SHAPE has named every item and the outline is either
-approved in copilot or allowed forward under the explicit auto gate policy.
+SURVEY runs after SHAPE has named every item and passed its mechanical checks.
+For `v0.*`, that checked state may advance in copilot or auto while approval
+remains open; Content stays closed. For `G>=1`, the outline must have direct or
+inherited human approval in either mode.
 It inventories the current `task/` and `discoveries/` libraries, classifies
 each selected route as existing Result, Ticket only, rerun, or new design, and
 writes the evidence-to-Run lineage. It does not scaffold a Ticket, execute a
@@ -396,7 +479,9 @@ means that no Run Ticket exists.
   There is no `found`, `person`, or `none` action.
 - **Citations use the same graph.** A `CITE` item may reuse or commission a
   Discovery Run, then its local Page Evidence Item Run produces the focal,
-  verified citation claim. It is not routed to a special `person` outcome.
+  verified citation claim and the accepted source set that entails it. It is
+  not routed to a special `person` outcome, and its identity is not multiplied
+  merely because CONTENT later places the same source more than once.
 - **A SURVEY row is complete** when every declared Supporting and Local route
   is honestly classified (existing Result, Ticket only, rerun, or new design),
   one Local Input is explicit, the derived
@@ -438,10 +523,10 @@ then `cycle: LAND`.
 
 ```text
 SHAPE  any of the five ❌                     fix the plan here; no tick yet
-SHAPE  five pass, items owed, gate allows      OUTLINE / SURVEY
-SHAPE  five pass, every item folded, allowed   CONTENT / WRITE
-SHAPE  approved ⬜ in copilot                   HOLD
-SHAPE  approved ⬜ in auto                      record owed; follow declared gate policy
+SHAPE  five pass, items owed                   OUTLINE / SURVEY
+SHAPE  five pass, every make folded and others durably decided  CONTENT / WRITE
+SHAPE  G>=1 approved ⬜ in copilot release      HOLD
+SHAPE  G>=1 approved ⬜ in auto release         record owed; HOLD before CONTENT
 SURVEY route ambiguous                         OUTLINE / SURVEY
 SURVEY Decide open without durable policy      HOLD at OUTLINE / SURVEY
 SURVEY every make graph classified + allowed  EVIDENCE / LAND
@@ -457,14 +542,16 @@ OUTLINE never routes directly to CHECK; a Page version must first pass CONTENT.
 ```text
 phase: OUTLINE
 cycle: SHAPE | SURVEY
-file: <page>/outline/<stem>-outline-v<N>.<k>.md | <page>/outline/<stem>-evidence-items.md
-supersedes: v<N>.<k-1> | v<N-1>.0 | none
+file: <page>/outline/<stem>-outline-v<G>.<S>[.<E>].md | <page>/outline/<stem>-evidence-items.md
+supersedes: <previous exact version> | none
 requirement: V1 V2 V3 V4 read ✅
 feedback: n routed · n served · n declined
 items: n typed · n specified · n planned · n decided · by type VALUE/CITE/DISPLAY
 runs-mapped: existing supporting n (Execution n · Discovery n) · planned n · local n
 checks: ⓪ ✅ ① ✅ ② ✅ ③ ✅ ④ ✅        (SHAPE)
 counts: divisions · paragraphs · bullets · Evidence Items by type
+form: paragraph jobs/transitions · word target · sentence slots · expected words/sentence
+citations: CITE Items · source entries · planned/realized placements · key mentions · density
 threads: D<nn> opened … · D<nn> settled …
 approved: ✅ <who> <date> | ⬜ waiting/owed
 route: CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD

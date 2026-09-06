@@ -9,8 +9,8 @@ description: >-
   Trigger: page check, CHECK phase, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.7.3"
-  last_updated: "2026-09-04"
+  version: "0.8.1"
+  last_updated: "2026-09-06"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -67,7 +67,7 @@ ROUTES (§🔀 · the six, each finding names one)
   ✅ CLOSE      the version meets the closing rule
   🧭 CONTEXT    policy, requirement, ownership, or related context is stale
   🧭 OUTLINE    the plan itself is wrong (SHAPE), or an Evidence Item has no
-                complete Run graph (SURVEY): a v<N+1> reopens planning
+                complete Run graph (SURVEY): the next `v<G>.<S>[.<E>]` reopens planning
   🔎 EVIDENCE   a complete graph lacks a valid local Result (LAND), or a
                 landed Result is stale or must be re-embedded
   ✍️ CONTENT    Page realization, purpose/Aims, or delivery needs work
@@ -162,7 +162,7 @@ projection-stale                 latex/ or word/ is older than the        CONTEN
 ✅ CLOSE       the version meets the closing rule
 🧭 CONTEXT     policy, requirement, ownership, or related context is stale
 🧭 OUTLINE    the plan itself is wrong (SHAPE), or an Evidence Item has no
-              complete Run graph (SURVEY): a v<N+1> reopens OUTLINE
+              complete Run graph (SURVEY): the next `v<G>.<S>[.<E>]` reopens OUTLINE
 🔎 EVIDENCE   a complete graph lacks a valid local Result (LAND), or a landed
               Result is stale or must be re-embedded
 ✍️ CONTENT    purpose, Aims, prose, or delivery realization needs work
@@ -214,7 +214,7 @@ CHECK administers display acceptance and any owner RULING that exists:
 ```text
 tick             lives on                          reserved by            phase
 ──────────────────────────────────────────────────────────────────────────────────
-`approved:`      outline/<stem>-outline-v<N>.md    haipipe-page-outline     SHAPE
+`approved:`      outline/<stem>-outline-v<G>.<S>[.<E>].md  haipipe-page-outline  SHAPE; evidence may inherit
 `Decide`         outline/<stem>-evidence-items.md, per item  haipipe-page-outline  SURVEY
 `Verified`       each authored CITE Evidence Item  haipipe-page-evidence     LAND
 `read:`          legacy outbound source material   owning workflow phase    LAND

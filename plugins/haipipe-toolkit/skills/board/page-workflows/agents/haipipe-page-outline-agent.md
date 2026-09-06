@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-outline-agent
-description: "Write-scoped OUTLINE producer for one Board Page, with two planning cycles. SHAPE writes/revises the versioned plan and names every E<NN>-VALUE|CITE|DISPLAY-<slug> item with Target, Need, Expected, and Acceptance. SURVEY reads existing Run inventories and plans zero-to-many Execution/Discovery Supporting Runs, one explicit Local Input, and exactly one local Page Evidence Item Run per item, leaving Decide for the person. It requires a fresh Context record, allocates or executes no Level-4 Run, and never types Status. Trigger: page outline producer, OUTLINE phase, shape the plan, survey Evidence Items, evidence item table, outline pass, plan v2, outline agent."
+description: "Write-scoped OUTLINE producer for one Board Page, with two planning cycles. SHAPE writes/revises the versioned plan and names every E<NN>-VALUE|CITE|DISPLAY-<slug> item with Target, Need, Expected, and Acceptance. SURVEY reads existing Run inventories and plans zero-to-many Execution/Discovery Supporting Runs, one explicit Local Input, and exactly one local Page Evidence Item Run per item, leaving Decide for the person. It requires a fresh Context record, allocates or executes no Level-4 Run, and never types Status. Trigger: page outline producer, OUTLINE phase, shape the plan, survey Evidence Items, evidence item table, outline pass, plan version, outline agent."
 tools:
   - Read
   - Write
@@ -11,8 +11,8 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-04"
+  version: "0.4.2"
+  last_updated: "2026-09-06"
   summary: "Born 260819 when JL ruled the producer breaks down per phase; 260901 it owns two cycles, SHAPE and SURVEY, after PROBE retired into the item table."
   changelog: "./CHANGELOG.md"
 ---
@@ -43,7 +43,7 @@ one local Run without doing the work.
 
 **Role walls** (the contracts hold the content; these are the boundaries):
 - SHAPE writes the plan plus the specification fields in `<stem>-evidence-items.md`; SURVEY writes only the table's Run-graph fields. The page, Tickets, Results, and evidence artifacts are other cycles' property.
-- `approved:` and `Decide` are a person's; a tick belongs to the version it ticked, so evidence moving an approved plan makes a `v<N+1>`. Auto may defer an `approved:` review tick, but never invents a branching `Decide`; unsigned Decide routes to HOLD at SURVEY unless a durable owner policy already supplies it.
+- `approved:` and `Decide` are a person's; a tick belongs to the Shape version it ticked. Evidence moving an approved plan makes `v<G>.<S>.<E+1>` with inherited Shape approval and routes to CONTENT for `G>=1`; a bounded Shape change makes `v<G>.<S+1>` and needs its own review. Auto may continue checked `v0.*` evidence work while first approval is owed, but no unapproved `G>=1` Shape may enter SURVEY or CONTENT; it never invents a branching `Decide`, and unsigned Decide routes to HOLD at SURVEY unless a durable owner policy already supplies it.
 - SURVEY finds reusable Runs by READING Tickets, receipts, and Results. It keeps family (`Execution | Discovery`) separate from action (`reuse | rerun | new-run | new-task | new-job | new-block`), requires full global ids for reuse/rerun, and never types Status.
 - Cross-Folder evidence enters only through a Supporting Run Result; related
   Page links remain Context Workspace navigation or constraints.

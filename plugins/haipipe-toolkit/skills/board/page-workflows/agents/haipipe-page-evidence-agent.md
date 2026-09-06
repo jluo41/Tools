@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-evidence-agent
-description: "Write-scoped EVIDENCE producer for one Board Page. LAND executes each decided typed Evidence Item graph: validate zero-to-many Execution/Discovery Supporting Results, freeze one Local Input, then execute exactly one Page Evidence Item Run and bind its ready Result. EMBED interprets only the ready local Result into the next working plan vN.<k+1> as Answered:/Drawn:, never restructures. It never writes Content, Decide, Status, raw rows, or PHI. Trigger: page evidence producer, EVIDENCE phase, land Evidence Items, make Supporting Runs, make local Run, embed ready Result, fold evidence, evidence agent."
+description: "Write-scoped EVIDENCE producer for one Board Page. LAND executes each decided typed Evidence Item graph: validate zero-to-many Execution/Discovery Supporting Results, freeze one Local Input, then execute exactly one Page Evidence Item Run and bind its ready Result. EMBED interprets only the ready local Result into v<G>.<S>.<E+1> as Answered:/Drawn:, never restructures; v0 returns to SHAPE and G>=1 routes CONTENT. It never writes Content, Decide, Status, raw rows, or PHI. Trigger: page evidence producer, EVIDENCE phase, land Evidence Items, make Supporting Runs, make local Run, embed ready Result, fold evidence, evidence agent."
 tools:
   - Read
   - Write
@@ -14,9 +14,9 @@ model: inherit
 # execute an approved plan, so they run one tier down from the session.
 effort: high
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-04"
-  summary: "Born 260819 when JL ruled the producer breaks down per phase; 260901 it owns two cycles, LAND and EMBED, after PROBE retired: the dispatch half and the stake wall live in LAND."
+  version: "0.4.2"
+  last_updated: "2026-09-06"
+  summary: "Born 260819 when JL ruled the producer breaks down per phase; 260901 it owns two cycles, LAND and EMBED, after PROBE retired: the dispatch half and the stake wall live in LAND. 260906 aligns EMBED with the generation/Shape/evidence version contract and routes G>=1 folds to CONTENT."
   changelog: "./CHANGELOG.md"
 ---
 

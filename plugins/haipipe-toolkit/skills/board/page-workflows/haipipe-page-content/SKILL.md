@@ -9,8 +9,8 @@ description: >-
   phase split. Trigger: page content, CONTENT phase, WRITE cycle, division
   writing, draft page, revise page, build page, /haipipe-page-content.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-09-04"
+  version: "0.7.0"
+  last_updated: "2026-09-06"
   # version history: ./CHANGELOG.md
 ---
 
@@ -28,6 +28,7 @@ pre-checking are movements inside that cycle, not four Page phases:
 ```text
 03 CONTENT · haipipe-page-content
 └── WRITE
+    ├── Entry check  approved plan/evidence + manuscript form budget
     ├── Draft       plan/evidence → division candidates
     ├── Revise      improve realization under the same promise
     ├── Build       regenerate declared delivery artifacts
@@ -43,7 +44,7 @@ READS    frozen Context record · approved outline · folded Evidence Items ·
          Local Results · applicable requirements/style policy · current Page
 WRITES   Page Content, Opening/Aims when authorized, delivery projections,
          Page Division Writing Tickets/Results, log, CONTENT receipt
-EXITS    every commissioned division Result is accepted and promoted; declared
+EXITS    the entry checklist passes; every commissioned division Result is accepted and promoted; declared
          artifacts are current; a fresh pre-check reports ready
 ROUTES   CHECK · CONTENT again · CONTEXT · OUTLINE · EVIDENCE · HOLD
 TICK     none. CONTENT never approves or closes its own version
@@ -87,15 +88,91 @@ REOPEN       context, plan, evidence Result, Page Face owner, acceptance, or tar
 For Job-backed Task Folders, resolve the Result through the `haipipe-run`
 dialect instead of copying it into the Page Folder.
 
+## ⓪ Entry check · the OUTLINE → CONTENT gate
+
+Before allocating a Division Writing Run, write one compact entry-check record
+from the current files. This is a handoff audit, not another plan and not a
+draft. It must distinguish hard authority gates from form-range warnings.
+
+```text
+AUTHORITY  Context record is fresh · selected outline has G>=1 and either an
+           explicit Shape approval or an evidence revision that declares and
+           inherits its approved shape-base · every typed item is folded from a complete accepted
+           Local Result · every Bullet has typed evidence or explicit none
+NAMES      Page/Section name · ordered Content-division or subsection names ·
+           paragraph jobs · any venue deviation and its ruling
+STRUCTURE  divisions/subsections · paragraphs by division · total paragraphs ·
+           sentence slots by paragraph · total sentence slots
+LENGTH     declared word target · expected words per slot = target / slots ·
+           applicable sentence-length center or limit and its named authority
+REFERENCES CITE Items · verified source entries · planned citation-bearing
+           slots · planned density = citation-bearing slots / all slots ·
+           unique source keys and key density reported separately
+EVIDENCE   typed/folded/stale counts · Result paths resolve · coverage is 100%
+VERDICT    ready for WRITE | return to CONTEXT | OUTLINE | EVIDENCE | HOLD
+```
+
+For a Section Page, load the Section owner's form rules and use
+`haipipe-paper-section/cli/section-stats.py` to measure any existing prose as a
+baseline and every drafted candidate after promotion. Before prose exists,
+sentence length is an expected value from the declared word budget, not an
+actual measurement. If no authoritative word, paragraph, sentence-length, or
+citation-density target exists, report `not specified`; never invent a venue
+rule or silently borrow one from another Section.
+
+Read the current plan and generated Evidence inventory once. Follow only the
+Local Result pointers selected by the current Evidence Items; do not enumerate
+historical Result trees unless a selected pointer, status, or hash disagrees.
+Stop the entry audit as soon as every row has a supported verdict.
+
+Keep four citation units separate: CITE Evidence Items, verified source
+entries, citation-bearing sentence slots, and future citation-key mentions.
+Only `citation-bearing slots / all slots` is the planned citation density.
+After drafting, measure actual citation-bearing sentences, citation commands,
+and key mentions from the prose and compare them with the plan.
+
+A failed authority or evidence row blocks WRITE. A form metric outside a named
+venue or paper requirement blocks only when that authority makes it binding;
+otherwise mark it `⚠ review`, explain the tradeoff, and let the human decide.
+For MISQ Section prose, treat a median around 18–24 words as a comfortable
+house-style center unless a direct contract overrides it. Sentence length is a
+distribution, not a target for every sentence: vary short and long sentences
+with their jobs. A sentence above 30 words triggers `⚠ review`, never an
+automatic split or blocker; split it only when it stacks separable reader moves
+or its syntax obscures the main claim.
+
 ## ① Draft
 
-- Enter only when Context is resolved and the plan version is approved.
+- Enter only when Context is resolved and the plan has `G>=1`. Use either an
+  explicitly approved Shape version or an evidence revision that declares and
+  inherits that Shape approval. Never write or refresh Content from `v0.*`.
+- Refresh Content after every accepted plan-version change. A Shape revision
+  may alter structure and prose. An evidence revision updates only affected
+  realizations, citations, values, displays, and their traces; unchanged prose
+  is still revalidated against the exact new plan version.
 - For each commissioned division, freeze only the addressed plan slice and
   Evidence Results it uses.
 - A Section Page keeps one sentence slot per planned Bullet; other Page Face owners
   may realize one Bullet as one or more sentences.
+- A Section sentence realizes one point. Do not fuse a definition, mechanism,
+  boundary, result, and transition merely to save space. For MISQ, keep the
+  median around 18–24 words while varying individual sentence lengths. Review
+  a 30+ word sentence for stacked moves or difficult syntax; keep it when one
+  coherent relation is clearer in the longer form.
+- Let paragraph logic carry the flow. Avoid formulaic connective ladders,
+  repeated three-part templates, inflated framing, and clause-stacked prose;
+  preserve calibrated hedging and exact theoretical terms.
 - End each realized unit with its stable plan address according to the Page
   Type's sentence contract.
+- Enforce the addressed Bullet's evidence boundary. A citation placement
+  requires a CITE Item on that same Bullet; a concrete empirical value requires
+  a VALUE Item there; a placed figure or table requires its DISPLAY Item.
+  `Evidence: none` forbids all four. If the prose needs material the Bullet did
+  not declare, return it to OUTLINE/SHAPE before writing.
+- Do not inherit evidence from another sentence slot in the same paragraph.
+  Even when two Bullets cite the same source, CONTENT traces each placement to
+  that Bullet's own CITE Item; source and Supporting Run reuse happen beneath
+  the two distinct Items.
 - Never invent a number, source, interpretation, or display. A missing support
   routes to EVIDENCE or OUTLINE.
 
@@ -148,7 +225,8 @@ identity and is the only phase allowed to CLOSE.
 phase: CONTENT
 cycle: WRITE
 context: <context record version/hash>
-plan: v<N> approved ✅
+plan: v<G>.<S>[.<E>] · Shape approved directly or inherited ✅
+entry_check: authority/evidence pass · form ready or named warnings
 division_runs: [<RUNNAME → Result → promoted C<n>>]
 page: <source version before → after>
 delivery: [<artifact paths>]

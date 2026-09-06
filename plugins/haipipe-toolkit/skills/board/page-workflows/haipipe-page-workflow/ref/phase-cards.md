@@ -19,7 +19,7 @@ operating view every phase skill and workflow surface may quote.
    PREPARE ───────────▶    SHAPE ─▶ SURVEY ─────────▶    LAND ─▶ EMBED
       ▲                     ▲                            │       │
       │ policy drift        └────────────────────────────┴───────┘
-      │                                 next working plan vN.<k+1>
+      │                                 next v<G>.<S>[.<E>] plan revision
       │                                             │ approved + folded
       │                                             ▼
       └──────────── 04 CHECK ◀──────────── 03 CONTENT
@@ -58,11 +58,12 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
             Bullet expect?
 📥 READS    frozen Context · Page Face owner outline policy · current Page · prior
             plan · feedback and decisions
-📤 WRITES   outline/<stem>-outline-v<N>.md; SHAPE fields in
+📤 WRITES   outline/<stem>-outline-v<G>.<S>[.<E>].md; SHAPE fields in
             <stem>-evidence-items.md; open Discussion and one Log record
 🚪 EXITS    arc/coverage/target/value/shape checks pass; each item has an
             E<NN>-VALUE|CITE|DISPLAY-<slug> name, expectation, and acceptance
-✋ TICK     approved: is person-reserved; copilot waits, auto records it owed
+✋ TICK     approved: is person-reserved; both modes require it for G>=1
+            Content release; checked v0 evidence work may continue while owed
 🔀 ROUTES   OUTLINE/SURVEY · CONTENT/WRITE · OUTLINE/SHAPE ·
             CONTEXT/PREPARE · HOLD
 🚫 RUNS     none: plan and Evidence Item specifications are not Runs
@@ -109,12 +110,15 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
 
 ```text
 ❓ ASKS     what does each ready local Result mean for its target Bullet?
-📥 READS    ready local Results · current approved plan
-📤 WRITES   outline v<N+1> with Answered:/Drawn:/Routed: appends;
-            approved: resets to ⬜; never changes the Result
+📥 READS    ready local Results · checked v0 plan or approved G>=1 plan
+📤 WRITES   outline v<G>.<S>.<E+1> with Answered:/Drawn:/Routed: appends;
+            for G=0, approved: remains ⬜ and the plan returns to SHAPE;
+            for G>=1, declares shape-base and inherits Shape approval before
+            routing CONTENT; never changes the Result
 🚪 EXITS    every ready item is folded; contradictions are explicit findings
-✋ TICK     none; the new plan returns to the SHAPE approval gate
-🔀 ROUTES   OUTLINE/SHAPE, always
+✋ TICK     none; v0 returns to the SHAPE approval gate, while G>=1 inherits
+            the approved Shape and routes to CONTENT
+🔀 ROUTES   OUTLINE/SHAPE for G=0 · CONTENT for G>=1
 🚫 RUNS     none: consumes and interprets existing Results
 ```
 
@@ -153,7 +157,7 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
 
 | Act | Authority path | Owning cycle |
 |---|---|---|
-| `approved:` | `outline/<stem>-outline-v<N>.md` | SHAPE |
+| `approved:` | `outline/<stem>-outline-v<G>.<S>[.<E>].md` | SHAPE; evidence revisions inherit |
 | `Decide` | `outline/<stem>-evidence-items.md` | SURVEY |
 | worker-specific verification/acceptance | worker authority named by LAND | LAND |
 | Page/display `accepted:` and Folder ruling | Page/review authority | CHECK |

@@ -1,3 +1,13 @@
+## 0.8.1 — 2026-09-06
+
+- Replace remaining live generation-only reopen language with explicit Shape
+  and evidence revision routes.
+
+## 0.8.0 — 2026-09-06
+
+- Read the exact `v<G>.<S>[.<E>]` plan at CHECK and recognize inherited Shape
+  approval on evidence-only revisions.
+
 ## 0.7.3 — 2026-09-04
 
 - Resolve closing policy through the exact Page Face owner, including a
@@ -164,3 +174,7 @@ section renamed that morning.
   exact built version, repairs nothing, and remains the only phase that may
   CLOSE.
 - Remove PageX rank from the active human-gate inventory.
+## 0.8.1 — 2026-09-06
+
+- Express OUTLINE re-entry using the generation/Shape/evidence version contract
+  instead of the retired single-counter notation.

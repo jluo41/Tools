@@ -100,3 +100,8 @@
 - Remove PageX from OUTLINE/SURVEY and EVIDENCE/LAND agent contracts.
 - Keep DRAFT and REVISE agent names only for historical receipt compatibility;
   new dispatch uses CONTENT.
+## Page outline/evidence agents 0.4.2 — 2026-09-06
+
+- Align producer guidance with `v<G>.<S>[.<E>]`: evidence folds preserve the
+  Shape approval and route G>=1 to CONTENT, while bounded Shape changes require
+  their own review.

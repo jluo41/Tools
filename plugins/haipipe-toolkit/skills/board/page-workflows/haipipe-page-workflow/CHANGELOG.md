@@ -1,3 +1,23 @@
+## 0.28.2 — 2026-09-06
+
+- Clarify that checked generation-zero plans may complete evidence work before
+  first approval, while Content release still requires promotion to `v1.0`.
+- Define the first approval and next-generation redesign transitions without
+  implying that evidence completeness and Shape approval are the same gate.
+- Remove the legacy auto-mode exception that could release Content while the
+  current Shape's person-reserved approval was still owed.
+
+## 0.28.1 — 2026-09-06
+
+- Replace remaining live single-counter examples in workflow cards, producer
+  guidance, and the Outline agent with `v<G>.<S>[.<E>]` semantics.
+
+## 0.28.0 — 2026-09-06
+
+- Route three-part `generation.Shape.evidence` versions explicitly.
+- Keep `v0.*` planning-only and route `G>=1` evidence folds to CONTENT under
+  inherited Shape approval so every version change receives a Content refresh.
+
 ## 0.27.0 — 2026-09-04
 
 - Align EMBED with semantic outline versioning: it produces the next working
@@ -547,3 +567,8 @@ The loop is DERC, and it ends at a deliverable (JL 260816).
   to one loop is the drift this move exists to prevent.
 - The run contract's relative paths gained one `../` for the deeper folder;
   its content is otherwise untouched.
+## 0.28.1 — 2026-09-06
+
+- Align the phase cards and workflow table with the `v<G>.<S>[.<E>]` contract:
+  v0 evidence folds return to SHAPE, while G>=1 folds inherit Shape approval
+  and route to CONTENT.

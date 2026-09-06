@@ -1,3 +1,17 @@
+## 0.21.1 · 2026-09-06
+
+- Accept a mechanically checked `v0.*` plan as the authority for pre-approval
+  SURVEY/LAND/EMBED work while retaining approved-Shape input for `G>=1`.
+- Keep first approval as the Content-release boundary rather than an evidence
+  execution prerequisite.
+
+## 0.21.0 · 2026-09-06
+
+- Make EMBED increment the evidence component in `v<G>.<S>.<E>` without
+  changing Shape.
+- Keep `v0.*` folds in OUTLINE. For `G>=1`, inherit the current Shape approval
+  and route the evidence revision directly to a scoped CONTENT refresh.
+
 ## 0.20.0 · 2026-09-04
 
 - Make EMBED create only the next unapproved working plan (`vN.<k+1>`), never

@@ -10,7 +10,7 @@ description: >-
   evidence, EVIDENCE phase, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.20.0"
+  version: "0.21.1"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -25,7 +25,7 @@ Page planning and evidence loop
   SHAPE    outline    specify item identity + expected ready evidence  👤 approved:
   SURVEY   outline    inventory supports + input + local Run           👤 Decide
   LAND     this file  allocate planned Tickets, execute → local Result ⚙ ready
-  EMBED    this file  bind ready Result into next working plan vN.<k+1> ⚙ SHAPE
+  EMBED    this file  bind Result into v<G>.<S>.<E+1>          ⚙ CONTENT when G≥1
 ```
 
 Load contracts in this order:
@@ -59,7 +59,7 @@ loaded once.
 ## ⚡ Phase card
 
 ```text
-READS    target Page · approved plan · outline/<stem>-evidence-items.md ·
+READS    target Page · checked v0 plan or approved G>=1 plan · outline/<stem>-evidence-items.md ·
          selected Run Tickets/receipts/Results · frozen Context · existing
          evidence lanes
 WRITES   Supporting and local Run receipts/Results in their owner-governed
@@ -70,7 +70,7 @@ NEVER    target prose · item identity/type/Target/Expected/Acceptance · outlin
          order · a Decide · a typed Status · PHI or raw rows in Page artifacts
 EXITS    LAND: every make-item has valid Supporting Results, one frozen input, and one
          ready local Result that passes its authored Acceptance checks · EMBED: every
-         ready item is folded, then SHAPE re-agrees the plan
+         ready item is folded; v0 returns to SHAPE, G>=1 refreshes CONTENT
 HUMAN    owns Decide and any worker-specific verification gate; LAND and EMBED
          never synthesize those decisions
 ```
@@ -94,7 +94,7 @@ no Page argument: EMBED owns the interpretation.
 
 | Cycle | Level-4 Run operations | Cardinality | Close |
 |---|---|---:|---|
-| SHAPE | none | 0 | typed item expectation approved |
+| SHAPE | none | 0 | typed item expectation checked; Content release approval is separate |
 | SURVEY | inventory + classify only | 0 allocations, 0 executions | each route is existing Result, Ticket only, rerun, or new design + Decide |
 | LAND · Supporting | allocate/scaffold planned Execution / Discovery routes, then execute or reuse | `sum(S_i)`, `S_i ≥ 0` | every declared Supporting Result valid |
 | LAND · Local | allocate/scaffold, then execute Page · Evidence Item | exactly `N_make` | one ready local Result per make-item |
@@ -258,12 +258,15 @@ Results. For each ready item:
   structure. EMBED fills; it never restructures.
 
 If a ready Result contradicts the outline, open a `D<nn>` thread and route to
-SHAPE. Otherwise write the next working plan `vN.<k+1>` with `approved: ⬜`
-and `supersedes: vN.<k>` (from frozen `vN.0`, this is `vN.1`), then return to
-SHAPE. Only a later human approval promotes the selected plan to
-`v<N+1>.0`. A changed Supporting or local Result after the fold makes the
-binding `stale` and reopens LAND
-or EMBED as needed.
+SHAPE. Otherwise preserve the Shape exactly and write the next evidence
+revision `v<G>.<S>.<E+1>`. The two-part source `v<G>.<S>` has implicit
+`E=0`. Set `supersedes:` to the exact source version. For `G=0`, keep
+`approved: ⬜` and return to SHAPE; CONTENT remains closed. For `G>=1`, add
+`shape-base: v<G>.<S>`, transcribe `approved: ✅ inherited from v<G>.<S> · …`
+from that approved Shape, and route to CONTENT so every changed evidence
+binding refreshes its affected realizations. Do not request another Shape
+approval for a pure fold. A changed Supporting or local Result after the fold
+makes the binding `stale` and reopens LAND or EMBED as needed.
 
 ## 🔀 Routing
 
@@ -274,11 +277,13 @@ LAND   Run graph or Local Input incomplete             → OUTLINE / SURVEY
 LAND   support/local Run truthfully failed or blocked  → EVIDENCE / LAND or HOLD, with Run id
 LAND   every make-item has a ready local Result         → EVIDENCE / EMBED
 EMBED  ready Result contradicts the outline            → OUTLINE / SHAPE with D<nn>
-EMBED  every ready Result folded                       → OUTLINE / SHAPE with next working plan
+EMBED  every make-item Result folded under G=0         → OUTLINE / SHAPE with evidence revision
+EMBED  every make-item Result folded; defer/drop signed under G>=1 → CONTENT / WRITE with evidence revision
 ```
 
-EVIDENCE never routes directly to CONTENT. SHAPE re-agrees the evidence-aware
-outline before prose begins.
+EVIDENCE routes directly to CONTENT only for a pure evidence revision under an
+already approved `G>=1` Shape. A contradiction or any Shape change still
+returns to SHAPE. Generation zero never reaches CONTENT.
 
 ## 🧾 Receipt
 
@@ -291,8 +296,8 @@ local-runs: n planned · n running · n done · n failed/blocked
 bindings: item id → local global Run id → Result path
 folded: item ids written into the next working outline version
 limits: Run ids that did not complete and truthful reasons
-route: CONTEXT | OUTLINE | EVIDENCE | HOLD
-next_cycle: PREPARE | SHAPE | SURVEY | LAND | EMBED  # omit on HOLD
+route: CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
+next_cycle: PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE  # omit on HOLD
 ```
 
 The material lanes remain under `outline/evidence/`. Resolve execution
@@ -303,6 +308,6 @@ Task's `runs/` and its generated Result under the resolved
 look local, recreate a root `<page>/evidence/` category, or create a standalone
 Evidence tab.
 
-Read fully only the target Page, approved plan, Evidence Item table, named Run
+Read fully only the target Page, checked v0 plan or approved G>=1 plan, Evidence Item table, named Run
 receipts, and Results required by the current item graph. Keep broad build logs
 and unrelated sibling Pages out of context.
