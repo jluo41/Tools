@@ -12,8 +12,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.9.1"
-  last_updated: "2026-09-04"
+  version: "0.9.3"
+  last_updated: "2026-09-06"
   # version history: ./CHANGELOG.md
 ---
 
@@ -123,6 +123,7 @@ same grammar: `<level-letter><NN>_<noun>_<qualifier>`.
 ~~~text
 discoveries/
 └── b01_<block_noun>_<qualifier>/      Block: broad Board/program; prefer few
+    ├── board.md                       Board head; `board-kind: discovery-block`
     ├── j01_<job_noun>_<qualifier>/    Job: one inquiry/campaign group
     └── j02_<job_noun>_<qualifier>/    sibling group on the same Board
         └── t01_<task_noun>_<qualifier>/  Task = article-shaped Page Folder
@@ -164,12 +165,22 @@ separate Bibex plugin.
    Opening a Run creates both, with runtime status planned.
 4. A complete Result requires <RUNNAME>.md, facts.md, runtime.yaml, and an
    exactly-one-entry <RUNNAME>.bib whose key equals the Card's cite: @Key.
+   New paper Results also declare `result_contract: paper-source-v2` and carry
+   `source-access.json` plus `source-access.md`: canonical article/publisher,
+   PubMed or its DOI query, exact-title Google Scholar and Google search links,
+   Bib source, and any lawful full-text route. Search links are navigation
+   provenance, never claim evidence. The receipt separately reports reading
+   depth (`metadata-only | abstract | full-text`), claim-support state, and
+   locator state; technical `complete` must never imply that full text or a
+   focal claim was verified.
    Runtime must name the Bib source and `mode: verbatim_copy`. Metadata alone
    is not a supplied BibTeX entry and may not be formatted into one.
    `complete` is technical Result completeness; citation verification may
    still be `pending`, but then the Task cannot close as `ok` or
    `inconclusive`.
-5. PDF, raw extraction, and captured Trigger text are optional.
+5. PDF, raw extraction, abstract extraction, and captured Trigger text are
+   optional. A missing full text remains explicit in source access and never
+   licenses a full-text readout.
 6. Internal API, CLI, worker, and skill calls are receipt detail, never Runs.
 7. The Task Page Evidence Bib is a deterministic union of completed Result Bibs
    at `outline/evidence/bibex/<task>.bib`. It is derived; correction lands in
@@ -262,6 +273,14 @@ an existing Block whenever a new inquiry belongs to the same program. A
 single-Job Block is allowed only as a newly opened frontier; once several
 related inquiry groups exist, they must be sibling Jobs under one Block rather
 than one Block per Job.
+
+Every canonical Discovery Block carries `board.md` with
+`board-kind: discovery-block`. This declaration selects the shared BJTR projection:
+Block = Board, Job = Group, Discovery Task = Page, and Paper/Source Run =
+execution record. SPACE Home classifies the resulting container as a Discovery
+Board from its `discoveries/` ownership path. The `## Pages` section may list
+only Job headings because the direct `jNN_/tNN_` tree supplies membership and
+default Task order.
 
 ### 2. D1 `SCOPE`
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import json
 import os
 import sys
 import tempfile
@@ -227,6 +228,48 @@ def add_verification(
     runtime.write_text(text, encoding="utf-8")
 
 
+def enable_paper_source_v2(topic: Path, stem: str, *, complete: bool = True) -> None:
+    result = topic / "results" / stem
+    runtime = result / "runtime.yaml"
+    text = runtime.read_text(encoding="utf-8").replace(
+        "status: complete\n",
+        "status: complete\n"
+        "result_contract: paper-source-v2\n"
+        "source_access:\n"
+        "  manifest: source-access.json\n"
+        "  summary: source-access.md\n"
+        "analysis:\n"
+        "  reading_depth: abstract\n"
+        "  claim_support: pending\n"
+        "  locator_status: pending\n",
+    )
+    runtime.write_text(text, encoding="utf-8")
+    if not complete:
+        return
+    record = {
+        "links": {
+            "article": "https://doi.org/10.1000/demo",
+            "publisher": "https://example.org/paper",
+            "pubmed": "https://pubmed.ncbi.nlm.nih.gov/?term=10.1000%2Fdemo%5BAID%5D",
+            "google_scholar": "https://scholar.google.com/scholar?q=%22Demo+paper%22",
+            "google": "https://www.google.com/search?q=%22Demo+paper%22",
+            "bibtex": "https://api.crossref.org/works/10.1000%2Fdemo/transform/application/x-bibtex",
+        },
+        "retrieval": {
+            "reading_depth": "abstract",
+            "claim_support": "pending",
+            "locator_status": "pending",
+        },
+    }
+    (result / "source-access.json").write_text(
+        json.dumps(record), encoding="utf-8"
+    )
+    (result / "source-access.md").write_text(
+        "# Source access\n\n- [Google Scholar](https://scholar.google.com/)\n",
+        encoding="utf-8",
+    )
+
+
 def add_report(
     topic: Path,
     *,
@@ -265,6 +308,30 @@ def close_page(topic: Path) -> None:
 
 
 class PaperRunContractTest(unittest.TestCase):
+    def test_paper_source_v2_requires_access_pair(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            stem = "r01_example2026_demo"
+            make_pair(topic, stem)
+            enable_paper_source_v2(topic, stem, complete=False)
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(error.startswith("complete-source-access-missing:") for error in errors),
+                errors,
+            )
+
+    def test_paper_source_v2_accepts_complete_access_pair(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            stem = "r01_example2026_demo"
+            make_pair(topic, stem)
+            enable_paper_source_v2(topic, stem)
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertFalse(
+                any("source-access" in error or "runtime-analysis" in error for error in errors),
+                errors,
+            )
+
     def test_legacy_root_evidence_lane_is_forbidden(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             topic = make_topic_path(Path(temp))

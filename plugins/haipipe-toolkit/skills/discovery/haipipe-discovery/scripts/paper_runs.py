@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -43,6 +44,9 @@ LEGACY_ROLE_RE = re.compile(r"(?m)^role:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
 FAMILY_FIELD_RE = re.compile(r"(?m)^family:\s*['\"]?([^'\"\s]+)['\"]?\s*$")
 OPERATION_FIELD_RE = re.compile(
     r"(?m)^operation:\s*['\"]?([^'\"\s]+)['\"]?\s*$"
+)
+RESULT_CONTRACT_RE = re.compile(
+    r"(?m)^result_contract:\s*['\"]?([^'\"\s]+)['\"]?\s*$"
 )
 EXECUTED_AT_RE = re.compile(r"(?m)^executed_at:\s*['\"]?([^'\"\n]+)['\"]?\s*$")
 DOI_RE = re.compile(r'(?im)\bdoi\s*=\s*[{"]\s*([^}"]+?)\s*[}"]')
@@ -117,6 +121,10 @@ WRITING_STYLE_LABELS = (
     "Limits and next move",
     "Section rules",
 )
+PAPER_SOURCE_V2 = "paper-source-v2"
+READING_DEPTHS = {"metadata-only", "abstract", "full-text"}
+CLAIM_SUPPORT_STATES = {"pending", "supported", "qualified", "unsupported"}
+LOCATOR_STATES = {"pending", "partial", "complete"}
 
 
 @dataclass(frozen=True)
@@ -227,6 +235,91 @@ def _bib_verification(runtime_text: str) -> tuple[str, str | None, str | None]:
         _block_field(verification, "by"),
         _block_field(verification, "at"),
     )
+
+
+def _source_access_errors(result_dir: Path, runtime_text: str) -> list[str]:
+    """Validate the opt-in paper-source-v2 access and reading receipt."""
+    contract = _field(runtime_text, RESULT_CONTRACT_RE)
+    if contract is None:
+        return []
+    if contract != PAPER_SOURCE_V2:
+        return [
+            f"runtime-result-contract-invalid: {result_dir / 'runtime.yaml'}: "
+            f"{contract!r}"
+        ]
+
+    errors: list[str] = []
+    json_path = result_dir / "source-access.json"
+    markdown_path = result_dir / "source-access.md"
+    for required in (json_path, markdown_path):
+        if not required.is_file():
+            errors.append(f"complete-source-access-missing: {required}")
+    if not json_path.is_file():
+        return errors
+    try:
+        record = json.loads(json_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeError) as exc:
+        errors.append(f"source-access-json-invalid: {json_path}: {exc}")
+        return errors
+
+    links = record.get("links") if isinstance(record, dict) else None
+    if not isinstance(links, dict):
+        errors.append(f"source-access-links-missing: {json_path}")
+    else:
+        for name in (
+            "article",
+            "publisher",
+            "pubmed",
+            "google_scholar",
+            "google",
+            "bibtex",
+        ):
+            value = links.get(name)
+            if not isinstance(value, str) or not value.startswith(("http://", "https://")):
+                errors.append(f"source-access-link-missing: {json_path}: {name}")
+
+    retrieval = record.get("retrieval") if isinstance(record, dict) else None
+    if not isinstance(retrieval, dict):
+        errors.append(f"source-access-retrieval-missing: {json_path}")
+    else:
+        for name, allowed in (
+            ("reading_depth", READING_DEPTHS),
+            ("claim_support", CLAIM_SUPPORT_STATES),
+            ("locator_status", LOCATOR_STATES),
+        ):
+            if retrieval.get(name) not in allowed:
+                errors.append(
+                    f"source-access-{name}-invalid: {json_path}: "
+                    f"{retrieval.get(name)!r}"
+                )
+
+    source_access = _yaml_block(runtime_text, "source_access")
+    if source_access is None:
+        errors.append(f"runtime-source-access-missing: {result_dir / 'runtime.yaml'}")
+    else:
+        expected = {"manifest": "source-access.json", "summary": "source-access.md"}
+        for name, value in expected.items():
+            if _block_field(source_access, name) != value:
+                errors.append(
+                    f"runtime-source-access-path-invalid: "
+                    f"{result_dir / 'runtime.yaml'}: {name}"
+                )
+
+    analysis = _yaml_block(runtime_text, "analysis")
+    if analysis is None:
+        errors.append(f"runtime-analysis-missing: {result_dir / 'runtime.yaml'}")
+    else:
+        for name, allowed in (
+            ("reading_depth", READING_DEPTHS),
+            ("claim_support", CLAIM_SUPPORT_STATES),
+            ("locator_status", LOCATOR_STATES),
+        ):
+            if _block_field(analysis, name) not in allowed:
+                errors.append(
+                    f"runtime-analysis-{name}-invalid: "
+                    f"{result_dir / 'runtime.yaml'}"
+                )
+    return errors
 
 
 def verification_counts(topic: Path) -> dict[str, int]:
@@ -644,6 +737,7 @@ def check_topic(topic: Path) -> tuple[list[str], dict[str, int], list[BibEntry]]
 
         if status != "complete":
             continue
+        errors.extend(_source_access_errors(result_dir, runtime_text))
         if _field(runtime_text, EXECUTED_AT_RE) is None:
             errors.append(f"runtime-executed-at-missing: {runtime_path}")
         bib_receipt = _yaml_block(runtime_text, "bib")

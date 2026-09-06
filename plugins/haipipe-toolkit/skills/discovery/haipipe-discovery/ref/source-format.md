@@ -30,13 +30,21 @@ Required identity header:
 ```
 
 Then follow the Result Card sections in `paper-run-contract.md`: Question,
-Readout, Facts, optional Trigger claim audit, Limits, and Reuse. `VERIFIED`
+Readout, Source access, Retrieval scope, Facts, optional Trigger claim audit,
+Limits, and Reuse. `VERIFIED`
 means exact title, authors, venue, and locator were confirmed against a trusted
 publisher/index by a person. Anything less remains `NEEDS-VERIFICATION`.
 That state does not prevent a technically complete Result when its Card,
 facts, authoritative one-entry Bib, and runtime receipt are all present; it
 does prevent the Discovery Task from claiming an epistemic `ok` or
 `inconclusive` close. Keep the Task blocked/held and show the verification debt.
+
+Every new paper Result exposes clickable DOI/publisher, PubMed-or-query,
+exact-title Google Scholar, exact-title Google, authoritative BibTeX, and any
+lawful full-text route through `source-access.md`. Always name the actual
+reading depth beside those links. A discovered full-text URL does not mean the
+Run read the full text, and a Scholar/Google link is navigation rather than
+evidence authority.
 
 ## Coverage declaration
 

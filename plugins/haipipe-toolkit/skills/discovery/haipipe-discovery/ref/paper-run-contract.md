@@ -83,7 +83,8 @@ INPUTS     Task Page question/type, Trigger provenance, canonical Subject identi
 WORKER     the selected search/read/analyzer skill, CLI, API, or declared agent
 RESULT     Result Card · facts.md · one-entry Bib · runtime.yaml; optional PDF/raw/trigger
 ACCEPT     exact stem pair, executable Ticket, truthful runtime, complete artifacts,
-           canonical identity, cite/Bib equality, and verbatim Bib provenance
+           canonical identity, cite/Bib equality, verbatim Bib provenance, and
+           for paper-source-v2 a machine-readable + human-readable source-access pair
 PROMOTION  D1 SYNTHESIZE binds direct Result/cite lineage into the Page plan;
            CONTENT writes the root Page; the Outline
            plugin builds the deterministic aggregate Bib
@@ -113,6 +114,9 @@ does not receive its own Run identity.
         ├── r01_chen2025_trace.md      Paper/Source Card readout
         ├── r01_chen2025_trace.bib     exactly one authoritative entry
         ├── facts.md                   atomic reusable findings
+        ├── source-access.json         article/index/search/full-text routes
+        ├── source-access.md           same routes, human-clickable
+        ├── abstract.md                optional retrieved abstract
         ├── trigger.md                 optional captured trigger
         ├── runtime.yaml               state + provenance + subject identity
         ├── raw.md                     optional extraction/worker output
@@ -163,6 +167,15 @@ Completion hard-fails when:
 - the Bib entry was composed from model memory rather than copied from a
   trusted publisher/index/person source.
 
+New paper Runs write `result_contract: paper-source-v2`. For that contract,
+completion also hard-fails when `source-access.json` or `source-access.md` is
+missing, when the access record does not identify the DOI/canonical landing
+page and Bib source, or when it omits exact-title Google Scholar and Google
+search URLs. These search URLs help a person inspect or export a record; they
+are not authoritative source or claim support. Historical Results without a
+`result_contract` remain readable under the preceding contract and must not be
+silently rewritten.
+
 `paper.pdf`, `trigger.md`, and `raw.md` are optional. An `unresolved` or
 `blocked` Result is a truthful receipt, not a completed Paper Result; it is not
 eligible for evidence aggregation.
@@ -178,6 +191,7 @@ address_compact: b02j03t01r01
 family: discovery
 operation: paper-analysis
 status: complete
+result_contract: paper-source-v2
 trigger:
   kind: social_note
   input: "https://example.org/short-link"
@@ -188,6 +202,13 @@ subject:
   canonical_url: "https://proceedings.neurips.cc/..."
   doi: "10.52202/085713-0087"
   arxiv: "2506.09114"
+source_access:
+  manifest: source-access.json
+  summary: source-access.md
+analysis:
+  reading_depth: abstract
+  claim_support: pending
+  locator_status: pending
 bib:
   source: "https://proceedings.neurips.cc/.../Bibtex"
   mode: verbatim_copy
@@ -200,6 +221,12 @@ executed_at: "2026-09-01T12:00:00-04:00"
 
 Also record the dispatcher/worker calls and failure reason when applicable.
 Never store credentials or private tokens.
+`reading_depth` is evidence actually retrieved and inspected by this Run, not
+the best link discovered. `full-text` is legal only when the Run captured or
+read the full article. `claim_support` is `pending | supported | qualified |
+unsupported`; `locator_status` is `pending | partial | complete`. A metadata-
+only or abstract Run may be technically complete but cannot present
+full-text-only facts as established.
 `bib.verification.status` is `pending` or `verified`; missing means `pending`.
 Only a person may set `verified`, together with `by` and `at`. A Result may be
 technically `complete` while verification is pending, but the Discovery Task
@@ -222,6 +249,19 @@ What this Run was asked to establish.
 ## Readout
 The paper/source's question, method, results, and contribution.
 
+## Source access
+- Article: canonical DOI or publisher landing page.
+- PubMed: record when resolved, otherwise a DOI search.
+- Google Scholar: exact-title search for inspection and BibTeX export.
+- Google: exact-title web search.
+- BibTeX: authoritative export used by this Result.
+- Full text: lawful route when found; otherwise explicitly not found.
+
+## Retrieval scope
+- Reading depth: metadata-only | abstract | full-text.
+- Claim support: pending | supported | qualified | unsupported.
+- Locator: pending | partial | complete.
+
 ## Facts
 - Atomic finding with a page/section/table/figure anchor when available.
 
@@ -235,6 +275,12 @@ What the Subject and this Run do not establish.
 Which topic-level arguments this Result can support, without binding it 1:1 to
 any one Content division.
 ```
+
+For new Results, the Card may link to `source-access.md` rather than repeat the
+URLs, but the reading depth and claim/locator states must remain visible. Use
+`scripts/paper_source_access.py` to produce the deterministic access pair. It
+may query Crossref, PubMed, and OpenAlex; it only constructs Google/Scholar
+navigation URLs and never scrapes them.
 
 Content divisions and Paper Results are many-to-many. Topic synthesis reads
 the Cards and `facts.md`; it does not make the folder hierarchy pretend that a

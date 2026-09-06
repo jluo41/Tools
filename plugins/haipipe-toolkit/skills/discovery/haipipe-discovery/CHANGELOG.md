@@ -8,6 +8,23 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## [0.9.3] — 2026-09-06
+
+- Restore the source-card requirement for an exact-title Google Scholar link
+  and add matching Google, DOI/publisher, PubMed, BibTeX, and lawful full-text
+  routes to every new `paper-source-v2` Result.
+- Separate technical Result completion from reading depth, claim support, and
+  locator completion so a metadata/Bib retrieval cannot masquerade as a
+  full-paper evidence reading.
+- Add `scripts/paper_source_access.py` for deterministic source-link and
+  abstract-access receipts without scraping Google.
+
+## [0.9.2] — 2026-09-05
+
+- Make the Discovery Block's Board identity explicit: every canonical `bNN_`
+  Block carries `board.md` with the shared BJTR `discovery-block` projection, and
+  SPACE Home presents each such Block as one Discovery Board.
+
 ## [0.9.1] — 2026-09-04
 
 - Keep `1_search`, `2_review`, and `3_idea` as numbered skill-family groups,
