@@ -1,4 +1,7 @@
-# Topic display companion
+# Legacy topic display companion
+
+Compatibility-only schema for archived QA-probe Pages. Current displays are
+typed Evidence Items owned by the Outline/Evidence workflow.
 
 Use one hidden Display companion after each QA-probe on a Value or Literature page that declares `display: companion`.
 The companion is a candidate display record, not a Board Page and not a final paper float.

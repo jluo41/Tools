@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Roll up every evidence topic on a board: what was asked, what came back.
+"""Compatibility roll-up for retired route-based evidence topics.
 
 WHY THIS EXISTS. The question a person actually has is not "what type is this
 page", it is "how far along is the evidence": how many literature topics are
@@ -14,10 +14,10 @@ screen: 28 conversations, 11 answered, and 68 consumer rows of which zero were
 ever closed. Answers had been coming back for weeks and not one had been written
 back to the row that asked.
 
-    python3 evidence.py <board-dir>            print the roll-up
-    python3 evidence.py <board-dir> --block    print it as a generated block,
+    python3 legacy/evidence.py <board-dir>            print the roll-up
+    python3 legacy/evidence.py <board-dir> --block    print it as a generated block,
                                                ready for a control page
-    python3 evidence.py <board-dir> --json     the same data, for anything else
+    python3 legacy/evidence.py <board-dir> --json     the same data, for anything else
 
 The block form carries a MEASURED date and a regenerate command, which is what
 `check.py`'s `generated-block-stale` rule reads. A roll-up has no completion, so
@@ -31,7 +31,7 @@ from collections import Counter
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
-from src.topic_entry_contract import EVIDENCE_DIRS, head            # noqa: E402
+from legacy.topic_entry_contract import EVIDENCE_DIRS, head         # noqa: E402
 
 # One marker pair PER GENERATOR. A shared pair means the last writer
 # silently deletes every other block on the page, which is what a shared
@@ -116,7 +116,7 @@ def render(rows, tot, date, board_name):
     W = 74
     L = [BEGIN,
          f"  EVIDENCE ROLL-UP, MEASURED {date}. GENERATED; do not hand-edit.",
-         f"  regenerate: evidence.py {board_name} --block",
+         f"  regenerate: legacy/evidence.py {board_name} --block",
          "  asked = E divisions · landed = answer read or produced here",
          "  closed = consumer rows whose answer reached the sentence that asked",
          "",
@@ -182,7 +182,7 @@ def content_preview(board, pages, date):
     bib = bibliography(board)
     L = [CBEGIN,
          f"  EVIDENCE CONTENT, MEASURED {date}. GENERATED; do not hand-edit.",
-         f"  regenerate: evidence.py {board.name} --content",
+         f"  regenerate: legacy/evidence.py {board.name} --content",
          "  outward: the citation key each answer became, resolved in the .bib",
          "  inward:  the run and QA the answer came from, resolved on disk",
          ""]

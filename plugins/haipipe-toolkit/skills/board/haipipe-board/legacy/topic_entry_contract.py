@@ -1,4 +1,4 @@
-"""Optional generic contract for an evidence page and its nested QA-probes.
+"""Compatibility checker for retired route-based evidence Pages and QA probes.
 
 The Board engine never names a consumer family such as Paper, Literature, or
 Value.  A board opts into this overlay by writing ``route: outward`` or

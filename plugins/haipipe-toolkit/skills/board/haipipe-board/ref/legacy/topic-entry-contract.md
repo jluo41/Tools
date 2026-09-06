@@ -1,4 +1,8 @@
-# Evidence page and nested QA-probe contract
+# Legacy evidence page and nested QA-probe contract
+
+Compatibility-only schema for archived outward/inward evidence Pages. Do not
+use it for current Page authoring; current work uses typed Evidence Items with
+Supporting Runs and Local Runs.
 
 Use this optional overlay when a Board has one reader-facing evidence page and several neutral requests to run beneath it.
 The contract is generic. It names neither a Paper stage nor an evidence bank.
@@ -53,7 +57,7 @@ An answered probe should be made visible before it is made manuscript-ready. A t
 The record states the possible five-second takeaway, claim role, and disposition.
 It may say `not-displayable`; the purpose is to make that decision inspectable, not to force every result into a figure or table.
 Only a `selected` companion may file a Display request and become a formal Display unit.
-The card grammar is `ref/topic-display-card.md`.
+The card grammar is `topic-display-card.md` beside this file.
 
 ## The QA-probe: a record, not a Page
 
