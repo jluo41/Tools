@@ -7,8 +7,8 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.57.8"
-  last_updated: "2026-09-04"
+  version: "0.58.0"
+  last_updated: "2026-09-06"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -361,6 +361,31 @@ these rows and no rows of its own.
 visible paragraph, the Aims with their `Now:` lines, the Content divisions,
 the last log record); a group or board folder prints one roster line per
 page. A gist, never a substitute for the whole-file read.
+
+### 🔗 Open the rendered Page
+
+A source `.md` path is not the reader-facing link. Build the Board, then open
+the generated Page through the repository's configured Board server:
+
+```bash
+ROOT="$(git rev-parse --show-toplevel)"
+set -a
+source "$ROOT/.server_config/settings.env"
+set +a
+python3 "$ROOT/$JJLUO_SERVER_SCRIPT" --root "$ROOT" \
+  --host "$JJLUO_BIND_HOST" --port "$JJLUO_LOCAL_PORT" \
+  --space-name "$JJLUO_SPACE_NAME" --public-url "$JJLUO_PUBLIC_URL" \
+  --no-auth
+```
+
+Open `<JJLUO_PUBLIC_URL>/b/<board-slug>/<page-id>` in a browser. The short
+route redirects to the canonical generated file; `<page-id>` is the resolved
+Page id (for example, `b01j03t04` for a Task Page). The Board index is
+`<JJLUO_PUBLIC_URL>/b/<board-slug>`. If the server is already running, reuse
+it; do not start a second listener. Use the configured public URL for a
+reader-facing reply and never substitute `localhost`, `127.0.0.1`, or
+`file://`. The short-route and server details are owned by
+`haipipe-board/ref/operations.md`; this section is the Page entry point.
 
 **Create**: resolve the board and group (ask only when the group is genuinely
 ambiguous) · pick the id and copy `haipipe-board/ref/page-template.md`, never

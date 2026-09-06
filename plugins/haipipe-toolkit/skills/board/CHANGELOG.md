@@ -4,6 +4,15 @@ board — Changelog
 Family-level changes. Skill implementation history remains in
 `haipipe-board/CHANGELOG.md`; agent history remains in `agents/CHANGELOG.md`.
 
+## 2026-09-05 - Current-only Board surface
+
+- Make the family README a current ownership and workflow map rather than a
+  history of moved or deleted Page variants.
+- Delete the retired Probe phase skill and actor from `_old`; Git history is
+  the archive.
+- Keep compatibility utilities behind `haipipe-board/legacy/` while current
+  commands and skills teach only CONTEXT, OUTLINE, EVIDENCE, CONTENT, and CHECK.
+
 ## 2026-09-04 - Task Blocks become Boards
 
 - Define Board as a kind-selected Page container rather than only a

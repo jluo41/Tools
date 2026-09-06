@@ -27,8 +27,15 @@ Read it as: **TERM** — what it is. `the path it actually names`.
 - **Context record** — the generated PREPARE projection of the governing
   identity, ownership, policy, requirements, related information, feedback,
   decisions, and Page records. `<page>/outline/<stem>-context.md`
+- **reader-facing URL** — the HTTP address a person opens to read a generated
+  Board or Page. It comes from the repository's configured public URL and
+  short route, never from a local Markdown path, `file://`, `localhost`, or
+  `127.0.0.1`. `<JJLUO_PUBLIC_URL>/b/<board-slug>/<page-id>`
+- **short Board route** — the compact HTTP alias that redirects to one
+  generated Board index or Page. `<JJLUO_PUBLIC_URL>/b/<board-slug>[/<page-id>]`;
+  its resolver is `haipipe-board/live/home.py`.
 - **plan**, also **the outline file** — the agreed SHAPE of a page, written and
-  approved before any prose. `<page>/outline/<stem>-outline-v<N>.md`
+  approved before any prose. `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`
 - **bullet** — one POINT in the plan: a short capitalized HEAD, then one folded
   line (`Note:` authored, `Answered:`/`Drawn:` appended when evidence lands),
   then its mark. Addressed by POSITION, never by a name.

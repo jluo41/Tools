@@ -1,3 +1,14 @@
+## 0.58.0 · 2026-09-06
+
+- Define generation/Shape/evidence plan-version notation in the Page glossary
+  so Page routing and Outline ownership use the same contract.
+
+## 0.57.9 · 2026-09-06
+
+- Add the Page entry point for opening a generated Page through the configured
+  reader-facing Board URL, with the short-route and no-localhost rule.
+- Define `reader-facing URL` and `short Board route` in the Page glossary.
+
 ## 0.57.8 · 2026-09-04
 
 - Close the mandatory Page-type audit by distinguishing registry-owned
@@ -942,3 +953,7 @@ The slide binding (division · source · render · acceptance) is its typed reco
 - Replace active DRAFT/REVISE phase authority with `haipipe-page-content`.
 - Remove PageX from new Page evidence storage; keep old lanes read-only and
   route cross-Folder evidence through Supporting Run Results.
+## 0.58.0 · 2026-09-06
+
+- Align the Page glossary with the generation/Shape/evidence outline filename
+  contract: `<stem>-outline-v<G>.<S>[.<E>].md`.
