@@ -12,7 +12,7 @@ description: >-
   paper identity, research questions, pitch, establishment board, page-type
   story, page-type seed.
 metadata:
-  version: "0.8.0"
+  version: "0.8.1"
   last_updated: "2026-09-07"
   group-token: "Story<NN>"
   outline:
@@ -48,7 +48,29 @@ by the roadmap child and the `show` column by the narrative child, so reading
 one page tells you what is asked, what is running, what came back, and where
 each answer is shown. "Seed" survives as the name of the identity divisions
 (§1, §2, §4, §7) and of the establish loop's scoreboard role; it is no longer
-a page of its own. Its two children, `Story<NN>-roadmap/` and
+a page of its own.
+
+**The flow inside one Story (JL 260907)** is four steps, each a table or a
+short set of divisions, each feeding the next:
+
+```text
+1  Seed                 why this idea fits this paper and these authors · what it IS / is NOT
+                        §1 Identity · §2 Pitch · §4 Stakes · §7 Boundaries        on the Story page
+        ▼
+2  Research Questions   what we go out to answer · RQ<n> · ⬜/🔨/✅              §3 on the Story page
+        ▼
+3  Task                 what we do to answer them · TWO tables on Story<NN>-roadmap:
+                        the Task table (executions in examples/<Project>/tasks/) and
+                        the Discovery table (literature and source reads in discoveries/)
+        ▼
+4  Narrative            how the paper is written · the Narrative table, one row per Section,
+                        on Story<NN>-narrative-<desk>
+```
+
+Step 2 drives step 3 (every ⬜ RQ names the Task or Discovery row that will
+answer it); step 3's results flip step 2's states and fill §6; step 4 only
+shows ✅ rows. `haipipe-paper-roadmap` owns the two step-3 tables,
+`haipipe-paper-narrative` owns the step-4 table. Its two children, `Story<NN>-roadmap/` and
 `Story<NN>-narrative-<desk>/`, sit inside its folder. Older boards with a flat
 `Story01-seed/` beside `Story02-roadmap/` are grandfathered:
 

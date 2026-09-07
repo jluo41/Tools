@@ -12,13 +12,13 @@ description: >-
   roadmap page, block board, campaign plan, task group, block job run, lap,
   register QA, intake, page-type roadmap.
 metadata:
-  version: "0.6.3"
+  version: "0.7.0"
   last_updated: "2026-09-07"
   group-token: "Story<NN>-roadmap"
   outline:
     mode: grammar
     source: "this SKILL.md"
-    shape: "division 1 is Mission, division 2 is Block Board; then one division per block B<n> in id order, then one division per lap L<n> in id order; Open is last (R<n> direction ids are grandfathered)"
+    shape: "division 1 is Mission, division 2 is Block Board (the Task table), division 3 is Discovery Table; then one division per block B<n> in id order, then one division per lap L<n> in id order; Open is last (R<n> direction ids are grandfathered; a page without division 3 is pre-0.7.0)"
 ---
 
 # /haipipe-paper-roadmap · plan the campaign, register what comes home
@@ -101,11 +101,14 @@ job while the release is the person's.
                                E-rows and §8 open tensions, transcribed as a
                                readable debt list · states the Intake law and
                                scope (which QA banks receipts may come from)
-### 2 · Block Board         🔥 the whole campaign in one screen · one row per
+### 2 · Block Board         🔥 THE TASK TABLE · the whole campaign in one screen · one row per
                                block
 #### 3 · B1 · <slug>        one division per block, in id order · lists that
 #### 4 · B2 · <slug>           block's jobs with their run ranges
 #### 5 · L1 · <date-slug>   one division per LAP, in id order · the register
+### 3 · Discovery Table     🔥 THE DISCOVERY TABLE · one row per literature or source
+                            read this paper commissions: D<n> · subject · RQ served ·
+                            state ⬜/🔨/✅ · Discovery Run and Result path
 ### N · Open                🔥 what is still out running · always last
 ```
 
@@ -177,6 +180,30 @@ Column laws:
   on it — one string, on two pages. A block lands one receipt for the block,
   not one per run: run-level detail belongs in the task folder, and a roadmap
   that lists runs as receipts has become a second task board.
+
+## 📚 The Discovery Table · division 3 (0.7.0 · JL 260907)
+
+Step 3 of the Story's flow is "what we do to answer the questions", and it has
+two kinds of doing: EXECUTE (a task in `examples/<Project>/tasks/`, the Block
+Board above) and READ (a literature review, a source analysis, a novelty check
+in `examples/<Project>/discoveries/`). The Discovery Table is the second kind,
+one row per discovery this paper commissions:
+
+```text
+id   subject we go read                          serves   state        Discovery Run · Result
+D1   physician personality → prescribing, prior  RQ1      ✅ answered   discoveries/b01_<slug>_evidence_board/j01_<subject>_inquiry · landscape.md
+D2   discretion gradient precedents              RQ3      🔨 exploring  discoveries/b01_<slug>_evidence_board/j04_<subject>_inquiry
+D3   pre-encounter trait measurement designs     RQ7      ⬜ open       (not allocated)
+```
+
+The row's `serves` cell names an RQ in the parent Story's §3 (and through it
+an E-row in §6); a ✅ row's Result is what the Story cites when it flips that
+RQ. The table registers and never executes: the discovery work itself runs
+under `haipipe-discovery` as Discovery Page Folders with numbered Paper Runs,
+and this page binds their paths. The Block Board is the same table for
+executions; together they are the Story's step-3 "Task" view, and
+`/task-table` renders the Block Board's tasks from the `tasks/` tree while the
+Discovery Table is hand-registered until a renderer exists.
 
 ## 🧾 A block's own division · one per row
 

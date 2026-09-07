@@ -1,3 +1,8 @@
+## 0.8.1 · 260907
+- "The flow inside one Story" block (JL 260907): Seed → Research Questions →
+  Task (Task table + Discovery table on the roadmap child) → Narrative
+  (Narrative table on the narrative child), with who owns which table.
+
 ## 0.8.0 · 260907
 
 - Renamed `haipipe-paper-seed` → `haipipe-paper-story` (JL 260907: "we should

@@ -1,3 +1,7 @@
+## 0.8.4 · 260907
+- The Per-section Outline is named the Narrative table, the Story's step-4
+  table (JL 260907); the Section-control table is its compact first view.
+
 ## 0.8.3 · 260907
 - Home is the child page `Story<NN>-<idea-slug>/Story<NN>-narrative-<desk>/`,
   the Story's plan to SHOW; a retarget adds a sibling child, never a new Story;

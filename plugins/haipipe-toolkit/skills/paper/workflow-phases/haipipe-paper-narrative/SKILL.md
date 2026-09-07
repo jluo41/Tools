@@ -9,7 +9,7 @@ description: >-
   or repairing its section map. Trigger: narrative page, paper story, claim
   roles, section map, page-type narrative.
 metadata:
-  version: "0.8.3"
+  version: "0.8.4"
   last_updated: "2026-09-07"
   group-token: "Story<NN>-narrative-<desk>"
   outline:
@@ -178,9 +178,12 @@ Such judgments use the Narrative Page's own typed Evidence Items and accepted
 local Results. The Page is not evidence-free merely because its output is an
 outline.
 
-## 📋 The governing per-section outline
+## 📋 The governing per-section outline · THE NARRATIVE TABLE
 
-Write one row per Section in reader order. Make the row detailed enough that a
+This division is the Story's step-4 table, the Narrative table (JL 260907):
+how the paper is written, one row per Section in reader order. The generated
+Section-control table is its compact first view; the rows here are the
+authority. Write one row per Section in reader order. Make the row detailed enough that a
 fresh Section agent does not invent the paper's logic.
 
 ```text

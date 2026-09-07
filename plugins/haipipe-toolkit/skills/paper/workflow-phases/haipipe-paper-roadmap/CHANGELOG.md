@@ -1,3 +1,10 @@
+## 0.7.0 · 260907
+- The roadmap is the Story's step-3 "Task" view with TWO tables (JL 260907):
+  the Block Board is named the Task table, and a new required division 3, the
+  Discovery Table (D<n> · subject · RQ served · state · Discovery Run/Result),
+  registers the literature and source reads the paper commissions. Outline
+  shape string updated; a page without division 3 is pre-0.7.0.
+
 ## 0.6.3 · 260907
 - Home is the child page `Story<NN>-<idea-slug>/Story<NN>-roadmap/`, the
   Story's plan to COLLECT; it writes the parent RQ table's "collect" column and
