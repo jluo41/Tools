@@ -1,8 +1,8 @@
 ---
 name: haipipe-paper-workflow
 description: >-
-  The paper-level phase machine: six phases (Ideation → Seed → Roadmap →
-  Narrative → Section → Round) with a checkable gate between each. Use when
+  The paper-level phase machine: six phases (Ideation → Story → Roadmap →
+  Narrative → Section → Round; Seed is Story's 0.5–0.7 name) with a checkable gate between each. Use when
   asking where a paper is, whether it may advance, or what to mint next.
   Trigger: paper journey, what phase are we in, phase gate,
   /haipipe-paper-workflow.
