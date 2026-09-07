@@ -41,14 +41,23 @@ ideation:
   evidence: "one source bullet per idea naming its IDEA_REPORT; novelty per claim from discovery QA"
   closing: "G0: novelty per claim + pilot + human PROCEED; the winning idea's went-to names the Seed"
   law: paper/workflow-phases/haipipe-paper-ideation
-seed:
-  owner: paper
+story:
+  owner: paper            # paper 0.8.x: the Story page = one idea's control center
   standing: contract
-  token: SD
+  token: Story<NN>
   mode: fixed
-  evidence: "source pages resolve through Context; evidentiary reuse enters through typed Supporting/local Run Results; Establishment Board E-rows carry the novelty column"
-  closing: "G4: ticked outline, novelty column filled, pitch sells only ✅ rows"
-  law: paper/workflow-phases/haipipe-paper-seed
+  evidence: "§3 Research Question table (⬜/🔨/✅ · collect · show) drives the roadmap child; source pages resolve through Context; evidentiary reuse enters through typed Supporting/local Run Results; Establishment Board E-rows carry the novelty column, one E-row per RQ"
+  closing: "G4: ticked outline, every ✅ RQ lands on a narrative section row, novelty column filled, pitch sells only ✅ rows"
+  law: paper/workflow-phases/haipipe-paper-story
+seed:
+  owner: paper            # 0.5–0.7 name of story; accepted as alias, same law
+  standing: contract
+  token: Story<NN>
+  mode: fixed
+  alias-of: story
+  evidence: "as story"
+  closing: "as story"
+  law: paper/workflow-phases/haipipe-paper-story
 roadmap:
   owner: paper
   standing: contract

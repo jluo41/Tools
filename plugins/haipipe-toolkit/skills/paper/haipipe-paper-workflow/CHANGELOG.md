@@ -1,3 +1,9 @@
+## 0.8.1 · 260907
+
+- P1 is named Story, after its authority page (the naming law); "Seed" stays
+  as the alias and as the name of the identity divisions the Story page holds.
+  `haipipe-paper-seed` → `haipipe-paper-story`; gazette row added.
+
 ## 0.8.0 · 260907
 
 - Story = one idea (JL 260907): the story group's number is the IDEA COUNTER.

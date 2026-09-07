@@ -1,15 +1,18 @@
 ---
-name: haipipe-paper-seed
+name: haipipe-paper-story
 description: >-
-  Paper journey phase P1 (Seed) and the Page Type contract for a paper's
-  venue-free identity, written ON THE STORY PAGE (Story<NN>-<idea-slug>): the
-  Research Question table, pitch, stakes, and the Establishment Board of what
-  the evidence licenses. Use when starting a paper, telling its one-minute
-  story, or retargeting to a new venue without rewriting the study.
-  Trigger: seed page, paper identity, pitch, establishment board, page-type
-  seed.
+  Paper journey phase P1 (Story) and the Page Type contract for the STORY
+  PAGE, Story<NN>-<idea-slug>: one idea, one paper, one control center. It
+  carries the paper's venue-free identity (the Seed: identity, pitch, stakes,
+  boundaries), the Research Question table that drives the work, the
+  Establishment Board that records what came back, and the handoff to its two
+  child plans (roadmap = collect, narrative = show). Use when starting a paper,
+  telling its one-minute story, reading where one idea stands, or retargeting
+  to a new venue without rewriting the study. Trigger: story page, seed page,
+  paper identity, research questions, pitch, establishment board, page-type
+  story, page-type seed.
 metadata:
-  version: "0.7.0"
+  version: "0.8.0"
   last_updated: "2026-09-07"
   group-token: "Story<NN>"
   outline:
@@ -18,20 +21,41 @@ metadata:
     shape: "Identity → Pitch → Research Questions → Stakes → Source Pages → Establishment Board → Boundaries → Narrative Handoff"
 ---
 
-# /haipipe-paper-seed · establish what the paper is
+# /haipipe-paper-story · one idea, one page: what the paper is and what it asks
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
-Declare `page-type: seed`. In a runtime paper board this page IS the Story
-page: `A1-Story/Story<NN>-<idea-slug>/Story<NN>-<idea-slug>.md` (0.7.0, JL
-260907: one Story = one idea; the number is the idea counter, `Story01` is the
-first idea that survived the pool). Its two children, `Story<NN>-roadmap/` and
+Declare `page-type: story` (`page-type: seed` is the 0.7.x alias and still
+resolves here). In a runtime paper board this page IS the Story page:
+`A1-Story/Story<NN>-<idea-slug>/Story<NN>-<idea-slug>.md` (0.8.0, JL 260907:
+one Story = one idea; the number is the idea counter, `Story01` is the first
+idea that survived the pool).
+
+## 🧭 What the Story page IS
+
+```text
+Story<NN>-<idea-slug>.md      the one address for one paper
+├── the Seed                  §1 Identity · §2 Pitch · §4 Stakes · §7 Boundaries
+│                             what the paper IS and is NOT · venue-free · 🔒 stable
+├── the Research Questions    §3 · what we go out to explore · ⬜/🔨/✅ · drives the roadmap
+├── the Establishment Board   §6 · what came back, one E-row per RQ · 🔥 volatile
+├── Source Pages + Handoff    §5 · §8 · what it may read · the packet its narrative child opens
+└── two child pages           Story<NN>-roadmap (plan to COLLECT) · Story<NN>-narrative-<desk> (plan to SHOW)
+```
+
+The Story page CONTROLS and never DOES: it holds no manuscript prose, no venue
+word, no run. Its §3 table is the control view: the `collect` column is written
+by the roadmap child and the `show` column by the narrative child, so reading
+one page tells you what is asked, what is running, what came back, and where
+each answer is shown. "Seed" survives as the name of the identity divisions
+(§1, §2, §4, §7) and of the establish loop's scoreboard role; it is no longer
+a page of its own. Its two children, `Story<NN>-roadmap/` and
 `Story<NN>-narrative-<desk>/`, sit inside its folder. Older boards with a flat
 `Story01-seed/` beside `Story02-roadmap/` are grandfathered:
 
 ## 🧭 Journey phase
 
-This skill is journey phase P1 Seed (establish) of the paper journey and owns
-the `page-type: seed` contract below. Enter through gate G0. Two exits: G1
+This skill is journey phase P1 Story (establish; "Seed" was the 0.5–0.7 phase name) of the paper journey and owns
+the `page-type: story` contract below (`seed` accepted as alias). Enter through gate G0. Two exits: G1
 opens the Roadmap (the establish loop P1↔P2), and G4 (the loop's ONLY exit)
 opens the first Narrative. The Seed alone writes E-row flips; the Roadmap only
 proposes settles. `haipipe-paper-workflow` holds the full gate assertions; this

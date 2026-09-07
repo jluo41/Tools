@@ -1,3 +1,11 @@
+## 0.171.1 · 2026-09-07
+
+- Know `page-type: story` (paper 0.8.x: the Story page, one idea's control
+  center): family order, group family label, stage label, and the
+  context-record law map (`seed` stays as its alias, mapped to the same
+  `haipipe-paper-story` law). Frontmatter version also catches up with the
+  0.171.0 CHANGELOG entry it had missed.
+
 ## 0.171.0 · 2026-09-06
 
 - Route the typed Evidence chip on the Outline plugin's Bullet Workspace plan

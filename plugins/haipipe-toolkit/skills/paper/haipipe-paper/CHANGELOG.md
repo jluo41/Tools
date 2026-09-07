@@ -1,5 +1,10 @@
 # CHANGELOG · haipipe-paper
 
+## 0.8.1 · 260907
+
+- P1 is Story: phase figure, one-liner, routing row, `/haipipe-paper story`
+  verb (`seed` alias kept), completion check. Routes to `haipipe-paper-story`.
+
 ## 0.8.0 · 260907
 
 - Paper folder scaffold rewritten (JL 260907): page groups and `board.md` at

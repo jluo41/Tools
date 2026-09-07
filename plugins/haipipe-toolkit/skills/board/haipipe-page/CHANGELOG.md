@@ -1,3 +1,8 @@
+## 0.60.3 · 2026-09-07
+
+- Type registry: `story` added (law `paper/workflow-phases/haipipe-paper-story`,
+  token `Story<NN>`); `seed` kept as `alias-of: story` on the same law.
+
 ## 0.60.2 · 2026-09-07
 
 - Make the user-check packet new-layout-only: legacy Display and LaTeX lanes

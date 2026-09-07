@@ -7,7 +7,7 @@ description: >-
   Trigger: paper journey, what phase are we in, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "0.8.0"
+  version: "0.8.1"
   last_updated: "2026-09-07"
 ---
 
@@ -29,9 +29,9 @@ the same law the Round contract holds for "Paper Round" versus "workflow
 round". Prefer "journey" when speaking of P0–P5.
 
 **The naming law (0.5.0)**: a journey phase is NAMED BY ITS AUTHORITY PAGE
-TYPE — Ideation, Seed, Roadmap, Narrative, Section, Round — so nobody
+TYPE — Ideation, Story, Roadmap, Narrative, Section, Round — so nobody
 maintains a second vocabulary. Each phase keeps its old verb as a
-parenthesized ALIAS — Ideation (ideate), Seed (establish), Roadmap (route),
+parenthesized ALIAS — Ideation (ideate), Story (establish; "Seed" is its 0.5–0.7 name and still resolves), Roadmap (route),
 Narrative (tell), Section (realize), Round (respond) — legal in prose, never
 in a folder or page id. A future phase inherits this law: it takes its
 authority page's name and may carry one verb alias.
@@ -56,8 +56,9 @@ phase                     authority page                 what the phase produces
 P0 Ideation (ideate)      ideation   (A1-Story/Story00)  a winning idea sent to
                                                          its Seed · the repo is
                                                          minted WITH this page
-P1 Seed (establish)       seed       (A1-Story/Story<NN>) a defensible identity
-                                         the Story page      + RQ table + E-board
+P1 Story (establish)      story      (A1-Story/Story<NN>) one idea's control
+                          (seed =    the Story page      center: identity (the
+                          alias)                         Seed) + RQ table + E-board
 P2 Roadmap (route)        roadmap    (Story<NN>/          released blocks: where
                                        Story<NN>-roadmap)
                                                          to go, who runs it,
@@ -218,7 +219,7 @@ second desk for the same idea is a second `Story<NN>-narrative-<desk>` inside
 the same Story, never a new Story. A Research Question is a QUESTION the paper
 goes out to explore (⬜ open · 🔨 exploring · ✅ answered); the Establishment
 Board's E-row is the backward record of what came back, one E-row per RQ.
-`haipipe-paper-seed` owns the table's shape.
+`haipipe-paper-story` owns the table's shape.
 
 ## 📜 Gazette of retired names
 
@@ -228,6 +229,10 @@ against this table and do not rewrite frozen files:
 ```text
 old phase name        new phase (alias)          old gate         new gate
 ──────────────────────────────────────────────────────────────────────────
+— 0.8.1 (260907): P1 renamed Story; haipipe-paper-seed → haipipe-paper-story —
+P1 Seed (establish)   P1 Story (establish)       G1 · G4          G1 · G4
+page-type: seed       page-type: story (seed
+                      accepted as alias)
 — 0.8.0 (260907): Story = one idea; 0-paperboard and desk rooms retired ——
 Story01-seed          Story<NN>-<idea-slug>      (unchanged)      (unchanged)
                       · the Story page itself

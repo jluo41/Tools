@@ -1,3 +1,12 @@
+## 0.8.0 · 260907
+
+- Renamed `haipipe-paper-seed` → `haipipe-paper-story` (JL 260907: "we should
+  have the haipipe-paper-story"). The journey phase is P1 Story; the page type
+  is `story` (`seed` accepted as alias). New "🧭 What the Story page IS" block:
+  the one address for one paper, holding the Seed (identity divisions), the RQ
+  table, the E-board, and the handoff to its two child plans; it controls and
+  never does. Content contract otherwise unchanged from 0.7.0.
+
 ## 0.7.0 · 260907
 
 - The Seed lives ON the Story page `A1-Story/Story<NN>-<idea-slug>/` (JL

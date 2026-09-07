@@ -635,6 +635,7 @@ def render(meta, qs):
     sfamilies = [
         ("open", "Open"),
         ("seed", "Seed"),
+        ("story", "Story"),
         ("work", "Work"),
         ("venue", "Venue"),
         ("literature", "Literature"),

@@ -44,7 +44,8 @@ from src.outline_version import latest_outline, version_tag  # noqa: E402
 # haipipe-page/ref/type-registry.md `law:` rows.
 OWNERS = {
     "ideation": ("haipipe-paper-workflow", "haipipe-paper-ideation"),
-    "seed": ("haipipe-paper-workflow", "haipipe-paper-seed"),
+    "seed": ("haipipe-paper-workflow", "haipipe-paper-story"),   # 0.7.x alias of story
+    "story": ("haipipe-paper-workflow", "haipipe-paper-story"),
     "roadmap": ("haipipe-paper-workflow", "haipipe-paper-roadmap"),
     "narrative": ("haipipe-paper-workflow", "haipipe-paper-narrative"),
     "section": ("haipipe-paper-workflow", "haipipe-paper-section"),

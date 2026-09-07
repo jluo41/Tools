@@ -8,7 +8,7 @@ from urllib.parse import quote
 from . import body as _bd
 from .body import (body, flat_rows, inline, note_body, render_apparatus,
                    render_thread, sort_log)
-from .common import aim_progress, aim_summary, esc, sec, stinfo
+from .common import aim_progress, aim_summary, esc, evidence_lane_dir, sec, stinfo
 from .feedback import routed_pairs
 from .item_table import (action_label, compact_global_run, compact_paper_run,
                          readable_global_run, readable_paper_route, repo_root,
@@ -16,6 +16,7 @@ from .item_table import (action_label, compact_global_run, compact_paper_run,
 
 STAGE_LABELS = {
     "seed": "SEED PAGE",
+    "story": "STORY PAGE",
     "work": "WORK PAGE",
     "venue": "VENUE PAGE",
     "display": "DISPLAY PAGE",
@@ -119,7 +120,9 @@ def references_block(q):
     stem = pathlib.Path(q.get("file") or "").stem
     if not (_bd.PAGE_DIR and stem):
         return ""
-    bib = _bd.PAGE_DIR / "bibex" / (stem + ".bib")
+    # Canonical `outline/evidence/bibex/` first; a flat `bibex/` is only a
+    # pre-migration alias (haipipe-page folder v3).
+    bib = evidence_lane_dir(_bd.PAGE_DIR, "bibex") / (stem + ".bib")
     src = _bd.PAGE_DIR / (stem + ".md")
     if not (bib.is_file() and src.is_file()):
         return ""

@@ -7,7 +7,7 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.60.2"
+  version: "0.60.3"
   last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

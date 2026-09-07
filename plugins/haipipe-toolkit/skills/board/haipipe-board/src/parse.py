@@ -395,6 +395,7 @@ def parse_dir(d):
                 family_order = {
                     "open": 0,
                     "seed": 0,
+                    "story": 0,      # paper 0.8.x: the Story page; seed is its alias
                     "work": 1,
                     "venue": 2,
                     "literature": 3,

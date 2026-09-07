@@ -13,9 +13,9 @@ library outside the journey:
 ```text
 P0 Ideation (ideate)     Story00 · the repo is minted with this page · sends one
                          idea to its Seed
-P1 Seed (establish)      Story<NN>-<idea> · THE STORY PAGE · one idea = one
-                         paper (0.8.0) · venue-free · Research Question table +
-                         E-board with novelty column
+P1 Story (establish)     Story<NN>-<idea> · THE STORY PAGE · one idea = one
+                         paper (0.8.0) · holds the Seed (identity) · Research
+                         Question table · E-board with novelty column
 P2 Roadmap (route)       Story<NN>-roadmap · child of its Story · plan to COLLECT
                          · block rows serving RQ/E-rows · person-released · then
                          dispatch cards and receipts, lap by lap, on the same page
@@ -85,7 +85,7 @@ paper/
 │   └── ref/                   config example and assembly references
 ├── workflow-phases/          six journey-phase skills, each owning its
 │   ├── haipipe-paper-ideation/     page-type key (JL 260831: replaces page-types/)
-│   ├── haipipe-paper-seed/
+│   ├── haipipe-paper-story/       (was haipipe-paper-seed until 0.8.0)
 │   ├── haipipe-paper-roadmap/
 │   ├── haipipe-paper-narrative/
 │   ├── haipipe-paper-section/
@@ -99,94 +99,24 @@ paper/
 
 ## Family status
 
-as of 2026-08-28 · regenerate with `/workflow-table paper` · this block is a dated receipt, never a second authority
-
-Five classes, five column sets. A row with an empty field record is `(provisional)` whatever its static score.
+as of 2026-09-07 · regenerate with `/workflow-table paper` · this block is a dated receipt, never a second authority
 
 ```text
-DOOR · does every road lead somewhere
-| skill         | ver   | routes | resolve | stale | scaffold | desc shape |
-|---------------|-------|--------|---------|-------|----------|------------|
-| haipipe-paper | 0.1.0 | 12     | 12 OK   | 0     | matches  | use-when ✓ |
-                  first NUMBERED version, 260828 · unversioned for 125 commits
+Part      Phase / Cycle            skill                    ver     L3 content it changes                      L4 Runs               human gate
+A1-Story  P0 Ideation              haipipe-paper-ideation   0.6.2   Story00-ideation.md                        Discovery 0..N        G0 PROCEED
+A1-Story  P1 Story (seed alias)    haipipe-paper-story      0.8.0   Story<NN>-<idea>.md · §3 RQ table · §6     Page Evidence 0..N    G1 outline tick
+A1-Story  P2 Roadmap · collect     haipipe-paper-roadmap    0.6.3   Story<NN>-roadmap.md · parent "collect"    Execution/Discovery   G2 release blocks
+A1-Story  P3 Narrative · show      haipipe-paper-narrative  0.8.3   Story<NN>-narrative-<desk>.md · "show"     none                  G4/G5 venue decision
+Ba/Bb     P4 Section               haipipe-paper-section    0.8.4   S-<desk>-*.md · delivery/latex/<page>.tex  Page Evidence/Writing  outline v1.0 mint
+delivery  assemble (verb)          haipipe-paper-assemble   0.3.0   none · writes build-manifest/qa            Delivery 1 per build  G6 decide to send
+Bc        P5 Round send/respond/   haipipe-paper-round      0.5.0   RD<NN>.md · sent/ feedback/ released/      none                  G7 dispositions
+          release
+gates     all                      haipipe-paper-workflow   0.8.1   none                                       none                  —
+door      all                      haipipe-paper            0.8.1   none                                       none                  —
+library   consulted at P3          haipipe-paper-venue      0.6.0   QBv bank page                              none                  —
 ```
 
-```text
-MACHINE · how much of the machine has ever run
-| skill                  | ver   | phases | gates | receipt owner | fired live | gazette |
-|------------------------|-------|--------|-------|---------------|------------|---------|
-| haipipe-paper-workflow | 0.6.0 | 6      | 8     | 8/8           | 4/8        | ✓       |
-                                    fired: G0 G2 G3 G4 · never: G1 G5 G6 G7
-```
-
-```text
-CONTRACT · the eight properties  (① why ② 词 ③ 址 ④ 量 ⑤ 格 ⑥ 据 ⑦ 查 ⑧ 界)
-| contract  | ver   | ①| ②| ③| ④| ⑤| ⑥| ⑦| ⑧| total               | field record        |
-|-----------|-------|--|--|--|--|--|--|--|--|---------------------|---------------------|
-| roadmap   | 0.5.0 | ✓| ✓| ✓| ✓| ✓| ✓| ✓| ✓| 8/8 · EXERCISED     | 2 boards · 1 FT · 3 gaps patched |
-| seed      | 0.5.3 | ✓| ✓| ✓| —| ✓| ✓| ✓| ✓| 7/7 · EXERCISED     | 2 boards · settle + G4 ran |
-| ideation  | 0.5.4 | ✓| ✓| ✓| —| ✓| ✓| ✓| ✓| 7/7 · EXERCISED     | 2 boards · CHECK routed HOLD |
-| venue     | 0.4.0 | ✓| ✓| ✓| —| ✓| —| ✓| ✓| 6/6 · EXERCISED     | 17 desk pages, consumed |
-| section   | 0.4.0 | ✓| ✓| ✓| ◐| ◐| —| ✓| ✓| 6/7 · EXERCISED     | 16 pages, most-used |
-| narrative | 0.5.2 | ✓| ✓| ✓| ◐| ✗| ✓| ◐| ✓| 6/8 · USED          | 2 pages · G5 never ran |
-| round     | 0.3.1 | ✓| ✓| ✓| ✗| ✓| ✓| ◐| ✓| 6.5/8 (provisional) | 0 instances ever |
-```
-
-Population: `instances` counts pages on the REAL paper boards under `examples/`.
-
-It excludes the skill-documentation boards under `skills/diagrams/`, whose pages carry a `page-type:` line because they DESCRIBE a type rather than instantiate one.
-
-`haipipe-board/cli/pagetypes.py` counts the WIDE population and so reports higher numbers (round 1, seed 9, section 17); read its table through this law before scoring a tier.
-
-```text
-LIBRARY · assets, and whose clock they keep
-| asset            | count | neutral | clock          | consumed at | oldest verify |
-|------------------|-------|---------|----------------|-------------|---------------|
-| venue/bank       | 17    | ✓       | the desk's own | G5 · §1     | ?             |
-| venue/playbook-* | 8     | ✓       | the desk's own | narrative   | ?             |
-| venue/literature | 3     | ✓       | ad hoc         | narrative   | ?             |
-```
-
-```text
-CRAFT · a tool, and what it may touch
-| skill                          | ver   | last  | lives in | scope       | reversible |
-|--------------------------------|-------|-------|----------|-------------|------------|
-| haipipe-paper-revise-humanizer | 0.2.6 | 08-05 | writing/ | section tex | ✓          |
-```
-
-Knife points, in the order their repair buys the most:
-
-```text
-1  MACHINE fired 4/8 · G5/G6/G7 have never left the page · needed: nothing
-   written, only run · next hit: the MS narrative opens G5, the first
-   decision letter opens G7 — that opening IS the field test
-2  collection: 2 live pages and NO contract ships · the expected residue of
-   the 260828 merge, now reported by `pagetypes.py --check` · needed: fold
-   the two grandfathered SD03 pages, or state the grandfather in the engine
-   · next hit: every run of the drift check until one of the two happens
-3  narrative ⑤ · the 17-field section-map row carries no per-field law ·
-   needed: one legality sentence per field, roadmap-column style · next
-   hit: the C5 inheritance decision when the MS round opens
-
-repaired 260828 · DOOR ver MISSING → 0.1.0 · roadmap 0.3.1 → 0.5.0, its
-CHANGELOG reordered newest-first with the duplicate 0.2.0 sections merged,
-and the executor-home law reversed: a block's task group lives in the task
-layer's own home, examples/<Project>/tasks/{G}{NN}_<name>/, never in the
-paper repo — the door's scaffold dropped its tasks/ line to match
-```
-
-## Ownership
-
-| Layer | Owns |
-|---|---|
-| `haipipe-paper` | Paper routing, Page graph, assembly, delivery |
-| `haipipe-paper-workflow` | the six phases, their gates, phase receipts — never content |
-| `haipipe-paper-assemble` | source-driven complete-paper document build, config, manifest, and QA |
-| `haipipe-page` | Shared Page shape and CREATE/WORK ON verbs |
-| Paper Page Type | The persistent shape and closing rule of one paper artifact |
-| `haipipe-page-workflow` | OUTLINE through CHECK, receipts, stop rules |
-| Page plugins | probes, storage-less value joins, citations, displays, PageX, generated formats |
-| `haipipe-board` | rendering, serving, checking, and Board registration |
+First repo on this layout: `examples/Project-Personality-OpioidRx/papers/Paper-AgreeablePrescription`. Static quality and fresh-context field tests have not been run for 0.8.x.
 
 ## Complete-paper document build
 

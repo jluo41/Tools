@@ -2,12 +2,12 @@
 name: haipipe-paper
 description: >-
   The one door for planning, writing, and revising a paper as a graph of Board
-  Pages. Routes Ideation, Seed, Roadmap, Venue, Narrative, Section and Round
+  Pages. Routes Ideation, Story, Roadmap, Venue, Narrative, Section and Round
   Pages to their contracts and runs each through the page lifecycle.
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "0.8.0"
+  version: "0.8.1"
   last_updated: "2026-09-07"
   summary: "page-types/ replaced by workflow-phases/: six haipipe-paper-<phase> skills; venue contract moved beside its bank."
 ---
@@ -54,8 +54,8 @@ verb kept as a parenthesized alias.
 P0 Ideation (ideate)      💭 Story00 · the repo is minted with this page ·
 │                            ideas cheap and disposable
 │                            gate G0: novelty per claim + pilot + human PROCEED
-P1 Seed (establish)       🌱 Story<NN>-<idea> · THE STORY PAGE · one idea = one
-│                            paper · venue-free · RQ table + E-board with novelty
+P1 Story (establish)      🌱 Story<NN>-<idea> · THE STORY PAGE · one idea = one
+│                            paper · holds the Seed (identity) · RQ table · E-board
 │                            gate G1: skeleton stands · gap list readable
 P2 Roadmap (route)        🗺 Story<NN>-roadmap · child of its Story · plan to
 │                            COLLECT · BLOCK rows serving RQ/E-rows · ✋ released ·
@@ -89,10 +89,12 @@ The seven Page Types, one line each:
   story group's page zero (`Story00-ideation`), minted with the repo before any
   Seed exists; eliminated ideas stay forever; the winning idea's `went to`
   names this board's Seed (or, rarely, a sibling repo's).
-- **Seed** is one venue-free identity per paper and LIVES ON THE STORY PAGE
-  (`Story<NN>-<idea-slug>.md`, JL 260907): identity, boundary, the Research
-  Question table, the Establishment Board; it survives retargeting unchanged
-  and binds its Ideation origin as a birth certificate.
+- **Story** is one idea's control center, `Story<NN>-<idea-slug>.md` (JL
+  260907): it holds the Seed (venue-free identity, pitch, stakes, boundaries),
+  the Research Question table that drives the work, the Establishment Board
+  that records what came back, and the handoff to its two child plans; it
+  survives retargeting unchanged and binds its Ideation origin as a birth
+  certificate. `haipipe-paper-story` (was `haipipe-paper-seed`).
 - **Roadmap** is one paper's plan to COLLECT, a child page of its Story
   (`Story<NN>-roadmap`), campaign and intake on one page: BLOCK
   rows (data, model, analysis, …) each serving a Seed E-row, with executor,
@@ -208,7 +210,7 @@ Resolve the paper root and target Page before changing anything.
 |---|---|
 | brainstorm, novelty-check, eliminate an idea, or send one to a Seed | `haipipe-paper-ideation` |
 | ask where a paper is in the journey, or test a gate | `haipipe-paper-workflow` |
-| create or repair paper identity | `haipipe-paper-seed` |
+| start a paper, read where one idea stands, repair its identity or RQ table | `haipipe-paper-story` (`seed` still routes here) |
 | plan the campaign, release a block, register receipts, close a lap | `haipipe-paper-roadmap` |
 | inspect or record a target venue | `haipipe-paper-venue` (library lane, not a phase) |
 | design claims, arc, or per-section outline | `haipipe-paper-narrative` |
@@ -228,7 +230,7 @@ Resolve the paper root and target Page before changing anything.
 /haipipe-paper status [paper] [section|evidence|citation|display]
 /haipipe-paper journey [paper]         read the journey position · test the gates ·
                                        never advances anything
-/haipipe-paper seed [paper] [phase]
+/haipipe-paper story [paper] [phase]    (`seed` accepted as alias)
 /haipipe-paper roadmap [paper] [phase]
 /haipipe-paper venue <target> [phase]
 /haipipe-paper narrative <target> [phase]
@@ -459,7 +461,7 @@ retired stage lane.
 Before reporting Paper work complete:
 
 - The active Page Type and Page phase are explicit.
-- Seed contains no venue-specific promise.
+- The Story page contains no venue-specific promise, no prose, no run.
 - Each Narrative names its venue and carries claims plus one detailed row per
   Section.
 - Every Section resolves to one Narrative row and every consequential sentence
