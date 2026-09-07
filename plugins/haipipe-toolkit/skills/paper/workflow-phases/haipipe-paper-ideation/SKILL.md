@@ -8,9 +8,9 @@ description: >-
   Trigger: ideation page, find ideas, brainstorm, novelty check, page-type
   ideation.
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-08-31"
-  group-token: "SD"
+  version: "0.6.2"
+  last_updated: "2026-09-07"
+  group-token: "Story00"
   outline:
     mode: grammar
     source: "this SKILL.md"
@@ -40,26 +40,29 @@ under it. It is the story group's PAGE ZERO (0.4.0) — no separate group; it
 sits in the same group as the Seed its best idea becomes, before it:
 
 ```text
-Paper-<Slug>/0-paperboard/
-└── A1-Story/                    the venue-free P0-P2 head (journey 0.6.0)
-    ├── Story00-ideation/              one direction, its ideas, ranked
-    ├── Story01-seed/                  what the winning idea became
-    └── Story02-roadmap/               where the campaign goes next, and what
-                                    it brought back
+Paper-<Slug>/
+└── A1-Story/                          the story group, at the paper root (0.8.0)
+    ├── Story00-ideation/              THIS PAGE · one direction, its ideas, ranked
+    └── Story01-<idea-slug>/           what the winning idea became: one Story =
+        ├── Story01-roadmap/           one idea · its plan to collect
+        └── Story01-narrative-<desk>/  · its plan to show, one per desk
+    (a second surviving idea is Story02-<slug>/ · the number counts ideas)
 ```
-
-(The tellings close the same group: `Story<NN>-narrative-<desk>`, one page per desk.)
 
 **The repo precedes the Seed** (0.2.0): minting a paper's Ideation Page is
 what creates `Paper-<Slug>/` — as a git submodule immediately, per the
-scaffold rule — with only `0-paperboard/A1-Story/Story00-ideation/` inside.
+scaffold rule — with only `board.md` and `A1-Story/Story00-ideation/` inside.
 The direction's name may seed the repo slug; a direction that dies leaves the
 repo standing as its own record. **A board holds exactly ONE ideation page**
 (the journey fixes the story group's roles, one each): a direction that
 genuinely forks is a new direction, so it mints its own `Paper-<Slug>/` with
 its own `Story00-ideation`, and the two pages cross-reference through the
-originating row's `went to`. Before 0.5.0 a fork could take "the next free SD
-number"; that reading died when the journey fixed every SD number's role.
+originating row's `went to`. Two ideas from the SAME direction that both
+survive are `Story01-<slug>` and `Story02-<slug>` in this board (0.8.0, JL
+260907: the Story number counts ideas); the `went to` cell names the Story page
+by id. Before 0.5.0 a fork could take "the next free SD number"; that reading
+died when the journey fixed the roles, and 0.8.0 gives the number back its
+counting job at the idea level.
 
 The page is EVERGREEN (♻️): it never closes while the direction is alive.
 Ideas are cheap — generated in batches, ranked, eliminated without ceremony.

@@ -1,3 +1,10 @@
+## 0.8.4 · 260907
+- Runtime home at the paper root, no `0-paperboard/`. "Where the words live"
+  rewritten: on this page, as `delivery/latex/<page>.tex` (fragment the paper
+  build \inputs) and `<page>-complete.tex/.pdf` (the page's own deliverable);
+  the desk room is retired for new repos. New milestone paragraph: outline
+  tick + display preview PDFs + page PDF = DONE.
+
 ## 0.8.3 · 260907
 
 - Add reader-facing subsection naming: substantive subjects rather than writer

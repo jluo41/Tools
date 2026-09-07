@@ -1,3 +1,9 @@
+## 0.6.3 · 260907
+- Home is the child page `Story<NN>-<idea-slug>/Story<NN>-roadmap/`, the
+  Story's plan to COLLECT; it writes the parent RQ table's "collect" column and
+  every block serves an RQ row and its E-row. Collection page retired outright.
+  group-token "SD" → "Story<NN>-roadmap".
+
 ## 0.6.2 · 260831
 - Remove angle-bracket address notation from the discovery description so the
   package passes skill metadata validation; the body keeps the full grammar.

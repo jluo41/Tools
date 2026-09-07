@@ -1,5 +1,19 @@
 # CHANGELOG · haipipe-paper
 
+## 0.8.0 · 260907
+
+- Paper folder scaffold rewritten (JL 260907): page groups and `board.md` at
+  the paper root (`paper-root: .`), no `0-paperboard/`; `A1-Story` holds the
+  pool plus one `Story<NN>-<idea-slug>/` per idea with its roadmap and
+  narrative children nested inside; `delivery/` (factory: paper-build.toml,
+  latex/, word/) replaces the hand-edited desk room. The room law of 260824 is
+  replaced by the delivery law: pages own the words, `delivery/` is regenerated
+  whole from their `<page>.tex` fragments and never hand-edited.
+- Round folders hold `sent/` · `feedback/` · `released/`.
+- Phase figure, Seed/Roadmap/Narrative one-liners, routing row, assembly
+  figure and completion checks follow. `Paper-AgreeablePrescription` is the
+  first repo on this layout; every earlier layout is grandfathered.
+
 ## 0.7.1 · 260904
 
 - Keep the shared Outline presenter at the Page surface and load only its exact

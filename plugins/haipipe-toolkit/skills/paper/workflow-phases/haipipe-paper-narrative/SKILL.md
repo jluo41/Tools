@@ -9,9 +9,9 @@ description: >-
   or repairing its section map. Trigger: narrative page, paper story, claim
   roles, section map, page-type narrative.
 metadata:
-  version: "0.8.2"
-  last_updated: "2026-09-04"
-  group-token: "NA"
+  version: "0.8.3"
+  last_updated: "2026-09-07"
+  group-token: "Story<NN>-narrative-<desk>"
   outline:
     mode: grammar
     source: "this SKILL.md"
@@ -34,17 +34,28 @@ page bound, every claim parented to an E-row, every section-map row budgeted.
 the phase. The page itself always runs through `/haipipe-page` and
 `haipipe-page-workflow` (CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK),
 never a private lifecycle. In a
-runtime paper board Narratives close the story group: one page per desk, in
-arrival order after the venue-free head, reading the Seed from the same group
-(tokens re-ruled JL 260831; a separate `A2-NA-narrative` group with NA-numbered
-narratives is grandfathered): ```text 0-paperboard/ └── A1-Story/ ├──
-Story00-ideation · Story01-seed · Story02-roadmap   the venue-free head ├──
-Story03-narrative-<desk>/ how the paper is told to desk 1 └──
-Story04-narrative-<desk>/ how it is told to desk 2 ``` The group law: the
-narrative pages decide the telling, one desk one page; no manuscript prose
-lives here, and every `Story<NN>-narrative` names its desk in its slug. The
-head pages (Story00 to Story02) stay wholly venue-free; a venue word enters
-the group only through a narrative page, anywhere else it is a leak.
+runtime paper board a Narrative is the Story's PLAN TO SHOW, a child page inside
+the Story's folder, one per desk, carrying its parent's number (0.8.0, JL
+260907; the flat `Story03-narrative-<desk>` sibling layout and the older
+`A2-NA-narrative` group are grandfathered):
+
+```text
+Paper-<Slug>/A1-Story/
+└── Story<NN>-<idea-slug>/            the Story · seed + RQ table
+    ├── Story<NN>-roadmap/            plan to COLLECT
+    ├── Story<NN>-narrative-<desk1>/  THIS PAGE · plan to SHOW · how the paper is
+    │                                 told to desk 1 · writes the RQ table's
+    │                                 "show" column
+    └── Story<NN>-narrative-<desk2>/  how it is told to desk 2 · a retarget adds
+                                      a sibling here, never a new Story
+```
+
+The group law: the narrative pages decide the telling, one desk one page; no
+manuscript prose lives here, and every `Story<NN>-narrative-<desk>` names its
+desk in its slug. Every ✅ RQ row of the parent Story must land on exactly one
+section-map row here, and that Section id is written back into the parent's
+"show" column. The parent and its roadmap child stay wholly venue-free; a venue
+word enters the Story only through a narrative page, anywhere else it is a leak.
 
 ## 📐 Grain and boundary
 
@@ -175,7 +186,8 @@ fresh Section agent does not invent the paper's logic.
 ```text
 section-id
 section kind and working title
-room files · the tex under this telling's desk room, <N>-<desk><year>/sections/
+page deliverable · the Section Page's own delivery/latex/<page>.tex fragment, which
+           the paper's delivery/latex/ \inputs in this row's order
 reader question
 reader state on entry
 reader state on exit

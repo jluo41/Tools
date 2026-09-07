@@ -1,5 +1,19 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.3.0 · 260907
+
+- Source of record moves from the desk room to the Section Pages (JL 260907):
+  the build reads each page's `delivery/latex/<page>.tex` fragment in the
+  Narrative's order, regenerates `delivery/latex/` whole (master.tex,
+  sections/, appendices/, displays/, reference.bib) and converts
+  `delivery/word/` from it. `paper-build.toml` lives at `delivery/` and gains a
+  `[pages]` block; the latex-room adapter is unchanged, so grandfathered desk
+  rooms still build.
+- New "🏁 The milestone that admits a page": outline tick + display PDFs +
+  page PDF, else the page is reported not ready and the build is DRAFT.
+- Build protocol ends with ON SEND (copy into the Round's `sent/`) and ON
+  ROUND CLOSE (copy into `released/`).
+
 ## 0.2.1 · 260904
 - Added config-driven LibreOffice PDF twins for the main manuscript and
   supplement, with renderer availability/errors in QA and output hashes in the

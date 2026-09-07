@@ -1,3 +1,10 @@
+## 0.6.2 · 260907
+- Tree at the paper root, no `0-paperboard/`; the winning idea becomes
+  `Story01-<idea-slug>/` with roadmap and narrative children; a second surviving
+  idea is `Story02-<slug>` in the same board (the number counts ideas).
+  Mint rule: repo starts with `board.md` + `A1-Story/Story00-ideation/`.
+  group-token "SD" → "Story00".
+
 ## 0.6.1 · 260831
 - Home renamed A1-Story/Story00-ideation (SD/NA retired, JL 260831); the tellings close the same group.
 

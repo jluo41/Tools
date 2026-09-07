@@ -7,8 +7,8 @@ description: >-
   routes changes to the owning Pages, and closes with an approved response. Use
   when opening, triaging, answering, or closing a revision round.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-08-31"
+  version: "0.5.0"
+  last_updated: "2026-09-07"
   group-token: "RD"
   outline:
     mode: fixed
@@ -75,11 +75,34 @@ received-at       date and source location
 response-due      date, explicit none, or unknown
 ```
 
-Store supplied letters or memos INSIDE this Round page's folder — a received
-letter floating at the repo root is homeless material (JL 260823). Preserve
-their wording; never rewrite received material into a cleaner second source.
+A Round BEGINS with a delivery and ENDS with one (0.5.0, JL 260907): the
+version you sent that drew the comments, and the version you released with
+every ledgered concern answered. Both are frozen inside the Round's folder,
+beside what came back:
+
+```text
+B<x>-<desk>-Round/RD<NN>-<event>-<yymmdd>/
+├── RD<NN>-<event>-<yymmdd>.md   the ledger: every comment, its route, what changed
+├── sent/                        what WE SENT · the PDF + DOCX + build-manifest that
+│                                drew the comments · copied from delivery/ on send
+├── feedback/                    what CAME BACK · letters, memos, marked-up PDFs
+├── released/                    what WE RELEASED · the PDF + DOCX + manifest with
+│                                every ledgered concern answered · cut on close
+└── outline/ …
+```
+
+A professor's pass, a coauthor pass, and a desk decision are all Rounds of the
+same shape; the folder name says which. The next Round's `sent/` repeats this
+Round's `released/`: one file copied twice is cheap, and the two manifests'
+hashes show whether anything slipped in between (a difference is explained on
+the Log). The last Round's `released/` is the accepted manuscript, so nothing
+dangles. Root `delivery/` stays the factory; `sent/` and `released/` are copies
+cut from it, never edited. Store supplied letters or memos in `feedback/` — a
+received letter floating at the repo root is homeless material (JL 260823).
+Preserve their wording; never rewrite received material into a cleaner second
+source. (`files/` was the pre-0.5.0 name of `feedback/`.)
 The runtime home is the DESK'S OWN ROUND GROUP (JL 260831, three groups per
-desk): `0-paperboard/B<x>-<desk>-Round/RD<NN>-<event>/`, beside that desk's
+desk): `B<x>-<desk>-Round/RD<NN>-<event>/` at the paper root, beside that desk's
 -Main and -Appendix groups, so the desk's downstream story sits in three
 named shelves. A foreign-desk round mints its desk's -Round group even when
 that is the desk's only group. Boards with a combined `B<x>-<desk>` group or
@@ -92,7 +115,8 @@ remain unambiguous.
 
 ```text
 1  Round Identity and Intake
-   identity block · received files · base build · scope · due date
+   identity block · what was sent (`sent/`: path, date, recipient, manifest
+   hash) · what came back (`feedback/`) · scope · due date
 
 2  Feedback Coverage Ledger
    one row per atomic concern; every received point appears exactly once
@@ -110,7 +134,8 @@ remain unambiguous.
    point-by-point reply, editor note, tracked-change/diff pointers, commitments
 
 7  Close Receipt and Handoff
-   ledger totals · revised build · response artifact · deferred items · next Round
+   ledger totals · the released build (`released/`: path, manifest hash) ·
+   response artifact · deferred items · next Round
 ```
 
 ## 📋 Feedback ledger contract

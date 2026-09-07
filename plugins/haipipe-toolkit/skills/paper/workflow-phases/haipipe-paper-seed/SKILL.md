@@ -2,29 +2,31 @@
 name: haipipe-paper-seed
 description: >-
   Paper journey phase P1 (Seed) and the Page Type contract for a paper's
-  venue-free identity: research question, pitch, stakes, and the Establishment
-  Board of what the evidence licenses. Use when starting a paper, telling its
-  one-minute story, or retargeting to a new venue without rewriting the study.
+  venue-free identity, written ON THE STORY PAGE (Story<NN>-<idea-slug>): the
+  Research Question table, pitch, stakes, and the Establishment Board of what
+  the evidence licenses. Use when starting a paper, telling its one-minute
+  story, or retargeting to a new venue without rewriting the study.
   Trigger: seed page, paper identity, pitch, establishment board, page-type
   seed.
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-08-31"
-  group-token: "SD"
+  version: "0.7.0"
+  last_updated: "2026-09-07"
+  group-token: "Story<NN>"
   outline:
     mode: fixed
     source: "this SKILL.md"
-    shape: "Identity → Pitch → Research Question → Stakes → Source Pages → Establishment Board → Boundaries → Narrative Handoff"
+    shape: "Identity → Pitch → Research Questions → Stakes → Source Pages → Establishment Board → Boundaries → Narrative Handoff"
 ---
 
 # /haipipe-paper-seed · establish what the paper is
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
-Declare `page-type: seed`. In a runtime paper board this page lives at
-`0-paperboard/A1-Story/Story01-seed/`, second page of the venue-free story
-group it shares with its Ideation origin and the establish loop's two working
-pages (journey 0.5.0, JL 260824; older boards with narratives inside this
-group are grandfathered):
+Declare `page-type: seed`. In a runtime paper board this page IS the Story
+page: `A1-Story/Story<NN>-<idea-slug>/Story<NN>-<idea-slug>.md` (0.7.0, JL
+260907: one Story = one idea; the number is the idea counter, `Story01` is the
+first idea that survived the pool). Its two children, `Story<NN>-roadmap/` and
+`Story<NN>-narrative-<desk>/`, sit inside its folder. Older boards with a flat
+`Story01-seed/` beside `Story02-roadmap/` are grandfathered:
 
 ## 🧭 Journey phase
 
@@ -35,17 +37,23 @@ opens the first Narrative. The Seed alone writes E-row flips; the Roadmap only
 proposes settles. `haipipe-paper-workflow` holds the full gate assertions; this
 block only places the phase. The page itself always runs through
 `/haipipe-page` and `haipipe-page-workflow` (OUTLINE → … → CHECK), never a
-private lifecycle. ```text 0-paperboard/A1-Story/ ├── Story00-ideation/ the
-ideas this paper came from ├── Story01-seed/ what the paper IS · venue-free ·
-exactly one ├── Story02-roadmap/ where to go next AND what came back · plans
-against §6's gaps, proposes the settles └── Story<NN>-narrative-<desk>/ the
-tellings, one per desk (Story03 first) ``` The group law: the head pages
-(P0–P2) are the paper's venue-free head; no manuscript prose and no venue word
-lives in them — the tellings close the same group as
-`Story<NN>-narrative-<desk>` pages (JL 260831). In the
-establish loop this page is the SCOREBOARD: the Roadmap plans and registers,
-and the Seed ALONE writes E-row flips, each flip citing the landed QA path the
-Roadmap's lap carries.
+private lifecycle.
+
+```text
+A1-Story/
+├── Story00-ideation/                 the pool the idea came from
+└── Story<NN>-<idea-slug>/            THIS PAGE · what the paper IS · venue-free
+    ├── Story<NN>-roadmap/            child · plan to COLLECT · fills the RQ
+    │                                 table's "collect" column · proposes settles
+    └── Story<NN>-narrative-<desk>/   child · plan to SHOW · one per desk · fills
+                                      the RQ table's "show" column
+```
+
+The group law: the Story page and its roadmap child are venue-free; no
+manuscript prose and no venue word lives in them. A venue enters the Story only
+through a narrative child. In the establish loop this page is the SCOREBOARD:
+the Roadmap plans and registers, and the Seed ALONE writes RQ states and E-row
+flips, each flip citing the landed QA path the Roadmap's lap carries.
 
 ## 🌱 Grain and boundary
 
@@ -76,8 +84,10 @@ working title · one-sentence identity · unit of analysis · scope
 ### 2 · Pitch                 🎤 BLUF · re-opens when a cited row flips
 the one-minute story: hook → what we did → what we found → who should care
 
-### 3 · Research Question     🔒 STABLE
-primary RQ · answer form · secondary RQs only when indispensable
+### 3 · Research Questions    🔒 question text STABLE · 🔥 state column VOLATILE
+one row per question the paper goes out to explore: RQ<n> · the question ·
+⬜ open / 🔨 exploring / ✅ answered · collect (roadmap block) · show
+(narrative section) · answer form stated once above the table
 
 ### 4 · Stakes                🔒 STABLE
 real-world problem · intellectual problem · why this study is worth finishing
@@ -95,6 +105,33 @@ hard limits · non-claims · what the paper will NOT assert
 ### 8 · Narrative Handoff     ♻️ DERIVED · assembled from 1–7, licenses nothing new
 the smallest typed packet from which any venue-specific Narrative can begin
 ```
+
+## ❓ The Research Question table · division 3 (0.7.0 · JL 260907)
+
+A Research Question is a QUESTION the paper goes out to explore. It is not a
+hypothesis: a hypothesis asserts an answer, an RQ sends the roadmap out to get
+one. The table is the Story's control center, and it is why the Story page is
+the paper's one address: read it and you know what is being asked, what is
+running, what came back, and where each answer is shown.
+
+```text
+id    the question we go explore                     state        collect          show
+RQ1   Does X predict Y beyond Z?                     ✅ answered   B1 · done        S-<desk>-Main-Results
+RQ2   Does the effect survive the stricter FE?       🔨 exploring  B2 · running     S-<desk>-Appendix-Robustness
+RQ3   Does it hold in a pooled interaction test?     ⬜ open       B3 · not started (not allocated)
+```
+
+The state is about the QUESTION, never about how strong the answer turned out:
+⬜ open means named and nobody is on it, and a ⬜ row is an instruction to the
+roadmap child; 🔨 exploring means a block is running; ✅ answered means a result
+is back, and an ✅ row is an obligation for the narrative child. Whether the
+answer supports or refutes belongs to the Establishment Board, one E-row per
+RQ, so every RQ has exactly one E-row and the two ids appear side by side.
+The `collect` column is written by the roadmap child (its block id and state);
+the `show` column is written by the narrative child (the Section page that
+carries the answer). The Seed alone flips the state. The question text is
+STABLE: rewording a question is identity drift and must be explained on the
+Log; adding a question is a new row, never a rewrite.
 
 ## 🎤 The Pitch · division 2
 
@@ -123,7 +160,9 @@ through the page's `latex/` plugin when a shareable copy is needed.
 ## 📊 The Establishment Board · division 6
 
 One row per proposition the paper could defend: a one-sentence claim, its
-status, and the §5 asset it rests on. The board is FLAT and UNRANKED — no row
+status, the §5 asset it rests on, and the §3 Research Question it answers
+(0.7.0: one E-row per RQ, the RQ id is a column, so the forward question and
+the backward record read as one line). The board is FLAT and UNRANKED — no row
 is crowned the headline here, because ranking answers "important to whom?"
 and that names a desk. Each Narrative selects and orders from this board for
 its own target; the pitch's lead is the one exception, and it is the general

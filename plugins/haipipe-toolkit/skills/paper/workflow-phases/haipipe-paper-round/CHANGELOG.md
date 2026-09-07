@@ -1,3 +1,9 @@
+## 0.5.0 · 260907
+- A Round begins with a delivery and ends with one (JL 260907): `sent/` (the
+  PDF+DOCX that drew the comments), `feedback/` (what came back; was `files/`),
+  `released/` (the PDF+DOCX with every concern answered). Roles 1 and 7 name
+  them with manifest hashes. Path at the paper root, no `0-paperboard/`.
+
 ## 0.4.1 · 260831
 - Runtime home is the desk's -Round group (JL 260831); combined B<x>-<desk> and lone C1-RD-round grandfathered.
 

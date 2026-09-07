@@ -1,3 +1,13 @@
+## 0.7.0 · 260907
+
+- The Seed lives ON the Story page `A1-Story/Story<NN>-<idea-slug>/` (JL
+  260907: one Story = one idea); its roadmap and narrative children nest inside.
+- Division 3 becomes the Research Question TABLE: RQ<n> · question · ⬜ open /
+  🔨 exploring / ✅ answered · collect (roadmap block) · show (narrative
+  section). New "❓ The Research Question table" law: an RQ asks, an E-row
+  records; one E-row per RQ, the RQ id is an E-board column; the Seed alone
+  flips states. Outline shape string updated. group-token "SD" → "Story<NN>".
+
 ## 0.6.1 · 260831
 - Home renamed A1-Story/Story01-seed (SD/NA retired, JL 260831); group tree gains the narrative pages that close the group.
 

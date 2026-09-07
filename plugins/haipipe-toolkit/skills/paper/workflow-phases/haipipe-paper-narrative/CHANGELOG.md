@@ -1,3 +1,11 @@
+## 0.8.3 · 260907
+- Home is the child page `Story<NN>-<idea-slug>/Story<NN>-narrative-<desk>/`,
+  the Story's plan to SHOW; a retarget adds a sibling child, never a new Story;
+  every ✅ RQ row lands on one section-map row and that Section id is written
+  back to the parent's "show" column. Section-row field "room files" becomes
+  "page deliverable" (the page's `<page>.tex` fragment).
+  group-token "NA" → "Story<NN>-narrative-<desk>".
+
 ## 0.8.2 · 260904
 
 - Enter Narrative Pages through the five-phase Page lifecycle beginning at

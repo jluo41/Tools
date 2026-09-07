@@ -1,3 +1,15 @@
+## 0.8.0 · 260907
+
+- Story = one idea (JL 260907): the story group's number is the IDEA COUNTER.
+  `Story00-ideation` is the pool; `Story<NN>-<idea-slug>` is one paper's control
+  center and carries the Seed; `Story<NN>-roadmap` (plan to COLLECT) and
+  `Story<NN>-narrative-<desk>` (plan to SHOW) are its child pages. New
+  "🧩 Story = one idea" block; phase table, G0 receipt, group map updated.
+- `0-paperboard/` wrapper and `<N>-<desk><year>/` desk rooms retired for new
+  repos; `delivery/` replaces the room. Both grandfathered. Gazette 0.8.0 rows.
+- The Collection page is retired outright (was grandfathered since 0.6.0).
+- G7 names the Round's `sent/` and `released/` frozen builds.
+
 ## 0.7.4 · 260904
 
 - Name the current Page loop CONTEXT through CHECK.

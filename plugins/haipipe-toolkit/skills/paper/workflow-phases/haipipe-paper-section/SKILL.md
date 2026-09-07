@@ -7,7 +7,7 @@ description: >-
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.8.3"
+  version: "0.8.4"
   last_updated: "2026-09-07"
   page_ruling: none
   group-token: "S-<desk>-Main | S-<desk>-Appendix"
@@ -72,7 +72,7 @@ of the paper reading path without deleting their authority.
 ## 🏠 Runtime home (0.4.0)
 
 ```text
-0-paperboard/
+Paper-<Slug>/                                        groups at the paper root (0.8.0)
 ├── Ba-<desk1>-Main/       S-<desk>-Main-<kind>       the desk's main reader order
 ├── Bb-<desk1>-Appendix/   S-<desk>-Appendix-<slug>   its appendix sections
 ├── Bc-<desk1>-Round/      RD<NN>-<event>    its rounds (P6)
@@ -88,15 +88,23 @@ supplies reading order; a new section is never renamed merely because another
 section is inserted. Older `S<D><NN>` and `SA<NN>` IDs stay readable only as
 legacy/archive compatibility.
 
-**Where the words live (0.3.1)**: the tex a unit page tracks sits in its
-telling's desk room, `<N>-<desk><year>/sections/`, and that room is
-self-contained per the door's room law — the unit's `\includegraphics` paths
-resolve inside the room's `displays/` (copies of accepted page-local DISPLAY
-Results), and its citation keys resolve in the room's own `reference.bib`
-(assembled from accepted page-local CITE Results). A unit whose tex reaches into
-another room, a shared top-level folder, or a page's `display/` directly is a
-defect: copy the artifact into the room and name the owning page as
-provenance.
+**Where the words live (0.8.4 · JL 260907)**: on this page. The Section Page
+compiles its own deliverable through the page-level delivery plugin,
+`delivery/latex/<page>-complete.tex` with its `-complete.bib` and `.pdf`,
+wrapping the body fragment `delivery/latex/<page>.tex` that the paper build
+`\input`s; its `\includegraphics` paths resolve to its own accepted display units
+(`outline/evidence/display/<unit>/assets/figure.pdf`) and its citation keys to
+its own `-complete.bib`. The paper's `delivery/latex/` is regenerated FROM these
+files by `haipipe-paper-assemble`, never the other way round: a correction goes
+into this page and the paper folder is rebuilt whole. The old desk room
+(`<N>-<desk><year>/sections/*.tex` as source of record) is retired for new
+repos and grandfathered where it exists.
+
+**The milestone (JL 260907)**: this page is DONE, and admitted to the paper
+build, when three things exist: the outline table is approved
+(`outline/<page>-outline-v*.md`, ticked), every display unit has its
+`preview.pdf`, and the page PDF compiles under `delivery/latex/`. A page
+missing any of the three is not ready, and the paper build says so.
 
 Older repos using `1-SC-main/`, `2-SA-appendix/`, the `SC`/`SA` tokens, or a
 shared `0-sections/`/`0-display/` are grandfathered and migrate only on

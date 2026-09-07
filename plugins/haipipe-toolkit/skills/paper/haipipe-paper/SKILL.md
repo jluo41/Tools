@@ -7,8 +7,8 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "0.7.2"
-  last_updated: "2026-09-06"
+  version: "0.8.0"
+  last_updated: "2026-09-07"
   summary: "page-types/ replaced by workflow-phases/: six haipipe-paper-<phase> skills; venue contract moved beside its bank."
 ---
 
@@ -54,16 +54,19 @@ verb kept as a parenthesized alias.
 P0 Ideation (ideate)      💭 Story00 · the repo is minted with this page ·
 │                            ideas cheap and disposable
 │                            gate G0: novelty per claim + pilot + human PROCEED
-P1 Seed (establish)       🌱 Story01 · venue-free · E-board with novelty column
+P1 Seed (establish)       🌱 Story<NN>-<idea> · THE STORY PAGE · one idea = one
+│                            paper · venue-free · RQ table + E-board with novelty
 │                            gate G1: skeleton stands · gap list readable
-P2 Roadmap (route)        🗺 Story02 · BLOCK rows serving E-rows · ✋ released ·
+P2 Roadmap (route)        🗺 Story<NN>-roadmap · child of its Story · plan to
+│                            COLLECT · BLOCK rows serving RQ/E-rows · ✋ released ·
 │                            then the receipts land on its lap divisions
 │                            gate G2: every 🔨/⬜ E-row has a ▶️ row or waiver
 │                            gate G3: done-when holds · settle written on Seed
 │  ↺ P1↔P2 = the establish loop · exits only through the Seed:
 │                            gate G4: ticked outline · novelty column ·
 │                            pitch sells only ✅ rows
-P3 Narrative (tell)       🧭 NA · one per desk · §1 IS the venue decision
+P3 Narrative (tell)       🧭 Story<NN>-narrative-<desk> · child of its Story ·
+│                            plan to SHOW · one per desk · §1 IS the venue decision
 │                            gate G5: bank page bound · claims parented ·
 │                            map rows budgeted
 P4 Section (realize)      📄 one per map row · sign-off = per-unit CHECK ✅
@@ -86,9 +89,12 @@ The seven Page Types, one line each:
   story group's page zero (`Story00-ideation`), minted with the repo before any
   Seed exists; eliminated ideas stay forever; the winning idea's `went to`
   names this board's Seed (or, rarely, a sibling repo's).
-- **Seed** is one venue-free identity per paper; it survives retargeting
-  unchanged and binds its Ideation origin as a birth certificate.
-- **Roadmap** is one paper's campaign, plan and intake on one page: BLOCK
+- **Seed** is one venue-free identity per paper and LIVES ON THE STORY PAGE
+  (`Story<NN>-<idea-slug>.md`, JL 260907): identity, boundary, the Research
+  Question table, the Establishment Board; it survives retargeting unchanged
+  and binds its Ideation origin as a birth certificate.
+- **Roadmap** is one paper's plan to COLLECT, a child page of its Story
+  (`Story<NN>-roadmap`), campaign and intake on one page: BLOCK
   rows (data, model, analysis, …) each serving a Seed E-row, with executor,
   done-when, budget, and a person's block-by-block release — a block is a
   task group, its jobs are task folders, its runs are configurations,
@@ -98,9 +104,10 @@ The seven Page Types, one line each:
   page plans and registers, and never executes.
 - **Venue** is one evidence-backed desk record in the shared bank — a library
   asset outside the journey; the decision to target it lives on a Narrative.
-- **Narrative** is one desk's telling: venue decision, claim system, argument
-  order, and the one-row-per-section map. One desk, one page; retargeting
-  mints a sibling from the same Seed.
+- **Narrative** is one desk's telling and the paper's plan to SHOW, a child
+  page of its Story (`Story<NN>-narrative-<desk>`): venue decision, claim
+  system, argument order, and the one-row-per-section map. One desk, one page;
+  retargeting mints a sibling child from the same Story.
 - **Section** is one reader-ordered manuscript or appendix unit executing one
   Narrative row; the tex owns the words, the page owns the tracking.
 - **Round** is one bounded feedback batch parented to a named Narrative. It
@@ -210,7 +217,7 @@ Resolve the paper root and target Page before changing anything.
 | check paper or one family's status | `/haipipe-paper status` (command, not a Page Type) |
 | run one Page through its lifecycle | `haipipe-page-workflow` |
 | compile or export one Page | Page-local `latex/` or `word/` plugin |
-| assemble the paper | `haipipe-paper-assemble` from the desk-room source and accepted bindings |
+| assemble the paper | `haipipe-paper-assemble` from the Section Pages' own `delivery/latex/` outputs and accepted bindings |
 | respond to reviewers | a Round Page plus affected Narrative/Sections |
 
 ### Paper verbs
@@ -259,33 +266,39 @@ claims on any other Page.
 Narrative does not become evidence-free merely because its output is an
 outline.
 
-## 📂 Paper folder scaffold (JL 260823 · desk rooms JL 260824 · phase groups JL 260824)
+## 📂 Paper folder scaffold (JL 260823 · groups at the root and delivery/ JL 260907)
 
-A new paper repo — created as a git submodule immediately — is one numbered
-board plus one self-contained DESK ROOM per telling, in arrival order. Board
-groups map onto the journey: P0–P2 in the story group, P3 in the narrative
-group, P4–P5 in one group per desk:
+A new paper repo — created as a git submodule immediately — is one board whose
+page groups sit directly at the paper root, plus one `delivery/` folder that
+is a projection of the finished Section Pages. There is no `0-paperboard/`
+wrapper and no hand-edited desk room. Board groups map onto the journey: P0
+and the Stories in `A1-Story/`, P4–P5 in one group per desk:
 
 ```text
 Paper-<Slug>/
-├── 0-paperboard/               the board · 0 is ALWAYS the board · FIXED name,
-│   ├── board.md                tooling may rely on it
-│   ├── board/                  engine-generated HTML (build.py output)
-│   ├── A1-Story/               P0-P3 · Story00-ideation · Story01-seed ·
-│   │                           Story02-roadmap (the venue-free head), then
-│   │                           Story<NN>-narrative-<desk>, one per desk in
-│   │                           arrival order (Story03 first)
-│   ├── Ba-<desk1>-Main/        P4 · first desk's named Main sections
-│   ├── Bb-<desk1>-Appendix/    P4 · its named Appendix sections
-│   ├── Bc-<desk1>-Round/       P5 · its RD<NN> rounds, one page per batch
-│   └── Bd-<desk2>-Main/ …      second desk continues at the next free letter
+├── board.md                    the board · paper-root: .
+├── board/                      engine-generated HTML (build.py output)
+├── A1-Story/
+│   ├── Story00-ideation/       P0 · the idea pool · exactly one
+│   └── Story01-<idea-slug>/    P1 · ONE STORY = ONE IDEA · the Story page carries
+│       │                       the Seed and the Research Question table
+│       ├── Story01-roadmap/            P2 · child · plan to COLLECT
+│       └── Story01-narrative-<desk>/   P3 · child · plan to SHOW · one per desk
+│   (a second surviving idea is Story02-<slug>/, same shape)
+├── Ba-<desk1>-Main/            P4 · first desk's named Main sections
+├── Bb-<desk1>-Appendix/        P4 · its named Appendix sections
+├── Bc-<desk1>-Round/           P5 · its RD<NN> rounds, one page per batch ·
+│   └── RD<NN>-<event>-<date>/  each holds sent/ · feedback/ · released/ (the
+│                               frozen PDF+DOCX that drew comments, what came
+│                               back, the PDF+DOCX that answered them)
+├── Bd-<desk2>-Main/ …          second desk continues at the next free letter
 │                               (a foreign-desk round mints only its -Round)
-├── 1-<desk><year>/             first desk's ROOM (e.g. 1-ms2026/) · its number
-│   ├── sections/               matches the desk's arrival order, the same order
-│   ├── displays/               that assigned its lowercase B letter
-│   ├── reference.bib
-│   └── master tex · class/style files · compile script · the deliverable PDF
-├── 2-<desk><year>/             second desk's room (e.g. 2-wise2026/) · same shape
+├── delivery/                   GENERATED · never hand-edited
+│   ├── paper-build.toml        reading order · venue profile · output names
+│   ├── latex/                  master.tex + sections/ + appendices/ (the pages'
+│   │                           <page>.tex fragments) + displays/ + reference.bib,
+│   │                           all copied from the pages · the compiled paper PDF
+│   └── word/                   .docx converted from latex/
 └── README.md
 ```
 
@@ -296,22 +309,33 @@ consumer-neutral and a page binds them by path, so a task inside the paper
 would make the paper both the consumer of its evidence and the executor of it.
 `haipipe-paper-roadmap` carries the law and the which-project test.
 
-**The room law (JL 260824)**: a desk room is self-contained — its tex reads
-only its own `sections/`, includes only from its own `displays/`, cites only
-its own `reference.bib`, and compiles alone. Rooms never reach into each
-other. Evidence AUTHORITY never moves into a room: `displays/` holds COPIES of
-accepted page-local DISPLAY Results, and `reference.bib` is assembled from
-accepted CITE Results. Reuse across tellings goes through named Supporting Run
-Results, never through a shared folder or PageX link. The old shared
-top-level `sections/`, `displays/`, and root `reference.bib` are retired for
-new repos: a second telling that wants the first telling's figure copies it
-from the owning page into its own room, with the page as provenance.
+**The delivery law (JL 260907; replaces the room law of 260824)**: the words
+live on the Section Pages. Each Section Page compiles its own
+`delivery/latex/<page>-complete.tex` (with its `.bib` and `.pdf`) through the
+page-level delivery plugin, and that PDF is the page's own deliverable; the
+body fragment beside it, `delivery/latex/<page>.tex`, is what the paper
+build `\input`s. The paper's `delivery/latex/` is built FROM those fragments,
+in the Narrative's section-map order: `master.tex` is generated, `sections/`
+and `appendices/` are copies of the fragments, `displays/` holds copies of
+accepted page-local DISPLAY floats and assets, and `reference.bib` is merged
+from the pages' `bibex/<page>.bib`. Nothing under `delivery/` is hand-edited; a correction goes
+back to the owning page and the folder is regenerated whole. `delivery/word/`
+is converted from `delivery/latex/` and never edited either. On send, a copy
+of the current build is frozen in the Round it opens (`RD<NN>/sent/`); on that
+Round's close, the answering build is frozen in `RD<NN>/released/`
+(`haipipe-paper-round`). Evidence
+AUTHORITY never moves into `delivery/`: it holds copies, the pages hold the
+Results. The milestone that admits a page into the build is per Section Page:
+its outline table is approved, every display unit has its preview PDF, and its
+own page PDF compiles. The old self-contained desk rooms (`<N>-<desk><year>/`
+with `sections/*.tex` as source of record) are retired for new repos and
+grandfathered where they exist.
 
 **Group-name grammar (JL 260824; Section IDs re-ruled 260901)** — one `A` group
-carries the per-paper journey: `A1-Story` holds P0–P3, the venue-free head
-(`Story00-ideation`, `Story01-seed`, `Story02-roadmap`) and then one
-`Story<NN>-narrative-<desk>` per desk, because a page id should explain itself
-(`SD`/`NA` tokens are retired); `B` groups run in lowercase
+carries the per-paper journey: `A1-Story` holds `Story00-ideation` (the pool)
+and one `Story<NN>-<idea-slug>` per surviving idea, each holding its
+`Story<NN>-roadmap` and `Story<NN>-narrative-<desk>` children (JL 260907: the
+number is the idea counter; `SD`/`NA` tokens are retired); `B` groups run in lowercase
 letter order across the board, ONE LETTER PER GROUP (JL 260831 "Ba to be Main,
 Bb to be Appendix, Bc to be Round"): the first desk takes `Ba-<desk>-Main` for
 the named Main units, `Bb-<desk>-Appendix` for its named Appendix units, and
@@ -331,9 +355,13 @@ next distinctive letter. Review letters live inside their Round page's
 folder, never at the repo root. Existing repos (`0-<Slug>PaperBoard/`, bare
 `paperboard/`, `0-sections/`, `0-display/`, a shared root `reference.bib`,
 `SC`/`A<D>`/`SD`/`NA` tokens, a separate `A2-NA-narrative` group, a lone `C1-RD-round`
-group, a story group holding a separate `SD03-collection` page) are
-grandfathered and migrate only on explicit request, because the
-rename touches tex `\input` paths, legacy PageX symlinks, and compile scripts.
+group, a story group holding a separate `SD03-collection` page, the
+`0-paperboard/` wrapper with `<N>-<desk><year>/` desk rooms beside it, and the
+flat phase-numbered story group `Story01-seed` / `Story02-roadmap` /
+`Story03-narrative-<desk>`) are grandfathered and migrate only on explicit
+request, because the rename touches tex `\input` paths, legacy PageX
+symlinks, and compile scripts. `Paper-AgreeablePrescription` is the first
+repo on the 0.8.0 layout.
 
 ## 📦 Assembly and delivery
 
@@ -342,26 +370,30 @@ Paper assembly is a source-driven projection, governed by
 folders, and it does not use a previous Word file as a template or input.
 
 ```text
-Board/Page authority                  Desk-room source of record
-boundary · claims · evidence         master.tex · sections/*.tex
-acceptance · display bindings        displays/ · reference.bib
+Board/Page authority                  Section Pages' own deliverables
+boundary · claims · evidence         <page>/delivery/latex/<page>-complete.tex
+acceptance · display bindings        + .bib · accepted display assets
              \                         /
-              accepted bindings + paper-build.toml
+              accepted bindings + delivery/paper-build.toml
+                               ↓
+             delivery/latex/ regenerated whole: master.tex ·
+             sections/ · appendices/ · displays/ · reference.bib
                                ↓
              shared assembly engine + venue profile
                                ↓
        main DOCX/PDF · supplement · snapshots · manifest · QA
 ```
 
-The Page-local `latex/` and `word/` plugins remain useful for reviewing one
-Section Page. They are not the complete-paper assembly input. The complete
-paper builder reads the active desk room, whose TeX wording is the source of
-record for the deliverable and whose files must stay inside that room.
+The Page-local `delivery/word/` snapshot remains useful for a coauthor
+reading one Section Page. It is not the complete-paper input. The complete
+paper builder reads each Section Page's `delivery/latex/<page>-complete.tex`
+in the Narrative's order, regenerates `delivery/latex/` from them, and
+converts `delivery/word/` from that. The pages own the wording; `delivery/`
+is a projection and is never edited by hand.
 
-Every desk room that emits a complete Word document should declare a
-`paper-build.toml` (or an equivalent registered config) containing the source
-room, master, sections, displays, bibliography, output names, and venue
-profile. The reusable engine owns parsing, document events, rendering,
+The paper declares one `delivery/paper-build.toml` containing the page groups
+and the Narrative that orders them, the display and bibliography sources,
+output names, and venue profile. The reusable engine owns parsing, document events, rendering,
 manifests, and QA; the paper contributes configuration and only a narrowly
 scoped adapter for unusual constructs. See
 `haipipe-paper-assemble/SKILL.md` for the full contract.
@@ -440,8 +472,9 @@ Before reporting Paper work complete:
   promoted asset still follows the normal candidate and evidence gates.
 - Every Round covers one feedback batch, routes every item exactly once, and
   names checked target-Page versions plus an approved response/build receipt.
-- The complete-paper PDF/DOCX is regenerated from the active desk-room source,
-  accepted Page bindings/versions, and declared `paper-build.toml` config.
+- The complete-paper PDF/DOCX is regenerated from the Section Pages' own
+  `delivery/latex/` outputs, accepted Page bindings/versions, and the declared
+  `delivery/paper-build.toml` config.
 - The build manifest records the source/config/profile/engine versions and the
   output QA result; no generated Word file is used as an input.
 - G6 submission-readiness is either closed or explicitly recorded as a DRAFT

@@ -7,8 +7,8 @@ description: >-
   Trigger: paper journey, what phase are we in, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "0.7.4"
-  last_updated: "2026-09-04"
+  version: "0.8.0"
+  last_updated: "2026-09-07"
 ---
 
 # /haipipe-paper-workflow · know the phase, test the gate, mint the next page
@@ -56,17 +56,19 @@ phase                     authority page                 what the phase produces
 P0 Ideation (ideate)      ideation   (A1-Story/Story00)  a winning idea sent to
                                                          its Seed · the repo is
                                                          minted WITH this page
-P1 Seed (establish)       seed       (A1-Story/Story01)  a defensible identity
-                                                         + E-board
-P2 Roadmap (route)        roadmap    (A1-Story/Story02)  released blocks: where
+P1 Seed (establish)       seed       (A1-Story/Story<NN>) a defensible identity
+                                         the Story page      + RQ table + E-board
+P2 Roadmap (route)        roadmap    (Story<NN>/          released blocks: where
+                                       Story<NN>-roadmap)
                                                          to go, who runs it,
                                                          done-when · then the
                                                          landed QA receipts,
                                                          lap by lap, settled
                                                          back onto the Seed
    ↺ P1↔P2 is the ESTABLISH LOOP · exits only through the Seed at G4
-P3 Narrative (tell)       narrative  (A1-Story, 1/desk)  a desk decision +
-                                                         section map
+P3 Narrative (tell)       narrative  (Story<NN>/          a desk decision +
+                                       Story<NN>-narrative- section map
+                                       <desk>, 1/desk)
 P4 Section (realize)      section    (B group, per row)  signed-off units
    P4.9                   assemble — a VERB, not a phase the built deliverable ·
                                                          DRAFT until G6 holds
@@ -114,9 +116,9 @@ G0  Ideation → Seed        precondition, tested on the idea's summary row
                            pilot result or explicit waiver · a person's
                            PROCEED tick (or PROCEED WITH CAUTION with its risk
                            accepted in the tick) · receipt, recorded after the
-                           act: Story01-seed exists in this board's A1-Story,
-                           its §5 first row binds Story00-ideation back, and the
-                           idea's `went to` cell names it (an idea that went
+                           act: Story<NN>-<idea-slug> exists in this board's
+                           A1-Story, its §5 first row binds Story00-ideation
+                           back, and the idea's `went to` cell names it (an idea that went
                            to a DIFFERENT paper adds: that new repo exists as
                            a submodule)
 
@@ -146,7 +148,8 @@ G5  Narrative → Section    the Narrative's §1 binds one bank page · every cl
 
 G6  Section → assemble     every map row's unit page is CHECK-closed
                            (✅ SETTLED) · `/haipipe-paper-assemble` itself
-                           RUNS ANYTIME from the active desk-room source — a
+                           RUNS ANYTIME from the Section Pages' own
+                           delivery/latex/ outputs — a
                            build made while G6 fails is watermarked DRAFT in
                            its receipt, one made while it holds is
                            SUBMISSION-READY · the gate informs, the person
@@ -156,7 +159,9 @@ G7  Round (per round)      every received concern appears exactly once in the
                            ledger and routes exactly once — to the Seed when it
                            demands evidence the paper does not hold, to the
                            Narrative for a retelling, to a Section for a rework
-                           — and a person approves the response receipt
+                           — the Round's sent/ and released/ each hold one
+                           frozen build with its manifest hash · and a person
+                           approves the response receipt
 ```
 
 Gate numbers are stable across 0.6.0: G2 and G3 both read the Roadmap now
@@ -165,10 +170,14 @@ Gate numbers are stable across 0.6.0: G2 and G3 both read the Roadmap now
 ## 🗃 Group mapping (JL 260828)
 
 ```text
-P0–P3   A1-Story/            Story00-ideation · Story01-seed · Story02-roadmap,
-                             the venue-free head, one each; then
-                             Story<NN>-narrative-<desk>, one page per desk in
-                             arrival order (Story03 first; JL 260831)
+P0      A1-Story/Story00-ideation/         the idea pool · exactly one per board
+P1–P3   A1-Story/Story<NN>-<idea-slug>/     ONE STORY = ONE IDEA (JL 260907) · NN
+        │                                   is the idea counter, 01 first · the
+        │                                   Story page carries the Seed and the
+        │                                   Research Question table
+        ├── Story<NN>-roadmap/              child page · the plan to COLLECT
+        └── Story<NN>-narrative-<desk>/     child page · the plan to SHOW · one
+                                            per desk, arrival order
 P4–P5   Ba-<desk>-Main/      the desk's S<D> main sections
         Bb-<desk>-Appendix/  its SA appendix sections
         Bc-<desk>-Round/     its RD rounds (JL 260831: one letter per group;
@@ -177,10 +186,39 @@ P4–P5   Ba-<desk>-Main/      the desk's S<D> main sections
 ```
 
 A foreign-desk round (feedback from a desk this board never told) mints that
-desk's B group even when the group holds only RD pages. Boards laid out under
-the pre-0.5.0 grammar (narratives inside the SD story group, a lone
-C1-RD-round group), and boards holding a separate `SD03-collection` page from
-the 0.5.0 era, are grandfathered and migrate only on explicit request.
+desk's B group even when the group holds only RD pages. Grandfathered, migrating
+only on explicit request: the pre-0.5.0 grammar (narratives inside the SD story
+group, a lone C1-RD-round group); the 0.5.0–0.7.x flat story group
+(`Story01-seed`, `Story02-roadmap`, `Story03-narrative-<desk>` as siblings,
+phase-numbered); and the `0-paperboard/` wrapper with `<N>-<desk><year>/` desk
+rooms beside it. The Collection page is retired; a board still holding one
+reads it as history.
+
+## 🧩 Story = one idea (0.8.0 · JL 260907)
+
+The story group's number is the IDEA COUNTER, not the phase. `Story00` is the
+pool every idea comes from; `Story01-<idea-slug>` is the first idea that
+survived it, `Story02-<slug>` the second. One Story is one paper's control
+center: its own page carries the Seed (identity, boundary, the Research
+Question table, the Establishment Board), and its two child pages are its two
+PLANS, which differ only in direction:
+
+```text
+Story<NN>-<idea-slug>.md          the Story · seed + RQ table · what this paper IS
+├── Story<NN>-roadmap             plan to COLLECT · runs backward to the data ·
+│                                 points at examples/<Project>/tasks/ and
+│                                 discoveries/ · fills the RQ table's "collect"
+└── Story<NN>-narrative-<desk>    plan to SHOW · runs forward to the reader ·
+                                  points at Ba-<desk>-Main/ and Bb-<desk>-Appendix/
+                                  · fills the RQ table's "show"
+```
+
+A child page carries its parent's NN so its id says which Story it serves; a
+second desk for the same idea is a second `Story<NN>-narrative-<desk>` inside
+the same Story, never a new Story. A Research Question is a QUESTION the paper
+goes out to explore (⬜ open · 🔨 exploring · ✅ answered); the Establishment
+Board's E-row is the backward record of what came back, one E-row per RQ.
+`haipipe-paper-seed` owns the table's shape.
 
 ## 📜 Gazette of retired names
 
@@ -190,6 +228,16 @@ against this table and do not rewrite frozen files:
 ```text
 old phase name        new phase (alias)          old gate         new gate
 ──────────────────────────────────────────────────────────────────────────
+— 0.8.0 (260907): Story = one idea; 0-paperboard and desk rooms retired ——
+Story01-seed          Story<NN>-<idea-slug>      (unchanged)      (unchanged)
+                      · the Story page itself
+Story02-roadmap       Story<NN>-roadmap · child
+Story<NN>-narrative-  Story<NN>-narrative-<desk>
+<desk> (sibling)      · child of its Story
+0-paperboard/         the paper root · board.md
+                      and groups sit there
+<N>-<desk><year>/     delivery/ · generated from
+(desk room)           the Section Pages' own tex
 — 0.6.0 (260828): the Collection page folded into the Roadmap ——————————
 P3 Collection         P2 Roadmap (route) ·       G3 (unchanged    G3
    (collect)          its lap divisions          number)
@@ -230,5 +278,5 @@ holds, per telling. Inside the establish loop the reading is the lap: a paper
 with released blocks still running sits at P2 with cards out; one whose last
 lap settled and left gaps sits at P2 planning the next release. Two tellings
 of one paper may sit in different phases — the MS telling in P5 while a WISE
-telling is in P4 — because P3 onward is per-narrative. P0–P2 are per-paper
-and shared.
+telling is in P4 — because P3 onward is per-narrative. P0 is per-board; P1–P2
+are per-Story and shared by that Story's tellings.

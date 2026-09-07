@@ -12,9 +12,9 @@ description: >-
   roadmap page, block board, campaign plan, task group, block job run, lap,
   register QA, intake, page-type roadmap.
 metadata:
-  version: "0.6.2"
-  last_updated: "2026-08-31"
-  group-token: "SD"
+  version: "0.6.3"
+  last_updated: "2026-09-07"
+  group-token: "Story<NN>-roadmap"
   outline:
     mode: grammar
     source: "this SKILL.md"
@@ -41,23 +41,28 @@ never a private lifecycle.
 
 Exactly one Roadmap per paper, minted right after the Seed and EVERGREEN (♻️):
 it never closes while any E-row is ⬜/🔨 or any released block is running. It
-is the story group's third and last page — the plan and the intake desk are
-ONE page, because every released block comes home to the row that sent it:
+is the Story's PLAN TO COLLECT, a child page inside the Story's folder — the
+plan and the intake desk are ONE page, because every released block comes home
+to the row that sent it:
 
 ```text
-Paper-<Slug>/0-paperboard/A1-Story/
-├── Story00-ideation/               where the idea came from
-├── Story01-seed/                   what the paper IS · the scoreboard
-├── Story02-roadmap/                where to go next AND what came back · THIS PAGE
-└── Story<NN>-narrative-<desk>/     the tellings, one per desk (Story03 first)
+Paper-<Slug>/A1-Story/
+├── Story00-ideation/                 where the idea came from
+└── Story<NN>-<idea-slug>/            the Story · what the paper IS · the RQ table
+    ├── Story<NN>-roadmap/            THIS PAGE · plan to COLLECT · where to go
+    │                                 next AND what came back · writes the RQ
+    │                                 table's "collect" column
+    └── Story<NN>-narrative-<desk>/   plan to SHOW · one per desk
 ```
 
-The head of the story group (Story00 to Story02) is wholly venue-free; the
-desk layer starts at the `Story<NN>-narrative-<desk>` pages that close the
-group (JL 260831). In the journey (haipipe-paper-workflow 0.6.0) this
-page is P2 Roadmap (route), the planning-and-intake beat of the P1↔P2
-establish loop. Boards with a separate `SD03-collection` page are
-grandfathered and fold it into this page only on explicit request.
+This page and its parent are wholly venue-free; the desk layer starts at the
+`Story<NN>-narrative-<desk>` sibling (0.8.0, JL 260907: one Story = one idea,
+the number counts ideas and the child carries its parent's number). Every
+block serves a named RQ row of the parent's §3 and its E-row in §6, and points
+at `examples/<Project>/tasks/` or `discoveries/`, never at a folder inside the
+paper. In the journey this page is P2 Roadmap (route), the planning-and-intake
+beat of the P1↔P2 establish loop. The Collection page is retired; a board still
+holding one reads it as history and migrates only on explicit request.
 
 ## 🧱 Three layers, one address (JL 260828)
 
@@ -257,8 +262,8 @@ gathered nothing and rejected nothing, and conflating the two mis-decides
 the claim the card serves.
 
 ```text
-pagex/     binds Story01-seed (the §6 gap list the plan serves and the E-rows
-           the settle proposals point at)
+pagex/     binds the parent Story page, Story<NN>-<idea-slug> (its §3 RQ rows
+           and §6 E-rows the plan serves and the settle proposals point at)
 probe/     the dispatch cards · one per released block · receipts land here
            first, then are registered on the lap
 ```
@@ -272,7 +277,8 @@ writes E-row flips.
   and scope; none is silently missing.
 - Every Block Board row has no blank cell; every status is from the fixed
   vocabulary; every ▶️/🔵/✅ row carries a person's release with date.
-- Every row's serves column resolves to a real E-row id on Story01-seed §6.
+- Every row's serves column resolves to a real RQ id in the parent Story's §3
+  and its E-row id in §6.
 - Every block states its job count and its run count; no row is unbudgeted.
 - Every block has a division listing its jobs with run ranges, and every job
   sweeping more than one axis states the axis order.

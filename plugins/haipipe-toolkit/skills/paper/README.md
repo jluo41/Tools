@@ -13,13 +13,15 @@ library outside the journey:
 ```text
 P0 Ideation (ideate)     Story00 · the repo is minted with this page · sends one
                          idea to its Seed
-P1 Seed (establish)      Story01 · one per paper · venue-free · E-board with
-                         novelty column
-P2 Roadmap (route)       Story02 · block rows serving E-rows · person-released ·
-                         then dispatch cards and receipts, lap by lap, on the
-                         same page
+P1 Seed (establish)      Story<NN>-<idea> · THE STORY PAGE · one idea = one
+                         paper (0.8.0) · venue-free · Research Question table +
+                         E-board with novelty column
+P2 Roadmap (route)       Story<NN>-roadmap · child of its Story · plan to COLLECT
+                         · block rows serving RQ/E-rows · person-released · then
+                         dispatch cards and receipts, lap by lap, on the same page
    ↺ P1↔P2 = the establish loop · exits only through the Seed at G4
-P3 Narrative (tell)      NA · one per desk · §1 binds a bank Venue Page
+P3 Narrative (tell)      Story<NN>-narrative-<desk> · child of its Story · plan
+                         to SHOW · one per desk · §1 binds a bank Venue Page
 P4 Section (realize)     one per map row · then assemble (a verb) at G6
 P5 Round (respond)       in the desk's B group · routes each concern once →
                          Seed / Narrative / Section · gates G0-G7 in the
@@ -52,6 +54,23 @@ lives inside one probe card's proof and `## Values` block and is cited as
 
 There is no View layer. Literature, Value, and Display are Page-local plugin
 lanes, not Page Types.
+
+## Paper layout (0.8.0 · JL 260907)
+
+```text
+Paper-<Slug>/                        no 0-paperboard/ wrapper · board.md at the root
+├── board.md                         paper-root: .
+├── A1-Story/
+│   ├── Story00-ideation/            the idea pool
+│   └── Story01-<idea-slug>/         one Story = one idea · seed + RQ table
+│       ├── Story01-roadmap/         plan to collect → tasks/ · discoveries/
+│       └── Story01-narrative-<desk>/  plan to show → Ba/Bb
+├── Ba-<desk>-Main/  Bb-<desk>-Appendix/  Bc-<desk>-Round/
+└── delivery/                        GENERATED from the Section Pages' own
+    ├── paper-build.toml             delivery/latex/<page>.tex fragments
+    ├── latex/                       master.tex · sections/ · displays/ · .bib · PDF
+    └── word/                        .docx converted from latex/
+```
 
 ## Active files
 
@@ -173,7 +192,8 @@ paper repo — the door's scaffold dropped its tasks/ line to match
 
 There are two different Word exports. `haipipe-plugin-delivery/ref/word.md` renders one Page
 for coauthor review. `haipipe-paper-assemble` builds the complete manuscript
-from the active desk-room master/sections/displays/bibliography. The latter is
+from the Section Pages' own `delivery/latex/<page>-complete.tex` files,
+regenerating the paper's `delivery/latex/` whole (0.3.0). The latter is
 deterministic and source-driven: generated Word files and section snapshots
 are outputs only, never inputs. New papers should provide a small
 `paper-build.toml` and select a venue profile; they should not copy a large
