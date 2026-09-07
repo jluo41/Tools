@@ -52,12 +52,16 @@ is `C1` with `P1` to `P<n>`.
   Evidence: E<NN>-<TYPE>-<slug> · <expected ready evidence>
                                           one named evidence item, before SURVEY
   Accept: <observable acceptance checks>  required directly after each Evidence line
+  Serves: C<n>.P<m>.B<k>[, ...]           DISPLAY only; optional additional reader
+                                          moves served by the same placed display
   Answered: <ids + numbers>               appended by the fold when a card lands;
                                           ends `· recount` when the value counts the
                                           run's own artifacts (receipts, findings)
   Drawn: <what the figure shows>          appended by the fold, transcribed from the
                                           unit's README claim, never composed
-  Routed: <RD> <row id>                   appended by ⓪ COLLECT, one line per row served
+  Routed: <RD> <row id>                   appended by ⓪ COLLECT, one line per row served;
+                                          readers also accept `RD01 S1-PP5; RD01 S1-PP7`
+                                          and `RD01 S3-PP2, S3-PP3` as several rows
   Evidence: none · <reason>               alternative when this Bullet needs no
                                           citation, value, figure, or table
 ```
@@ -145,6 +149,10 @@ Accept: <observable checks>                one line directly after each item
   `<stem>-evidence-items.md`; it does not invent what the item should become.
 - Several items may belong to one bullet; each has its own immediately
   following `Accept:` line and its own table record.
+- A DISPLAY Item keeps exactly one owning Target. It may add `Serves:` with
+  other Bullet addresses when one placed display performs several reader jobs.
+  Those addresses do not inherit the DISPLAY Item and still make their own
+  evidence decisions.
 - The fold APPENDS `Answered: E<id> · <interpretation + Result>` for VALUE or
   CITE and `Drawn: E<id> · <claim + Result>` for DISPLAY. It never edits the
   bullet head, item identity, expectation, or acceptance contract.
@@ -172,9 +180,10 @@ only appends or refreshes `Answered:`/`Drawn:` bindings increments `E` under
 the same Shape. `v0.S.E` is valid in both copilot and auto: checked Shape may
 proceed through SURVEY, LAND, and EMBED before the first approval, but no
 `v0.*` plan releases or refreshes Content. The first explicit channel approval
-promotes the selected Shape-and-evidence state to `v1.0`; it does not assert
-that every Evidence Item is ready. Unfinished evidence continues through
-SURVEY/LAND/EMBED under `v1.0` before CONTENT.
+promotes the selected Shape-and-evidence state to `v1.0` only after every
+machine-finishable Evidence Item has been completed as far as possible. Any
+remaining secure-server or person gate is named in the `approved:` line;
+those items may continue through SURVEY/LAND/EMBED under `v1.0`.
 
 For `G>=1`, every version change refreshes CONTENT. A bounded Shape change
 increments `S`, resets `E` to zero, and receives its own human review before

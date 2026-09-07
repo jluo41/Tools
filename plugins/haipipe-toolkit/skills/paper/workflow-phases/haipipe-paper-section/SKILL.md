@@ -7,8 +7,8 @@ description: >-
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.8.2"
-  last_updated: "2026-09-04"
+  version: "0.8.3"
+  last_updated: "2026-09-07"
   page_ruling: none
   group-token: "S-<desk>-Main | S-<desk>-Appendix"
   outline:
@@ -249,6 +249,36 @@ comparison owed`); one `Cut:` bullet names what leaves the section and where it
 goes; a Note is one line and never the drafted sentence, which lives on the
 page. The approved specimen is `S-MISQ-Main-Abstract-outline-v3.md` on the MISQ board,
 quoted in `haipipe-plugin-outline` §✂️.
+
+## 🏷 Reader-facing subsection titles
+
+During SHAPE and CONTENT revision, name each subsection for the substantive
+subject or relationship its paragraphs develop. A reader scanning the titles
+should recognize the actors, constructs, decisions, or contexts being studied
+without knowing the planning vocabulary.
+
+- Prefer concrete, concise noun phrases with parallel grammatical form across
+  peer subsections. Preserve defined construct names and the venue's casing;
+  do not shorten a title by changing the construct or making a stronger claim.
+- Distinguish a reader-facing title from a paragraph job. `Resolve the rivalry`
+  describes the writer's task; `Patient-Request Pressure and Physician
+  Accommodation` names the subject. `Boundary tests and integrated model`
+  is too generic when the actual subject is prescribing across clinical contexts.
+  These examples illustrate the distinction, not a required outline or phrase list.
+- Check title-to-body fit: the title covers the whole subsection, distinguishes
+  it from its neighbors, and promises no unmeasured mediation, demonstrated
+  causality, or material absent from its paragraphs. `Boundary`, `model`, and
+  `competing predictions` are legitimate terms when they identify the actual
+  subject; they are not banned words.
+- Read the ordered titles alone, then inspect the corresponding paragraphs.
+  Revise a vague title; do not reorganize an approved argument merely to fit
+  a more attractive label. A genuine scope/order/claim change returns to SHAPE.
+- For an authorized title-only clarification, synchronize the current Outline
+  division, Page Content heading, and matching Aim heading; regenerate the
+  Board and declared delivery and inspect both. Preserve historical plans and
+  completed Run inputs. Apply the plan grammar's version rule: a mechanical
+  relabeling with unchanged scope, order, Bullets, and evidence need not consume
+  a version; record the rationale instead of disguising a Shape change as wording.
 
 ## 🃏 Landing evidence in prose
 

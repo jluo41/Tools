@@ -57,7 +57,8 @@ from src.item_table import bullets as typed_evidence_bullets, evidence_none_targ
 from src.parse import parse_dir  # noqa: E402
 from legacy.topic_entry_contract import check_topic_entries  # noqa: E402
 from src.page_evidence import check_page_evidence  # noqa: E402
-from src.feedback import rounds as _rounds, parse_round, register_path, register_ids  # noqa: E402
+from src.feedback import (rounds as _rounds, parse_round, register_path,  # noqa: E402
+                          register_ids, routed_rows)
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 MAX_PAGE_TITLE_WORDS = 6
@@ -1547,7 +1548,9 @@ def check_feedback_coverage(path, text, name, rep):
         latest = latest_outline(path.parent / "outline", path.stem)
         plan = latest.read_text(encoding="utf-8", errors="replace") if latest else ""
         rdid = rd.stem.split("-")[0]
-        served = set(re.findall(rf"(?m)^\s+Routed:\s*{rdid}\s+(\S+)", plan))
+        # One grammar with the Page's Feedback column (src/feedback.py):
+        # `Routed: RD01 S3-PP2, S3-PP3` serves two rows, not `S3-PP2,`.
+        served = {rid for _rd, rid in routed_rows(plan, rdid)}
         declined = set(re.findall(rf"(?m)^declined:\s*{rdid}\s+(\S+)", plan))
         open_rows = {r["id"] for r in data["rows"].get(pid, []) if r["state"] == "open"}
         for rid in sorted((open_rows & have) - served - declined):

@@ -203,6 +203,7 @@ collapsed `Run & Result paths` disclosure and must wrap within the card.
 | `Need` | SHAPE | why the outline needs this item, in one line |
 | `Expected` | SHAPE | `<TYPE> · <ready-to-use payload>` |
 | `Acceptance` | SHAPE | observable checks for the ready Evidence Result |
+| `Serves` | SHAPE; `DISPLAY` only | optional additional Bullet addresses served by the same placed display; Target remains the single owner and no sibling inherits the Item |
 | `Verified` | human at LAND; `CITE` only | `⬜` until a person signs `✅ <who> <timestamp>` after checking source identity, focal claim, and locator; omit on VALUE/DISPLAY |
 | `Supporting Runs` | SURVEY | `[]` or a semicolon-separated list of existing `Family · reuse/rerun/registered · full global Run id` and/or planned `Family · new-* · parent route` entries |
 | `Local Input` | SURVEY; LAND freezes | one envelope plan: Supporting Results plus named governed page-local paths when needed; LAND appends `→ <packet>#<sha256>` |
@@ -212,6 +213,13 @@ collapsed `Run & Result paths` disclosure and must wrap within the card.
 Comments hold rationale; they never replace an expected payload, acceptance
 test, or Run address. A typed `Status` label is a defect because status is
 derived from receipts and Results.
+
+A recovered prior output may carry the binding qualifier
+`provisional · <path>#<sha256>` after LAND verifies it against the current
+contract. `provisional` is not a Run action and does not replace `reuse` or
+`rerun`; it records that the accepted Supporting Result came from a governed
+old store. A newer canonical Result for the same target marks the provisional
+binding stale automatically and reopens LAND or EMBED.
 
 ## The Run graph · zero-to-many supports, exactly one local Run
 

@@ -7,8 +7,8 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.58.0"
-  last_updated: "2026-09-06"
+  version: "0.60.2"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -32,6 +32,11 @@ the base/variant model           the template file (ref/page-template.md)
 This skill never contains the renderer, the server or the checker; it calls
 them. The authoritative template stays `haipipe-board/ref/page-template.md`;
 this contract cites it and never forks it.
+
+The reader-facing completion packet is defined in
+`ref/user-check-packet.md`. Every Page-changing reply uses that contract so a
+person can inspect the Outline table, the current Display PDF(s), and the
+compiled Page-level PDF without searching through process output.
 
 ## 📁 What a page is on disk
 
@@ -218,8 +223,8 @@ index     phase/cycle     skill                                  gate
 00        CONTEXT/PREPARE  page-workflows/haipipe-page-context     ⚙ resolved context
 01        OUTLINE/SHAPE    page-workflows/haipipe-page-outline     👤 approved:
           OUTLINE/SURVEY   page-workflows/haipipe-page-outline     👤 Decide per item
-02        EVIDENCE/LAND    page-workflows/haipipe-page-evidence    ⚙ every make-item ready
-          EVIDENCE/EMBED   page-workflows/haipipe-page-evidence    ⚙ back to SHAPE
+02        EVIDENCE/LAND    page-workflows/haipipe-page-evidence    ⚙ local work exhausted; external gates named
+          EVIDENCE/EMBED   page-workflows/haipipe-page-evidence    ⚙ v0 → SHAPE · G>=1 → CONTENT
 03        CONTENT/WRITE    page-workflows/haipipe-page-content     ⚙ cold pre-check ready
 04        CHECK/CHECK      page-workflows/haipipe-page-check       👤 accepted:
 ```
@@ -244,7 +249,8 @@ the section list itself is being agreed        → SHAPE
 an item has no valid Run graph or Decide        → SURVEY
 a decided item has no ready local Result        → LAND
 a ready item is not yet in the plan             → EMBED
-purpose, Aims, or prose realization changes    → CONTENT / WRITE
+approved purpose, Aim promise, or structure changes → OUTLINE / SHAPE
+prose realization changes under the same promise → CONTENT / WRITE
 a concrete version is judged                   → CHECK
 ```
 
@@ -285,10 +291,11 @@ stated as a `**Covered elsewhere**:` part in its drawer.
 
 `## Outline` is the only on-page projection of the planning process. It opens
 by default immediately after the always-visible Opening. Normally it renders
-the current plan's `▤ Outline table`: `Address · Planned move · Evidence ·
-Supporting Run · Local Run`; C/P rows are narrative group headers and B rows
-are the checkable claim/evidence rows. Evidence chip colour and its popover
-carry the derived item state, so no separate Status column is shown. A Page
+the current plan's `▤ Outline table`: `Address · Planned move · Feedback ·
+Evidence · Supporting Run · Local Run`; C/P rows are narrative group headers and B rows
+are the checkable claim/evidence rows. Evidence chip colour carries the quick
+signal and its deep-linked Evidence Workspace card carries the detail, so no
+separate Status column or Page popover is shown. A Page
 Type may define one generated
 executive projection from its own authoritative Content records. When it does,
 that projection appears first and the generic plan table remains available in
@@ -387,6 +394,33 @@ reader-facing reply and never substitute `localhost`, `127.0.0.1`, or
 `file://`. The short-route and server details are owned by
 `haipipe-board/ref/operations.md`; this section is the Page entry point.
 
+Before returning a reader-facing Page link, make a lightweight request to the
+exact configured public URL and require a successful response. Every reply
+that changes a Page ends with that verified Board URL when the request
+succeeds. If verification fails, the user-check packet ends with an explicit
+Board-unavailable blocker and no clickable substitute. It may not end with a
+source-file path, `localhost`, `127.0.0.1`, or `file://`.
+
+### 👀 User check packet · the only primary return surfaces
+
+After any Page, plan, Page-local evidence, DISPLAY, Content, or derived
+projection change, return the compact packet in
+`ref/user-check-packet.md`, in this order:
+
+1. the verified Board Page URL, labelled **Outline table**;
+2. one current standalone `preview.pdf` link for each declared DISPLAY unit,
+   labelled **Latest Display PDF(s)**;
+3. the current one-Page compiled PDF, labelled **Latest Page-level PDF**.
+
+“Page-level” means this Page or Section Page only. It is not the paper master,
+the desk-room build, a Display preview, or a configuration file. Keep raw
+receipts, logs, TeX sources, manifests, and unrelated outputs out of the
+primary completion block. If any requested surface is missing or stale, say so
+explicitly and name the blocker instead of presenting an older file as current.
+The user-check packet is new-layout-only: it accepts only
+`outline/evidence/display/<unit>/preview.pdf` and
+`delivery/latex/<stem>.pdf`; legacy locations do not qualify.
+
 **Create**: resolve the board and group (ask only when the group is genuinely
 ambiguous) · pick the id and copy `haipipe-board/ref/page-template.md`, never
 retype the shape · a three-to-five-word title stating the purpose · the
@@ -434,6 +468,10 @@ writing; a copied checklist in a prompt is a second authority and drifts.
   asked for permission on the way: write the source, propagate a new rule to
   `ref/page-template.md` and this file, run `check.py`, then confirm the render
   rather than the markdown.
+- **An accepted process ruling lands in its owning skill first**, then in every
+  affected Page during the same pass. The Page receipt names the exact skill
+  version used. Do not leave the ruling only in chat or apply it to Pages under
+  an older contract.
 - **The write anchor rule**: a machine write lands at a section boundary,
   never at a byte offset; appending under a named `##` heading is safe.
 - **The human-decision rule**: a machine updates an Aim's tick only from
@@ -516,6 +554,7 @@ Every id inside a fenced figure renders as a link.
 haipipe-page/
 ├── SKILL.md            this contract
 ├── ref/glossary.md     every word this family uses, with the path it names
+├── ref/user-check-packet.md  the three-surface reader-facing completion packet
 ├── ref/type-registry.md  compatibility key records + phase-owner arguments
 └── CHANGELOG.md        version history, and the only home for retired rules
 ```

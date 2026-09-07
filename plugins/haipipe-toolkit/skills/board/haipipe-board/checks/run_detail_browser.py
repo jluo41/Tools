@@ -3,16 +3,23 @@
 
 Drives the real nested Page -> Outline -> Evidence frames.  It deliberately
 clicks several Run families while Outline is already active, then an Evidence
-chip, then a Feedback chip. Runs must land on real Runs-lens elements; the
-Evidence chip must land on its real Evidences-lens item card with no popover;
-Feedback must land on its real Context record. This protects both the
+chip, then the typed Evidence chip inside the Outline plugin's own Bullet
+Workspace, then a Feedback chip. Runs must land on real Runs-lens elements;
+both Evidence chips must land on the real Evidences-lens item card with no
+popover; Feedback must land on its real Context record. This protects both the
 state-loss race and the mobile popover trap.
+
+The Run and Evidence cases are pinned to the MISQ Abstract's items.  The
+Feedback case discovers the first Feedback chip on the Page it is given; a
+Page whose plan carries no `Routed:` line has none, so pass `--feedback-url`
+naming a Page that does (the Abstract lost its `Routed:` lines at plan v1.4).
 """
 
 import argparse
 import re
 from urllib.parse import parse_qs, urlparse
 
+from playwright.sync_api import TimeoutError as PlaywrightTimeout
 from playwright.sync_api import expect, sync_playwright
 
 
@@ -41,6 +48,10 @@ def main():
     parser.add_argument(
         "--fallback-popover", action="store_true",
         help="remove the native Popover API before every document boots",
+    )
+    parser.add_argument(
+        "--feedback-url", default="",
+        help="a Board Page URL whose plan carries `Routed:` rows (default: --url)",
     )
     args = parser.parse_args()
 
@@ -158,27 +169,76 @@ def main():
             raise AssertionError(f"Evidence: inner deep link lost: {evidence_href}")
         print(f"PASS {'Evidence chip':<22} {EVIDENCE_LABEL}")
 
+        # The typed Evidence chip INSIDE the Outline plugin (its Bullet
+        # Workspace plan card) is the same route: it switches the lens in
+        # place, lands on the same card, opens no popover, and leaves the
+        # complete route in the Outline document's own URL (JL 260907: the
+        # Page chip was fixed and this one still popped).
         page.reload(wait_until="domcontentloaded")
+        chip = page_frame.locator(
+            f'a.outline-evidence[data-outline-focus="{FOCUS}"]').first
+        chip.wait_for(timeout=30_000)
+        chip.tap()                                   # opens the Outline tab
+        bullet_space = outline_frame.locator('button.space[data-space="bullet"]')
+        bullet_space.wait_for(timeout=30_000)
+        bullet_space.tap()
+        typed = outline_frame.locator(
+            f'a.evchip.typed-ev[data-outline-seg="items"]'
+            f'[data-outline-focus="{FOCUS}"]').first
+        typed.wait_for(timeout=30_000)
+        expect(typed).to_have_text(EVIDENCE_LABEL)
+        expect(outline_frame.locator('[popovertarget^="typed-ev"]')).to_have_count(0)
+        typed.tap()
+        expect(evidence_space).to_have_class(re.compile(r"\bon\b"), timeout=30_000)
+        expect(items_lens).to_have_class(re.compile(r"\bon\b"), timeout=30_000)
+        item_card = evidence_frame.locator(f"#{FOCUS}")
+        expect(item_card).to_be_visible(timeout=30_000)
+        expect(item_card).to_have_class(re.compile(r"\brun-focus\b"), timeout=30_000)
+        expect(outline_frame.locator("[popover]:popover-open")).to_have_count(0)
+        expect(evidence_frame.locator("[popover]:popover-open")).to_have_count(0)
+        outline_href = outline_frame.locator("body").evaluate("() => location.href")
+        evidence_href = evidence_frame.locator("body").evaluate("() => location.href")
+        if f"focus={FOCUS}" not in outline_href or "seg=items" not in outline_href:
+            raise AssertionError(f"Bullet chip: Outline URL lost the route: {outline_href}")
+        if f"focus={FOCUS}" not in evidence_href or "seg=items" not in evidence_href:
+            raise AssertionError(f"Bullet chip: inner deep link lost: {evidence_href}")
+        if "run=" in outline_href or "run=" in evidence_href:
+            raise AssertionError(f"Bullet chip: a Run leaked into the route: {evidence_href}")
+        print(f"PASS {'Bullet Workspace chip':<22} {EVIDENCE_LABEL}")
+
+        # Feedback: the first routed chip on the Page (or --feedback-url).
+        feedback_url = args.feedback_url or args.url
+        page.goto(split_url(feedback_url), wait_until="domcontentloaded", timeout=30_000)
         feedback = page_frame.locator(
-            'a[data-outline-lens="fb"]'
-            '[data-outline-focus="feedback-S0-PP1"]'
-        ).first
-        feedback.wait_for(timeout=30_000)
+            'a[data-outline-lens="fb"][data-outline-focus]').first
+        try:
+            feedback.wait_for(timeout=30_000)
+        except PlaywrightTimeout:
+            raise SystemExit(
+                "FAIL Feedback: no Feedback chip on %s; its plan carries no "
+                "`Routed:` line, so pass --feedback-url naming a Page that does"
+                % feedback_url)
+        feedback_id = feedback.get_attribute("data-outline-focus") or ""
+        feedback_row = feedback_id.removeprefix("feedback-")
+        if not re.fullmatch(r"S[A-Z0-9]+-PP\d+|R\d{2}", feedback_row):
+            raise AssertionError(f"Feedback: chip id is not a register row id: {feedback_id}")
         feedback.tap()
         context_space = outline_frame.locator('button.space[data-space="context"]')
         expect(context_space).to_have_class(re.compile(r"\bon\b"), timeout=30_000)
         feedback_lens = outline_frame.locator('.lens-chip[data-lens="fb"]')
         expect(feedback_lens).to_have_class(re.compile(r"\bon\b"), timeout=30_000)
-        feedback_card = outline_frame.locator("#feedback-S0-PP1")
+        feedback_card = outline_frame.locator(f"#{feedback_id}")
         expect(feedback_card).to_be_visible(timeout=30_000)
         expect(feedback_card).to_have_class(re.compile(r"\brecord-focus\b"))
-        expect(feedback_card).to_contain_text("Reposition the opening")
-        expect(feedback_card).to_contain_text("Do not begin with online reviews")
-        print("PASS Feedback             S0-PP1")
+        expect(feedback_card).to_contain_text(feedback_row)
+        outline_href = outline_frame.locator("body").evaluate("() => location.href")
+        if "lens=fb" not in outline_href or f"focus={feedback_id}" not in outline_href:
+            raise AssertionError(f"Feedback: outer deep link lost: {outline_href}")
+        print(f"PASS {'Feedback':<22} {feedback_row}")
 
         mode = "fallback" if args.fallback_popover else "native"
         print(f"mobile {args.engine} Outline links OK · {mode} Popover API · "
-              "3 Runs + Evidence + Feedback")
+              "3 Runs + Evidence + Bullet Workspace chip + Feedback")
         browser.close()
 
 

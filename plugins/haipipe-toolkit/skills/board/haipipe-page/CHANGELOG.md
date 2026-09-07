@@ -1,3 +1,38 @@
+## 0.60.2 · 2026-09-07
+
+- Make the user-check packet new-layout-only: legacy Display and LaTeX lanes
+  are no longer searched or returned as compatibility outputs.
+
+## 0.60.1 · 2026-09-07
+
+- Keep freshly rendered but unaccepted Display and Page PDFs visible as
+  current drafts while distinguishing their pending human gates.
+- Do not emit an unverified Board URL as a clickable reader-facing link, and
+  recognize legacy Page-local `display/` lanes when locating previews.
+- Align the base Page's Board-link wording with the explicit unavailable-route
+  failure packet.
+
+## 0.60.0 · 2026-09-07
+
+- Add one reader-facing user-check packet for every Page-changing reply:
+  the verified Board URL for the Outline table, current Display `preview.pdf`
+  links, and the compiled Page-level PDF.
+- Distinguish a Page/Section PDF from a Display preview, paper master, and
+  configuration file; stale or missing projections must be labelled instead of
+  silently returned as current.
+
+## 0.59.0 · 2026-09-06
+
+- Verify every reader-facing Board URL and end each Page-changing reply with
+  that public URL rather than a source path or loopback address.
+- Land an accepted process ruling in its owning skill before applying it to
+  affected Pages, and record the governing skill version in the Page receipt.
+- Align the compact Page Outline contract with its existing Feedback column.
+- Align the base Page with the Outline plugin's deep-linked Evidence cards and
+  the phase-specific EMBED routes for `v0` and approved generations.
+- Route purpose, Aim-promise, and structure changes back to SHAPE while keeping
+  prose-only realization changes under CONTENT.
+
 ## 0.58.0 · 2026-09-06
 
 - Define generation/Shape/evidence plan-version notation in the Page glossary

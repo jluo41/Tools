@@ -129,3 +129,43 @@ def register_ids(reg):
     if not reg.exists():
         return set()
     return set(re.findall(r"(?m)^(?:###|-) (" + RID + r") · ", reg.read_text(encoding="utf-8", errors="replace")))
+
+
+ROUTED_LINE = re.compile(r"(?m)^\s+Routed:\s*(.+?)\s*$")
+
+
+def routed_pairs(route):
+    """One `Routed:` value -> [(round id, row id), ...].
+
+    `Routed: RD01 S1-PP5; RD01 S1-PP7` and `Routed: RD01 S3-PP2, S3-PP3` both
+    name two rows.  Rows are separated by whitespace, commas, or semicolons;
+    a Round id (`RD<nn>`) anywhere on the line owns every row after it until
+    the next Round id.  One grammar for the Page's Feedback column and the
+    checker's served-row tooth: splitting on whitespace alone (260906) minted
+    dead chips `S1-PP5;` and `RD01` whose focus id matched no register record,
+    so the Feedback lens opened on nothing.
+    """
+    round_id, pairs = "", []
+    for token in re.split(r"[\s,;]+", route.strip()):
+        token = token.strip(".:")
+        if not token:
+            continue
+        if re.fullmatch(r"RD\d+", token):
+            round_id = token
+            continue
+        pairs.append((round_id, token))
+    return pairs
+
+
+def routed_rows(plan_text, round_id=None):
+    """Every (round id, row id) a plan's `Routed:` lines name, in plan order.
+
+    With `round_id` given, only that Round's rows are returned, which is what
+    check.py's `feedback-unserved` tooth compares against the open register.
+    """
+    out = []
+    for match in ROUTED_LINE.finditer(plan_text):
+        for rd, rid in routed_pairs(match.group(1)):
+            if round_id is None or rd == round_id:
+                out.append((rd, rid))
+    return out

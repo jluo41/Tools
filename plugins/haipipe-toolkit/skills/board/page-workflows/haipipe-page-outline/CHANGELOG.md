@@ -1,3 +1,19 @@
+## 0.32.1 · 2026-09-07
+
+- Route manuscript subsection naming to the Section owner's reader-facing
+  title contract during SHAPE; keep the naming policy in one authority.
+
+## 0.32.0 · 2026-09-06
+
+- Build SHAPE from the brief, routed advisor feedback, approved sibling arcs,
+  the Narrative Page, and measured venue exemplars; keep the log historical.
+- Add display planning, paragraph order/balance, and the explanatory-boundary
+  test to SHAPE and its human review packet.
+- Promote to `v1.0` only after local evidence work is exhausted, with any
+  remaining secure-server or person gates named explicitly.
+- Report prior-version changes, manuscript counts, display count, next-version
+  semantics, and the AI's own approval verdict before asking the person.
+
 ## 0.31.1 · 2026-09-06
 
 - Allow checked `v0.*` plans to proceed through evidence work in copilot or

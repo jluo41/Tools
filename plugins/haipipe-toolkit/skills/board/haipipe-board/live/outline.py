@@ -244,7 +244,7 @@ summary:hover{{color:var(--acc)}}
  border:1px solid color-mix(in srgb,currentColor 26%,transparent);
  background:color-mix(in srgb,currentColor 8%,transparent);
  border-radius:4px;padding:0 4px;color:inherit;vertical-align:1px}}
-.evchip{{cursor:pointer}}
+.evchip{{cursor:pointer}} a.evchip{{text-decoration:none}}
 .evtag{{border-style:dashed}}
 /* A bullet with hidden detail is a details element: the row shows only the
    terse head + chips, and clicking unfolds the Answered:/Drawn: text (JL 260819:
@@ -505,9 +505,8 @@ document.querySelectorAll('a.badge').forEach(function(a){{
     if(el)el.scrollIntoView({{behavior:'smooth'}});
   }});
 }});
-if(requested)activateLens(requested);
-if(requestedFocus&&requested!=='workspace')setTimeout(function(){{
-  var target=document.getElementById(requestedFocus);
+function focusRecord(id){{
+  var target=document.getElementById(id);
   if(!target)return;
   document.querySelectorAll('.record-focus').forEach(function(x){{
     x.classList.remove('record-focus');}});
@@ -515,7 +514,35 @@ if(requestedFocus&&requested!=='workspace')setTimeout(function(){{
   target.setAttribute('tabindex','-1');
   target.focus({{preventScroll:true}});
   target.scrollIntoView({{block:'center'}});
-}},0);
+}}
+/* A typed Evidence chip inside the Bullet Workspace is the same route a Page
+   chip is: lens + seg + focus, never a popover.  Switch lens in place, reload
+   the Evidence Workspace frame at the exact card, and keep the complete route
+   in this document's URL so a reload lands on the same card. */
+document.addEventListener('click',function(ev){{
+  var a=ev.target.closest?ev.target.closest('a[data-outline-focus]'):null;
+  if(!a||ev.button!==0||ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey)return;
+  ev.preventDefault();
+  requested=a.getAttribute('data-outline-lens')||'workspace';
+  requestedSeg=a.getAttribute('data-outline-seg')||'';
+  requestedFocus=a.getAttribute('data-outline-focus')||'';
+  requestedRun=a.getAttribute('data-outline-run')||'';
+  if(requested==='workspace'&&!requestedSeg)requestedSeg=requestedRun?'runs':'items';
+  activateLens(requested);
+  if(requestedFocus&&requested!=='workspace')focusRecord(requestedFocus);
+  try{{
+    var u=new URL(location.href);
+    u.searchParams.set('lens',requested);
+    ['seg','focus','run'].forEach(function(k){{u.searchParams.delete(k);}});
+    if(requestedSeg)u.searchParams.set('seg',requestedSeg);
+    if(requestedFocus)u.searchParams.set('focus',requestedFocus);
+    if(requestedRun)u.searchParams.set('run',requestedRun);
+    history.replaceState(null,'',u.href);
+  }}catch(e){{}}
+}});
+if(requested)activateLens(requested);
+if(requestedFocus&&requested!=='workspace')setTimeout(function(){{
+  focusRecord(requestedFocus);}},0);
 </script>
 </body></html>"""
 
@@ -896,40 +923,39 @@ def _typed_item_review(page_src, plan, plan_text, approved):
     }
 
 
-def _typed_item_chip(item, popover_id):
-    """One compact status tag with its Survey graph behind a native popover."""
+def _typed_item_chip(item, outline_url=""):
+    """One compact status tag that routes to its Evidence Workspace item card.
+
+    Same law as the compact Page table: the chip is a route, not a card.  The
+    item's whole Survey graph (Target, Expected, Acceptance, Supporting Runs,
+    Local Input, Local Run, Result, Decide) lives once, on the Evidence
+    Workspace card, so the Bullet Workspace only names and colours the item and
+    hands the reader to that exact card.  The native popover this replaced
+    duplicated every field and trapped a phone reader behind a panel that was
+    hard to close (JL 260907: the Page chip was fixed, this one still popped).
+    """
     status = item["status"]
     cls = "ok" if status in {"ready", "folded", "accepted"} else (
         "mut" if status in {"deferred", "dropped"} else "warn"
     )
-    rows = (
-        ("Label", item.get("label") or "legacy fallback"),
-        ("Target", item["target"]),
-        ("Expected", item["expected"]),
-        ("Acceptance", item["acceptance"]),
-        ("Supporting Runs", item["supporting_runs"]),
-        ("Local Input", item["local_input"]),
-        ("Local Run", item["local_run"]),
-        ("Result", item["result"]),
-        ("Decide", item["decide"]),
-    )
-    detail = "".join(
-        '<div class=rr><b>%s</b><span>%s</span></div>' % (_e(label), _inl(value))
-        for label, value in rows
-    )
     # The wall identity is deliberately short but semantic: readers see the
     # item number, evidence kind, and readable preview name. The immutable id,
-    # full type, status, and complete route remain in the popover.
+    # full type, and status ride on the title; everything else is on the card.
     label = wall_label(
         item["id"], item["type"], item["name"], item.get("label", "")
     )
+    focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item["id"])
+    # One URL names the destination exactly like a Page chip does
+    # (lens + seg + focus).  Without a known Board route (a checker or test
+    # rendering the card alone) the href is the bare focus; the document's
+    # click delegate switches lens in place either way.
+    href = ("%s&lens=workspace&seg=items&focus=%s" % (outline_url, focus)
+            if outline_url else "#" + focus)
     return (
-        '<button class="evchip %s" popovertarget="%s">%s</button>'
-        '<div id="%s" popover class="chipcard %s">'
-        '<div class=cch><b>%s</b><span class=cck>%s · %s</span></div>'
-        '<div class="ccb rrows">%s</div></div>'
-        % (cls, popover_id, _e(label), popover_id, cls, _e(item["id"]),
-           _e(item["type"]), _e(status), detail)
+        '<a class="evchip %s typed-ev" href="%s" data-outline-lens="workspace" '
+        'data-outline-seg="items" data-outline-focus="%s" title="%s · %s · %s">%s</a>'
+        % (cls, _e(href), _e(focus), _e(item["id"]), _e(item["type"]),
+           _e(status), _e(label))
     )
 
 
@@ -1404,11 +1430,17 @@ def _bundle_state(kind, refs, address, by_bullet, display_by_bullet,
             "have": 1, "need": 1}
 
 
-def plan_card(page_src, root=None):
-    """-> the html for the plan card, or '' when the page has no outline file."""
+def plan_card(page_src, root=None, path_q="", file_q=""):
+    """-> the html for the plan card, or '' when the page has no outline file.
+
+    `path_q`/`file_q` are the Board route the live Outline was opened with; they
+    let a typed Evidence chip carry its complete one-URL destination.
+    """
     f, ver = _latest_plan(page_src)
     if f is None:
         return ""
+    outline_url = ("/_board/outline?path=%s&file=%s" % (quote(path_q), quote(file_q))
+                   if path_q and file_q else "")
     txt = f.read_text(encoding="utf-8", errors="replace")
     approved = bool(re.search(r"^approved:\s*✅", txt, re.M))
     cards, units, keys, serves, display_serves = _disk_state(page_src)
@@ -1516,12 +1548,13 @@ def plan_card(page_src, root=None):
         addr = full_addr
 
         # New typed Evidence Items are the current contract.  Their short
-        # inline tags keep the Shape readable; the native popover exposes the
-        # whole Survey graph (supports, local Run, Result, and human Decide).
+        # inline tags keep the Shape readable; each is a route to the item's
+        # Evidence Workspace card, where the whole Survey graph (supports,
+        # local Run, Result, and human Decide) is shown once.
         typed_chips = []
         for item in typed["by_target"].get(full_addr, []):
             nid += 1
-            typed_chips.append(_typed_item_chip(item, "typed-ev%d" % nid))
+            typed_chips.append(_typed_item_chip(item, outline_url))
 
         def _backlink(exclude=()):
             """The ↩ tag: cards that name THIS bullet in their `serves:`.
@@ -2186,7 +2219,8 @@ def render(title, o, page_src=None, root=None, path_q="", file_q=""):
     # second one was for). The PLAN is what we said we would write; the PAGE
     # is what is written now. Reading them unlabelled beside each other, with
     # two different section lists, is what made the tab confusing.
-    plan = plan_card(page_src, root) if page_src is not None else ""
+    plan = (plan_card(page_src, root, path_q, file_q)
+            if page_src is not None else "")
     plan_head = ''
     by_div = _page_now(plan, plan_head, cards) if o["divs"] else (plan +
         cards[-1] + '<div class=mut>no numbered Content divisions found; '

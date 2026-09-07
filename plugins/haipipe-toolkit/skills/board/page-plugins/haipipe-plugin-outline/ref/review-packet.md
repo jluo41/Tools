@@ -13,11 +13,14 @@ approval on the person's behalf.
   decisive P/B labels when that helps the person inspect sequencing.
 - On a revision, identify what changed since the prior version and why.  Do
   not recite every bullet when a division map is enough.
-- For a Section, include a compact form audit: paragraph count; one reader job
-  per paragraph; sentence-slot count; word target; implied words per sentence;
-  transitions; and any paragraph whose job is merely defensive, cautionary, or
-  meta-commentary. Compare paragraph, sentence, and citation expectations to
-  the resolved venue source when one exists.
+- Start with `version · content licensed/not yet · next bounded/major version`.
+- For a Section, include a compact form audit: subsection, sub-subsection,
+  paragraph, and sentence counts; one reader job per paragraph; sentence-slot
+  count; word target; implied words per sentence; transitions; and any
+  paragraph whose job is merely defensive, cautionary, or meta-commentary.
+  Compare paragraph, sentence, and citation expectations with measurements
+  from 2–3 named exemplar PDFs. A target without a named measured authority is
+  `not specified`.
 
 ## 2 · Evidence owed
 
@@ -32,6 +35,8 @@ approval on the person's behalf.
   Items “the number of citations.”
 - For every item material to the page's headline, show: `target → expected
   payload → acceptance → Supporting Runs → Local Input → Local Run`.
+- Report the planned display count and, for each display, its purpose and the
+  Bullets it serves. Flag overlapping display purposes for consolidation.
 - Confirm that each citation/value/display-bearing Bullet owns the matching
   type at that exact address. An explicit `none` is valid only for a realization
   with no citation, empirical value, figure, or table.
@@ -51,6 +56,7 @@ approval on the person's behalf.
 
 ## 4 · Human decision
 
+- Open with `My verdict: approve / do not approve · because …`.
 - State whether the mechanical plan checks pass and whether an approval is
   possible now.
 - Ask for the smallest concrete human ruling: approve/revise the Shape, choose

@@ -1,3 +1,13 @@
+## 0.29.1 — 2026-09-07
+
+- Route the user-check packet through the new Display and Page-level delivery
+  lanes only; legacy compatibility paths no longer qualify.
+
+## 0.29.0 — 2026-09-07
+
+- Make the three-surface Page user-check packet the standard completion
+  payload after Page-changing work.
+
 ## 0.28.2 — 2026-09-06
 
 - Clarify that checked generation-zero plans may complete evidence work before

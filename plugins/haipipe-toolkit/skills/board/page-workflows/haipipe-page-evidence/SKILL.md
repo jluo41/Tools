@@ -10,7 +10,7 @@ description: >-
   evidence, EVIDENCE phase, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.21.1"
+  version: "0.22.0"
   last_updated: "2026-09-04"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -68,8 +68,9 @@ WRITES   Supporting and local Run receipts/Results in their owner-governed
          in the table · next-working-plan fold lines
 NEVER    target prose · item identity/type/Target/Expected/Acceptance · outline
          order · a Decide · a typed Status · PHI or raw rows in Page artifacts
-EXITS    LAND: every make-item has valid Supporting Results, one frozen input, and one
-         ready local Result that passes its authored Acceptance checks · EMBED: every
+EXITS    LAND: every locally attainable make-item has valid Supporting Results,
+         one frozen input, and one ready local Result that passes its authored
+         Acceptance checks; every remaining server/person gate is named · EMBED: every
          ready item is folded; v0 returns to SHAPE, G>=1 refreshes CONTENT
 HUMAN    owns Decide and any worker-specific verification gate; LAND and EMBED
          never synthesize those decisions
@@ -137,6 +138,13 @@ target: E01-VALUE-adjusted-effect
 
 ## 🛬 LAND · execute one dependency graph per item
 
+Before declaring evidence missing, search the Folder owner's current Result
+store, governed `_WorkSpace` stores, and explicit `old/` directories. A
+recovered prior output is a **provisional Supporting Result binding**, not a
+new action: record its exact path and hash, use it when it satisfies the
+current contract, and mark it stale automatically when a newer canonical
+Result for the same target lands.
+
 For every item whose `Decide` is `☑ make`:
 
 1. **Validate the plan.** Confirm type, Target, Expected, Acceptance, Supporting
@@ -145,7 +153,8 @@ For every item whose `Decide` is `☑ make`:
 2. **Resolve Supporting routes.** Work only the routes SURVEY selected:
    existing full Run ids classified `reuse`, `rerun`, or `registered`, plus
    bounded `new-run`, `new-task`, `new-job`, or `new-block` plans. Supporting families
-   are only Execution and Discovery.
+   are only Execution and Discovery. Search the governed current and old
+   Result stores before concluding that a selected support is unavailable.
 3. **Allocate before execution.** An existing route keeps its registered
    `bNNjNNtNNrNN`. For a planned route, invoke the owning Execution or
    Discovery workflow now to allocate one real `rNN`, scaffold its Ticket and
@@ -155,6 +164,9 @@ For every item whose `Decide` is `☑ make`:
 4. **Require valid Supporting Results.** Trust no claimed `complete` without
    the owning worker's Result gate and runtime receipt. Preserve truthful
    failed or blocked receipts; do not invent `none` or ask a `person` action.
+   A recovered old Result may be bound provisionally with its hash when it
+   passes the present acceptance contract; a later canonical Result with the
+   same target supersedes that binding and reopens LAND or EMBED as needed.
 5. **Freeze one Local Input.** Materialize the SURVEY plan as one immutable
    envelope containing exact Supporting Result pointers/hashes plus any named
    pre-existing governed page-local artifacts. Cross-Folder evidence must
@@ -184,11 +196,20 @@ For every item whose `Decide` is `☑ make`:
    identity, focal claim, and locator for human verification. Record a durable
    `Verified: ✅ <who> <timestamp>` on that item row. A machine never signs it,
    and the CITE item remains not-ready until it is signed.
+9. **Promote the verified bibliography entry.** After a CITE item is signed,
+   write its verified entry into the owning paper's room bibliography under
+   the same citation key. If that key already exists with a different body,
+   report the conflict and do not overwrite either entry. A ready CITE Result
+   is not complete for delivery while its verified key is absent from the room
+   bibliography.
 
 Different item graphs may run in parallel because cross-item local-Result
 dependencies are forbidden. Within one graph the local Run waits for every
 declared Supporting Result to validate. This dependency is
-the only required ordering.
+the only required ordering. LAND exhausts every route runnable on the current
+machine before returning. Only a secure-server requirement or an explicit
+person gate may stop the pass; the receipt names which one stopped it, or says
+`nothing left`.
 
 ### Actions are not families
 
@@ -237,7 +258,7 @@ Result store.
 |---|---|
 | VALUE | value(s), units, population/denominator, method label, uncertainty when expected, reproducible provenance |
 | CITE | verified source identity, supported focal claim, locator, and provenance to Discovery/support Results; the CITE row's `Verified` gate is signed |
-| DISPLAY | frozen intake, build recipe, selected artifact/preview, caption claim, and provenance |
+| DISPLAY | frozen intake, build recipe, selected artifact plus required image/PDF `preview`, caption claim, and provenance |
 
 No local Result may contain raw sensitive rows, credentials, or an argument
 about what the Page should conclude.
@@ -275,10 +296,10 @@ LAND   item meaning/acceptance invalid                  → OUTLINE / SHAPE
 LAND   governing Context is stale or conflicting       → CONTEXT / PREPARE
 LAND   Run graph or Local Input incomplete             → OUTLINE / SURVEY
 LAND   support/local Run truthfully failed or blocked  → EVIDENCE / LAND or HOLD, with Run id
-LAND   every make-item has a ready local Result         → EVIDENCE / EMBED
+LAND   every locally attainable item is ready; remaining server/person gates named → EVIDENCE / EMBED
 EMBED  ready Result contradicts the outline            → OUTLINE / SHAPE with D<nn>
 EMBED  every make-item Result folded under G=0         → OUTLINE / SHAPE with evidence revision
-EMBED  every make-item Result folded; defer/drop signed under G>=1 → CONTENT / WRITE with evidence revision
+EMBED  every ready Result folded; remaining gates named and defer/drop signed under G>=1 → CONTENT / WRITE in final or explicit draft mode
 ```
 
 EVIDENCE routes directly to CONTENT only for a pure evidence revision under an
@@ -291,11 +312,14 @@ returns to SHAPE. Generation zero never reaches CONTENT.
 phase: EVIDENCE
 cycle: LAND | EMBED
 items: n make · n deferred · n dropped · n ready · n folded · n stale
+item-status: grouped by VALUE/CITE/DISPLAY · item → decided · landed · folded · ready · attainability local/server/person
 supporting-runs: Execution n · Discovery n · reused n · rerun n · registered n
 local-runs: n planned · n running · n done · n failed/blocked
 bindings: item id → local global Run id → Result path
+previews: DISPLAY item → rendered image/PDF viewer link
 folded: item ids written into the next working outline version
 limits: Run ids that did not complete and truthful reasons
+stopped-by: server <what> | person <what> | nothing left
 route: CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
 next_cycle: PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE  # omit on HOLD
 ```

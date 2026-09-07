@@ -1,3 +1,15 @@
+## 0.22.0 · 2026-09-06
+
+- Search governed current and old Result stores before declaring evidence
+  missing; hash recovered outputs as provisional bindings that canonical
+  Results supersede automatically.
+- Exhaust locally runnable work before returning and name the secure-server or
+  person gate that stops LAND.
+- Promote verified CITE entries into the room bibliography without overwriting
+  key conflicts, and require a rendered preview link for DISPLAY Results.
+- Report item progress as decided, landed, folded, and ready with
+  local/server/person attainability.
+
 ## 0.21.1 · 2026-09-06
 
 - Accept a mechanically checked `v0.*` plan as the authority for pre-approval

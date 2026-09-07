@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Page Skills Review · JL</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #667085;
+      --line: #dce2ea;
+      --soft: #f6f8fb;
+      --paper: #ffffff;
+      --blue: #225ea8;
+      --blue-soft: #eaf2fb;
+      --green: #177245;
+      --green-soft: #e9f7ef;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --amber: #a15c00;
+      --amber-soft: #fff5df;
+      --shadow: 0 18px 50px rgba(20, 34, 54, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eef2f7;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.62;
+    }
+
+    button, textarea, input { font: inherit; }
+
+    button { cursor: pointer; }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .rail {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      color: #e9f0f8;
+      background: #142238;
+      overflow-y: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #2e6fb7;
+    }
+
+    .rail-label {
+      margin: 0 0 8px;
+      color: #98a8bc;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .rail nav {
+      display: grid;
+      gap: 5px;
+    }
+
+    .rail a {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 11px;
+      border-radius: 9px;
+      color: #d7e0eb;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .rail a:hover { background: rgba(255,255,255,.08); }
+
+    .rail a span:last-child { color: #8fa2b8; }
+
+    .rail-progress {
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255,255,255,.12);
+    }
+
+    .rail-progress strong {
+      display: block;
+      margin-bottom: 8px;
+      color: white;
+      font-size: 27px;
+      line-height: 1;
+    }
+
+    .progress-track {
+      height: 7px;
+      margin-top: 12px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.13);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: #64d399;
+      transition: width .2s ease;
+    }
+
+    main {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 42px 42px 90px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(32px, 5vw, 54px);
+      line-height: 1.07;
+      letter-spacing: -.045em;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border: 1px solid #f0d59e;
+      border-radius: 999px;
+      color: var(--amber);
+      background: var(--amber-soft);
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 34px;
+      padding: 12px;
+      border: 1px solid rgba(211, 219, 229, .9);
+      border-radius: 16px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 10px 32px rgba(20, 34, 54, .08);
+      backdrop-filter: blur(14px);
+    }
+
+    .search {
+      min-width: 220px;
+      flex: 1;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: white;
+    }
+
+    .filter, .action {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: #344054;
+      background: white;
+      font-weight: 680;
+    }
+
+    .filter.active {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .action.primary {
+      border-color: var(--blue);
+      color: white;
+      background: var(--blue);
+    }
+
+    .part {
+      scroll-margin-top: 96px;
+      margin-top: 44px;
+    }
+
+    .part-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+
+    .part-heading h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.025em;
+    }
+
+    .part-heading span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .cards { display: grid; gap: 16px; }
+
+    .card {
+      scroll-margin-top: 96px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card[data-choice="agree"] { border-left: 5px solid var(--green); }
+    .card[data-choice="disagree"] { border-left: 5px solid var(--red); }
+    .card[data-choice="change"] { border-left: 5px solid var(--amber); }
+
+    .card-head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 13px;
+      align-items: start;
+      padding: 21px 22px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .item-id {
+      min-width: 52px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .card h3 {
+      margin: 1px 0 0;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -.018em;
+    }
+
+    .choice-label {
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--soft);
+      font-size: 13px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .card-body {
+      padding: 20px 22px 8px;
+      color: #344054;
+    }
+
+    .card-body p { margin: 0 0 12px; }
+    .card-body ul { margin: 0 0 14px; padding-left: 22px; }
+    .card-body li { margin: 6px 0; }
+    .card-body strong { color: var(--ink); }
+    .card-body code {
+      padding: 2px 5px;
+      border-radius: 5px;
+      color: #344054;
+      background: #eef1f5;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .91em;
+    }
+
+    .card-body table {
+      width: 100%;
+      margin: 6px 0 16px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .card-body th, .card-body td {
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .card-body th { background: var(--soft); }
+
+    .review {
+      display: grid;
+      grid-template-columns: auto auto auto minmax(180px, 1fr);
+      gap: 9px;
+      padding: 15px 22px 20px;
+      background: #fbfcfe;
+    }
+
+    .choice {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      font-weight: 750;
+    }
+
+    .choice[data-value="agree"].selected {
+      border-color: var(--green);
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .choice[data-value="disagree"].selected {
+      border-color: var(--red);
+      color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .choice[data-value="change"].selected {
+      border-color: var(--amber);
+      color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .note {
+      width: 100%;
+      min-height: 45px;
+      max-height: 160px;
+      padding: 9px 11px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: white;
+    }
+
+    .empty, .error {
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: white;
+      text-align: center;
+    }
+
+    .next-box {
+      margin-top: 42px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #142238;
+      color: #dce7f5;
+    }
+
+    .next-box h2 { margin: 0 0 12px; color: white; }
+    .next-box ol { margin: 0; padding-left: 22px; }
+    .next-box li { margin: 7px 0; }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 30;
+      padding: 11px 15px;
+      border-radius: 10px;
+      color: white;
+      background: #142238;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: .18s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+      .shell { display: block; }
+      .rail { position: static; height: auto; padding: 18px 20px; }
+      .rail nav, .rail-label { display: none; }
+      .brand { margin: 0; }
+      .rail-progress { margin: 14px 0 0; padding-top: 14px; }
+      .rail-progress strong { display: inline; margin-right: 8px; font-size: 20px; }
+      main { padding: 28px 18px 70px; }
+      .hero { grid-template-columns: 1fr; }
+      .status-pill { justify-self: start; }
+      .toolbar { top: 6px; }
+    }
+
+    @media (max-width: 680px) {
+      body { font-size: 16px; }
+      .hero-copy { font-size: 16px; }
+      .toolbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .search { grid-column: 1 / -1; min-width: 0; }
+      .filter, .action { width: 100%; }
+      .card-head { grid-template-columns: auto minmax(0, 1fr); }
+      .choice-label { grid-column: 2; justify-self: start; }
+      .card-body { padding: 17px 17px 7px; }
+      .review { grid-template-columns: 1fr; padding: 14px 17px 18px; }
+      .choice { text-align: left; }
+      .part-heading { display: block; }
+      .part-heading span { display: block; margin-top: 4px; }
+    }
+
+    @media print {
+      body { background: white; }
+      .shell { display: block; }
+      .rail, .toolbar, .review, .toast { display: none !important; }
+      main { width: auto; padding: 0; }
+      .hero { grid-template-columns: 1fr; }
+      .card { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand"><span class="brand-mark">✓</span><span>Page Skills Review</span></div>
+      <p class="rail-label">Sections</p>
+      <nav id="nav"></nav>
+      <div class="rail-progress">
+        <strong id="rail-count">0 / 28</strong>
+        <span>items reviewed</span>
+        <div class="progress-track"><div class="progress-fill" id="rail-fill"></div></div>
+      </div>
+    </aside>
+
+    <main>
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Human review proposal · 260906</p>
+          <h1>把你的反馈写进 Page Skills</h1>
+          <p class="hero-copy">逐项阅读 Claude B 从 375 条消息中整理出的规则。每一项选择“同意”“不同意”或“修改”，结果会自动保存在这个浏览器中。</p>
+        </div>
+        <span class="status-pill">● JL 决定已记录</span>
+      </header>
+
+      <div class="toolbar" aria-label="Review controls">
+        <input class="search" id="search" type="search" placeholder="搜索条目或关键词…" aria-label="搜索条目">
+        <button class="filter active" data-filter="all">全部</button>
+        <button class="filter" data-filter="pending">待决定</button>
+        <button class="filter" data-filter="reviewed">已决定</button>
+        <button class="action" id="print">打印</button>
+        <button class="action primary" id="export">复制决定</button>
+      </div>
+
+      <div id="content"><div class="empty">正在读取提案…</div></div>
+      <div id="next"></div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const SOURCE = '260906-page-skills-from-jl-feedback.md';
+    const STORE_KEY = 'page-skills-review-260906-v1';
+    const PART_LABELS = {
+      'Part 0': '关键决定',
+      'Part 1': 'Outline',
+      'Part 2': 'Evidence',
+      'Part 3': 'Content',
+      'Part 4': 'Page',
+      'Part 5': 'Plugin',
+      'Part 6': '现有规则'
+    };
+
+    let reviewState = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+    let allCards = [];
+    let activeFilter = 'all';
+
+    const escapeHtml = (value) => value
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;');
+
+    function inline(text) {
+      return escapeHtml(text)
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    }
+
+    function renderMarkdown(lines) {
+      const output = [];
+      let i = 0;
+      while (i < lines.length) {
+        const line = lines[i].trim();
+        if (!line || /^- \*\*Your call/.test(line)) { i += 1; continue; }
+
+        if (line.startsWith('|')) {
+          const rows = [];
+          while (i < lines.length && lines[i].trim().startsWith('|')) {
+            rows.push(lines[i].trim().split('|').slice(1, -1).map(cell => cell.trim()));
+            i += 1;
+          }
+          const cleanRows = rows.filter(row => !row.every(cell => /^:?-+:?$/.test(cell)));
+          if (cleanRows.length) {
+            const [head, ...body] = cleanRows;
+            output.push('<table><thead><tr>' + head.map(c => `<th>${inline(c)}</th>`).join('') + '</tr></thead><tbody>' + body.map(row => '<tr>' + row.map(c => `<td>${inline(c)}</td>`).join('') + '</tr>').join('') + '</tbody></table>');
+          }
+          continue;
+        }
+
+        if (/^\d+\. /.test(line)) {
+          const items = [];
+          while (i < lines.length && /^\d+\. /.test(lines[i].trim())) {
+            items.push(lines[i].trim().replace(/^\d+\. /, ''));
+            i += 1;
+          }
+          output.push('<ol>' + items.map(item => `<li>${inline(item)}</li>`).join('') + '</ol>');
+          continue;
+        }
+
+        if (line.startsWith('- ')) {
+          const items = [];
+          while (i < lines.length && lines[i].trim().startsWith('- ')) {
+            items.push(lines[i].trim().slice(2));
+            i += 1;
+          }
+          output.push('<ul>' + items.map(item => `<li>${inline(item)}</li>`).join('') + '</ul>');
+          continue;
+        }
+
+        output.push(`<p>${inline(line)}</p>`);
+        i += 1;
+      }
+      return output.join('');
+    }
+
+    function parseProposal(markdown) {
+      const lines = markdown.split(/\r?\n/);
+      const parts = [];
+      let currentPart = null;
+      let currentCard = null;
+      let nextLines = [];
+
+      const saveCard = () => {
+        if (!currentCard || !currentPart) return;
+        if (currentCard.lines.some(line => line.includes('Your call'))) {
+          currentPart.cards.push(currentCard);
+        }
+      };
+
+      for (const raw of lines) {
+        const partMatch = raw.match(/^## (Part \d+) · (.+)$/);
+        if (partMatch) {
+          saveCard();
+          currentCard = null;
+          if (partMatch[1] === 'Part 7') {
+            currentPart = { key: 'Part 7', title: partMatch[2], cards: [] };
+            parts.push(currentPart);
+          } else {
+            currentPart = { key: partMatch[1], title: partMatch[2], cards: [] };
+            parts.push(currentPart);
+          }
+          continue;
+        }
+
+        if (currentPart?.key === 'Part 7') {
+          nextLines.push(raw);
+          continue;
+        }
+
+        const cardMatch = raw.match(/^### ((?:D\d+)|(?:P\d+)) · (.+)$/);
+        if (cardMatch) {
+          saveCard();
+          currentCard = { id: cardMatch[1], title: cardMatch[2], lines: [] };
+          continue;
+        }
+
+        if (currentPart?.key === 'Part 6' && raw.startsWith('- **N1**')) {
+          saveCard();
+          currentCard = { id: 'N1–N6', title: 'Already present in the skills', lines: [raw] };
+          continue;
+        }
+
+        if (currentCard) currentCard.lines.push(raw);
+      }
+      saveCard();
+      return { parts: parts.filter(part => part.key !== 'Part 7' && part.cards.length), nextLines };
+    }
+
+    function choiceText(value) {
+      return { agree: '✅ 同意', disagree: '❌ 不同意', change: '✎ 修改', pending: '待决定' }[value || 'pending'];
+    }
+
+    function cardTemplate(card) {
+      const state = reviewState[card.id] || {};
+      const choice = state.choice || 'pending';
+      return `
+        <article class="card" id="item-${card.id}" data-id="${card.id}" data-choice="${choice}" data-search="${escapeHtml((card.id + ' ' + card.title + ' ' + card.lines.join(' ')).toLowerCase())}">
+          <div class="card-head">
+            <span class="item-id">${card.id}</span>
+            <h3>${inline(card.title)}</h3>
+            <span class="choice-label">${choiceText(choice)}</span>
+          </div>
+          <div class="card-body">${renderMarkdown(card.lines)}</div>
+          <div class="review" aria-label="${card.id} decision">
+            <button class="choice ${choice === 'agree' ? 'selected' : ''}" data-value="agree">✅ 同意</button>
+            <button class="choice ${choice === 'disagree' ? 'selected' : ''}" data-value="disagree">❌ 不同意</button>
+            <button class="choice ${choice === 'change' ? 'selected' : ''}" data-value="change">✎ 修改</button>
+            <textarea class="note" placeholder="可选：写下修改意见…" aria-label="${card.id} 修改意见">${escapeHtml(state.note || '')}</textarea>
+          </div>
+        </article>`;
+    }
+
+    function render(parsed) {
+      const content = document.getElementById('content');
+      const nav = document.getElementById('nav');
+      allCards = parsed.parts.flatMap(part => part.cards);
+
+      content.innerHTML = parsed.parts.map(part => `
+        <section class="part" id="${part.key.replace(' ', '-').toLowerCase()}">
+          <div class="part-heading">
+            <h2>${PART_LABELS[part.key] || part.title}</h2>
+            <span>${part.cards.length} 个审阅项</span>
+          </div>
+          <div class="cards">${part.cards.map(cardTemplate).join('')}</div>
+        </section>`).join('');
+
+      nav.innerHTML = parsed.parts.map(part => `
+        <a href="#${part.key.replace(' ', '-').toLowerCase()}">
+          <span>${PART_LABELS[part.key] || part.title}</span><span>${part.cards.length}</span>
+        </a>`).join('');
+
+      document.getElementById('next').innerHTML = `
+        <section class="next-box">
+          <h2>你确认之后</h2>
+          ${renderMarkdown(parsed.nextLines)}
+        </section>`;
+
+      bindReviewEvents();
+      updateProgress();
+      applyFilters();
+    }
+
+    function bindReviewEvents() {
+      document.querySelectorAll('.card').forEach(card => {
+        const id = card.dataset.id;
+        card.querySelectorAll('.choice').forEach(button => {
+          button.addEventListener('click', () => {
+            const nextChoice = button.dataset.value;
+            const existing = reviewState[id]?.choice;
+            reviewState[id] = { ...(reviewState[id] || {}), choice: existing === nextChoice ? '' : nextChoice };
+            saveAndRefreshCard(card);
+          });
+        });
+        card.querySelector('.note').addEventListener('input', event => {
+          reviewState[id] = { ...(reviewState[id] || {}), note: event.target.value };
+          persist();
+        });
+      });
+    }
+
+    function saveAndRefreshCard(card) {
+      const id = card.dataset.id;
+      const choice = reviewState[id]?.choice || 'pending';
+      card.dataset.choice = choice;
+      card.querySelectorAll('.choice').forEach(button => button.classList.toggle('selected', button.dataset.value === choice));
+      card.querySelector('.choice-label').textContent = choiceText(choice);
+      persist();
+      updateProgress();
+      applyFilters();
+    }
+
+    function persist() {
+      localStorage.setItem(STORE_KEY, JSON.stringify(reviewState));
+    }
+
+    function updateProgress() {
+      const total = allCards.length;
+      const reviewed = allCards.filter(card => reviewState[card.id]?.choice).length;
+      document.getElementById('rail-count').textContent = `${reviewed} / ${total}`;
+      document.getElementById('rail-fill').style.width = `${total ? (reviewed / total) * 100 : 0}%`;
+    }
+
+    function applyFilters() {
+      const query = document.getElementById('search').value.trim().toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        const choice = reviewState[card.dataset.id]?.choice;
+        const filterMatch = activeFilter === 'all' || (activeFilter === 'pending' && !choice) || (activeFilter === 'reviewed' && choice);
+        const searchMatch = !query || card.dataset.search.includes(query);
+        card.hidden = !(filterMatch && searchMatch);
+      });
+      document.querySelectorAll('.part').forEach(part => {
+        part.hidden = ![...part.querySelectorAll('.card')].some(card => !card.hidden);
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    async function exportDecisions() {
+      const lines = allCards.map(card => {
+        const state = reviewState[card.id] || {};
+        const symbol = { agree: '✅', disagree: '❌', change: '✎' }[state.choice] || '⬜';
+        return `${card.id} ${symbol}${state.note ? ' · ' + state.note.trim() : ''}`;
+      });
+      const reviewed = allCards.filter(card => reviewState[card.id]?.choice).length;
+      const output = `Page Skills Review (${reviewed}/${allCards.length})\n\n${lines.join('\n')}`;
+      try {
+        await navigator.clipboard.writeText(output);
+      } catch (_) {
+        const temp = document.createElement('textarea');
+        temp.value = output;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        temp.remove();
+      }
+      showToast('决定已复制，可以直接贴回对话');
+    }
+
+    document.getElementById('search').addEventListener('input', applyFilters);
+    document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
+      activeFilter = button.dataset.filter;
+      document.querySelectorAll('.filter').forEach(item => item.classList.toggle('active', item === button));
+      applyFilters();
+    }));
+    document.getElementById('print').addEventListener('click', () => window.print());
+    document.getElementById('export').addEventListener('click', exportDecisions);
+
+    fetch(SOURCE, { cache: 'no-store' })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.text();
+      })
+      .then(markdown => render(parseProposal(markdown)))
+      .catch(error => {
+        document.getElementById('content').innerHTML = `<div class="error"><strong>提案读取失败</strong><br>${escapeHtml(error.message)}</div>`;
+      });
+  </script>
+</body>
+</html>

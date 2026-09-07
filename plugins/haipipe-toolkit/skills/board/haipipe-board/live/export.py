@@ -33,6 +33,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from src.common import (DELIVERY_LANES, EVIDENCE_LANES, OUTLINE_LANES,
@@ -180,6 +181,13 @@ class ExportMixin:
                 else:
                     short = "-".join(d.name.split("-")[:2])
                     aliases = [short]
+                # A Page may cite the display by its manuscript-facing
+                # reference (for example ``\\ref{fig:theory-model}``) rather
+                # than by the board short id.  Keep that reference as a full
+                # alias so the exporter can place the winning asset without
+                # rewriting the already-correct Figure reference.
+                if lab:
+                    aliases.append("\\ref{%s}" % lab.group(1))
                 out.append((short,
                             {"dir": d, "label": lab.group(1) if lab else None,
                              "kind": kind.group(1) if kind else "figure",
@@ -362,6 +370,12 @@ document.getElementById('rebuild').onclick = function () {
                     # the conventional Figure/Table reference instead.
                     if u["label"]:
                         noun = "Table" if u["kind"] == "table" else "Figure"
+                        # A formal manuscript reference is already in the
+                        # correct reader-facing form.  Insert the float but
+                        # leave ``\\ref{...}`` untouched; replacing only its
+                        # inner label would produce a nested/broken reference.
+                        if body[m.start():m.end()].startswith("\\ref{"):
+                            continue
                         # A page's source contract is the bare stable id
                         # (``Display1``), but older pages sometimes wrote
                         # ``Figure Display1``.  Normalize that legacy form
@@ -488,7 +502,17 @@ document.getElementById('rebuild').onclick = function () {
             + "\\input{%s}\n" % stem
             + "\n".join(tail) + "\n\\end{document}\n", encoding="utf-8")
 
+        # LuaLaTeX/luaotfload needs a writable cache.  A sandboxed Board
+        # process may inherit a read-only user TeX cache, which otherwise
+        # makes a valid page fail before the first font is loaded.
+        tex_cache = Path(tempfile.gettempdir()) / "haipipe-texmf"
+        tex_cache.mkdir(parents=True, exist_ok=True)
         env = dict(os.environ, PATH=_TEXBIN + ":" + os.environ.get("PATH", ""))
+        env["TEXMFVAR"] = str(tex_cache / "var")
+        env["TEXMFCONFIG"] = str(tex_cache / "config")
+        env["XDG_CACHE_HOME"] = str(tex_cache / "cache")
+        for cache_dir in ("var", "config", "cache"):
+            (tex_cache / cache_dir).mkdir(parents=True, exist_ok=True)
         if bib:
             env["BIBINPUTS"] = ".:%s:" % bib.parent
         # First pass lays down display labels; second resolves their in-text

@@ -9,8 +9,8 @@ description: >-
   workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.28.2"
-  last_updated: "2026-09-06"
+  version: "0.29.1"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md
 ---
 
@@ -63,6 +63,13 @@ front phase prepares their context and the last phase judges their result:
 `Outline` and `Content` align with the Page's two substantive structures:
 Outline plans what the Page will say; Content is what it says. Draft and
 Revise are no longer Page phases. They are movements inside CONTENT/WRITE.
+
+Every user-facing completion after a Page-changing action follows
+`../../haipipe-page/ref/user-check-packet.md`: verified Board URL for the
+Outline table, current standalone Display PDF(s), and the current Page-level
+PDF. Only the new `outline/evidence/display/` and `delivery/latex/` lanes are
+eligible. The workflow receipt remains the audit record; it is not the primary
+user-facing answer.
 
 ## 🧭 One Outline plugin serves three phases
 

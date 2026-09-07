@@ -9,8 +9,8 @@ description: >-
   phase split. Trigger: page content, CONTENT phase, WRITE cycle, division
   writing, draft page, revise page, build page, /haipipe-page-content.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-06"
+  version: "0.8.2"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md
 ---
 
@@ -79,8 +79,9 @@ INPUTS       <stem>-context.md + approved outline version + every folded local
 WORKER       haipipe-page-content plus the selected Page Face owner/narrative/style skill
 RESULT       <page>/results/<RUNNAME>/ with candidate.md, trace.md, runtime.yaml
 ACCEPT       candidate covers its plan bullets; every factual claim maps to a
-             folded item or declared source; no unsupported hole; style and
-             Page Face owner checks pass
+             folded item or declared source; draft mode may carry only named
+             [E## pending] gates and final mode permits no unsupported hole;
+             style and Page Face owner checks pass
 PROMOTION    CONTENT writes the accepted candidate into <page>.md and records RUNNAME
 REOPEN       context, plan, evidence Result, Page Face owner, acceptance, or target changed
 ```
@@ -97,8 +98,10 @@ draft. It must distinguish hard authority gates from form-range warnings.
 ```text
 AUTHORITY  Context record is fresh · selected outline has G>=1 and either an
            explicit Shape approval or an evidence revision that declares and
-           inherits its approved shape-base · every typed item is folded from a complete accepted
-           Local Result · every Bullet has typed evidence or explicit none
+           inherits its approved shape-base · every locally attainable typed
+           item is folded from a complete accepted Local Result · every
+           unresolved server/person gate is named on the approved plan · every
+           Bullet has typed evidence or explicit none
 NAMES      Page/Section name · ordered Content-division or subsection names ·
            paragraph jobs · any venue deviation and its ruling
 STRUCTURE  divisions/subsections · paragraphs by division · total paragraphs ·
@@ -131,11 +134,14 @@ Only `citation-bearing slots / all slots` is the planned citation density.
 After drafting, measure actual citation-bearing sentences, citation commands,
 and key mentions from the prose and compare them with the plan.
 
-A failed authority or evidence row blocks WRITE. A form metric outside a named
+A failed authority row blocks WRITE. A missing locally attainable Result also
+blocks WRITE. A named secure-server or person gate may enter explicit draft
+mode under the placeholder rule below; final mode still rejects it. A form metric outside a named
 venue or paper requirement blocks only when that authority makes it binding;
 otherwise mark it `⚠ review`, explain the tradeoff, and let the human decide.
-For MISQ Section prose, treat a median around 18–24 words as a comfortable
-house-style center unless a direct contract overrides it. Sentence length is a
+For MISQ Section prose, treat a median near 21 words (normally within an
+18–24-word center) as a comfortable house style unless a direct contract
+overrides it. Sentence length is a
 distribution, not a target for every sentence: vary short and long sentences
 with their jobs. A sentence above 30 words triggers `⚠ review`, never an
 automatic split or blocker; split it only when it stacks separable reader moves
@@ -154,6 +160,9 @@ or its syntax obscures the main claim.
   Evidence Results it uses.
 - A Section Page keeps one sentence slot per planned Bullet; other Page Face owners
   may realize one Bullet as one or more sentences.
+- A normal manuscript paragraph contains 4–6 sentences. Grow an underdeveloped
+  paragraph by adding warranted one-point sentences, not by lengthening its
+  existing sentences.
 - A Section sentence realizes one point. Do not fuse a definition, mechanism,
   boundary, result, and transition merely to save space. For MISQ, keep the
   median around 18–24 words while varying individual sentence lengths. Review
@@ -162,6 +171,14 @@ or its syntax obscures the main claim.
 - Let paragraph logic carry the flow. Avoid formulaic connective ladders,
   repeated three-part templates, inflated framing, and clause-stacked prose;
   preserve calibrated hedging and exact theoretical terms.
+- Keep workflow bookkeeping out of reader prose. Words such as `historical`,
+  `provisional`, `pending`, and `will be replaced` belong in the Evidence Item,
+  Result, or Discussion record, not in the manuscript.
+- When an older accepted value exists, write that value plainly and keep its
+  provisional caveat in the evidence record. When no value exists and the
+  approved plan names a server/person gate, draft mode may place exactly one
+  visible marker `[E## pending]` at the owed realization. It is a drafting aid,
+  not evidence; final mode rejects every such marker.
 - End each realized unit with its stable plan address according to the Page
   Type's sentence contract.
 - Enforce the addressed Bullet's evidence boundary. A citation placement
@@ -183,6 +200,18 @@ Improve argument, sequence, clarity, voice, citations, and captions. If the
 promise or structure must change, stop and route to OUTLINE; if a governing
 policy changed, route to CONTEXT.
 
+For manuscript headings, apply `haipipe-paper-section`'s “Reader-facing
+subsection titles” contract: validate title-to-body fit and synchronize an
+authorized naming repair across the current Outline, Content, Aims, and built
+delivery. A title repair alone is not permission to rewrite the argument.
+
+Before Build, run `haipipe-paper-revise-humanizer`, then have a fresh-context
+reviewer compare the revised prose with measured passages from named MISQ
+exemplars and return a style verdict. Record both receipts. A requested
+`writing-only` review may judge argument and prose while unresolved values stay
+in explicit `[E## pending]` markers; exclude those markers from the style
+verdict and do not mistake that review for final readiness.
+
 Direct writes are the default. Candidate-only mode is used only when the user
 explicitly asks to compare alternatives.
 
@@ -192,6 +221,20 @@ Regenerate only the delivery projections declared by the Page Face owner or owni
 workflow, such as `delivery/latex/`, `delivery/word/`, or render outputs. The
 source Page remains the authority. A stale or failed build keeps CONTENT open;
 it is not a CHECK finding yet because no checkable version exists.
+
+After Build, assemble the user-check packet from
+`../../haipipe-page/ref/user-check-packet.md`: rebuild affected DISPLAY
+previews, rebuild the one-Page LaTeX PDF when Page prose or an embedded display
+changed, and give the verified Board Page URL where the generated Outline table
+can be read. The packet's third link is the Page/Section PDF, never the paper
+master.
+
+When the person asks for a complete version, deliver the requested LaTeX/PDF
+and Word projections, report the PDF page count, and return the reader-facing
+viewer link. Trim figure PDFs to their content margins before assembly. If a
+named server/person gate prevents a final build, return the best available
+draft PDF first with its visible evidence markers; final build mode must fail
+while any `[E## pending]` marker remains.
 
 ## ④ Pre-check
 
@@ -230,6 +273,9 @@ entry_check: authority/evidence pass · form ready or named warnings
 division_runs: [<RUNNAME → Result → promoted C<n>>]
 page: <source version before → after>
 delivery: [<artifact paths>]
+delivery_report: PDF pages · reader-facing viewer link · draft/final mode
+user_check_packet: Board Outline URL · current Display PDF(s) · current Page-level PDF
+revise: humanizer receipt · fresh-context MISQ style verdict
 pre_check: ready | another-pass | blocked
 artifacts: [<every written path>]
 evidence: [<plan, context, Result, and check paths>]

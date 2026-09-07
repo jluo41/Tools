@@ -9,7 +9,7 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.45.2"
+  version: "0.46.0"
   last_updated: "2026-09-06"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -212,8 +212,11 @@ change refreshes Content. A pure evidence revision declares its `shape-base`
 and inherits that Shape's approval. Increment `G` only for a large change to
 the central argument, hypotheses, major divisions, or overall narrative after
 a substantial review round. Mechanical repairs stay within the current
-version. `approved:` remains a person's act; a machine may only transcribe a
-direct approval or an existing Shape approval inherited by an evidence fold.
+version. First approval promotes to `v1.0` only after every machine-finishable
+Evidence Item has been taken as far as possible; remaining secure-server or
+person gates are named in the approval line. `approved:` remains a person's
+act; a machine may only transcribe a direct approval or an existing Shape
+approval inherited by an evidence fold.
 
 ## 🎛 The tab · Context + Bullet + Evidence, one Outline plugin
 
@@ -326,10 +329,10 @@ When a person asks to review, check, read, or approve a page outline, the
 OUTLINE phase reads these existing records as one compact, linked packet:
 
 ```text
-① Current Shape    plan v<G>.<S>[.<E>] · approval · arc · C/P path · Section form audit
-② Evidence owed    typed/status counts · distinct item/source/placement/key metrics · material paths
+① Current Shape    version/content licence/next version · prior-version diff + reasons · approval · arc · C/P path · measured Section counts
+② Evidence owed    typed/status counts · distinct item/source/placement/key metrics · display count/purpose · material paths
 ③ What shaped it   routed Feedback · applicable Requirement · open Discussion only
-④ Human decision   exact approval/Decide choice · blockers · no inferred tick
+④ Human decision   AI verdict + reason · exact approval/Decide choice · blockers · no inferred tick
 ```
 
 The response links the current plan and every record it names.  A feedback row
@@ -358,8 +361,9 @@ source entries, realized placements, key mentions, or cited-sentence density.
 
 No emoji inside a tag; colour is only a quick signal. A Run chip's small word
 is its next action (`plan`, `run`, `rerun`, or `reuse`), never a combined
-status. On the compact Page an Evidence chip is a route to its Evidence
-Workspace item card, never a popover; inside the live tab the THING itself
+status. On the compact Page, and on the Bullet Workspace plan card inside
+the live tab, an Evidence chip is a route to its Evidence Workspace item
+card, never a popover; inside the live tab the THING itself
 (the reference as printed, the card's own question, the unit's own claim) is
 shown on that card, and a 📚 panel prints `Author et al.`, never the author list.
 `CITE` is one Evidence Item type, not a separate table column: one bullet may
@@ -412,6 +416,11 @@ skills          scan seed + person's rank/add/remove gestures  /_board/skill (em
 
 `POST /_board/outline` exists only so the shell's `tab: {url, write}` contract
 holds; it writes nothing.
+
+After SHAPE, SURVEY, or EMBED changes a plan or Evidence Item record, run the
+Outline generators, rebuild the Board, open the 🧭 tab, and confirm the updated
+projection before replying. Regeneration, build, and rendered-tab inspection
+are one completion step; a source-only edit is unfinished.
 
 ## 📂 Files
 

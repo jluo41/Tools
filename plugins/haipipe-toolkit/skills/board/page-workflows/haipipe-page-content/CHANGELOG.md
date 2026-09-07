@@ -1,3 +1,25 @@
+## 0.8.2 · 2026-09-07
+
+- Require CONTENT/Build to return the shared user-check packet with the
+  Outline Board URL, current Display PDFs, and current Page-level PDF.
+
+## 0.8.1 · 2026-09-07
+
+- Apply the Section owner's subsection-title contract during revision and
+  synchronize authorized naming repairs without expanding their scope.
+
+## 0.8.0 · 2026-09-06
+
+- Permit explicit draft mode after local evidence work is exhausted: use an
+  old accepted value plainly or one visible `[E## pending]` marker for a named
+  server/person gate; final mode rejects every marker.
+- Keep workflow vocabulary out of manuscript prose and shape normal paragraphs
+  as 4–6 one-point sentences with a median near 21 words.
+- Require a humanizer pass and fresh-context MISQ style verdict before Build;
+  add writing-only review for drafts with unresolved values.
+- On complete-version requests, deliver the requested PDF/LaTeX and Word,
+  report pages and viewer link, and trim figure PDF margins.
+
 ## 0.7.0 · 2026-09-06
 
 - Admit only generation `G>=1` plans to CONTENT; every `v0.*` state remains

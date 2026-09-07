@@ -7,8 +7,8 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "0.7.1"
-  last_updated: "2026-09-04"
+  version: "0.7.2"
+  last_updated: "2026-09-06"
   summary: "page-types/ replaced by workflow-phases/: six haipipe-paper-<phase> skills; venue contract moved beside its bank."
 ---
 
@@ -153,6 +153,28 @@ several artifacts or panels, but it has one message, one frozen Local Input,
 and one independent acceptance state. The root paper build may copy accepted
 artifacts into its compiled deliverable; the local Result remains the evidence
 authority.
+
+### 🖼 Concept-first gate for visual DISPLAY Results
+
+For a diagram, illustration, or PowerPoint-native figure whose layout or icon
+language is still open, the paper workflow freezes the visual direction before
+editable authoring:
+
+```text
+visual reference → composition brief → human ruling
+                 → editable reconstruction → candidate review → promotion
+```
+
+The reference may be user-provided, an existing candidate, an Image Gen
+concept, or a sketch. The composition brief records the panel structure,
+relationships, must-keep icons or objects, label budget, palette, and avoid
+list. A generated bitmap is a design reference, not a substitute for the
+editable PPT/SVG source; final labels and any real counts are re-typeset from
+the admitted evidence or caller-supplied context. When a user asks to reduce
+text, preserve the existing iconography and object semantics unless removal is
+explicitly requested. If the user asks to discuss first, do not replace the
+accepted asset or Board page before the visual ruling is recorded. Numeric
+tables and plots continue through the normal intake/spec path.
 
 Evidence evolves through the shared Page loop:
 
@@ -413,6 +435,9 @@ Before reporting Paper work complete:
 - Citation, value, and display bindings live on the consuming Page; each one
   resolves to a typed Evidence Item, full local Run id, and accepted Result.
 - Every display has its own intake, artifacts, bindings, and acceptance state.
+- For a visual DISPLAY whose composition was open, the accepted unit records a
+  concept reference and composition ruling before editable reconstruction; the
+  promoted asset still follows the normal candidate and evidence gates.
 - Every Round covers one feedback batch, routes every item exactly once, and
   names checked target-Page versions plus an approved response/build receipt.
 - The complete-paper PDF/DOCX is regenerated from the active desk-room source,

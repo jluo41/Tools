@@ -115,7 +115,6 @@ class OutlineReviewPacketTest(unittest.TestCase):
                 "✍️ plan v1", "approved: ⬜", "1 evidence item · Decisions 0/1",
                 "1</b> SHAPE", "2</b> SURVEY", "3</b> LAND", "4</b> EMBED",
                 "E01-VALUE-review-cohort-counts",
-                "Supporting Runs", "Local Input", "Local Run", "Decide",
             ):
                 self.assertIn(wanted, body)
             self.assertNotIn("PageX Bindings", body)
@@ -125,15 +124,23 @@ class OutlineReviewPacketTest(unittest.TestCase):
                 self.assertNotIn(retired, body)
             self.assertIn("E1V.ReviewCohort", body)
             self.assertNotIn("📝 E1", body)
-            start = body.index('<div id="typed-ev1" popover')
-            card = body[start:body.index("</div></div>", start) + len("</div></div>")]
-            self.assertIn("E01-VALUE-review-cohort-counts", card)
-            for field in (
-                "Target", "Expected", "Acceptance", "Supporting Runs",
-                "Local Input", "Local Run", "Result", "Decide",
-            ):
-                self.assertIn(field, card)
-            self.assertNotIn("PageX Bindings", card)
+            # The typed chip is a route to its Evidence Workspace item card,
+            # the same law the compact Page table follows: it opens no popover
+            # and duplicates none of the card's fields on the plan card.
+            self.assertIn(
+                '<a class="evchip warn typed-ev" '
+                'href="#run-E01-VALUE-review-cohort-counts" '
+                'data-outline-lens="workspace" data-outline-seg="items" '
+                'data-outline-focus="run-E01-VALUE-review-cohort-counts" '
+                'title="E01-VALUE-review-cohort-counts · VALUE · specified">'
+                'E1V.ReviewCohort</a>',
+                body,
+            )
+            self.assertNotIn('popovertarget="typed-ev', body)
+            self.assertNotIn('id="typed-ev1" popover', body)
+            for field in ("Target", "Expected", "Acceptance", "Supporting Runs",
+                          "Local Input", "Local Run", "Result", "Decide"):
+                self.assertNotIn("<b>%s</b>" % field, body)
 
     def test_outline_owns_one_internal_evidence_workspace(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -156,6 +163,24 @@ class OutlineReviewPacketTest(unittest.TestCase):
             self.assertIn("requestedRun=params.get('run')||''", rendered)
             self.assertIn("requestedSeg=params.get('seg')||''", rendered)
             self.assertIn("function workspaceSource(frame)", rendered)
+            # With the Board route known, the Bullet Workspace's typed chip
+            # carries the complete one-URL destination, and the document's
+            # click delegate switches lens in place and keeps that route in
+            # its own URL; no typed popover remains.
+            self.assertIn(
+                'href="/_board/outline?path=/Board/board.md&amp;file=MAIN/SM00-abstract/'
+                'SM00-abstract.md&amp;lens=workspace&amp;seg=items&amp;'
+                'focus=run-E01-VALUE-review-cohort-counts" '
+                'data-outline-lens="workspace" data-outline-seg="items" '
+                'data-outline-focus="run-E01-VALUE-review-cohort-counts"',
+                rendered,
+            )
+            self.assertNotIn('popovertarget="typed-ev', rendered)
+            self.assertIn("ev.target.closest('a[data-outline-focus]')", rendered)
+            self.assertIn("function focusRecord(id)", rendered)
+            self.assertIn("history.replaceState(null,'',u.href);", rendered)
+            self.assertIn("if(requested==='workspace'&&!requestedSeg)"
+                          "requestedSeg=requestedRun?'runs':'items';", rendered)
             # The Page names the Evidence Workspace segment; an older link
             # without one still derives it from whether a Run was named.
             self.assertIn(

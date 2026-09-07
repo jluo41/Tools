@@ -1,3 +1,22 @@
+## 0.46.1 · 2026-09-06
+
+- State that the Bullet Workspace's typed Evidence chip takes the same route
+  as the compact Page chip (Evidence Workspace → Evidences, exact card) and
+  opens no popover.
+- Document that a `Routed:` value may name several rows separated by spaces,
+  commas, or semicolons; one line per row stays canonical.
+
+## 0.46.0 · 2026-09-06
+
+- Make first `v1.0` approval wait until local evidence work is exhausted and
+  name remaining secure-server or person gates.
+- Expand the human review packet with version diffs, measured manuscript
+  counts, display purpose/count, and the AI's own verdict.
+- Allow one DISPLAY Item to name additional served Bullets while preserving
+  one owning Target and no sibling evidence inheritance.
+- Treat regenerate, Board rebuild, and rendered 🧭 inspection as one required
+  completion step after SHAPE, SURVEY, or EMBED changes.
+
 ## 0.45.2 · 2026-09-06
 
 - Make `v0.S.E` valid before approval in both interaction modes while Content

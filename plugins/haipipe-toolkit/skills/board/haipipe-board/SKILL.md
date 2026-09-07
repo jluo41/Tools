@@ -220,7 +220,11 @@ never writes a Board roster into Project or SPACE metadata.
   (`lens` + `seg` + `focus`), scrolled into view and highlighted. The compact
   Page opens no Evidence popover and keeps no second copy of the item's
   fields; `none` and `missing` cells stay inert text with their reason on
-  hover.
+  hover. The typed Evidence chip inside the Outline plugin's Bullet
+  Workspace takes the same route to the same card, switching lens in
+  place; it opens no popover either. A `Routed:` value may name several
+  rows separated by spaces, commas, or semicolons, and every Feedback
+  chip's focus id must equal a register record id.
 - Archive moves source under `_archive/`; it never deletes the record.
 - One Board has one `board.md`; do not create a second roster or `STATUS.md`.
 - Page-local folders are plugins; a new folder name needs a real plugin owner.

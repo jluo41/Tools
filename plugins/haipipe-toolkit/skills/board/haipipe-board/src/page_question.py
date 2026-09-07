@@ -9,6 +9,7 @@ from . import body as _bd
 from .body import (body, flat_rows, inline, note_body, render_apparatus,
                    render_thread, sort_log)
 from .common import aim_progress, aim_summary, esc, sec, stinfo
+from .feedback import routed_pairs
 from .item_table import (action_label, compact_global_run, compact_paper_run,
                          readable_global_run, readable_paper_route, repo_root,
                          readable_task, run_registry, wall_label)
@@ -488,10 +489,11 @@ def _outline_grid(page_src):
             return '<span class="outline-feedback-empty">—</span>'
         chips = []
         for route in routes:
-            tokens = route.split()
-            round_id = tokens[0] if tokens and re.match(r"^RD\d+", tokens[0]) else ""
-            labels = tokens[1:] if round_id else tokens
-            for label in labels:
+            # `RD01 S1-PP5; RD01 S1-PP7` is two rows.  Each chip's focus id
+            # must equal a register record's id, or the Feedback lens opens
+            # on nothing (src/feedback.py routed_pairs owns the grammar).
+            pairs = routed_pairs(route)
+            for round_id, label in pairs:
                 focus = "feedback-" + re.sub(r"[^A-Za-z0-9_-]", "-", label)
                 title = "%s %s" % (round_id, label) if round_id else label
                 chips.append(
@@ -500,7 +502,7 @@ def _outline_grid(page_src):
                     'data-outline-focus="%s" title="%s">%s</a>' %
                     (outline_url, esc(focus), esc(focus), esc(title), esc(label))
                 )
-            if not labels:
+            if not pairs:
                 chips.append('<span class="outline-feedback" title="%s">%s</span>' %
                              (esc(route), esc(route)))
         return "".join(chips)

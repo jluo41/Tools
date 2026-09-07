@@ -1,3 +1,10 @@
+## 0.8.3 · 260907
+
+- Add reader-facing subsection naming: substantive subjects rather than writer
+  tasks, exact constructs, title-to-body fit, and ordered-title review.
+- Keep authorized title-only repairs synchronized across Outline, Content,
+  Aims, Board, and delivery without rewriting historical plans or Run inputs.
+
 ## 0.8.2 · 260904
 
 - Split stale upstream ownership precisely: Narrative returns to the journey;

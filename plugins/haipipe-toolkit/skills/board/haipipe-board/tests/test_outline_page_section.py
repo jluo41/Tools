@@ -175,6 +175,51 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertIn("specified", html)
         self.assertNotIn("🖼 Diagram", html)
 
+    def test_feedback_chips_split_routed_rows_on_commas_and_semicolons(self):
+        """`Routed: RD01 S1-PP5; RD01 S1-PP7` is two live chips, never a dead one.
+
+        Splitting on whitespace alone minted `feedback-S1-PP5-` and
+        `feedback-RD01`, ids no register record carries, so the Feedback lens
+        opened on nothing (MISQ Introduction and Theory plans, 260906).
+        """
+        plan = PLAN.replace("  Routed: RD01 S1-PP1\n",
+                            "  Routed: RD01 S1-PP5; RD01 S1-PP7\n") + (
+            "- B2 · Name the second move\n"
+            "  Note: The second slot.\n"
+            "  Routed: RD01 S1-PP2, S1-PP3\n"
+        )
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "QA" / "QA1.md"
+            source.parent.mkdir(parents=True)
+            source.write_text(PAGE, encoding="utf-8")
+            outline = source.parent / "outline"
+            outline.mkdir()
+            (outline / "QA1-outline-v1.md").write_text(plan, encoding="utf-8")
+            (outline / "QA1-evidence-items.md").write_text(ITEMS, encoding="utf-8")
+
+            prior_base = board_body.BASE
+            board_body.BASE = root
+            try:
+                page = parse_page("QA1", PAGE, file="QA/QA1.md")
+                html = render_question(page, None, None)
+            finally:
+                board_body.BASE = prior_base
+
+        for label in ("S1-PP5", "S1-PP7", "S1-PP2", "S1-PP3"):
+            self.assertIn(
+                'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=fb'
+                f'&amp;focus=feedback-{label}" data-outline-lens="fb" '
+                f'data-outline-focus="feedback-{label}" title="RD01 {label}">{label}</a>',
+                html,
+            )
+        self.assertNotIn("feedback-S1-PP5-", html)
+        self.assertNotIn("feedback-S1-PP2-", html)
+        self.assertNotIn('data-outline-focus="feedback-RD01"', html)
+        self.assertNotIn(">RD01</a>", html)
+        self.assertNotIn(">S1-PP5;</a>", html)
+        self.assertNotIn(">S1-PP2,</a>", html)
+
     def test_wall_abbreviates_all_three_evidence_types(self):
         cases = (
             ("CITE", "E02-CITE-guideline", "guideline source", "Guideline", "E2C.Guideline"),

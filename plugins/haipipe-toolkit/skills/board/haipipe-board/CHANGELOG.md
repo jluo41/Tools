@@ -1,3 +1,19 @@
+## 0.171.0 · 2026-09-06
+
+- Route the typed Evidence chip on the Outline plugin's Bullet Workspace plan
+  card to `Evidence Workspace → Evidences` at the exact item card, the same
+  one-URL route (`lens=workspace&seg=items&focus=run-<item>`) the compact Page
+  chip takes; the Outline document switches lens in place and keeps the route
+  in its own URL. Remove the `typed-ev` native popover and its duplicated
+  field rows; backlink and citation popovers are unchanged.
+- Read `Routed:` values through one grammar (`src/feedback.py` `routed_pairs`
+  / `routed_rows`) in the Page's Feedback column and in check.py's
+  `feedback-unserved` tooth: `RD01 S1-PP5; RD01 S1-PP7` and `RD01 S3-PP2,
+  S3-PP3` are several rows, never a dead `S1-PP5;` or `RD01` chip.
+- Extend `checks/run_detail_browser.py` with the Bullet Workspace chip step,
+  discover the Feedback chip instead of pinning `S0-PP1`, and add
+  `--feedback-url` for a Page whose plan carries `Routed:` rows.
+
 ## 0.170.1 · 2026-09-06
 
 - Align current Board examples, chat guidance, glossary references, and parser

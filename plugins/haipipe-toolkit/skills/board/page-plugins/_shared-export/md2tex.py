@@ -75,6 +75,12 @@ ESTABLISHES = re.compile(r"^\W*\s*Establishes\b")
 # backticks around the word.
 CODE_SPAN = re.compile(r"`([^`]+)`")
 
+# Task Pages carry a small reader-facing status tail after their manuscript
+# content. It belongs on the Board Page, not in a paper export. Likewise, the
+# reading anchor is HTML apparatus rather than prose.
+EXPORT_SCAFFOLD = re.compile(r"^(?:answers\b|not\s+answered\b|next\s+run\b)",
+                             re.I)
+
 # A percentage in board prose ("26% of the headline cohort") reached raw LaTeX
 # as a live comment character: `%` and everything after it on the line vanished
 # from the compiled PDF with no error, no warning, just a shorter sentence
@@ -183,6 +189,41 @@ def section_title_of(page):
     return m.group(1) if m else None
 
 
+def keywords_text_of(page):
+    """Return reader prose from an optional ``### Keywords`` division.
+
+    ``md2docx.parse_page`` deliberately drops unnumbered working headings, so
+    the Keywords heading itself is absent from its shared block stream.  The
+    prose still arrives, previously joining the final abstract sentence in the
+    LaTeX projection.  Read this one manuscript metadata division by name so
+    the LaTeX writer can restore its conventional inline label and spacing.
+    """
+    raw = pathlib.Path(page).read_text(encoding="utf-8", errors="replace")
+    raw = re.sub(r"<!--.*?-->", "", raw, flags=re.S)
+    lines = raw.splitlines()
+    in_content = False
+    in_keywords = False
+    kept = []
+    for raw_line in lines:
+        stripped = raw_line.strip()
+        if stripped == "## Content":
+            in_content = True
+            continue
+        if in_content and stripped.startswith("## "):
+            break
+        if not in_content:
+            continue
+        if stripped.startswith("### "):
+            in_keywords = stripped[4:].strip() == "Keywords"
+            continue
+        if not in_keywords or not stripped:
+            continue
+        if stripped.startswith(("#### ", ">", "(", "```")):
+            continue
+        kept.append(re.sub(r"^[-*]\s+", "", stripped))
+    return " ".join(kept).strip()
+
+
 def build_section(page, displays, report, keep_fences=False):
     blocks, nfenced = md2docx.parse_page(page, keep_fences=keep_fences)
     declared = section_title_of(page)
@@ -218,6 +259,13 @@ def build_section(page, displays, report, keep_fences=False):
             out.append("\n\\%s{%s}\n" % (lvl, escape_prose(name)))
             continue
         line = b[1].strip()
+        if ((line.startswith("<a ") and line.endswith("</a>"))
+                or EXPORT_SCAFFOLD.match(line)):
+            continue
+        # Page Content uses bullets as its trace unit. The paper projection
+        # keeps the sentence but not the Board-only list marker; otherwise a
+        # paragraph exports as "- claim one. - claim two".
+        line = re.sub(r"^[-*]\s+", "", line)
         if ESTABLISHES.match(line):
             continue
         if GROUP_TITLE.match(line):
@@ -236,7 +284,7 @@ def build_section(page, displays, report, keep_fences=False):
                                           CODE_SPAN.sub(code_span_tex,
                                                         escape_prose(m.group(2))))) + "\n\n")
             continue
-        buf.append(badge_sub(CODE_SPAN.sub(code_span_tex, escape_prose(b[1]))))
+        buf.append(badge_sub(CODE_SPAN.sub(code_span_tex, escape_prose(line))))
         # A Display named in this sentence is \input right after the paragraph
         # that first mentions it, which is MISQ's stated rule: "embedded in the
         # body of the paper, following the first reference".
@@ -250,7 +298,29 @@ def build_section(page, displays, report, keep_fences=False):
                 report.append("%s: \\ref{%s} matches no display unit"
                               % (os.path.basename(page), lab))
     flush()
-    return "".join(out)
+    body = "".join(out)
+
+    # Keywords are manuscript metadata, not a numbered section.  The shared
+    # reader drops their unnumbered heading but retains their prose, so restore
+    # the conventional inline label and keep the terms out of the abstract's
+    # paragraph.  Match the last exact occurrence so a later manuscript
+    # division or a bullet-form keyword list remains valid, while ordinary
+    # Sections with no Keywords division stay a no-op.
+    keywords = keywords_text_of(page)
+    if keywords:
+        rendered = badge_sub(CODE_SPAN.sub(code_span_tex,
+                                           escape_prose(keywords)))
+        at = body.rfind(rendered)
+        if at >= 0:
+            before = body[:at].rstrip()
+            after = body[at + len(rendered):].lstrip()
+            body = (before + "\n\n\\smallskip\n"
+                    "\\noindent\\textbf{Keywords:} " + rendered + "\n\n"
+                    + after)
+        else:
+            report.append("%s: Keywords division was not isolated in LaTeX"
+                          % os.path.basename(page))
+    return body
 
 
 def main():
