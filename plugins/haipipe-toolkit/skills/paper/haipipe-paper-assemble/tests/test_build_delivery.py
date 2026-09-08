@@ -247,3 +247,31 @@ def test_missing_latexmk_is_reported_not_a_traceback(paper, monkeypatch):
     manifest = json.loads((m.HERE / "build-manifest.json").read_text())
     assert manifest["render"]["latexmk_rc"] == 127 and manifest["status"] == "DRAFT"
     assert "not found" in manifest["render"]["latexmk_tail"]
+
+
+def test_round_freeze_copies_all_declared_outputs_and_is_immutable(paper):
+    """send/release must include a declared supplement and never overwrite a snapshot."""
+    m = paper
+    m.OUT.update({
+        "supplement_pdf": "latex/T-supp.pdf",
+        "supplement_docx": "word/T-supp.docx",
+    })
+    for configured in m.OUT.values():
+        path = m.rel(configured)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"%PDF" if path.suffix == ".pdf" else b"artifact")
+    (m.HERE / "display-register.md").write_text("# display register\n")
+    round_dir = m.ROOT / "Bc-T-Round" / "RD01-T-review-20260908"
+    round_dir.mkdir(parents=True)
+
+    m.freeze("sent", "RD01")
+    snapshot = round_dir / "sent"
+    assert (snapshot / "T.pdf").exists()
+    assert (snapshot / "T.docx").exists()
+    assert (snapshot / "T-supp.pdf").exists()
+    assert (snapshot / "T-supp.docx").exists()
+    assert (snapshot / "build-manifest.json").exists()
+    assert (snapshot / "display-register.md").exists()
+
+    with pytest.raises(SystemExit, match="immutable"):
+        m.freeze("sent", "RD01")

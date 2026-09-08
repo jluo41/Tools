@@ -33,7 +33,7 @@ Compose `bNN_{block_name}`, for example:
 - `b05_paper_display`
 
 The `b` prefix carries level only. Never infer a Task type from the Block
-index or resurrect the retired A/B/C/D type-letter scheme.
+index or introduce a second type-letter scheme.
 
 
 Step 3 - Create the Board skeleton

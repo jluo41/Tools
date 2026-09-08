@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.7.1"
+  version: "0.7.2"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -339,14 +339,18 @@ resolve Paper and its delivery/
   → render optional section snapshots
   → write assets and the build manifest
   → render DOCX/PDF previews and inspect layout when requested
-  → ON SEND (a person's act): mint or name the Round, copy the current
-    PDF + DOCX + build-manifest into B<x>-<desk>-Round/RD<NN>/sent/
+  → ON SEND (a person's act): mint or name the Round, copy every declared
+    output (main/supplement PDF + DOCX when present) plus the manifest and
+    display register into
+    B<x>-<desk>-Round/RD<NN>-<desk>-<event>-<YYYYMMDD>/sent/
   → ON ROUND CLOSE: rebuild, then copy into that Round's released/
 ```
 
 `sent/` and `released/` are frozen copies and never rebuilt in place; the
-Round's Log carries their manifest hashes. `haipipe-paper-round` owns the
-folder shape.
+Round's close receipt under `outline/` carries their manifest hashes.
+`haipipe-paper-round` owns the folder shape. A freeze fails if any declared
+output is missing or if the destination already contains a prior snapshot;
+this prevents a partial send from masquerading as a complete Round.
 
 The paper-specific command is the thin wrapper `ref/build.py.wrapper`,
 installed as `delivery/build.py`:
@@ -354,6 +358,7 @@ installed as `delivery/build.py`:
 ```bash
 .venv/bin/python delivery/build.py            # build · DRAFT unless every page is ready
 .venv/bin/python delivery/build.py send RD02  # freeze the current build into that Round's sent/
+.venv/bin/python delivery/build.py release RD02  # after G5 approval, freeze the answering build
 ```
 
 The wrapper contains no logic of its own; it delegates to

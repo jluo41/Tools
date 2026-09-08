@@ -1,5 +1,15 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.7.2 · 260908
+
+- Round snapshots now freeze every output declared in `delivery/paper-build.toml`,
+  including supplement PDF/DOCX when present, plus the display register.
+- `send` and `release` refuse missing outputs and refuse to overwrite a
+  populated `sent/` or `released/` directory; an immutable snapshot must be
+  cut into a new or explicitly migrated Round.
+- The receipt reference is the Round's `outline/` close record, not a retired
+  on-page `## Log` section.
+
 ## 0.7.1 · 260908
 
 - **Word tables arrive** (Paper-MISQ-Board: 3 of 4 main tables and 7 of 12 appendix tables reached Word as a caption with nothing under it, or not at all). `parse_table_rows` in `scripts/latex_room_to_docx.py` is brace-aware: the column spec is read as a balanced group (`p{3cm}`, `@{}`, `>{…}`, `*{6}{X}`, `tabularx`/`tabular*` width argument, `longtable`, `array`), rows split on `\\` only at depth 0 (`\shortstack` stays one cell), `\multicolumn{n}` pads `n-1` cells. The old regex `\{[^{}]*\}` returned no rows for any nested-brace spec.

@@ -14,8 +14,8 @@ ref/build.py.wrapper) that sets HAIPIPE_PAPER_BUILD_CONFIG to its own
 paper-build.toml and execs this file, so a fix here reaches every paper:
 
   .venv/bin/python delivery/build.py                 build (DRAFT unless every page is ready)
-  .venv/bin/python delivery/build.py send RD02       copy the current build into that Round's sent/
-  .venv/bin/python delivery/build.py release RD01    copy the current build into that Round's released/
+  .venv/bin/python delivery/build.py send RD02       copy every declared output into that Round's sent/
+  .venv/bin/python delivery/build.py release RD01    copy every declared output into that Round's released/
 
 Three behaviors this engine guarantees, each with a tooth in tests/:
   A  a display cited by a fragment is printed ONCE (md2tex already embeds it as
@@ -716,14 +716,60 @@ def build():
     for w in BUILD_WARNINGS: print(f"  ⚠ document: {w}")
 
 def freeze(kind: str, rd: str):
+    """Cut one immutable Round snapshot from the current generated delivery.
+
+    The Round contract is output-config driven: every declared output must be
+    present, and the derived display register travels with the manifest. A
+    partially populated destination is never repaired in place; a new Round
+    (or an explicit human migration) is required.
+    """
+    if kind not in {"sent", "released"}:
+        sys.exit(f"invalid freeze target {kind!r}; expected sent or released")
     rounds = list(ROOT.glob(f"B*-*-Round/{rd}-*"))
-    if len(rounds) != 1: sys.exit(f"expected one Round folder for {rd}, found {len(rounds)}")
-    if not rel(OUT["main_pdf"]).exists():
-        sys.exit(f"nothing to freeze: {OUT['main_pdf']} does not exist; run the build first")
-    dst = rounds[0] / kind; dst.mkdir(exist_ok=True)
-    for src in [rel(OUT[k]) for k in ("main_pdf", "main_docx", "manifest")] + [HERE / "display-register.md"]:
-        if src.exists(): shutil.copy2(src, dst / src.name); print(f"  → {dst.relative_to(ROOT)}/{src.name}")
-    print(f"{kind}/ frozen for {rounds[0].name} · hash {sha(rel(OUT['manifest']))}")
+    if len(rounds) != 1:
+        sys.exit(f"expected one Round folder for {rd}, found {len(rounds)}")
+
+    dst = rounds[0] / kind
+    if dst.exists():
+        leftovers = [p for p in dst.iterdir() if p.name != ".gitkeep"]
+        if leftovers:
+            names = ", ".join(sorted(p.name for p in leftovers))
+            sys.exit(f"{dst.relative_to(ROOT)} is immutable and already contains: {names}")
+    dst.mkdir(parents=True, exist_ok=True)
+
+    sources = []
+    missing = []
+    targets = set()
+    for key, configured in OUT.items():
+        src = rel(configured)
+        if not src.exists():
+            missing.append(f"{key}: {configured}")
+            continue
+        target_name = src.name
+        if target_name in targets:
+            sys.exit(f"freeze output name collision: {target_name}")
+        targets.add(target_name)
+        sources.append((key, src))
+
+    register = HERE / "display-register.md"
+    if not register.exists():
+        missing.append(f"display-register: {register.relative_to(ROOT)}")
+    elif register.name in targets:
+        sys.exit(f"freeze output name collision: {register.name}")
+    else:
+        sources.append(("display-register", register))
+
+    if missing:
+        sys.exit("cannot freeze an incomplete build; missing: " + "; ".join(missing))
+
+    for key, src in sources:
+        target = dst / src.name
+        if src.is_dir():
+            shutil.copytree(src, target)
+        else:
+            shutil.copy2(src, target)
+        print(f"  → {dst.relative_to(ROOT)}/{target.name} ({key})")
+    print(f"{kind}/ frozen for {rounds[0].name} · hash {sha(dst / Path(OUT['manifest']).name)}")
 
 def main(argv=None):
     a = list(sys.argv[1:] if argv is None else argv)
