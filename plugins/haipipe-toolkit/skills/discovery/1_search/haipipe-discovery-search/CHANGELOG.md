@@ -3,6 +3,13 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.7.0 · 2026-09-08
+
+- Add external provider routing for academic-paper-search, ARIS research-lit,
+  and the optional AER novelty pass.
+- Normalize external hits before canonical identity resolution and keep all
+  provider calls below the D1 Run commissioner.
+
 ## 0.6.0 · 2026-09-07
 
 - Narrow the Search family to candidate discovery and canonical Subject

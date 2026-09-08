@@ -7,14 +7,14 @@ description: >-
   Result directory containing a Result Card, facts, runtime receipt, and
   one-entry BibTeX. Use to add a paper/link/PDF, find and read literature,
   review a source or field, synthesize prior work, build an evidence Bib, or
-  answer a discovery QA question. Trigger: discover, find paper, add paper,
+  resolve a discovery question through Runs/Results. Trigger: discover, find paper, add paper,
   paper run, source link, lit review, review, synthesize, 查文献, verdict,
-  landscape, qa,
+  landscape,
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-09-07"
+  version: "0.12.0"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
 
@@ -22,8 +22,8 @@ metadata:
 
 Single entry for durable external-evidence work. A Discovery `tNN_` Task Page
 Folder is one research Topic with BOTH a Page Face and a Task Face. It never references its
-consumer upward; consumers link to its public Result Cards, typed records, or QA
-digests from their own side.
+consumer upward; consumers link to its public Run Results, typed records, or
+Page Evidence Items from their own side.
 
 For durable work, LOAD haipipe-folder and haipipe-page for the two Faces. Load
 `haipipe-plugin-outline` for the Page's Outline + Evidence Workspace and its
@@ -43,6 +43,8 @@ ref/paper-run-contract.md      Level-4 Run/Result/Bib law
 ref/discovery-yaml-schema.md   Task manifest + typed records
 ref/source-format.md           human source presentation
 ref/external-skill-map.md      ARIS pin, promoted adapters, and boundaries
+ref/external-capability-registry.md
+                                normalized external packets and family routing
 ../../board/page-plugins/haipipe-plugin-outline/ref/item-table.md
                                 typed Evidence Item and Run-lineage grammar
 ../../board/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md
@@ -72,7 +74,6 @@ ref/external-skill-map.md      ARIS pin, promoted adapters, and boundaries
 /haipipe-discovery migrate-bjtr <bank>            dry-run legacy B/J/T migration
 /haipipe-discovery migrate-bjtr <bank> --repair-pages  refresh migration Pages
 /haipipe-discovery regroup-bjtr <bank>             repair one-Job-per-Block banks
-/haipipe-discovery qa "<question>" [task]        question door; fn/qa.md
 /haipipe-discovery feedback ...                  fn/feedback.md
 /haipipe-discovery digest ...                    fn/digest.md
 /haipipe-discovery <specialist> [args]           one-off worker, no folder
@@ -122,7 +123,10 @@ before each compatibility review. The active Discovery family promotes only
 the narrow adapters it can honor: `gemini-search` for optional broad recall
 and `openalex` for optional structured metadata. Their upstream source, commit,
 and the skills intentionally kept reference-only are listed in
-`ref/external-skill-map.md`.
+`ref/external-skill-map.md`. Additional reference procedures for provider
+routing, source tracing, citation checks, genealogy, and Result-to-Claim
+support are described in `ref/external-capability-registry.md`; they return
+packets to the local family routers and do not become new lifecycle owners.
 
 Do not replace these numbered groups with `routes/`. Only
 `workflow-phases/` declares executable phase ownership.
@@ -151,8 +155,7 @@ discoveries/
             ├── scripts/                           optional instrument
             ├── runs/r01_<author><year>_<paper>.sh
             ├── results/r01_<author><year>_<paper>/
-            ├── summary.md | verdict.md | landscape.md
-            └── QA/
+            └── summary.md | verdict.md | landscape.md
 ~~~
 
 The path is the address. A Run above is `b01j01t01r01` compact and
@@ -250,7 +253,8 @@ Page phase owns every Page mutation. Never mint an umbrella Discovery Run.
 1. Resolve `folder-kind: discovery` directly through
    `haipipe-discovery-inquiry` D1 and its `ref/workflow-table.md`;
    the empirical Task Page compatibility grammar does not apply.
-2. qa, feedback, and digest route to their fn file before other parsing.
+2. feedback and digest route to their fn file before other parsing; discovery
+   questions use the normal SCOPE → ACQUIRE → SYNTHESIZE Run/Result path.
 3. A workflow/run verb operates on a durable `tNN_` Task Page Folder.
 4. Existing Task, Job, and Block paths are detected by structure; Task runs the
    D1 workflow plus its Page handoff, while Job/Block iterate their child Tasks.
@@ -413,14 +417,15 @@ Pages carrying the deterministic migration signature; authored Pages are left
 untouched. The checker also requires Writing Style, a bounded Opening, a face
 diagram per Content division, Content/Aim name agreement, and Page/Aim closure.
 
-## QA question door
+## Discovery questions use Runs and Results
 
-Full contract: fn/qa.md. It scans existing QA answers first, then completed
-Result Cards, root Pages, and typed records. If existing artifacts answer the question it
-writes a digest only. Otherwise it claims one QA ticket and enriches at the
-shallowest depth: read existing Results, add Paper Runs to this Task, open a
-new Task in the Job, open a Job in the Block, or open a Block. A consumer never
-writes Discovery QA files.
+There is no separate question side door or answer-bank folder. Resolve a
+question by reusing an existing immutable Run/Result when it already answers the frozen scope. If a
+source or comparison is missing, admit it as a new Paper/Source Run, execute the
+ticket, and write its paired Result. SYNTHESIZE may then create a typed Page
+record or a consumer-owned Local Run over one or more Supporting Run Results.
+Reuse records the full BJTR Run id; changed scope allocates a new Run with
+`supersedes:`. Page CHECK remains the final quality gate.
 
 ## One-off work
 

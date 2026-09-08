@@ -3,6 +3,15 @@ discovery agents — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match the skill frontmatter `version:`. Newest first.
 
+## 2026-09-07 · Search/Review/Synthesize split
+
+- Creator 1.17.0, reviewer 1.10.0, and orchestrator 2.7.0 now dispatch
+  `haipipe-discovery-search`, `haipipe-discovery-review`, and
+  `haipipe-discovery-synthesize` as the only live Discovery families.
+- Remove the Discovery Idea route: Idea-typed manifests are rejected, not
+  redirected or read through a compatibility path. Semantic direction starts
+  in sibling `haipipe-ideation` after a checked synthesis Page.
+
 ## 2026-09-07 · BJTR alignment addendum
 
 - Make the Block -> Job -> Task Page -> Run address the only project hierarchy.

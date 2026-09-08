@@ -7,8 +7,8 @@ description: >-
   queue, or audit an Insight question. Trigger: insight question, question
   register, I1, QD QI QK QW, folder-kind question, /haipipe-insight-question.
 metadata:
-  version: "1.0.2"
-  last_updated: "2026-08-31"
+  version: "1.1.0"
+  last_updated: "2026-09-07"
   workflow: haipipe-insight-workflow
   phase: I1
   folder_kind: question
@@ -54,7 +54,8 @@ target rung, why now, what would answer it, affected partition(s), and blocked
 Aim. No preferred answer is admissible.
 
 A pre-climbed external-parent bridge is still an ordinary Wisdom question. Its
-QW row additionally records the exact Task Insight Page and `RF<n>@<version>`
+QW row additionally records the Task Insight instance, item, execution version,
+RF id, and Result path/hash
 being evaluated plus the one local I5 W Folder that will contextualize it. The
 borrowed RF is evidence for the question, not its Application answer.
 
@@ -74,7 +75,7 @@ queue state; target Folders write receipts in their own
 `outline/<stem>-log.md`.
 
 For the pre-climbed external-parent bridge, verify the five assertions owned by
-`haipipe-insight-workflow`, write the Task Page/RF version and local W Folder on
+`haipipe-insight-workflow`, write the exact item Result/RF packet and local W Folder on
 the QW row, and reopen that row whenever the RF or one of its source versions
 changes. Never mark the row terminal merely because the Task RF is settled.
 
@@ -88,7 +89,7 @@ changes. Never mark the row terminal merely because the Task RF is settled.
 
 GI1 passes for one question when its id, rung, origin, answerability test, and
 initial Queue cell are complete. A bridge QW additionally requires its exact
-Task Page/RF version and local W Folder. GI6 closes the registered chain only
+instance/item/version/RF packet and local W Folder. GI6 closes the registered chain only
 when its target rung is terminal and every partial final has a reason on its
 target Folder; for a bridge, that terminal is the signed local I5 Folder, never
 the external RF. An empty register is valid and closed as a register.
@@ -97,7 +98,7 @@ the external RF. An empty register is valid and closed as a register.
 
 Hand the next rung a neutral question id, exact ask, target, scope/partition,
 answerability test, and blocked Aim. A bridge handoff also carries the exact
-Task Page/RF version to I5. Never hand it an anticipated result or Design
+item Result/RF packet to I5. Never hand it an anticipated result or Design
 permission.
 
 ## Files

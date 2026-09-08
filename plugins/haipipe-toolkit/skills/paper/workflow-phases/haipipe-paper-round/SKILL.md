@@ -26,8 +26,8 @@ Declare `page-type: round`.
 This skill is journey phase P4 Round (respond) of the paper journey and owns
 the `page-type: round` contract below. Opens on a feedback batch any time after
 a build exists. Closes through gate G5: every concern ledgered and routed
-exactly once (the Story's §6 Evidence Board for new evidence, a Story §8
-Section Control row for retelling, a Section for rework) and a person approves
+exactly once (the Story's C5 support and C6/C7 needs for new evidence, a Story C8
+Section Narrative row for retelling, a Section for rework) and a person approves
 the response receipt. `haipipe-paper-workflow`
 holds the full gate assertions; this block only places the phase. The page
 itself always runs through `/haipipe-page` and `haipipe-page-workflow` (OUTLINE
@@ -44,7 +44,7 @@ base paper build + received feedback
                   ↓
         one Round Page and ledger
                   ↓ routes work to
-      Story §6/§8 rows · Sections · their evidence/plugins
+      Story C5–C8 content · Sections · their evidence/plugins
                   ↓ returns checked versions to
        response package + revised build + close receipt
 ```
@@ -65,10 +65,9 @@ Record the Round identity before triage:
 round-id          stable id within this paper
 round-kind        editor-review · reviewer-review · coauthor · internal ·
                   foreign-desk (a review of this work's telling at a desk
-                  with no §8 Section Control rows on this board)
+                  with no §8 Section Narrative rows on this board)
 venue-page        selected Venue Page and version, or explicit none
-story             governing Story page, its §8 target, and version
-                  (`narrative` is the pre-260907 name of this field) · a
+story             governing Story page, its §8 target, and version · a
                   foreign-desk round names the desk in received-from and
                   still parents to the Story, because its evidence routes there
 base-build        exact manuscript/PDF/version that received the feedback
@@ -107,8 +106,8 @@ The runtime home is the DESK'S OWN ROUND GROUP (JL 260831, three groups per
 desk): `B<x>-<desk>-Round/RD<NN>-<event>/` at the paper root, beside that desk's
 -Main and -Appendix groups, so the desk's downstream story sits in three
 named shelves. A foreign-desk round mints its desk's -Round group even when
-that is the desk's only group. Boards with a combined `B<x>-<desk>` group or
-the older lone `C1-RD-round/` group are grandfathered.
+that is the desk's only group. A combined `B<x>-<desk>` group or the older
+lone `C1-RD-round/` group is not a current Round location.
 
 ## 📐 Required Content roles
 
@@ -152,7 +151,7 @@ verbatim quote or faithful pointer
 issue kind and severity
 exact concern
 affected claim ids
-affected Story Section Control row and version
+affected Story Section Narrative row and version
 affected Section or appendix Page
 required evidence/citation/value/display work
 human disposition and rationale
@@ -174,12 +173,12 @@ Keep authority with the artifact being changed:
 
 | Concern | Owning destination |
 |---|---|
-| evidence the paper does not yet hold (new analysis class, ablation, downstream outcome) | the Story's §6 Evidence Board — a new or reopened E-row, with a §6.4 work row |
-| contribution, claim role, or paper order | the Story's §8 Section Control row (and its compile-order block) |
+| evidence the paper does not yet hold (new analysis class, ablation, downstream outcome) | the Story's C5 evidence proposition plus the corresponding C6 Discovery or C7 Task need |
+| contribution, claim role, or paper order | the Story's §8 Section Narrative row (and its compile-order block) |
 | section argument, wording, placement, or limitation | owning Section Page |
-| missing analysis or factual support | consuming Page's `probe/` and proof |
-| citation request | consuming Page's `bibex/` |
-| number correction | consuming Page's probe-card `## Values` binding |
+| missing analysis or factual support | consuming Page's typed Evidence Item; a new study need also changes Story C7 |
+| citation request | consuming Page's CITE Evidence Item and verified source set |
+| number correction | consuming Page's VALUE Evidence Item and accepted local Result |
 | table or figure change | owning Page's `display/<unit>/` |
 | response wording and coverage | this Round Page |
 
@@ -196,7 +195,7 @@ each reopened page is the existing per-page RUN, `haipipe-page-workflow` at
 OUTLINE, one page at a time or under a signed charter, each ending at a
 person's `approved:`. A blind N-way fan-out buys N unapproved plans and N
 ticks; the order above is what makes the ticks worth buying. `applied` here needs that register's
-`landed:` version first, and G7 runs `feedback-coverage` board-wide before
+`landed:` version first, and G5 runs `feedback-coverage` board-wide before
 this page may close.
 
 The Round records routes and checked returns. It does not become a second home
@@ -204,22 +203,18 @@ for revised section prose, research values, citations, or paper displays. A
 ledger item may say `applied` only after the owning Page names a checked version;
 “edited” or “agent finished” is not proof.
 
-## 🃏 Round-local plugins
+## 🃏 Round-local evidence and delivery
 
-Use Page-local plugins only for material the Round itself consumes:
+Use the shared Page contract for material the Round itself consumes. Context
+records bounded links to the Venue, Story, affected Pages and checked versions.
+The Evidence Workspace owns typed CITE/VALUE/DISPLAY Items, their Supporting
+Run lineage and accepted local Results. The Delivery plugin owns generated
+response artifacts under `delivery/latex/` and `delivery/word/`.
 
-```text
-pagex/    bounded links to the Venue, Story, affected Pages, and checked versions
-probe/    unresolved interpretation or response questions owned by this Round
-bibex/    citations used in the response letter itself
-display/  coverage maps, before/after comparisons, or response-only exhibits
-latex/    generated response letter or Round PDF
-word/     generated response DOCX when requested
-```
-
-New substantive paper evidence belongs on the Story (§6) or the Section Page
-whose prose will use it. Values remain storage-less inside probe cards and are cited
-as `PP<NN>.v<n>`; never create a Round `value/` folder.
+New substantive paper evidence changes C5 support and affected C6/C7 needs on
+the Story; the Section whose prose uses it binds its own typed Evidence Item.
+Round-local evidence supports the response itself, not a second manuscript.
+Do not recreate retired PageX or legacy evidence, bibex, or standalone value plugin lanes.
 
 ## ✍️ Response contract
 

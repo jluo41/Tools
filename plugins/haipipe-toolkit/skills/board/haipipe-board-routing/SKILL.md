@@ -7,8 +7,8 @@ description: >-
   happened and the board must record it. Trigger: route, write back, owning
   page, we decided, board structure, regroup, /haipipe-board-routing.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-08-27"
+  version: "0.10.1"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -210,8 +210,10 @@ PROPOSED   no page owns this: routing drafts the page id, title, and group
 REPORTED   the owner is another family's board: a report, not an edit
 ```
 
-**The gate before the reply (QA3, JL 260802).**
-Five conditions hold before an agent may tell a person a round is done, and `cli/gate.py` runs the two that are mechanical:
+**The handoff before the reply.**
+Five conditions still define a truthful handoff before an agent tells a person a
+round is done. The first and fourth are human/browser judgements; the second
+and third are mechanical checks:
 
 ```
 ①  WRITTEN BACK   every change has a record on the page that owns it
@@ -221,9 +223,20 @@ Five conditions hold before an agent may tell a person a round is done, and `cli
 ⑤  STATED         the reply names which of ①-④ ran, with ③'s numbers
 ```
 
-Run `python3 <board-skill>/cli/gate.py <board> --start` before the work and the same command without `--start` after it. The script lives in `haipipe-board/cli/`, not here: this skill ships one script and it is `src/lanes.py`.
+Run the current mechanical path after the write:
+
+```bash
+python3 <board-skill>/cli/build.py <board>
+python3 <board-skill>/cli/check.py <board>
+```
+
+Whole-page semantic judgement belongs to `/haipipe-page-check`. It is
+read-only and writes the check receipt; it never repairs the version it judged.
 ③ compares PER PAGE, never the board's total, because a second session writing the same board moves the total underneath you: it went 304 to 276 during one round on 260802. A warning the round introduced blocks the handback; the board's standing warnings are out of scope.
-① and ④ are printed as not tested, because whether a change was substantive and whether the person's own tab has the new assets are judgments the command cannot make. A gate that reports a condition it did not test is worse than no gate.
+① and ④ remain explicit human/browser checks, because whether a change was
+substantive and whether the person's own tab has the new assets cannot be
+proven by a command. A handoff that reports an untested condition as complete
+is worse than one that names the remaining judgement.
 A round that changed PROSE also owes a cold read by `haipipe-board-reviewer-agent`; a round that changed only mechanics does not, since there is nothing for a reader to judge.
 A failed gate is reported, never hidden. "The checker is red and here is why" is worth more than "done" and wrong.
 

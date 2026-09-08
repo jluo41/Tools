@@ -124,7 +124,7 @@ If the user only asks for one specific detail, answer it directly — skip the f
 /arxiv "PAPER_ID" - download          - download the PDF to local library
 /deepxiv "PAPER_ID" - section: Methods  - read a specific section progressively
 /research-lit "related topic"        - multi-source literature survey
-/novelty-check "idea from paper"     - verify novelty against this paper's area
+/haipipe-ideation "direction"        - turn accepted evidence into a direction
 ```
 
 ## Update Research Wiki (if active)
@@ -171,4 +171,6 @@ This saves significant tokens by filtering out marginally relevant papers before
 
 ### As follow-up from other skills
 
-After `/research-lit`, `/novelty-check`, or `/idea-discovery` surface a specific paper, users can invoke `/alphaxiv PAPER_ID` for a fast deep-dive without re-running the full survey.
+After `/research-lit` or `/haipipe-ideation` surfaces a specific paper, users
+can invoke `/alphaxiv PAPER_ID` for a fast deep-dive without re-running the
+full survey.

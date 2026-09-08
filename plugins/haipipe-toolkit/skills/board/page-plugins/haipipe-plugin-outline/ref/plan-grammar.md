@@ -19,9 +19,12 @@ approved: ⬜  |  ✅ <WHO> <YYMMDD HHMM> · in chat: "<the person's words>" |
 arc: <the argument the division sequence makes, in one sentence>
 ```
 
-Optional head lines: `round: <RD id>` · `narrative-row: <NA page> / <section>` ·
+Optional head lines: `round: <RD id>` · `story-row: <Story page> / <section>` ·
 `structure-source: <desk> §<n> <Sec-token>` · `feedback: n routed · n served ·
 n declined` · `declined: <RD> <row id> · <reason>` (one per declined row).
+
+Plans carrying the pre-260907 `narrative-row:` key are migration inputs only;
+rewrite that head to `story-row:` before a new Story-controlled Section pass.
 
 - `arc:` states an argument. "This page reports the results of X" is a table
   of contents and fails (`plan-no-arc`).
@@ -138,7 +141,7 @@ Accept: <observable checks>                one line directly after each item
 - A source-free bullet writes `Evidence: none · <reason>`. This is a CONTENT
   constraint: its realization contains no citation placement, empirical value,
   figure, or table. A transition, research question, paper-owned design move,
-  or roadmap can qualify. If later prose needs material, return to SHAPE and
+  or a paper-owned planning handoff can qualify. If later prose needs material, return to SHAPE and
   mint a typed item. `🎯` remains an Aim annotation and is not an Evidence Item.
 - Every item id is `E<NN>-<TYPE>-<slug>`; bare `E01` and unnamed icon-only marks
   are invalid. Item numbers are stable within the Page and never renumbered.

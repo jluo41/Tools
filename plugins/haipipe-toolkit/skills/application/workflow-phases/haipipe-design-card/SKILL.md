@@ -17,6 +17,10 @@ metadata:
 
 # /haipipe-design-card · state the bet before making the artifact
 
+> Legacy reader only (Design v2): the sections below describe existing D1–D5
+> records; do not execute their historical writes or create new DU Folders.
+> New work and adoption use `haipipe-design` and its native Run workflow.
+
 Load `haipipe-folder`, `haipipe-design`, `haipipe-design-workflow`, and
 `haipipe-plugin-design`.
 

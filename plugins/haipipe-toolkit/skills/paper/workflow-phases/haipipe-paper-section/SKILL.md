@@ -3,7 +3,7 @@ name: haipipe-paper-section
 description: >-
   Paper journey phase P3 (Section) and the Page Type contract for one
   reader-ordered manuscript or appendix Section. It executes exactly one
-  current Story Section Control row, resolves venue-and-kind structure, and binds prose to
+  current Story Section Narrative row, resolves venue-and-kind structure, and binds prose to
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
@@ -17,10 +17,10 @@ metadata:
     resolver: "cli/resolve-structure.py <QBv page> <section page> · prints structure-source (the bound QBv FILE) and structure-division (its `§<n> Sec-<n>-<Kind>` row)"
     marker: "section-page-template: 1"
     fallback: "paper/workflow-phases/haipipe-paper-section/ref/generic-template.md"
-    shape: "current Story Section Control row overlaid on the resolved venue Sec- division or the explicit generic fallback"
+    shape: "current Story Section Narrative row overlaid on the resolved venue Sec- division or the explicit generic fallback"
 ---
 
-# /haipipe-paper-section · execute one Story Section Control row
+# /haipipe-paper-section · execute one Story Section Narrative row
 
 Load `haipipe-page`, `haipipe-page-workflow`, the current Page phase, the
 paper-owning workflow, this Page Type, and its phase references in that order.
@@ -30,7 +30,7 @@ Declare `page-type: section` and `section_kind: <kind>`.
 
 This skill is journey phase P3 Section (realize) of the paper journey and owns
 the `page-type: section` contract below. Enter through gate G3, one page per
-Story §8 Section Control row, each row released by a person independently.
+Story §8 Section Narrative row, each row released by a person independently.
 Gate G4 marks the assembled build SUBMISSION-READY versus DRAFT; assemble
 itself is a verb, not a phase, and runs anytime from `delivery/` on the Story's
 compile-order block. `haipipe-paper-workflow` holds the full gate assertions; this block only
@@ -47,15 +47,15 @@ differ.
 Authority order:
 
 ```text
-Story Seed divisions (§1–§7: identity, evidence boundary)
+Story Seed divisions (C1–C5: identity and evidence boundaries)
   → selected Venue rules
-  → current Story §8 Section Control row and Story version
+  → current Story §8 Section Narrative row and Story version
   → venue × section-kind structure/template
   → landed Page-local evidence
   → current prose
 ```
 
-Prose never outranks a changed Section Control row or binding desk rule.
+Prose never outranks a changed Section Narrative row or binding desk rule.
 
 ## 🚪 Opening stays with the reader
 
@@ -86,8 +86,7 @@ story. Section IDs are semantic: `S-<desk>-Main-<kind>` and
 `S-<desk>-Appendix-<slug>`. The ID must tell a reader the object, desk, lane,
 and page job without a numeric crosswalk. The ordered group in `board.md`
 supplies reading order; a new section is never renamed merely because another
-section is inserted. Older `S<D><NN>` and `SA<NN>` IDs stay readable only as
-legacy/archive compatibility.
+section is inserted.
 
 **Where the words live (0.8.4 · JL 260907)**: on this page. The Section Page
 compiles its own deliverable through the page-level delivery plugin,
@@ -98,8 +97,7 @@ wrapping the body fragment `delivery/latex/<page>.tex` that the paper build
 its own `-complete.bib`. The paper's `delivery/latex/` is regenerated FROM these
 files by `haipipe-paper-assemble`, never the other way round: a correction goes
 into this page and the paper folder is rebuilt whole. The old desk room
-(`<N>-<desk><year>/sections/*.tex` as source of record) is retired for new
-repos and grandfathered where it exists.
+(`<N>-<desk><year>/sections/*.tex`) is not a current source of record.
 
 **The milestone (JL 260907)**: this page is DONE, and admitted to the paper
 build, when three things exist: the outline table is approved
@@ -107,18 +105,12 @@ build, when three things exist: the outline table is approved
 `preview.pdf`, and the page PDF compiles under `delivery/latex/`. A page
 missing any of the three is not ready, and the paper build says so.
 
-Older repos using `1-SC-main/`, `2-SA-appendix/`, the `SC`/`SA` tokens, or a
-shared `0-sections/`/`0-display/` are grandfathered and migrate only on
-explicit request.
-
 ## 📥 Required contract block
 
 Record these fields in the Page before drafting:
 
 ```text
-story-row           Story-<letter> §8.1 / <section-id> + the Story version
-                    (`narrative-row` is the pre-260907 name of this field and
-                    is read as an alias on unmigrated pages)
+story-row           Story-<letter> C8 / <section-id> (resolve the actual row anchor) + the Story version
 section_kind        abstract · introduction · literature-review · theory ·
                     methods · results · discussion · conclusion · appendix ·
                     venue-specific kind · UNDERSCORE, matching the header key
@@ -137,9 +129,9 @@ evidence-allowlist  typed Evidence Item ids and accepted local Result ids
 transition-in/out   required joins to neighboring Sections
 ```
 
-If the Section Control row is missing or stale, CONTEXT records its exact
-source and returns `HOLD` to `haipipe-page-story`, the owner of the Story page
-and its §8 table. If Venue
+If the Section Narrative row is missing or stale, CONTEXT records its exact
+source and returns `HOLD` to `haipipe-paper-story`, the owner of the Story page
+and its C8 narrative and detailed Section rows. If Venue
 authority is missing or stale, it returns `HOLD` to
 `haipipe-paper-venue`, the owning QBv bank Page Type; Venue is a library, not
 a journey phase. After the exact owner repairs and versions the source, the
@@ -299,7 +291,7 @@ separate Page Types or plugins. The Section uses the same Outline plugin as the
 other Page phases:
 
 ```text
-Context Workspace    Story Section Control row, Venue, requirements, and bounded related links
+Context Workspace    Story Section Narrative row, Venue, requirements, and bounded related links
 Bullet Workspace     sentence slots and their Evidence Item ids
 Evidence Workspace   Supporting Runs → Local Input → Local Run → typed Result
 ```
@@ -308,7 +300,7 @@ Cross-Folder material enters through an Execution or Discovery Supporting Run
 Result. LAND freezes those Results into one Local Input and produces one local
 `VALUE`, `CITE`, or `DISPLAY` Result for the focal item. EMBED binds that local
 Result to its Bullet before CONTENT writes prose. There is no active PageX,
-probe, bibex, value, or display plugin in this contract; old lanes are
+legacy evidence, bibex, value, or display plugin in this contract; old lanes are
 migration-only input.
 
 Every consequential sentence must be one of:
@@ -326,7 +318,7 @@ local display items, one typed contract and local Run per item.
 
 On a venue change:
 
-1. Bind the Section to the new Story Section Control row.
+1. Bind the Section to the new Story Section Narrative row.
 2. Re-resolve venue × kind structure and hard constraints.
 3. Preserve Evidence Item/Result ids whose meaning and scope remain valid.
 4. Return changed item meaning to OUTLINE/SHAPE, changed Run design to
@@ -335,7 +327,7 @@ On a venue change:
 
 ## ✅ Closing checks
 
-- Exactly one current Story Section Control row governs the Page.
+- Exactly one current Story Section Narrative row governs the Page.
 - Reader entry and exit states match neighboring rows.
 - Every claim and consequential sentence has inspectable support or an open
   obligation.

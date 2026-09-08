@@ -1,6 +1,6 @@
 ---
 name: haipipe-discovery-orchestrator-agent
-description: "ORCHESTRATOR for Discovery Task Page Folders. Runs QA, FULL, or ENRICH mode; routes Triggers into canonical one-Subject Paper Runs; enforces runs/<RUNNAME>.sh ↔ results/<RUNNAME>/; dispatches creator, reviewer, and read-only search workers; returns Topic/Result/QA paths without consumer vocabulary."
+description: "ORCHESTRATOR for Discovery Task Page Folders. Runs FULL or ENRICH mode; routes Triggers into canonical one-Subject Paper Runs; enforces runs/<RUNNAME>.sh ↔ results/<RUNNAME>/; dispatches creator, reviewer, and read-only search workers; returns Topic/Run/Result paths without consumer vocabulary."
 tools:
   - Read
   - Write
@@ -12,7 +12,7 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.6.1"
+  version: "2.7.0"
   last_updated: "2026-09-07"
   summary: "Discovery orchestrator for explicit Block-Job-Task-Run addresses."
 ---
@@ -24,15 +24,14 @@ and Level-4 contract. Do not substitute historical flat sources.md behavior.
 
 ## Boundary
 
-The Discovery bank is probe-unaware. Input is a Topic path, a Trigger, or one
+The Discovery bank is consumer-unaware. Input is a Topic path, a Trigger, or one
 plain-language external-evidence question. Never inspect the caller's paper,
-stake, hypothesis ids, or probe files. Strip consumer vocabulary if it leaks
+stake, hypothesis ids, or consumer-side files. Strip consumer vocabulary if it leaks
 in, restate the question generally, and report that lint defect.
 
 ## Modes
 
 ~~~text
-QA      run fn/qa.md; return one QA path or a refusal
 FULL    run D1 SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> Page 00–04 -> D1 CLOSE
 ENRICH  add the minimum new Paper Run(s) to an existing on-topic Folder
 ~~~
@@ -80,21 +79,15 @@ owns relevance, Subject resolution, deduplication, Run allocation, and writes.
    root Page writes while D1 records the CONTENT no-Run rationale.
 7. After Page `04 CHECK` closes the Page, creator runs D1 CLOSE and reconciles
    the Task Face; any hard failure routes backward and CLOSE cannot claim ok;
-   when commissioned, it completes the already-claimed QA ticket. Reviewer
-   runs the final gate.
+   Reviewer runs the final gate.
 
-## QA claim
+## Question routing
 
-Follow haipipe-discovery/fn/qa.md exactly. Gate order is:
-
-~~~text
-1 QA scan -> 2 digest existing Results/Page/typed records -> 3 claim then lifecycle
-~~~
-
-A working QA file means someone is already on it. Return its path and run
-nothing. Gate 3 creates the claim under noclobber before searches. The creator
-completes that same file at CLOSE. A consumer never writes a Discovery QA
-file.
+Questions are handled by the same D1 path as every other Discovery request:
+reuse an existing immutable Run/Result when it answers the frozen scope; otherwise
+admit the missing Subject, run the ticket, and write its paired Result. A Page
+consumer records Supporting Run ids and owns any Local Run/Result it needs. There
+is no separate question claim, ticket, folder, or answer-bank digest.
 
 ## Run truth
 
@@ -122,14 +115,12 @@ Only complete Results enter outline/evidence/bibex/<task>.bib.
 topic:         <path>
 address:       <bNN.jNN.tNN>
 address_compact:<bNNjNNtNN>
-mode:          qa | full | enrich
+mode:          full | enrich
 page:          <root Page path>
 discovery_type:<canonical Page Type>
 runs:          {planned, running, complete, blocked, unresolved}
 typed_record:  <path | none>
 evidence_bib:  <path | none>
-qa_file:       <path | none>
-qa_state:      answered | working | none
 review:        pass | revise | blocked
 summary:       one line
 ~~~

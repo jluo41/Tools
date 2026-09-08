@@ -36,7 +36,7 @@ KIND2TOK = {
 # would tell a consumer-neutral asset to invent a division to suit one paper.
 ABSENT_BY_DESIGN = {("qbv1-misq", "literature-review"),
                     # JAMA IM folds Conclusions into Discussion; the paper keeps a
-                    # Conclusions page by the Story's Section Control allocation (historically the Narrative NA01 §5.6)
+                    # Conclusions page by the Story's Section Narrative allocation (historically the Narrative NA01 §5.6)
                     ("qbv6-jama-im", "conclusions")}
 
 # `### 4 · Sec-0-Abstract: one unstructured paragraph, question forward`
@@ -111,7 +111,7 @@ def main() -> int:
             addr = hit + (f" · split with {len(kinds[k]) - 1} sibling Page(s)"
                           if rel == "SHARED" else "")
         elif (a.qbv.stem.lower(), k) in ABSENT_BY_DESIGN:
-            rel, addr = "ABSENT BY DESIGN", "ref/generic-template.md · record the deviation on the Story's Section Control row"
+            rel, addr = "ABSENT BY DESIGN", "ref/generic-template.md · record the deviation on the Story's Section Narrative row"
         else:
             rel, addr = "MISSING", "ref/generic-template.md · raise the gap on the QBv page"
             missing += 1

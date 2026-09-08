@@ -3,6 +3,20 @@ haipipe-toolkit — Changelog
 
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
+### Paper Ideation naming · 2026-09-08
+
+- Renamed the P0 owner from `haipipe-page-ideation` to
+  `haipipe-paper-ideation` and moved it into `paper/workflow-phases/`, matching
+  the Paper-family names already used by Story, Section, and Round.
+- Kept `page-type: ideation` and the shared Page lifecycle unchanged.
+
+### Task/Discovery question-channel retirement · 2026-09-08
+
+- Removed live Task and Discovery QA folders, question commands, `fn/qa.md`
+  handlers, and the old probe collector. Questions now use the shared
+  Run/Result contract; Page Evidence Workspaces record Supporting Runs and
+  consumer-owned Local Runs. Historical design diagrams are non-runtime only.
+
 ### Paper journey 1.0.0 · single-Story control · 2026-09-07
 
 - The paper journey is Ideation → Story → Evidence/Execution → Section →

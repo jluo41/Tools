@@ -10,7 +10,7 @@ round: RD01-misq-feedback-20260825
 date: 260831
 approved: ✅ JL 260831 0146 · in chat: "ok, good, I approve this outline"; transcribed by CC, the tick is JL's
 status: approved · DRAFT written 260831 0137, REVISE trimming to the length aim
-narrative-row: Story03 / S-MISQ-Main-Abstract
+story-row: Story-A §8.1 / S-MISQ-Main-Abstract
 structure-source: QBv1-misq §4 Sec-0-Abstract
 feedback: 8 routed · 8 served · 0 declined
 arc: A doctor-decision problem, measured through reviews, answered by one main result, bounded by patient pressure and room to decide, closed on the IS meaning.

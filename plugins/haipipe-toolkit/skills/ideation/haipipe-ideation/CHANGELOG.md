@@ -2,6 +2,11 @@
 
 Skill-scoped changelog (read on demand; not loaded at invocation).
 
+## 0.2.2 · 2026-09-08
+
+- Updated the Paper P0 handoff target to `haipipe-paper-ideation` after the
+  Ideation contract moved into the Paper journey-phase family.
+
 ## 0.2.1 · 2026-09-07
 
 - Closed fresh-agent retrofit gaps: canonical zero-padded Idea aliases,

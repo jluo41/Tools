@@ -10,8 +10,8 @@ description: >-
   climb, chain, partition, pooling verdict, Design Handoff, /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.0.5"
-  last_updated: "2026-08-31"
+  version: "1.1.0"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,7 +19,7 @@ metadata:
 
 `haipipe-application` remains the Application umbrella (two-board pairing, PageX crossing, ends-at-ACCEPTED); this door owns the InsightBoard's own laws and verbs, symmetric to `/haipipe-design` on the other board. Physically it lives inside `skills/application/` because an InsightBoard cannot exist outside an Application; the slash name is first-class regardless.
 
-**The name is reused; the thing is not.** A `/haipipe-insight` existed until 260717 as a knowledge-base layer and was retired (application CHANGELOG 6.6.0) because it competed with the probe → task/discovery bank for evidence authority. This door holds NO evidence: evidence lives in the bank, values bind to QA files, and the door states only how one board turns them into a signed handoff.
+**The name is reused; the thing is not.** The earlier top-level knowledge-base layer was retired. This Application door does not replace the evidence producers: values bind to named Supporting Run Results through local Evidence Runs, and this door states how one board turns bounded evidence into a signed handoff.
 
 **Who owns what**:
 
@@ -37,21 +37,24 @@ haipipe-folder                the shared two-face Folder and phase contract
 haipipe-application-workflow  cross-board handoffs only; no duplicate Insight phases
 ```
 
-`page-type: insight` stays TASK-ONLY: the consumer-neutral whole chain in one
-Page (`/haipipe-task insight`), which is where dataset-first exploration lives.
+`page-type: insight` stays TASK-ONLY: a consumer-neutral topic/data instance
+with item Runs, each carrying a versioned DIKW/RF Result (`/haipipe-task
+insight`). This is where dataset-first exploration lives. Its item workflow
+and tables belong to `haipipe-page-insight/ref/`, not this Application ladder.
 This door never mints one—its Folders are Meta, Question, Data, Information,
 Knowledge, and Wisdom. A settled Wisdom-targeted Task RF may enter only as the
-workflow's pre-climbed external parent: I1 registers its exact version and a
+workflow's pre-climbed external parent: I1 registers its exact
+instance/item/execution-version/RF reference and a
 local I5 Wisdom Folder contextualizes and signs the Application Design Handoff.
 RF never reaches Design directly.
 
 ## The Climb Law · a six-level lifting chain
 
-Authority to conclude LIFTS one rung at a time, each rung citing only named rows of the rung below — the mirror of the design side's narrowing Reads Law. Enforcement is two-sided: each rung's fixed outline shape demands its citations division (Data Cited, Information Cited, Knowledge Cited), and G1 refuses the climb into W until every value below is bound to a QA file by path.
+Authority to conclude lifts one rung at a time, each rung citing named rows below it. Each rung's fixed outline demands its citations division (Data Cited, Information Cited, Knowledge Cited); the climb into W requires exact source Result bindings and accepted local Evidence Items.
 
 ```text
 ① MT00       source: <extract>            the board's ONE dataset · set at scaffold
-② D page     observes, run-bound          cites the run/QA file · no interpretation
+② D page     observes, run-bound          cites the exact Run Result · no interpretation
 ③ I page     derives from named D rows    a rate is Information, never a claim
 ④ K page     claims from named I rows     strength · rivals · boundary
 ⑤ W page     counsels from named K rows   contextual · verdict-conditioned
@@ -60,8 +63,9 @@ Authority to conclude LIFTS one rung at a time, each rung citing only named rows
 
 Level-skipping is a CHECK routing failure, with exactly two exceptions, both inside the X cross group and both recorded in the rung contracts: the contrast I page derives from MIRRORED I rows (I-from-I), and the pooling-verdict K page cites the heterogeneity K row (K-from-K), because its subject is a claim about claims.
 
-The pre-climbed external-parent bridge is not a third skip: the Task Insight
-Page already contains and CHECK-closes the complete `D→I→K→W→RF` chain. GI4
+The pre-climbed external-parent bridge is not a third skip: the selected Task
+Insight item's accepted Result CHECK-closes the complete `D→I→K→W→RF` chain.
+Open sibling items do not invalidate that Result. GI4
 verifies that authority before local I5 performs the new Application-contextual
 operation; see `haipipe-insight-workflow`.
 
@@ -124,7 +128,7 @@ PARTITION-MAJOR · when each subgroup must produce its OWN K claims and W counse
                                            letters sort last (legacy: 9-X-cross/)
 ```
 
-The layout is chosen once, at scaffold; `ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page owns its own bounded `evidence/probe/`; Meta and the four registers own none, and no flat `1-probes/` exists. A flat `probe/` on an unmigrated Page is a compatibility alias, never the shape new work writes. `A<NN>_` is only a project-local ordering option before the subject; the canonical shape stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
+The layout is chosen once, at scaffold; `ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page declares its typed Evidence Items in `outline/` and binds Supporting and Local Runs; Meta and the four registers own none, and no flat run bank exists. Legacy probe paths are read-only migration input and are never created by new work. `A<NN>_` is only a project-local ordering option before the subject; the canonical shape stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
 
 ## The Folder phases this door owns
 
@@ -148,7 +152,7 @@ enter | status      resolve the board · derive frontier from disk · count regi
 meta | sources      create/resume the one MT00 (the umbrella's fn/meta.md)
 question | ask      register one question on the rung register it faces · NEVER answer it there
 climb | chain       open or extend the frontier rung for one question (the umbrella's fn/chain.md) ·
-                    probes raised · ✋ a person releases each card before dispatch
+                    Evidence Items planned · ✋ a person releases each Run before dispatch
 partition           register a partition on MT00 and insert its group before X (ref/partition.md)
 verdict             drive the X group to its pooling K page · POOL or SPLIT
 settle              flip the register cell ✅, 🚫 with a reason, or 🟡 <page> final
@@ -160,8 +164,8 @@ check | review      CHECK selected rung pages in a fresh context
 workflow | run      drive laps (§The lap): gap → climb (✋release inside) → ✋sign → settle · STOP
 ```
 
-The two Insight cross-phase ✋ gates never have an auto mode: releasing a probe
-card and signing a handoff are a person's, and every page dispatched into
+The two Insight cross-phase ✋ gates never have an auto mode: releasing a
+bounded Run and signing a handoff are a person's, and every page dispatched into
 `haipipe-page-workflow` pins `mode: copilot`. Page-local outline/read/verified
 ticks remain nested controls rather than new Insight gates. With the Design
 door's two cross-phase gates (card release, acceptance), they are the
@@ -182,17 +186,15 @@ lap entry: pick one frontier question, a register cell not yet settled
            group from the register cell · the register pen
            records the allocation, `⬜ <id>`, in the same lap
 ③ CLIMB    run that ONE page through haipipe-page-workflow,      pen: chain page
-           mode: copilot — cards raised at PROBE (a card is the
-           probe plugin's `evidence/probe/PP<NN>-<slug>/card.md`, states
-           and shape per board/haipipe-plugin/ref/roster.md —
-           this door POINTS, it does not restate) · MATCH the
-           QA bank BEFORE raising and AGAIN at dispatch — a
-           released card whose numbers the bank already holds
-           reuses them and dispatches NOTHING, because a re-run
-           reproducing known numbers under a new timestamp
-           muddies the run identity closed pages already bind ·
-           ✋ a person releases each · answers land at EVIDENCE
-           bound to QA paths · the rung closes CHECK
+           mode: copilot — Evidence Items and their Run/Result records are
+           declared in the outline table (this door points, it does not
+           restate their shape) · MATCH existing
+           Supporting Run Results BEFORE raising and AGAIN at dispatch — a
+           released card whose numbers are already held reuses the immutable
+           Run and dispatches NOTHING, because a re-run reproducing known
+           numbers under a new timestamp muddies the run identity closed pages
+           already bind · ✋ a person releases each · focal evidence lands in
+           the consumer-owned Local Run/Result · the rung closes CHECK
 ④ SIGN     only when the rung was W: draft the Design Handoff    pen: W page
            division · ✋ a person signs at that page's CHECK (G2)
 ⑤ SETTLE   flip the register cell ✅, 🚫 with a reason, or        pen: register
@@ -241,7 +243,7 @@ The two ✋ gates never gain an auto mode, but a person may PRE-AUTHORIZE classe
 charterable        vocabulary re-marks under a ruled grammar · 🟡 final flips whose
                    licensing sentence the machine QUOTES in the receipt · header
                    re-derivations citing their Queue
-never charterable  handoff signatures · releasing a probe card that runs NEW
+never charterable  handoff signatures · releasing a Run that starts NEW
                    computation · any write the charter does not name
 ```
 

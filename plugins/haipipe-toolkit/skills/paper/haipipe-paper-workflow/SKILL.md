@@ -35,7 +35,7 @@ Content explains the paper's knowledge needs, evidence basis, and intended
 argument through C1–C8. Assignments, releases, state and receipts remain in
 the shared workflow records and native owners. Seed, Discovery Roadmap, Task
 Roadmap, and Section Narrative are substantive Story content; they do not
-require separate Paper Pages. `haipipe-page-story` alone owns that shape.
+require separate Paper Pages. `haipipe-paper-story` alone owns that shape.
 
 ## 🗺 Active paper journey
 

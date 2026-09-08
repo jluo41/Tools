@@ -1,5 +1,8 @@
 # haipipe-insight · version history
 
+1.1.0 · 260908
+- Distinguish topic/data research instances and independently runnable items from Application rung Folders; require exact item Result evidence at the signed I1/I5 bridge.
+
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
 - 1.0.5 (260831): replace the last direct Task-Insight-to-Design route with

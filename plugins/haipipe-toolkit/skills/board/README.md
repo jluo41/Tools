@@ -85,7 +85,6 @@ skills are deleted; Git history is their archive.
 ## Validation
 
 ```bash
-python3 haipipe-board/cli/pagetypes.py --check
 python3 haipipe-board/cli/foldercontracts.py --check
 python3 -m unittest discover -s haipipe-board/tests
 ```

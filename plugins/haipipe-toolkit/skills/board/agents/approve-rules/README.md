@@ -27,8 +27,7 @@ which is worse than not asking.
 approve-rules.md   🧭 an OUTLINE plan, before prose is written
 display-rules.md   🖼 a DISPLAY unit, before it is accepted
 cite-rules.md      📚 a BIBEX entry, before it is verified
-value-rules.md     🧮 a historical Probe card, before it is read; current
-                   VALUE items use the Outline item-table acceptance contract
+value-rules.md     🧮 a VALUE Evidence Item's accepted Result
 ```
 
 ## How they grow
@@ -69,7 +68,7 @@ artifact   🤖 the agent writes        🧑 the person writes       rules file
 outline    checked:  ✅ auto …        approved: ✅ JL <YYMMDD>   approve-rules.md
 display    checked:  ✅ auto …        accepted: ✅ JL <YYMMDD>   display-rules.md
 cite       checked = {auto <YYMMDD>}  verified = {JL <YYMMDD>}   cite-rules.md
-value      checked:  ✅ auto …        read:     ✅ JL <YYMMDD>   value-rules.md
+value      checked:  ✅ auto …        accepted: ✅ JL <YYMMDD>   value-rules.md
 ```
 
 The cite row uses `=` and braces because a bibtex entry has no `key: value`;

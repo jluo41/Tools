@@ -13,8 +13,8 @@ House form (Markdown source, generated webpage tree):
       Q2-<slug>.md
       board/
         index.html
-        QA.html
-        QA/QA1-<slug>.html
+        evidence.html
+        evidence/E01-<slug>.html
         _assets/board.css
         _assets/board.js
 Legacy single-file boards ([BOARD]/[Qn] blocks in one board.md) still build.

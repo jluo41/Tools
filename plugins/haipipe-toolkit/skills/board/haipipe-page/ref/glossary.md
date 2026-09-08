@@ -73,17 +73,9 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   is `Verified:` on the authored Evidence Item row, not a second bibex gate.
 - **receipt** — the machine-readable record of one phase pass: who acted, which
   phase, which round, where it routed. `<board>/_runs/page/<page>/<stamp>.json`
-- **the bank** — the task and discovery folders that ANSWER questions, and know
-  nothing about who asked. `tasks/<block>/<job>/<task>/QA/<n>-<slug>.md` and
-  `discoveries/bNN_<block>/jNN_<job>/tNN_<task>/QA/<n>-<slug>.md`
-- **QA file** — one answer in the bank, written in general language with no
-  page, claim or stake in it, so any consumer can read it. Its number is only
-  the ORDER that task folder answered questions in, never a rank or a version:
-  `5-reported-trait-coefficients-mme-outcomes.md` is simply the fifth question
-  that folder has been asked.
-  ⛔ **Never abbreviate one as "QA/5" in a reply.** It reads as a section
-  number and names nothing a person can open (JL 260820: "what is the QA/5?
-  how to understand it?"). Say the file: the folder it lives in, then its name.
+- **the bank** — Task and Discovery folders whose immutable Run/Result receipts
+  are reused by later Pages. New Page work records a full Supporting Run id and,
+  when needed, one Page-local Evidence Item Run instead.
 
 ## 🗂 Evidence and Run presentation
 

@@ -91,7 +91,7 @@ a gate and a formality.
 - `agents/haipipe-task-orchestrator-agent.md`
   The dispatch target that coordinates the pair.
 - `agents/haipipe-task-creator-agent.md`
-  Produces plan, code, report, and the QA digest when one is due.
+  Produces the plan, code, report, and paired Run/Result record.
 - `agents/haipipe-task-reviewer-agent.md`
   Evaluates all four stages; does not yet name a per-phase defect class.
 - `task-lifecycle.workflow.js`

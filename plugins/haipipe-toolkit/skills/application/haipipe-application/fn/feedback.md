@@ -54,7 +54,7 @@ For /haipipe-application feedback "<text>":
     Insight phase order/frontier/GI gates              haipipe-insight-workflow
     I0 scope/source inventory                          haipipe-insight-meta
     I1 question/register/settlement                    haipipe-insight-question
-    I2 observations/run/QA binding                     haipipe-insight-data
+    I2 observations and Run/Result binding              haipipe-insight-data
     I3 rates/contrasts                                 haipipe-insight-information
     I4 claim/strength/rivals                           haipipe-insight-knowledge
     I5 counsel/signed handoff                          haipipe-insight-wisdom

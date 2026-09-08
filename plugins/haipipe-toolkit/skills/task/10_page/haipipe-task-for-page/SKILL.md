@@ -4,7 +4,7 @@ description: >-
   Task-type specialist for a PAGE-SERVING execution job: one job per Board
   Page that produces reusable Supporting Run Results for typed Evidence Items.
   It reads upstream task folders, computes or extracts owed values into
-  values.yaml + QA digests, and proposes the upstream task when a value has no
+  values.yaml + Result receipts, and proposes the upstream task when a value has no
   source yet. Called by /haipipe-task when task-type=page; its Results are
   selected by SURVEY and consumed by LAND. Trigger: page
   collection job, collect the values, serve the page's cards, values.yaml,
@@ -18,7 +18,7 @@ metadata:
 
 # /haipipe-task-for-page · one job answers one page's numbers with code
 
-Load `haipipe-task` first (the hierarchy, the four phases, the QA door); this
+Load `haipipe-task` first (the hierarchy, the four phases, and Run/Result law); this
 file owns the delta for `task-type: page`. The consumer side is a typed row in
 `outline/<stem>-evidence-items.md`; SURVEY maps this job's full Run id as a
 Supporting Run and LAND consumes its Result. This job never edits the Page,
@@ -32,14 +32,14 @@ Q        every number this page needs: computed by execution, from named
          proposed as the task that would produce it
 READS    a frozen consumer-neutral input batch (expected payload + acceptance,
          with Page claims removed) · upstream task folders' report.yaml ·
-         results/ · QA/
+         results/ · workflow/report.yaml
 WRITES   its own job only: plan.yaml · scripts/<collector>.py ·
-         scripts/config/rNN · $OUTPUT_ROOT/results/<task>/<run>/values.yaml · QA/<n>-<slug>.md ·
+         scripts/config/rNN · $OUTPUT_ROOT/results/<task>/<run>/values.yaml · runtime/report receipts ·
          workflow/proposals.md
 NEVER    a consumer/ file or any stake · the page or its outline/ · a sibling
          job's folder · a value it computed nowhere (GATE-3: a name that does
          not resolve must raise)
-EXITS    Report: every question answered in values.yaml + QA, or carried as
+EXITS    Report: every question answered in values.yaml + its Run/Result receipt, or carried as
          an owed row with its proposal
 ```
 
@@ -58,7 +58,6 @@ tasks/                                           <page>/
     │   │   └── runs/r01_<batch>.sh
     │   ├── workflow/  plan.yaml · report.yaml · proposals.md
     │   ├── results/t01_collect_values/r01_<batch>/values.yaml
-    │   └── QA/1-<slug>.md …
     └── j02_values_<pageB>/
 ```
 
@@ -82,10 +81,8 @@ tasks/                                           <page>/
 
 ```text
 SURVEY       selects this existing/needed Execution Run as a Supporting route
-executor     for each neutral question: /haipipe-task qa "<question>" <this job>
-             gate ① existing QA answer → path · ② results/ hold it → digest ·
-             ③ neither → ENTER the lifecycle HERE: extend the collection
-             script, rerun the ticket, complete the QA file at Report
+executor     for each neutral question: reuse a Run/Result or open a new Run
+             at the shallowest depth; execute the ticket and publish its Result
 LAND         validates the Supporting Result, freezes it into Local Input, and
              executes the Page-local Evidence Item Run; changed values reopen EMBED
 ```
@@ -97,7 +94,7 @@ questions and serves `values.yaml` rows to whoever binds them.
 ## 📐 values.yaml · the machine-readable half of the answer
 
 One file per Run under resolved `$OUTPUT_ROOT`, beside the Run's other Results;
-the QA digest cites it.
+the Result receipt cites it.
 Every row resolves or is `owed` — a computed row with an unresolvable
 `source:` raises at run time, never defaults.
 
@@ -108,7 +105,7 @@ upstream:                            # every folder this run read, pinned
   - examples/ProjB/tasks/R01_Reg_TraitOpioid · report.yaml 260828
 values:
   - id: adjusted-effect              # consumer-neutral Result key
-    question: 2-agreeableness-effect # QA/2-agreeableness-effect.md
+    question: 2-agreeableness-effect # the Page Evidence Item's question
     value: "-0.083"
     unit: "SD opioid days per SD agreeableness"
     source: "R01_Reg_TraitOpioid/results/j02_reg_pain/r01_baseline/coef_table.csv#agreeable.b"
@@ -122,11 +119,9 @@ values:
 ## 🕳 The propose half · a missing value becomes a named task, not a guess
 
 - **A question no upstream folder can answer is never computed around**: the
-  row lands `state: owed`, its QA file lands `state: answered` with a body
-  stating the absence and pointing at the proposal (`fn/qa.md`'s state set is
-  frozen; `concern` is the page-side CARD's word, never a QA file's — the
-  refresh writes the superseding QA file when the upstream lands), and one
-  proposal record is appended to `workflow/proposals.md`.
+  row lands `state: owed`, records the missing input and one proposal in
+  `workflow/proposals.md`, and waits for a new Supporting Run. No separate
+  question ticket or digest is created.
 - **A proposal names the MEASUREMENT and its home**: `### P<n> · <headline>`,
   then `Block:` `Job:` `Task:` (stranger-test names), `Produces:` (the exact
   file and field the owed row would bind), `Needs:` (inputs that exist today).
@@ -158,7 +153,7 @@ in both directions.
 ```text
 Plan     workflow/plan.yaml: input = the batch's questions + the upstream
          folders each should read; process = extract | compute | join;
-         output = values.yaml rows + QA files. IPO schema:
+         output = values.yaml rows + Result receipts. IPO schema:
          task/haipipe-workflow/ref/plan-schema.md
 Build    scripts/collect_values.py + scripts/config/r<NN>_<batch>.yaml: one entry per
          question (id, upstream path, extraction); CODE_REVIEW.md Gate 1
@@ -169,8 +164,8 @@ Execute  bash runs/r<NN>_<batch>.sh with `TASK_NAME="collect_values"`,
          → values.yaml + per-question artifacts
          The generic Run scaffolder writes the complete `status: planned`
          runtime receipt before this Ticket may launch.
-Report   report.yaml mirrors plan · RUN_AUDIT.md Gate 2 · QA/<n>-<slug>.md
-         completed per answered question · proposals.md rows for the owed
+Report   report.yaml mirrors plan · RUN_AUDIT.md Gate 2 · Result receipts
+         for answered questions · proposals.md rows for the owed
 ```
 
 ## 📂 Files
@@ -182,7 +177,7 @@ haipipe-task-for-page/
 └── CHANGELOG.md                 version history
 ```
 
-The base is `haipipe-task` (hierarchy, phases, `fn/qa.md` for the QA-file
-anatomy this job writes). The Page-side contracts it serves but never edits are
+The base is `haipipe-task` (hierarchy, phases, and Run/Result anatomy). The
+Page-side contracts it serves but never edits are
 `haipipe-page-outline`, `haipipe-page-evidence`, and
 `haipipe-plugin-outline/ref/item-table.md`.

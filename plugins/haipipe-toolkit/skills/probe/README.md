@@ -18,8 +18,7 @@ Current authorities:
 | Evidence landing and embedding | `../board/page-workflows/haipipe-page-evidence/SKILL.md` | `<page>/runs/` + `<page>/results/` |
 | Supporting execution/discovery | `../board/page-plugins/haipipe-plugin-runs/SKILL.md` | owning Folder's real Run/Result paths |
 
-`_old/haipipe-probe/` and `agents/haipipe-probe-q-executor-agent.md` exist only
-for un-migrated QA-bank records. They must not create a new `<page>/probe/`,
-`<page>/evidence/pagex/`, or standalone Evidence surface. New cross-Folder
-evidence is a Supporting Run Result; Related Page links belong to Context
+The former collector and its old fixtures are retired. This directory is kept
+only as a migration note; it is not a live skill or a route. New cross-Folder
+evidence is a Supporting Run Result, and Related Page links belong to Context
 Workspace.

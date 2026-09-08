@@ -17,6 +17,10 @@ metadata:
 
 # /haipipe-design-pagedown · make the grown board read true
 
+> Legacy reader only (Design v2): the sections below describe existing D1–D5
+> records; do not execute their historical writes or create new DU Folders.
+> New work and adoption use `haipipe-design` and its native Run workflow.
+
 Load `haipipe-folder`, the Design door/workflow, `haipipe-page`, and the fresh
 Board reviewer at milestone rounds.
 

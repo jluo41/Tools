@@ -100,7 +100,7 @@ phases:
           - tasks/A01_.../results/dry_run.log
 
   - title: Review
-    detail: "QA gate before handoff"
+    detail: "review gate before handoff"
     steps:
       - label: "code review"
         type: agent
@@ -330,7 +330,6 @@ answered. It is gone, along with the mailbox mechanism it served. A report descr
 run did; it never names anyone downstream, because this layer does not know that anyone is
 downstream.
 
-When a run answers a QUESTION, the answer is a FILE — the job's readable digest at
-`<job>/QA/<n>-<slug>.md` (written at Report; contract in `haipipe-task/fn/qa.md`). Whoever
-asked reads that file. Nothing is written back, no id is recorded, and no field points
-outward.
+When a run answers a QUESTION, the answer is its paired Result and runtime
+receipt. A consumer records the full immutable Run id and, when needed, creates
+its own Local Run/Result. Nothing writes into a parallel answer bank.

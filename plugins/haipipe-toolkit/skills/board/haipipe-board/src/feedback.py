@@ -71,10 +71,10 @@ def parse_round(md):
         for p in expand_ids(pages):
             verdicts[p] = (verdict.strip(), consensus.strip(), gate.strip(), order.strip())
     # §2 ledger: R-rows and the pages each routes to. A page named here but
-    # holding no §2B block (the Narrative, typically) still owes a register,
-    # keyed by the R id; and a Section whose parent R-row also routes to a
-    # Narrative WAITS on that Narrative (the Round's own routing table:
-    # claim role and paper order are ruled there first).
+    # holding no §2B block (the Story control page, typically) still owes a
+    # register, keyed by the R id; and a Section whose parent R-row also
+    # routes to Story/Section waits on the Story control page (the Round's
+    # own routing table: claim role and paper order are ruled there first).
     ledger = {}
     for rid, anchors, concern, affected, state in LEDGER.findall(t):
         concern = concern.strip()

@@ -14,7 +14,6 @@ metadata:
   folder_kind: design-division
   primary_face: page
   page_ruling: domain-gate
-  legacy_page_type: design
   outline:
     mode: grammar
     source: "GD0-closed Brief + landed Insight Evidence Items + venue pack"
@@ -22,6 +21,10 @@ metadata:
 ---
 
 # /haipipe-design-division · make each judged unit decidable
+
+> Legacy reader only (Design v2): the sections below describe existing D1–D5
+> records; do not execute their historical writes or create new DU Folders.
+> New work and adoption use `haipipe-design` and its native Run workflow.
 
 Load `haipipe-folder`, `haipipe-page`, the Design door/workflow,
 `haipipe-plugin-design`, `haipipe-plugin-outline/ref/item-table.md`, and the venue pack. Existing

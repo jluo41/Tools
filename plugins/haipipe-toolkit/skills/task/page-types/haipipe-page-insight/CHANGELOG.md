@@ -1,3 +1,12 @@
+## 1.0.0 — 2026-09-07
+
+- Replace single-question Page granularity with a topic/data instance whose
+  Insight Items are local Run tickets with versioned DIKW Results.
+- Add instance/item schemas, workflow and item tables, resumable checkpoints,
+  shared Task recipe binding, migration, and precise Result/RF references.
+- Evaluate Application reuse at the accepted item Result, preserving the
+  contextual I1/I5 bridge and leaving unrelated open items independent.
+
 ## 0.8.0 — 2026-09-07
 
 - Rename the public skill from `haipipe-page-for-insight` to

@@ -94,8 +94,9 @@ gap with a plausible rule.
 If the named authority itself is stale or incomplete, CONTEXT does not repair
 that upstream artifact. Return `HOLD` with its exact path, Folder or Page Face
 owner skill, the required change, and `resume: CONTEXT/PREPARE`. A stale
-Story Section Control row returns to `haipipe-page-story`, the paper-journey
-owner of the Story page (Roadmap and Narrative retired 260907). A stale Venue rule returns to `haipipe-paper-venue`, the owning QBv bank
+Story Section Narrative row returns to `haipipe-paper-story`, the semantic
+owner of the Story blueprint (including C6/C7 Roadmaps and C8 Narrative).
+A stale Venue rule returns to `haipipe-paper-venue`, the owning QBv bank
 Page Face owner; Venue is a library, not a paper-journey phase. After the exact owner
 repairs and versions the source, the consumer Page resumes at CONTEXT/PREPARE
 and freezes the new source. CONTEXT owns resolution and handoff, not upstream

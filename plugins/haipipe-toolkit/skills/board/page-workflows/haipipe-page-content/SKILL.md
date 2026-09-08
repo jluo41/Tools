@@ -9,7 +9,7 @@ description: >-
   phase split. Trigger: page content, CONTENT phase, WRITE cycle, division
   writing, draft page, revise page, build page, /haipipe-page-content.
 metadata:
-  version: "0.8.3"
+  version: "0.8.4"
   last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md
 ---
@@ -287,7 +287,7 @@ entry_check: authority/evidence pass · form ready or named warnings
 division_runs: [<RUNNAME → Result → promoted C<n>>]
 page: <source version before → after>
 delivery: [<artifact paths>]
-delivery_report: PDF pages · reader-facing viewer link · draft/final mode
+build_manifest: <owning delivery/build-manifest.json, when this build emits one>
 user_check_packet: Board Outline URL · evidence to open now (Display PDFs · citations · value cards) · Content state after Revise · current Page-level PDF
 revise: humanizer receipt · fresh-context MISQ style verdict
 pre_check: ready | another-pass | blocked

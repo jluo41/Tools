@@ -29,8 +29,9 @@ chat honest is the same three things that keep a phase honest:
 - **The rule**: a write lands in the file that owns that kind of thing (§🗺),
   and nowhere else. A generated file (`*-feedback.md`, `*-requirement.md`,
   `*-evidence.md`) is regenerated with its generator, never hand-edited; a run
-  folder (`_runs/`, `runs/`) and a QA file in `state: working` are never
-  written, because a job may be running there.
+  folder (`_runs/`, `runs/`) and a mutable question/answer file in
+  `state: working` are never written, because a job may be running there;
+  record work as a Run with an immutable Result.
 - **The tooth**: the `*-hand-edited` and `*-stale` checks, `content-attribution`,
   `discussion-settled-thread`, `sentence-without-realizes`,
   `number-without-lane`; the chat runs `check.py` scoped to the page after a
@@ -67,7 +68,7 @@ what you type                         lands in                                gr
   the page lacks
 "the abstract should be 9 sentences"  page.md · ## Aims                       Done when: · Now: on the Aim row         CONTENT/WRITE · haipipe-page-content
   a promise change
-"rerun the LBP regression"            <task folder>/…                         plan.yaml · code · report.yaml · QA/     the task family · haipipe-task
+"rerun the LBP regression"            <task folder>/…                         plan.yaml · code · report.yaml · results/  the task family · haipipe-task
   task work                                                                                                             + the for-<kind> its plan names
 "move that box" · "redraw the arrow"  studio/draw/<stem>.excalidraw           scoped element edit · your ask quoted   the ownership rule ·
   the diagram, mid-discussion                                                    in the log record                       haipipe-plugin-studio/ref/draw.md

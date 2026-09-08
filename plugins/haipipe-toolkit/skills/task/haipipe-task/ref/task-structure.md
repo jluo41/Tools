@@ -113,17 +113,10 @@ NESTED (canonical):
   notebooks/      MANDATORY runtime record, mirrored: notebooks/<task>/<run>.ipynb
                   (papermill injects params and writes the executed result here;
                   it is the canonical "what happened during this run" record).
-  QA/             OPTIONAL: the job's READABLE digests — QA/<n>-<slug>.md,
-                  <n> = creation order, so `ls QA/` IS the index (no INDEX
-                  file). One file per DIRECTION this job has explored:
-                  `# Q — <question>` + `## Answer` (with [→ results/<file>]
-                  anchors) + `## Caveats` + `## Not-done`. Write-once; a later
-                  question ADDS QA/<n+1>-<slug>.md. Written at Report, by THIS
-                  layer, for one of three reasons only (a question arrived ·
-                  results/ already answered one but no digest existed · a
-                  finding was judged worth digesting) — a QA/ mirroring every
-                  result is noise. Slug only: no external id, and no vocabulary
-                  this layer could not have produced. Contract: fn/qa.md.
+  report/          optional human-readable report projections; the canonical
+                  answer remains the paired Run Result and runtime receipt.
+                  A consumer records the full Run id as a Supporting Run and
+                  owns any Local Run/Result needed for a focal item.
   sbatch/         OPTIONAL: submit this job's own DAG, or split this job's
                   runs across GPUs. The only sbatch there is: a batcher that
                   would span jobs says those jobs are one job.
@@ -274,7 +267,7 @@ Job-level diagram/  (operational detail)
 
   tasks/bNN_{block}/jNN_{job}/diagram/
   ├── 01-overview.txt     what / why / inputs / outputs (replaces job README)
-  ├── 02-design.txt       approach: model arch / algorithm / probe setup
+  ├── 02-design.txt       approach: model arch / algorithm / run setup
   ├── 03-runs.txt         | Run | Variant | Result Dir | Status | Notes |
   ├── 04-progress.txt     dated progress log (newest entry on top, append-only)
   └── task.excalidraw     bundle (built by txt-to-canvas)

@@ -7,7 +7,7 @@ Owner:    Written by the task's `*.py` / `*.do` at finalize. May be edited by
 Status:   Source-of-truth for the measured NUMBERS of ONE run. `runtime.yaml`
           records machine facts about the run; `metrics.json` records what it
           measured. It is the file every later reader — a cross-run comparison,
-          a report, a QA digest — resolves a number out of, by KEY. Keys are
+          a report, or a consumer Local Run — resolves a number out of, by KEY. Keys are
           therefore a contract: name them stably.
 
 

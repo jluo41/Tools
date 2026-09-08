@@ -28,7 +28,7 @@ haipipe-page
   → haipipe-page-outline
   → the exact Folder-owning workflow or canonical family skill
   → the exact Page Face owner skill
-  → the exact narrative/style policy, when applicable
+  → the exact writing/style policy, when applicable
   → haipipe-plugin-outline/ref/plan-grammar.md
   → haipipe-plugin-outline/ref/item-table.md
   → haipipe-plugin-outline/ref/review-packet.md (only for a human review or approval)
@@ -41,14 +41,14 @@ presenter skill is not another execution step.
 
 The current `haipipe-page-context` PREPARE record must be fresh before this
 chain acts. The Folder owner and Page Face owner supply the Page's
-outline/narrative/style policy.
+outline and style policy.
 Do not route through a separate Task Page-Type layer. The owning workflow or
 canonical family skill already supplies the Page contract. For a Task Folder,
 `haipipe-task` fills both owner roles and is loaded once. Load no sibling Page
 body and no board-wide checker output before reading the target Page. SHAPE may
 use only the approved arcs and decisions of declared sibling Pages and the
-paper's Narrative Page, resolved through Context; it does not import sibling
-prose.
+Story's Section Narrative row, resolved through Context; it does not import
+sibling prose.
 
 The Page workflow gives OUTLINE two planning cycles. Its sibling
 `haipipe-page-evidence` owns LAND and EMBED; `haipipe-page-content` owns the
@@ -115,7 +115,7 @@ READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
          disk) · the owning workflow phase's outline policy · the page · the current plan ·
          the project's Execution/Discovery Run inventories (SURVEY only) ·
          outline/<stem>-context.md · declared sibling Pages' approved arcs and
-         decisions + the Narrative Page through Context · outline/skill/<stem>.md when present
+         decisions + the Story Section Narrative row through Context · outline/skill/<stem>.md when present
 WRITES   outline/<stem>-outline-v<G>.<S>[.<E>].md · outline/<stem>-evidence-items.md ·
          outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
          record) · outline/evidence/supporting-runs/<stem>-run-bindings.md
@@ -163,9 +163,9 @@ The cycle where the human and the AI shape the plan together. Named for what
 BOTH sides do; it ends when the shape is agreed, never earlier.
 
 ```text
-1 BRIEF     the person says the narrative in a few lines: what this page must argue
+1 BRIEF     the person states the page's argument in a few lines: what this page must argue
 2 PROPOSE   the AI writes plan v0.1 from the brief + routed advisor feedback +
-            declared sibling Pages' approved arcs/decisions + Narrative + owning
+            declared sibling Pages' approved arcs/decisions + Story Section row + owning
             phase policy + venue; the log is history, never a Shape authority;
             every owed thing is a named typed Evidence Item with Label + Expected + Accept
 3 REACT     the person reads the rendered plan on the 🧭 tab: ticks, comments, redirects
@@ -243,12 +243,12 @@ never recalled from memory.
   a date, a run order or a config order is not a reason. The heaviest finding
   has its own division, or its own paragraph on a one-division page; a finding
   a reader cannot reach from the list is mis-weighted.
-- **The Narrative row's order binds.** A Round's proposed reader order is an
+- **The Story Section Narrative row's order binds.** A Round's proposed reader order is an
   input served through that row; where the two differ, follow the row and
-  open a `D<nn>` naming the Round's row, because the Narrative ratifies order
+  open a `D<nn>` naming the Round's row, because the Story ratifies order
   changes, not a Section.
 - **A Section page plans sentence slots.** One bullet per slot in the
-  Narrative row's order; the venue's moves (V4) are the slots' jobs; V2 sets
+  Story row's order; the venue's moves (V4) are the slots' jobs; V2 sets
   the budget; a division V3 refuses fails ④ here and never reaches CONTENT
   part. Terms are defined inline the first time; the plan never quotes the
   sentence it plans.
@@ -302,7 +302,7 @@ never recalled from memory.
   leave the decision implicit and never mix `none` with typed items. `none`
   means CONTENT may realize that Bullet without a citation, empirical value,
   table, or figure; a transition, research question, paper-owned design move,
-  or roadmap may qualify. If CONTENT later needs any such material, return the
+  or a paper-owned planning handoff may qualify. If CONTENT later needs any such material, return the
   Bullet to SHAPE and mint its own typed Evidence Item first.
 - **The fold appends to the bullet that asked** (EMBED's write, read here): a
   landed value becomes `Answered:`, a built unit's README claim becomes

@@ -7,9 +7,9 @@ description: >-
   and evidence handoff. Use when resolving,
   scaffolding, checking, or closing one BJTR Discovery Task Page Folder.
 metadata:
-  version: "0.5.0"
+  version: "0.5.1"
   last_updated: "2026-09-07"
-  workflow: haipipe-discovery-workflow
+  workflow: haipipe-discovery-inquiry
   phase: D1
   folder_kind: discovery
   primary_face: page
@@ -30,8 +30,8 @@ D1 is the sole Discovery Folder phase and owns the domain/Task workflow:
 SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
 ```
 
-The stable metadata value `haipipe-discovery-workflow` is its registry identity,
-not a second skill to load. The Page Face independently advances through
+This skill is the Discovery D1 registry identity; there is no second workflow
+skill to load. The Page Face independently advances through
 `haipipe-page-workflow` 00–04. D1 SYNTHESIZE hands Results to that workflow;
 it does not write Page artifacts through a private lifecycle. Each admitted
 canonical paper or source is one Discovery Level-4 Run. The D1 root uses the

@@ -1,8 +1,8 @@
 """`store:` on board.md — the optional key that routes commissioned output.
 
 A board that owns its evidence base declares where work it commissions writes
-its results, notebooks and QA digests. A dispatching probe resolves the line
-once and hands the executor an absolute path, so the key must not climb.
+its Results and notebooks. The Evidence Workspace resolves the line once and
+hands the executor an absolute path, so the key must not climb.
 """
 import re
 import unittest
@@ -86,10 +86,11 @@ class BoardStoreContractTest(unittest.TestCase):
         self.assertIn("result_store:", text)
         self.assertIn("RESULT_STORE", text)
 
-    def test_qa_return_carries_the_bank(self):
-        text = (self.SKILLS / "task/haipipe-task/fn/qa.md").read_text(encoding="utf-8")
-        self.assertRegex(text, r"(?m)^bank:",
-                         msg="the qa return must name the bank it addressed")
+    def test_task_contract_uses_run_results(self):
+        text = (self.SKILLS / "task/haipipe-task/SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("Runs/Results", text)
+        self.assertIn("Supporting", text)
+        self.assertNotIn("fn/qa.md", text)
 
     def test_run_template_resolves_rather_than_hardcodes(self):
         text = (self.SKILLS / "task/haipipe-task/ref/run-sh-template.sh").read_text(encoding="utf-8")

@@ -1,8 +1,7 @@
-# Probe agents · compatibility only
+# Probe agents · retired
 
-`haipipe-probe-q-executor-agent` remains solely to read or finish an
-un-migrated QA-bank batch. It is not part of the current Page workflow and may
-not mint Page-local Probe/PageX storage.
+There are no live agents in this directory. The former question collector was
+removed when Task and Discovery moved to the shared Run/Result contract.
 
 For new work, SURVEY records Execution or Discovery Supporting Runs directly;
 LAND consumes their Results through one frozen Local Input and one local Page
@@ -14,6 +13,6 @@ board/page-workflows/haipipe-page-evidence/SKILL.md
 board/page-plugins/haipipe-plugin-runs/SKILL.md
 ```
 
-The compatibility agent still dispatches only consumer-neutral questions and
-must never receive Page claims or stakes. Its returned QA path may be cited by
-a migrated Supporting Run Result; it is never itself a current Page binding.
+New work is routed by the Page Evidence Workspace: SURVEY records Supporting
+Run ids, LAND creates one consumer-owned Local Run, and the resulting Result is
+the only current Page binding.

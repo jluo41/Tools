@@ -1,5 +1,10 @@
 # Changelog · haipipe-plugin-delivery
 
+## 0.4.1 — 2026-09-07
+- Remove the standalone delivery-QA lane and sibling report from the active
+  contract. `delivery/build-manifest.json` is the single build receipt;
+  whole-Page acceptance remains owned by the Page `CHECK` phase.
+
 ## 0.4.0 — 2026-09-04
 - Make Delivery the only callable skill for exported Page material; LaTeX,
   Word, Slide, and Render retain their full lane contracts under `ref/`.

@@ -1,6 +1,6 @@
 # Submission-readiness reference
 
-Use this reference at the paper's final G6 pass. Treat it as a gate, not as a
+Use this reference at the paper's final G4 pass. Treat it as a gate, not as a
 generic suggestion list. Record each item as `✅ closed`, `⚠️ human review`, or
 `⛔ blocker`, with an owner and evidence path when it is not closed.
 

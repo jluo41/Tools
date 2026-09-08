@@ -62,7 +62,8 @@ def _fields(runtime: Path | None) -> dict[str, str]:
         hit = re.search(rf"^{re.escape(name)}:\s*(.+?)\s*$", text, re.M)
         return hit.group(1).strip().strip('"') if hit else ""
 
-    return {name: field(name) for name in ("global_id", "status", "target", "result", "ticket")}
+    return {name: field(name) for name in
+            ("global_id", "status", "target", "result", "ticket", "family")}
 
 
 def _status(runtime: Path | None, fields: dict[str, str]) -> str:
@@ -146,6 +147,8 @@ def _evidence_refs(page_src: Path, *, run_id: str, ticket: Path) -> list[str]:
 def local_runs(page_src: Path) -> list[dict]:
     """Read allocated Folder-local or Job-backed Task Run pairs."""
     page_dir = page_src.parent
+    instance_rows = (_insight_runs(page_src) if (page_dir / "workflow/insight.yaml").is_file() else [])
+    item_tickets = {row["ticket"] for row in instance_rows}
     task_info, job_dir = _task_context(page_src)
     runs_dir = page_dir / "runs"
     if task_info:
@@ -154,8 +157,10 @@ def local_runs(page_src: Path) -> list[dict]:
     else:
         results_dir = page_dir / "results"
         result_base = page_dir
-    rows = []
+    rows = list(instance_rows)
     for ticket in _ticket_files(runs_dir):
+        if ticket in item_tickets:
+            continue
         runtime = _runtime_for(ticket, runs_dir, results_dir)
         fields = _fields(runtime)
         if task_info:
@@ -166,6 +171,14 @@ def local_runs(page_src: Path) -> list[dict]:
                 compact = f"{task_info['id']}{local_run.group(1).lower()}"
             global_id = readable_global_run(compact) if compact else ticket.stem
             run_id = global_id
+        elif (fields.get("family") == "design" or
+              re.fullmatch(r"r[0-9]{2,}_design_(?:generate|verify)_[a-z0-9][a-z0-9_-]*",
+                           ticket.stem)):
+            # Design uses its stable Folder address, never a fabricated Paper
+            # or b/j/t identity. Its YAML Ticket is already a supported suffix.
+            compact = ""
+            global_id = fields.get("global_id") or f"{page_dir.as_posix()}#{ticket.stem}"
+            run_id = ticket.stem
         else:
             paper_id = (compact_paper_run(fields.get("global_id", ""))
                         or compact_paper_run(ticket.stem))
@@ -191,6 +204,37 @@ def local_runs(page_src: Path) -> list[dict]:
                 ticket=ticket,
             ),
         })
+    return sorted(rows, key=lambda row: (_STATE_ORDER.get(row["status"], 9), row["run_id"]))
+
+
+def _insight_runs(page_src: Path) -> list[dict]:
+    """The instance dialect has one ticket and several explicit executions."""
+    from src.insight_instances import contract
+    api = contract()
+    try:
+        manifest, items, errors = api.inspect(page_src.parent)
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, api.yaml.YAMLError):
+        return []  # the Outline item table displays the validation failure
+    rows = []
+    for item in items:
+        if not item["ticket"]:
+            continue  # proposed items are not allocated Runs
+        run = item["item"]["run"]
+        ticket = page_src.parent / "runs" / f"{run}.sh"
+        for info in item["versions"] or [None]:
+            ident = info["execution"] if info else f"{manifest['instance']}#{run}"
+            directory = page_src.parent / "results" / run / info["version"] if info else None
+            status = "Ready"
+            if info:
+                status = {"planned": "Ready", "running": "Running", "complete": "Done",
+                          "failed": "Failed", "blocked": "Held"}.get(info["status"], "Held")
+                if not info["valid"] or info["stale"]:
+                    status = "Held"
+            rows.append({"run_id": ident, "global_id": ident, "compact_id": ident if info else "",
+                         "ticket": ticket, "runtime": directory / "runtime.yaml" if directory else None,
+                         "result": str(directory / "result.yaml") if directory and (directory / "result.yaml").is_file() else "",
+                         "target": item["item"].get("question", ""), "status": status,
+                         "refs": _evidence_refs(page_src, run_id=ident, ticket=ticket)})
     return sorted(rows, key=lambda row: (_STATE_ORDER.get(row["status"], 9), row["run_id"]))
 
 

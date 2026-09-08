@@ -72,7 +72,7 @@ from datetime import datetime
 from pathlib import Path
 
 IDX = re.compile(r"^([bjtr])(\d\d)_(.+)$")
-NOT_A_TASK = {"src", "sbatch", "results", "notebooks", "QA", "workflow",
+NOT_A_TASK = {"src", "sbatch", "results", "notebooks", "workflow",
               "outline", "diagram", "__pycache__", "_tools", "dist", "chat"}
 TICKET_EXT = {".sh", ".ps1"}
 CODE_EXT = {".py", ".do", ".R", ".sh", ".ipynb"}

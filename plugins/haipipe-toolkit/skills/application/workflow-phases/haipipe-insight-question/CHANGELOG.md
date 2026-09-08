@@ -1,5 +1,9 @@
 # haipipe-insight-question · version history
 
+## 1.1.0 — 2026-09-08
+
+- Register an exact instance/item/version/RF Result path and hash. Unrelated open items do not block a ready external parent.
+
 ## 1.0.2 — 2026-08-31
 
 - Define I1 ownership of the Task-RF bridge: a QW row pins the exact external

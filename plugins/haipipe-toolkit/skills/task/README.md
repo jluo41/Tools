@@ -76,16 +76,18 @@ task/haipipe-page-task/
 └── SKILL.md                     display-rich reader contract for Task Pages
 
 task/page-types/
-└── haipipe-page-insight/       one reusable DIKW chain around one question
+└── haipipe-page-insight/       topic/data instance with item Runs and DIKW Results
 ```
 
 `haipipe-task` remains the canonical owner of Task Folder identity, execution,
 results, and closure. `haipipe-page-task` extends the same-stem reader Page
 with the required evidence-display inventory: substantive tables, figures, and
 method/provenance diagrams. An Insight Page may read several Task Pages, Task
-`QA/` answers, Discovery Pages, or prior Insight Pages. It remains
-consumer-neutral and exports RF.
-Paper and Application may bind that exact RF version, but neither downstream
+Run Results, Discovery Pages, or prior Insight Pages. It remains
+consumer-neutral. Each item owns a question, local ticket, execution versions,
+and DIKW/RF Result; its workflow and generated item table live with the skill.
+Shared Task recipes accept instance-specific frozen inputs and output scopes.
+Paper and Application may bind exact instance/item/version/RF evidence, but neither downstream
 stake is written into the Insight Page; an Application must turn it into its
 own contextual, signed I5 handoff before Design may use it.
 
@@ -93,7 +95,11 @@ own contextual, signed I5 handoff before Design may use it.
 
 Tasks execute internal work: a task ends at Report, having produced `results/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer tracks no consumers, names none, and its working docs (SKILL/ref/fn) never route upward.
 
-Self-contained is not deaf, though. Questions arrive through exactly ONE door — `/haipipe-task qa "<question>" [<job>]` (`haipipe-task/fn/qa.md`) — as one question in general language, with no id, no reference to whoever asked, and no stake attached. The verb answers it (① scan the job's `QA/` → ② digest what `results/` already hold → ③ run P-B-E-R at the shallowest depth that answers it) or REFUSES it, and hands back a path to `<job>/QA/<n>-<slug>.md`. It never learns who asked, or why.
+Self-contained does not mean opaque. Questions resolve through the normal
+Run/Result contract: reuse an existing full Run id when it answers the scope;
+otherwise open the shallowest new Run, execute it, and publish its paired Result.
+A consumer records Supporting Run ids and, when a focal item is needed, its own
+Local Run/Result. There is no separate question command, ticket, or answer bank.
 
 That door is a SIDE door. The task session's primary mode is autonomous Plan → Build → Execute → Report with no question pending at all.
 

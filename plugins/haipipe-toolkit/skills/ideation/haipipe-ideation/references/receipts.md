@@ -31,7 +31,7 @@ returned_at: "2026-09-07T12:30:00-04:00"
 ```
 
 The request is a consumer-side receipt. Do not put `consumer`, `parent`, or
-ideation paths into `discovery.yaml`; Discovery remains probe/consumer
+ideation paths into `discovery.yaml`; Discovery remains consumer
 unaware. A returned result is usable only after the bundle’s direct Result,
 Bib, Card, runtime path, and `bib.verification` checks pass.
 
@@ -114,7 +114,7 @@ selected_ideas:
     intended_category: "article type"
     venue_contract: "shared venue bank/.../QBvN-....md#versioned-contract"
     hard_limits: ["what Paper must not claim"]
-paper_route: haipipe-page-ideation
+paper_route: haipipe-paper-ideation
 status: ready
 created_at: "2026-09-07T13:05:00-04:00"
 ```

@@ -1,207 +1,193 @@
 ---
 name: haipipe-page-insight
 description: >-
-  The task-only Page Type for one CONSUMER-NEUTRAL Insight Page on the
-  Task/Insights Board: a whole D→I→K→W chain plus reusable findings, carrying
-  no downstream stake. This is where dataset-first exploration lives; Paper
-  and Application consumers reuse a settled chain through Supporting Run
-  Results. Trigger:
-  task insight, DIKW page, dataset exploration, insights board, page-type
-  insight.
+  Create or update a task-side Insight Page Folder for one research topic and
+  data context. Its Insight Items are independently runnable questions; each
+  produces a versioned DIKW result and reusable findings. Use for dataset or
+  patient insight instances, item Runs, resumable checkpoints, shared Task
+  analysis calls, and exact instance/item/result citations. Application
+  InsightBoard rung pages remain owned by haipipe-insight-workflow.
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-09-07"
+  version: "1.0.0"
+  last_updated: "2026-09-08"
   outline:
     mode: fixed
     source: "this SKILL.md"
-    shape: "Origin → Question/Scope → Sources → D → I → K → W → Reusable Findings"
+    shape: "Origin → Instance and Scope → Insight Items → Synthesis → Reusable Findings"
   parent: haipipe-page
 ---
 
-# /haipipe-page-insight · turn evidence into a reusable D→I→K→W chain
+# /haipipe-page-insight · one topic instance, independently runnable items
 
-Load `haipipe-page`, `haipipe-page-workflow`, then this contract. Load
-`haipipe-plugin-outline/ref/item-table.md` and the current Page phase material
-when mapping Task/Discovery Supporting Run Results or making local Evidence
-Items ready. This type inherits directly from the shared Page Face; its Task
-family location names its creator, not a second parent contract.
+An Insight Folder is one addressable research topic in an explicit data
+context. Its same-stem Markdown file is the Page Face. Its **Insight Items**
+are the questions and insight work performed inside that Page: one item owns
+one local Run ticket and a history of immutable execution Results. An item is
+not another Page Folder. The Page organizes the findings from its items.
 
-## Where this type is used, and where it is not
+Load `haipipe-page` and `haipipe-page-workflow` for the shared Page frame and
+authoring controls. Read `ref/instance-items.md` for identity, schemas, runtime
+structure, and citations; `ref/workflow-table.md` when planning or resuming;
+`ref/task-calls.md` when invoking reusable analysis. Migration from the previous
+single-question Page is described in `ref/migration.md`.
 
-```text
-🧪 Task/Insights Board       THIS TYPE · one page, the whole D→I→K→W chain
-                             consumer-neutral · no serves: · no application:
+## Scope and ownership
 
-🔎 Application InsightBoard  NOT this type · four phase-owned Folders
-                             I2 data · I3 information · I4 knowledge ·
-                             I5 wisdom (`haipipe-insight-workflow`)
-```
-
-An Application decomposes the chain because its levels get reused across questions and refreshed on different clocks. This Board keeps them in one page because a consumer-neutral exploration has no roster to reassemble the chain for it, and one page is how it stays readable.
-
-An Application borrows a settled chain from here through an Evidence Item's
-Supporting Run Result rather than reopening the question locally.
-
-What it borrows is an unsigned, consumer-neutral Reusable Finding. RF is not a
-Design Handoff, has no `serves:` authority, and may not bind directly to an
-Application DesignBoard. A consuming Application must register its own I1 QW
-need and contextualize the exact RF version in a local, human-signed I5 Wisdom
-Folder.
-
-**Ownership, settled 260820.** This contract ships under `task/page-types/` because the task layer is now its only creator, which resolves the question QI0 raised while it governed both layers.
-
-## Base and specialization
-
-```text
-INHERIT from haipipe-page            SPECIALIZE for Insight
-shared Page frame                    one neutral insight question
-CONTEXT→OUTLINE→EVIDENCE→CONTENT     fixed D→I→K→W Content grammar
-Supporting/local Run evidence graph several Task/Discovery/Page sources
-version-bound CHECK and reopening    Reusable Findings
-```
-
-Do not inherit a desired answer or downstream stake. A later Paper or
-Application may borrow a settled finding; it does not commission this Page or
-rewrite its question around a preferred consequence.
-
-## Required identity
-
-Declare:
+`/haipipe-task insight "<topic>" [<board>]` creates or resumes this Folder.
+Keep the public skill and installed path; no second Insight skill or parallel
+Page frame is required. This remains the task-only Page Type during the
+shared Folder-kind migration:
 
 ```yaml
 page-type: insight
-scope: task                                      # the only live scope
-insight-target: data | information | knowledge | wisdom
+scope: task
+insight-layout: items-v1
+insight-instance: sms/patient-a-study
 ```
 
-A Page carrying `application:` or `serves:` is defective: those two fields are a commission, and this Board's pages are consumer-neutral so they can be reused by a consumer that did not exist when they were written.
+No `application:` or `serves:` belongs on this research Page. A patient is one
+possible independent data context, not a universal row grain. The same Page
+may declare several datasets when its topic is their comparison. A Board may
+organize many such instances; the Application one-extract-per-Board law does
+not force a new task-side Board for each patient.
 
-One Page covers one answerable insight question. Split when two questions can settle, stale, or be reused independently.
+Split a Folder when its topic or independently managed data context changes.
+Add an item when another answerable question belongs to the same topic. Do
+not split a Page merely because a question or finding has its own completion
+state. Do not automatically turn each data row, patient, DIKW rung, figure,
+tool call, or finding into a Run.
 
-## Boundary
+## The item is the unit of insight work
+
+One item declares its question, frozen inputs, target, expected Result, and
+acceptance test. Its stable id is its `rNN_<stem>` ticket stem; do not add a
+second `itemNN` namespace or an `items/<item>/` Folder hierarchy. A proposed
+row has no actual Run until its ticket exists. The human label may say
+“Item 1”; the address remains `r01_description`.
+
+Each execution may call shared Task capabilities, gather evidence, reason
+through DIKW, and return positive, null, contradictory, or insufficient
+evidence. A target is the depth to assess, not a promise to find a positive
+effect. The target is declared per item; a legacy Page `insight-target:` is
+only a migration default.
 
 ```text
-Task/Discovery Folder   executes or gathers source evidence
-Task QA / source Page   says what data exists, at what grain, and how fresh
-Supporting Run Result  carries the cross-Folder evidence edge
-Task Insight Page       owns traceable D→I→K→W and reusable findings
-Paper / Application    reuses the exact settled Result and decides its own use
+Folder instance
+  r01_description@v001       bounded question → evidence → D/I/K/W/RF
+  r02_temporal-pattern@v001  bounded question → evidence → D/I/K/W/RF
+  r01_description@v002       later execution, preserves v001
 ```
 
-This Page may name source population and analysis context, but never a
-consumer's blocked decision, audience strategy, venue choice, or design
-consequence. D/I/K remain evidence-led. W states general applicability,
-boundary, and unsafe inference without writing final copy or strengthening K.
+An **Insight Item** is a domain work unit. An **Evidence Item** is a typed
+VALUE/CITE/DISPLAY support unit in the shared Outline workspace. They are not
+synonyms. An Insight Item may use several Evidence Items. Their producing and
+local Runs retain their own targets and receipts; count them as dependencies,
+not additional Insight Items. An item Run earns its identity through its own
+DIKW Result; a dispatcher that only launches dependencies earns no extra Run.
 
-## Fixed Content outline
+## Page Face
+
+Retain `Opening → Outline → Content → Aims`. The Content has five divisions:
+
+1. **Origin**: why this research topic exists, without a preferred conclusion.
+2. **Instance and Scope**: data context, versions, population/unit, window,
+   exclusions, and shared analysis capabilities available to this instance.
+3. **Insight Items**: one block per declared item, in stable id order. Each
+   names its question, target, exact execution version, progress, and the
+   D/I/K/W/RF rows actually supported by that Result. Link the evidence.
+4. **Synthesis**: a reading across accepted item Results, including disagreement
+   and limits. A new numerical derivation or independently reusable claim
+   needs a commissioned item/supporting Task, not an unrecorded calculation.
+5. **Reusable Findings**: a generated or explicitly version-bound index of
+   accepted item findings. Each row carries the full instance/item/version/RF
+   address. This index exports existing findings and creates none.
+
+The item table is a read projection of `workflow/insight.yaml`, tickets, and
+Result receipts. Use `scripts/insight_items.py table <folder>` to inspect it.
+It is not a second handwritten status ledger. The generic Outline table still
+projects the Page plan and typed Evidence Items; the item table summarizes
+domain work. Neither replaces the other or adds a new universal Page section.
+
+## Task Face and execution
+
+The Task Face owns item intent, dependency dispatch, input freezing,
+checkpoints, Result validation, and publication. Its workflow and Phase × Run
+Map live in `ref/workflow-table.md`; Page authoring still uses the shared Page
+workflow. DIKW is inside each item Result, not four new phase-owned Folders.
+
+Use the Insight instance dialect in `haipipe-run`: one stable local ticket
+resolves to versioned execution addresses in this instance. Record the full
+address; `r01` alone is never a cross-Folder execution reference. A shared
+recipe, a test execution of that recipe, and an instance execution are three
+different identities. `ref/task-calls.md` owns the binding protocol.
+
+Shared Task code stays with the producing Task. The Insight supplies the data
+manifest, allowed parameters, and output scope through a small local ticket.
+It does not edit another patient's inputs or overwrite the producer's default
+test execution. A call that a legacy launcher cannot parameterize must first
+be adapted and verified; never silently run its default dataset.
+
+Page numeric evidence keeps the existing single page-serving collection route
+and named producing Run/Result bindings. Cross-Folder evidence enters through full
+Supporting Run Results; each typed make-item still owes its local Evidence
+Item Run. Load `haipipe-plugin-outline/ref/item-table.md` when mapping those
+dependencies. The new item dialect does not authorize direct raw-result
+reading from a consuming Page or a second numeric computation path.
+
+## DIKW Result and closure
+
+Every item keeps the trace:
 
 ```text
-### 1 · Origin
-### 2 · Question and Scope
-### 3 · Source Map
-### 4 · Data
-### 5 · Information
-### 6 · Knowledge
-### 7 · Wisdom
-### 8 · Reusable Findings
+named source/Run → D<n> → I<n> → K<n> → W<n> → RF<n> Reusable Finding
 ```
 
-- **Origin** says why the question is worth answering and what prompted it: a
-  dataset landed, a run finished, or a pattern was noticed. It names no
-  downstream consumer or blocked decision.
-- **Question and Scope** states one answerable question with population/unit,
-  time window, and exclusions.
-- **Source Map** names Task Folders/Pages, Task QA, Discovery Pages, or accepted
-  Pages. It never gives a downstream consumer a raw `results/` path.
-- **Data** records dated observations with source/run anchors and no
-  interpretation.
-- **Information** derives patterns, nulls, and contradictions from named Data
-  rows.
-- **Knowledge** states propositions, strength, rivals, and boundary conditions
-  from named Information rows.
-- **Wisdom** states what K means in general: where it holds, where it breaks,
-  and what would be unsafe to conclude. Every W row names a K parent.
-- **Reusable Findings** exports finding, strength, boundary, source versions,
-  and unresolved gaps in language a future consumer can use. It adds no design
-  consequence because that belongs to the consumer's own workflow.
+D observes dated evidence; I derives patterns from named D rows; K states
+claims with strength, rivals, and boundary; W explains applicability and
+unsafe inference; RF exports the finding without strengthening it. Row ids are
+local to an exact item execution Result. Reusing `D1` in another item is legal
+only because the full address disambiguates it.
 
-## Trace law
+The checkpoints record frozen inputs, ready evidence, checked reasoning, and
+publication. They are resumable records, not additional Runs or automatic
+human approval requests. Existing Page/Evidence human decisions remain owned
+by their original contracts. A failed or insufficient-evidence Result is a
+truthful outcome; it must not be published as an accepted finding.
 
-```text
-source/run → D<n> → I<n> → K<n> → W<n> → RF<n> Reusable Finding
-```
+Item acceptance is independent of sibling items. A completed item can be
+reused while another is open. The Page closes only when its declared items
+are terminal or explicitly held outside the current scope, its synthesis is
+current, and Page CHECK passes. A data/recipe/source change preserves old
+Results and reopens only dependent bindings. It never rewrites history or
+silently upgrades an existing Design citation to the latest version.
 
-No level cites a later level as evidence. Preserve null, negative, and contradictory results. A contextual W may be useful and still fail when no K parent warrants it.
+## Handoff
 
-## Supporting and local Runs
+A consumer selects an accepted finding by **instance + item + execution
+version + RF id**, with its Result path and hash. The parent Page URL is
+navigation, not the evidence address. Use `ref/instance-items.md` for the
+portable reference packet and historical single-chain aliases.
 
-```text
-Task / Discovery Folder ── Supporting Run Result ─┐
-accepted governed source ── frozen Local Input ───┼─▶ local Evidence Item Run
-                                                   └─▶ ready D/I/K/W evidence
-settled Reusable Finding ── Supporting Run Result ───▶ future consumer
-```
+RF is not a
+Design Handoff. It remains unsigned, consumer-neutral evidence. An Application
+registers its I1 QW need and contextualizes the exact item RF in a local,
+human-signed I5 Wisdom Folder. The relevant item's Wisdom target and current
+accepted Result are tested, not whole-Page completion; unrelated open items
+do not block this bridge. An explicit no-answer cannot satisfy the bridge.
 
-SURVEY records every source as a full Supporting Run id or a governed local
-source in the frozen Local Input. LAND completes the Supporting Runs and one
-local Page Evidence Item Run per make-item. A consuming Paper or Application
-reuses the exact settled Result through its own Supporting/local Run graph and
-never copies this Page's records.
+## Validation and files
 
-For an Application, the reused evidence terminates at its I5 bridge Folder,
-not at Design. The Task Page supplies pre-climbed DIKW evidence; Application
-I1/I5 own the commission, applicability judgment, design consequence, and
-signature.
+- `scripts/insight_items.py check <folder>` validates manifests, ticket/Result
+  pairing, immutable execution identities, source hashes, checkpoints, DIKW
+  references, and accepted finding addresses. It is a structural/provenance
+  check, not independent scientific review.
+- `scripts/insight_items.py table <folder>` returns one row per declared
+  item; the current Result and checkpoint come from receipts.
+- `ref/instance-items.md`: runtime schema and exact reference packet.
+- `ref/workflow-table.md`: workflow, checkpoints, Phase × Run Map, reopening.
+- `ref/task-calls.md`: reusable Task recipe and instance binding.
+- `ref/migration.md`: old Page-to-item mapping and compatibility.
+- `agents/openai.yaml`: existing discoverable entry, updated to item semantics.
 
-## Runtime shape
-
-```text
-<task-board>/I<NN>-<slug>/                the Task/Insights Board, never an Application board
-├── I<NN>-<slug>.md
-├── outline/
-│   ├── <stem>-context.md
-│   ├── <stem>-plan-v<N>.md
-│   ├── <stem>-evidence-items.md
-│   └── evidence/
-│       ├── supporting-runs/ generated lineage pointers
-│       ├── materials/       frozen governed source captures
-│       ├── bibex/           accepted CITE Results
-│       └── display/         accepted DISPLAY Results
-├── runs/                                local Page Run tickets, when commissioned
-└── results/                             local Page Results
-```
-
-The Page owns interpretation, not source code or raw results.
-`evidence/display/` shows evidence and never becomes another authority.
-
-## Workflow and staleness
-
-Run the full shared workflow:
-
-```text
-CONTEXT → SHAPE ⇄ SURVEY ⇄ LAND ⇄ EMBED → WRITE → CHECK
-```
-
-Changing a named Run or source reopens dependent D/I/K/W/RF rows. A consumer's
-context change does not rewrite this Page; that consumer must recheck its own
-Supporting/local Result binding. A changed RF version stales every consuming
-binding until it is rechecked.
-
-## Closing checks
-
-- `scope: task` is declared; `application:` and `serves:` are absent.
-- The Page names no downstream consumer, blocked decision, or preferred use.
-- The promised `insight-target` is reached or explicitly rejected with a reason.
-- Every D row has a resolvable dated source/run.
-- Every I/K/W/RF row traces to the immediately preceding authority.
-- Nulls, contradictions, rivals, and scope limits remain visible.
-- D/I/K contain no desired message or downstream persuasion language.
-- W contextualizes without exceeding K; RF preserves unsafe inference and gaps.
-- No RF claims a signature, `serves:` decision, Design Handoff, or direct
-  Design authority.
-- Source reruns have not left a settled but stale reading.
-- A fresh consumer can reuse Division 8 through a full Supporting Run Result
-  without opening Task/Discovery source folders.
-- Division 8 reads correctly to a consumer that did not exist when it was written.
-
-This variant owns no scripts.
+The skill owns no patient dataset and executes no analysis merely because its
+instructions were loaded.

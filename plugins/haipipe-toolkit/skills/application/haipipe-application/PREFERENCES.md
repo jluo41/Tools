@@ -29,10 +29,16 @@ topic -- update, don't duplicate).
 - **Share the Page substrate, not the delivery vocabulary.** Paper and
   Application both consume Folders through PageX and both use the shared Page
   phases on their Page Faces. Paper keeps Opening→Narrative→Section;
-  Application keeps Insight I0-I5 → Design D0-D5, with projections under
+  Application keeps its Insight handoff → Design lifecycle, with projections under
   `delivery/render/`. A change to PageX, Page phases, or the Insight handoff
   triggers a cross-family review. A change to Paper argument structure does
   not automatically port into Application message structure.
+
+- **Native Design units are Run Results (JL, 2026-09-08).** New Design work
+  uses Plan → Generate → Verify → Adopt in one stable Design Folder, with
+  `haipipe-design-unit` generating or independently verifying one bounded
+  commission. This supersedes the former Design D0-D5 Folder ladder for new
+  work; historical records remain read-only. It does not migrate Insight.
 
 - **No prose without understanding: explain what each sentence DOES before writing it.** The agent must not produce prose (manuscript sentences, story-line drafts, paragraph rewrites) unless it can explain what each sentence does for the reader and why it says THIS and not something else. Production without understanding (知其然不知其所以然) is the root cause of bad writing: the output reshuffles bullet points into plausible-sounding text without grasping the argument. If unable to explain the sentence's job, say so rather than draft. One sentence at a time, grounded in what it DOES, not what it CONTAINS. (JL, 2026-06-26, MISQ-Introduction session: "What is the root cause, in philosophy")
 

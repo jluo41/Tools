@@ -332,8 +332,9 @@ def check_board(d, rep):
                     f"no `{key}:` line; the board cannot say what it is for or when it ends")
 
     # `store:` is OPTIONAL and declares where work COMMISSIONED by this board
-    # writes its generated output: results, notebooks and QA digests. A probe
-    # dispatching from one of this board's pages passes it as RESULT_STORE, so
+    # writes its generated output: results and notebooks. A consumer-owned
+    # Local Run records any page-serving adaptation as an immutable Result.
+    # A dispatching page passes the Result store as RESULT_STORE, so
     # the executor is told a PATH and never learns which consumer it serves.
     # Absent means this board commissions nothing that produces files, and a
     # task it dispatches keeps output in its own folder (JL 260823).
@@ -1699,16 +1700,13 @@ PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 # `intervention` was renamed to the already-listed `design`, and `artifact` was
 # absorbed into a per-division `accepted:` row. Both are dropped, so a page still
 # carrying either key now reports page-type-unknown and gets migrated.
-# 260824, paper journey 0.5.0: `roadmap` and `collection` joined as the two
-# working pages of the establish loop (the Seed states the gaps, the Roadmap
-# plans the errands, the Collection registers the receipts).
-# 260907, paper journey 1.0.0: `story` is the Story page's own key (seed stays
-# as its alias); roadmap/narrative stay accepted for grandfathered boards.
-PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed", "story",
-                    "section", "round", "labeling", "narrative", "dash", "task", "insight",
+# 260907, current Paper layout: the Story page owns the paper's integrated
+# control surface. Seed, Roadmap, Narrative, and Collection are content
+# concepts or retired page keys, not current Page Types.
+PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "story",
+                    "section", "round", "labeling", "dash", "task", "insight",
                     "meta", "question", "data", "information", "knowledge",
-                    "wisdom", "brief", "view", "stage", "ideation",
-                    "roadmap", "collection")
+                    "wisdom", "brief", "view", "stage", "ideation")
 STEP4_STAGE = re.compile(r"^S-[A-Za-z]+-[A-Za-z0-9]+(?:-.+)?$")
 
 
@@ -1884,6 +1882,28 @@ def _card_field(text, key):
     return m.group(1).strip() if m else None
 
 
+def check_native_design_runs(d, rep):
+    """Delegate allocated native Design Runs to their worker-owned gate."""
+    import importlib.util
+
+    folders = {p.parent.parent for p in d.rglob("runs/r*_design_*.yaml")}
+    folders.update(p.parent.parent for p in d.rglob("results/r*_design_*")
+                   if p.is_dir())
+    if not folders:
+        return
+    checker = (HERE.parents[1] / "application" / "workflow-phases" /
+               "haipipe-design-unit" / "scripts" / "check_unit.py")
+    try:
+        spec = importlib.util.spec_from_file_location("design_unit_gate", checker)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        for folder in sorted(folders):
+            for issue in module.audit_folder(folder):
+                rep.add(ERROR, "design-run-contract", str(folder.relative_to(d)), issue)
+    except (ImportError, OSError, ValueError) as exc:
+        rep.add(ERROR, "design-run-checker", str(d), str(exc))
+
+
 def check_design_family(d, rep):
     """The design family's laws, given teeth (JL 260824).
 
@@ -1902,6 +1922,7 @@ def check_design_family(d, rep):
     structural is still checked on a record board: files, depth, resolvable
     references, and the evidence-within-grant chain when a grant exists.
     """
+    check_native_design_runs(d, rep)
     bmd = d / "board.md"
     if not bmd.is_file():
         return

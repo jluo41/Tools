@@ -1,7 +1,8 @@
 import unittest
 from pathlib import Path
 
-from src.folder_contract import discover
+from src.folder_contract import discover, read_contract, resolve
+from src.plan_shape import type_outline
 
 
 class ApplicationFolderArchitectureTest(unittest.TestCase):
@@ -168,9 +169,9 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn("GI5 passes only", wisdom)
         self.assertIn("GI6 is the following I1 register-settlement act", wisdom)
 
-    def test_design_thread_evolves_in_place_and_pagedown_has_receipt(self):
+    def test_legacy_design_thread_schema_remains_readable(self):
         workflow = (
-            self.application / "haipipe-design-workflow" / "SKILL.md"
+            self.application / "haipipe-design-workflow" / "references" / "legacy-workflow.md"
         ).read_text(encoding="utf-8")
         pagedown = (
             self.application / "workflow-phases"
@@ -207,20 +208,20 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
 
     def test_unit_readme_never_becomes_the_acceptance_authority(self):
         design = (
-            self.application / "haipipe-plugin-design" / "SKILL.md"
+            self.application / "haipipe-plugin-design" / "references" / "legacy-thread.md"
         ).read_text(encoding="utf-8")
         self.assertIn("state: draft | judged", design)
         self.assertIn("Acceptance exists only on the parent D4 division row", design)
         self.assertIn("Legacy `accepted@v<N>` remains readable", design)
 
     def test_brainstorm_entries_carry_reach_and_origin(self):
-        agent = (
-            self.application / "haipipe-design" / "agents"
-            / "haipipe-designer-agent.md"
+        modes = (
+            self.application / "workflow-phases" / "haipipe-design-unit"
+            / "references" / "modes.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("one `trying:` line", agent)
-        self.assertIn("one\n   `from:` honesty label", agent)
-        self.assertIn("every valid `from:`", agent)
+        self.assertIn("trying/from provenance", modes)
+        self.assertIn("from insight names an authorized source", modes)
+        self.assertIn("intuition is labeled brief-only or informed", modes)
 
     def test_runtime_board_names_are_subject_first_suffixes(self):
         application = (
@@ -241,7 +242,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
 
     def test_d5_seals_and_stops_instead_of_looping_directly_to_d0(self):
         workflow = (
-            self.application / "haipipe-design-workflow" / "SKILL.md"
+            self.application / "haipipe-design-workflow" / "references" / "legacy-workflow.md"
         ).read_text(encoding="utf-8")
         self.assertIn("D5→GD6 seals and STOPS", workflow)
         self.assertIn("a later commissioned round re-enters D0", workflow)
@@ -263,10 +264,19 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
             self.application / "haipipe-design" / "agents"
             / "haipipe-designer-agent.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("state from released to landed", agent)
-        self.assertIn("serves` (the owning division id)", agent)
-        self.assertNotIn("direction (the card id)", agent)
-        self.assertNotIn("landed: pointer", agent)
+        self.assertIn("YAML Ticket", agent)
+        self.assertIn("haipipe-design-unit/SKILL.md", agent)
+        self.assertIn("Do not edit a card", agent)
+
+    def test_design_unit_worker_does_not_own_a_folder_phase(self):
+        worker = (self.application / "workflow-phases" /
+                  "haipipe-design-unit" / "SKILL.md")
+        self.assertIsNone(read_contract(worker))
+        legacy = resolve(self.skills, folder_kind="design-unit")
+        self.assertEqual(legacy.name, "haipipe-design-realization")
+        current = type_outline("design", self.skills)
+        self.assertEqual(Path(current["type_path"]),
+                         self.application / "haipipe-design" / "SKILL.md")
 
     def test_venue_packs_are_profiles_not_private_lifecycles(self):
         venue = self.application / "venue"
@@ -284,24 +294,26 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
                 self.application / skill / "SKILL.md"
             ).read_text(encoding="utf-8")
             self.assertIn("cross-phase authority gates", text)
-            self.assertIn("nested Page-Face controls", text)
+            self.assertIn("nested Page-Face controls", " ".join(text.split()))
 
     def test_application_preferences_use_phase_native_architecture(self):
         preferences = (
             self.application / "haipipe-application" / "PREFERENCES.md"
         ).read_text(encoding="utf-8")
         self.assertIn("matching I1-I5\n  Folder", preferences)
-        self.assertIn("Insight I0-I5 → Design D0-D5", preferences)
+        self.assertIn("Plan → Generate → Verify → Adopt", preferences)
+        self.assertIn("haipipe-design-unit", preferences)
+        self.assertIn("It does not migrate Insight", preferences)
         self.assertNotIn("Artifact Pages consume", preferences)
         self.assertNotIn("Brief→Insights→Design→Artifacts", preferences)
 
-    def test_design_verb_cannot_bypass_pagedown(self):
+    def test_design_verb_closes_native_round_without_shipping(self):
         design = (
             self.application / "haipipe-application" / "fn" / "design.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("Run D1–D5", design)
-        self.assertIn("write the D5 receipt, pass GD6", design)
-        self.assertNotIn("Run D1–D4", design)
+        self.assertIn("haipipe-design-workflow", design)
+        self.assertIn("round receipt", design)
+        self.assertIn("Do not ship or measure", design)
 
     def test_page_run_is_folder_first_and_probe_is_retired(self):
         workflow = (
@@ -320,16 +332,16 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
         unit = (
             self.application / "workflow-phases"
-            / "haipipe-design-unit" / "SKILL.md"
+            / "haipipe-design-unit" / "references" / "legacy-phase.md"
         ).read_text(encoding="utf-8")
-        agent = (
-            self.application / "haipipe-design" / "agents"
-            / "haipipe-designer-agent.md"
+        modes = (
+            self.application / "workflow-phases" / "haipipe-design-unit"
+            / "references" / "modes.md"
         ).read_text(encoding="utf-8")
         self.assertIn("pool, predicts nothing", card)
         self.assertIn("expressly has no\n`prospect.md`", unit)
-        self.assertIn("pool\n   disclaimer", agent)
-        self.assertIn("pool count/provenance coverage", agent)
+        self.assertIn("No experiment allocation", modes)
+        self.assertIn("or forecast is implied", modes)
 
     def test_x2_has_a_deterministic_task_inbox_packet(self):
         workflow = (
@@ -343,7 +355,8 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn("packet_version: <N>", workflow)
         self.assertIn("immutable candidate-packet revision", workflow)
         self.assertIn("independent\nof design and render versions", workflow)
-        self.assertIn("reciprocal PageX", workflow)
+        self.assertIn("reciprocal Supporting Run binding", workflow)
+        self.assertIn("no\ninvented Run identity", workflow)
         self.assertIn("Incoming Application candidates", task)
         self.assertIn("state: proposed", task)
 
@@ -364,7 +377,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
                 self.assertNotIn(stale, text, str(path))
 
         design_plugin = (
-            self.application / "haipipe-plugin-design" / "SKILL.md"
+            self.application / "haipipe-design-workflow" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("DS Folder's `outline/<DS-stem>-log.md`", design_plugin)
         self.assertNotIn("DS page's Log", design_plugin)
@@ -400,7 +413,10 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
             self.skills / "task" / "page-types"
             / "haipipe-page-insight" / "SKILL.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("The task-only Page Type", insight)
+        self.assertIn("insight-layout: items-v1", insight)
+        self.assertIn("one item owns", insight)
+        self.assertIn("one local Run ticket", insight)
+        self.assertNotIn("One Page covers one answerable insight question", insight)
         self.assertIn("scope: task", insight)
         self.assertIn("RF<n> Reusable Finding", insight)
         self.assertIn("RF is not a\nDesign Handoff", insight)
@@ -524,11 +540,12 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertNotIn("no local chain page needed", application)
         self.assertIn("Task RF never binds directly to Design", chain)
         self.assertIn("Pre-climbed external parent", insight_workflow)
-        self.assertIn("I1 QW register → I5 contextual W", insight_workflow)
+        self.assertIn("I1 QW → I5 contextual W", insight_workflow)
+        self.assertIn("unrelated open items do not block", insight_workflow)
         self.assertIn("RF itself never satisfies X1", insight_workflow)
         self.assertIn("RF never reaches Design directly", insight_door)
         self.assertNotIn("local P2", insight_door)
-        self.assertIn("Task Insight Page/RF<n>@<version>", wisdom)
+        self.assertIn("Task Insight instance/item@execution-version/RF<n>", wisdom)
         self.assertIn("exact external K/W/RF row ids", wisdom)
         self.assertIn("signed: ✅ <initials> <YYMMDD>", wisdom)
         self.assertIn("handoff <W-id>@v<N>", d4)

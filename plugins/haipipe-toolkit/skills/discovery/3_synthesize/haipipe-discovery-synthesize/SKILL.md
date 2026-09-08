@@ -8,8 +8,8 @@ description: >-
   build a landscape, connect findings, /haipipe-discovery-synthesize.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-07"
+  version: "0.2.0"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
 
@@ -39,8 +39,10 @@ Load `haipipe-discovery` and
 load the shared Page workflow and Outline citation authority when making Page
 changes. The BJTR retrofit is
 `../../haipipe-discovery/ref/bjtr-alignment.md`.
+For accepted external synthesis workers and the normalized claim packet, read
+`../../haipipe-discovery/ref/external-capability-registry.md`.
 
-This skill may read completed Results, Review packets, Task QA, and the frozen
+This skill may read completed Results, Review packets, Task Run receipts, and the frozen
 `discovery.yaml`. It may write only the Page artifacts owned by the current
 Page phase and optional typed Task-side records declared by the Page type. It
 does not allocate or execute a Discovery Run, create a shell ticket, or write
@@ -62,6 +64,29 @@ benchmark-landscape
 If a synthesis lacks a required paper/source, return the request to D1
 `ACQUIRE`; do not fill the gap with an unverified citation or an umbrella Run.
 
+## External synthesis procedures
+
+Use K-Dense's thematic, chronological, methodological, or theoretical
+structures only as candidate organization schemes; the Page question chooses
+the final structure. For `landscape-review`, research-genealogy may propose a
+non-linear citation lineage, but every node and edge must resolve to an
+admitted Result. ARIS `result-to-claim` may classify a Page claim as
+supported, partial, or unsupported. Citation-fidelity and reference-verify are
+not cross-Page workers; both must be resolved per Result before promotion.
+Citation-audit may hold the Page at CHECK when a cross-Result citation or
+context is not verified. `prior-art-search` is restricted to the
+`prior-art-verdict` route.
+
+Normalize worker output before drafting:
+
+```text
+claim_or_theme, supporting_result_ids, opposing_result_ids,
+relationship, evidence_depth, citation_keys, gap, limit, next_move
+```
+
+These workers provide draft reasoning only. They never create a Run, Result,
+local Bib, or competing Page artifact.
+
 ## Durable procedure
 
 1. Read the complete BJTR Task address, manifest, Page question, boundary,
@@ -72,7 +97,9 @@ If a synthesis lacks a required paper/source, return the request to D1
    re-admitted by D1 `ACQUIRE` before entering the current Task aggregate.
 3. Build a synthesis map before drafting: claim or theme, supporting Results,
    opposing Results, evidence depth, unresolved gap, and the limit on the
-   conclusion. Preserve disagreement instead of averaging it away.
+   conclusion. Preserve disagreement instead of averaging it away. If an
+   external worker was used, retain its claim/relationship packet as working
+   evidence and verify every Result pointer before writing.
 4. Dispatch the appropriate craft worker when useful (for example
    `research-lit`, `comm-lit-review`, or `academic-researcher`), but keep the
    worker's output as a draft packet. The Page phase remains the only writer
@@ -122,4 +149,3 @@ open.
 For an inline request, return a clearly labeled synthesis packet without
 writing files. Durable synthesis requires a BJTR Task Page, accepted Results,
 and the shared Page workflow.
-

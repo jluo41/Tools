@@ -9,8 +9,8 @@ description: >-
   workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.29.1"
-  last_updated: "2026-09-07"
+  version: "0.29.3"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
 
@@ -138,7 +138,7 @@ closable Ticket → Result attempt:
 CONTEXT      no Run; it resolves planning inputs
 SHAPE        no Run; it defines Bullet and Evidence Item contracts
 SURVEY       no Run; it inventories/references/reserves the graph
-LAND         Runs exist: Supporting Execution/Discovery, then local Evidence Item
+LAND         Runs exist: Supporting Execution/Discovery/Insight, then local Evidence Item
 EMBED        no Run; it interprets ready Results into the plan
 CONTENT      Division Writing Runs exist when divisions are independently closable
 CHECK        no Run; it is a version gate
@@ -147,7 +147,7 @@ CHECK        no Run; it is a version gate
 The two evidence layers are mandatory and named separately:
 
 ```text
-Supporting Runs  0..N  Execution or Discovery
+Supporting Runs  0..N  Execution, Discovery, or accepted Insight item execution
                          ↓ Results
 Local Input        1    one frozen envelope per Evidence Item
                          ↓
@@ -205,7 +205,7 @@ haipipe-page
   → haipipe-page-outline
   → haipipe-paper-workflow
   → haipipe-paper-section
-  → haipipe-page-story             (the §8 Section Control row the Section executes)
+  → haipipe-paper-story             (the §8 Section Narrative row the Section executes)
   → haipipe-plugin-outline/ref/plan-grammar.md
   → haipipe-plugin-outline/ref/item-table.md
 ```

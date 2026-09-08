@@ -11,14 +11,14 @@ bind nothing.
 batch: results_batch
 questions:
   - id: adjusted-effect               # consumer-neutral Result key
-    qa_slug: agreeableness-effect   # bare slug; the run assigns <n> in creation
+    evidence_slug: agreeableness-effect   # bare slug; the run assigns <n> in creation
                                     # order and values.yaml records the final filename
     ask: "What is the estimated effect of physician agreeableness on opioid
           days supplied, in SD units, in the baseline pain-cohort model?"
     upstream: examples/Project-Personality-OpioidRx/tasks/R01_Reg_TraitOpioid
     extract: "results/j02_reg_pain/r01_baseline/coef_table.csv#agreeable.b"
   - id: cohort-physician-count
-    qa_slug: cohort-physician-count
+    evidence_slug: cohort-physician-count
     ask: "How many physicians remain in the pooled five-pain-cohort analysis
           sample after exclusions?"
     upstream: examples/Project-Personality-OpioidRx/tasks/B01_CaseData_TraitOpioid

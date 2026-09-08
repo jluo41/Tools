@@ -3,6 +3,13 @@ haipipe-discovery-review — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.7.0 · 2026-09-08
+
+- Add external review procedures for extraction, appraisal, citation tracing,
+  and citation-fidelity checks.
+- Normalize worker output into the existing Result review contract and retain
+  unresolved citation state instead of creating alternate artifacts.
+
 ## 0.6.0 · 2026-09-07
 
 - Narrow the live Review family to per-Subject source reading and Result

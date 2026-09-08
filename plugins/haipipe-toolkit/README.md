@@ -5,9 +5,9 @@ A skill-set for **turning runs into trustworthy science**.
 
 ```text
 ⚙️ Engineering                         🔬 Research composition
-data → nn → endpoint → individual      Task / Discovery ── QA bank
+data → nn → endpoint → individual      Task / Discovery ── Run/Result
                                                   │
-accepted Board Pages ── Probe/PageX ──┐           │ Probe/QA
+accepted Board Pages ── Evidence Workspace ── Supporting/Local Runs
                                      ▼           ▼
                               typed consumer Pages
                                      │
@@ -22,33 +22,35 @@ If you want the whole model → **`ARCHITECTURE.md`**. For recipes → **`USAGE.
 The research lifecycle, in one screen
 --------------------------------------
 
-The current research stack is Page-first. Task and Discovery execute work;
-Ideation turns their accepted evidence into research directions; Probe routes
-evidence into the Page that consumes it; Paper composes accepted Pages.
+The current research stack is Page-first. Task and Discovery execute work as
+paired Runs/Results; Evidence Workspaces connect immutable Supporting Runs to
+consumer-owned Local Runs; Ideation turns accepted evidence into research
+directions; Paper composes accepted Pages.
 
 ```
 ⚙️ EXECUTORS                         📄 CONSUMING PAGE
 tasks/<leaf>/                        <page>/<page>.md
   results/                             outline/
-  QA/<n>-<slug>.md                     pagex/   accepted-Page lane
-discoveries/<leaf>/                    probe/   Task/Discovery QA lane
+  workflow/report.yaml                 outline/  Page Evidence Workspace
+discoveries/<leaf>/                    runs/ + results/  paired evidence
   sources.md · verdict.md              bibex/ · display/
-  QA/<n>-<slug>.md                     latex/ · word/ derived
+  workflow/ (optional)                 latex/ · word/ derived
 
-                         🃏 PROBE
-                 source: page ──▶ PageX
-       source: task|discovery ──▶ QA Probe
+                         🧷 EVIDENCE
+                 source Run ──▶ Supporting Run
+            focal Page item ──▶ Local Run/Result
 ```
 
-**The bank never learns that probes exist.** No `_ASK/`, no ids, no back-references.
-It answers plain questions through its own `qa` verb, and the answer is a file.
+**The bank never learns a consumer's stake.** It returns an immutable Run/Result
+receipt. The consumer records that full Run id as Supporting evidence and owns
+the Local Run/Result that makes its focal item ready.
 
-**The wall is a dispatch rule plus separate Page-local records.** PageX binds
-exact accepted Page files. QA Probe strips consumer stake before a neutral
-question reaches Task or Discovery; the executor writes the bank answer.
+**The wall is a dispatch rule plus separate Page-local records.** The Page
+Evidence Workspace binds exact Supporting Run ids and Local Run/Result receipts;
+Task and Discovery never write consumer prose.
 
-Depth: `skills/probe/haipipe-probe/SKILL.md` is the constitution.
-Design record + the rulings behind it: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/`.
+The neutral spine is `skills/run/haipipe-run/SKILL.md`; Page evidence wiring is
+owned by `skills/board/page-plugins/haipipe-plugin-outline/`.
 
 
 Commands
@@ -61,20 +63,12 @@ Commands
                       inline discussion, synchronization, and review
 
 /haipipe-task         the internal executor — Plan → Build → Execute → Report
-/haipipe-task qa "<question>" [<leaf>]          ← THE QUESTION DOOR
-                      One question, GENERAL language (no paper ref, no stake).
-                      ① QA scan → ② digest → ③ P-B-E-R → 🚫 refuse.
-                      Returns tasks/<leaf>/QA/<n>-<slug>.md.
-                      Three callers: a human exploring · the orchestrator
-                      itself (self-directed) · a paper's probe DISPATCH.
+/haipipe-task run <task> [<run>]                 execute/reuse one Run/Result
+                      Questions first reuse an exact Result; missing evidence
+                      opens the shallowest new Run and returns its receipt.
 
-/haipipe-discovery    the external executor — Search | Review
+/haipipe-discovery    the external executor — Search | Review | Synthesize
 /haipipe-ideation     the semantic bridge — evidence bundle | ideas | Paper handoff
-/haipipe-discovery qa "<question>" [<leaf>]     ← the symmetric door
-
-/haipipe-probe        evidence router: PageX for accepted Pages; QA Probe for
-                      Task/Discovery. The layer never runs bank work itself.
-
 /haipipe-paper        thin academic router over Ideation, Story, Venue,
                       Section, and Round Pages (Roadmap/Narrative retired 260907)
 /haipipe-application  the non-academic consumer — same model, venue-gated
@@ -119,13 +113,12 @@ second public surface.
 ```
 skills/
 ├── task/              ⚙️ internal execution + the engineering substrate
-│   ├── haipipe-task/       the 4-stage lifecycle hub + the `qa` verb
+│   ├── haipipe-task/       the 4-stage lifecycle hub + Run/Result receipts
 │   ├── 1_data/ 2_nn/ 3_end/ 4_individual/    the task-domain families
 │   └── agents/             orchestrator · creator · reviewer
 │
-├── discovery/         🔍 external evidence — Search | Review + the `qa` verb
+├── discovery/         🔍 external evidence — Search | Review | Synthesize + Run/Result
 ├── ideation/          💡 semantic research directions over Task + Discovery evidence
-├── probe/             🃏 evidence router: PageX + Task/Discovery QA
 ├── paper/             📄 academic composition over six Page Types
 ├── application/       📱 non-academic consumer — venue-gated
 ├── board/             🧭 Board + Page Type/Phase contracts + producer/reviewer/orchestrator
@@ -147,21 +140,20 @@ Where to read next
 ------------------
 
 ```
-ARCHITECTURE.md          the whole model — the two banks, the probe bridge, the layers
-USAGE.md                 recipes: the commands, in the order you actually use them
-Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/       the probe design record + every ruling behind it
+skills/run/haipipe-run/SKILL.md  the neutral Level-4 Run/Result contract
+skills/board/page-workflows/     the Page Context → Outline → Evidence → Content → Check loop
 skills/STRUCTURE.md      the skill-tree mental model
 skills/board/README.md   the first-class Board family and its reviewer
-skills/probe/haipipe-probe/SKILL.md    the probe constitution (read before touching probes)
 ```
 
 
 Principles
 ----------
 
-**The bank grows on its own.** An executor session runs Plan→Build→Execute→Report for
-its own sake — no question pending, no ask. Most probe questions should therefore hit
-an answer that *already exists*. Commissioning new work is the exception, not the norm.
+**Results grow by bounded Runs.** An executor session runs
+Plan→Build→Execute→Report (or Discovery Scope→Acquire→Synthesize→Close) and
+publishes an immutable Result. Consumers reuse a complete Run by id whenever
+possible; missing evidence opens the shallowest new Run.
 
 **One file, one writer.** No file in this system has two writers. That is what lets a
 paper session and a task session run weeks apart with zero coordination.

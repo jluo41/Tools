@@ -3,6 +3,10 @@ haipipe-application — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [1.2.0] — 2026-09-08
+
+- Dataset-first research uses topic/data instances with item Runs; downstream chains select exact accepted item Results without waiting for unrelated siblings.
+
 ## [1.0.6] — 2026-08-31
 
 - Route a settled Task Reusable Finding through an Application-owned bridge:

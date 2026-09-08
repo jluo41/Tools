@@ -189,7 +189,7 @@ Suggest follow-up skills:
 
 ```text
 /research-lit "topic"     - multi-source review: Zotero + Obsidian + local PDFs + web
-/novelty-check "idea"     - verify your idea is novel against these papers
+/haipipe-ideation "direction" - build a grounded direction from accepted evidence
 ```
 
 ## Key Rules

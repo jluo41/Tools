@@ -3,8 +3,8 @@ name: haipipe-discovery-search
 description: "Search-route specialist for source-map Discovery Pages: find candidates, resolve canonical papers/sources, and hand admitted Subjects to the D1 Run contract. Trigger: search sources, find papers, add paper run, source map, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-07"
+  version: "0.7.0"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
 
@@ -20,6 +20,8 @@ numbered description is ambiguous.
 LOAD haipipe-discovery first for the Topic workflow and read
 `../../haipipe-discovery/ref/page-types.md` for the Page promise and
 `../../haipipe-discovery/ref/paper-run-contract.md` for every durable source.
+For external provider selection and the normalized candidate packet, read
+`../../haipipe-discovery/ref/external-capability-registry.md`.
 
 ## Workers
 
@@ -53,6 +55,22 @@ fallback; record each channel as searched or not searched. Full novelty work
 adds a field-appropriate top-venue pass; light mode records the omitted pass in
 the Topic coverage declaration.
 
+## External provider routing
+
+Use the `academic-paper-search` decision tree as a reference when the normal
+channel set needs an additional provider. Prefer the narrowest authoritative
+channel for the identity in hand: arXiv for an arXiv identifier, Crossref or
+PubMed for DOI/journal metadata, OpenAlex for cross-source discovery and OA
+links, and Unpaywall only for lawful full-text availability. NBER/SSRN are
+optional field-specific channels, not replacements for the required preprint
+and journal-index coverage.
+
+Treat ARIS `research-lit` and AER `aer-literature` as read-only search craft:
+they may propose aliases, citation chains, or an antecedents map, but the HAI
+specialist still deduplicates candidates, verifies identity, records channel
+coverage, and decides admission. Normalize every external hit to the registry
+candidate packet before any Run is opened.
+
 ## Durable procedure
 
 1. Read `discovery_type` from discovery.yaml (or normalize a legacy
@@ -66,7 +84,8 @@ the Topic coverage declaration.
    optional `gemini-search` alias/subproblem sweep and `openalex`
    metadata/citation sweep. If an optional adapter is unavailable, record the
    coverage gap and continue; do not turn an optional failure into a blocked
-   Task.
+   Task. If an external provider-routing procedure is used, record its name
+   in the runtime receipt as worker detail; it does not create a new Run.
 3. RESOLVE each kept candidate to one canonical Subject: exact title, authors,
    venue/year, and DOI/arXiv/PubMed/publisher URL. Use Crossref or PubMed as
    identity/index fallbacks, not as a substitute for the preprint/journal

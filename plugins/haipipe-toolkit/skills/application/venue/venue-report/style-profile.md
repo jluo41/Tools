@@ -24,7 +24,7 @@ improvement in 7-day refill adherence (OR = 1.42, 95% CI:
 age and gender subgroups (Table 2). No adverse events were
 reported during the pilot period.
 
-¹ Source 1: accepted signed handoff and its bound QA source,
+¹ Source 1: accepted signed handoff and its bound Supporting/Local Run Result,
   recorded by path in the owning Design Folder.
 ```
 

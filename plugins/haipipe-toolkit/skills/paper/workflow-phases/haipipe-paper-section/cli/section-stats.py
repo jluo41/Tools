@@ -249,7 +249,7 @@ def dashboard(main_dir, date):
                                    s[:64] + ("…" if len(s) > 64 else "")))
             for q in QIDRX.findall(s):
                 if asked and q not in asked:
-                    issues.append((para, q + " has no probe entry",
+                    issues.append((para, q + " has no Evidence Item / Run Result",
                                    s[:64] + ("…" if len(s) > 64 else "")))
         for l in pl:
             for lab in REFRX.findall(l):
@@ -290,7 +290,7 @@ def dashboard(main_dir, date):
           "  %d prose words across the section set" % tot_w,
           "  %d REAL defects in PROSE SENTENCES: %d owed citation(s), %d Q-id(s) that no"
           % (tot_def, owed, noq),
-          "     probe entry declares. A marker inside an Aim record or a Log entry is a",
+          "     Evidence Item / Run Result declares. A marker inside an Aim record or a Log entry is a",
           "     defect being REPORTED, not committed, and is not counted here.",
           "  displays: %d of %d units are named by some section's prose"
           % (len(placed), len(units)),

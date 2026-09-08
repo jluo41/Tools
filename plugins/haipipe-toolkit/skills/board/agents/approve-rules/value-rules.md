@@ -1,64 +1,44 @@
-# value-rules · what an agent checks before a person's 🧮 `read:`
+# value-rules · machine checks for a value Result
 
-> Compatibility only. Current `E<NN>-VALUE-*` Evidence Items have no `read:`
-> tick; readiness comes from their accepted local Result contract in
-> `haipipe-plugin-outline/ref/item-table.md`. These rules interpret historical
-> Probe-card receipts without keeping the retired Plugin skill alive.
-
-Seeded 260818. `read:` means "a person read the answer"; what an agent can
-establish is everything AROUND that: that the number in the prose is the number
-in the file, and that the file is the one the card asked for.
+Current value Evidence Items are served by a consumer-owned Local Run and an
+accepted Result.  These rules check the machine-verifiable part of that
+contract; a person's interpretation or decision remains outside this file.
 
 ## Rules
 
 ```text
-R1  THE PROSE NUMBER EQUALS THE PROOF NUMBER. Every figure the page states
-    from this card appears, character for character, in a file under the
-    card's proof/. A rounded number names its rounding.
-R2  target: RESOLVES. The card's `target:` path exists and is the QA file
-    that answers this card's own Q-executor, not a topic-similar neighbour.
-R3  proof/ CARRIES ITS PROVENANCE. Every pulled file has source, run and
-    sha256 in the manifest, and each sha256 matches the bytes on disk.
-R4  THE ANSWER ANSWERS THE QUESTION ASKED. executor/'s A-executor addresses
-    executor/'s Q-executor. A bank that answered a different question is a
-    finding, not a value.
-R5  serves: NAMES REAL ADDRESSES. Every `C<n>.P<n>.B<n>` in `serves:` exists
-    in the approved outline of the round that raised the card.
-R6  THE STATE LADDER IS THE PLUGIN'S, ALL EIGHT OF IT. `planned ·
-    commissioned · answered · answered-local · read · deferred · failed ·
-    concern`, the historical Probe-card list, and nothing outside it.
-    `raised`, `working` and `bound` were retired before the current Evidence
-    Item model and are defects where they appear.
-    ⚠️ Until 260821 this rule named only the first four, so a legally
-    `deferred`, `failed` or `concern` card FAILED R6 — the rule reported the
-    ladder it had been given, not a defect on the card.
-R7  NO STAKE CROSSED. executor/ contains no claim id, no page id, and no
-    sentence from consumer/. The wall is a path, and this rule is what
-    proves it held.
-R8  ONE QUESTION, ONE CARD. No second card on this page asks the same
-    Q-executor. A duplicate is the exact failure the PP id exists to prevent.
-R9  THE AGENT WRITES `checked:`, NEVER `read:`. Two fields, two authors, the
-    same split `approve-rules.md` R10 fixes for an outline:
-
-    ```text
-    checked: ✅ auto <YYMMDD> · value-rules R1-R8 pass   🤖 the agent
-    read:    ✅ JL <YYMMDD>                              🧑 the person
-    ```
-
-    Added 260821, and this file already knew it: the closing note below said
-    an agent "may pass R1-R8 and still not write it" without naming what it
-    writes instead. Now it has a field.
+R1  THE PROSE NUMBER EQUALS THE RESULT NUMBER. Every value the page states
+    from this item appears, character for character, in the accepted Result.
+    A rounded number names its rounding.
+R2  THE RESULT RESOLVES. The Local Run and its Result path exist, the Result
+    names the Supporting Run(s), and the item points to that exact receipt.
+R3  PROVENANCE IS COMPLETE. Each pulled value names source, run, unit/window,
+    and sha256 (when the source is a file); hashes match the bytes on disk.
+R4  THE RESULT ANSWERS THE ITEM. The Result's scope and fields address the
+    Evidence Item specification, not a topic-similar neighbour.
+R5  SERVES NAMES REAL ADDRESSES. Every page/division address in `serves:`
+    exists in the approved outline for the round that owns the item.
+R6  STATE IS CURRENT. An item is one of `planned · commissioned · landed ·
+    embedded · deferred · failed · concern`; an obsolete or unknown state is
+    a finding, not an implicit pass.
+R7  THE STAKE WALL HOLDS. Supporting Run artifacts contain no consumer prose
+    or page-only claim; the Local Run is the only place that adapts them for
+    this Evidence Item.
+R8  ONE ITEM, ONE SPECIFICATION. Duplicate Evidence Items with the same
+    type/name and scope are a defect; reuse the immutable Result instead.
+R9  THE AGENT WRITES `checked:`, NEVER A HUMAN DECISION. A passing check may
+    record `checked: ✅ auto <YYMMDD> · value-rules R1-R8 pass`; it may not
+    write `approved:`, `verified:`, `accepted:`, or a person's ruling.
 ```
 
-## 🚫 NOT rules
+## Out of scope
 
 ```text
-"is this number surprising enough to report?"
-"was this the right question to ask the bank?"
-"does this number change the paper's story?"
+"is this number important enough to report?"
+"was this the right item to specify?"
+"does this number change the page's argument?"
 ```
 
-What a number MEANS is the page's argument and is re-judged each time, so it
-is a person's 🛑. On a historical Probe card, `read:` itself stays a
-person's tick: an agent that passes R1-R8 writes `checked:` (R9) and
-stops there.
+Those are page decisions.  If a Supporting Run is stale or a Local Run is
+missing, reopen the item and start the shallowest bounded Run required; do not
+create a parallel answer bank or question channel.

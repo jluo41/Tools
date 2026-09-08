@@ -41,7 +41,7 @@ inspect current/previous visual
   → concept image or sketch
   → composition freeze
   → editable SVG/PPT reconstruction
-  → exported candidate QA
+  → exported candidate Result
   → caller promotion
 ```
 

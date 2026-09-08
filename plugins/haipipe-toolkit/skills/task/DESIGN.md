@@ -39,8 +39,9 @@ paper/               /haipipe-paper-*              paper/
 applications/        /haipipe-application-*        application/
 ```
 
-The executors answer questions through ONE door each (`/haipipe-task qa`,
-`/haipipe-discovery qa`) and return a PATH to a readable digest. Nothing else crosses.
+The executors answer questions through the same Run/Result contract as every
+other request. They return an immutable Run id and Result path; a consumer
+records that id as a Supporting Run and owns any Local Run needed downstream.
 
 `project/` owns project-scope ops (the umbrella + inspect + organize + project/block scaffold).
 `task/` owns the inside-execution layer — the lifecycle orchestrator, task-type
@@ -425,20 +426,15 @@ TWO SESSION MODES:
 ```
    PRIMARY        autonomous Plan → Build → Execute → Report. No question pending, no ask.
                   This IS the project's research, and the bank grows here.
-   ANSWERABILITY  also task-native, also with no question pending: write readable digests
-                  for findings worth digesting, and build code so FUTURE questions are
-                  cheap. We do not know which questions will come. We make the bank
-                  easier to ask.
+   REUSE/EXTEND    locate an existing Result first; when it is insufficient, open the
+                  shallowest new Run and publish a paired Result. We do not create a
+                  parallel answer bank.
 ```
 
-THE ONE DOOR IN — the `qa` verb (`haipipe-task/fn/qa.md`). A question arrives as ONE
-QUESTION IN GENERAL LANGUAGE and nothing else. The verb answers it (① QA SCAN → ② DIGEST →
-③ P-B-E-R at the shallowest depth) or REFUSES it, and returns a path to
-`<job>/QA/<n>-<slug>.md`. It never learns who asked or why, and must not try to find out.
-
-The pen never leaves this layer: WE write the QA file. A file in this bank authored by an
-outsider carries the outsider's vocabulary — that is exactly how a task result on disk
-today ended up asserting a consumer's claim ids.
+Questions remain consumer-neutral at the executor boundary. Reuse points to a
+complete immutable Run/Result; missing evidence opens a new Run, script, or Job
+at the shallowest honest depth. Literature questions route to Discovery and
+cross-Result interpretation routes to Insight. There is no question-bank file.
 
 
 The 4-Phase Lifecycle
@@ -484,12 +480,6 @@ required:
   results/<run>/metrics.json      the measured numbers, under stable keys
   workflow/report*.yaml           mirrors the plan and records what happened
   RUN_AUDIT.md                    reviewer pass/warn unless explicitly exempt
-
-optional:
-  QA/<n>-<slug>.md                the READABLE digest of a direction this job explored.
-                                  Three reasons only: a question arrived · results/ already
-                                  answered one but no digest existed · we judged a finding
-                                  worth digesting. A QA/ mirroring every result is noise.
 
 forbidden:
   reading a consumer's files, of any kind
@@ -622,7 +612,7 @@ The read surface (what a later reader can rely on)
 ==================================================
 
 A task never references anyone downstream. But its outputs ARE read later — by a future
-task session, by a cross-run comparison, by a QA digest, by a human — which makes certain
+task session, by a cross-run comparison, by a consumer Run, by a human — which makes certain
 file FORMATS a contract. Change them deliberately.
 
 ```
@@ -636,20 +626,18 @@ results/<RUN>/runtime.yaml    machine facts: status (ok|failed|running), git_sha
 configs/<RUN>.yaml            frozen parameters + _meta.git_sha — what this run actually ran
 workflow/report*.yaml         the plan, mirrored, filled with what happened
 RUN_AUDIT.md                  Gate 2: did THIS run produce a trustworthy artifact?
-QA/<n>-<slug>.md              OPTIONAL. The readable digest: # Q / ## Answer (with
-                              [→ results/…] anchors) / ## Caveats / ## Not-done.
-                              Numbering IS the index. Write-once. Slug only.
+Supporting Run / Local Run    consumer-side lineage: full immutable source Run ids plus
+                              the consumer's own focal Run/Result receipt.
 ```
 
 WRITER RULE — every one of these files has exactly ONE writer: THIS LAYER. Nothing outside
-the task layer writes anything under `tasks/`. Not a config, not a run script, not a QA
-file. A caller that needs work done here DISPATCHES it —
+the task layer writes anything under `tasks/`. Not a config, not a run script. A caller
+that needs work done here DISPATCHES it —
 `Agent(haipipe-task-orchestrator-agent)`, clean context, one question or one spec — and
 reads the result afterwards. It does not reach in.
 
-The reverse direction does not exist. There is no field pointing outward, no id, no
-notification, no back-reference. The question comes in through `fn/qa.md`; a PATH goes
-back; the conversation is over.
+The reverse direction remains explicit and narrow: the executor returns its full
+Run/Result receipt; consumers may record that immutable id as a Supporting Run.
 
 
 Decision Log
@@ -667,6 +655,6 @@ Decision Log
 2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discoveries/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
 2026-06-21  Documented: three orthogonal axes (lifecycle / task domains / type spokes). Type spokes stay an unnumbered enum by design; only lifecycle stages and pipeline domains are numbered, because only they are sequenced.
 2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /haipipe-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
-2026-07-14  Approved (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, rulings R1-R18): the task layer is CONSUMER-UNAWARE, but not question-deaf. DELETED: _ASK/ stubs, _ANS/, the `answers:` report field, external ids anywhere under tasks/, and the probe-aware `asks` verb. ADDED: the `qa` verb (fn/qa.md) — one question in general language in, a path to <job>/QA/<n>-<slug>.md out; gate ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth (read | new run | new script | new job), or REFUSE. ADDED: the OPTIONAL QA/ folder — the job's readable, numbered map of the directions it has explored; authored by THIS layer at Report; three reasons only; no consumer vocabulary. AFFIRMED: the task session's PRIMARY mode is autonomous P-B-E-R with no question pending, and answerability work (digests + code that makes future questions cheap) is task-native. Supersedes the "sandwich model" (2026-06-19) and the "Downstream Consumer Contract" (2026-06-11) entries below.
+2026-07-14  Historical probe/answer-bank design recorded (R1-R18). Retired on 2026-09-08: Task questions now use the shared Run/Result contract, and consumers bind Supporting/Local Runs. The old question command, answer-bank folder, and digest are no longer live.
 2026-06-21  Decided: Phase 2 (rename for-xxx skills) REJECTED. Names stay haipipe-task-for-xxx by design; the haipipe-task- prefix keeps each specialist clearly inside the haipipe-task family. Migration is complete at Phase 1 (folder nesting). No skill rename.
 2026-06-21  Refined (per "we will keep adding domains"): numbering is APPEND-ONLY, never renumbered. id = creation order, permanent; pipeline-flow order is a separate documented attribute, not the id. Founding assignment keeps existing folders fixed (data=1, nn=2, endpoint=3, individual=4) and appends fit=5, eval=6, display=7, stata=8, agent=9. New domains take the next integer; Phase 1 touches zero existing folders. Rejected the one-time tidy renumber as inconsistent with append-only.

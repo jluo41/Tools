@@ -1,85 +1,101 @@
 ---
 name: haipipe-design-unit
 description: >-
-  DesignBoard workflow phase D2 and Folder contract for realizing one released
-  Card into a complete design Unit, including spec, evidence, content,
-  ideation when required, and either a scorable prospect or pool provenance.
-  Trigger: design unit,
-  realize design, D2, /haipipe-design-unit.
+  Generate, revise, or verify one bounded Design Unit from a frozen caller
+  ticket. Returns a DU Result or a separate verification Result. Use for one
+  message, sequence, candidate set, or UI unit; not for Board management,
+  adoption, shipping, or measurement.
 metadata:
-  version: "1.0.4"
-  last_updated: "2026-09-01"
-  workflow: haipipe-design-workflow
-  phase: D2
-  folder_kind: design-unit
-  primary_face: task
-  page_ruling: none
+  version: "2.0.0"
+  last_updated: "2026-09-07"
 ---
 
-# /haipipe-design-unit · realize one released bet
+# /haipipe-design-unit · one commission, one inspectable result
 
-Load `haipipe-folder`, the Design door/workflow, `haipipe-plugin-design`, and
-the selected venue pack.
+This is a worker like a display renderer, not a Folder/phase owner. The
+caller owns the Run identity, input authority, release, scheduling, and
+adoption. The existing physical location and installed symlink stay valid;
+`workflow-phases/` no longer implies that this worker owns phase D2.
 
-## Position
+Read [unit-contract.md](references/unit-contract.md) on every invocation.
+Read [modes.md](references/modes.md) only for the selected mode. The caller
+compiles and pins relevant venue rules; load only the selected venue pack
+when a rule needs interpretation, never every venue or the entire Board.
 
-D2 begins only after GD1 and ends at the complete-unit assertion GD2. Released
-cards may realize in parallel, one designer per thread.
+## Entry
 
-## Folder Kind
+The logical operations are `generate <ticket>` and `verify <ticket>`.
+These are skill instructions, not shell commands. `evaluate` aliases verify;
+revision is generate with a frozen base and feedback. A model/tool call is not
+a Run by itself: the caller supplies a real Ticket and runtime receipt under
+`haipipe-run`.
 
-A Design Unit is the complete realization beside one card. It is not yet a
-verdict or accepted division. Its posture-required content, spec, evidence or
-disclaimer, and forecast or pool provenance must be inspectable without
-reconstructing the designer's chat.
+Resolve checker paths from this skill's directory, not the Design Folder.
+Validate with `python3 scripts/check_unit.py --ticket <ticket>`. Read the
+ticket's exact config and source files. Missing, stale, contradictory, or
+unapproved inputs return a named hold. Never discover replacement evidence,
+execute an upstream producer, or infer approval. A brief-only commission is
+legal when explicitly configured and cannot claim measured effectiveness.
 
-D2 is the second current identity of the same stable DU Folder born in D1.
-`folder-kind: design-unit` means realization is current; it does not move the
-card or create a sibling Unit Folder.
+## Generate
 
-## Input
+1. Resolve what one DU contains: one message, a complete sequence, or an
+   explicitly commissioned candidate set. Files, variants, internal drafts,
+   and retries do not create extra Run identities.
+2. Work only in the ticket's paired Result directory. Use the frozen config's
+   goal, source roles, output contract, and criteria; never invent a passing
+   rubric after seeing the output. For revision, read the exact base and
+   feedback but do not edit the base.
+3. Produce the selected mode's content. Treat evidence, inspiration, reference
+   material, and avoid lists according to their roles. An intuition or
+   forecast is not an observed finding.
+4. Check the actual artifacts against every criterion. Use deterministic
+   checks when possible. For visual criteria inspect the actual render.
+   Semantic judgments name observable evidence; merely compiling a file or
+   writing "pass" is not verification.
+5. Iterate within the explicit budget. Preserve useful alternatives and check
+   outcomes, not private chain-of-thought. If criteria conflict or the budget
+   is exhausted, return the unmet criteria and leave a truthful partial Result.
+6. Write the result envelope and checks defined by the contract; validate with
+   `python3 scripts/check_unit.py --ticket <ticket> --result <result.yaml>`.
+   Return exact paths, verdict, coverage, and gaps. The caller, not this worker,
+   writes runtime lifecycle state and decides whether the Run is complete.
 
-The released card and grant; Brief roster row; venue pack; inherited rails;
-allowed templates/fielded set; and the posture-specific obligations.
+Self-checking belongs to this Run and never claims independent review.
+Once complete, the DU is immutable. Later feedback requires a new Run.
 
-## Page Face
+## Verify
 
-Every unit exposes `README`, `spec`, `evidence`, and `content/`. Ordinary and
-generate bets expose `prospect.md`; generate also exposes `ideation.md`.
-Brainstorm exposes `ideation.md` plus `inspiration.md` and expressly has no
-`prospect.md`. A reader can see the exact artifact, its invariant/variable
-split, evidence use or pool disclaimer, safety rails, and posture-owned outlook.
+Read each target DU's pinned result manifest and its hash-bound artifacts.
+Do not rewrite the targets, their checks, runtime, Page, or adoption record.
+The verification output directory must be disjoint from every target.
 
-## Task Face
+Write a separate check for every target artifact × criterion pair, with
+`pass | fail | unresolved`, observed evidence, and actionable findings.
+A fully performed review may complete with a fail verdict; unresolved
+required checks keep the review incomplete. Neither verdict means adopted.
 
-One designer realizes the card. Generate runs explicit diverge then converge;
-brainstorm produces a genuinely new pool with no comparator or forecast;
-other postures follow their card. Evidence stays within grant, every file is
-complete, and the card state becomes `landed` only after materialization.
+For `review_mode: independent`, use an actual fresh reviewer context with an
+identity distinct from each producer. A changed actor label alone is not
+independence. The generator's self-check cannot satisfy this request.
 
-## Plugins
+## Boundaries
 
-- `design` required and owns the thread files;
-- `studio` optional as the human's authoring room;
-- `runs` optional only for a declared Run/Result unit, never for
-  arbitrary artifact generation; scripts remain optional;
-- `render` is produced later for acceptance.
+- The caller releases work, allocates Tickets, resolves upstream sources,
+  records runtime, manages the Page, and adopts results. This worker does none
+  of those invisibly.
+- Write only the current output directory, never inputs or completed Results.
+- Verification methods may be shared with generation, while independent
+  reviewers remain independent executions.
+- Never send, deploy, allocate traffic, or measure effectiveness here.
+- Return operation, Run id, Result path, verdict, criterion coverage, and gaps.
+  Structural validation alone is not a semantic or safety endorsement.
 
-## Gate and Closure
+## Legacy
 
-GD2 passes when all posture-required files exist, evidence ⊆ grant, content is
-complete, rails are explicit, and the card state is `landed`. A proposed card
-with sibling files or a released card with a partial unit fails.
-
-## Handoff
-
-Hand D3 the immutable card/grant plus the complete landed unit. Do not hand the
-designer's private reasoning as evidence. On GD2, append `D2 → D3` to
-`workflow/phase.yaml` and make `folder-kind: design-verdict` current. A failed
-verdict appends `D3 → D2` before re-realization; history is never rewritten.
-
-## Files
-
-- Unit: `<DesignFolder>/design/DU<NN>-<slug>/`
-- Phase identity/history: `<unit>/workflow/phase.yaml`
-- Required file grammar: `haipipe-plugin-design`
+Old `design/DU*/` directories have no implied Run identity. The caller may
+pin their concrete content files as legacy base/reference material for a new
+generation. Independent verification of an old unit requires an explicit
+input adapter, not a forged historical Result.
+[legacy-phase.md](references/legacy-phase.md) describes the old D2 shape for
+read-only interpretation; never execute its phase transitions.

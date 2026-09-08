@@ -7,6 +7,13 @@ SKILL.md frontmatter `version:`. Newest first.
 **v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
 never reaches `1.0.0` without JL's explicit say-so.
 
+## 0.10.1 - 2026-09-08
+
+- Retired the obsolete round-gate command and its unreferenced browser binding
+  battery. Handoff now uses `build.py`, a scoped `check.py`, and the read-only
+  `/haipipe-page-check` semantic receipt; no QA command is part of the live
+  routing skill.
+
 ## 0.10.0 - 2026-08-27
 
 - Routed Board and Page writes now resolve a repository-root `.server_config/`

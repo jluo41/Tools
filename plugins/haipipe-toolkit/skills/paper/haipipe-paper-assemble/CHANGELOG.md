@@ -8,6 +8,8 @@
   1.0.0). A retired Narrative's 📖 section map is parsed only as a legacy
   fallback so an archived page can be rebuilt for comparison; the board roster
   is the last resort. Written by Claude Peer.
+- `delivery/build-manifest.json` is the sole delivery receipt; the former
+  sibling delivery-QA report is no longer generated.
 
 ## 0.4.0 · 260907
 

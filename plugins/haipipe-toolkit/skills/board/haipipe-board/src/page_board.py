@@ -412,7 +412,7 @@ def _token_label(tok):
         return "rounds"
     if u == "SA":                      # Section-Appendix (JL 260831)
         return "appendix"
-    if u == "STORY":                   # journey pages incl. the narrative (JL 260831)
+    if u == "STORY":                   # the Story control-page family (JL 260907)
         return "story"
     if u.startswith("S"):
         return "main sections"

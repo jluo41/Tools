@@ -99,6 +99,7 @@ def type_outline(kind: str, skills_root: pathlib.Path) -> dict:
 
     out = {
         "mode": row("mode"),
+        "title_match": row("title-match"),
         "source": row("source"),
         "marker": row("marker"),
         "fallback": row("fallback"),
@@ -192,6 +193,12 @@ def check(page_src: pathlib.Path, plan_text: str, skills_root: pathlib.Path):
             ]
 
     titles = _DIV.findall(plan_text)
+    # Opt in to the topic/items contract explicitly. Historical single-chain
+    # Insight Pages retain their recorded eight-division shape until migrated.
+    if kind == "insight" and not re.search(
+            r"(?m)^insight-layout:\s*items-v1\s*$", page_src.read_text(encoding="utf-8")):
+        decl = dict(decl, mode="fixed", shape=(
+            "Origin → Question/Scope → Sources → D → I → K → W → Reusable Findings"))
     mode, out = decl.get("mode", ""), []
 
     if mode == "grammar" and decl["words"]:
@@ -250,9 +257,17 @@ def check(page_src: pathlib.Path, plan_text: str, skills_root: pathlib.Path):
     elif mode == "fixed" and decl.get("shape"):
         # A fixed type LISTS its divisions; the shape row is that list.
         want = [w.strip() for w in re.split(r"[·→|,]", decl["shape"]) if w.strip()]
-        if want and len(titles) and len(titles) != len(want):
+        exact = decl.get("title_match") == "exact"
+        if want and (titles or exact) and len(titles) != len(want):
             out.append("mode is `fixed` with %d declared divisions; the plan has %d"
                        % (len(want), len(titles)))
+        elif exact:
+            # Only contracts that require named divisions opt in. Other fixed
+            # Page Faces retain their existing count-only policy.
+            for index, (expected, actual) in enumerate(zip(want, titles), 1):
+                if actual != expected:
+                    out.append("C%d title must be %r; the plan has %r"
+                               % (index, expected, actual))
     return out
 
 

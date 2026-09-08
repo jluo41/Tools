@@ -20,8 +20,8 @@ phases are expensive, and why.
 phase                      what it did                       min    ktok  tools  s/tool
 ────────────────────────────────────────────────────────────────────────────────────────
 PROBE (now SURVEY+LAND)    raise 10 cards, MATCH, dispatch   32.1   143.4     35    55.1
-PROBE repair 1             2 bank QA files                   10.2    12.9      1   610.5
-PROBE repair 2+3           3 bank QA files + cross-refs      14.1    15.5      2   422.9
+PROBE repair 1             2 Supporting Run Results         10.2    12.9      1   610.5
+PROBE repair 2+3           3 Results + cross-refs           14.1    15.5      2   422.9
 EVIDENCE (LAND)            harvest 10 + bibex + 3 tables     36.5   390.6    152    14.4
 ④+⑤ DRAFT+REVISE fused     45 points, 6 divisions, the pdf   18.3   207.8     93    11.8
 🖼 one display unit         rebuild an existing table          5.0    54.5     21    14.2
@@ -70,8 +70,8 @@ skips most of that.
 ## The cost nobody plans for
 
 Both expensive surprises this day were the same kind: **evidence that came back
-WRONG and had to be argued down.** QC2's bank asserted the wrong personality
-trait across five QA files, and correcting it took three dispatches and 24
+WRONG and had to be argued down.** QC2's source set asserted the wrong personality
+trait across five Results, and correcting it took three dispatches and 24
 minutes on top of the phase that found it. That is not overhead to remove; it
 is the loop working. But it means a schedule built from the table above and
 nothing else will be short by a third.

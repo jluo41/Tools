@@ -3,17 +3,17 @@ name: haipipe-task
 description: >-
   Task-family door and canonical owner of Task Folder execution and closure:
   runs Plan → Build → Execute → Report, keeps the run-bound technical Page Face, iterates blocks, answers source
-  questions through `qa`, creates DIKW Insight Pages through
+  questions through bounded Runs/Results, creates topic-instance Insight Pages with item Runs through
   `insight`, and routes reader-facing Task Pages through the
   haipipe-page-task companion.
-  Use for task execution, Task Board status, QA files, or result
-  interpretation. Hierarchy: block to job to task to run (task-group and
+  Use for task execution, Task Board status, Run/Result interpretation, or
+  Supporting/Local Run wiring. Hierarchy: block to job to task to run (task-group and
   task-folder are the pre-260829 names for block and job). Trigger: task,
   job, block, task folder, task group, Task Board, plan, build, execute,
-  report, qa, insight, DIKW, /haipipe-task.
+  report, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.15.2"
+  version: "0.17.0"
   last_updated: "2026-09-07"
   folder_owner: canonical
   folder_kind: task
@@ -61,7 +61,7 @@ project        examples/Proj{...}/
               (legacy: code at the task ROOT, pre-260831;
               FLAT job: .py at root + flat configs/ runs/ — one implicit task)
               TWO MODES:
-              ① self-serving      output stays in the job     results/ notebooks/ QA/
+              ① self-serving      output stays in the job     results/ notebooks/ workflow/
               ② consumer-serving  output goes to a store      <store>/<job path>/
               the JOB's `store:` declaration picks ②; absent means ① (ref/hierarchy.md)
               ⚠️ HIGHEST PRIORITY: every name passes the STRANGER TEST — <noun>_<qualifier>,
@@ -102,7 +102,7 @@ display       /haipipe-task-for-display           (independent)
 individual    /haipipe-task-for-individual        /haipipe-individual
 agent         /haipipe-task-for-agent             /haipipe-task-llm-engine (LLM call runtime)
 endpoint      /haipipe-task-for-endpoint          /haipipe-end (package + deploy)
-page          /haipipe-task-for-page              (serves ONE Board Page's task-route probe cards: values.yaml + QA + proposals)
+page          /haipipe-task-for-page              (serves ONE Board Page's task route: Supporting/Local Runs + Results)
 ```
 
 NOTE: a block prefix (bNN_) carries no type information — detect type from script content, never from a name. Per-type default letters + the "project scheme wins" rule: `ref/hierarchy.md`.
@@ -143,8 +143,7 @@ Each verb's full contract lives in its own `fn/` file (cited below) — read tha
 /haipipe-task audit <block-or-job-path>               structural audit vs the runname-spine contract (fn/audit.md)
 /haipipe-task scan-status [project-path]              status scan across blocks (fn/scan-status.md)
 
-/haipipe-task qa "<question>" [<job-path>]            THE QUESTION DOOR: one general question in, a QA-file PATH out (fn/qa.md)
-/haipipe-task insight "<question-or-topic>" [<board>]  create or resume one DIKW Insight Page (fn/insight.md)
+/haipipe-task insight "<topic>" [<board>]  create/resume an Insight instance and its item Runs (fn/insight.md)
 
 /haipipe-task feedback "<text>"                       capture skill feedback (merge-or-create), ROUTED to the domain folder it concerns
 /haipipe-task feedback list [unit]                    aggregate open feedback across ALL inboxes (grouped by unit)
@@ -168,7 +167,6 @@ Build (建)    creates   <task>/{code + config/<run>.yaml} · <task>/runs/<run>.
 Execute (行)  generates results/<task>/<run>/{metrics.json, runtime.yaml, *.md, *.csv} · notebooks/<task>/<run>.ipynb
               agents    none — just `bash runs/<run>.sh` (human or autoExecute)
 Report (报)   creates   workflow/report.yaml + report-script-<name>.yaml · RUN_AUDIT.md (Gate 2)
-              completes QA/<n>-<slug>.md when the qa gate ③ claimed one (see "The QA/ folder")
               agents    creator drafts → reviewer checks accuracy → ↺
 ```
 Each phase READS the prior phase's output + its type's `ref/` (plan-sample · authoring-conventions · plan-schema); the exact per-phase reads live in `fn/stage-plan.md` and `fn/stage-report.md`.
@@ -178,7 +176,7 @@ File ownership is strict:
 Plan touches only `workflow/plan*.yaml`. 
 Build touches only code/configs/runs. 
 Execute touches only `results/` and `notebooks/`. 
-Report touches only `workflow/report*.yaml`, `RUN_AUDIT.md`, and — when one is due — `QA/`.
+Report touches only `workflow/report*.yaml` and `RUN_AUDIT.md`.
 
 ## Which mode? Ask ONCE, at scaffold (JL 260823)
 
@@ -241,9 +239,13 @@ reader-facing display-density and table/figure/diagram requirement for a Task
 Page is owned by `haipipe-page-task`; it does not change the numeric
 provenance or Result-store boundary here.
 
-**QA is the DIRECTION-POINTER above the four phases — it WRAPS them and decides whether to enter them at all.** 
-A `qa` question hits a 3-way gate: ① an existing `QA/` answer → return it; ② the answer already sits in `results/` → digest it, no run; ③ neither → ENTER Plan → Build → Execute → Report at the shallowest depth that answers it. 
-So QA sits ONE LEVEL ABOVE the lifecycle: ①/② read what already exists, ③ enters the phases (writing a `working` claim before Plan, the answer at Report). See `fn/qa.md`.
+**Questions are ordinary Run requests, not a separate question lane.** A question is
+resolved by locating an existing Run/Result first; if evidence is missing, open
+the shallowest new Run (or Task/Job when the scope truly requires it), execute it,
+and publish the paired Result. A consumer that needs a focal evidence item owns a
+Local Run over one or more Supporting Run Results. Reuse points to the immutable
+Run id; a changed input gets a new Run with `supersedes:`. There is no separate
+question command, answer-bank folder, ticket, or digest.
 
 The `workflow/` folder is the task's observability surface: Plan = intent, Report = evidence, same IPO shape at both levels (schema: `task/haipipe-workflow/ref/plan-schema.md`).
 
@@ -287,17 +289,26 @@ A Task execution lifecycle ends at Report: it produces `results/` and stops.
 The Folder closes only when both faces are current. Its Page Face can therefore
 remain open after Report, and a rerun reopens the reading bound to that Result.
 
-The readable answer to any question about those results is the `QA/` digest this layer writes; a consumer reads THAT, never `results/` directly. This layer tracks no consumers.
+The readable answer to a question is the paired Run Result (and, when needed,
+the Task's `workflow/report.yaml`); consumers link the full Run id and Result
+path. This layer never creates a parallel answer bank.
 
 **Insight is the KNOWLEDGE SURFACE above Task and Discovery evidence.** A Task
-Page reads Runs against one task question; an Insight Folder may synthesize
-several Task Pages, QA answers, Discovery Pages, or prior Insight Folders around
-one consumer-neutral question. It carries the trace `D → I → K → W → RF`.
+Page reads Runs against one task question; an Insight Folder organizes a
+consumer-neutral research topic and data context. Its Insight Items are local
+Run tickets, each answering one question with a versioned `D → I → K → W → RF`
+Result. Add a sibling item for another question in the same topic rather than
+minting another Page. Items may synthesize several Task Pages, Run Results,
+Discovery Pages, or prior item Results. The contract and item workflow are
+owned by `haipipe-page-insight` and its `ref/` files.
 Cross-Folder evidence enters its Evidence Workspace through full Supporting Run
 Result ids; one local Page Evidence Item Run makes each focal item ready. It
-never executes a producing Folder invisibly or reads raw `results/` when
-QA/report is owed. Paper and Application reuse only settled **Reusable
-Findings** through their own Supporting/local Run graph. An RF is unsigned,
+never executes a producing Folder invisibly or reads raw `results/` without
+its Run receipt. Paper and Application reuse only settled **Reusable
+Findings** by exact instance/item/execution-version/RF reference through their
+own Supporting/local Run graph. The shared Task recipe can be called by
+independent dataset instances without copying code or altering its test
+execution; see the Insight contract's `ref/task-calls.md`. An RF is unsigned,
 consumer-neutral evidence, not an Application Design Handoff, not a `serves:`
 decision, and never direct Design authority. An Application that uses it must
 own the downstream I1 registration and contextual, signed I5 Wisdom bridge.
@@ -305,9 +316,9 @@ own the downstream I1 registration and contextual, signed I5 Wisdom bridge.
 ### Incoming Application candidates
 
 An accepted Design candidate may cross into an explicitly named executable
-Folder at `workflow/inbox/application/<packet-id>.yaml`. The Application
-crossing writer may add this immutable raw-material packet; it may not add a
-private binding lane or edit the target's plan, code, runs, results, QA, or
+  Folder at `workflow/inbox/application/<packet-id>.yaml`. The Application
+  crossing writer may add this immutable raw-material packet; it may not add a
+  private binding lane or edit the target's plan, code, runs, results, or
 terminal state. The packet remains `state: proposed` until the target Task
 owner validates it and enters its own Plan. Its grammar is owned by
 `haipipe-application-workflow` X2. There is no Task plugin and no invisible
@@ -324,30 +335,12 @@ train, sweep, profile, scan. No question is pending.
 No one asked. 
 This IS the project's research, and the bank grows here, autonomously.
 
-**ANSWERABILITY WORK — also task-native, also with no question pending.** 
-A task session may legitimately:
-- write a `QA/` digest for a finding worth digesting, and
-- build or refactor code so that FUTURE questions are cheap to answer.
-
-It does not know WHICH questions will come. 
-It makes the bank EASIER TO ASK. 
-Making the bank easy to query is the executor's OWN work — a consumer (paper/application) never reaches in to do it.
-
-
-**THE SIDE DOOR — the `qa` verb.** 
-Questions arrive through exactly ONE door: one question in general language (no id, no stake, no reference to whoever asked), a QA-file PATH out. 
-The verb answers it via the ①②③ gate above, or REFUSES it (out of scope — e.g. a literature question). 
-Three callers — a human, the orchestrator agent (self-directed), a relayed question — one identical door; none gets a special path. 
-It never learns who asked, or why. Full contract: `fn/qa.md`.
-
----
-
-The QA/ folder (OPTIONAL, per job)
--------------------------------------------
-
-The readable answer, per job: `QA/<n>-<slug>.md` — one mutable `state:` line, ONE WRITER (this layer); a CONSUMER (probe/paper/application) NEVER writes one.
-Plain prose + `[→ results/…]` anchors, no consumer vocabulary (no claim ids, no "the paper"). Not every job has a `QA/`, and that is normal.
-The file template, the state-line + `started:`/TTL, supersession, and the checker codes live in `fn/qa.md` — read it before touching a QA file.
+**Run/Result answerability.**
+A task session keeps future questions cheap by making every input, execution,
+and Result receipt explicit. Supporting Runs provide source material; a Local
+Run turns that material into the consumer's focal item. No consumer reaches into
+an answer bank: it records the Supporting Run ids and its own Local Run/Result
+in the Page Evidence Workspace.
 
 ---
 
@@ -465,9 +458,11 @@ Step 2: Resolve scope. Cascade:
       `feedback` → read `fn/feedback.md` and run it inline (capture / list / move; routing rules, merge-or-create, inbox paths all live THERE). Stop.
       `digest` → read `fn/digest.md` and run it inline (resolve the target session first; mandatory confirm gate before filing). Stop.
   (0.5) UTILITY VERB `scan-status` — first positional is `scan-status` → read `fn/scan-status.md` and run it inline. Stop.
-  (0.6) QUESTION DOOR `qa` — first positional is `qa` → read `fn/qa.md` and run it inline (the ①②③ gate; remaining args = the question, an OPTIONAL job path, OPTIONAL `--check-only`). Not a lifecycle scope: do not continue to Step 3. Stop.
-        `--check-only` = DETECTION only (report the path, write nothing incl. NO CLAIM, never fall through to ③) — the probe MATCH step's free pass. Gate ①'s state-line branches, the strip-any-external-id rule, and the identical discovery-twin spelling all live in `fn/qa.md`.
-  (0.7) KNOWLEDGE DOOR `insight` — first positional is `insight` → read `fn/insight.md`, resolve the Task/Insights Board, and create or resume one `page-type: insight` Page through `haipipe-page`. This is not P-B-E-R scope: do not continue to Step 3. Stop.
+  (0.6) QUESTION ROUTING — reuse an exact immutable Run Result, or enter the
+        shallowest honest lifecycle depth. Literature questions route to
+        `haipipe-discovery`; consumer-neutral cross-Result interpretation
+        routes to `haipipe-page-insight`. There is no separate question verb.
+  (0.7) KNOWLEDGE DOOR `insight` — first positional is `insight` → read `fn/insight.md`, resolve the Task/Insights Board, and create or resume a topic/data instance with item Runs through `haipipe-page-insight`. This is not a blanket P-B-E-R dispatch: return after the item's workflow has produced its next action or requested outcome.
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
       - path is an existing job → scope=single-phase on that job (Step 3c).
       - path is an existing block → scope=block-iterate with stages=[that stage] (Step 3d).
@@ -525,7 +520,7 @@ Step 3a (scope=job only): Task-type inference cascade.
         eval·score·metrics·mae·rmse → eval      · figure·table·plot·panel → display
         subject·patient·cgm-trace → individual  · agent·llm·prompt·claude → agent
         endpoint·deploy·package·serve → endpoint
-        collect·values·page-serving·probe-batch → page
+        collect·values·page-serving·evidence-batch → page
       STATA (stata·.do·cms·case·reg·ols·iv) → DELEGATE to `/haipipe-task-for-stata`
         (it owns stage disambiguation): `Skill("haipipe-task-for-stata", args="… [--auto]")`.
   Confidence: medium. AUTO → accept. Interactive → propose; one-line ASK to confirm.
@@ -666,9 +661,8 @@ Invocation examples
 /haipipe-task job data
 /haipipe-task job eval --project-id Project-REACH-ADHD --group b03_band4
 
-# the QUESTION DOOR — one general question in, a QA-file PATH out
-/haipipe-task qa "Do any WellDoc tables carry a menstrual or cycle column?"
-/haipipe-task qa "What is the fit exponent on the 4-model sweep?" examples/ProjA/tasks/B01_scaling/B4_fit_scaling_law
+# a bounded question reuses or opens a normal Run/Result
+/haipipe-task run examples/ProjA/tasks/B01_scaling/B4_fit_scaling_law r01_fit_scaling
 
 # direct specialist (bypass orchestrator)
 /haipipe-task-for-data

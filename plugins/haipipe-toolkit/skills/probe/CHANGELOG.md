@@ -4,6 +4,15 @@ probe - Changelog
 Layer-scoped changelog for the probe (PROBE / claim) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+## [RETIREMENT] — 2026-09-08 — old QA source removed
+
+The Probe source contract, QA fixtures, and collector test harness are no
+longer part of the toolkit. The directory now keeps this changelog only as
+historical provenance; the live evidence path is
+`Supporting Run → Local Run → immutable Result` under the Page Evidence
+Workspace. No Task or Discovery route may recreate `QA/`, `_ASK/`, or a Probe
+card.
+
 
 ## [6.1.0] — 2026-08-21 — THE COST LADDER IS BACK IN THE CONSTITUTION
 

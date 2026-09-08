@@ -22,7 +22,7 @@ per Task Folder; Configs and Runs are separate appendix grains.
 
 Grain is decided by STRUCTURE: a block is a folder under the root that holds
 folders; a job is a folder under a block; a task is a folder under a job that
-is not one of `src sbatch results notebooks QA workflow outline diagram
+is not one of `src sbatch results notebooks workflow outline diagram
 _tools dist chat`. The `<b|j|t|r>NN_` prefix is then read for the address; a
 folder that has none renders `b??`/`j??`/`t??`/`r??` and a `N1` finding. A
 name never filters a folder out.

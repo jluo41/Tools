@@ -9,7 +9,7 @@
 
 # store — OPTIONAL, top level (NOT inside _meta: the run script greps it before
 # any YAML is parsed). Where this call's GENERATED output lands: results/,
-# notebooks/, QA/, RUN_AUDIT.md. (CODE_REVIEW.md NEVER follows the store: it
+# notebooks/, workflow/, RUN_AUDIT.md. (CODE_REVIEW.md NEVER follows the store: it
 # reviews code at a git_sha and stays in the job — the pre-flight gate reads
 # $TASK_DIR/CODE_REVIEW.md only.) Repo-relative or absolute.
 # Omit it and output stays in the job, which is the default and what

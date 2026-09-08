@@ -26,14 +26,14 @@ under the job. It maps 1:1 onto a Board page, so the three document levels line 
 
 ```
 BOARD   diagram/<NN>-<topic>-<YYMMDD>/   ←→   BLOCK  tasks/bNN_<topic>/  (+ board.md)
-  GROUP   1-QA-<slug>/                   ←→     JOB    jNN_<question_group>/
-    PAGE    QA1-<slug>/QA1-<slug>.md     ←→       TASK   tNN_<name>/tNN_<name>.md
+  GROUP   1-<slug>/                       ←→     JOB    jNN_<question_group>/
+    PAGE    P1-<slug>/P1-<slug>.md       ←→       TASK   tNN_<name>/tNN_<name>.md
             (no counterpart)             ←→         RUN    rNN_<stem>  — an execution
 ```
 
 The dividing line inside a job is **authored vs generated**: the task folder holds what a
 person wrote; the job folder holds what a machine produced (`results/`, `notebooks/`,
-`QA/`, `workflow/`). That is the same line mode ② already draws, which is why a
+`workflow/`). That is the same line mode ② already draws, which is why a
 consumer-serving job still moves whole folders to its store.
 
 ⚠️ **Still open at 260830, do not read as settled**: (a) the Databricks column above, since
@@ -183,7 +183,6 @@ jNN_{job_name}/
 ├── results/                    JOB level, two levels deep: results/<task>/<run>/
 ├── notebooks/                  papermill records, mirrored: notebooks/<task>/<run>.ipynb
 │                               (+ the generated template notebooks/<task>/_source.ipynb)
-├── QA/                         <n>-<slug>.md digests, when `qa` is called
 ├── CODE_REVIEW.md · RUN_AUDIT.md
 ├── workflow/                   plan/report artifacts (haipipe-workflow)
 └── diagram/                    optional, only if the job diverges from the block narrative
@@ -215,6 +214,12 @@ R03  git_dirty: True                             produced from uncommitted code
 R04  runtime.yaml missing a required field       the record is incomplete
 ```
 
+For the Insight instance dialect, compare full instance/item/version ids;
+identical local recipe stems across patients are not collisions. Its frozen
+input and Result hashes supplement config provenance. The neutral Run
+contract and `page-types/haipipe-page-insight/ref/task-calls.md` define this
+parameterized-call exception; do not infer it for an unadapted legacy ticket.
+
 
 **FLAT (legacy — a job with ONE implicit task; the pre-260829 shape):**
 
@@ -224,7 +229,7 @@ R04  runtime.yaml missing a required field       the record is incomplete
 ├── configs/  <run>.yaml        flat
 ├── runs/     <run>.sh          flat
 ├── results/  <run>/            one level
-└── notebooks/ QA/ sbatch/ diagram/ workflow/
+└── notebooks/ sbatch/ diagram/ workflow/
 ```
 
 Tooling accepts BOTH (run-sh-template.sh detects the shape from the ticket's
@@ -252,7 +257,7 @@ jNN_{job_name}/                the SAME job, minus everything generated
 ├── CODE_REVIEW.md             stays: it reviews CODE at a git_sha, not a cohort
 
 <store>/<this job's path under tasks/>/
-├── results/  notebooks/  QA/
+├── results/  notebooks/  workflow/
 └── RUN_AUDIT.md               audits one RUN's results, so it follows them
 ```
 
@@ -278,14 +283,14 @@ reason results sits at job level.
 Three mechanisms set it, each covering what the others cannot (JL 260823):
 
 ```
-DISPATCH   a consumer's board.md carries `store:`; the probe resolves it and
-           sends RESULT_STORE with the batch. Automatic, and the only one that
+DISPATCH   a consumer's board.md carries `store:`; the dispatcher resolves it
+           and sends RESULT_STORE with the batch. Automatic, and the only one that
            works for board-driven runs nobody typed a config for.
 SCAFFOLD   creating a job ASKS once, when a board with a store exists,
            and persists the answer as the job's `store:`. Blocking, not
            defaulting — see SKILL.md § Which mode.
-GUARD      a run about to write job-local WARNS when a store already holds a
-           QA bank for this same job. Catches what the first two missed.
+GUARD      a run about to write job-local WARNS when a store already holds
+           Result artifacts for this same job. Catches what the first two missed.
 ```
 
 `OUTPUT_BASE` travels beside `OUTPUT_ROOT` and is the base a SIBLING job's
@@ -295,12 +300,15 @@ config key, `<job-rel>/results/...`, then resolves correctly in both.
 **Which mode is right is decided by WHO OWNS THE ANSWER**, not by how big the
 job is or who launched it. Mode ① when the answer is only about the code that
 produced it; mode ② when a consumer's evidence base is what the answer joins.
-The test is: if a second cohort ran through this same code, would the two sets
-of answers need to be kept apart? Yes means mode ②, because one job cannot
-hold two cohorts' results without one overwriting the other.
+The test is whether a consumer owns the answer and needs its own evidence
+store. Independent cohorts must always have distinct execution identities and
+Result addresses, in either mode. An Insight instance may select its own
+store while calling the same Task recipe; it freezes dataset/version and
+output scope in the call receipt rather than copying shared code. Store
+separation alone does not qualify an otherwise ambiguous Run id.
 
 In mode ② the task layer is handed a PATH and never a consumer identity, so a
-dispatching probe can supply it without breaching the stake wall — the executor
+dispatching consumer can supply it without breaching the stake wall — the executor
 writes where it is told and still cannot learn whose claim it serves.
 
 Nothing DATA-DEPENDENT may sit in the job in mode ②, and that includes

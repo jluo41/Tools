@@ -1,5 +1,9 @@
 # haipipe-insight-wisdom · version history
 
+## 1.1.0 — 2026-09-08
+
+- Contextualize checked item Results through Supporting Run and local Evidence bindings; preserve human-signed Design authority and pinned historical references.
+
 ## 1.0.2 — 2026-08-31
 
 - Let I5 contextualize one exact, CHECK-current Task Reusable Finding through

@@ -1,5 +1,8 @@
 # haipipe-insight-workflow · version history
 
+1.1.0 · 260908
+- Validate the selected Wisdom-targeted item execution and RF packet, not whole research-Page completion. Keep local I1/I5 signature, GI6, and X1 authority.
+
 1.0.4 · 260831
 - Add the pre-climbed external-parent bridge: a CHECK-current, Wisdom-targeted
   Task RF may supply the already-complete DIKW authority to local I5 only after

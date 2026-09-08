@@ -23,7 +23,7 @@ compact address: bNNjNNtNNrNN
 
 | Agent | Owns | Never owns |
 |---|---|---|
-| orchestrator | QA/FULL/ENRICH routing, dispatch, final state | paper search details |
+| orchestrator | FULL/ENRICH routing, dispatch, final state | paper search details |
 | creator | D1 Task/Run/Result writes; Page writes only under the current Page phase | reviewing its own work |
 | reviewer | Plan/Run/Bib/Report gates | searching or creating evidence |
 | search worker | one read-only channel/verification batch | relevance, Runs, writes |
@@ -60,5 +60,7 @@ Card cite key == Bib key
 Task Page Evidence Bib == deterministic union of complete Result Bibs
 ~~~
 
-QA remains a side door governed by haipipe-discovery/fn/qa.md. A consumer never
-writes into the Discovery bank.
+Questions are handled through the ordinary Discovery Run/Result path. A consumer
+never writes into the Discovery bank: it records Supporting Run ids and owns any
+Local Run/Result needed for a focal Page Evidence Item. There is no separate
+answer-bank side door or folder.

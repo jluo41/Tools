@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper Story"
+  short_description: "Plan the whole paper from questions to sections"
+  default_prompt: "Use $haipipe-paper-story to draft or revise a paper's prospective blueprint: its Seed, Discovery Roadmap, Task Roadmap, and Section Narrative. Keep the design and outline at v0.x pending explicit user approval."

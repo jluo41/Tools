@@ -38,25 +38,40 @@ SKILLS = HERE.parent.parent                             # skills/
 sys.path.insert(0, str(HERE))
 
 from src import item_table                              # noqa: E402
+from src.folder_contract import resolve as resolve_folder_contract  # noqa: E402
 from src.outline_version import latest_outline, version_tag  # noqa: E402
 
-# page-type -> (Folder-owning workflow, Page Face owner), from
-# haipipe-page/ref/type-registry.md `law:` rows.
-OWNERS = {
-    "ideation": ("haipipe-paper-workflow", "haipipe-page-ideation"),   # paper/page-types/ (260907)
-    "seed": ("haipipe-paper-workflow", "haipipe-page-story"),   # 0.7.x alias of story
-    "story": ("haipipe-paper-workflow", "haipipe-page-story"),
-    # retired 260907: Roadmap and Narrative folded into the Story page; the
-    # law is parked, and a page still declaring these keys is grandfathered.
-    "roadmap": ("haipipe-paper-workflow", "retired 260907 · paper/_old/retired-workflow-phases-260907/haipipe-paper-roadmap"),
-    "narrative": ("haipipe-paper-workflow", "retired 260907 · paper/_old/retired-workflow-phases-260907/haipipe-paper-narrative"),
-    "section": ("haipipe-paper-workflow", "haipipe-paper-section"),
-    "round": ("haipipe-paper-workflow", "haipipe-paper-round"),
-    "venue": ("haipipe-paper-workflow", "haipipe-paper-venue"),
-    "task": ("haipipe-task", "haipipe-task"),
-    "insight": ("haipipe-task", "haipipe-page-insight"),
-    "discovery": ("haipipe-discovery-workflow", "haipipe-discovery-inquiry"),
-}
+
+def owners(kind):
+    """Resolve ownership from the contract that declares this Page kind.
+
+    There is deliberately no central Page-Type registry. Phase-owned Folder
+    contracts are authoritative when present; otherwise the Page-Face skill
+    found by ``plan_shape`` supplies the family and face names.
+    """
+    if not kind:
+        return "unresolved", "unresolved"
+
+    contract = resolve_folder_contract(
+        SKILLS, folder_kind=kind, legacy_page_type=kind
+    )
+    if contract is not None:
+        rel = contract.path.relative_to(SKILLS)
+        family = rel.parts[0] if rel.parts else "unresolved"
+        return family, contract.path.parent.name
+
+    from src.plan_shape import type_outline  # local import avoids router cycles
+
+    declaration = type_outline(kind, SKILLS)
+    type_path = declaration.get("type_path", "")
+    if type_path:
+        path = Path(type_path)
+        try:
+            family = path.relative_to(SKILLS).parts[0]
+        except ValueError:
+            family = "unresolved"
+        return family, path.parent.name
+    return "unresolved", "unresolved"
 NONE = "none"
 
 
@@ -130,7 +145,7 @@ def build(page_md: Path, board: Path) -> str:
     else:
         kind = fm(text, "folder-kind") or fm(text, "page-type")
         kind_src = f"`{page_md.name}` frontmatter `page-type:`"
-    folder_owner, face_owner = OWNERS.get(kind, ("unresolved", "unresolved"))
+    folder_owner, face_owner = owners(kind)
     if folder_owner == "unresolved":
         missing.append("CTX1")
     ctx1 = row("CTX1 · Page identity and ownership", "resolved" if kind else "missing", [
@@ -170,7 +185,7 @@ def build(page_md: Path, board: Path) -> str:
                     f"`{structure}`" + (f" · {division}" if division else "") if structure
                     else f"{face_owner} contract"),
                    ("Narrative/style policy",
-                    f"{style} · Story §8 Section Control (haipipe-page-story)" if style else NONE),
+                    f"{style} · Story §8 Section Narrative (haipipe-paper-story)" if style else NONE),
                    ("Requirements",
                     f"`outline/{req.name}` · {len(v_ids)} V · {len(w_ids)} W"
                     if req.is_file() else "none generated"),

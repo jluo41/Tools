@@ -3,6 +3,9 @@
 - After Build, return the four-surface user-check packet: evidence to open now,
   whether Revise ran (a first draft is never presented as final), then the
   Page-level PDF as the delivery surface.
+- The receipt no longer carries a `delivery_report`; when an owning build emits
+  one, it names the single `delivery/build-manifest.json`, with no delivery-QA
+  sibling.
 
 ## 0.8.3 · 2026-09-07
 

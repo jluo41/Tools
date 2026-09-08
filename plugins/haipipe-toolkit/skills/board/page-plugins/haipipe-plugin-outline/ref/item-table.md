@@ -224,7 +224,7 @@ binding stale automatically and reopens LAND or EMBED.
 ## The Run graph · zero-to-many supports, exactly one local Run
 
 ```text
-Supporting Runs  0..N  Execution | Discovery
+Supporting Runs  0..N  Execution | Discovery | accepted Insight item execution
                          ↓ validated upstream Results
 Local Input       1     one frozen envelope containing those Results/local sources
                          ↓
@@ -295,12 +295,21 @@ selectable text in the popover, never download anchors.
 
 ## Families and actions are separate dimensions
 
-Supporting Run families are only:
+Supporting Run families are:
 
 ```text
 Execution   computation · data · model · deterministic tooling
 Discovery   search · papers · sources · external evidence
+Insight     an accepted instance/item execution Result with a traceable RF
 ```
+
+Insight instance references use `<instance>#<rNN_stem>@<vNNN>` plus the exact
+Result path/hash in the frozen Local Input. `Insight · reuse · <full-id>` may
+support another Page; instance-local Execution supports use `Execution` with
+the same qualified identity dialect. The item schema and workflow are owned
+by `haipipe-page-insight/ref/instance-items.md`. Never flatten such a reference
+to a BJTR id or drop its dataset instance/version. A research Insight Item is
+not one of this table's typed Evidence Items.
 
 The action vocabulary is:
 
@@ -347,8 +356,8 @@ pre-existing page-local material or says `item contract only` for a genuinely
 source-free construction.
 
 A sibling Evidence Item's future local Result is never an implicit local input.
-If two items need the same upstream evidence, both list the same Execution or
-Discovery Supporting Run (normally `reuse`). This keeps item graphs independently
+If two items need the same upstream evidence, both list the same Execution,
+Discovery, or accepted Insight Supporting Run (normally `reuse`). This keeps item graphs independently
 closable and preserves LAND's item-level parallelism.
 
 ## Cross-Folder evidence uses Supporting Results

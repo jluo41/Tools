@@ -195,7 +195,7 @@ Suggest follow-up skills:
 ```text
 /arxiv "topic"           - search arXiv preprints (complements this search)
 /research-lit "topic"    - multi-source review: Zotero + local PDFs + arXiv + S2
-/novelty-check "idea"    - verify novelty against literature
+/haipipe-ideation "direction" - build a grounded direction from accepted evidence
 ```
 
 ## Key Rules

@@ -14,7 +14,7 @@ own every addressable Run.
 | `i4b.screen` | VENUE SCREEN | Broad-screen every admitted Idea for field, audience, contribution, method/evidence shape, article type, and obvious desk mismatch. | one `cards/venue-fit/iNN_venue-fit.yaml` per Idea | none; missing official scope routes to Discovery | Every admitted Idea has a retained broad screen → `i4c.fit`, elimination, or `i2.search` | None |
 | `i4c.fit` | VENUE DEEP FIT | Compare live finalists against current Venue contracts; record fit, desk risks, missing evidence, and reroutes. | Venue Fit Card revisions and Venue/Discovery receipts | Venue Page workflow plus owner Discovery Runs; no ideation Run | Every selected candidate has complete deep fit → `i5.select` or refresh owner evidence | None; machine recommends only |
 | `i5.select` | SELECT | Record which cards, targets, and categories, if any, a person chooses and why; comparison order is not selection. | selection receipt; card state; distinct Story and target route per selected card | none | Human idea-and-target decision exists → `i6.handoff` or remain open | Required: select, abandon, or defer |
-| `i6.handoff` | HANDOFF | Package selected cards plus their distinct Story and target routes for Paper P0 without copying evidence or venue rules. | `handoff/paper-ideation.yaml` | none | Packet passes handoff assertions → `haipipe-page-ideation` | Required: person/date, target/category, and accepted risk |
+| `i6.handoff` | HANDOFF | Package selected cards plus their distinct Story and target routes for Paper P0 without copying evidence or venue rules. | `handoff/paper-ideation.yaml` | none | Packet passes handoff assertions → `haipipe-paper-ideation` | Required: person/date, target/category, and accepted risk |
 
 ## Run law
 

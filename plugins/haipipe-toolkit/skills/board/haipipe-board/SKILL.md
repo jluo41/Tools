@@ -7,8 +7,8 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.171.1"
-  last_updated: "2026-09-07"
+  version: "0.172.0"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
 
@@ -251,7 +251,6 @@ current authoring contracts.
 ```bash
 python3 <skill>/cli/build.py <board-folder>
 python3 <skill>/cli/check.py <board-folder> --summary
-python3 <skill>/cli/pagetypes.py --check
 python3 <skill>/cli/foldercontracts.py --check
 python3 -m unittest discover -s <skill>/tests
 ```

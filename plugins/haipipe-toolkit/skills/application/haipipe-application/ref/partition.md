@@ -59,7 +59,7 @@ A child InsightBoard for one partition may be opened ONLY by citing a SPLIT verd
 Folder phases   FD01 is I2 Data, XK01 is I4 Knowledge; legacy runtime pages
                 may retain page-type: data/knowledge, but no partition kind exists
 board.md        no new key; store:, spine:, close: as everywhere else
-probe / qa      the rung's rules apply unchanged inside every partition group
+run / result    the rung's rules apply unchanged inside every partition group
 engine          no regex, renderer or checker change; the id grammar already fits
 ```
 

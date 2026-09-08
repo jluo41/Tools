@@ -87,7 +87,7 @@ because <signed W handoff>, do <move>, within <rail>
 The phase selects plugins. Important boundaries:
 
 - PageX is the one cross-Folder binding surface, across Boards and into Task
-  Folders. A Folder card reads live plan/report/QA status when present.
+  Folders. A Folder card reads live plan/report and Run/Result status when present.
 - There is no `haipipe-plugin-task` or `task/` lane after migration.
 - Code stays named **Code**. Task Face is universal; execution is behavior;
   Code is the optional presenter over `scripts/config/`, `runs/`, and
@@ -135,7 +135,7 @@ crossing: X0 need-out | X1 signed-handoff | X2 outbound | X3 read-back
 ```
 
 It delegates to the owning workflow and adds no human gate. The four human
-gates remain Probe release, Wisdom signing, Card release/kill, and Division
+gates are Outline release, Wisdom signing, Card release/kill, and Division
 acceptance.
 
 ## Compatibility

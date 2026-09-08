@@ -1,14 +1,27 @@
-# `design` · create or resume one audience/job Design Folder
+# design · create or resume one stable Design Folder
 
-1. Require a GD0-closed Brief handoff and resolve one audience × behavior job × primary venue row.
-2. Reuse or create `<DesignTopic>-DesignBoard/2-DS-design/DS<NN>-<audience>-<job>-<venue>/DS<NN>-<audience>-<job>-<venue>.md` (an optional project-local `B<NN>_` prefix may precede the topic) with `folder-kind: design-division`. Audience × job × venue defines identity. A legacy `page-type: design` is readable but is not written on new work.
-3. Load the Brief, settled Insight Design Handoffs through PageX, and the venue pack. Never inspect their Task/Discovery sources.
-4. Run D1–D5 through `haipipe-design-workflow`: cards, units, verdicts, then the reader-facing Design contract, Insight Use Map, inline or promoted principles, unit map, repeated unit divisions, variants, cross-unit rails, and the PageDown truth pass.
-5. Keep one jointly reviewed message/touchpoint/panel/section per division. Split Design Pages by audience/job/venue independence, not by arbitrary prose length.
-6. Route a missing load-bearing premise to the matching MT question register through the `question` verb; hold only the dependent Aim.
-7. Build and CHECK the exact visible system. Record acceptance as a per-division `accepted:` row naming reviewer, date, handoff version, and render version.
-8. After every D4 thread is terminal, write the D5 receipt, pass GD6, and stop at a sealed accepted Design. Do not write a deploy record, a shipment log, or a measurement round; those belong to the task layer.
+1. Resolve the Brief and one audience × behavior job × primary venue roster row.
+2. Reuse or create `<DesignTopic>-DesignBoard/2-DS-design/DS<NN>-<audience>-<job>-<venue>/<stem>.md`
+   with `folder-kind: design`. Load `haipipe-design` as its canonical owner.
+   Existing legacy Folders retain historical records. A controlling legacy
+   phase.yaml or design-division kind requires explicit owner-metadata migration
+   under haipipe-design/references/migration.md before new native writes.
+3. Pin relevant authorized inputs. Validate signed contextual W handoffs before
+   empirical use; do not inspect raw Task/Discovery results or invent Insight
+   Supporting Run identities. A commissioned brief-only creative unit is legal.
+4. Use `haipipe-design-workflow` to write/release commissions, allocate YAML
+   Run Tickets, generate through `haipipe-design-unit`, independently verify,
+   and present exact candidate previews for a person's adoption.
+5. The Page explains goals, constraints, candidate differences and selected
+   members. A DU is a generation Result, not a nested phase-owned Folder.
+6. Missing load-bearing premises become named gaps for the caller; hold only
+   dependent work. Do not silently launch another lane.
+7. Record adoption of exact Result/member/verification/render/handoff versions,
+   update the readable Page and round receipt, and stop. Do not ship or measure.
 
-A changed handoff, content edit, venue constraint, or re-render clears the affected division's `accepted:` row and only that row. Generate rendered output through `fn/render.md`, which writes projections and never Pages.
+New input/content/config changes get new Runs and stale only affected current
+bindings. Historical decisions and old design/DU files remain unchanged.
+Render with fn/render.md; projections are never the authoritative DU content.
 
-Return the Design Page path, audience/job/venue, adopted and declined Handoffs, division count, per-division acceptance state, D5/GD6 receipt, and next phase.
+Return Folder path, commissioned Runs, generated/verified Result paths, adopted
+members, freshness, open gaps, and the next bounded action.

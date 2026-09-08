@@ -67,7 +67,7 @@ Four rules make it work:
    hand-aligned, so a variable-width id silently ruins every one of them.
    Pad the counter (`C02-01`, not `C02-1`).
 3. **A renumber keeps a `was` column.** Old ids stay resolvable, because
-   they are cited from code comments, day folders and QA files.
+   they are cited from code comments, day folders and Result receipts.
 4. **Cite an issue as `[ID]` in code.** The bracket is what makes a sweep
    safe: bare `S33` is also the ICD-10 code for lumbar sprain, and bare
    `S10` is a plan step id in `workflow/*.yaml`. A sweep that matched the

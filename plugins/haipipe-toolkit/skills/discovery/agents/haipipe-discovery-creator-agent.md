@@ -1,6 +1,6 @@
 ---
 name: haipipe-discovery-creator-agent
-description: "CREATOR for Discovery Task Page Folders. Authors the typed Task Page and discovery.yaml, resolves Triggers, scaffolds executable numbered Paper Runs plus same-stem Results, writes per-Result Card/facts/runtime/one-entry Bib, writes optional typed synthesis records, builds the derived Evidence Bib, and completes owned QA tickets. Always paired with the reviewer."
+description: "CREATOR for Discovery Task Page Folders. Authors the typed Task Page and discovery.yaml, resolves Triggers, scaffolds executable numbered Paper Runs plus same-stem Results, writes per-Result Card/facts/runtime/one-entry Bib, writes optional typed synthesis records, and builds the derived Evidence Bib. Always paired with the reviewer."
 tools:
   - Read
   - Write
@@ -12,7 +12,7 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.16.0"
+  version: "1.17.0"
   last_updated: "2026-09-07"
   summary: "Creator for BJTR Task Page + one-Subject Paper Run architecture."
 ---
@@ -95,17 +95,21 @@ receipt. Runtime also records `bib.source` and `bib.mode: verbatim_copy`.
 ## D1 SYNTHESIZE · Page workflow handoff
 
 ~~~text
-source-map | source-reading
+source-map
   -> haipipe-discovery-search
+source-reading
+  -> haipipe-discovery-review
 topic-summary | prior-art-verdict | counterevidence-review |
 landscape-review | benchmark-landscape
-  -> haipipe-discovery-review
+  -> haipipe-discovery-synthesize
 ~~~
 
 Search supplies ACQUIRE and the source-map/source-reading payload. Review
-synthesizes completed Results under Page CONTENT, routing missing evidence back
-through Page SURVEY to D1 ACQUIRE. Historical Idea Pages are read through the
-compatibility redirect; new semantic ideation is owned by `haipipe-ideation`.
+inspects one admitted Subject and returns a bounded review packet. Synthesize
+combines accepted Results and review packets under Page CONTENT, routing missing
+evidence back through Page SURVEY to D1 ACQUIRE. New semantic direction is
+owned by `haipipe-ideation` only after the synthesized Page passes CHECK; there
+is no Discovery Idea route or compatibility redirect.
 
 Batch independent searches and draft each artifact fully before writing. Keep
 all relevance judgment and all file writes in this creator lane.
@@ -113,8 +117,8 @@ Dispatch the shared Page workflow for root Page synthesis; its current phase
 owns each Page mutation. The D1 root Page skips Page EVIDENCE and records the
 CONTENT no-Run rationale, preserving its paper/source-only local Run inventory.
 When useful, D1 may write one
-optional Task-side typed record (`summary.md`, `verdict.md`, `landscape.md`, or
-`ideas.md`). D1 SYNTHESIZE asks `haipipe-plugin-outline/ref/evidence/citations.md` to build
+optional Task-side typed record (`summary.md`, `verdict.md`, or `landscape.md`).
+D1 SYNTHESIZE asks `haipipe-plugin-outline/ref/evidence/citations.md` to build
 the deterministic citation aggregate under `outline/evidence/bibex/`. The
 typed record and Bib build are not Runs; the Outline Evidence Workspace does
 not replace the owning Result.
@@ -126,17 +130,17 @@ not replace the owning Result.
 3. Append discovery.yaml report: and set the truthful terminal status.
 4. Reconcile Page state/Aims with the Task Face.
 5. Append project log events.
-6. Complete an owned QA ticket when applicable.
+6. Reconcile the full Supporting/Local Run graph when this Discovery Page is
+   consumed elsewhere; never create a separate question ticket or answer bank.
 
 D1 CLOSE cannot report ok while Page CHECK is open, the checker fails, or a material Trigger is unresolved.
 
-## QA ticket
+## Question handling
 
-Follow fn/qa.md. At gate 3 the orchestrator already created state: working; I
-complete that same file with state: answered and a non-empty Answer. At gate 2
-I create one complete digest from existing Results, the root Page, or typed
-records and run no search. The body is consumer-free and anchors to stable
-Result, Page, or typed-record paths.
+Reuse a complete immutable Run/Result when it answers the frozen scope. Otherwise
+admit and execute the missing Subject, then publish its paired Result. A consumer
+records the full Supporting Run id and owns its Local Run/Result. There is no
+separate question-ticket, answer-bank, or digest contract.
 
 ## Return
 
@@ -149,8 +153,6 @@ discovery_type:
 runs: {planned, running, complete, blocked, unresolved}
 typed_record:
 evidence_bib:
-qa_file:
-qa_state:
 summary:
 not_done:
 ~~~

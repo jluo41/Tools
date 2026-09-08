@@ -3,6 +3,19 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.17.0 · 2026-09-08
+
+- Topic/data-instance Insight Pages contain independently runnable items and versioned Results.
+- Shared Task recipes are reused through explicit input/output bindings; preserve test runs and isolate instance stores.
+
+## 0.16.0 · 2026-09-08
+
+- Retire the Task question/QA channel: remove `fn/qa.md`, QA folders, tickets,
+  and digests from the live contract and route every question through an
+  immutable Run/Result.
+- Make consumer evidence explicit as Supporting Runs plus a consumer-owned
+  Local Run/Result; update the task agents, refs, and examples accordingly.
+
 ## 0.15.2 · 2026-09-07
 
 - Add `haipipe-page-task` as the reader-facing companion for Task Pages.

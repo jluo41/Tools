@@ -17,6 +17,10 @@ metadata:
 
 # /haipipe-design-verdict · judge the unit independently
 
+> Legacy reader only (Design v2): the sections below describe existing D1–D5
+> records; do not execute their historical writes or create new DU Folders.
+> New work and adoption use `haipipe-design` and its native Run workflow.
+
 Load `haipipe-folder`, the Design door/workflow, and
 `haipipe-plugin-design`. The judge is never the D2 designer.
 

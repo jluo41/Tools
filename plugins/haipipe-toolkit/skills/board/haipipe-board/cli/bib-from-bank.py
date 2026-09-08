@@ -8,7 +8,7 @@
 It takes the STAGE and finds the paper root from it, the same way the display
 tools do, because a specimen stage carries its own root under `_fixture/`.
 
-THE SHAPE, which is QA-bank / QA-probe applied to references:
+THE SHAPE, which is the Supporting Run/Result contract applied to references:
 
     bank.bib            venue/literature/, shared, hand-maintained, one copy
         |

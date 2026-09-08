@@ -3,16 +3,18 @@
 A question spans four pages on the InsightBoard. This verb opens the next level, never all four at once.
 
 1. Resolve the InsightBoard and require one registered question id: `QD<n>`, `QI<n>`, `QK<n>` or `QW<n>` from the matching register `MT01`-`MT04`. A question not yet registered is registered first, through the `question` verb, on the register facing its target rung; a Brief-raised need arrives the same way and keeps the register's id from then on.
-2. FIRST search the Task/Insights Board for a settled `page-type: insight` Page
-   whose question covers this need. A match is reusable evidence, never Design
+2. FIRST search Task/Insights instances for an accepted item Result whose
+   question covers this need. A match is reusable evidence, never Design
    authority. It may take the **pre-climbed external-parent bridge** only when
    all of these are true:
-   - `scope: task`, `insight-target: wisdom`, and no `application:` or `serves:`;
-   - CHECK is closed against current source versions;
-   - one exact `RF<n>@<version>` traces `D → I → K → W → RF` inside that Page.
+   - the instance has `scope: task` and no `application:` or `serves:`, and
+     the chosen item execution has `target: wisdom`;
+   - that item Result passed independent CHECK against its exact sources;
+   - the instance/item/execution-version/RF reference, Result path/hash, and
+     `D → I → K → W → RF` trace all resolve. Open siblings are independent.
 
    For a valid match, register or resume one `QW<n>` row in MT04, record the
-   exact Task Page/RF version and one local I5 Wisdom Folder on that row, and
+   exact instance/item/version/RF packet and one local I5 Wisdom Folder, and
    register the RF's producing Run Result in the local W Folder's Evidence Item
    graph. Run I5 there: cite rather than
    copy the Task K/W/RF rows, test them against this Application's audience,
@@ -23,7 +25,7 @@ A question spans four pages on the InsightBoard. This verb opens the next level,
    chain. This is a bridge over a pre-climbed parent, not a skipped epistemic
    rung, and the Task RF never binds directly to Design.
 
-   An incomplete, stale, below-Wisdom, or untraceable Task Page cannot use the
+   An incomplete, stale, below-Wisdom, or untraceable item Result cannot use the
    bridge. It may be cited as input to the normal local climb, but it cannot
    close a rung by itself.
 3. Read the question's Queue row on its register to see how far the chain has climbed, then open only the NEXT level. On a rung-major board:

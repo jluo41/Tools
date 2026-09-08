@@ -1,3 +1,10 @@
+## 0.172.0 · 2026-09-08
+
+- Project Insight instance manifests into an item table and exact-version Runs rows.
+- Register qualified Insight Supporting Results with provenance validation and duplicate-identity rejection.
+- Retain the legacy single-chain outline unless the Page opts into `insight-layout: items-v1`.
+- Add synthetic multi-instance and read-projection regression coverage.
+
 ## 0.171.1 · 2026-09-07
 
 - Know `page-type: story` (paper 0.8.x: the Story page, one idea's control

@@ -122,7 +122,7 @@ A semantic handoff consumes Result/Bib pointers and does not create a
 Discovery Run or Result.
 
 Folders may reference another Topic's Page or typed record from their own side. A
-Discovery Folder remains probe-unaware and never tracks its consumers.
+Discovery Folder remains consumer-unaware and never tracks its consumers.
 
 ## Trigger resolution
 

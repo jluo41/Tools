@@ -12,8 +12,8 @@ description: >-
   result, calibration run, qualification run, production scan, final audit,
   /haipipe-run.
 metadata:
-  version: "0.6.5"
-  last_updated: "2026-09-04"
+  version: "0.8.0"
+  last_updated: "2026-09-08"
 ---
 
 # /haipipe-run · one attempt, two projections, one receipt
@@ -24,6 +24,11 @@ Level 4 beneath a Folder/Task, but it is not another folder level:
 ```text
 Run address = authored Ticket identity = generated Result identity
 ```
+
+The Insight instance dialect qualifies a reusable local ticket with its
+instance and immutable execution version. In that dialect the equation is
+`full Run address = instance + local ticket + execution version`, not the
+unqualified ticket stem. All other dialects retain their existing resolver.
 
 Load the Folder owner first: normally a workflow phase, or a declared canonical
 family skill for a stable base Folder such as Task. Then load the current phase
@@ -129,6 +134,8 @@ Page · Evidence Item     one focal VALUE/CITE/DISPLAY Result ready for EMBED
 Page · Division Writing  one Content division candidate
 Page · Display           one display unit candidate
 Labeling                 a domain operation declared by subjective-label/ref/ref-run.md
+Insight · Item           one topic-instance item's checked DIKW/RF Result
+Design                   one generated DU or independently commissioned verification
 ```
 
 Inside EVIDENCE/LAND, a DISPLAY-typed Evidence Item is still exactly one
@@ -138,6 +145,9 @@ when a display unit is commissioned as an independently closable target outside
 an Evidence Item Run; never count both families for one unit.
 
 The base classifies these families but does not define their semantic outputs.
+Design's caller-owned YAML Ticket dialect and generate/verify gates are in
+`../../application/haipipe-design-workflow/references/run-profile.md`;
+the worker is `haipipe-design-unit`, not another Folder owner.
 The owning phase supplies the target grammar and the worker/dialect supplies the
 kind-specific Result gate. A phase may extend the vocabulary only when the new
 family has an independently testable target and Result contract.
@@ -157,6 +167,10 @@ r07_labeling-executor-predict_test-v1-executor-a
 Use lowercase ASCII, digits, underscores, and hyphens. Never renumber. When
 intent, target, frozen inputs, or acceptance semantics change materially,
 allocate a new Run and record `supersedes:` rather than overwriting history.
+
+For Insight instance work, a new execution version is a new full Run id;
+the stable local ticket may be reused. `supersedes` relates replacement
+executions of the same work/context, not independent patient datasets.
 
 Use the local `rNN` stem for files and a full global reference when one Folder
 refers to another Run:
@@ -186,9 +200,39 @@ Run until its Ticket exists.
 inputs, and acceptance are unchanged. If any changes materially, mint a new
 Run and set `supersedes: bNNjNNtNNrNN` in its receipt.
 
+### Insight instance dialect
+
+The task-side Insight contract owns this scoped dialect and its schemas at
+`task/page-types/haipipe-page-insight/ref/instance-items.md`:
+
+```text
+local item / ticket    r01_description / runs/r01_description.sh
+full execution         sms/patient-a-study#r01_description@v001
+local Result           results/r01_description/v001/result.yaml
+runtime receipt        results/r01_description/v001/runtime.yaml
+frozen input           results/r01_description/v001/input.yaml
+```
+
+One authored ticket can commission several versions, each with exactly one
+frozen input envelope, runtime receipt, and Result address. Changing data,
+recipe, intent, or acceptance allocates the next version; retrying unchanged
+inputs appends attempts to that version. Cross-Folder references carry the
+full execution id, Result path, and hash; an `rNN` or BJTR address without
+instance/version cannot distinguish patient A from B. This namespace does not
+reuse Paper's `pj` prefix or renumber existing Task Runs.
+
+Instance-local supporting Execution tickets may call a shared Task recipe
+under the same qualified identity scheme. Recipe definitions are not counted
+as completed Runs. Their actual call owns one producing receipt; the Insight
+Item owns a different DIKW Result. See the Insight `ref/task-calls.md` for
+parameter binding, isolation, and legacy adapter checks. This does not grant
+all existing launchers an unimplemented input override.
+
 ## Two mandatory projections
 
 Every Run has exactly one authored Ticket and one generated Result address.
+In the Insight dialect this statement is per full execution version: the
+ticket is reusable, while each qualified execution has one Result address.
 Resolve their physical locations from the Folder dialect:
 
 ```text
@@ -297,7 +341,7 @@ failure: null
 ```
 
 For `operation: evidence-item`, `inputs` is one frozen envelope. It may contain
-zero-to-many Execution/Discovery Supporting Result pointers and hashes but
+zero-to-many Execution/Discovery/Insight Supporting Result pointers and hashes but
 remains one local Run input. The local Run produces exactly one typed focal
 Result; Page interpretation belongs to EMBED and is not part of this Run.
 

@@ -10,7 +10,10 @@ The cheap way is to match the name. `{NN}_{task_name}` is the documented convent
 
 So the test has to be structural, and the interesting part is that the structural test is not merely safer, it is also the correct definition. A task-folder is a directory that holds runnable work. That is what the router needs to know, it is what the name was only ever a hint about, and it excludes `__pycache__`, `figures/`, `sbatch/` and `diagram/` for free.
 
-**Covered elsewhere**: What a task-folder contains once identified is `QA6`'s neighbourhood and the `QC` group; the four phases it runs are `QB2` to `QB5`; the naming and indexing rules themselves are `hierarchy.md`'s and are not re-ruled here.
+**Covered elsewhere**: What a Task Page Folder contains once identified is
+the current Task and Run contract; the four phases it runs are `QB2` to `QB5`;
+the naming and indexing rules themselves are `hierarchy.md`'s and are not
+re-ruled here.
 
 ## Diagram
 ```

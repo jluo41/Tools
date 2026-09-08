@@ -157,6 +157,34 @@ class RunsPluginTest(unittest.TestCase):
             [rel for rel, _path in by_label["outline"]["list"]],
         )
 
+    def test_design_ticket_without_runtime_is_not_a_paper_run(self):
+        stem = "r01_design_generate_sms"
+        ticket = self.page.parent / "runs" / (stem + ".yaml")
+        ticket.parent.mkdir()
+        ticket.write_text("schema: haipipe.design-ticket/v1\n", encoding="utf-8")
+        rows = local_runs(self.page)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["run_id"], stem)
+        self.assertIsNone(rows[0]["runtime"])
+
+    def test_design_yaml_ticket_keeps_design_identity(self):
+        stem = "r01_design_generate_sms"
+        ticket = self.page.parent / "runs" / (stem + ".yaml")
+        ticket.parent.mkdir()
+        ticket.write_text("schema: haipipe.design-ticket/v1\n", encoding="utf-8")
+        runtime = self.page.parent / "results" / stem / "runtime.yaml"
+        runtime.parent.mkdir(parents=True)
+        runtime.write_text(
+            "family: design\nstatus: complete\nrun: " + stem + "\n",
+            encoding="utf-8")
+        (runtime.parent / "result.yaml").write_text("verdict: pass\n", encoding="utf-8")
+        rows = local_runs(self.page)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["run_id"], stem)
+        self.assertFalse(rows[0]["run_id"].startswith("P "))
+        self.assertEqual(rows[0]["ticket"], ticket)
+        self.assertEqual(rows[0]["runtime"], runtime)
+
 
 if __name__ == "__main__":
     unittest.main()

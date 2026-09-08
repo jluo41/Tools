@@ -10,8 +10,9 @@ only V records and preserves the authored W records verbatim.
 
 The law shipped in 0.17.1 and the generator did not, so the 🧭 tab never
 showed a 📏 chip (JL 260831: "among them I didn't see the requirement").
-The first generator copied the Narrative row and broad board rules into the
-venue block; JL 260831 asked that block to stay concise and venue-focused.
+The first generator copied the Story Section Control row and broad board rules
+into the venue block; JL 260831 asked that block to stay concise and
+venue-focused.
 Page-specific writing rules are requirements too, but have a different owner:
 they live as authored W records after the generated block.
 
@@ -22,8 +23,9 @@ they live as authored W records after the generated block.
 
   Wn  Writing  one page-owned instruction: Rule · Applies · Source
 
-The Page's own reader question is on the 🧭 tab already; the Narrative row
-lives on the Narrative page; broad board rules live in `ref/writing-rules.md`.
+The Page's own reader question is on the 🧭 tab already; the Story Section
+Control row is resolved through Context; broad board rules live in
+`ref/writing-rules.md`.
 
 The V block is regenerated and never edited. The W block is authored and
 never overwritten. `check.py` reports missing, malformed, or stale blocks.

@@ -1,5 +1,8 @@
 # haipipe-application-workflow · version history
 
+1.1.0 · 260908
+- Carry the exact item execution/RF packet across X1; local contextual Wisdom still owns the Design handoff.
+
 1.0.5 · 260831
 - Make X1 explicit for the Task-RF bridge: I1 and the local W pin the exact RF,
   but only the contextual, signed Application W may cross into Design.

@@ -620,11 +620,14 @@ def render_outline(page_src=None, page_type=""):
     table = _outline_grid(page_src) if page_src is not None and page_src.is_file() else ""
     narrative = (_narrative_section_control(page_src)
                  if (page_type or "").strip() == "narrative" else "")
-    if not table and not narrative:
+    from .insight_instances import render_items
+    insight = render_items(page_src) if (page_type or "").strip() == "insight" else ""
+    if not table and not narrative and not insight:
         return ""
-    if narrative:
-        primary = ('<div class="outline-table"><div class="fh">▤ Narrative section table</div>'
-                   f'{narrative}</div>')
+    if narrative or insight:
+        label = "Insight item table" if insight else "Narrative section table"
+        primary = (f'<div class="outline-table"><div class="fh">▤ {label}</div>'
+                   f'{insight or narrative}</div>')
         plan = (f'<details class="outline-plan-secondary"><summary>▤ Plan and evidence</summary>'
                 f'<div class="outline-plan-body">{table}</div></details>' if table else "")
         table_html = primary + plan
@@ -648,8 +651,9 @@ def has_outline_plan(page_src):
         return False
     page_src = pathlib.Path(page_src)
     return (page_src.is_file()
-            and any((page_src.parent / "outline").glob(
-                f"{page_src.stem}-outline-v*.md")))
+            and ((page_src.parent / "workflow/insight.yaml").is_file()
+                 or any((page_src.parent / "outline").glob(
+                     f"{page_src.stem}-outline-v*.md"))))
 
 
 def split_stage_record(kind, content_sections):

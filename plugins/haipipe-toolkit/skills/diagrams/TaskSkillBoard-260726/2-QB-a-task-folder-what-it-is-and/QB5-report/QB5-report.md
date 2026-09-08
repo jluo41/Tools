@@ -10,14 +10,14 @@ What Gate 2 can catch is the opposite of Gate 1's, and the pair only works becau
 
 The blocker is upstream. If a plan may declare `metrics.json` without naming its keys, then "did the run produce what the plan promised" is not a checkable question, and Gate 2 degrades into a reader saying the numbers look reasonable. That is `QB2`'s completeness ruling, and this phase cannot be made rigorous before it lands.
 
-**Covered elsewhere**: The plan it mirrors is `QB2`; the pre-run gate is `QB3`; the digest that may be written at this phase is `QD1`; where outputs were allowed to land is `QC2`.
+**Covered elsewhere**: The plan it mirrors is `QB2`; the pre-run gate is `QB3`; the paired Run/Result contract is `QC1`; where outputs are allowed to land is `QC2`.
 
 ## Diagram
 ```
    REPORT          creates  workflow/report.yaml
                             report-script-<name>.yaml
                             RUN_AUDIT.md                      ← GATE 2
-                   completes QA/<n>-<slug>.md, when one is due   → QD1
+                   completes the paired Result and report receipt
 
     creator drafts ────▶ reviewer checks accuracy ────▶ ↺
 
@@ -56,16 +56,16 @@ Plan and Report share the IPO shape so that a diff between them is meaningful. I
 different structure, checking it against the plan would require a reader to hold both in their
 head and decide what corresponds to what, and that reader would be the same person who wrote both.
 
-### This is where the digest may be written, and only sometimes
-REPORT is the only phase allowed to complete a `QA/<n>-<slug>.md`, and only for one of three
-reasons: a question arrived, results already answered a question that had no digest, or a finding
-was judged worth digesting. A `QA/` mirroring every result is noise, which is why 1 of 107 folders
-having one is not by itself a problem.
+### This is where the Result is reconciled
+REPORT is the only phase that reconciles the executed Run with its plan and
+records the immutable Result receipt. It does not create a question file,
+answer bank, or digest. A consumer reads the Result through a Supporting Run
+binding and creates a Local Run only when page-specific normalization is needed.
 
 ### File ownership
-REPORT touches `workflow/report*.yaml`, `RUN_AUDIT.md`, and `QA/` when one is due. It does not
-touch `results/`, which is EXECUTE's and is now evidence: a phase that could edit the numbers it is
-auditing would make the audit worthless.
+REPORT touches `workflow/report*.yaml` and `RUN_AUDIT.md`. It does not touch
+`results/`, which is EXECUTE's immutable output: a phase that could edit the
+numbers it is auditing would make the audit worthless.
 
 ## Aims
 - [ ] 🔓 Unblock the mechanical check
@@ -74,8 +74,9 @@ auditing would make the audit worthless.
       A rate above 1, an empty `n`, a metric identical across every arm of a sweep. Cheap, mechanical, and none of them are written down.
 - [ ] 📦 Check the heavy-artifact rule at this gate
       `QC2` forbids a checkpoint in `results/`. Gate 2 is where a machine would notice, and it does not look.
-- [ ] 📋 State the three reasons a digest is due
-      They are in `SKILL.md` prose. In the reporter's own contract, where the decision is actually made, they are not.
+- [ ] 📋 Keep Result reconciliation explicit
+      The report must identify the Run, the produced Result, the checks that
+      passed, and any remaining blocker; no separate digest is created.
 
 ## Discussion
 
@@ -88,8 +89,8 @@ files rather than fields, the audit compares existence rather than content.
 ## Files
 - `fn/stage-report.md`
   The phase contract: what it reads, what it writes.
-- `fn/qa.md`
-  The digest contract, for the case where one is due.
+- `fn/stage-report.md`
+  The report contract, including the Result reconciliation.
 - `ref/metrics-json-schema.md`
   What a metrics file is expected to contain.
 

@@ -19,7 +19,7 @@ metadata:
 
 This is the paper-level document contract. It is different from
 `haipipe-plugin-delivery/ref/word.md`, which exports one Board Page for a coauthor. Assembly
-combines the Story's Section Control rows and the Section Pages into the complete deliverable
+combines the Story's Section Narrative rows and the Section Pages into the complete deliverable
 for one desk.
 
 The public Paper door routes `assemble` here. The implementation is expected to
@@ -33,7 +33,7 @@ The layers have different jobs:
 ```text
 Paper-<Slug>/                          the board at the paper root
   ├── A1-Story/Story-<letter>/         boundary, claims, evidence, acceptance
-  │       §8 Section Control + haipipe:compile-order block = reading order
+  │       §8 Section Narrative + haipipe:compile-order block = reading order
   └── Ba-<desk>-Main/<page>/           each Section Page owns its words:
         └── delivery/latex/            <page>.tex (body fragment, what the paper
                                        \inputs) · <page>-complete.tex/.pdf (the
@@ -45,7 +45,7 @@ delivery/latex/                        GENERATED whole from the pages
   ├── master.tex                       one \input per page, Story compile order
   ├── sections/ · appendices/          copies of the pages' <page>.tex fragments
   ├── displays/                        copies of accepted display floats + assets
-  └── reference.bib                    merged from the pages' bibex/<page>.bib
+  └── reference.bib                    merged from outline/evidence/bibex/<page>.bib
               ↓
 shared assembly engine + venue profile
               ↓
@@ -53,10 +53,12 @@ DOCX / PDF / supplement / snapshots / build manifest
 ```
 
 The Board and Page files decide what the paper is allowed to claim and whether
-the relevant Section is CHECK-closed. Each Section Page's own
-`delivery/latex/<page>-complete.tex` owns that page's reader-facing wording;
-the Story's compile-order block owns the order. `delivery/latex/` is regenerated
-from them and is never edited by hand (JL 260907; this replaces the 260824
+the relevant Section is CHECK-closed. Each Section Page owns its wording and
+projects it into `delivery/latex/<page>.tex`, the body fragment used by the
+paper builder. `<page>-complete.tex` is only the standalone Page wrapper;
+it is not a manuscript input. The selected Story C8 compile-order block owns
+the order. The paper's `delivery/latex/` is regenerated from the body fragments
+and is never edited by hand (JL 260907; this replaces the 260824
 desk-room law, under which `<N>-<desk><year>/sections/*.tex` was the source of
 record). A builder may refuse or watermark a build when a page's deliverable is
 not bound to its current accepted version, but it must not silently replace
@@ -71,6 +73,15 @@ compiled page PDF (`delivery/latex/<page>.pdf` or `<page>-complete.pdf`). A
 page missing any of the three is listed in the build manifest as not ready and
 the build is `DRAFT`; the builder never substitutes an older desk-room copy for it.
 
+Read the current outline's explicit `approved:` record, not merely its filename
+or an older approved outline. When an `outline-version:` is declared, it must
+match the file being admitted. An unsigned newer revision blocks admission;
+a filename, successful test, or complete set of render files grants no approval.
+Record the inspected outline path, version, approval, and content hash in the
+manifest. These mechanical milestones do not establish G4: missing checks for
+current Page CHECK closure, accepted evidence, or human submission approval
+must remain explicit blockers, and the build stays `DRAFT`.
+
 Generated DOCX, PDF, `draft-sections/*.docx`, copied assets, previews, and
 manifests are derived artifacts. They are never source of record and never
 become inputs to the next build.
@@ -80,7 +91,7 @@ become inputs to the next build.
 | Lane | Input | Output | Purpose |
 |---|---|---|---|
 | Page-level Delivery `ref/word.md` | one Page's Markdown and Page-local evidence | `<page>/delivery/word/` | coauthor review of one Section/Page |
-| Paper-level `haipipe-paper-assemble` | every Section Page's `delivery/latex/<page>.tex` fragment, accepted display floats, merged `bibex/` bibliography | `delivery/latex/` then `delivery/word/` | complete manuscript and supplement |
+| Paper-level `haipipe-paper-assemble` | every Section Page's `delivery/latex/<page>.tex` fragment, accepted display floats, merged `outline/evidence/bibex/` bibliography | `delivery/latex/` then `delivery/word/` | complete manuscript and supplement |
 
 Page-level Word snapshots are not the assembly input. Paper-level assembly
 does not concatenate those snapshots. Both lanes are projections of their
@@ -93,9 +104,8 @@ The implementation has four separable parts:
 1. **Source adapter** — reads the declared source format. The adapter is a
    self-contained LaTeX room: recursively expand `\\input`, resolve
    labels/references/citations, read room-local displays and bibliography, and
-   preserve section order from the master. Under 0.3.0 that room is the
-   generated `delivery/latex/`; a grandfathered `<N>-<desk><year>/` desk room
-   is the same shape and still reads.
+   preserve section order from the master. The current assembly source is
+   generated `delivery/latex/`, populated from the declared Section Pages.
 2. **Document model** — turns source into typed title, abstract, prose,
    heading, list, table, figure, caption, reference, and appendix events.
 3. **Venue profile** — supplies output rules such as font, spacing, title-page
@@ -130,11 +140,11 @@ venue_profile = "misq"
 [pages]
 # where the words come from: the Section Page groups, and the Story page whose
 # `haipipe:compile-order` block fixes the reading order. Each page contributes its body fragment
-# <page>/delivery/latex/<page>.tex, its bibex/<page>.bib, and the float.tex +
+# <page>/delivery/latex/<page>.tex, its outline/evidence/bibex/<page>.bib, and the float.tex +
 # asset of every display unit its fragment \ref's.
 main = "../Ba-MISQ-Main"
 appendix = "../Bb-MISQ-Appendix"
-order = "../A1-Story/Story-A/Story-A.md"   # the compile-order block; a legacy 📖 map is a fallback only
+order = "../A1-Story/Story-A/Story-A.md"   # selected C8 compile-order block
 
 [source]
 # the GENERATED room; the builder writes it, nobody edits it
@@ -161,9 +171,14 @@ assets = "latex/submission-assets"
 manifest = "build-manifest.json"
 ```
 
-A grandfathered desk-room paper keeps its `<desk>-word/paper-build.toml` with
-`[source] room = "../<N>-<desk><year>"` and no `[pages]` block; the adapter is
-the same.
+The selected C8 compile-order block and declared Section groups determine the
+current build inputs. A missing or ambiguous order is a repair requirement,
+not permission to read a retired planning Page or silently choose another
+desk room. Inspect older adapters before use and report unsupported checks;
+this contract does not claim that all historical parser paths were removed.
+For the single-target interface, require exactly one complete marker block.
+Reject duplicate or malformed Section entries instead of silently omitting
+them; candidate tellings are narrative plans, not additional active blocks.
 
 Configuration selects and names inputs/outputs. It does not duplicate prose,
 claims, values, citations, captions, or table cells. If a paper needs a
@@ -273,13 +288,16 @@ At minimum, a complete manuscript build records:
   unresolved references, missing assets, word-count results, renderer outcomes,
   and build status.
 
+The manifest is the sole delivery receipt; Page-level acceptance remains the
+`CHECK` phase. No sibling delivery report is emitted.
+
 The manifest is provenance, not a second content store. A generated snapshot
 may be opened and marked up by a coauthor, but its corrections must be routed
 back to the source Section or config before the next build.
 
 ## 🚦 DRAFT versus SUBMISSION-READY
 
-Assembly can run at any time. It does not itself pass G6. The output status is
+Assembly can run at any time. It does not itself pass G4. The output status is
 derived from the declared checks:
 
 ```text
@@ -298,9 +316,9 @@ decision.
 The assembly engine must check, or explicitly report that a check is not
 available:
 
-- every declared source file exists and is inside `delivery/latex/` (or, for a
-  grandfathered paper, its declared desk room); every page listed under
-  `[pages]` meets the milestone or is reported as not ready;
+- every declared source file exists and is inside generated `delivery/latex/`;
+  the selected C8 order agrees with `[pages]`, and every listed Section meets
+  the milestone or is reported as not ready;
 - no generated DOCX/PDF/snapshot is read as an input;
 - every `\\input`, citation, label/reference, table asset, and figure asset
   resolves or is listed as a visible failure;
@@ -312,7 +330,7 @@ available:
 - source, config, profile, engine version, and output hashes are recorded;
 - DOCX structure has the expected tables, figures, headings, and sections;
 - rendered pages are visually inspected when the output is being handed off;
-- if the build is run before G6, the result is visibly marked `DRAFT`.
+- if the build is run before G4, the result is visibly marked `DRAFT`.
 
 ## ⛔ Prohibited shortcuts
 
@@ -334,4 +352,4 @@ Before reporting assembly complete, name:
 - the generated main/supplement outputs and manifest;
 - word-count basis and result;
 - structural and visual check result;
-- unresolved author actions and whether G6 is still open.
+- unresolved author actions and whether G4 is still open.

@@ -49,6 +49,7 @@ _WALL_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]{0,11}$")
 _EVIDENCE_RE = re.compile(rf"^\s*Evidence:\s*({_ITEM_ID})\s*·\s*(.+)$")
 _NO_EVIDENCE_RE = re.compile(r"^\s*Evidence:\s*none\s*·\s*(\S.*)$", re.I)
 _GLOBAL_RUN_RE = re.compile(r"^b(\d+)\.?j(\d+)\.?t(\d+)\.?r(\d+)$")
+_INSTANCE_RUN_RE = re.compile(r"^[a-z0-9][a-z0-9_/-]*#r\d{2,}_[a-z0-9][a-z0-9_-]*@v\d{3,}$")
 _PAPER_RUN_RE = re.compile(r"^[pP]\.?j(\d+)\.?t(\d+)\.?r(\d+)$")
 _TASK_RE = re.compile(r"^b\d+\.?j\d+\.?t\d+(?:\.?r\d+)?$")
 _PARENT_TASK_RE = re.compile(r"^b(\d+)\.?j(\d+)\.?t(\d+)$")
@@ -58,7 +59,10 @@ _BLOCK_RE = re.compile(r"^b\d+(?:\.?j\d+(?:\.?t\d+(?:\.?r\d+)?)?)?$")
 
 def compact_global_run(value: str) -> str:
     """Return the canonical compact global Run id, or ``\"\"`` when invalid."""
-    match = _GLOBAL_RUN_RE.fullmatch((value or "").strip())
+    value = (value or "").strip()
+    if _INSTANCE_RUN_RE.fullmatch(value):
+        return value
+    match = _GLOBAL_RUN_RE.fullmatch(value)
     if not match:
         return ""
     return "b%sj%st%sr%s" % match.groups()
@@ -66,7 +70,10 @@ def compact_global_run(value: str) -> str:
 
 def readable_global_run(value: str) -> str:
     """Return a human-readable dotted global Run id, or ``\"\"`` when invalid."""
-    match = _GLOBAL_RUN_RE.fullmatch((value or "").strip())
+    value = (value or "").strip()
+    if _INSTANCE_RUN_RE.fullmatch(value):
+        return value
+    match = _GLOBAL_RUN_RE.fullmatch(value)
     if not match:
         return ""
     return "b%s.j%s.t%s.r%s" % match.groups()
@@ -364,6 +371,8 @@ def run_registry(root_text: str) -> dict[str, dict[str, str]]:
         }
     _add_current_task_tickets(root, records)
     _add_discovery_tickets(root, records)
+    from .insight_instances import register_instances
+    register_instances(root, records)
     return records
 
 
@@ -450,7 +459,7 @@ def _valid_supporting(value: str) -> tuple[bool, int]:
         return False, 0
     for entry in entries:
         parts = [part.strip() for part in entry.split("·")]
-        if len(parts) < 3 or parts[0] not in ("Execution", "Discovery"):
+        if len(parts) < 3 or parts[0] not in ("Execution", "Discovery", "Insight"):
             return False, len(entries)
         action = parts[1].lower()
         if not _valid_action_address(action, parts[2]):

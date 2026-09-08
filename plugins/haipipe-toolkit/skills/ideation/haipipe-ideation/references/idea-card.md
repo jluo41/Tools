@@ -150,7 +150,7 @@ because it ranks first or because a machine recommended a journal. Zero cards
 may be selected; when several are selected, each receives a distinct Paper
 Story route and target decision.
 
-The adapter to `haipipe-page-ideation` is direct:
+The adapter to `haipipe-paper-ideation` is direct:
 
 | Ideation artifact | Paper P0 destination |
 |---|---|

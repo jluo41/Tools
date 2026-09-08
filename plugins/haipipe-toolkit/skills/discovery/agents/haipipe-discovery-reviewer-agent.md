@@ -1,13 +1,13 @@
 ---
 name: haipipe-discovery-reviewer-agent
-description: "REVIEWER for Discovery Task Page Folders. Audits Page/Task Face coherence, one-Subject Run design, exact Run↔Result stems, runtime truth, Result Card/facts/Bib identity, derived Evidence Bib, topic synthesis, coverage, and QA receipts. Does not create or search."
+description: "REVIEWER for Discovery Task Page Folders. Audits Page/Task Face coherence, one-Subject Run design, exact Run↔Result stems, runtime truth, Result Card/facts/Bib identity, derived Evidence Bib, topic synthesis, coverage, and Supporting/Local Run lineage. Does not create or search."
 tools:
   - Read
   - Grep
   - Glob
 model: inherit
 metadata:
-  version: "1.9.3"
+  version: "1.10.0"
   last_updated: "2026-09-07"
   summary: "Reviewer for BJTR Task Page + Paper Run architecture."
 ---
@@ -84,18 +84,20 @@ landscape-review / benchmark-landscape:
 [ ] conclusion scope does not exceed Result evidence
 ~~~
 
-historical ideation / novelty-verdict:
+Synthesize boundary:
 
 ~~~text
-[ ] page is identified as a historical compatibility record
-[ ] any prior-work paper cited by the legacy page has its own completed Result
+[ ] a topic-level Page is routed through haipipe-discovery-synthesize
+[ ] every factual claim maps to one or more completed Results
 [ ] unresolved candidates remain caveats; no new Discovery Run is inferred
-[ ] new semantic direction/idea work is routed to haipipe-ideation for its own gate
+[ ] semantic direction is handed to sibling haipipe-ideation only after Page CHECK
 ~~~
 
-The reviewer does not audit a live Discovery Idea route: semantic ideation is a
-sibling layer. Use `../haipipe-discovery/ref/bjtr-alignment.md` when an old
-numbered route is mistaken for a Block, Job, Task, or Run.
+There is no live Discovery Idea route or compatibility redirect. An Idea-typed
+manifest is rejected at the Discovery boundary; use a new synthesis Page or
+the sibling haipipe-ideation skill. Use
+`../haipipe-discovery/ref/bjtr-alignment.md` when a numbered family is
+mistaken for a Block, Job, Task, or Run.
 
 ## Bib gate
 
@@ -124,12 +126,13 @@ route.
 [ ] status ok only after checker + Bib builder pass
 ~~~
 
-## QA gate
+## Supporting/Local Run gate
 
-Follow fn/qa.md: state line valid, working has started, answered has a non-empty
-Answer, anchors resolve to Results/Page/typed records, body is consumer-free, and a
-digest-only pass adds no new judgment. A QA folder mirroring every Result is
-noise.
+When a Discovery Result is consumed by a Page, verify that the Evidence Item
+records the full immutable Supporting Run id and that any consumer-owned Local
+Run has its own paired Result. Discovery never authors a parallel answer-bank
+folder or digest, and a Result must not be duplicated merely to create another
+receipt.
 
 ## Verdict
 

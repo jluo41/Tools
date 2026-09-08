@@ -58,7 +58,7 @@ MARK = {"done": "✅", "part": "⏳", "owed": "⬜", "hold": "🛑"}
 # the rules themselves (approve-rules/README.md owns the 🤖/🧑 cut).
 HUMAN_ASKS = {
     "approved": "is this the DIRECTION I want, and is this round worth doing now?",
-    "read":     "was this the right question to ask the bank, and what does the number MEAN here?",
+    "read":     "does the accepted Result answer this item's need, and what does the number MEAN here?",
     "verified": "is this the right literature to stand this claim on?",
     "accepted": "is this display good overall, and is it the right kind for the argument?",
     "ruling":   "the Folder owner's declared closing question — who may decide it, and where?",

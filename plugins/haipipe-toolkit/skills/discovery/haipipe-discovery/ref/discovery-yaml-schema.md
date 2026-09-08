@@ -18,8 +18,7 @@ discoveries/                                  bank
             ├── scripts/                      optional instrument
             ├── runs/r01_<author><year>_<paper>.sh
             ├── results/r01_<author><year>_<paper>/
-            ├── summary.md | verdict.md | landscape.md
-            └── QA/
+            └── summary.md | verdict.md | landscape.md
 ```
 
 Every new name uses `<level-letter><NN>_<noun>_<qualifier>`. `discoveries/` is
@@ -97,7 +96,7 @@ completed Result Bib may enter this Task's
 
 No `runs:` list. No `expected_outputs:` list of per-paper files. The filesystem
 is authoritative for both. No `parent` or `consumed_by` field: the Discovery
-bank remains probe-unaware.
+bank remains consumer-unaware.
 
 Manifests using `type` + `role` may normalize only through the permitted map in
 `page-types.md`. Idea-typed manifests are unsupported and fail validation;
@@ -110,7 +109,8 @@ For an existing two-level bank, use `../scripts/migrate_bjtr.py`. Its default
 mode is a no-write preview. The structural mapping is one legacy bank -> one
 Board Block, each legacy Group -> a numbered `jNN_..._inquiry` Job, then each
 numbered leaf -> its same-number `tNN_` Task Page. Existing source, note,
-synthesis, QA, and PDF artifacts move intact;
+synthesis, and PDF artifacts move intact; legacy question artifacts are excluded from
+the current contract;
 the migrator never manufactures historical Paper Runs from them.
 A legacy `report:` preserves the old outcome but supports only `reported` after
 structural migration; old `review`, `ok`, and `inconclusive` do not prove that
@@ -265,24 +265,13 @@ Search and every other type write their reader-facing synthesis into the root
 Page Content rather than a second monolithic `notes.md`. A generated
 `sources.md` may be kept as a legacy index, but it is not authority.
 
-## QA digests
+## Run/Result question receipts
 
-`QA/` remains optional and is governed by `fn/qa.md`. A QA answer anchors to
-stable Result Cards, root Page sections, or typed-record sections:
-
-```md
-# Q — <self-contained question>
-- state: answered
-
-## Answer
-Plain answer. Anchors: [→ results/r03_x/r03_x.md#Facts] [→ verdict.md#Evidence]
-
-## Caveats
-- What this does not establish.
-
-## Not-done
-- What remains unresolved and why.
-```
+Questions are answered by an existing immutable Run/Result or by a newly
+admitted Paper/Source Run. The full BJTR Run id, runtime receipt, Result Card,
+and any typed synthesis record are the durable receipt. A consumer records the
+Supporting Run id and owns any Local Run/Result needed for a focal Page Evidence
+Item. Discovery does not create a second answer bank.
 
 ## Project log events
 

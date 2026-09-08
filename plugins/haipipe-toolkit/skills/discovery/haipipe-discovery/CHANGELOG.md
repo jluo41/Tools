@@ -8,6 +8,21 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.12.0 · 2026-09-08
+
+- Retire the Discovery question/QA channel and its bank-owned folders/digests.
+  Questions now reuse or create a bounded Discovery Run and publish its paired
+  Result; consumers bind Supporting and Local Runs in their Evidence Workspace.
+- Remove the former probe collector from the live Discovery route.
+
+## 0.11.0 · 2026-09-08
+
+- Add the external capability registry for Search, Review, and Synthesize
+  reference procedures.
+- Define normalized external packets and keep provider, tracing, genealogy,
+  citation, and claim-support workers below HAI Run/Result/Page authority.
+- Link the registry from the public Discovery door and architecture notes.
+
 ## 0.10.0 · 2026-09-07
 
 - Delete the Discovery Idea family and remove its compatibility route and Page

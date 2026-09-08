@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Move a board's root pages into one named folder per Q group (QA1, JL 260726).
+"""Move a board's root pages into one named folder per Q group (JL 260726).
 
     python3 regroup.py <board-dir>            # dry run, prints the plan
     python3 regroup.py <board-dir> --apply    # do it (git mv when tracked)
@@ -10,7 +10,8 @@ move has to be a command rather than a habit: a rule enforced by hand drifts the
 first time somebody is in a hurry.
 
 WHY THE FOLDER CARRIES A NAME. It is `<N>-Q<key>-<slug of the group title>`,
-never a bare `QA/`. `QA/` writes the id a second time, and the id is already the
+never a bare group folder. Repeating the id in a folder name writes it a second
+time, and the id is already the
 prefix of every filename inside; the group's SUBJECT is the half a reader cannot
 recover from those filenames, so it is the half the folder name owes them.
 

@@ -310,8 +310,8 @@ def parse_dir(d):
         # reported unregistered-related-page. The letter is the family and the
         # digits are the order, which is the same shape `qm` already uses.
         # 260907, selected Story family (JL: "change Story 01 to Story A"): the
-        # paper journey's current ids are `Story-<letter>` with optional role
-        # suffixes (`Story-A`, `Story-A-roadmap`, `Story-A-narrative-<desk>`).
+        # paper journey's current id is `Story-<letter>`. Grandfathered boards
+        # may still carry role suffixes; current Story pages do not create them.
         # The P0 pool keeps its separate `Story00-ideation` identity and remains
         # covered by app_m below.
         story_m = re.match(r"(Story)-([A-Za-z])(?:-(.+))?$", p.stem)

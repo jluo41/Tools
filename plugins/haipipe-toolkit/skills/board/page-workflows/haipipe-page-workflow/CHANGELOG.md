@@ -1,3 +1,7 @@
+## 0.29.3 — 2026-09-08
+
+- Accept exact, checked Insight item executions as Supporting Runs alongside Execution and Discovery; preserve the local typed Evidence Item boundary.
+
 ## 0.29.2 — 2026-09-07
 
 - Follow the four-surface user-check packet: evidence that can be opened now

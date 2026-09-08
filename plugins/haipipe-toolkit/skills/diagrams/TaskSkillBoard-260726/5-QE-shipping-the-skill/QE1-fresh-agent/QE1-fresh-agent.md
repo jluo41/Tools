@@ -23,13 +23,13 @@ What makes this worth its own face rather than a checkbox is that the interestin
    forbidden this board · any conversation · any of us
 
    the run
-     1  enter the group        what does it SEE?              → QA4
+     1  enter the group        what does it SEE?              → current Task surface
      2  pick a task-folder     by STRUCTURE, or by name?      → QB1
      3  plan                   is the IPO contract complete?  → QB2
      4  build                  does it write an Intent docstring? → QB3
      5  execute                does it press the button itself?   → QB4
      6  report                 does it compare, or describe?  → QB5
-     7  asked a question       does it use the qa door?       → QA5
+     7  asked a question       does it use Run/Result?        → current evidence contract
 
    ── the useful output is WHERE it stops, not whether ───────
       each stopping point names the page that failed to ship a rule:
@@ -38,20 +38,20 @@ What makes this worth its own face rather than a checkbox is that the interestin
         names four sisters inconsistently   → QC1 did not graduate
         commits a checkpoint                → QC2 did not graduate
         reads results/ to answer            → QD2 did not graduate
-        writes a claim id into a digest     → QA5 did not graduate
-        types /haipipe-board itself         → QA4 did not graduate
+        writes a claim id into a digest     → Run/Result contract did not graduate
+        types a Board command itself        → current Task surface did not graduate
 
    ── the entry step is the new one ──────────────────────
       step 1 is currently untestable: entering a group prints text,
       so "what does it see" has an answer nobody is happy with.
-      This face cannot pass before QA4 does.
+      This face can pass only against the current Task and Run surfaces.
 ```
 
 ## Content
 ### The shipped surface is the whole surface
 The rule that makes the test meaningful: a fresh agent reads what a stranger would find, which is
 the skill package. This board is a working record and the runtime may never depend on it, which is
-`QA3`'s one-way rule stated as a test rather than as a principle.
+the one-way runtime boundary stated as a test rather than as a principle.
 
 ### A stopping point is a graduation failure, and that is the report
 Every place the agent stalls names a rule that was decided here and did not reach the manual. That
@@ -60,13 +60,14 @@ the mapping in the Diagram is worth keeping current as pages settle.
 
 ### It cannot run yet, and the reason is the ask
 Step 1 asks what a fresh agent sees on entering a group. Today it sees a paragraph, which is the
-thing `QA4` exists to change. So this face is blocked on `QA4` in a way the others are not: the
-rest of the run could be exercised now, but the first step would be testing the behaviour we have
-already decided to replace.
+thing the current Task surface exists to define. The rest of the run can be
+exercised against the shared Run/Result contract, and no separate question
+lane is part of the acceptance path.
 
 ## Aims
-- [ ] 🚪 Wait for `QA4`
-      Step 1 tests what a human sees on entering a group. Running it before the entry ruling lands measures the thing we are removing.
+- [ ] 🚪 Verify the current Task surface
+      Step 1 tests what a human sees on entering a group, using only the
+      shipped Task and Runs presenters.
 - [ ] 🧪 Run the test once, on a real group
       A group with several children, a fresh agent, the shipped docs. One run produces the whole stopping-point map.
 - [ ] 🗺 Keep the stopping-point map current
@@ -77,8 +78,8 @@ already decided to replace.
 ## Discussion
 
 ### From the retired States section (merged 260831)
-Not run. It cannot be run until `QA4` settles the entry, and nothing else on this board has
-graduated yet, so a run today would stop at step 1 and report the one thing already known.
+Not run on this retired design board. The current acceptance is performed
+against the live Task and Run/Result skills, not this historical record.
 - 260726 CC · 🧭 Made the stopping point the output
       Modelled on the paper family's fresh-agent face, with one change: the map from stopping point to page turns a pass/fail test into a diagnostic on this board's own graduation.
 

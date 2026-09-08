@@ -42,7 +42,7 @@ explanation, strength, or recommendation.
 ## Input
 
 - one registered QD ask;
-- one exact source Folder plus an accepted QA answer backed by a named run;
+- one exact source Folder plus an accepted Run/Result backed by a named run;
 - source version, run identity, unit, window, and coverage.
 
 ## Page Face
@@ -53,33 +53,32 @@ reported once here; higher rungs cite rows instead of restating them.
 
 ## Task Face
 
-Resolve the source relationship and live status through PageX. For every value
-coming from a Task or Discovery Folder, resolve an accepted QA answer through
-Probe even when the producing Folder is already linked and reported. Verify the
-named run and coverage; transcribe only reproducible observations; and reopen
-this Folder on rerun. This phase does not launch another Folder's Run and
-does not read raw `results/` when a QA/report surface is owed.
+Resolve the source relationship and live status through the Folder's Run/Result
+receipt. For every value coming from a Task or Discovery Folder, verify the
+named Supporting Run, coverage, and runtime receipt; transcribe only
+reproducible observations; and reopen this Folder on rerun. This phase does not
+launch another Folder's Run.
 
 One local Run may normalize or validate an intermediate owned by this Data
 Folder, but it cannot authorize a displayed value. Every displayed number
-produced by a Run still crosses the one page-serving collection job and its QA
-binding. A
+produced by a Run still crosses the one page-serving collection job and its
+Evidence Item binding. A
 reusable computation or source-data change belongs in its own linked executable
 Folder.
 
 ## Plugins
 
-- `pagex` required for the source Folder relationship and live task status;
-- `probe` required for every Task/Discovery-derived value; accepted Page
-  material may bind through PageX without a new Probe only when it already
-  exposes the exact accepted evidence the phase needs;
+- full Supporting Run id required for the source Folder relationship and live
+  task status;
+- a consumer-owned Local Run/Result is required when normalization or validation
+  is performed;
 - `outline` required;
 - `runs` optional only when this Folder itself owns a declared Run/Result
   derivation; scripts remain optional. Otherwise it is absent.
 
 ## Gate and Closure
 
-GI2 passes when every D value is bound by path to an accepted QA answer backed
+GI2 passes when every D value is bound by path to an accepted Run/Result backed
 by a named source/run, unit/window and coverage are explicit, gaps are visible,
 and no interpretation has entered.
 A rerun or changed source version reopens the affected rows and children.
@@ -92,5 +91,4 @@ coverage/gaps. Do not hand it a precomputed claim.
 ## Files
 
 - Page: `<DataFolder>/<DataFolder>.md`
-- Cross-Folder binding: `evidence/pagex/`
-- Required Task/Discovery QA bindings: `evidence/probe/`
+- Cross-Folder binding: full Supporting Run ids plus consumer Local Run/Result

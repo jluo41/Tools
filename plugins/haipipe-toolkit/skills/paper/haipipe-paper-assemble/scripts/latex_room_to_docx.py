@@ -1237,6 +1237,14 @@ def build() -> tuple[Path, Path]:
     if not BIB_PATH.exists():
         raise FileNotFoundError(BIB_PATH)
 
+    # submission-assets/ is a derived folder named by the CURRENT build's figures.
+    # Nothing ever removed a stale name, so a figure that was renamed or dropped
+    # kept shipping alongside its replacement (Figure-2.png outliving Figure 2).
+    if ASSET_DIR.is_dir():
+        for stale in ASSET_DIR.iterdir():
+            if stale.is_file():
+                stale.unlink()
+
     global BIB, CITATION_NUMBERS, REF_NUMBERS, REF_TEXT
     BIB = parse_bib(BIB_PATH.read_text(encoding="utf-8"))
     CITATION_NUMBERS = {}

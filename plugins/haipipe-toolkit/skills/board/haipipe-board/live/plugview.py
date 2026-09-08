@@ -151,12 +151,12 @@ assets/        ⚙️ the WINNING render
 candidates/ · versions/</pre>
 <div class="mut">nothing here yet · this is the unit shape the contract expects (QPf5 §1)</div></div>"""
 
-_GHOST_EVIDENCE = """<div class="card ghost"><b>PP01-&lt;slug&gt;/card.md</b>
-<pre>question    in the page's own words, stake included
-state:      planned → commissioned → answered → read
-bank:       reuse | run | code | new
-target:     &lt;task-folder&gt;/QA/&lt;n&gt;-&lt;slug&gt;.md</pre>
-<div class="mut">nothing asked yet · this is the card shape the contract expects (QPf9 §1)</div></div>"""
+_GHOST_EVIDENCE = """<div class="card ghost"><b>E01-&lt;slug&gt; · Evidence Item</b>
+<pre>specification   the page's evidence need
+state:          planned → commissioned → landed → embedded
+supporting:     execution/discovery Run ids
+local:          consumer-owned Run id → immutable Result</pre>
+<div class="mut">nothing landed yet · this is the Evidence Item shape the contract expects</div></div>"""
 
 # The historical Probe protocol's own ladder,
 # plus the three retired words so an old card still reads. `planned` and

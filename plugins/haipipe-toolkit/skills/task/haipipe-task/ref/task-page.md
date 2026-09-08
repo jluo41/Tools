@@ -52,8 +52,8 @@ execution history:
 4. What is the current reading, and what Run would settle what remains?
 
 `workflow/report*.yaml`, `RUN_AUDIT.md`, metrics, and notebooks report what ran.
-The Page adds the interpretation they cannot own. Do not copy those files or a
-QA digest into Page prose.
+The Page adds the interpretation they cannot own. Do not copy those files or
+invent a parallel digest; cite the exact Run/Result instead.
 
 ## Outline grammar
 
@@ -203,12 +203,12 @@ the Task Folder's current P-B-E-R records and the current READING gate above
 all pass. A new or stale Run reopens the affected evidence, reading, and Page;
 it does not create a new Board Page.
 
-## QA boundary
+## Run/Result boundary
 
-`QA/<n>-<slug>.md` answers one outside question and is written only by the Task
-QA door. The Page holds the Task's standing self-reading. Reference a QA file
-by path in the Context/Files record when needed; never copy its prose into the
-Page or edit it from the Page workflow.
+The Page's standing self-reading points to the paired Run Results and runtime
+receipts. A consumer records full immutable Supporting Run ids and owns any
+Local Run/Result needed for a focal Evidence Item. The Page workflow never
+creates a parallel answer bank.
 
 ## Template and checks
 
@@ -230,4 +230,4 @@ template. Then run the Page workflow and the Task tree checker. Before closure:
 - every shown number resolves to a full Run id;
 - Conclusion is last; its one current READING table is the local Page ruling,
   and every stable row is current and person-read;
-- machinery and QA prose remain in their owning files.
+- machinery and execution prose remain in their owning files.

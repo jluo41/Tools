@@ -198,7 +198,7 @@ Workflow
 │   │       └── files_out: [results/dry_run.log]
 │   │
 │   └── P3: "Review"
-│       └── S1: "QA gate"
+│       └── S1: "review gate"
 │           ├── files_in:  [build_lbp.py, configs/run_lbp.yaml]
 │           └── files_out: [CODE_REVIEW.md]
 │

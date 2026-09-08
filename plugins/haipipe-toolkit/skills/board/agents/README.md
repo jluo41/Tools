@@ -2,7 +2,7 @@ board: Agent Roster
 ====================
 
 The Board family owns a producer base, an approver, a reviewer, an auditor,
-and (under `../page-workflows/agents/`) one agent per lifecycle phase:
+and (under `../page-workflows/agents/`) one agent per current lifecycle phase:
 
 ```text
 haipipe-page-creator-agent      producer BASE + the two non-phase verbs
@@ -10,9 +10,8 @@ haipipe-page-creator-agent      producer BASE + the two non-phase verbs
 haipipe-page-approver-agent     rule-bound machine ticks against approve-rules/
 haipipe-board-reviewer-agent    fresh read-only board review; base of the judge
 haipipe-page-auditor-agent      packet builder + receipt keeper, NOT a dispatcher
-../page-workflows/agents/       ①-⑥ one producer per phase (outline, probe,
-                                evidence, draft, revise+compile) and
-                                ⑦ haipipe-page-check-agent, the judge
+../page-workflows/agents/       00 context, 01 outline, 02 evidence,
+                                03 content, and 04 check (the judge)
 ```
 
 The main session and `haipipe-board` remain the interactive writers. They
@@ -29,8 +28,8 @@ current session / haipipe-board      MAIN session invokes the Workflow;
         │                            auditor-agent validates the packet before,
         │ writes known change        stores + audits the receipt after
         ▼                                      │
-reviewer-agent: board review                   ├── producer: one phase agent per
-        │                                      │   phase (PRODUCER_AGENTS map;
+reviewer-agent: board review                   ├── producer: one current phase
+        │                                      │   agent (PRODUCER_AGENTS map;
         └── original writer fixes              │   creator-agent = fallback)
                                                ├── builder: snapshot version
                                                ├── judge: haipipe-page-check-agent

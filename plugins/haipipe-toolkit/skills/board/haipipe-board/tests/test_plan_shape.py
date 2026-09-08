@@ -95,6 +95,19 @@ class ResolvedSectionShapeTest(unittest.TestCase):
             )
         )
 
+    def test_insight_topic_page_has_items_instead_of_one_page_wide_dikw(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary) / "I01-topic.md"
+            page.write_text("# Topic\npage-type: insight\ninsight-layout: items-v1\n", encoding="utf-8")
+            titles = ("Origin", "Instance and Scope", "Insight Items", "Synthesis", "Reusable Findings")
+            complete = "\n".join(f"## C{i} · {name}" for i, name in enumerate(titles, 1))
+            self.assertEqual([], check(page, complete, SKILLS_ROOT))
+            old = "\n".join(f"## C{i} · {name}" for i, name in enumerate(
+                ("Origin", "Question/Scope", "Sources", "D", "I", "K", "W", "Reusable Findings"), 1))
+            self.assertTrue(check(page, old, SKILLS_ROOT))
+            page.write_text("# Legacy topic\npage-type: insight\n", encoding="utf-8")
+            self.assertEqual([], check(page, old, SKILLS_ROOT))
+
     def test_legacy_task_page_type_uses_the_same_canonical_owner(self):
         with tempfile.TemporaryDirectory() as temporary:
             page = Path(temporary) / "t01_model.md"

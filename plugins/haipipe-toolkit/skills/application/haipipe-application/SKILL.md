@@ -2,15 +2,15 @@
 name: haipipe-application
 description: >-
   One thin door over an Application's InsightBoard and DesignBoard. Their
-  native I0-I5 and D0-D5 workflow phases own each Folder kind, both Folder
-  faces, plugin profile, gates, and handoffs. The Application door owns only
+  Insight phases and canonical Design Folder owner govern both Folder
+  faces, plugins, gates, and handoffs. The Application door owns only
   cross-board routing and ends at accepted Design. Trigger: application,
   InsightBoard, DesignBoard, Folder phase, data meta, question, DIKW, Brief,
   design, review, accept, retarget, PageX crossing, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.0.6"
-  last_updated: "2026-08-31"
+  version: "1.2.0"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,12 +24,12 @@ that phase own the Folder's Page Face, Task Face, plugins, and closure.
 
 ```text
 Task / Discovery Folders
-          │ PageX whole-Folder link · Probe when evidence is missing
+          │ PageX whole-Folder link · Supporting Run when evidence is missing
           ▼
 🔎 InsightBoard                            🎨 DesignBoard
-I0 Meta → I1-I5 Folders ──── PageX ────▶  D0 Brief → D1-D5 Folders → ✅ accepted
-        D→I→K→W                                     R<n> divisions
-        + Design Handoff                            D4 divisions + delivery/render/
+I0 Meta → I1-I5 Folders ── signed input ─▶ Brief → stable DS Folder → ✅ accepted
+        D→I→K→W                                     generation/verification Runs
+        + Design Handoff                            DU Results + delivery/render/
 ```
 
 Application owns the folders, the design need, the contextual Wisdom, and acceptance. Task rules still own how a chain page crosses Task/Discovery evidence. Folder ownership does not transfer evidence authority.
@@ -43,7 +43,8 @@ One board carrying both halves made one Brief Page do two jobs and gave two diff
 🎨 DesignBoard     reader: whoever approves the send       ends at: accepted version
 ```
 
-PageX crosses boards unchanged, because it binds by path rather than by board.
+Existing PageX records remain readable. New Design work pins signed handoff
+files/versions as inputs; it creates no new PageX lane or fake Supporting Run.
 
 ## Phase-owned Folder kinds
 
@@ -51,15 +52,17 @@ PageX crosses boards unchanged, because it binds by path rather than by board.
 🔎 haipipe-insight-workflow
 I0 Meta · I1 Question · I2 Data · I3 Information · I4 Knowledge · I5 Wisdom
 
-🎨 haipipe-design-workflow
-D0 Brief · D1 Card · D2 Unit · D3 Verdict · D4 Division · D5 PageDown
+🎨 haipipe-design + haipipe-design-workflow
+stable Design Folder · Plan → Generate → Verify → Adopt
 ```
 
-These twelve phase skills live under `application/workflow-phases/`. Each owns
-one Folder kind's Page Face, Task Face, plugin profile, gate, and handoff.
+Insight and Brief retain their phase-owned contracts. Design is a canonical
+Folder owner; haipipe-design-unit is a worker, not a Folder phase. Legacy
+D1–D5 schemas remain read-only adapters under application/workflow-phases/.
 `page-type: meta|question|data|information|knowledge|wisdom|brief|design`
-remains a runtime compatibility lookup only. Promoted Principle is an optional
-D4 Folder role reviewed again at D5, not an independent Page Type or phase.
+remains a runtime compatibility lookup only. Historical Promoted Principle is
+an optional D4 role reviewed at D5, not an independent Page Type or phase.
+Native commissions pin any applicable principle as a versioned reference.
 `page-type: insight` remains Task-only for the consumer-neutral Task/Insights
 Board.
 
@@ -77,7 +80,7 @@ design | intervention | message
 render | project              generate a versioned projection through fn/render.md;
                               `artifact` is a legacy command alias, never a Folder kind
 review | audit | check         CHECK selected Design versions and their trace
-accept                         record the per-division acceptance row · the last act
+accept                         record version-bound human adoption · the last act
 retarget                       re-pin venue or audience and reopen dependent Design
 feedback | digest              run the existing family feedback procedures
 workflow | run | drive         cross the two boards through
@@ -92,7 +95,8 @@ page-level procedures both doors share.
 
 design-side verbs (brief · design · direction · release · realize · judge ·
 render · accept) are OWNED by the sibling door /haipipe-design since 260824:
-reads:/born-of:/stance laws, design cards, artifact units, the arm-agent.
+reads:/born-of: authority, Run-backed DU Results, independent verification,
+and the unit worker. Legacy card/thread records remain read-only.
 The rows above remain as forwards; fn/brief.md and fn/design.md stay as the
 page-level procedures both doors share.
 ```
@@ -141,11 +145,13 @@ A project whose executable Task folders use a stage-letter grammar such as `task
 └── <Program>-DesignBoard/                e.g. RefillFraming-DesignBoard
     ├── board.md                          reads: · the evidence whitelist
     ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set
-    ├── 1-P-principle/P<NN>-<slug>/        optional subordinate D4 promotion
+    ├── 1-P-principle/P<NN>-<slug>/        historical optional principle records
     └── 2-DS-design/DS<NN>-<audience>-<job>-<venue>/  units as divisions
-        ├── design/                       card + unit · one thread per Folder
+        ├── runs/                         caller-authored YAML Run Tickets
+        ├── results/                      generation DUs and verification Results
+        ├── scripts/config/               frozen per-Run configuration
         ├── delivery/render/              the unit as the recipient sees it
-        ├── evidence/pagex/              cross-Folder relationships
+        ├── workflow/                    dispatch and round receipts
         ├── evidence/display/            Page-owned displays, when selected
         └── outline/                     human plan and decision record
 ```
@@ -171,23 +177,24 @@ Knowledge, first page); phase ownership is unchanged. The grammar's single
 source is `ref/partition.md`: the mirror rule, MT00 partition register,
 shared-threshold rule, X-only comparison law, and SPLIT verdict.
 
-Do not create the legacy descriptions/themes/claims/advice ladder, a flat Application-wide `1-probes/`, a `4-deploy/`, or a `5-rounds/`. Each rung page owns its own bounded `evidence/probe/`; Meta, the registers, Brief, and Design Pages own none.
+Do not create the legacy descriptions/themes/claims/advice ladder, a flat Application-wide run bank, a `4-deploy/`, or a `5-rounds/`. Each rung page declares typed Evidence Items and binds Supporting/Local Runs; Meta, the registers, Brief, and Design Pages own none.
 
 ## The two authorities
 
 ```text
 InsightBoard
-  may PROBE Task/Discovery under each rung phase's Task Face
-  (page-type: insight itself remains task-only)
+  may commission bounded Supporting Runs from Task/Discovery under each rung
+  phase's Task Face (page-type: insight itself remains task-only)
   owns D→I→K and application-contextual W
 
 DesignBoard
-  may use PageX only
+  may consume authorized frozen inputs; never launches upstream work invisibly
   owns selection, inline/promoted warrants, message roles, concrete content,
   and acceptance
 ```
 
-The law: **Design Pages own no Probe; rung pages may Probe under Task-backed evidence authority.**
+The law: **Design Pages own no upstream execution; rung pages may commission
+Supporting Runs under Task-backed evidence authority.**
 
 ## Page flow
 
@@ -222,13 +229,13 @@ a dataset lands, no Brief yet
         │
         ▼
 🧪 /haipipe-task insight          scope: task · consumer-neutral · no serves:
-   D → I → K → W → Reusable Findings
+   topic instance → item Runs → versioned D/I/K/W/RF Results
         │
         │  ... later, a Brief raises a need this already answers
         ▼
-🔎 Application I1 QW              registers the need and exact RF version
+🔎 Application I1 QW              pins instance/item/version/RF + Result hash
         │
-        ▼ PageX · pre-climbed external parent
+        ▼ Supporting Result · pre-climbed external parent
 🔎 Application I5 W               contextual counsel + forbidden overreach
         │ ✋ signed local Design Handoff · then GI6
         ▼
@@ -236,17 +243,18 @@ a dataset lands, no Brief yet
 ```
 
 The chain verb (`fn/chain.md`, step 2) searches the Task/Insights Board FIRST
-and treats a settled `scope: task`, Wisdom-targeted RF as a **pre-climbed
+and treats an accepted `scope: task` instance item's Wisdom-targeted RF as a **pre-climbed
 external parent** rather than recomputing D/I/K locally. The Application still
 owns the commission and consequence: I1 registers one QW row, a local I5 W
-Folder PageX-binds the exact RF version, contextualizes it, and earns a human
+Folder binds the exact item Result through its Evidence graph, contextualizes it, and earns a human
 signature before GI6. A Task RF is consumer-neutral evidence, never a signed
 Design Handoff and never direct Design authority. The normal local I2-I5 climb
-remains the route when the Task Page is incomplete, stale, below Wisdom, or
+remains the route when the selected item Result is incomplete, stale, below Wisdom, or
 does not answer the registered need.
 
-These routes do not share a Page Type. Task owns the one-page
-`haipipe-page-insight` contract. An Application owns an I1 Question
+These routes do not share a Page Type. Task owns the topic-instance Page and
+item Run contract in `haipipe-page-insight`. An accepted item can be reused
+while siblings remain open. An Application owns an I1 Question
 register plus separate I2 Data, I3 Information, I4 Knowledge, and I5 Wisdom
 Folder contracts under `haipipe-insight-workflow`.
 
@@ -263,7 +271,10 @@ Application Need → QW → exact Task RF → contextual W → Design Handoff
 
 The Design Handoff names finding, strength, boundary, source versions, design consequence, forbidden overreach, and the Brief/Design need it serves. It does not write final message copy.
 
-Design Pages borrow the exact handoff file/scope through PageX. PageX answers "which Page material"; the Design Page answers "which move follows here." Never copy probe cards or inspect Task `results/` from a Design Page.
+Design Pages pin the exact signed handoff file/scope and hash in their Run
+inputs. Existing PageX is legacy metadata only. Never copy upstream Run
+artifacts, invent an Insight Run identity, or inspect raw Task results from a
+Design Page.
 
 ## Review and acceptance gates
 
@@ -323,7 +334,7 @@ frontier: meta | insight:<id> | brief | design:<id> | review | accepted
 maturity: scoped | understood | designed | authored | reviewed | accepted
 ```
 
-Also report open questions from the four registers (the wisdom register's rollup is the one-view source), stale Probe/PageX bindings, Design Page and division counts, and accepted render versions per division.
+Also report open questions from the four registers (the wisdom register's rollup is the one-view source), stale Run/PageX bindings, Design Page and division counts, and accepted render versions per division.
 
 ## Internal procedures
 

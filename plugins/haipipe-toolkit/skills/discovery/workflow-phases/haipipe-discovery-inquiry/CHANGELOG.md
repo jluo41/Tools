@@ -1,3 +1,8 @@
+## 0.5.1 · 2026-09-07
+
+- Make this phase skill its own registry identity after retiring the separate
+  `haipipe-discovery-workflow` directory; no stale workflow load is implied.
+
 ## 0.5.0 · 2026-09-07
 
 - Replace the retired Idea family with the live `3_synthesize` family.

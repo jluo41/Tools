@@ -11,6 +11,7 @@ haipipe-discovery/ref/lifecycle-map.md
 haipipe-discovery/ref/paper-run-contract.md
 haipipe-discovery/ref/discovery-yaml-schema.md
 haipipe-discovery/ref/bjtr-alignment.md
+haipipe-discovery/ref/external-capability-registry.md
 ~~~
 
 This file explains their relationship; when details differ, those runtime refs
@@ -42,7 +43,7 @@ Semantic ideation is a sibling layer, not a Discovery capability family:
 
 ~~~text
 ideation/haipipe-ideation
-  Task Results / QA + Discovery Result/Bib pointers
+  Task Run/Result + Discovery Result/Bib pointers
   -> evidence bundle -> Direction/Idea Cards -> Paper P0 handoff
 ~~~
 
@@ -106,6 +107,16 @@ Review inspects one source/Result at a time, and Synthesize combines accepted
 Results into the root article. Semantic ideation consumes Discovery and Task
 evidence in `haipipe-ideation` after this workflow; it is not a Discovery
 family. Worker/API/CLI calls are runtime detail inside a Run receipt.
+
+## External capability boundary
+
+Reference repositories contribute narrow provider, extraction, lineage, and
+verification procedures through
+`haipipe-discovery/ref/external-capability-registry.md`. Their outputs are
+normalized into Search, Review, or Synthesis packets. They cannot commission a
+Run, own a Result Card, write a one-entry Bib, or bypass the shared Page and
+Outline gates. This keeps external SaaS-style modules useful without creating
+a second Folder model.
 
 ## D1 domain-cycle × Run map
 

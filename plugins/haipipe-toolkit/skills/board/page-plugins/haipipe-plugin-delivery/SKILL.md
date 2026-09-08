@@ -9,8 +9,8 @@ description: >-
   show the pdf docx deck together,
   /haipipe-plugin-delivery.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-04"
+  version: "0.4.1"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -59,6 +59,14 @@ the category  <page>/delivery/ (flat names are compatibility reads only)
 
 `live/delivery.py` serves GET `/_board/delivery` (the segmented surface) and
 its POST twin; `82-plugin-delivery.js` registers the ONE row.
+
+## 🚫 No standalone delivery check lane
+
+Delivery has no separate quality lane or sibling report. Its machine receipt
+is the single `build-manifest.json`, whose `status`, `readiness`,
+`checks`, and `render` fields describe what was built and which blockers remain.
+The Page workflow's `haipipe-page-check` owns the human whole-Page close gate;
+Delivery only projects the declared outputs and their build diagnostics.
 
 ## 📂 Files
 

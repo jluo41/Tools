@@ -107,7 +107,8 @@ page-serving collection Job; it does not bypass that one numeric door to feed
 a Page DISPLAY unit directly. A local Run
 may validate or reshape non-authoritative intermediates, but it
 cannot become a second value door. A reusable derivation, a source-data change, or any displayed
-numeric result belongs in the linked executable Folder and its QA binding. The
+numeric result belongs in the linked executable Folder and its Run Result
+binding. The
 nine `outline/` process files and its nested evidence workspace, their ids, labels and writers are
 `haipipe-plugin-outline/ref/record-shape.md`; the plan's grammar is
 `ref/plan-grammar.md` beside it. A phase loads the exact Outline-plugin refs it
@@ -119,15 +120,15 @@ appended to each phase's execution dependency chain.
 
 A property every Page carries cannot tell one Folder kind from another. A Page
 shows something, cites something, states a number; so display, literature and
-value are plugins. In migrated families, a workflow phase or declared
-canonical family skill owns the Folder kind and its Page Face. In unmigrated
-families, a Page Type remains the compatibility owner. No `folder-kind:` or
-`page-type:` key is the flexible base.
+value are plugins. A workflow phase or declared family skill owns the Folder
+kind and its Page Face. A fixed Page Type may own a Page directly. No
+`folder-kind:` or `page-type:` key is the flexible base.
 
 Resolve ① to ⑥ in order and stop at the first key that matches. Exactly one
 semantic owner may claim the Page Face. An in-place Folder's
 `workflow/phase.yaml current.folder-kind` is authoritative; fixed-kind Folders
-use Page `folder-kind:`. `page-type:` is a compatibility fallback. If current
+use Page `folder-kind:`. `page-type:` is the declared Page Type when no current
+Folder kind exists. If current
 state and Markdown disagree, fix the Folder, never the resolver.
 
 ```text
@@ -135,7 +136,7 @@ step  machine-readable key                    Page Face owner    contract
 ──────────────────────────────────────────────────────────────────────────
 ①     workflow/phase.yaml current kind        workflow phase     phase skill
 ②     frontmatter `folder-kind: <key>`        phase or family    phase/family skill
-③     frontmatter `page-type: <key>`          compatibility key  phase/family/for-<key>
+③     frontmatter `page-type: <key>`          Page Type          phase/family/for-<key>
 ④     filename QBv<n>-                        venue              for-venue
 ⑤     filename S-<Family>-<unit>-<slug>       stage              for-stage
 ⑥     filename Q<group><n>[<face>]-<slug>     Q decision         base only
@@ -146,63 +147,14 @@ phase. Its Task Face does not select the Task Folder technical-report grammar:
 the Discovery phase owns that Page Face, while `haipipe-task` owns only
 `folder-kind: task`.
 
-### The inventory is derived, never written by hand
+### Page Types are self-owned
 
-Phase `legacy_page_type` metadata and unmigrated contract folders
-(`*/page-types/`, Paper's phase filename bridge, plus Venue) say who maintains
-a legacy key. `check.py` says what resolves and boards say what is in use:
-
-```bash
-python3 <haipipe-board>/cli/pagetypes.py           # the table, with live page counts
-python3 <haipipe-board>/cli/pagetypes.py --write   # rewrite the block below
-python3 <haipipe-board>/cli/pagetypes.py --check   # exit 1 on any drift
-```
-
-A key with live pages and no contract, or a key the engine accepts that nothing
-ships and nothing uses, is a finding; `--check` is the tooth. The block carries
-the structural facts only; the counts stay in the command's output.
-
-Since 260831 every key also has a RECORD in `ref/type-registry.md`: four
-fields, one consumer each (`outline` → SHAPE · `evidence` → SURVEY and LAND ·
-`prose` → WRITE · `closing` → CHECK). The phases are the functions; the
-record is their arguments. A `contract` key keeps its outline SHAPE in its
-own frontmatter and the registry points at it; a `record-only` compatibility
-key keeps its complete law in the registry, while a `key-only` record with live
-pages is a `registry-gap` (usage without law), reported by the same
-`--check`.
-
-<!-- BEGIN GENERATED page-type-inventory -->
-```text
-key          owner         engine  resolved by
-───────────────────────────────────────────────
-brief        application   ✓       `page-type:` line
-collection   —             ✓       `page-type:` line
-dash         —             ✓       `page-type:` line
-data         application   ✓       `page-type:` line
-design       application   ✓       `page-type:` line
-display      —             ✓       `page-type:` line
-ideation     paper         ✓       `page-type:` line
-information  application   ✓       `page-type:` line
-insight      task          ✓       `page-type:` line
-knowledge    application   ✓       `page-type:` line
-labeling     —             ✓       `page-type:` line
-meta         application   ✓       `page-type:` line
-narrative    —             ✓       `page-type:` line
-opening      —             ✓       `page-type:` line
-question     application   ✓       `page-type:` line
-roadmap      —             ✓       `page-type:` line
-round        paper         ✓       `page-type:` line
-section      paper         ✓       `page-type:` line
-seed         —             ✓       `page-type:` line
-slide        —             ✓       `page-type:` line
-stage        —             ✓       filename S-<Family>-<unit>-
-story        paper         ✓       `page-type:` line
-task         task          ✓       `page-type:` line
-venue        paper         ✓       filename QBv<n>-
-view         —             ✓       `page-type:` line
-wisdom       application   ✓       `page-type:` line
-```
-<!-- END GENERATED page-type-inventory -->
+Each current Page Type declares its own shape and owner in its Page-Face or
+workflow skill. `check.py` validates the `page-type:` value against the
+engine's current set and the resolver loads the owning contract directly.
+There is no central inventory, compatibility layer, alias table, or Page Type
+without an owning contract. A retired key must be migrated or removed from the
+Page; it is not kept alive by a second document.
 
 ### A variant extends the base and never redefines it
 
@@ -242,7 +194,7 @@ it. The ledger is `outline/<stem>-evidence-items.md`
 (`haipipe-plugin-outline/ref/item-table.md`).
 
 Resolve one invocation as: Folder → base Page Face → phase-owned Folder kind
-(or a legacy Page-Type compatibility contract) → current cycle →
+or declared Page Type → current cycle →
 phase-selected and page-local plugins.
 The cycles form a routing grammar, not a conveyor belt: each may repeat,
 SURVEY and LAND are skipped when the page promises nothing it cannot already
@@ -298,17 +250,18 @@ stated as a `**Covered elsewhere**:` part in its drawer.
 `## Outline` is the only on-page projection of the planning process. It opens
 by default immediately after the always-visible Opening. Normally it renders
 the current plan's `▤ Outline table`: `Address · Planned move · Feedback ·
-Evidence · Supporting Run · Local Run`; C/P rows are narrative group headers and B rows
+Evidence · Supporting Run · Local Run`; C/P rows are planning group headers and B rows
 are the checkable claim/evidence rows. Evidence chip colour carries the quick
 signal and its deep-linked Evidence Workspace card carries the detail, so no
 separate Status column or Page popover is shown. A Page
 Type may define one generated
 executive projection from its own authoritative Content records. When it does,
 that projection appears first and the generic plan table remains available in
-a closed evidence drawer. The retired Narrative type used this exception for
-its Section-control table; since 260907 the paper family's Story type carries
-that table as §8 Section Control. No projection is copied into a Page-authored
-`## Outline`, and a Page-authored narrative map does not exist. Content, Aims,
+a closed evidence drawer. The paper family's Story owns its Section Narrative
+and any supported compact section-map projection; resolve its current semantic
+contract through `haipipe-paper-story`. The base Page does not prescribe the
+Story's research Content divisions. No projection is copied into a Page-authored
+`## Outline`, and a Page-authored section map does not exist. Content, Aims,
 References, and every other optional fold start shut. The `outline/` folder
 remains the authority for every plan, writing rule, evidence, feedback,
 requirement, discussion, file, and log record.
@@ -465,7 +418,6 @@ python3 <toolkit>/skills/board/haipipe-board/cli/build.py <board-folder>
 python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> | grep '^<PAGE>'
 python3 <toolkit>/skills/board/haipipe-board/cli/check.py <board-folder> --summary
 python3 <toolkit>/skills/board/haipipe-board/cli/check.py --rules
-python3 <toolkit>/skills/board/haipipe-board/cli/pagetypes.py
 ```
 
 `--rules` prints every finding code with its message; read the laws before
@@ -514,7 +466,7 @@ writing; a copied checklist in a prompt is a second authority and drifts.
 Evaluation asks whether the authored page satisfies its declared
 requirements, never whether the reviewer likes the format, and the
 requirements resolve in this order: this contract and `ref/page-template.md`
-→ the phase-owned Page Face (or legacy Page-Type variant) → the current Page
+→ the phase-owned Page Face or declared Page Type → the current Page
 Phase contract → the page's own
 authored W records in `outline/<stem>-requirement.md` (and `## Stage Contract` on S) → the local division
 purpose and each paragraph's job line. A more specific source refines a
@@ -549,15 +501,13 @@ Every id inside a fenced figure renders as a link.
 
 ## ✅ Closing checks
 
-- `pagetypes.py --check` exits 0, and the generated inventory block matches
-  its output.
+- Every `folder-kind:` and `page-type:` value resolves directly to its owning
+  Page or workflow contract; no central registry is consulted.
 - Every heading passes `writing-rules.md`'s five lookup-key tests;
   `grep -n '^#\+ .*, '` returns only clauses that state a second rule.
 - No section states a rule a cited authority owns (`board-form.md` §4,
   `page-template.md`, `writing-rules.md`, `haipipe-plugin-outline`), except
   where this file adds what a machine may write.
-- No section narrates a retirement; what a key or section used to mean lives
-  in `CHANGELOG.md`.
 - Every path this file names resolves on disk; each `##` section answers one
   reader question.
 
@@ -568,11 +518,10 @@ haipipe-page/
 ├── SKILL.md            this contract
 ├── ref/glossary.md     every word this family uses, with the path it names
 ├── ref/user-check-packet.md  the four-surface reader-facing completion packet
-├── ref/type-registry.md  compatibility key records + phase-owner arguments
 └── CHANGELOG.md        version history, and the only home for retired rules
 ```
 
 Reads `haipipe-board/ref/page-template.md` and `ref/board-form.md` §4 as the
-authority; owns no scripts. `cli/pagetypes.py`, `cli/preview.py` and
+authority; owns no scripts. `cli/preview.py` and
 `cli/pagecontext.py` live with the machinery. The lifecycle packet and receipt
 spec belong to `page-workflows/haipipe-page-workflow/ref/page-run-contract.md`.

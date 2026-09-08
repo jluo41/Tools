@@ -4,15 +4,15 @@ description: >-
   Semantic ideation layer that turns internal Task evidence and external
   Discovery Results into grounded Direction and Idea Cards, pressure-tests
   claims and journal fit, records a human idea-and-target selection, and
-  prepares a bounded handoff to haipipe-page-ideation. Use for
+  prepares a bounded handoff to haipipe-paper-ideation. Use for
   evidence-grounded research directions, novelty review, and idea-to-venue
   portfolios; use haipipe-discovery for external search/read/synthesis,
   haipipe-paper-venue for one target's verified contract, and
-  haipipe-page-ideation for the paper's P0 page.
+  haipipe-paper-ideation for the paper's P0 page.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-09-07"
+  version: "0.2.2"
+  last_updated: "2026-09-08"
   folder_owner: canonical
   primary_face: direction
   page_ruling: none
@@ -62,7 +62,7 @@ Load the relevant owner before acting on that owner's artifact:
 4. `haipipe-paper-venue` when a shortlisted target needs a new or refreshed
    versioned Venue contract. It describes one desk; it never chooses the idea's
    target.
-5. `haipipe-page-ideation` only at handoff, when selected cards are ready to
+5. `haipipe-paper-ideation` only at handoff, when selected cards are ready to
    enter the Paper-specific P0 page. Load the base Page workflow only when
    actually running a Page phase, not for an Ideation-only audit.
 
@@ -200,7 +200,7 @@ pilot/feasibility receipt or waiver, Venue Fit Card and contract paths, the
 human idea-and-target decision, and hard limits. It does not duplicate
 evidence or venue rules.
 
-`haipipe-page-ideation` consumes that packet, writes the Paper-specific P0
+`haipipe-paper-ideation` consumes that packet, writes the Paper-specific P0
 page, and binds the origin in each selected Story direction. Multiple selected
 cards route to distinct Stories (`Story-A`, `Story-B`, ...); they do not become
 several competing ideas inside one Story. No handoff is emitted without a

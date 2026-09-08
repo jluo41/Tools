@@ -8,8 +8,8 @@ description: >-
   its plugins. Use to run or inspect an InsightBoard. Trigger: insight
   workflow, climb ladder, next rung, frontier cell, /haipipe-insight-workflow.
 metadata:
-  version: "1.0.4"
-  last_updated: "2026-08-31"
+  version: "1.1.0"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -20,6 +20,11 @@ for I0-I5 ordering and GI0-GI6. `haipipe-application-workflow` may delegate
 here and record a crossing, but it owns no alias phases or duplicate gates.
 This workflow never edits a Page Face itself; the selected phase delegates Page
 work to `haipipe-page-workflow`.
+
+This is the Application InsightBoard workflow. Task-side topic instances use
+the item/checkpoint workflow table owned by `haipipe-page-insight/ref/`.
+Independent questions there are item Runs inside one Page, not this ladder's
+separate rung Folders.
 
 ## 🔤 Terminology law
 
@@ -43,7 +48,7 @@ I1 Question (ask)         MT01-MT04 registers         the question matrix: one r
                           ← the scoreboard hub        per question, one column per
                                                       partition, a state per CELL
 I2 Data (observe)         the D page                  run-bound observations, every
-                                                      value bound to a QA file
+                                                      value bound to a named Run Result
 I3 Information (derive)   the I page                  rates and contrasts from
                                                       named D rows
 I4 Knowledge (claim)      the K page                  propositions with strength,
@@ -203,32 +208,38 @@ This is the only authoritative Insight order; the crossing workflow delegates he
 ### Pre-climbed external parent · Task RF bridge
 
 One narrow bridge preserves the Climb Law without duplicating a
-consumer-neutral chain. A settled Task Insight Page has already climbed
+consumer-neutral chain. A settled Task Insight item Result has already climbed
 `D → I → K → W → RF` under its own Task-only contract. An Application may use
 that completed chain as an **external parent** for a local I5 Folder:
 
 ```text
-Task Insight Page       Application InsightBoard                 DesignBoard
-D→I→K→W→RF ── PageX ─▶ I1 QW register → I5 contextual W ─✋─▶ X1 signed handoff
+Task instance/item@version/RF    Application InsightBoard          DesignBoard
+D→I→K→W→RF ── Supporting Result ─▶ I1 QW → I5 contextual W ─✋─▶ X1 handoff
 ```
 
 This is not permission to skip a rung inside an Application chain. It is a
 cross-scope authority bridge with five mechanically readable assertions:
 
-1. the Task Page declares `page-type: insight`, `scope: task`, and
-   `insight-target: wisdom`;
-2. it is CHECK-closed against current source versions;
-3. the borrowed `RF<n>@<version>` traces through named D/I/K/W rows;
-4. the Application I1 QW row records that exact Task Page/RF and the local I5
-   W Folder that consumes it;
-5. the W Folder's PageX primary list binds that exact version.
+1. the source is a task-side Insight instance and the selected item execution
+   has `target: wisdom`;
+2. that item Result is independently CHECK-accepted against its exact source
+   versions, with current applicability; unrelated open items do not block it;
+3. the borrowed RF traces through named D/I/K/W rows in that exact Result;
+4. the Application I1 QW row records instance, item, execution version, RF id,
+   Result path/hash, and the local I5 W Folder;
+5. the W Folder's Evidence Item graph binds that exact Supporting Result and
+   completes its local Evidence Run. Page navigation alone is not evidence.
+
+Legacy one-chain Page/RF references require a verified exact alias using
+`haipipe-page-insight/ref/migration.md`; never select a new item by text or
+`latest`.
 
 When all five hold, GI4 reads the external chain as the K/W parent and no
 local I2-I4 Folders are minted: their evidence authority remains in the Task
 Page. I5 still performs the Application operation—applicability, counsel,
 forbidden overreach, `serves:`, and human signature—and GI6 still settles the
 I1 row. The RF itself never satisfies X1 or any Design gate. A stale,
-below-Wisdom, incomplete, or untraceable Task Page fails the bridge assertion
+below-Wisdom, incomplete, or untraceable item Result fails the bridge assertion
 and routes through the ordinary local climb.
 
 ## 🚪 The gates
@@ -242,7 +253,7 @@ GI0  Meta → Question      MT00 is past 🔴 and its source resolves to a run �
 GI1  Question → Data      the cell's row carries target, raiser, what-would-answer,
                           and a state cell · its partition group exists on disk
 GI2  Data → Information   the D page is CHECK-closed, every value bound by path to
-                          an accepted QA answer backed by a named run
+                          an accepted source Result backed by a named run
 GI3  Information → Knowledge   the I page is CHECK-closed and derives only from named
                           D rows (X contrast: mirrored I rows, the one exception)
 GI4  Knowledge → Wisdom   the local K page is CHECK-closed · OR the pre-climbed
@@ -260,7 +271,9 @@ GI6  settle               the register cell flips ✅, or 🚫 with a reason, or
                           gaps remain → the next lap
 ```
 
-A value produced by EXTENDING an already-digested task run binds to the run's new artifact paths; whether the task QA digest reopens is the task layer's law, not this file's — an extension annotates the digest's anchors and never rewrites its answer.
+A value produced by EXTENDING an already-used task Run binds to the new artifact
+paths; the consumer records the new full Run id as a Supporting Run and reruns
+its Local Run when the focal evidence changes.
 
 The DERIVED-HEADER rule (`haipipe-insight-question`) covers every on-register
 restatement of the Queue — headers, Diagrams, Openings, status words, and counts.

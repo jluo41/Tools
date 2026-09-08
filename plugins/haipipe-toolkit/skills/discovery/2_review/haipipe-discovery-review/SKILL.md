@@ -3,8 +3,8 @@ name: haipipe-discovery-review
 description: "Review-route specialist for source-reading Discovery Pages: inspect one admitted Paper/Source Result at a time, extract reliable claims and limitations, and return a verified review packet. Trigger: read this paper, review this source, inspect a Result, source reading, /haipipe-discovery-review."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-07"
+  version: "0.7.0"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
 
@@ -19,6 +19,18 @@ when an older numbered description is ambiguous.
 
 Source-level deep reading may use the read workers under `1_search/`, while
 multi-source craft workers are dispatched by `3_synthesize`.
+For external review procedures and the normalized review packet, read
+`../../haipipe-discovery/ref/external-capability-registry.md`.
+
+## External review procedures
+
+Use K-Dense's literature-review procedure as a checklist for methods, sample,
+outcomes, limitations, reproducibility, conflicts of interest, and confidence.
+When a claim needs a primary-text locator, the literature-source-tracing
+procedure may be used as a worker. Citation-fidelity or reference-verify may
+be used as a verification pass. These workers return evidence rows or review
+fields; they do not create a DOCX, highlighted-PDF tree, alternate Result
+folder, or aggregate bibliography.
 
 ## Durable procedure
 
@@ -28,10 +40,14 @@ multi-source craft workers are dispatched by `3_synthesize`.
 2. Check identity, reading depth, locators, methods, claims, limitations,
    disagreement with the source's own framing, and the exact cite key. Do not
    infer a topic conclusion from one source.
-3. Return a review packet or write the source-reading Page through the current
+3. Normalize the review into the registry packet: identity, reading depth,
+   methods, claims, locators, limitations, disagreement, confidence,
+   verification state, and unresolved items. Preserve `pending` when a
+   citation or locator cannot be verified.
+4. Return a review packet or write the source-reading Page through the current
    shared Page phase. If a required source is missing, route to D1 `ACQUIRE`;
    do not allocate a Run from inside this skill.
-4. Hand accepted packets to `haipipe-discovery-synthesize` when the Page
+5. Hand accepted packets to `haipipe-discovery-synthesize` when the Page
    promise requires combining multiple Results. The synthesis family owns
    topic-level organization and Page CONTENT.
 

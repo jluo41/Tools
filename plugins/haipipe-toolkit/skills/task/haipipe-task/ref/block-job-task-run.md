@@ -137,7 +137,7 @@ R5  UNDER A JOB, `tNN_*` IS EXACTLY ONE TASK AND EVERYTHING ELSE IS NOT.
     lives in that task's `scripts/`, with its `config/` inside (JL 260831, two
     words on purpose — hierarchy.md "`0-libs/`: the one older name"). `0-libs/`
     is read but never written, and survives only as `src/0-libs/`. The reserved
-    siblings are `sbatch/ results/ notebooks/ QA/ workflow/ diagram/`. Loose
+    siblings are `sbatch/ results/ notebooks/ workflow/ diagram/`. Loose
     files currently use a competing `_` prefix (_lib-describe.do,
     _load-raw-standard.do, _resolve-raw-dir.do) — unify those into `src/`.
 
