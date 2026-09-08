@@ -16,7 +16,8 @@ unit/intake/                 what this display was allowed to read
 ```
 
 A first-class View may be the caller and place this unit at
-`views/<ViewPageStem>/output/<PageID>-Display<n>-<slug>/`. That folder is the
+`views/<ViewPageStem>/output/<PageID>-Display<n>-<slug>/` (a PAPER Section page names
+it `Sec<N>-Display<n>-<slug>` or `App<L>-Display<n>-<slug>` from its H1, JL 260908). That folder is the
 renderer unit itself, not an adapter copy. The View owns `output.md`, the
 reader job, evidence/Card bindings, and acceptance; the renderer still owns
 the recipe and promoted asset.
@@ -165,4 +166,4 @@ Candidate rendering must not mutate `intake/`.
 - Every numeric visual element traces to a `role: values` source.
 - Every values source points to a task holder, run when applicable, and canonical artifact.
 - `recipe/` reads only declared intake inputs for values.
-- The owning View Display row or legacy Paper `S-Display-N` page points to the manifest as its provenance binding.
+- The owning View Display row or the Paper Section page's `Sec<N>-Display<n>-<slug>` unit (legacy names `S-Display-N`, `<PageID>-Display<n>`) points to the manifest as its provenance binding.

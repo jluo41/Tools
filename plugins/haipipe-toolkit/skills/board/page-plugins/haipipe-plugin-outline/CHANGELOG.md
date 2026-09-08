@@ -1,5 +1,8 @@
 ## 0.46.1 · 2026-09-06
 
+## 0.46.1 · 2026-09-08
+- ref/evidence/displays.md: a Paper Section page names its display unit `Sec<N>-Display<n>-<slug>` / `App<L>-Display<n>-<slug>` from its H1 (JL 260908); other pages keep `<stem>-Display<n>-<slug>`.
+
 - State that the Bullet Workspace's typed Evidence chip takes the same route
   as the compact Page chip (Evidence Workspace → Evidences, exact card) and
   opens no popover.

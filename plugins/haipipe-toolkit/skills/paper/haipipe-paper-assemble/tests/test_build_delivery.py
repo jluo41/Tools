@@ -278,12 +278,18 @@ def test_round_freeze_copies_all_declared_outputs_and_is_immutable(paper):
 
 
 def test_display_unit_folder_grammar_is_a_register_tooth(paper):
-    """<PageID>-Display<N>-<slug> passes; the retired S-Display-* shape is a finding (JL 260908: unify)."""
+    """Sec<N>-Display<n>-<slug> (N from the page H1) passes; S-Display-* and <PageID>-Display-* are findings.
+
+    JL 260908: "unify them", then "it is too long, how about we just use the section index".
+    """
     m = paper
-    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
-    good = intro / "outline" / "evidence" / "display" / "S-T-Main-Intro-Display2-good"
-    good.mkdir(parents=True); (good / "README.md").write_text("## Placement\nMain; Introduction, Figure 7\n")
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"          # H1 says §1
+    disp = intro / "outline" / "evidence" / "display"
+    for name in ("Sec1-Display2-good", "S-T-Main-Intro-Display3-pageid-form", "Sec4-Display1-wrong-section"):
+        (disp / name).mkdir(parents=True); (disp / name / "README.md").write_text("## Placement\nMain; Introduction, Figure 7\n")
     register, _ = _assemble(m)
     legacy = [f for f in register["findings"] if f.startswith("legacy unit name")]
-    assert any("S-Display-1-one" in f for f in legacy)          # the fixture's own unit is legacy-named on purpose
-    assert not any("S-T-Main-Intro-Display2-good" in f for f in legacy)
+    assert any("S-Display-1-one" in f and "Sec1-Display<n>-<slug>" in f for f in legacy)   # fixture unit: legacy on purpose
+    assert any("S-T-Main-Intro-Display3-pageid-form" in f for f in legacy)                 # the one-hour PageID form: legacy
+    assert any("Sec4-Display1-wrong-section" in f for f in legacy)                          # right shape, wrong section number
+    assert not any("Sec1-Display2-good" in f for f in legacy)

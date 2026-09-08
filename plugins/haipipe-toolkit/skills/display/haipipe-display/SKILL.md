@@ -2,8 +2,8 @@
 name: haipipe-display
 description: "THE one door for display work: say what you want shown and this routes it to the right renderer by KIND, then the renderer writes a display unit per ref/display-unit-output-contract.md. Five renderers: 📊 haipipe-display-table · 📈 haipipe-display-figure · 📐 haipipe-display-diagram · 🎨 haipipe-display-illustration · ✒️ haipipe-display-tex (hand-authored TikZ, algorithm blocks, display equations). Use when user says 做表, 生成表格, regression table, 画图, 作图, generate figures, paper plots, 架构图, concept figure, make a display, render a unit, display unit, which renderer, /haipipe-display."
 metadata:
-  version: "0.3.3"
-  last_updated: "2026-09-06"
+  version: "0.3.4"
+  last_updated: "2026-09-08"
 ---
 
 # /haipipe-display · one door, five renderers, one unit contract
@@ -73,7 +73,9 @@ FigureSpec routes.
 
 A PAPER's unit lands at `displays/displayNN-<slug>/` under the paper root.
 A BOARD PAGE's unit lands at
-`<page>/outline/evidence/display/<stem>-DisplayN-<slug>/`, and the page-side rules
+`<page>/outline/evidence/display/<stem>-DisplayN-<slug>/` (a PAPER Section page names
+the unit `Sec<N>-Display<n>-<slug>` or `App<L>-Display<n>-<slug>` from its H1, JL 260908;
+`S-Display-*` is retired), and the page-side rules
 (address, citation chips, the human `accepted:` tick) belong to
 `board/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md`, not to this door.
 

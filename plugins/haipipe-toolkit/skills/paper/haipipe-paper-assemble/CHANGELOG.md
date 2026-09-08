@@ -1,5 +1,8 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.7.4 · 260908
+- Display unit folder grammar is `Sec<N>-Display<n>-<slug>` / `App<L>-Display<n>-<slug>` (JL 260908: "it is too long, how about we just use the section index", after 0.7.3's `<PageID>-Display<N>-<slug>`). The register derives the expected prefix from the owning page's H1 via `page_heading()` and flags: legacy names (`S-Display-*`, `<PageID>-Display-*`), a right-shaped name whose Sec/App does not match its page, a page with units but no §/Appendix in its H1. Cost written into the law: a moved compile order renames the units under that page.
+
 ## 0.7.3 · 260908
 - Display unit folder grammar `<PageID>-Display<N>-<slug>` is a register tooth (JL 260908 "unify them", relayed by Paper-JAMA-Board): every unit folder on disk is scanned, a `S-Display-*` or other non-conforming name is a `legacy unit name` finding, a unit without README.md is a finding. New "🗂 Display unit folders" section.
 

@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.7.3"
+  version: "0.7.4"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -216,17 +216,26 @@ never a caption with nothing under it (found by Paper-MISQ-Board, 260908: 3 of 4
 main tables and 7 of 12 appendix tables were lost). `tests/test_latex_room_to_docx.py`
 drives the real engine over a room with those exact column specs.
 
-## 🗂 Display unit folders (0.7.3 · JL 260908 "unify them")
+## 🗂 Display unit folders (0.7.4 · JL 260908 "use the section index")
 
-A display unit folder is `<PageID>-Display<N>-<slug>` under the owning page's
-`outline/evidence/display/` (the law of `haipipe-display`'s
-display-unit-output-contract and `haipipe-plugin-outline`'s displays ref):
-`S-JAMA-IM-Main-Results-Display1-forest`, `S-MISQ-Main-Introduction-Display1-linked-study-design`.
-The `S-Display-<code>-<slug>` shape is RETIRED. The display register reads every
-unit folder on disk and lists a non-conforming name as a finding (`legacy unit
-name … rename to <PageID>-Display<N>-<slug>`), and a unit without a `README.md`
-as a finding too, since it can declare no number. Findings never block a build;
-they name the debt.
+A display unit folder under a paper Section page is named by the section index
+its page declares in its H1, never by the long page id:
+
+```text
+Sec<N>-Display<n>-<slug>    under a main Section page whose H1 says "§N …"        Sec4-Display1-research-design
+App<L>-Display<n>-<slug>    under an appendix page whose H1 says "Appendix L …"   AppD-Display1-iv-outcomes
+```
+
+`Display<n>` counts the page's units in its own order; the slug names the unit.
+`S-Display-<code>-<slug>` and the earlier `<PageID>-Display<n>-<slug>` are
+RETIRED. The display register reads every unit folder on disk, derives the
+expected prefix from the owning page's H1 (the same `page_heading()` the master
+uses), and lists as a finding: a legacy name, a right-shaped name whose Sec/App
+does not match the page (the compile order moved and the unit kept its old
+number), a page whose H1 declares no §N or Appendix L yet holds units, and a
+unit without a `README.md`. Findings never block a build; they name the debt.
+The known cost, chosen by JL over the page-id form: a section number moves when
+the compile order changes, so units under that page are renamed then.
 
 ## 🎭 Venue profiles
 

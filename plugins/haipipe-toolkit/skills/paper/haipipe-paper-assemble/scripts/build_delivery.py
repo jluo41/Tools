@@ -589,10 +589,19 @@ def display_register(main, appx):
     for unit_dir in sorted(p_ for p_ in ROOT.glob("B*/*/outline/evidence/display/*/") if p_.is_dir()):
         unit, page = unit_dir.name, unit_dir.parents[3].name
         homes.setdefault(unit, []).append(page)
-        # 0.7.3 (JL 260908 "unify them"): a display unit folder is <PageID>-Display<N>-<slug>;
-        # the S-Display-* shape is retired paper-side naming and reads as legacy here
-        if not re.fullmatch(re.escape(page) + r"-Display\d+-[A-Za-z0-9][A-Za-z0-9-]*", unit):
-            findings.append(f"legacy unit name {unit} on {page}: rename to {page}-Display<N>-<slug>")
+        # 0.7.4 (JL 260908 "it is too long, how about we just use the section index"): a display
+        # unit folder is Sec<N>-Display<n>-<slug> under a main Section page whose H1 says §N, or
+        # App<L>-Display<n>-<slug> under an appendix page whose H1 says Appendix L. The expected
+        # prefix is DERIVED from the owning page's H1 (page_heading), so the tooth also catches a
+        # unit that kept an old number after the compile order moved. S-Display-* and the
+        # one-hour <PageID>-Display-* form are legacy.
+        dec, _ = page_heading({"dir": unit_dir.parents[3], "id": page})
+        if not dec:
+            findings.append(f"{page} declares no §N or Appendix L in its H1, so its unit {unit} cannot be named Sec/App")
+        else:
+            prefix = f"App{dec}" if dec.isalpha() else f"Sec{dec}"
+            if not re.fullmatch(re.escape(prefix) + r"-Display\d+-[A-Za-z0-9][A-Za-z0-9-]*", unit):
+                findings.append(f"legacy unit name {unit} on {page} ({'Appendix ' + dec if dec.isalpha() else '§' + dec}): rename to {prefix}-Display<n>-<slug>")
         if not (unit_dir / "README.md").exists():
             findings.append(f"{unit} on {page} has no README.md, so it can declare no number")
             continue
