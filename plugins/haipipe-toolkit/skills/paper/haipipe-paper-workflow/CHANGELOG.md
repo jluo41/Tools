@@ -1,3 +1,21 @@
+## 1.1.1 · 2026-09-07
+
+- Clarified that both human PROCEED and risk-accepted PROCEED WITH CAUTION can
+  pass G0, while open/deferred/abandoned states cannot.
+- Added non-destructive legacy Story role/path mapping and aligned target
+  authority: Ideation records intended target at G0; Story confirms and later
+  rebinds the operational target.
+
+## 1.1.0 · 2026-09-07
+
+- Extended G0 from Idea-only selection to human selection of an Idea plus its
+  intended target/category after complete deep fit against a current Venue
+  contract.
+- Added the Venue Page to the ownership map: it owns one desk's typed contract,
+  while Ideation owns comparative fit and the human target decision.
+- Required released Section rows to bind the current target desk and Venue
+  contract rather than carrying an optional unverified target label.
+
 ## 0.8.1 · 260907
 
 - P1 is named Story, after its authority page (the naming law); "Seed" stays

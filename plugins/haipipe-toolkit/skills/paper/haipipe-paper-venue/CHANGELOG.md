@@ -1,3 +1,15 @@
+## 0.8.0 — 2026-09-07
+
+- Added the machine-readable `versioned_contract` block and explicit
+  current/partial/stale/superseded gate semantics for Ideation, Story, and
+  Section consumers.
+- Added statement-by-statement migration of legacy prose into the typed
+  authority vocabulary; a legacy or PARTIAL QB page is a lead, not a current
+  contract.
+- Aligned target authority with the current paper journey: Ideation records the
+  intended target at G0, Story confirms it operationally and owns later
+  human-approved rebinds, and Venue never selects the target.
+
 ## 260907 · consumer renamed
 
 - The venue contract's consumer is the Story's §8 Section Control row (and the

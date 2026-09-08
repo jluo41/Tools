@@ -3,12 +3,12 @@ name: haipipe-paper-venue
 description: >-
   Paper Page Type for one external submission target: a journal, funder, or
   patent office. Separates binding desk rules from observed venue patterns,
-  records provenance, and hands a verified venue contract to the Story's Section Control rows and
-  Section Pages. Use when researching, creating, refreshing, or comparing a
-  venue Page.
+  records provenance, and hands a verified venue contract to Ideation deep fit,
+  the Story's Section Narrative rows, and Section Pages. Use when researching,
+  creating, refreshing, or comparing a venue Page.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-04"
+  version: "0.8.0"
+  last_updated: "2026-09-07"
   page_ruling: none
   outline:
     mode: fixed
@@ -27,11 +27,11 @@ resolver.
 ## 🏛 Grain and boundary
 
 One Venue Page describes one submission target. It does not choose the paper's
-target and does not write the paper's Story or its Section Control rows.
+target and does not write the paper's Story or its Section Narrative rows.
 
 ```text
 Venue Page   what this external desk requires, rewards, rejects, and costs
-Story        how this paper is told for that desk (§8 Section Control rows)
+Story        how this paper is told for that desk (§8 Section Narrative rows)
 Section      how one unit satisfies its Story row and desk constraints
 ```
 
@@ -40,9 +40,11 @@ the target's own document units when journal section kinds do not apply.
 
 **The bank is a library, not a phase** (JL 260823). Venue Pages live in the
 shared QBv bank and sit outside the paper journey: nothing about a paper
-advances by writing one. The decision to target a desk lives on that paper's
-the Story's §8 Section Control rows, which bind the bank page and never restate it; a missing desk
-gets its bank page minted as a sub-step of naming that target.
+advances by writing one. Ideation records a person's intended target/category
+at G0 after deep fit; the Story confirms it as the paper's operational target
+and binds the bank contract in its Section Narrative rows. A later target change
+is a new human paper-journey receipt plus Story rebind, never a Venue Page
+decision. A missing or stale desk contract is refreshed before the gate.
 
 ## 📚 Two profiles (0.4.0)
 
@@ -80,6 +82,44 @@ For desk facts record source, access date, access method, and enforcement time:
 submission, revision, acceptance, or publication. When desk and pack disagree,
 the desk wins for compliance and the disagreement remains visible.
 
+Legacy free prose is not grandfathered into an authority class. Migrate it one
+statement at a time, retaining the original locator: official target text with
+its date/method may become `DESK RULE`; measured exemplars may become
+`PACK OBSERVATION`; unsupported playbook advice may become
+`PACK PRESCRIPTION`; a paper choice may become `LOCAL DECISION`; anything
+without enough provenance remains `UNKNOWN`. File existence, modification
+time, or prior use never establishes authority or currentness.
+
+## 📦 Versioned contract block
+
+Every Page intended for deep-fit or Story consumption exposes one
+machine-readable contract block. The Page may contain richer prose; this is
+the bounded interface consumers test:
+
+```yaml
+versioned_contract:
+  schema_version: 1
+  contract_version: "2026-09-07.1"
+  target: "Journal or desk"
+  category: "article/application category"
+  profile: pack-backed | cfp-only
+  state: current | partial | stale | superseded
+  verified_at: "2026-09-07"
+  refresh_due: "2027-03-07 or null"
+  official_source_results: ["discoveries/.../results/rNN_...md"]
+  blocking_unknowns: []
+  contract_locator: "QBvN-....md#versioned-contract"
+```
+
+`current` means the target/category match, the Page CHECK accepted this
+contract version, every volatile binding rule used by consumers resolves to a
+named official-source Result, and no `blocking_unknowns` item invalidates the
+intended fit or submission path. `partial`, `stale`, `superseded`, or an absent
+block may support discovery or a broad screen but cannot close deep fit, G0,
+or a new Story/Section release. A refresh mints a new `contract_version` and
+preserves the prior block in history; it never overwrites what an earlier
+decision consumed.
+
 ## 📐 Required Content outline
 
 ```text
@@ -104,7 +144,8 @@ the desk wins for compliance and the disagreement remains visible.
    fees · review timing · reported acceptance information · uncertainty
 
 7  Gaps and Handoff
-   stale or missing facts · desk/pack conflicts · verified contract consumed by the Story's Section Control rows
+   stale or missing facts · desk/pack conflicts · versioned contract state ·
+   verified contract consumed by Ideation and the Story's Section Narrative rows
 ```
 
 The exact number of Unit Guidance divisions may vary with the target. Keep the
@@ -134,8 +175,8 @@ Run/Result identity. A bare uncited number is an open obligation.
 
 ## 📤 Handoff
 
-The Story's Section Control rows and Section Pages consume a versioned Venue contract rather than
-copying the whole Page:
+Ideation deep fit, the Story's Section Narrative rows, and Section Pages consume
+the named versioned Venue contract rather than copying the whole Page:
 
 ```text
 target and category
@@ -145,6 +186,7 @@ reader order/document units
 total and per-unit constraints
 required displays/citations/disclosures
 known conflicts, unknowns, and refresh date
+contract version, state, verification date, and official-source Result paths
 ```
 
 ## ✅ Closing checks
@@ -154,13 +196,15 @@ known conflicts, unknowns, and refresh date
 - Every desk rule has an enforcement moment.
 - Desk/pack disagreements and missing facts remain visible.
 - Structure totals and per-unit guidance are reconciled or explicitly conflict.
-- The Story's Section Control rows can consume a bounded, versioned venue contract.
+- The machine-readable contract block is present, checked, and honestly
+  `current`, `partial`, `stale`, or `superseded`.
+- The Story's Section Narrative rows can consume a bounded, versioned venue contract.
 - CHECK judges the rendered Page and its linked evidence before closure.
 
 `page_ruling: none` is explicit: Venue CHECK may close the bank Page when its
-semantic/mechanical contract and artifact-specific gates pass. A later
-The target decision (a Story §8 row) remains owned by the paper journey and is not a
-second Venue-page approval.
+semantic/mechanical contract and artifact-specific gates pass. The human
+target decision remains owned by the paper journey and is not a second
+Venue-page approval.
 
 `template.md` is the scaffold for a new Venue Page. This variant owns no
 scripts; Board machinery builds and checks it.

@@ -2,6 +2,34 @@
 
 Skill-scoped changelog (read on demand; not loaded at invocation).
 
+## 0.2.1 · 2026-09-07
+
+- Closed fresh-agent retrofit gaps: canonical zero-padded Idea aliases,
+  explicit PROCEED WITH CAUTION selection mapping, retrospective-pilot rules,
+  broad-only Venue candidates, and legacy Story role/path bindings.
+- Defined a bounded read-only audit mode that reports missing owner receipts as
+  HOLD without recursively crawling Page machinery or inventing history.
+- Made Venue-contract currentness machine-testable and aligned intended-target
+  ownership at G0 with Story-owned operational confirmation and later rebinds.
+
+## 0.2.0 · 2026-09-07
+
+- Added a two-pass Idea × Venue Fit protocol: every admitted idea receives a
+  broad screen, while live finalists receive evidence-bound deep fit against
+  current versioned Venue contracts.
+- Added explicit journal-family, article-type, desk-risk, missing-evidence,
+  reroute, and human target-decision fields without converting venue fit into
+  a prestige score or acceptance prediction.
+- Extended the selection and Paper handoff gates so each selected idea carries
+  its own human-selected target/category and Venue Fit/contract paths.
+
+## 0.1.9 · 2026-09-07
+
+- Consume the live Discovery Search → Review → Synthesize contract.
+- Remove the claim that Discovery Idea pages or the old `haipipe-discovery-idea`
+  route remain readable; Discovery now rejects that family and hands only
+  checked synthesis Pages into semantic ideation.
+
 ## 0.1.8 · 260907
 
 - Defined admission at stable `iNN` assignment: admitted cards remain durable,

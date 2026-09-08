@@ -17,25 +17,37 @@ direction:
 sources:
   internal:
     - id: int01
-      kind: task-result | task-qa | task-report | task-page
+      kind: task-result | task-report | task-page
       path: "tasks/.../results/.../report.md"
       address: bNN.jNN.tNN.rNN | bNN.jNN.tNN
-      locator: "metric/table/section or QA heading"
+      locator: "metric/table/section or report heading"
       role: signal | method | feasibility | boundary
-      status: complete | answered | reported | pending | blocked
+      status: complete | reported | pending | blocked
       digest: "short description of what this source establishes"
   external:
     - id: ext01
-      kind: discovery-result | discovery-page | discovery-qa
+      kind: discovery-result | discovery-page
       result_path: "discoveries/.../results/rNN_.../rNN_....md"
       bib_path: "discoveries/.../results/rNN_.../rNN_....bib"
       runtime_path: "discoveries/.../results/rNN_.../runtime.yaml"
       address: bNN.jNN.tNN.rNN | bNN.jNN.tNN
       cite: "@CanonicalKey"
-      locator: "Card section/fact/page/figure or QA heading"
-      role: prior-art | method | theory | boundary | counterevidence
+      locator: "Card section/fact/page/figure or report heading"
+      role: prior-art | method | theory | boundary | counterevidence | venue-scope | venue-exemplar
       status: complete | verified | pending | blocked
       digest: "short description of what this source establishes"
+  venues:
+    - id: ven01
+      kind: venue-page-contract
+      path: "shared venue bank/.../QBvN-....md#versioned-contract"
+      target: "Journal name"
+      category: "article type or submission category"
+      version: "..."
+      refreshed_at: "2026-09-07"
+      authority_types: [DESK RULE, PACK OBSERVATION, UNKNOWN]
+      role: venue-fit | desk-rule | structure | submission-boundary
+      status: current | stale | pending | blocked
+      digest: "short description of what this contract establishes"
 policy:
   local_first: true
   no_copy: true
@@ -47,7 +59,7 @@ updated_at: "2026-09-07T12:00:00-04:00"
 
 The exact path is resolved against the project root. `address` is always the
 full owner-native readable BJTR address: `bNN.jNN.tNN.rNN` for a Run/Result or
-`bNN.jNN.tNN` for a Page, report, or QA artifact. A bare `rNN` or an empty
+`bNN.jNN.tNN` for a Page or report. A bare `rNN` or an empty
 address is never sufficient. If an owner artifact cannot be mapped to a full
 address, hold the bundle instead of inventing one.
 
@@ -66,21 +78,26 @@ A Bib file is a citation projection, not a source entry. Do not encode a
 Bib-only item as `kind: discovery-bib`; point to its owning Discovery Result
 and runtime instead.
 
-For internal Task evidence, point to the owner’s Result, report, or QA file and
-retain its full address, status, and a locator. A bundle may contain a Task QA
-entry, a Task Result entry, or both; when both are used, keep them as separate
-sources. `task-result` is an execution output; `task-qa` is the Task owner’s
-answer to one general question. Never merge a QA answer and a Result into an
-invented composite source. A Task QA answer is not permission for an ideation
-card to state more than the answer establishes.
+For internal Task evidence, point to the owner’s Result or report and retain its
+full Run address, status, and a locator. Never invent a composite source: the
+paired Run/Result is the execution output, while any interpretation belongs in
+the consumer's own record.
+
+For venue fit, first reuse a current versioned `haipipe-paper-venue` contract.
+The bundle points to that contract under `sources.venues`; it does not copy
+desk rules or exemplar observations. `current` means the target/category is
+identical, the contract's refresh date covers the ideation decision, and every
+load-bearing rule retains its authority type and evidence path. A stale or
+missing contract may guide a search but cannot satisfy deep fit or handoff.
 
 ## Provenance rules
 
-1. **Owner stays owner.** Task owns internal execution and QA; Discovery owns
-   external Subjects, Runs, Results, and Bibs; Ideation owns only this manifest,
-   cards, semantic receipts, and handoff.
-2. **Pointers over copies.** Do not paste Result Cards, facts, reports, QA
-   answers, or BibTeX into the bundle. A short digest is an interpretation and
+1. **Owner stays owner.** Task owns internal execution and Results; Discovery owns
+   external Subjects, Runs, Results, and Bibs; the Venue bank owns one target's
+   typed contract; Ideation owns only this manifest, cards, comparative fit,
+   semantic receipts, and handoff.
+2. **Pointers over copies.** Do not paste Result Cards, facts, reports, or BibTeX
+   into the bundle. A short digest is an interpretation and
    must not replace the source path and locator.
 3. **Separate evidence from inference.** A card labels direct observation,
    cross-source interpretation, and proposed hypothesis separately. An
@@ -148,6 +165,24 @@ An older Result is “strictly deeper” only when it reaches a later level in t
 order and its locators actually support the current claim; a title/DOI match,
 an abstract link, or a larger citation count is not deeper evidence.
 
-When internal feasibility is missing, the symmetric route is `haipipe-task qa`
-for an existing answer or a new Task Run when the work passes the four
-`haipipe-run` tests. The bundle records the returned owner path either way.
+When internal feasibility is missing, reuse an existing Task Run/Result or open
+a new Task Run when the work passes the four `haipipe-run` tests. The bundle
+records the returned owner path either way.
+
+When venue evidence is missing, use a two-pass route:
+
+```text
+broad screen
+  ├─ verified scope material supports family/named-candidate reading → retain
+  └─ missing or volatile scope fact → Discovery official-source request
+
+deep fit for live finalist
+  ├─ current Venue contract covers target/category → reuse venNN pointer
+  └─ missing/stale contract → Discovery desk/exemplar Results
+                         → create or refresh haipipe-paper-venue
+                         → add current venNN pointer → refresh fit card
+```
+
+An external journal skill pack is at most `PACK PRESCRIPTION` until its claim
+is independently supported. It cannot replace the official-source Result or
+Venue contract, even when it names the correct journal.

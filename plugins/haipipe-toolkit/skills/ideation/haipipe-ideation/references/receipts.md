@@ -2,7 +2,7 @@
 
 These small records make the handoffs testable without turning Ideation into a
 third evidence bank. They are written under the ideation unit’s `workflow/`
-and `handoff/` lanes; source owners retain their own Results and QA files.
+and `handoff/` lanes; source owners retain their own Runs and Results.
 
 ## Discovery search request/return
 
@@ -43,15 +43,23 @@ old receipt.
 ## Human selection receipt
 
 ```yaml
-version: 1
+version: 2
 kind: ideation-selection
 ideation_task: bNN.jNN.tNN
 direction_card: cards/direction.yaml
 decision: select | defer | abandon
+selection_posture: proceed | proceed-with-caution | not-applicable
 selected_cards: [cards/i01_idea.yaml]
 story_routes:
   - card: cards/i01_idea.yaml
-    story: Story-A
+    story_role: Story-A
+    story_path: "Paper-.../A1-Story/Story-A/Story-A.md"
+target_routes:
+  - card: cards/i01_idea.yaml
+    venue_fit_card: cards/venue-fit/i01_venue-fit.yaml
+    target: "Journal name"
+    category: "article type"
+    venue_contract: "shared venue bank/.../QBvN-....md#versioned-contract"
 by: "person:<identifier>"
 at: "2026-09-07T13:00:00-04:00"
 accepted_risks:
@@ -60,23 +68,34 @@ assertions:
   evidence_complete: true | false
   novelty_reviewed: true | false
   feasibility_receipt_or_waiver: true | false
+  venue_fit_reviewed: true | false
+  target_selected: true | false
 reason: "bounded decision rationale"
 ```
 
-Only `decision: select` with all three assertions true can produce a Paper
-handoff. Every selected card has exactly one distinct `story_routes` entry and
-must have resolved Core-Claim `novelty_check.status` values (`novel` or
-`partial`; never `unverified`, `inconclusive`, or `preempted`). Selection may
-name several cards, but it does not declare one global winner; each selected
-card becomes one Story.
+`PROCEED` maps to `decision: select` plus `selection_posture: proceed`.
+`PROCEED WITH CAUTION` maps to `decision: select` plus
+`selection_posture: proceed-with-caution` and requires at least one named
+`accepted_risks` entry. `ABANDON` maps to `decision: abandon`; an open or
+deferred verdict maps to `decision: defer` until a person changes it.
+
+Only `decision: select` with all five assertions true can produce a Paper
+handoff. Every selected card has exactly one distinct `story_routes` entry,
+one matching `target_routes` entry, and resolved Core-Claim
+`novelty_check.status` values (`novel` or `partial`; never `unverified`,
+`inconclusive`, or `preempted`). Its Venue Fit Card must have a complete broad
+screen, complete deep fit, and a human-selected target/category backed by the
+named current Venue contract. Selection may name several cards, but it does
+not declare one global winner; each selected card becomes one Story with its
+own intended target.
 `defer` and `abandon` remain durable history and do not authorize Paper work.
 The machine may prepare this record, but a person owns `by`, `at`, `decision`,
-and accepted risks.
+`selection_posture`, every `target_routes` value, and accepted risks.
 
 ## Paper P0 handoff
 
 ```yaml
-version: 1
+version: 2
 kind: paper-ideation-handoff
 source:
   ideation_task: bNN.jNN.tNN
@@ -85,10 +104,15 @@ source:
   selection_receipt: workflow/selection.yaml
 selected_ideas:
   - card: cards/i01_idea.yaml
-    story: Story-A
+    story_role: Story-A
+    story_path: "Paper-.../A1-Story/Story-A/Story-A.md"
     claim_ids: [c01, c02]
     evidence_ids: [int01, ext01]
-    feasibility_receipt_or_waiver: "tasks/.../QA/...md or cards/i01_idea.yaml#feasibility.waiver"
+    feasibility_receipt_or_waiver: "tasks/.../results/.../runtime.yaml or cards/i01_idea.yaml#feasibility.waiver"
+    venue_fit_card: cards/venue-fit/i01_venue-fit.yaml
+    intended_target: "Journal name"
+    intended_category: "article type"
+    venue_contract: "shared venue bank/.../QBvN-....md#versioned-contract"
     hard_limits: ["what Paper must not claim"]
 paper_route: haipipe-page-ideation
 status: ready
@@ -96,10 +120,17 @@ created_at: "2026-09-07T13:05:00-04:00"
 ```
 
 The handoff contains IDs, owner paths, statuses, interpretations, novelty
-readings, feasibility receipt/waiver, and hard limits. It contains no copied
-Result Card, facts, QA answer, or BibTeX. Paper P0 maps it to Direction, Ideas,
-Core Claims, Pilot result, Recommendation, Eliminated Ideas, and the human
-`went to` decision, then binds its Paper origin back to this packet.
+readings, feasibility receipt/waiver, Venue Fit/contract paths, human-selected
+target/category, and hard limits. It contains no copied Result Card, venue
+rule, facts, or BibTeX. Paper P0 maps it to Direction, Ideas, Core
+Claims, Pilot result, Journal / Venue Fit, Recommendation, Eliminated Ideas,
+and the human target plus `went to` decision, then binds its Paper origin back
+to this packet.
+
+For an inherited Story such as `Story01-seed`, keep that path and record its
+canonical role in `story_role`. G0 requires reciprocal origin links, not a
+filesystem rename. Historical `pagex/` links are navigation/evidence only and
+cannot stand in for this selection receipt.
 
 ## Receipt checks
 
@@ -111,5 +142,8 @@ Core Claims, Pilot result, Recommendation, Eliminated Ideas, and the human
   work or explicit none, remaining delta, limitation, and a resolved status
   for a selected card;
 - feasibility has the required receipt or reasoned waiver;
+- every admitted Idea has a broad Venue screen; each selected card has complete
+  deep fit, a current Venue contract, and a human-selected target/category;
 - selection and handoff contain a person/date; each selected card has one
-  distinct Story route; the handoff is emitted only for selected cards.
+  distinct Story route and one matching target route; the handoff is emitted
+  only for selected cards whose idea and target gates both pass.

@@ -1,3 +1,22 @@
+## 0.8.1 · 2026-09-07
+
+- Added explicit retrofit adapters for `i1` → `i01`, flat novelty claims,
+  archived QA, and legacy Story paths without destructive renaming.
+- Defined when existing regressions qualify as a retrospective Task-owned
+  pilot and made clear that an unsupported `SKIPPED` line cannot pass G0.
+- Unified G0 selection around human PROCEED or risk-accepted PROCEED WITH
+  CAUTION plus the intended target/category.
+
+## 0.8.0 · 2026-09-07
+
+- Added one visible Journal / Venue Fit field per admitted Idea and a venue-fit
+  plus target column to the comparison table.
+- Extended G0 so a selected Idea needs complete deep fit, a current Venue
+  contract, and a person's intended target/category in addition to novelty and
+  feasibility.
+- Kept target recommendation machine-authored and target selection human-owned;
+  the Page consumes Fit/contract paths without copying desk rules.
+
 ## 0.7.4 · 260907
 
 - Defined `iNN` assignment as Idea admission: admitted cards keep divisions,

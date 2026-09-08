@@ -4,18 +4,19 @@ description: >-
   Paper journey phase P0 (Ideation) and the Page Type contract for one research
   direction's ideas, before any selected Story exists: generate, compare, and
   optionally order a dynamic candidate set, novelty-check claims, record
-  pilots, then eliminate, defer, or send selected ideas to distinct Stories. Use
-  when brainstorming a direction or checking whether an idea has been done.
-  Trigger: ideation page, find ideas, brainstorm, novelty check, page-type
+  pilots, compare journal fit, then eliminate, defer, or send selected
+  idea-and-target pairs to distinct Stories. Use when brainstorming a direction,
+  checking whether an idea has been done, or deciding where it fits. Trigger:
+  ideation page, find ideas, brainstorm, novelty check, journal fit, page-type
   ideation.
 metadata:
-  version: "0.7.4"
+  version: "0.8.1"
   last_updated: "2026-09-07"
   group-token: "Story00"
   outline:
     mode: grammar
     source: "this SKILL.md"
-    shape: "the Page Face is Opening → Outline → Content → Aims; Content division 1 is Direction, division 2 is Ideas (ranked) with a source bullet naming each ideation handoff or legacy IDEA_REPORT it drew from; for a dynamic set of K admitted ideas, divisions 3 through K+2 are Idea 1 through Idea K, each carrying Method · Hypothesis · Minimum experiment · Expected outcome · Core Claims / Novelty Check · Pilot result · Risk · Reviewer's likely objection · Recommendation; division K+3 is Eliminated Ideas and K+4 is Suggested Execution Order (a retrofit page may nest its single idea under division 2)"
+    shape: "the Page Face is Opening → Outline → Content → Aims; Content division 1 is Direction, division 2 is Ideas (ranked) with a source bullet naming each ideation handoff or legacy IDEA_REPORT it drew from; for a dynamic set of K admitted ideas, divisions 3 through K+2 are Idea 1 through Idea K, each carrying Method · Hypothesis · Minimum experiment · Expected outcome · Core Claims / Novelty Check · Pilot result · Journal / Venue Fit · Risk · Reviewer's likely objection · Recommendation; division K+3 is Eliminated Ideas and K+4 is Suggested Execution Order (a retrofit page may nest its single idea under division 2)"
 ---
 
 # /haipipe-page-ideation · one direction's ideas, in the reports' own words
@@ -28,8 +29,10 @@ Declare `page-type: ideation`.
 This skill is journey phase P0 Ideation (ideate) of the paper journey and owns
 the `page-type: ideation` contract below. The repo is minted WITH this page, so
 there is no entry gate. Exit through gate G0 for each selected idea: per-claim
-novelty bound to QA files, a pilot result or explicit waiver, and a person's
-PROCEED tick sending that idea to its own Story. `haipipe-paper-workflow`
+novelty bound to QA files, a pilot result or explicit waiver, complete deep
+venue fit, and a person's PROCEED or risk-accepted PROCEED WITH CAUTION tick
+selecting the intended target/category
+and sending that idea to its own Story. `haipipe-paper-workflow`
 holds the full gate assertions; this block only places the phase. The page
 itself always runs through `/haipipe-page` and `haipipe-page-workflow`
 (OUTLINE → … → CHECK), never a private lifecycle.
@@ -46,7 +49,7 @@ Paper-<Slug>/
 └── A1-Story/                          the story group, at the paper root (0.8.0)
     ├── Story00-ideation/              THIS PAGE · one direction, its ideas, ranked
     └── Story-A/                       what the first selected idea became:
-        ├── Story-A.md                 one idea · one paper control center
+        ├── Story-A.md                 one idea · one prospective paper blueprint
         └── outline/                   its Page workflow records
     (a second surviving idea is Story-B/ · the letter identifies the Story)
 ```
@@ -97,8 +100,9 @@ remains a brief completion contract:
 Do not promote Data, Preliminary Results, Novelty Check, Feedback, Display,
 States, Files, Log, or Discussion into additional top-level Page sections.
 Data and preliminary results live in each Idea's Method/Minimum experiment and
-Pilot result; Novelty Check lives under Core Claims; Feedback/Display/receipts
-remain in their owning Page workflow records.
+Pilot result; Novelty Check lives under Core Claims; Journal / Venue Fit lives
+inside each Idea division; Feedback/Display/receipts remain in their owning
+Page workflow records.
 
 Page review and Paper selection are separate human decisions. The Page
 workflow's `approved:` accepts the C/P/B Shape and its `accepted:` CHECK ruling
@@ -110,7 +114,8 @@ infer either decision from the other.
 ## 📐 Content outline · the source reports' structure
 
 The divisions mirror IDEA_REPORT.md (idea-creator) section for section, with
-the Novelty Check Report's Core Claims folded into each idea's division. Let
+the Novelty Check Report's Core Claims and HAI Idea × Venue Fit projection
+folded into each idea's division. Let
 `K >= 1` be the number of admitted Idea Cards, including cards later
 eliminated whose divisions remain as history. The number is dynamic:
 
@@ -133,7 +138,10 @@ under division 2 (`#### 2.1 · Idea 1: <title>`); the field list still applies
 inside it.
 
 Admission is the stable boundary. An idea becomes admitted when the semantic
-layer assigns it an `iNN` card; from then on it keeps one division forever.
+layer assigns it a zero-padded `iNN` card (`i01`, `i02`, ...); from then on it
+keeps one division forever. Historical `i1` ids remain readable and may retain
+their paths; record the `i1` → `i01` canonical alias in the card/handoff rather
+than renaming an inherited artifact.
 A duplicate phrase, overbroad claim, or framing rejected before `iNN`
 assignment may appear only in Eliminated Ideas with its source and reason and
 does not owe a fabricated Idea division. The Page must state which kind each
@@ -145,11 +153,10 @@ The summary table, one row per live idea, every cell a state and never a
 blank:
 
 ```text
-id  idea (one line)                  novelty            pilot           verdict              went to
-────────────────────────────────────────────────────────────────────────────────────────────────────
-i1  <one sentence>                   HIGH · closest:    ✅ QA path      ✅ PROCEED           Story-A (here) ·
-                                     <prior>                            (JL 260823)          or Paper-<Other>
-i2  <one sentence>                   ⬜ unchecked        —               ⬜ open               —
+id  idea                 novelty       pilot        venue fit       verdict       target       went to
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+i01 <one sentence>       HIGH           ✅ QA path   STRONG · vfit   ✅ PROCEED    JAMA · Art.  Story-A
+i02 <one sentence>       ⬜ unchecked   —            ⬜ pending      ⬜ open       —            —
 ```
 
 Verdict vocabulary — the Novelty Report's own recommendation words, decided
@@ -166,11 +173,14 @@ The row order supports comparison and attention only. The first row is not
 automatically selected, and the page may end with no selected idea, one
 selected idea, or several selected ideas. Human verdict and `went to`, not
 position, record selection; several selected rows route to distinct Stories.
+For every admitted row, `venue fit` is a state backed by its Idea × Venue Fit
+Card. A selected row also names the person's target and article/category;
+machine recommendations stay inside the idea division.
 
 ## 🧾 Each idea's division · the report's fields
 
 One division per idea, titled `Idea <n>: <title>`, carrying IDEA_REPORT.md's
-own field names — no translation layer:
+field names plus the explicit HAI Journal / Venue Fit field:
 
 ```text
 Method                        what we actually do, 2-4 concrete steps, plain language
@@ -183,6 +193,11 @@ Core Claims / Novelty Check   one line per claim plus its exact search question,
                               📮 → /haipipe-ideation pressure-test + Discovery Search QA
 Pilot result                  POSITIVE/NEGATIVE/SKIPPED + the receipt
                               📮 → task-layer QA, or an explicit waiver
+Journal / Venue Fit           broad screen for every admitted idea; deep fit
+                              for live finalists; candidate targets, article
+                              type, desk risks, missing evidence, reroute,
+                              current Venue contract, and machine recommendation
+                              📮 → /haipipe-ideation venue-fit
 Risk                          what could sink it
 Reviewer's likely objection   the strongest counterargument
 Recommendation                the machine's PROCEED/CAUTION/ABANDON with reasons;
@@ -191,6 +206,12 @@ Recommendation                the machine's PROCEED/CAUTION/ABANDON with reasons
 
 A retrofit page fills only the fields its receipts support and marks the rest
 `⬜`; inventing history is worse than a visible blank.
+
+For retrofit novelty, split a flat Core Claims block only where the inherited
+text already states distinct claims. Reuse archived QA only when its exact
+question tests the matching claim; otherwise print `unverified` and route a
+new Discovery check. Do not convert one old blob-level novelty verdict into
+several claim-level passes.
 
 ## 🔬 Core Claims, checked one by one
 
@@ -227,6 +248,7 @@ path:
 Core Claims lines   ← /haipipe-ideation pressure-test + Discovery Search QA
 Ideas + divisions   ← /haipipe-ideation synthesize → Idea Cards + handoff
 Pilot result        ← task-layer QA file (small, budgeted, disposable run)
+Journal/Venue Fit   ← /haipipe-ideation venue-fit → Fit Card + Venue contract
 ```
 
 The standing semantic executor for both idea lanes is `/haipipe-ideation`.
@@ -249,13 +271,22 @@ A pilot is a feasibility receipt, not a result: budget it small, time-box it,
 and record a failed pilot as honestly as a passed one. A cell asserting a
 verdict with no QA path behind it is a defect.
 
+Existing regressions may be read as a retrospective pilot only through a
+Task-owned QA receipt that names the bounded minimum experiment, exact output
+paths and execution provenance, acceptance reading, and positive/negative
+result. An inherited `SKIPPED` line or manuscript claim does not satisfy G0;
+it needs that retrospective receipt, a new pilot, or an explicit human waiver.
+
 ## 🎓 Sending selected ideas to Stories
 
-An idea's row may name a Story in `went to` only when all three hold:
+An idea's row may name a Story in `went to` only when all four hold:
 
 - its Core Claims each carry a novelty reading from an independent context,
 - its Pilot result binds a feasibility receipt (or records an explicit,
   reasoned waiver),
+- its Venue Fit Card has a retained broad screen, complete deep fit against a
+  current Venue contract, and the row names the person's intended
+  target/category,
 - a person has ticked PROCEED on that row, or PROCEED WITH CAUTION with its
   named risk accepted in the tick — the machine writes only the
   Recommendation field; the verdict is human, and eliminated ideas never
@@ -263,11 +294,16 @@ An idea's row may name a Story in `went to` only when all three hold:
 
 It is a two-way act: `went to` names the Story — normally `Story-A`, `Story-B`,
 and so on beside this page, or the new repo when an idea leaves for a DIFFERENT
-paper — and that Story's §5 first Source Pages row binds THIS page and its
+paper — and that Story's C5 Source Pages and provenance subsection binds THIS page and its
 ideation handoff back. Historical `pagex/` bindings remain readable but are
 not created for new work. A row naming a Story that does not bind back, or a
 Story claiming an origin this page does not show, is a defect on whichever
 side is missing.
+
+A legacy destination such as `Story01-seed` may remain the physical path. Its
+G0 receipt records `story_role: Story-A` plus the exact legacy `story_path`,
+and the two artifacts bind each other. Do not mint a duplicate Story merely
+to normalize its name; a historical `pagex/` link is not the G0 receipt.
 
 Selection is per idea, not per comparison table. A person may select none,
 one, or several candidates; every selected candidate receives one distinct
@@ -277,9 +313,10 @@ best idea.
 ## ✋ Human authority
 
 A machine may generate ideas, run searches and pilots through the proper
-layers, fill Core Claims lines, and write Recommendation fields. It may not
-tick a verdict, eliminate or defer an idea, or send a selected idea to a Story.
-Killing, deferring, and committing are all human acts.
+layers, fill Core Claims lines, build Venue Fit Cards, and recommend target
+options. It may not tick a verdict, select a target/category, eliminate or
+defer an idea, or send a selected idea to a Story. Killing, deferring,
+targeting, and committing are all human acts.
 
 Gate G0 (Ideation → Story; historical Seed wording remains readable) is tested
 on each selected idea's summary row and ticked by
@@ -311,6 +348,8 @@ later Page version adds, defers, or eliminates other candidates.
 - Every Core Claims / Novelty Check line traces to a per-claim QA file; every
   cited prior work is verified or marked `[UNVERIFIED]`.
 - Every Pilot result binds a QA path or an explicit waiver.
+- Every admitted Idea has a broad Venue screen; every selected Idea has a
+  complete deep fit, current Venue contract, and human-selected target/category.
 - Every non-open human verdict carries a person's tick and date.
 - Every `went to` names a distinct Story that binds this page back.
 - Historical SD-named instances preserve their paths unless an explicit
