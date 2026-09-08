@@ -345,12 +345,12 @@ def write_master(main, appx, status, ready_n, total_n):
 """
     body = []
     for p, floats in main:
-        if p.get("included") and not p["ready"]:
+        if p.get("included", p["ready"]) and not p["ready"]:
             note = "; ".join(p["reasons"]).replace("_", r"\_").replace("<", r"$<$").replace(">", r"$>$")
             body.append(r"\noindent\textcolor{red!70!black}{\small\textit{[DRAFT PAGE · " + note + "]}}")
-        if p.get("included") and p["id"].endswith("-Abstract"):
+        if p.get("included", p["ready"]) and p["id"].endswith("-Abstract"):
             body.append(rf"\input{{sections/{p['id']}}}"); body.append(""); continue
-        if p.get("included"):
+        if p.get("included", p["ready"]):
             if JAMA:   # the JAMA Word renderer splits the body on these four headings
                 kind = p["id"].rsplit("-Main-", 1)[-1].replace("-", " ")
                 frag_txt = (SEC / f"{p['id']}.tex").read_text(encoding="utf-8", errors="replace")
@@ -367,10 +367,10 @@ def write_master(main, appx, status, ready_n, total_n):
     tail = ["\\section*{Acknowledgments}", "\\noindent\\textit{[Acknowledgments, funding and disclosures are written at submission; this build is a draft.]}", "",
             "\\clearpage", "\\bibliographystyle{apalike}", "\\bibliography{reference}", "", "\\clearpage", "\\appendix", ""]
     for p, floats in appx:
-        if p.get("included") and not p["ready"]:
+        if p.get("included", p["ready"]) and not p["ready"]:
             note = "; ".join(p["reasons"]).replace("_", r"\_").replace("<", r"$<$").replace(">", r"$>$")
             tail.append(r"\noindent\textcolor{red!70!black}{\small\textit{[DRAFT PAGE · " + note + "]}}")
-        if p.get("included"):
+        if p.get("included", p["ready"]):
             tail.append(rf"\input{{appendices/{p['id']}}}")
             tail += [rf"\input{{displays/{f}/float}}" for f in floats]
         else:

@@ -9,6 +9,8 @@ Paper-level opt-ins in `scripts/build_delivery.py`, driven by `paper-build.toml`
 - `venue_profile = "jama-internal-medicine"` now shapes the master the JAMA Word renderer parses: a title-page `center` block instead of `\maketitle`, a `\section{Introduction|Methods|Results|Discussion}` boundary before any main fragment that lacks it, and the Abstract page's own `\section*{Key Points}` / `\section*{Abstract}` kept rather than rewritten into an `abstract` environment.
 - Display units in the flat layout (`figure.pdf`, `table-body*.tex`, `float.tex` at the unit root) are copied and retargeted like `assets/` units; a fragment's `\input` of `display/<unit>/float` or `…/table-body` resolves either way.
 
+Fix (same day, 4929a597 follow-up): the `included` flag was set only inside `build()`, so a caller that hands `write_master` a ready page directly (the engine's own tests do) got no `\input` and the register counted 0 floats; inclusion now defaults to readiness (`p.get("included", p["ready"])`), suite 6/6.
+
 Verified on both papers: Paper-AgreeableOpioid-Jama 25-page PDF + main and supplement DOCX (latexmk 0, docx 0); Paper-AgreeablePrescriptionDiscretion unchanged at 23 pages, 5/14 ready, `\maketitle` and `abstract` environment intact.
 
 ## 0.6.0 · 260908
