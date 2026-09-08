@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""check.py — the structural half of QA9, run against one board.
+"""check.py — the mechanical structural check for one board.
 
-QA9 rules that a change gets TWO checks on ONE trigger: a structural pass, which
-is decidable by machine, and a cold read by a zero-background agent, which is
-not. This file is only the first. It exists because the second cannot be
-automated and the first should never have needed a human.
+This command checks the parts of a Board/Page contract that are decidable by
+machine. A fresh Page CHECK read remains a separate semantic judgement; this
+file never claims to replace it.
 
 What it does NOT do, and cannot:
   · judge whether the prose is readable — that is the cold read
@@ -21,16 +20,17 @@ Three families:
   SITE      the built board/ tree: local links and media resolve, tags balance,
             ids unique
   TEMPLATE  render ref/page-template.md as a Q and as an S, then assert each
-            construct QA9 names produced its class. A construct the template
-            never exercises is reported as a GAP, not skipped (QA9's 🕳 item).
+            construct named by the current contract produces its class. A
+            construct the template never exercises is reported as a GAP, not
+            skipped.
 
 Shares the renderer's section aliases, state tokens, and page discovery helpers
 from src/common.py. The checker keeps independent structural assertions because
 its job is to compare the documented contract with what the renderer accepts.
 
-Report-only by default, exit 0. `--strict` exits 1 on any ERROR. Whether a red
-result BLOCKS a change or only reports it is JL's open item on QA9, so this
-defaults to the harmless side and the ruling stays open.
+Report-only by default, exit 0. `--strict` exits 1 on any ERROR. The Page
+workflow decides whether a finding blocks a handoff; this command only reports
+the mechanical result.
 
     python3 check.py <board-dir> [--strict] [--quiet]
 """
@@ -87,7 +87,7 @@ APPLICATION_BOARD_NAME = re.compile(
 # `retired-section` reports it, and this list no longer DEMANDS it.
 REQUIRED = ["Opening", "Done when"]
 
-# QA9's construct table: source form -> the class the renderer must produce.
+# The construct table: source form -> the class the renderer must produce.
 # Kept in this order so the report reads like the table on that page.
 CONSTRUCTS = [
     ("lead is the door",     "details.it.row.qd",  r'<details class="it row qd"', r"^## (?:Opening|Question)\s*$"),
@@ -322,7 +322,7 @@ def check_board(d, rep):
     # is about the DECISION and implementation intent lives in Aims, so
     # a ✅ page there legitimately carries unticked boxes. Detected by reading
     # what the board says about itself, which is fragile: a board has no way to
-    # DECLARE which rules it opts out of, and that gap is an item on QA9.
+    # DECLARE which rules it opts out of, and keep that gap visible in the report.
     decision_only = bool(re.search(
         r"`?state:`?[^\n]{0,80}\b(is about|means)\b[^\n]{0,40}\bDECISION\b", text, re.I))
 
@@ -344,7 +344,7 @@ def check_board(d, rep):
         if target.startswith("~") or ".." in target.split("/"):
             rep.add(ERROR, "board-store-path", f"board.md -> {target}",
                     "a `store:` must be repo-relative or absolute with no `..` and no "
-                    "`~`; a dispatching probe resolves it once and hands the executor "
+                    "`~`; a dispatching Page resolves it once and hands the executor "
                     "an absolute path, so a climbing path resolves differently "
                     "depending on who dispatched")
     # `reads:` (JL 260824, the design family): the board's evidence whitelist.
@@ -509,7 +509,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     # A page id in backticks should resolve, either to a declared Link or to a
     # file on this board. Historical mentions of a retired id look identical to
     # live references today, which is why these are WARN: see the retired-id
-    # convention item on QA9.
+    # convention item in the current structural contract.
     for lineno, ln in strip_fences(text, prose_only=True):
         for tok in re.findall(r"`(S-[A-Za-z0-9-]+|Q[A-Za-z]*\d+[a-z]?(?:@\w+)?)`", ln):
             if tok in links or tok in page_ids:
@@ -664,7 +664,6 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
     check_canvas_frames(text, name, rep, path.parent)
     check_duplicate_sections(text, name, rep)
     check_retired_sections(text, name, rep)
-    check_evidence_pointer(text, name, rep)
     check_page_evidence(path, text, name, rep, ERROR, WARN)
     check_fence_balance(text, name, rep)
     check_content_attribution(text, name, rep)
@@ -795,60 +794,6 @@ RETIRED_SECTIONS = {
               "its `Done when:` test and its `Now:` fact. Live asks "
               "(`### Needs JL · tick these`) become that Aim's `Now:` line",
 }
-
-
-def check_evidence_pointer(text, name, rep):
-    """An `### E<n>` division's QA-probe pointer must be able to BECOME a link.
-
-    A ```fence is CODE, and the renderer never links or chips anything inside
-    code. So a pointer written inside a figure is inert BY CONSTRUCTION: it
-    reads exactly like a working one and there is nothing to click.
-
-    `QBt4` shipped that way for a day. Its own Log records the decision that
-    caused it: the record anatomy makes `🔗 QA-probe:` the first line of an E
-    division and the caption rule makes `**Name**:` the first line of any
-    division, so to avoid printing the pointer twice it was moved INSIDE the
-    figure. That settled a FORMATTING collision and silently removed a
-    FUNCTION. `QBt5`, written the same week with the pointer above the fence,
-    rendered its link the whole time, which is what made the cause provable.
-
-    WHY THIS RULE HAD TO EXIST. Every other link check here answers "does this
-    href resolve". None of them can see a pointer that never became an href at
-    all: a dead link is visible and an ungenerated link is not. That blind spot
-    is the reason the same defect kept coming back, so the check is on the
-    SOURCE line rather than on the rendered anchor.
-    """
-    # SCOPED TO AN E DIVISION, because a page that DESCRIBES the pointer is not
-    # writing one. The first version flagged QC5, the page that documents this
-    # very defect, for quoting the string inside an example figure. A checker
-    # that fires on its own documentation is a checker people learn to ignore,
-    # which is worse than the defect it catches.
-    fence = in_e = False
-    divisions, pointers = [], []
-    for i, line in enumerate(text.split("\n"), 1):
-        if line.lstrip().startswith("```"):
-            fence = not fence
-            continue
-        if not fence and line.startswith("### "):
-            in_e = bool(re.match(r"^###\s+E\d+\s*·", line.strip()))
-            if in_e:
-                divisions.append((i, line.strip()[:60]))
-        if not fence and line.startswith("## "):
-            in_e = False
-        if in_e and "🔗 QA-probe:" in line:
-            pointers.append((i, fence))
-
-    buried = [i for i, f in pointers if f]
-    for i in buried:
-        rep.add(ERROR, "evidence-pointer-in-fence", f"{name}:{i}",
-                "the `🔗 QA-probe:` pointer sits inside a ``` fence, which is "
-                "code, so it can never render as a link and there is nothing "
-                "for a reader to click. Move it ABOVE the fence and backtick "
-                "the path.")
-    if divisions and not pointers:
-        rep.add(ERROR, "evidence-pointer-missing", f"{name}:{divisions[0][0]}",
-                f"{len(divisions)} `### E<n>` division(s) and no `🔗 QA-probe:` "
-                "pointer anywhere, so the page names no record to open.")
 
 
 def check_fence_balance(text, name, rep):
@@ -2468,7 +2413,7 @@ def check_page(d, rep):
 # panel. That is not hypothetical: `.fig`, written for markdown images, matched
 # every figure panel and its `display:block` beat the UA rule that hides a
 # closed popover, so five invisible full-width panels lay across the page and
-# swallowed every click for a day (QA9, JL 260726).
+# swallowed every click for a day during the early Board renderer work (JL 260726).
 # `chipcard` itself is NOT in the list: styling the panel's own base class
 # bare is the correct way to style a panel. The danger is the OTHER tokens,
 # which are kind and state words a page might plausibly want for something else.
@@ -2481,8 +2426,9 @@ def check_css(rep):
     """A bare class selector that collides with a chip panel's own classes.
 
     The failure this catches renders perfectly and reads perfectly: the page is
-    correct, the prose is correct, and the interaction is dead. Neither of QA9's
-    other two instruments can see it, which is why it gets its own.
+    correct, the prose is correct, and the interaction is dead. A structural
+    report must catch this directly because neither prose review nor a normal
+    link scan can see a hidden panel collision.
     """
     from src import assets as _a
     for m in BARE_CLASS.finditer(_a.css()):
@@ -2612,7 +2558,7 @@ def print_rules():
 
 
 def main():
-    ap = argparse.ArgumentParser(description="structural half of QA9")
+    ap = argparse.ArgumentParser(description="mechanical structural check")
     ap.add_argument("board", nargs="?", help="the board folder")
     ap.add_argument("--strict", action="store_true",
                     help="exit 1 on any ERROR (JL's ruling on blocking is open; default reports)")

@@ -37,7 +37,7 @@ Define and verify the entry rule.
 G1-entry-rule.md
 ```
 
-## QA1-entry-rule.md
+## G1-entry-rule.md
 
 ````markdown
 # Verifiable entry rule

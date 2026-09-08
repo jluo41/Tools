@@ -1,8 +1,9 @@
 ## 0.172.1 · 2026-09-08
 
-- Remove the obsolete QA3 round gate and its unreferenced browser binding
-  battery. Board completion now uses the current build/check tools plus the
-  Page CHECK workflow; no QA command is shipped.
+- Remove the obsolete QA3 round gate, its unreferenced browser binding battery,
+  and the live checker's former QA-probe pointer rule. Board completion now
+  uses the current build/check tools plus the Page CHECK workflow; no QA
+  command or QA-probe pointer is shipped.
 
 ## 0.172.0 · 2026-09-08
 

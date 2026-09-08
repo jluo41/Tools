@@ -632,9 +632,10 @@ and the page interprets; WRITE runs without asking; never write the person's tic
 Decide, verified:, accepted:); never judge your own version.
 
 WALLS: generated files (-feedback, -requirement, -evidence) are regenerated with
-their cli/*.py, never hand-edited · _runs/, runs/ and a QA file in `state: working`
-are never written · approved: accepted: read: verified: are a person's · a signed
-lane is never deleted · a sentence is never rewritten without its ✎ record ·
+their cli/*.py, never hand-edited · _runs/, runs/, and results/ are written only
+by the owning workflow or Run dialect, never by an ad-hoc chat edit · approved:
+accepted: read: verified: are a person's · a signed lane is never deleted · a
+sentence is never rewritten without its ✎ record ·
 Content states the present (no dates, no names as authority) · every G>=1 plan version
 is either the next bounded Shape v<G>.<S+1> (evidence resets to zero) or the next
 evidence fold v<G>.<S>.<E+1>. Before a write, say the address and the row above you are using.

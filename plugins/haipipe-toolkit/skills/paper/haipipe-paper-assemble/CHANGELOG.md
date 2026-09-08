@@ -1,5 +1,18 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.6.0 · 260908
+
+- Canonical engine `scripts/build_delivery.py` (was paper-local `delivery/build.py`
+  in every paper); papers install the thin wrapper `ref/build.py.wrapper` as
+  `delivery/build.py`. Three behaviors found by Paper-MISQ-Board in one paper
+  copy now ship for all: A display printed once (`DEDUPE_EMBEDDED_FLOATS`),
+  B a not-ready page keeps its number via `page_heading()`, C the display
+  register `delivery/display-register.md` + manifest `displays` block counting
+  what the master prints, with four teeth. `tests/test_build_delivery.py`
+  carries a tooth per behavior and the expect-fail run for A.
+- Engine version is read from this file's frontmatter and stamped into
+  master.tex, the register, the bibliography and the manifest.
+
 ## 0.5.0 · 260907
 
 - Reading order comes from the Story page's `haipipe:compile-order` block

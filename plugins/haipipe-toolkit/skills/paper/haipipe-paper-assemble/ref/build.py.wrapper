@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+"""delivery/build.py · thin wrapper over haipipe-paper-assemble's canonical engine.
+
+Copy this file to <paper>/delivery/build.py unchanged. It finds the repository
+root, points HAIPIPE_PAPER_BUILD_CONFIG at the paper-build.toml beside it, and
+execs Tools/.../haipipe-paper-assemble/scripts/build_delivery.py INSIDE this
+module, so `python delivery/build.py` behaves exactly like the engine and a
+test that imports this file sees the engine's functions. Every fix lands in the
+engine once and reaches every paper. Run with the workspace venv
+(.venv/bin/python): the engine needs Python 3.11+ for tomllib.
+"""
+import os
+from pathlib import Path
+
+_here = Path(__file__).resolve().parent
+_repo = _here
+for _ in range(12):
+    _repo = _repo.parent
+    if (_repo / "pyproject.toml").exists() and (_repo / "Tools").exists():
+        break
+__engine_dir__ = _repo / "Tools/plugins/haipipe-toolkit/skills/paper/haipipe-paper-assemble/scripts"
+_engine = __engine_dir__ / "build_delivery.py"
+if not _engine.exists():
+    raise SystemExit(f"canonical engine not found: {_engine} (is the Tools submodule checked out?)")
+os.environ.setdefault("HAIPIPE_PAPER_BUILD_CONFIG", str(_here / "paper-build.toml"))
+exec(compile(_engine.read_text(encoding="utf-8"), str(_engine), "exec"))

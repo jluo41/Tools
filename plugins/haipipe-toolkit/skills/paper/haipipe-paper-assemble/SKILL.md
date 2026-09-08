@@ -10,8 +10,8 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-07"
+  version: "0.6.0"
+  last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
 
@@ -115,14 +115,54 @@ The implementation has four separable parts:
 4. **Renderer and validators** — emit DOCX/PDF and review snapshots, calculate
    the source manifest, and run structural plus rendered visual checks.
 
-The shared engine belongs under the Paper assembly skill's implementation
-(`scripts/` or its installed package). A paper room supplies configuration and,
-only when necessary, a small adapter for genuinely unusual source constructs.
-`SKILL.md` is the contract and routing layer; it is not a 1000-line copied
-renderer. The reference `latex-room` implementation currently lives at
-`scripts/latex_room_to_docx.py` and is invoked by a paper-room thin wrapper.
-The reference TOML implementation requires Python 3.11+ (or an equivalent
-TOML parser supplied by the installation).
+The shared engine lives under this skill: `scripts/build_delivery.py` is the
+CANONICAL delivery engine (regenerates `delivery/latex/`, compiles, converts
+Word, writes the display register and the manifest) and
+`scripts/latex_room_to_docx.py` is the latex-room → DOCX adapter it calls. A
+paper supplies configuration only: its `delivery/build.py` is the thin wrapper
+at `ref/build.py.wrapper`, copied unchanged, which sets
+`HAIPIPE_PAPER_BUILD_CONFIG` to the `paper-build.toml` beside it and execs the
+engine inside its own module. A fix in the engine reaches every paper on the
+next build; a paper-local `build.py` with logic of its own is the defect this
+rule exists to prevent (260908: three real fixes were found in one paper's copy
+while a sibling paper kept printing every display twice). `SKILL.md` is the
+contract and routing layer; it is not a 1000-line copied renderer. The engine
+requires Python 3.11+ for `tomllib`; run it with the workspace venv.
+
+## 🔢 Three behaviors every build must have (260908)
+
+Found paper-locally by Paper-MISQ-Board, now in the engine with a tooth each in
+`tests/test_build_delivery.py`:
+
+```text
+A  print a display ONCE          md2tex already embeds a cited display as a real float inside the
+                                 fragment; the master never re-\inputs the unit's float.tex after it.
+                                 Without this every figure and table printed twice (Figure 1 = Figure 2).
+                                 switch: DEDUPE_EMBEDDED_FLOATS
+B  a not-ready page keeps        its H1 declares number and title ("# S-<desk>-Main-X · §4 Title"):
+   its number                    the master emits a real numbered \section{Title} plus one italic
+                                 "[Not yet compiled into this build: <reasons>]" line. An unnumbered
+                                 "[NOT READY]" heading slid every later section down one number.
+                                 parser: page_heading()
+C  the display register          delivery/display-register.md counts what the MASTER prints, walking
+                                 master.tex in \input order, and compares with the number each unit's
+                                 README `## Placement` declares. Four teeth: declared ≠ printed · printed
+                                 with no declared number · one label printed twice · one number claimed
+                                 by 2+ units, scanned over ALL units on disk so a collision on a
+                                 not-ready page is visible before that page compiles.
+                                 also in build-manifest.json under "displays"
+```
+
+## 🧪 The expect-fail procedure (the Gate-1 lesson)
+
+A check that measures what a page CONTAINS is blind to what the document
+PRINTS: the first register counted fragments and reported the same findings on
+the broken build as on the good one. Every tooth in this skill is therefore
+proven by making it fail first: `test_behavior_A_expect_fail_register_catches_the_double_print`
+switches `DEDUPE_EMBEDDED_FLOATS` off and asserts the register reports the
+double print; only then does the positive test count. When you add a behavior,
+add the tooth that fails without it, and record both runs. Run the suite with
+`.venv/bin/python -m pytest Tools/plugins/haipipe-toolkit/skills/paper/haipipe-paper-assemble/tests -q`.
 
 ## ⚙️ Canonical configuration
 
@@ -231,14 +271,17 @@ resolve Paper and its delivery/
 Round's Log carries their manifest hashes. `haipipe-paper-round` owns the
 folder shape.
 
-The paper-specific command may be a thin wrapper, for example:
+The paper-specific command is the thin wrapper `ref/build.py.wrapper`,
+installed as `delivery/build.py`:
 
 ```bash
-python3 delivery/build.py
+.venv/bin/python delivery/build.py            # build · DRAFT unless every page is ready
+.venv/bin/python delivery/build.py send RD02  # freeze the current build into that Round's sent/
 ```
 
-That wrapper must delegate to the shared engine and config. It must not contain
-a second source model or read a prior `.docx`. An installation that packages
+The wrapper contains no logic of its own; it delegates to
+`scripts/build_delivery.py` and the paper's `paper-build.toml`. It must not
+contain a second source model or read a prior `.docx`. An installation that packages
 the engine may additionally expose a module command:
 
 ```bash

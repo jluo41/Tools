@@ -15,14 +15,14 @@ dropping a path.
 
 WHAT COMES WITH THE PAGE. Before folding, a group folder holds the plugin
 material of all its pages side by side, keyed by the page's name:
-`display/QBt3-for-display/`, `QA-probe/QBt5-for-value/`, `draw/QBt2.excalidraw`.
+`evidence/display/QBt3-for-display/`,
+`evidence/supporting-runs/QBt5-for-value/`, `draw/QBt2.excalidraw`.
 Each of those belongs to one page, so each moves under that page:
 `QBt3-for-display/display/QBt3-for-display/`. The INNER path is preserved
 exactly, never flattened, because things read it — a display unit is addressed
-by its own folder name, and a QA-probe record names its evidence page by the
-drawer it sits in (`legacy/topic_entry_contract.py` reads `parts[-2]`). Re-parent,
-do not rename: renaming is a different decision and belongs to whoever owns that
-contract.
+by its own folder name, and a legacy evidence record names its owning page by
+the drawer it sits in. Re-parent, do not rename: renaming is a different
+decision and belongs to whoever owns that contract.
 
 WHAT THE MOVE BREAKS, AND WHY IT IS FIXED HERE. A page one level deeper is a
 page whose every relative path is one level short. A sibling citation
