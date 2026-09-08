@@ -12,7 +12,7 @@ These entries are tracked as Git submodules so their upstream history stays sepa
 - Patent, genealogy, and source-tracing skills: `paper-to-patent-*`, `research-genealogy`, `literature-source-tracing`.
 - Figure, visualization, and methodology skills: `scipilot-figure-skill`, `intelligrapher`, `happy-figure-skill`, `science-superpowers`, `superpower-socialscience-skills`.
 - Math skills: `mathmodel-skill`, `claude-code-math-skills`.
-- Agent governance and writing-style skills: `sepia`, `stop-that-shit`, `stop-slop`, `stop-slop-zh`, `llm-wiki-skill`.
+- Agent governance and writing-style skills: `writing-dna-skill`, `sepia`, `stop-that-shit`, `stop-slop`, `stop-slop-zh`, `llm-wiki-skill`.
 - Tool libraries used as references: `tools/statsmodels`, `tools/dowhy`, `tools/causalml`, `tools/econml`, `tools/python-causality-handbook`, `tools/chatgpt-comparison-detection`.
 
 Use this after cloning the parent repository:

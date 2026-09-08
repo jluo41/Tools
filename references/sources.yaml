@@ -167,6 +167,13 @@ references:
     license: MIT
     notes: "Multi-platform Hook + Skill Guard for AI coding agents; reference only here, with Hooks not enabled by this repository."
 
+  - name: writing-dna-skill
+    path: references/writing-dna-skill
+    type: git-submodule
+    url: https://github.com/larashero3-dotcom/writing-dna-skill
+    license: MIT
+    notes: "Distills author-owned writing style into reusable language, structure, cognitive, source, and visual guidance; reference only."
+
   - name: stop-slop-zh
     path: references/stop-slop-zh
     type: git-submodule
@@ -322,6 +329,10 @@ candidates_from_screenshots:
     status: added
     path: references/stop-that-shit
     notes: "Matched the screenshot's Stop That Shit（别再造史了） project; tracked as a reference submodule."
+  - name: Writing DNA Distiller
+    status: added
+    path: references/writing-dna-skill
+    notes: "Matched the screenshot's writing-dna-skill project; tracked as a pinned reference submodule."
   - name: social-science tool list
     status: added
     paths: [references/auto-empirical-research-skills, references/statspai, references/awesome-journal-skills, references/aer-skills, references/auto-research-skills, references/tools/statsmodels, references/tools/dowhy, references/tools/causalml, references/tools/econml, references/tools/python-causality-handbook]

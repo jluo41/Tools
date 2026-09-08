@@ -145,3 +145,6 @@
 [submodule "references/stop-that-shit"]
 	path = references/stop-that-shit
 	url = https://github.com/lennney/stop-that-shit.git
+[submodule "references/writing-dna-skill"]
+	path = references/writing-dna-skill
+	url = https://github.com/larashero3-dotcom/writing-dna-skill.git
