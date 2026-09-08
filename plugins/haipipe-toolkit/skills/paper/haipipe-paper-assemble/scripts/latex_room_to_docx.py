@@ -277,16 +277,51 @@ def reference_value(label: str, full: bool = False) -> str:
     return REF_TEXT.get(label, label.split(":")[-1])
 
 
+def author_date_style() -> bool:
+    """Author-date (MISQ, apalike) instead of numbered Vancouver (JAMA and the medical
+    journals). The LaTeX lane has always followed the venue through bibstyle, while
+    Word emitted "[1,2]" and a numbered list for EVERY venue: a MISQ submission was
+    going out with medical-journal citations (JL 260908, caught against the
+    co-author's MISQ-Official-Format.docx, which is APA author-date throughout)."""
+    return str(PROFILE_CONFIG.get("citation_style", "numeric")).lower() in {"author-date", "authoryear", "apalike"}
+
+
+def surname_of(author_field: str) -> str:
+    first = re.split(r"\s+and\s+", latex_to_text(author_field or "").strip())[0].strip()
+    if not first:
+        return ""
+    return (first.split(",", 1)[0] if "," in first else first.split()[-1]).strip().rstrip(".")
+
+
+def author_date_label(key: str) -> str:
+    """(Barnett et al., 2017) · (Buchmueller and Carey, 2018) · (Soto, 2017)"""
+    fields = BIB.get(key, {})
+    people = [a for a in re.split(r"\s+and\s+", latex_to_text(fields.get("author", "")).strip())
+              if a and a.lower() != "others"]
+    names = [surname_of(a) for a in people]
+    year = latex_to_text(fields.get("year", "")).strip() or "n.d."
+    if not names:
+        return year
+    if len(names) == 1:
+        who = names[0]
+    elif len(names) == 2:
+        who = f"{names[0]} and {names[1]}"
+    else:
+        who = f"{names[0]} et al."
+    return f"{who}, {year}"
+
+
 def citation_text(match: re.Match[str]) -> str:
     keys = [key.strip() for key in match.group(1).split(",")]
-    numbers: list[str] = []
-    for key in keys:
-        if key not in BIB:
-            continue
+    present = [k for k in keys if k in BIB]
+    for key in present:
         if key not in CITATION_NUMBERS:
             CITATION_NUMBERS[key] = len(CITATION_NUMBERS) + 1
-        numbers.append(str(CITATION_NUMBERS[key]))
-    return "[" + ",".join(numbers) + "]" if numbers else ""
+    if not present:
+        return ""
+    if author_date_style():
+        return "(" + "; ".join(author_date_label(k) for k in present) + ")"
+    return "[" + ",".join(str(CITATION_NUMBERS[k]) for k in present) + "]"
 
 
 def latex_to_text(value: str) -> str:
@@ -670,7 +705,7 @@ def add_text(doc: Document, text: str, *, size: float = 12, bold: bool = False, 
     set_font(run, size=size, bold=bold, color="C00000" if action else None)
 
 
-def add_heading(doc: Document, text: str, level: int = 1) -> None:
+def add_heading(doc: Document, text: str, level: int = 1, *, upper: bool = True) -> None:
     if not text:
         return
     heading_style = str(PROFILE_CONFIG.get("heading_style", "heading")).lower()
@@ -682,7 +717,7 @@ def add_heading(doc: Document, text: str, level: int = 1) -> None:
     # joining an immediately preceding body paragraph and its next heading.
     paragraph.paragraph_format.space_before = Pt(6)
     paragraph.paragraph_format.space_after = Pt(0)
-    run = paragraph.add_run(text.upper() if level == 1 else text)
+    run = paragraph.add_run(text.upper() if (level == 1 and upper) else text)
     set_font(run, size=12, bold=True)
 
 
@@ -832,7 +867,7 @@ def add_figure(doc: Document, display: Display, title: str = "", *, compact: boo
 
 
 def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool = True, compact: bool = False,
-               number_displays: bool = False, main_numbering: bool = False) -> None:
+               number_displays: bool = False, main_numbering: bool = False, appendix_letters: bool = False) -> None:
     """0.7.1: ``number_displays`` gives every table/figure in this stream a running
     title ("Table S1.", "Figure S1."; prefixes from the profile), so a supplement
     table no longer prints its caption with no number."""
@@ -842,9 +877,17 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
     if main_numbering:
         prefixes = {"table": str(PROFILE_CONFIG.get("main_table_prefix", "Table ")),
                     "figure": str(PROFILE_CONFIG.get("main_figure_prefix", "Figure "))}
+    letter = 0
     for event in events:
         if event.kind == "heading":
-            add_heading(doc, str(event.value), event.level)
+            title = str(event.value)
+            if appendix_letters and event.level == 1:
+                # LaTeX's \appendix letters its sections; Word printed the bare title in
+                # caps, so "Appendix A." was nowhere in the .docx while the LaTeX PDF and
+                # the co-author's official-format file both carry it (JL 260908).
+                title = f"{PROFILE_CONFIG.get('appendix_word', 'Appendix')} {chr(ord('A') + letter)}. {title}"
+                letter += 1
+            add_heading(doc, title, event.level, upper=not (appendix_letters and event.level == 1))
         elif event.kind == "text":
             add_text(doc, str(event.value), size=11 if compact else 12)
         elif event.kind == "list":
@@ -1056,10 +1099,59 @@ def format_reference(key: str) -> str:
     return ". ".join(pieces).rstrip(".") + "."
 
 
+def apa_authors(author_field: str) -> str:
+    """Barnett, M. L., Olenski, A. R., & Jena, A. B."""
+    people = [a.strip().rstrip(".") for a in re.split(r"\s+and\s+", latex_to_text(author_field or "").strip())
+              if a.strip() and a.strip().lower() != "others"]
+    out = []
+    for person in people:
+        if "," in person:
+            surname, given = [p.strip() for p in person.split(",", 1)]
+        else:
+            parts = person.split()
+            surname, given = (parts[-1], " ".join(parts[:-1])) if len(parts) > 1 else (person, "")
+        given = " ".join(f"{g[0]}." for g in given.split() if g)
+        out.append(f"{surname}, {given}".strip().rstrip(","))
+    if not out:
+        return ""
+    if len(out) == 1:
+        return out[0]
+    return ", ".join(out[:-1]) + ", & " + out[-1]
+
+
+def format_reference_apa(key: str) -> str:
+    f = BIB[key]
+    bits = [apa_authors(f.get("author", "")), f"({latex_to_text(f.get('year', 'n.d.'))})."]
+    title = latex_to_text(f.get("title", "")).rstrip(".")
+    if title:
+        bits.append(title + ".")
+    journal = latex_to_text(f.get("journal", f.get("booktitle", ""))).rstrip(".")
+    volume = latex_to_text(f.get("volume", ""))
+    pages = latex_to_text(f.get("pages", "")).replace("--", "-")
+    if journal:
+        tail = journal + (f", {volume}" if volume else "") + (f", {pages}" if pages else "")
+        bits.append(tail + ".")
+    doi = latex_to_text(f.get("doi", "")).strip()
+    if doi:
+        bits.append("https://doi.org/" + doi)
+    return " ".join(b for b in bits if b).replace("..", ".")
+
+
 def add_references(doc: Document) -> None:
     if not CITATION_NUMBERS:
         return
     add_heading(doc, str(PROFILE_CONFIG.get("references_heading", "REFERENCES")), 1)
+    if author_date_style():
+        # alphabetical by first author, no numbers: the order a reader looks a name up in
+        for key in sorted(CITATION_NUMBERS, key=lambda k: (surname_of(BIB[k].get("author", "")).lower(),
+                                                           latex_to_text(BIB[k].get("year", "")))):
+            paragraph = doc.add_paragraph(style="Normal")
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            paragraph.paragraph_format.line_spacing = 1.0
+            paragraph.paragraph_format.left_indent = Inches(0.5)
+            paragraph.paragraph_format.first_line_indent = Inches(-0.5)
+            set_font(paragraph.add_run(format_reference_apa(key)), size=11)
+        return
     for number, key in enumerate(CITATION_NUMBERS, start=1):
         paragraph = doc.add_paragraph(style="Normal")
         paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -1413,7 +1505,25 @@ def build() -> tuple[Path, Path]:
             add_heading(main_doc, str(PROFILE_CONFIG.get("figures_heading", "FIGURE LEGENDS")), 1)
             for number, display in enumerate(main_figures, start=1):
                 add_figure(main_doc, display, f"Figure {number}")
+    # WHERE THE APPENDICES GO is the venue's call, not a constant. A separate
+    # "ONLINE-ONLY SUPPLEMENTAL MATERIAL" file is the MEDICAL convention; MISQ keeps
+    # Appendix A-E inside the one manuscript after the references, which is what the
+    # co-author's MISQ-Official-Format.docx does (JL 260908 "is the word fit the misq
+    # template as well?"). When they go in the main document the supplement is not
+    # written, and a stale one from an earlier profile is deleted rather than left
+    # on disk to be submitted by mistake.
+    appendices_in_main = str(PROFILE_CONFIG.get("appendices", "supplement")).lower() == "main"
+    if appendices_in_main:
+        add_events(main_doc, supplement_events, include_displays=True, number_displays=True,
+                   appendix_letters=True)
     main_doc.save(MAIN_PATH)
+    if appendices_in_main:
+        for stale in (SUPP_PATH, SUPP_PDF_PATH):
+            if stale.exists():
+                stale.unlink()
+        pdf_report = render_submission_pdfs()
+        write_common_receipts(main_events, main_displays, supplement_events, running_title, evidence, pdf_report)
+        return MAIN_PATH, None
 
     supp_doc = Document()
     configure_document(supp_doc, body_size=11, line_spacing=1.5)
@@ -1421,7 +1531,8 @@ def build() -> tuple[Path, Path]:
     add_text(supp_doc, str(PROFILE_CONFIG.get("supplement_title", "ONLINE-ONLY SUPPLEMENTAL MATERIAL")), bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_text(supp_doc, "[AUTHOR ACTION REQUIRED: confirm that all supplement citations, table labels, and figure labels match the final main manuscript]", size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
     supp_doc.add_page_break()
-    add_events(supp_doc, supplement_events, include_displays=True, compact=True, number_displays=True)
+    add_events(supp_doc, supplement_events, include_displays=True, compact=True, number_displays=True,
+               appendix_letters=True)
     supp_doc.save(SUPP_PATH)
 
     pdf_report = render_submission_pdfs()

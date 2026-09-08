@@ -36,7 +36,14 @@ hero_display = "research model / theoretical framework figure"
 # latex_room_to_docx.py WAS the medical-journal title page: the MISQ build shipped
 # a "Running title:" line with no value (under running_head = false), an
 # "Article type" line, and two build counts inside the deliverable.
-title_page_fields = ["title", "author", "affiliations", "corresponding"]
+# The MISQ manuscript is a BLIND copy: the co-author's official-format file carries
+# the title and nothing else before the abstract. Author names, affiliations and the
+# corresponding author live in ScholarOne's metadata and a separate title-page file.
+title_page_fields = ["title"]
+citation_style = "author-date"   # MISQ is author-date, matching the LaTeX lane's apalike; numbered Vancouver is the medical convention
+appendices = "main"              # Appendix A-E sit inside the manuscript after the references, not in a separate supplement file
+supplement_table_prefix = "Table A"
+supplement_figure_prefix = "Figure A"
 author_placeholder = "[AUTHOR NAMES: first, middle, and last names]"
 displays_position = "inline"     # v0728, the file MISQ received, interleaves its tables with the prose
 main_table_prefix = "Table "
