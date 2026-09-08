@@ -366,6 +366,9 @@ def write_master(main, appx, status, ready_n, total_n):
         body.append("")
     tail = ["\\section*{Acknowledgments}", "\\noindent\\textit{[Acknowledgments, funding and disclosures are written at submission; this build is a draft.]}", "",
             "\\clearpage", "\\bibliographystyle{apalike}", "\\bibliography{reference}", "", "\\clearpage", "\\appendix", ""]
+    if JAMA:   # JAMA supplements number their floats eTable 1… / eFigure 1…, restarting after the references
+        tail += ["\\setcounter{table}{0}\\renewcommand{\\tablename}{eTable}\\renewcommand{\\thetable}{\\arabic{table}}",
+                 "\\setcounter{figure}{0}\\renewcommand{\\figurename}{eFigure}\\renewcommand{\\thefigure}{\\arabic{figure}}", ""]
     for p, floats in appx:
         if p.get("included", p["ready"]) and not p["ready"]:
             note = "; ".join(p["reasons"]).replace("_", r"\_").replace("<", r"$<$").replace(">", r"$>$")
