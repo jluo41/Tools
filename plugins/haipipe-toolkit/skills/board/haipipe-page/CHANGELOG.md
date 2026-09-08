@@ -1,3 +1,14 @@
+## 0.61.3 · 2026-09-08
+
+- Scope the user-check packet's revision status to the resolved Page owner's
+  workers and style policy; Paper-only humanizer rules are conditional.
+
+## 0.61.2 · 2026-09-08
+
+- Make Page titles functional labels: concise, objective, and explicit about
+  the Page's subject plus its work or deliverable; keep findings and caveats
+  in Opening or Content instead of using a rhetorical or misleading headline.
+
 ## 0.61.1 · 2026-09-08
 
 - Define a canonical Task Page as the Page Face of the same physical

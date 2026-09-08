@@ -9,7 +9,7 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.46.2"
+  version: "0.46.3"
   last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -98,8 +98,8 @@ use Supporting Run Results; Related Page links appear in Context Workspace.
   `reuse`). A never-attempted real Ticket is `registered`; a failed,
   smoke-only, invalid, or explicitly stale attempt is `Rerun`, never `Done`;
   a missing Ticket is rendered as `needs … Run`, not a
-  made-up id. A Paper-local Run uses the distinct `pjNNtNNrNN` namespace and
-  renders as `P jNN.tNN.rNN`; its `plan` label means the address is proposed
+  made-up id. A Page-local Run uses its Folder owner's current namespace and
+  display label; its `plan` label means the address is proposed
   but no Run exists. Every displayed Run or planned-route token is an actual anchor:
   hovering it shows the Run filename, repository-relative Run path, available
   Result/Runtime paths, availability status, and next action; an unallocated
@@ -146,11 +146,11 @@ use Supporting Run Results; Related Page links appear in Context Workspace.
   `## States`, `## Files`, `## Log` or `## Discussion` as `retired-section`.
 
 The dotted address is presentation typography only. A global Supporting Run
-resolves to `b01j02t03r04`; a Paper-local Run resolves to `pjNNtNNrNN` and is
-shown with the fixed `P` family marker plus `jNN.tNN.rNN`. The two namespaces
-must not be collapsed. Planned external parents omit `.rNN`; a proposed
-Paper-local Run reserves it while remaining visibly `plan` until LAND creates
-the Ticket.
+resolves to `b01j02t03r04`; other Runs preserve their owner-native address and
+display label. Never collapse distinct owner namespaces. Planned external
+parents omit `.rNN`; a local full-address reservation is valid only under its
+Folder owner's current naming contract and stays visibly `plan` until LAND
+creates the Ticket. Page owns presentation, not family Run naming.
 
 The grammar of every record file, its labels, its writer and its teeth:
 `ref/record-shape.md`.
@@ -264,7 +264,7 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   evidence appears through its Supporting Run Result; related Page links stay
   in Context Workspace. `Evidences` explains each Evidence contract—what
   it is about, what it must contain, and what will make it ready. `Runs` is
-  grouped by Evidence and renders one card per mapped Supporting or Paper-local
+  grouped by Evidence and renders one card per mapped Supporting or Page-local
   Run; a shared Run may therefore appear under each Evidence that uses it.
   Its header reports both mapping and unique-Run counts. This is the complete
   evidence-source inventory, not the top-level `⚙️ Runs` inventory of only
@@ -299,6 +299,12 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   local Page · Evidence Item Run, ready Result, and fold. Header counts `specified · planned
   · ready · folded · accepted` are computed
   separately and never collapsed.
+- **Both failure modes render as a named row, never a blank**: 🕳 owed and
+- **One Evidence identity has one HTML target.** If a stale snapshot repeats
+  an item id, show one focusable card with an explicit duplicate-identity
+  warning and the conflicting source records. Never mark that contract ready
+  or silently discard the conflict; SHAPE resolves it. Run groups and item
+  counts use unique identities so duplicate records do not break deep links.
 - **Both failure modes render as a named row, never a blank**: 🕳 owed and
   nothing there (a bullet cites `Display2` and no unit folder exists) · 🎈
   there and uncited (a card no bullet names).

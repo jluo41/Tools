@@ -22,7 +22,7 @@ What "spec complete" means
 The required inputs for a silent run:
 
 ```
-□ run NAME              (run_-prefixed, snake_case)
+□ Run name              (`rNN_<noun>_<qualifier>`)
 □ _meta.purpose         (the one hard-required field)
 □ Job target            (resolved parent container, not "ASK from cwd")
 □ Task Folder target    (`tNN_<task>/`, also the Page Folder)
@@ -60,8 +60,8 @@ a human):
 status:       ok | blocked | failed
 job:          <absolute path to the parent jNN_<job>>      (on ok)
 task_folder:  <absolute path to tNN_<task>>                (on ok; same as Page Folder)
-run_name:     <NAME>
-files:        [scripts/config/<NAME>.yaml, runs/<NAME>.sh, $OUTPUT_ROOT/results/<task>/<NAME>/]
+run_name:     <rNN_run>
+files:        [scripts/config/<run>.yaml, runs/<run>.sh, $OUTPUT_ROOT/results/<task>/<run>/]
 missing:      [<field>, ...]                                (on blocked)
 note:         <one line>
 ```

@@ -84,7 +84,7 @@ resolve:
            shape" = a lifecycle contract rule -> fallback, NOT -2_nn even mid-nn-task).
          - names a known cross-cutting concern: the 4-phase lifecycle
            (Plan/Build/Execute/Report), the IPO contract, the job
-           scaffold, run conventions (runs/*.sh, papermill, configs/), the
+           scaffold, run conventions (runs/*.sh, papermill, scripts/config/), the
            creator-reviewer loop discipline, stage file-ownership, anything
            true across all domains.
        Rule of thumb: "would this complaint be equally true for a data task,

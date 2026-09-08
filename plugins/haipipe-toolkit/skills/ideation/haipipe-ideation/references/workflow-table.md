@@ -1,78 +1,72 @@
 # Ideation workflow table
 
-This is the concise Phase × Run map for the semantic ideation layer. The
-ideation unit uses BJTR for its durable container, while Task and Discovery
-own every addressable Run.
+The numbered directories are capability families, like Discovery's
+`1_search/2_review/3_synthesize`. They do not replace the durable BJTR address
+and never create a local ideation Run.
 
-| ID | Phase / cycle | Purpose | Authoritative writes | L4 Run profile | Exit / next route | Human gate |
+| ID | Capability family | Purpose | Canonical writes | Owner execution | Exit | Human gate |
 |---|---|---|---|---|---|---|
-| `i0.scope` | SCOPE | Freeze one direction, question, boundary, and decision rule. | `ideation.yaml`, direction face | none | Identity and scope agree → `i1.bundle` | Resolve material ambiguity |
-| `i1.bundle` | BUNDLE | Collect and freeze internal Task plus external Discovery pointers. | `bundle/evidence-bundle.yaml`, bundle receipt | none; reads owner Run/Results | Every input has owner path, status, locator, and role → `i2.search` or `i3.synthesize` | Approve a consequential evidence boundary when needed |
-| `i2.search` | SEARCH / REUSE | Reuse adequate Discovery Results or request missing source-map/source-reading work. | `workflow/` request/return receipts; no Discovery mutation | Discovery `paper-analysis` / `source-analysis` × `N_admitted`; Task Run × `N_missing_internal` | Returned owner Results are paired and valid → `i1.bundle` | None; citation verification remains owner-side |
-| `i3.synthesize` | SYNTHESIZE | Separate observations from inference and write the direction plus a dynamic compared candidate set. | `cards/direction.yaml`, `cards/iNN_*.yaml`, human face | none | Every material claim traces to bundle IDs; gaps are explicit → `i4a.pressure` | None |
-| `i4a.pressure` | PRESSURE-TEST | Test claims against closest work and feasibility; route gaps to owners. | card revisions plus pressure-test receipts | New/changed work uses owner Task/Discovery Run contracts; no ideation Run | Claim-level novelty and feasibility states are truthful → `i4b.screen` or `i2.search` | Accept a named risk only at selection |
-| `i4b.screen` | VENUE SCREEN | Broad-screen every admitted Idea for field, audience, contribution, method/evidence shape, article type, and obvious desk mismatch. | one `cards/venue-fit/iNN_venue-fit.yaml` per Idea | none; missing official scope routes to Discovery | Every admitted Idea has a retained broad screen → `i4c.fit`, elimination, or `i2.search` | None |
-| `i4c.fit` | VENUE DEEP FIT | Compare live finalists against current Venue contracts; record fit, desk risks, missing evidence, and reroutes. | Venue Fit Card revisions and Venue/Discovery receipts | Venue Page workflow plus owner Discovery Runs; no ideation Run | Every selected candidate has complete deep fit → `i5.select` or refresh owner evidence | None; machine recommends only |
-| `i5.select` | SELECT | Record which cards, targets, and categories, if any, a person chooses and why; comparison order is not selection. | selection receipt; card state; distinct Story and target route per selected card | none | Human idea-and-target decision exists → `i6.handoff` or remain open | Required: select, abandon, or defer |
-| `i6.handoff` | HANDOFF | Package selected cards plus their distinct Story and target routes for Paper P0 without copying evidence or venue rules. | `handoff/paper-ideation.yaml` | none | Packet passes handoff assertions → `haipipe-paper-ideation` | Required: person/date, target/category, and accepted risk |
+| `I1` | `1_generate` | Freeze the direction and evidence population; generate, deduplicate, and admit diverse candidates. | `ideation.yaml`, bundle, Direction Card, `iNN` Idea Cards, Paper sync revision | `haipipe-ideation-generate`; missing evidence routes to Task/Discovery; Paper projection routes to `haipipe-paper-ideation` | Every admitted card has a falsifiable claim, method, minimum experiment, expected/failure reading, Core Claims, and provenance; novelty remains unverified; the evergreen P0 cockpit can display the current landscape and portfolio | Resolve a material scope ambiguity when needed |
+| `I2a` | `2_test/novelty` | Test every Core Claim against verified closest work. | Idea Card novelty blocks plus a novelty receipt | `haipipe-novelty-check` → Discovery Search/Review/Synthesize | Each live claim is `novel`, `partial`, or `preempted`; inaccessible or insufficient evidence stays `inconclusive`/`unverified` | None |
+| `I2b` | `2_test/pressure` | Test falsifiability, construct/identification risk, data access, ethics, and the minimum experiment. | Pressure receipt plus feasibility block | `haipipe-idea-pressure-test` → Task/Run when computation is required | Pilot is positive/negative or a reasoned waiver exists; fatal assumptions and repair paths are explicit | Release new computation when required; accept risk only at Select |
+| `I2c` | `2_test/journal-fit` | Broad-screen all admitted cards and deep-fit live finalists. | one Venue Fit Card per Idea | `haipipe-journal-fit` → Discovery + current Venue contracts | Broad screen is complete for all; each live finalist has an evidence-bound deep fit or visible HOLD | None |
+| `I2d` | `2_test/nature` | Apply a Nature-family editorial overlay to named Nature candidates. | Nature review receipt linked from the Venue Fit Card | `haipipe-nature-paper-review`; current rules still come from Venue | Editorial shape, required upgrades, specialist reroutes, and rule gaps are explicit | None |
+| `I2` | `2_test` | Reconcile I2a–I2d into one per-Idea test matrix without a composite score. | card/test-matrix updates and refreshed Paper sync revision | `haipipe-ideation-test`; P0 projection remains `haipipe-paper-ideation` | Every live Idea has truthful novelty, feasibility, and venue states; missing work has an owner route; the same P0 cockpit shows additions, changes, merges, dispositions, and evidence gaps | None |
+| `I3` | `3_select` | Compare the portfolio, preserve eliminated history, record the sole human decision, and package selected idea-target pairs. | sync `portfolio_recommendation`, selection receipt, card states, `handoff/paper-ideation.yaml` | `haipipe-ideation-select`; Paper only projects the receipt | Every selected Idea has one target/category, current Venue contract, accepted risk, and distinct Story route | Required: select, defer, or abandon |
 
-## Run law
-
-The planned external count is `N_admitted canonical Discovery Subjects`; the
-planned internal count is `N_missing_internal analyses` only when a Task Run
-is actually commissioned. Search calls, card writes, synthesis, pressure-test
-passes, and the handoff are not Runs. Actual counts come only from owner-native
-Tickets plus valid runtime receipts.
-
-For a Discovery request, the exact chain is:
+## Owner routes
 
 ```text
-haipipe-ideation → haipipe-discovery → haipipe-discovery-search
-                 → haipipe-run → one canonical Subject per Run
-                 → same-stem Discovery Result + one-entry Bib
-                 → bundle refresh
+external prior work  haipipe-ideation → haipipe-discovery-search
+                                        → haipipe-discovery-review
+                                        → haipipe-discovery-synthesize
+                                        → verified Result/Card/Bib pointers
+
+internal feasibility haipipe-ideation → reuse Task Result
+                                      or haipipe-task + haipipe-run
+                                      → Task-owned pilot receipt
+
+venue facts          haipipe-journal-fit → haipipe-paper-venue
+                                         → current versioned contract
 ```
 
-For internal feasibility:
+Search calls, candidate generation, card edits, test reconciliation, journal
+comparison, and handoff are not Runs. A new bounded source analysis or
+internal computation becomes a Run only in its owning Discovery or Task
+folder.
 
-```text
-haipipe-ideation → reuse owner Run/Result
-                 or haipipe-task / haipipe-run (new bounded analysis)
-                 → owner Run/Result receipt → bundle refresh
-```
+## Gate assertions
 
-For venue fit:
+`I1 → I2` requires:
 
-```text
-haipipe-ideation broad screen → Discovery official scope when needed
-live finalist → reuse/create/refresh haipipe-paper-venue
-               → current versioned Venue contract
-               → Idea × Venue Fit Card → human target decision
-```
+- a frozen direction and pointer-based evidence bundle;
+- one or more stable `iNN` Idea Cards;
+- a falsifiable proposition, method, minimum experiment, expected outcome,
+  failure interpretation, and Core Claims on every admitted card; and
+- no generated statement presented as an established novelty finding.
+- a pointer-only Paper sync packet exposing the Discovery Landscape,
+  Opportunity Map, and complete candidate set without selection fields.
 
-The four Run tests, exact Ticket/Result pairing, `supersedes:` rule, and Bib
-authority remain those of `haipipe-run` and the owning Task/Discovery dialect.
-The workflow cannot close a card claim by counting a search hit or a model
-opinion as a Run.
+`I2 → I3` requires:
 
-## Handoff assertions
+- claim-level novelty records with exact search questions and closest-work
+  lineage;
+- novelty and identification credibility reported as separate axes;
+- a Task-owned feasibility receipt or reasoned waiver;
+- a retained broad venue screen for every admitted card;
+- current Venue contracts for every deep-fit finalist; and
+- every HOLD, contradiction, fatal assumption, and reroute preserved.
+- the current Test Matrix and machine-only portfolio reading synced to the same
+  evergreen Paper P0 revision.
 
-The packet is ready only when:
+`I3 → Paper P0` requires:
 
-- one Direction Card and a dynamic set of one or more stable Idea Cards are named;
-- each selected card's Core Claims have claim-level novelty readings and
-  direct evidence paths, with unverified work marked as such;
-- feasibility has a Task-owned receipt or an explicit, reasoned waiver;
-- every admitted card has a retained broad venue screen;
-- each selected card has complete deep fit, a current Venue contract, and one
-  human-selected target/category;
-- all cited Discovery Results point to their direct Card and one-entry Bib;
-- unresolved gaps and hard limits are visible;
-- a person has recorded selection, date, accepted risk, and one distinct Story
-  route plus one matching target route per selected card;
-- the packet contains paths and IDs only, so Paper can bind its own pages and
-  citations without duplicating owner artifacts.
-
-An absent selection is not a failed search. It leaves the ideation unit open or
-routes it back to `i2.search`, `i3.synthesize`, `i4a.pressure`, `i4b.screen`,
-or `i4c.fit`.
+- a dated human receipt selecting, deferring, or abandoning each reviewed
+  candidate;
+- one selected target/category and accepted-risk record per selected card;
+- a distinct Story route for each selected card;
+- direct paths to cards, owner Results, Venue Fit Cards, and Venue contracts;
+  and
+- a pointer-only handoff that copies neither evidence nor desk rules.
+- one authoritative I3 selection receipt; Paper P0 only projects its verdict,
+  target, and `went to` values.

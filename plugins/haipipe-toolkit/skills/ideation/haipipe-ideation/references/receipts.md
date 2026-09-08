@@ -4,6 +4,23 @@ These small records make the handoffs testable without turning Ideation into a
 third evidence bank. They are written under the ideation unit’s `workflow/`
 and `handoff/` lanes; source owners retain their own Runs and Results.
 
+Stage-specialist receipts live under `workflow/generate/`,
+`workflow/novelty/`, `workflow/pressure/`, and `workflow/nature/`. Their
+canonical fields are defined by the numbered Ideation specialists. The Idea
+Card and Venue Fit Card retain the current conclusion plus receipt path; they
+do not duplicate the specialist's search coverage, adversarial comparison, or
+pressure table.
+
+## Paper P0 working-state sync
+
+`projection/paper-ideation-sync.yaml` is the I1/I2 adapter defined in
+`manifest-and-sync.md`. It carries the evolving Discovery Landscape,
+Opportunity Map, candidate portfolio, Test Matrix projection, and open gaps to
+the same evergreen Paper P0 Page. It contains no human selection fields and
+does not authorize a Story. Material Generate/Test changes increment its
+revision and make the Paper projection stale until
+`haipipe-paper-ideation` records the same revision.
+
 ## Discovery search request/return
 
 ```yaml
@@ -101,6 +118,7 @@ source:
   ideation_task: bNN.jNN.tNN
   direction_card: cards/direction.yaml
   evidence_bundle: bundle/evidence-bundle.yaml
+  paper_ideation_sync: projection/paper-ideation-sync.yaml
   selection_receipt: workflow/selection.yaml
 selected_ideas:
   - card: cards/i01_idea.yaml
@@ -121,11 +139,16 @@ created_at: "2026-09-07T13:05:00-04:00"
 
 The handoff contains IDs, owner paths, statuses, interpretations, novelty
 readings, feasibility receipt/waiver, Venue Fit/contract paths, human-selected
-target/category, and hard limits. It contains no copied Result Card, venue
-rule, facts, or BibTeX. Paper P0 maps it to Direction, Ideas, Core
+target/category, latest Paper sync revision, and hard limits. It contains no
+copied Result Card, venue rule, facts, or BibTeX. Paper P0 maps it to Direction, Ideas, Core
 Claims, Pilot result, Journal / Venue Fit, Recommendation, Eliminated Ideas,
 and the human target plus `went to` decision, then binds its Paper origin back
 to this packet.
+
+`workflow/selection.yaml` is the sole human decision authority. Paper P0
+projects its verdict, target, and `went to` values from the final handoff; Page
+approval and Page CHECK cannot create a second decision or override the
+receipt.
 
 For an inherited Story such as `Story01-seed`, keep that path and record its
 canonical role in `story_role`. G0 requires reciprocal origin links, not a
@@ -139,11 +162,16 @@ cannot stand in for this selection receipt.
   is same-stem with one matching Bib key and a verified `bib.verification`
   receipt;
 - every Core Claim has a `novelty_check` containing a search question, closest
-  work or explicit none, remaining delta, limitation, and a resolved status
-  for a selected card;
+  work or explicit none, steelmanned rejection and defense, four-part delta
+  tuple, evidence depth, remaining delta, limitation, specialist receipt, and
+  a resolved status for a selected card;
+- novelty and identification credibility are reported as separate axes, with
+  the pressure receipt linked from the Idea Card;
 - feasibility has the required receipt or reasoned waiver;
 - every admitted Idea has a broad Venue screen; each selected card has complete
   deep fit, a current Venue contract, and a human-selected target/category;
 - selection and handoff contain a person/date; each selected card has one
   distinct Story route and one matching target route; the handoff is emitted
   only for selected cards whose idea and target gates both pass.
+- the latest Paper P0 sync packet resolves, its revision is not stale, and it
+  contains no independent selection fields.

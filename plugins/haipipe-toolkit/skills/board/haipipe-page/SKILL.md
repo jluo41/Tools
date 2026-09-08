@@ -7,7 +7,7 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.61.1"
+  version: "0.61.3"
   last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -377,8 +377,8 @@ projection change, return the compact packet in
 2. **Evidence you can open now**: one Evidence Workspace link plus, per ready
    typed Evidence Item, the DISPLAY unit's `preview.pdf`, the Page's citation
    register, or the VALUE item card deep link;
-3. **Content state**: the Page version and whether Revise ran (humanizer and
-   the fresh-context style verdict); a first draft is labelled as such;
+3. **Content state**: the Page version and whether Revise ran (owner-selected workers and
+   the fresh-context style verdict against the resolved owner's policy); a first draft is labelled as such;
 4. the current one-Page compiled PDF, labelled **Latest Page-level PDF**, the
    delivery surface shown after Revise.
 
@@ -447,8 +447,17 @@ writing; a copied checklist in a prompt is a second authority and drifts.
 - **The human-decision rule**: a machine updates an Aim's tick only from
   evidence it can inspect; a person's ruling is transcribed with the quote
   (`approved: ✅ JL 260831 0146 · in chat: "…"`), never decided.
-- **The form rules, each owned once**: the title is three to five visible
-  words in sentence case, never six (`writing-rules.md`; `title-too-long`) ·
+- **The form rules, each owned once**: the title is a functional label, not a
+  headline. Use three to five visible words in sentence case, never six
+  (`writing-rules.md`; `title-too-long`), and name the Page's subject plus the
+  work or deliverable it owns. Keep it objective and concrete: do not put a
+  joke, marketing phrase, surprise, accusation, or unqualified finding in the
+  title. Prefer `[subject]: [operation or deliverable]`, such as
+  `NPI2Photo: screening physician photo URLs`; put results, caveats, and
+  interpretation in Opening or Content, where scope and denominators can be
+  stated. Before writing, ask whether a new reader can tell what the Page does
+  from the title alone and whether the wording claims more than the evidence
+  supports ·
   the first blank line in Opening is the split between the visible paragraph
   (≈450 characters, 520 ceiling, `OPENING_MAX_STAGE_CHARS`) and the drawer ·
   every figure carries a caption line above its fence · Content is numbered

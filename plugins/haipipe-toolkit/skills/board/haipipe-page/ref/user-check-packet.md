@@ -36,7 +36,7 @@ records and may be mentioned only when they explain a missing or stale surface.
 
 3. Content state
    after CONTENT/WRITE: the Page version and whether Revise ran
-   (`revised · humanizer ✓ · style verdict ✓`) or not (`first draft · not yet
+   (`revised · owner policy checked · style verdict ✓`) or not (`first draft · not yet
    revised`). A first draft is never presented as final content.
 
 4. Latest Page-level PDF (delivery)
@@ -53,7 +53,7 @@ Use this exact compact shape in the user-facing reply:
 1. Outline table: [Open the Board Page](<verified configured Board URL>)
 2. Evidence you can open now: [Evidence Workspace](<Board URL…&lens=workspace&seg=items>)
    🖼 [<Display id>](<unit>/preview.pdf) · 📚 [citations](<page>/outline/evidence/bibex/<stem>-bib.html) · 🧮 [<Value id>](<…&seg=items&focus=run-<item>>)
-3. Content: v<G>.<S> · revised · humanizer ✓ · style verdict ✓   (or: first draft · not yet revised)
+3. Content: v<G>.<S> · revised · owner policy checked · style verdict ✓   (or: first draft · not yet revised)
 4. Latest Page-level PDF: [Open the Page PDF](<page>/delivery/latex/<stem>.pdf)
 ```
 
@@ -105,7 +105,7 @@ Before returning the packet:
 1. rebuild the Board when the Page or its plan changed;
 2. rebuild each affected DISPLAY unit's `preview.pdf` when its intake, recipe,
    asset, or wrapper changed, and the citation register when the `.bib` changed;
-3. run Revise (humanizer, then the fresh-context style verdict) before calling
+3. run Revise (owner-selected revision workers, then the fresh-context style verdict) before calling
    Content revised; then rebuild the Page-level PDF after Page prose or an
    embedded display changed;
 4. verify that every linked file exists and is newer than the source it

@@ -1,8 +1,7 @@
 runtime.yaml — Schema
 ======================
 
-Location: `$OUTPUT_ROOT/results/<NAME>/runtime.yaml` for a flat Job, or
-`$OUTPUT_ROOT/results/<task>/<NAME>/runtime.yaml` for a canonical nested Task.
+Location: `$OUTPUT_ROOT/results/<task>/<run>/runtime.yaml`.
 Owner: the Run scaffolder creates `status: planned`; the authored Ticket
 updates the same receipt automatically from launch onward; never edit it by hand.
 Status: source of truth for the lifecycle facts of one Run. The typed payload,

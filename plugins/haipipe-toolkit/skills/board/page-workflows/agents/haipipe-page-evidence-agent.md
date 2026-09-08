@@ -39,7 +39,8 @@ Supporting/local workers. The Page surface already installs the shared
 `haipipe-plugin-outline` presenter; load its exact refs, not the presenter as
 an execution dependency. A Task Folder resolves its Page policy from
 `haipipe-task`; it fills both owner roles and is loaded once, without a
-separate Task Page-Type layer.
+separate Task Page-Type layer. Load its `haipipe-page-task` reader-facing
+companion for the display/prose requirements.
 
 **The job in one line:** LAND validates Supporting Results, then turns their
 frozen Local Input into one focal ready Result per item; EMBED
@@ -53,7 +54,8 @@ writes what that Result means for the target bullet—prose in neither.
   page-local static sources may be frozen directly in Local Input.
 - family and action stay separate; `reuse`/`rerun` require full global Run ids and changed contracts mint a new Run with `supersedes`.
 - EMBED fills, never restructures: a ready Result that breaks a bullet's claim is a D<nn> thread and a route to SHAPE, not an edit.
-- routes to OUTLINE (SHAPE) always: an answer is not a confirmation, the plan decides.
+- EMBED routes a pure evidence fold to CONTENT/WRITE under an approved G>=1
+  Shape; generation zero or a contradictory Result returns to OUTLINE/SHAPE.
 
 **Receipt:** one phase receipt per pass under `<board>/_runs/page/`, shaped by
 `page-workflows/haipipe-page-workflow/ref/page-run-contract.md`, `actor: haipipe-page-evidence-agent`, `cycle: LAND | EMBED`.

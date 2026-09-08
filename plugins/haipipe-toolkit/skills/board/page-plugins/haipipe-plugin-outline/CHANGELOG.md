@@ -1,3 +1,11 @@
+## 0.46.3 · 2026-09-08
+
+- Delegate Run namespaces and form budgets to the resolved owner; keep legacy
+  material explicitly read-only and repair the illustrative Related Page link.
+- Require one focusable card per Evidence identity with visible source-conflict
+  details, and preserve distinct Run, Evidence, and Feedback destinations.
+- Align VALUE examples with the common Result envelope and governed stores.
+
 ## 0.46.1 · 2026-09-06
 
 ## 0.46.2 · 2026-09-08

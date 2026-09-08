@@ -9,8 +9,8 @@ description: >-
   phase split. Trigger: page content, CONTENT phase, WRITE cycle, division
   writing, draft page, revise page, build page, /haipipe-page-content.
 metadata:
-  version: "0.8.4"
-  last_updated: "2026-09-07"
+  version: "0.8.5"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
 
@@ -31,7 +31,7 @@ pre-checking are movements inside that cycle, not four Page phases:
 ```text
 03 CONTENT · haipipe-page-content
 └── WRITE
-    ├── Entry check  approved plan/evidence + manuscript form budget
+    ├── Entry check  approved plan/evidence + owner-declared form budget
     ├── Draft       plan/evidence → division candidates
     ├── Revise      improve realization under the same promise
     ├── Build       regenerate declared delivery artifacts
@@ -142,13 +142,10 @@ blocks WRITE. A named secure-server or person gate may enter explicit draft
 mode under the placeholder rule below; final mode still rejects it. A form metric outside a named
 venue or paper requirement blocks only when that authority makes it binding;
 otherwise mark it `⚠ review`, explain the tradeoff, and let the human decide.
-For MISQ Section prose, treat a median near 21 words (normally within an
-18–24-word center) as a comfortable house style unless a direct contract
-overrides it. Sentence length is a
-distribution, not a target for every sentence: vary short and long sentences
-with their jobs. A sentence above 30 words triggers `⚠ review`, never an
-automatic split or blocker; split it only when it stacks separable reader moves
-or its syntax obscures the main claim.
+Sentence-length and paragraph targets come from the resolved Page Face owner
+and the frozen Context's named policy. Record `not specified` when neither
+declares one. Vary sentence length with the reader job; review difficult syntax
+or stacked moves against that policy rather than importing a journal's range.
 
 ## ① Draft
 
@@ -169,14 +166,12 @@ diagram when that visual carries reader meaning.
   Evidence Results it uses.
 - A Section Page keeps one sentence slot per planned Bullet; other Page Face owners
   may realize one Bullet as one or more sentences.
-- A normal manuscript paragraph contains 4–6 sentences. Grow an underdeveloped
-  paragraph by adding warranted one-point sentences, not by lengthening its
-  existing sentences.
+- Follow the Page Face owner's paragraph budget. Grow an underdeveloped
+  paragraph with warranted reader moves rather than padding sentences.
 - A Section sentence realizes one point. Do not fuse a definition, mechanism,
-  boundary, result, and transition merely to save space. For MISQ, keep the
-  median around 18–24 words while varying individual sentence lengths. Review
-  a 30+ word sentence for stacked moves or difficult syntax; keep it when one
-  coherent relation is clearer in the longer form.
+  boundary, result, and transition merely to save space. Review stacked moves
+  and difficult syntax under the resolved style policy; one coherent relation
+  may be clearer in a longer sentence.
 - Let paragraph logic carry the flow. Avoid formulaic connective ladders,
   repeated three-part templates, inflated framing, and clause-stacked prose;
   preserve calibrated hedging and exact theoretical terms.
@@ -209,14 +204,19 @@ Improve argument, sequence, clarity, voice, citations, and captions. If the
 promise or structure must change, stop and route to OUTLINE; if a governing
 policy changed, route to CONTEXT.
 
-For manuscript headings, apply `haipipe-paper-section`'s “Reader-facing
-subsection titles” contract: validate title-to-body fit and synchronize an
+Apply the resolved Page Face owner's heading contract: validate title-to-body
+fit and synchronize an
 authorized naming repair across the current Outline, Content, Aims, and built
 delivery. A title repair alone is not permission to rewrite the argument.
 
-Before Build, run `haipipe-paper-revise-humanizer`, then have a fresh-context
-reviewer compare the revised prose with measured passages from named MISQ
-exemplars and return a style verdict. Record both receipts. A requested
+Before Build, run the revision workers selected by that owner and frozen
+Context, then have a fresh-context reviewer judge the revised prose against
+those named requirements and any declared exemplars. Record the exact policy,
+workers used, and style verdict. For a Paper Section, load
+`haipipe-paper-section` and run `haipipe-paper-revise-humanizer` when that
+owner requires it; journal exemplars apply only to their declared venue.
+Other Page owners supply their own policy. An optional worker that is not
+applicable is recorded as such, never as a missing Paper gate. A requested
 `writing-only` review may judge argument and prose while unresolved values stay
 in explicit `[E## pending]` markers; exclude those markers from the style
 verdict and do not mistake that review for final readiness.
@@ -289,14 +289,14 @@ page: <source version before → after>
 delivery: [<artifact paths>]
 build_manifest: <owning delivery/build-manifest.json, when this build emits one>
 user_check_packet: Board Outline URL · evidence to open now (Display PDFs · citations · value cards) · Content state after Revise · current Page-level PDF
-revise: humanizer receipt · fresh-context MISQ style verdict
+revise: <owner-selected revision receipts or not-applicable> · fresh-context style verdict against <named policy>
 pre_check: ready | another-pass | blocked
 artifacts: [<every written path>]
 evidence: [<plan, context, Result, and check paths>]
 route: CONTENT | CONTEXT | OUTLINE | EVIDENCE | CHECK | HOLD
 next_cycle: WRITE | PREPARE | SHAPE | SURVEY | LAND | CHECK  # omit on HOLD
 reason: <authority exercised and why the route follows>
-reopens_promise: <true only when routing to OUTLINE because the promise changed>
+reopens_promise: false  # current receipt grammar; describe promise changes in reason and route to OUTLINE
 ```
 
 ## 🚧 Boundaries
@@ -317,6 +317,7 @@ haipipe-page-content/
 └── ref/division-result.md
 ```
 
-Historical DRAFT/REVISE/COMPILE receipt tokens are interpreted by the
-lifecycle auditor. No redirect skills remain; every current writing dispatch
-uses this skill and records `phase: CONTENT · cycle: WRITE`.
+Every current writing dispatch records `phase: CONTENT · cycle: WRITE`.
+For an existing receipt using retired phase names, consult
+`../haipipe-page-workflow/ref/page-run-contract.md#legacy-compatibility-only`;
+those tokens are read-only historical input.

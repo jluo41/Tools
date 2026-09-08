@@ -63,5 +63,5 @@ task execution / discovery work
 - A source rerun reopens dependent Insight rows; it never silently updates a settled conclusion.
 
 Return the instance Page, item table, source status, exact completed item
-Results, and the next item checkpoint/Page phase. Existing single-chain Pages
-use the contract's migration procedure; do not fabricate historical Runs.
+Results, and the next item checkpoint/Page phase. Every cited Run must have a
+real Ticket and receipt.

@@ -101,9 +101,8 @@ any other type         one bullet = one POINT; CONTENT turns it into one or more
                        sentences
 ```
 
-Both grains: 3 to 6 bullets per paragraph, seven is two paragraphs. For an
-MISQ Section, five or six sentence-slot Bullets per paragraph is the default
-unless the direct venue contract or paragraph job requires otherwise. Each
+Both grains follow the paragraph budget declared by the Page Face owner and
+frozen Context; the base grammar sets no journal-specific sentence count. Each
 slot carries one point; split compound definition, mechanism, boundary, and
 transition jobs before CONTENT. A head
 says the content in plain words: `The question: agreeable doctors, patient
@@ -120,7 +119,7 @@ first use; a metaphor (`rung`) is rewritten to the plain thing (`step`).
 - a markdown heading mark (`##`, `####`) inside a head or Note; name the part
   in words or by `§4.1`
 - the card's question, the unit's claim, a contract's rule: each is one
-  popover away, and restating it makes the plan unskimmable
+  linked workspace card away, and restating it makes the plan unskimmable
 - a Note over 30 words, or a second head after a colon
 - past tense, a bare date code, a person's name as AUTHORITY (who ruled): the
   log carries who and when; a reviewer's comment cited as provenance

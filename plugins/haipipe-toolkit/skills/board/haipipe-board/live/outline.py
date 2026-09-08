@@ -413,7 +413,7 @@ object.evfig{{height:32vh}}
  scroll-margin-top:12px}}
 .lens .card pre{{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}}
 .workspace-frame{{display:block;width:100%;height:calc(100vh - 150px);
- min-height:560px;border:1px solid var(--line);border-radius:10px;background:var(--card)}}
+ min-height:180px;border:1px solid var(--line);border-radius:10px;background:var(--card)}}
 .lens{{display:none}} .lens.show{{display:block}}
 code{{font:12px ui-monospace,Menlo,monospace}}
 </style></head><body>

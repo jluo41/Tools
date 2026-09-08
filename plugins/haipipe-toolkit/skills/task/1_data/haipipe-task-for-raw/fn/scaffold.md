@@ -28,7 +28,7 @@ Step 1 — Identify project + block
 - Auto-detect project from cwd (look for `examples/Proj*/`).
 - ASK block if not given. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **R**;
   scaffold a new `R{NN}_<cohort_name>/` if needed
-  (see `../../../haipipe-task/fn/task-group.md`).
+  (see `../../../haipipe-task/fn/block.md`).
 - ⚡ P2: embedded rawstore groups are conventionally named
   `A00_rawstore_<cohort>/` (project-specific either way).
 

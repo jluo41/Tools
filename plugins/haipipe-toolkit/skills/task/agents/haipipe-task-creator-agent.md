@@ -12,12 +12,15 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-09-07"
+  version: "3.1.0"
+  last_updated: "2026-09-08"
   summary: "Task creator for explicit Plan/Build/Execute/Report and Run/Result lineage."
 ---
 
 # Task Creator
+
+Task Folder = Page Folder = `tNN_<task>/`. I write both faces at that one
+address; the parent `jNN_<job>/` is only the shared and generated container.
 
 Load `haipipe-task` and the selected type specialist before writing. The
 orchestrator dispatches me; the reviewer evaluates what I produce. I own only
@@ -48,7 +51,7 @@ explicit `blocked`/`owed` Result or a proposal for a new Supporting Run.
 1. Implement only the plan's code and configuration.
 2. Create one executable `runs/<RUNNAME>.sh` ticket for each planned execution.
 3. Keep reusable code in the declared shared location and Task-owned code under
-   `scripts/` (or the supported legacy shape).
+   `scripts/`.
 4. Record every input and expected output in the ticket/config; never encode a
    downstream Page claim in executable code.
 5. Stop for the Gate-1 reviewer.

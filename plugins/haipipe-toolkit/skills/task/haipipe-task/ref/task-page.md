@@ -29,15 +29,8 @@ contract: a numeric Task Page is not prose-only and must plan substantive
 tables, figures, and method/provenance diagrams.
 
 Add the exact `task-type:` when a specialist owns the executable dialect.
-`page-type: task`, `job:`, and `task-folder:` are legacy frontmatter keys
-accepted on existing Pages only. The key name `task-folder:` never changes the
-current vocabulary: Task Folder = Page Folder = `tNN_<task>/`, while Job means
-only its `jNN_<job>/` parent. Do not write those legacy keys into a new Page.
-
-Historical Log entries and immutable workflow receipts may still name the
-retired `haipipe-page-for-task`. Preserve those records as provenance, but
-resolve their current law to this reference; never dispatch or recreate the
-retired skill.
+Only `folder-kind: task` and `task: .` identify a Task Page. Task Folder = Page
+Folder = `tNN_<task>/`; Job means only its `jNN_<job>/` parent.
 
 The Page Face is not a run log. It is the technical report of what the Folder
 found and what those findings mean for the Task's own question. Machinery stays

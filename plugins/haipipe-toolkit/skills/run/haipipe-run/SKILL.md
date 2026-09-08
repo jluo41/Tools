@@ -12,7 +12,7 @@ description: >-
   result, calibration run, qualification run, production scan, final audit,
   /haipipe-run.
 metadata:
-  version: "0.8.0"
+  version: "0.8.1"
   last_updated: "2026-09-08"
 ---
 
@@ -181,21 +181,24 @@ global identity  b01j02t03r04
 ```
 
 A Paper Board has a separate local namespace because the Paper itself is the
-fixed block:
+fixed block. The current Paper-specific grammar is owned by
+`../../paper/haipipe-paper/ref/run-naming.md`:
 
 ```text
-authored plan   pj01t03r01
-wall label      P j01.t03.r01 new
-meaning         Page j01 · Evidence Item t03 · proposed Run r01
+Paper Main      pm-introduction-e01-cite-prescribing-variation-r01
+Paper Appendix  pa-robustness-e01-value-sensitivity-r01
+Paper Round     pr-rd01-misq-feedback-20260825-e01-cite-response-r01
 ```
 
 The `p` namespace must never be rewritten as `b01`; doing so can collide with
 an Execution or Discovery Run. A reserved Paper address is not counted as a
-Run until its Ticket exists.
+Run until its Ticket exists. The former `pjNNtNNrNN` form is a read-only
+historical Paper dialect; new Paper work must not mint it.
 
 `reuse` and `rerun` references require the full owner-native identity:
-`bNNjNNtNNrNN` for a Job-backed Task or global Supporting Run, and
-`pjNNtNNrNN` for a Paper-local Run.
+`bNNjNNtNNrNN` for a Job-backed Task or global Supporting Run, a
+`pm-/pa-/pr-` id for a current Paper-local Run, and the local `rNN_…` stem
+only when the owning Page's path is carried with it.
 `rerun` adds an attempt under the same Run identity because target, frozen
 inputs, and acceptance are unchanged. If any changes materially, mint a new
 Run and set `supersedes: bNNjNNtNNrNN` in its receipt.

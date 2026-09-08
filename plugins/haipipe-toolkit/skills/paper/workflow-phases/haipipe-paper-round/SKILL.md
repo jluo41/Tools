@@ -7,18 +7,20 @@ description: >-
   routes changes to the owning Pages, and closes with an approved response. Use
   when opening, triaging, answering, or closing a revision round.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-07"
+  version: "0.7.0"
+  last_updated: "2026-09-08"
   group-token: "RD"
   outline:
     mode: fixed
     source: "this SKILL.md"
+    surface: "Opening → Outline → Content → Aims"
     shape: "Round Identity and Intake → Feedback Coverage Ledger → Decisions and Response Strategy → Change Routing → Applied and Checked Changes → Response Package → Close Receipt and Handoff"
 ---
 
 # /haipipe-paper-round · close one feedback cycle without losing an item
 
-Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for RUN.
+Load `haipipe-page`, then this Page Type, then `haipipe-page-workflow` for the
+shared Page lifecycle.
 Declare `page-type: round`.
 
 ## 🧭 Journey phase
@@ -32,6 +34,8 @@ the response receipt. `haipipe-paper-workflow`
 holds the full gate assertions; this block only places the phase. The page
 itself always runs through `/haipipe-page` and `haipipe-page-workflow` (OUTLINE
 → … → CHECK), never a private lifecycle.
+Round is a Page-level control surface, not a Run, an Evidence/Execution owner,
+or a second Story.
 
 ## 🔄 Grain and boundary
 
@@ -55,14 +59,16 @@ new decision or feedback batch arrives after closure.
 
 A **Paper Round** is the persistent feedback cycle defined here. A **Page
 workflow round** is a reopening era inside one Page's OUTLINE-to-CHECK receipt.
-Never use one term or counter as the other.
+Never use one term or counter as the other. A Run can support work requested by
+a Round, but a Round never becomes the Run's owner or numbering authority.
 
 ## 🪪 Required identity block
 
 Record the Round identity before triage:
 
 ```text
-round-id          stable id within this paper
+round-id          stable id, unique across this paper (`RD<NN>`)
+page-id           full Page stem (`RD<NN>-<desk>-<event>-<YYYYMMDD>`)
 round-kind        editor-review · reviewer-review · coauthor · internal ·
                   foreign-desk (a review of this work's telling at a desk
                   with no §8 Section Narrative rows on this board)
@@ -82,21 +88,38 @@ every ledgered concern answered. Both are frozen inside the Round's folder,
 beside what came back:
 
 ```text
-B<x>-<desk>-Round/RD<NN>-<event>-<yymmdd>/
-├── RD<NN>-<event>-<yymmdd>.md   the ledger: every comment, its route, what changed
-├── sent/                        what WE SENT · the PDF + DOCX + build-manifest that
-│                                drew the comments · copied from delivery/ on send
-├── feedback/                    what CAME BACK · letters, memos, marked-up PDFs
-├── released/                    what WE RELEASED · the PDF + DOCX + manifest with
-│                                every ledgered concern answered · cut on close
-└── outline/ …
+Paper-<Slug>/
+└── B<x>-<desk>-Round/
+    └── RD<NN>-<desk>-<event>-<YYYYMMDD>/
+        ├── RD<NN>-<desk>-<event>-<YYYYMMDD>.md  the Round control page
+        ├── sent/             immutable copy of every declared submission output,
+        │                     plus build-manifest.json and display-register.md
+        ├── feedback/         immutable received letters, memos, and marked-up files
+        ├── released/         immutable answering build with the same manifest set
+        ├── response/         external Round only: approved response letter/table
+        │                     and its response manifest; omitted for internal work
+        └── outline/          Page Context/Outline/Evidence/Log projections
 ```
 
+`sent/` and `released/` contain the exact output set declared by the paper-root
+`delivery/paper-build.toml`. If a paper declares an online supplement, its PDF
+and DOCX belong in both snapshots; do not freeze only the main manuscript.
+The Round page records each snapshot's relative path, manifest hash, and
+creation event. A missing declared output is a failed freeze, not a silently
+partial Round.
+
+`response/` is not another manuscript source or evidence lane. It is the
+immutable upload-facing response package, cut only after the response content
+in Role 6 has human approval; its manifest records the response paragraphs and
+the ledger item ids they answer. An internal Round omits the directory and records
+`no external response required` in Roles 6 and 7.
+
 A professor's pass, a coauthor pass, and a desk decision are all Rounds of the
-same shape; the folder name says which. The next Round's `sent/` repeats this
-Round's `released/`: one file copied twice is cheap, and the two manifests'
-hashes show whether anything slipped in between (a difference is explained on
-the Log). The last Round's `released/` is the accepted manuscript, so nothing
+same shape; the folder name says which. The next Round normally starts by
+copying this Round's `released/` into its `sent/`. If an intervening rebuild
+changes the manuscript, that new build is the next Round's base and its
+different manifest hash is recorded explicitly; never silently reuse an older
+snapshot. The last Round's `released/` is the accepted manuscript, so nothing
 dangles. Root `delivery/` stays the factory; `sent/` and `released/` are copies
 cut from it, never edited. Store supplied letters or memos in `feedback/` — a
 received letter floating at the repo root is homeless material (JL 260823).
@@ -108,6 +131,67 @@ desk): `B<x>-<desk>-Round/RD<NN>-<event>/` at the paper root, beside that desk's
 named shelves. A foreign-desk round mints its desk's -Round group even when
 that is the desk's only group. A combined `B<x>-<desk>` group or the older
 lone `C1-RD-round/` group is not a current Round location.
+Here `B<x>` is a placeholder for the next free lowercase B-group letter: the
+first desk uses `Bc`, the next desk continues at `Bd`, and so on. It is not a
+second naming scheme.
+
+### 🪪 Round naming law
+
+Use the same semantic naming style as the desk's Main and Appendix shelves:
+
+```text
+Ba-MISQ-Main/       S-MISQ-Main-Results/
+Bb-MISQ-Appendix/   S-MISQ-Appendix-Robustness/
+Bc-MISQ-Round/      RD01-MISQ-feedback-20260825/
+```
+
+- `Bc-<desk>-Round` is the desk's Round shelf; `RD<NN>` is the semantic Round
+  token and is unique across the paper, even when more than one desk exists.
+- The canonical new Page stem is
+  `RD<NN>-<desk>-<event>-<YYYYMMDD>`; `<event>` is a short lower-kebab label.
+  Use ASCII lowercase letters, digits, and single hyphens in `<event>` (for
+  example `editor-decision` or `coauthor-pass`); keep it stable after intake.
+  Existing stems with an uppercase desk or an older date spelling remain
+  readable history and are not bulk-renamed.
+- `RD` is intentionally retained for **Round**. Do not shorten it to `R`,
+  which collides with Run, or `RR`, which incorrectly narrows every Round to a
+  reviewer/revision event. `rNN` and any Paper-local Run grammar belong to the
+  owning Run/Page contract and never replace `RD<NN>`.
+- A Round may record a Run or Result relation as `round: RD<NN>`; that relation
+  does not move evidence/execution into the Paper Board or mint a new Run.
+
+The two manifest hashes must be recorded in the new Round's identity block.
+The root `delivery/` remains the mutable factory, while all Round snapshots
+are immutable.
+
+## 🧭 Page surface and control loop
+
+Round content follows the shared Page surface exactly:
+
+```text
+## Opening   identity, base build, feedback intake, and boundary
+## Outline   generated plan table: item · route · owner · state · checked version
+## Content   the seven roles below, in order
+## Aims      human decisions, open actions, and the G5 close test
+```
+
+`## Outline` is a projection of the Round's current plan, not a second
+feedback ledger. The atomic ledger remains Role 2. Do not author `## States`,
+`## Files`, `## Discussion`, or `## Log` on the Page; the corresponding records
+belong under `outline/` and are linked from the Page. This keeps the Round
+compatible with the common Page CHECK and prevents an old Round's meeting
+notes from becoming a second authority.
+
+The shared Page phases give the Round this control loop; they do not create a
+private Round lifecycle:
+
+```text
+CONTEXT  freeze identity + inventory sent/feedback
+OUTLINE  atomize concerns + propose routes (no silent disposition)
+EVIDENCE record only the bounded support needed to answer or verify a concern
+CONTENT  record human decisions, owning-page returns, and response paragraphs
+CHECK    verify coverage, hashes, response trace, deferred handoffs, approval
+```
 
 ## 📐 Required Content roles
 
@@ -116,8 +200,9 @@ remain unambiguous.
 
 ```text
 1  Round Identity and Intake
-   identity block · what was sent (`sent/`: path, date, recipient, manifest
-   hash) · what came back (`feedback/`) · scope · due date
+   identity block · what was sent (`sent/`: exact output set, path, date,
+   recipient, manifest hash) · what came back (`feedback/`: source inventory
+   and hashes) · scope · due date
 
 2  Feedback Coverage Ledger
    one row per atomic concern; every received point appears exactly once
@@ -135,8 +220,9 @@ remain unambiguous.
    point-by-point reply, editor note, tracked-change/diff pointers, commitments
 
 7  Close Receipt and Handoff
-   ledger totals · the released build (`released/`: path, manifest hash) ·
-   response artifact · deferred items · next Round
+   ledger totals · the released build (`released/`: exact output set, path,
+   manifest hash) · response artifact or explicit internal no-response record ·
+   deferred items · next Round · approved-by · approved-at · approval record
 ```
 
 ## 📋 Feedback ledger contract
@@ -157,15 +243,20 @@ required evidence/citation/value/display work
 human disposition and rationale
 owning Page and owner
 response strategy and response paragraph id
+support/result relation (`round: RD<NN>` plus the full owner-native id)
 state
 before version and checked after version
 open blocker or explicit deferred handoff
 ```
 
 Use `open`, `routed`, `applied`, `answered`, `declined`, or `deferred` as ledger
-states. `applied`, `answered`, `declined`, and `deferred` are terminal only when
-their proof, rationale, or handoff is recorded. Never use a blank state and
-never drop a concern because it causes no manuscript change.
+states. `open` and `routed` are non-terminal. `applied` means a changed owning
+Page has passed CHECK and is waiting for the response trace; it is not terminal
+for an external Round. `answered` is the terminal state for a checked change or
+for a justified answer requiring no manuscript change. `declined` requires a
+human rationale, and `deferred` requires a named owner, reason, and next-Round
+handoff. Never use a blank state and never drop a concern because it causes no
+manuscript change.
 
 ## 🔀 Route work; do not absorb it
 
@@ -181,6 +272,11 @@ Keep authority with the artifact being changed:
 | number correction | consuming Page's VALUE Evidence Item and accepted local Result |
 | table or figure change | owning Page's `display/<unit>/` |
 | response wording and coverage | this Round Page |
+
+For a `foreign-desk` Round, the received desk is named in the identity and
+the route still lands first on the governing Story. A request about the
+telling becomes a human-approved C8 candidate row; it does not create a
+foreign Section or let the Round write a second manuscript.
 
 **Where a routed concern LANDS on its owner** (260831): the owning page's
 `outline/<stem>-feedback.md` (a section per Round), a register the page projects from this ledger
@@ -198,23 +294,39 @@ ticks; the order above is what makes the ticks worth buying. `applied` here need
 `landed:` version first, and G5 runs `feedback-coverage` board-wide before
 this page may close.
 
+The phrase **routed exactly once** means one ledger row and one route decision,
+not that a concern can name only one affected artifact. A single route may
+name a primary owning Page plus a required Story C5/C6/C7 or C8 update; those
+linked destinations remain one coordinated route under the same item id. Do
+not clone the concern into a second ledger row or create duplicate work items.
+
 The Round records routes and checked returns. It does not become a second home
 for revised section prose, research values, citations, or paper displays. A
 ledger item may say `applied` only after the owning Page names a checked version;
 “edited” or “agent finished” is not proof.
 
-## 🃏 Round-local evidence and delivery
+## 🃏 Evidence and delivery boundary
 
-Use the shared Page contract for material the Round itself consumes. Context
-records bounded links to the Venue, Story, affected Pages and checked versions.
-The Evidence Workspace owns typed CITE/VALUE/DISPLAY Items, their Supporting
-Run lineage and accepted local Results. The Delivery plugin owns generated
-response artifacts under `delivery/latex/` and `delivery/word/`.
+The Round does not own an Evidence/Execution lane. Its Context and ledger may
+point to an accepted Result, a source hash, or a checked Page version, but it
+does not create a new Discovery block, Task block, Run, or typed evidence item.
+If a concern needs substantive new evidence, route it to the Story's C5
+support and C6/C7 need, then let the external Discovery/Task/Run owner return
+the result. If a Section needs a local CITE/VALUE/DISPLAY item, the consuming
+Section owns that item and its Page workflow. The Round records only the
+relation and the returned version.
 
 New substantive paper evidence changes C5 support and affected C6/C7 needs on
 the Story; the Section whose prose uses it binds its own typed Evidence Item.
-Round-local evidence supports the response itself, not a second manuscript.
-Do not recreate retired PageX or legacy evidence, bibex, or standalone value plugin lanes.
+Round feedback is stored in `feedback/`, not converted into a new evidence
+authority. Do not recreate retired PageX or legacy evidence, bibex, or
+standalone value plugin lanes.
+
+The Delivery plugin owns generated manuscript artifacts. On a person's send
+act it freezes the current build into this Round's `sent/`; after the Round's
+CHECK and human close approval it freezes the answering build into
+`released/`. The Round page records the paths and hashes; it never edits the
+generated `delivery/` tree.
 
 ## ✍️ Response contract
 
@@ -226,8 +338,9 @@ review item id → disposition → checked change/evidence → response paragrap
 
 Distinguish completed changes from commitments. Do not claim a revision is
 complete until its owning Page has passed CHECK and the revised build contains
-that version. For an internal Round, record `no external response required`
-instead of inventing a response artifact.
+that version. For an internal Round, record `no external response required` in
+Role 6 and the close receipt instead of inventing an external letter. The
+internal item-by-item decision record still remains required.
 
 ## ✋ Human authority
 
@@ -241,9 +354,9 @@ A machine may propose dispositions, route accepted work, and close an already
 answered Decision Now row with the human's words. It may not manufacture the
 decision or mark the Round closed from ledger counts alone.
 
-Gate G5 (the per-round gate) leaves its receipt Log row on this page,
-stating the gate, the assertion results, and who approved the response
-receipt.
+Gate G5 (the per-round gate) leaves its receipt row under `outline/` and a
+linked summary in Role 7, stating the gate, assertion results, snapshot hashes,
+and who approved the response receipt.
 
 ## ✅ Closing checks
 
@@ -253,10 +366,15 @@ Close only through CHECK when:
 - every received concern appears exactly once in the ledger;
 - every item has a terminal disposition with inspectable support;
 - every applied change names the owning Page and its checked after-version;
+- `sent/` and `released/` each contain the complete declared delivery output
+  set, and both manifest hashes are recorded;
 - every external response paragraph maps back to ledger items;
-- the revised paper build and response artifact are regenerated and recorded;
+- the revised paper build and external response artifact, when required, are
+  regenerated and recorded; an internal Round records the explicit no-response
+  decision;
 - every deferred item names a reason, owner, and next-Round handoff;
-- a person approves the response and close receipt.
+- a person approves the response and close receipt, with identity, timestamp,
+  and approval record recorded.
 
 After closure, treat the Round as a historical record. Later feedback opens a
 new Round Page; it does not rewrite the closed one.

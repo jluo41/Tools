@@ -119,6 +119,10 @@ candidates:
         reason: "..."
         authority: "..."
         evidence: [ven01]
+    nature_overlay:
+      status: not-requested | complete | hold
+      receipt: null
+      verdict: null
     overall: strong | conditional | weak | off-fit | unknown
     desk_risks: ["..."]
     missing_evidence: ["..."]
@@ -151,6 +155,12 @@ a numeric composite score that hides an off-fit or unknown requirement. One
 `off-fit` dimension does not mechanically force rejection, but the card must
 name why the mismatch can or cannot be repaired. `unknown` remains open and
 routes to Discovery or Venue refresh.
+
+`nature_overlay` is populated only when a Nature-family target is actually
+under consideration. Its receipt comes from `haipipe-nature-paper-review` and
+evaluates editorial shape; binding target/category rules still resolve through
+the candidate's current Venue contract. A generic Nature-brand intuition is
+not a completed overlay.
 
 ## Currentness and legacy migration
 

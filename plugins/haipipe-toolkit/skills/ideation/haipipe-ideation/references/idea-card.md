@@ -62,21 +62,37 @@ method: "2–4 concrete steps"
 hypothesis: "one sentence"
 minimum_experiment: "smallest informative test"
 expected_outcome: "signal and failure interpretation"
+failure_interpretation: "what a null, contradictory, or failed minimum experiment means"
 novelty_delta: "what the verified closest work does not establish"
 core_claims:
   - id: c01
+    contribution_role: central | supporting
     claim: "..."
     evidence: [ext01]
     novelty_check:
       search_question: "the exact prior-art question asked"
       closest_work: "ext01 or explicit none found"
       remaining_delta: "what remains different from closest work"
+      rejection_case: "strongest evidence-bound case that the claim is already done"
+      defense_case: "strongest honest case that a material delta remains"
+      delta_tuple:
+        research_question: "theirs versus candidate"
+        mechanism: "theirs versus candidate"
+        identification_or_setting: "theirs versus candidate"
+        outcome: "theirs versus candidate"
+      evidence_depth: metadata-only | abstract | full-text
       limitation: "what the search did not establish"
       status: novel | partial | preempted | inconclusive | unverified
+      receipt: "workflow/novelty/i01_<timestamp>.yaml"
+identification:
+  credibility: strong | conditional | weak | unknown
+  fatal_assumptions: []
+  repair_path: "..."
 feasibility:
   evidence: [int01]
   pilot: positive | negative | skipped | waived | pending
   receipt: "tasks/.../results/.../runtime.yaml"
+  pressure_receipt: "workflow/pressure/i01_<timestamp>.yaml"
   waiver: ""             # required when pilot: waived
 venue_fit:
   card: venue-fit/i01_venue-fit.yaml
@@ -84,6 +100,7 @@ venue_fit:
   deep_fit: complete | pending | not-required
   overall: strong | conditional | weak | off-fit | unknown
   recommended_target: "Journal name or unresolved"
+  nature_review: "workflow/nature/i01_<timestamp>.yaml or null"
   human_target: open | selected | deferred | rejected
 risk: "..."
 reviewer_objection: "strongest counterargument"
@@ -107,9 +124,17 @@ and evidence detail. A candidate can be semantically strong while still being
 ## Pressure-test rules
 
 - Check Core Claims one at a time, not as one blob.
+- Mark every Core Claim `central` when the Idea's contribution depends on it,
+  otherwise `supporting`. An omitted role is read as `central` for backward
+  compatibility. The Test Matrix uses central-claim precedence rather than a
+  count or average.
 - For each claim, record a `novelty_check` with the search question, closest
-  verified work, remaining delta, unresolved limitation, and status. A search
-  result without an admitted Discovery Result remains a lead.
+  verified work, steelmanned rejection and defense, four-part delta tuple,
+  evidence depth, remaining delta, unresolved limitation, receipt, and status.
+  A search result without an admitted Discovery Result remains a lead.
+- Novelty and identification credibility are separate axes. A claim may be
+  genuinely new while its design is not yet credible; do not lower one axis to
+  hide a problem on the other.
 - Feasibility is a Task-owned receipt. A pilot is not a Discovery citation and
   does not become a local ideation Run. `feasibility.receipt` is required for
   positive, negative, or skipped pilots; a Task Run receipt counts only when

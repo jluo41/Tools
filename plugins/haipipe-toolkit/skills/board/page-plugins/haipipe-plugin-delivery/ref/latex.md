@@ -35,7 +35,7 @@ Three caller rules, each earned on 260815:
   A page outside any paper compiles cite-less, with `\citep` shown literally; inside a paper the master gains natbib, `plainnat`, and a bibtex pass.
 - A code span QUOTES and never EXECUTES: backticked TeX commands are escaped on the way out, so `\citep` prints instead of running.
 - **The Page title prints**: the standalone master opens with the complete canonical H1, TeX-escaped as plain text. The title is document identity, not a Content division, so it is emitted independently of numbered `###` manuscript headings.
-- THE PAGE'S DISPLAY EVIDENCE PRINTS (JL 260816): a unit under `<page>/outline/evidence/display/` that the prose cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN` is embedded once as a real float after the citing paragraph, in citation order, under MISQ's first-reference rule.
+- THE PAGE'S DISPLAY EVIDENCE PRINTS: a unit under `<page>/outline/evidence/display/` cited by Page-local `DisplayN`, fully qualified `<stem>-DisplayN`, or its authored `\ref{label}` is embedded once as a real float after the first citing paragraph, in source order. These are aliases of the same unit; multiple aliases never duplicate the float. Venue-specific placement overrides come from the resolved Page Face owner.
   The float is built from the unit's WINNING asset plus its own authored caption and label, so the wrapper master needs no tikz or renderer package; a ⬜ unit with no render is skipped, and a mention inside a verbatim fence is an illustration, not a citation.
 
 ## 📡 Surface · the segment, and what a failure shows

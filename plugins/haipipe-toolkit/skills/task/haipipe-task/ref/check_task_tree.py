@@ -18,10 +18,8 @@ DO    = re.compile(r'\bdo\s+"([A-Za-z0-9_./${}`\'-]+\.do)"')
 
 
 def cfgdir(task):
-    """A task's config home. scripts/config/ since 260831; config/ was the old one,
-    and is still READ so a half-migrated tree reports the real finding, not a
-    missing folder."""
-    return task/"scripts"/"config" if (task/"scripts"/"config").is_dir() else task/"config"
+    """Return the only valid Task config home."""
+    return task/"scripts"/"config"
 
 
 def codedir(job):
@@ -48,8 +46,9 @@ def check(root):
 
     for block in rows(root):
         jobs = [p for p in sorted(block.iterdir()) if p.is_dir() and p.name.startswith("j")]
-        # S18 every canonical Block is one Task Block Board, including a Block
-        # whose Jobs still use the readable flat-legacy runtime shape.
+        if (block/"README.md").is_file():
+            bad("S20", block.name, "Block root README is forbidden; use board.md or diagram/")
+        # S18 every Block is one Task Block Board.
         head = block / "board.md"
         if not head.is_file():
             bad("S18", block.name, "canonical Block has no board.md Task Block Board head")
@@ -68,6 +67,12 @@ def check(root):
 
         for job in jobs:
             tasks = [p for p in sorted(job.iterdir()) if p.is_dir() and p.name.startswith("t")]
+            if (job/"README.md").is_file():
+                bad("S20", job.name, "Job root README is forbidden; use the Block Board or diagram/")
+            if not tasks:
+                bad("S19", job.name, "Job contains no tNN_ Task Folder")
+            if any(job.glob("*.py")) or (job/"runs").is_dir() or (job/"config").is_dir():
+                bad("S19", job.name, "runnable material must live in a tNN_ Task Folder")
             for t in tasks:
                 m = IDX.match(t.name)
                 if not m or m.group(1) != "t":
@@ -76,6 +81,8 @@ def check(root):
                     bad("N5", t.name, "task name carries no subject")
                 if not (t/f"{t.name}.md").exists():
                     bad("S5", t.name, "no task page")
+                if (t/"README.md").is_file():
+                    bad("S20", t.name, "Task root README is forbidden; use the same-stem Task Page")
 
                 # S10 the two-word law (JL 260831): `src/` is the JOB's shared
                 # code, `scripts/` is the TASK's own. Either word at the wrong
@@ -96,6 +103,14 @@ def check(root):
                     bad("N7", f"{t.name}/{stem}", "ticket has no config of the same stem")
                 for stem in sorted(runcfgs - tickets):
                     bad("N7", f"{t.name}/{stem}", "config has no ticket of the same stem")
+                indexed = collections.defaultdict(set)
+                for stem in runcfgs | tickets:
+                    m_index = re.match(r'^(r\d\d)_', stem)
+                    if m_index: indexed[m_index.group(1)].add(stem)
+                for prefix, stems in sorted(indexed.items()):
+                    if len(stems) > 1:
+                        bad("N10", f"{t.name}/{prefix}",
+                            "Run index identifies multiple stems: " + ", ".join(sorted(stems)))
                 for k in sorted(tickets):
                     if not re.match(r'^r\d\d_[ABCD]_(cms|case|data|reg)_', k):
                         bad("N2", f"{t.name}/{k}", "run name carries no stage letter and kind")
@@ -105,9 +120,9 @@ def check(root):
 
             # N4 applies only to ALTERNATIVES — the folders a config picks between,
             # which are exactly the ones pipeline_dir names. Folders with distinct
-            # purposes (outcome/, pipeline/, 0-libs/) are not a sequence.
+            # folders with distinct purposes are not a sequence.
             alts = set()
-            for c in list(job.glob("t0*/scripts/config/**/r*.do")) + list(job.glob("t0*/config/**/r*.do")):
+            for c in list(job.glob("t0*/scripts/config/**/r*.do")):
                 m = re.search(r'global pipeline_dir "src/([0-9A-Za-z_]+)"', c.read_text())
                 if m: alts.add(m.group(1))
             unordered = sorted(a for a in alts if not re.match(r'^[0-9]', a))
@@ -134,7 +149,7 @@ def check(root):
                 task = task.parent
                 if not (cfgdir(task)/m.group(1).replace("\\","/")).exists():
                     bad("S2", k.name, f"config does not exist: {m.group(1)}")
-            for c in list(job.glob("t0*/scripts/config/**/r*.do")) + list(job.glob("t0*/config/**/r*.do")):
+            for c in list(job.glob("t0*/scripts/config/**/r*.do")):
                 m = re.search(r'global pipeline_dir "src/([0-9a-z_]+)"', c.read_text())
                 if not m: continue
                 task = c.parent
@@ -188,7 +203,7 @@ def check(root):
                 # `@Rest` and `@args` splat an ARRAY, which PowerShell binds
                 # positionally: every one of these files silently bound -WhatIf to
                 # -Family and failed. $PSBoundParameters is a hashtable and binds
-                # by name. Regenerate with _tools/write_pages.py rather than editing.
+                # by name. Rebuild generated entry points from the Task tree.
                 for e in sorted(sb.glob("by_*/*.ps1")):
                     b = "\n".join(l for l in e.read_text().splitlines() if not l.lstrip().startswith("#"))
                     if re.search(r'@(Rest|args)\b', b):
@@ -227,8 +242,8 @@ def check(root):
     # ── dialect-neutral rows of ref/task-tree-checklist.md (JL 260904) ──────────
     # Every one of these is a thing the 260904 PhyReview restructure shipped
     # broken and no code above caught: no runs/ in 19 tasks, tickets off the
-    # rNN_ grammar, batchers in runs/, results inside tasks, configs/ at task
-    # roots, parents[N] root walks, and a store folder named after the ticket.
+    # rNN_ grammar, batchers in runs/, Results inside Tasks, config outside
+    # scripts/, parents[N] root walks, and a store folder named after a Ticket.
     TICKET = re.compile(r'^r\d\d_')
     for block in rows(root):
         for job in (p for p in sorted(block.iterdir()) if p.is_dir() and p.name.startswith("j")):
@@ -263,11 +278,19 @@ def check(root):
                 if (t/"results").is_dir():
                     bad("S12", t.name, "results/ inside the task; the law is <job>/results/<task>/<run>/")
                 if (t/"configs").is_dir():
-                    bad("S14", t.name, "configs/ at the task root; config lives in scripts/config/")
+                    bad("S14", t.name, "plural config lane at Task root; config lives in scripts/config/")
                 # N7 for yaml dialects: rNN_ configs <-> rNN_ tickets
                 cfgd = t/"scripts"/"config"
                 runcfg = {c.stem for c in cfgd.glob("r[0-9][0-9]_*.y*ml")} if cfgd.is_dir() else set()
                 tk = {k.stem for k in tickets if TICKET.match(k.stem)}
+                indexed = collections.defaultdict(set)
+                for stem in runcfg | tk:
+                    m_index = re.match(r'^(r\d\d)_', stem)
+                    if m_index: indexed[m_index.group(1)].add(stem)
+                for prefix, stems in sorted(indexed.items()):
+                    if len(stems) > 1:
+                        bad("N10", f"{t.name}/{prefix}",
+                            "Run index identifies multiple stems: " + ", ".join(sorted(stems)))
                 for stem in sorted(runcfg - tk):
                     bad("N7", f"{t.name}/{stem}", "config has no ticket of the same stem")
                 if runcfg:
@@ -294,7 +317,7 @@ def check(root):
     proj = root.parent if not root.name.startswith("b") else root.parent.parent
     TP = re.compile(r"tasks/((?:[bjt]\d\d_|[A-Z]\d\d_)[A-Za-z0-9_][A-Za-z0-9_.\-/]*)")
     for f in sorted(root.rglob("*")):
-        if not f.is_file() or f.suffix not in (".py", ".yaml", ".yml", ".sh") or "results" in f.parts or "_retired" in f.parts: continue
+        if not f.is_file() or f.suffix not in (".py", ".yaml", ".yml", ".sh") or "results" in f.parts: continue
         for i, l in enumerate(f.read_text(errors="replace").splitlines(), 1):
             if l.lstrip().startswith("#") or "tasks.old/" in l: continue
             for m in TP.finditer(l):

@@ -2,7 +2,7 @@
 name: haipipe-sentence
 description: >-
   The SENTENCE contract of a board: the sentence as its atomic unit, with a
-  dotted address, > comment lanes, evidence cards on a span of words, and
+  dotted address, comment lanes, evidence cards on a span of words, and
   archived records. Load when an agent must write ONE line that reads like the
   board without operating the whole board. Trigger: comment on this sentence,
   edit this sentence, card on these words, sentence address,

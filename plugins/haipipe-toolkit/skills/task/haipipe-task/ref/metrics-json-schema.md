@@ -1,7 +1,7 @@
 metrics.json — Schema
 ======================
 
-Location: `results/<NAME>/metrics.json` (flat job) · `results/<task>/<NAME>/metrics.json` (nested job)
+Location: `$OUTPUT_ROOT/results/<task>/<run>/metrics.json`.
 Owner:    Written by the task's `*.py` / `*.do` at finalize. May be edited by
           re-running the task; never hand-edited.
 Status:   Source-of-truth for the measured NUMBERS of ONE run. `runtime.yaml`
@@ -56,15 +56,15 @@ Extraction contract (how a reader resolves a metric key)
 
 ```
 value = metrics[<metric_key>]
-  - value is a number              → use it directly (legacy/scalar path)
+  - value is a number              → use it directly
   - value is an object with `point` → use value.point as the estimate;
                                        also carry ci_lower/ci_upper/N if present
   - value is an object WITHOUT `point` → WARN: malformed metric; treat as missing
   - key absent                     → FAIL: name the run path + the missing key
 ```
 
-This keeps every existing scalar `metrics.json` working untouched while giving
-off-policy / bootstrapped metrics a canonical slot for their interval, so the
+This gives point metrics a compact form and off-policy or bootstrapped metrics
+a canonical slot for their interval, so the
 interval SURVIVES to the reader instead of being flattened to a bare point
 (which would let a Δ inside the noise band be read as real).
 
@@ -116,10 +116,5 @@ Only `summary.headline` (a string) is read by the shipped tooling; other
 `summary.*` keys are free-form.
 
 
-Backward compatibility
------------------------
-
-- Existing files with only bare scalars are fully valid — no migration needed.
-- The nested `{point, ci_*, N}` form is purely additive: a scalar reader that
-  predates this schema sees an object and should warn, not crash. Downstream
-  readers are expected to handle both shapes.
+Readers must accept both declared value forms and warn on any object without a
+`point` field.

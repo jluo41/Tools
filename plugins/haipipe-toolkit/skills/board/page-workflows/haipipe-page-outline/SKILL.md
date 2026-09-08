@@ -13,8 +13,8 @@ description: >-
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.32.1"
-  last_updated: "2026-09-07"
+  version: "0.32.2"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -44,7 +44,9 @@ chain acts. The Folder owner and Page Face owner supply the Page's
 outline and style policy.
 Do not route through a separate Task Page-Type layer. The owning workflow or
 canonical family skill already supplies the Page contract. For a Task Folder,
-`haipipe-task` fills both owner roles and is loaded once. Load no sibling Page
+`haipipe-task` fills both owner roles and is loaded once, together with its
+`haipipe-page-task` reader-facing companion for the display and prose contract.
+Load no sibling Page
 body and no board-wide checker output before reading the target Page. SHAPE may
 use only the approved arcs and decisions of declared sibling Pages and the
 Story's Section Narrative row, resolved through Context; it does not import
@@ -219,11 +221,12 @@ Run by hand, it is the three generators (`cli/requirement.py`,
 (`src/plan_shape.py`, as `checks/outline.py --boards <board>` runs them),
 `cli/check.py <board>`, and `cli/build.py <board>`.
 
-For an MISQ Section review, measure 2–3 named exemplar PDFs with
-`haipipe-paper-section/cli/section-stats.py` before setting paragraph, sentence,
-length, or citation-density expectations. Record the exemplar names beside the
-measurements. A target without a named measured authority is `not specified`,
-never recalled from memory.
+Resolve form expectations from the Page Face owner and frozen Context. When
+that policy calls for measured exemplars, record the named sources and their
+measurements before setting paragraph, sentence, length, or citation-density
+targets. A Paper Section uses the tools selected by `haipipe-paper-section`;
+other Pages use their own owner's policy. A target without a declared or
+measured authority is `not specified`, never recalled from memory.
 
 ### ② Plan · the owning phase gives the words, this pass gives the argument
 
@@ -234,8 +237,8 @@ never recalled from memory.
 - **One `## C<n>` per Content division of the page.** A flat Section page
   (one `### §1`) is one `C1` with `P1` to `P<n>`; the SM00 specimen has three
   because its page has three parts.
-- **For manuscript subsection names**, apply `haipipe-paper-section`'s
-  “Reader-facing subsection titles” contract. Check the titles alone and
+- **For subsection names**, apply the resolved Page Face owner's heading
+  contract. Check the titles alone and
   against their planned paragraphs before presenting SHAPE for review.
 - **`arc:` is one sentence that argues.** Every adjacent pair of divisions
   (or, on a one-division page, of paragraphs) passes the swap test: name why N
@@ -254,11 +257,9 @@ never recalled from memory.
   sentence it plans.
 - **One sentence slot carries one point.** Do not make one slot define a
   construct, explain its mechanism, state its boundary, and transition at the
-  same time. Split those jobs into separate Bullets before CONTENT. For an
-  MISQ Section, use five or six sentence slots per paragraph unless the direct
-  venue contract or the paragraph's job requires otherwise; plan for a median
-  around 18–24 words while allowing individual sentences to vary with their
-  jobs. Do not satisfy a word target by assuming routine 35-word sentences.
+  same time. Split those jobs into separate Bullets before CONTENT. Resolve
+  paragraph and sentence budgets from the Page Face owner's policy and
+  Context; do not borrow a journal's numeric targets for another Page type.
 - **Make the Section's form coherent before approval.** Resolve the venue's
   paragraph, word, sentence-length, and citation-density expectations when a
   venue bank or direct-paper audit supplies them. Give each paragraph one
@@ -457,15 +458,18 @@ each selected route as existing Result, Ticket only, rerun, or new design, and
 writes the evidence-to-Run lineage. It does not scaffold a Ticket, execute a
 worker, materialize a Result, or write prose. A new local route normally names
 its real owner/parent and receives `rNN` only when LAND allocates the Ticket.
-For a Paper-local Run only, SURVEY may reserve the proposed
-`P jNN.tNN.rNN` address so the Run remains indexable before LAND; `new` still
-means that no Run Ticket exists.
+A full address may be reserved only when the Folder owner's current naming
+contract permits it. Record that authority and keep the route labelled
+`new-run`; a reservation is not a Run Ticket.
 
 - **Preserve SHAPE's contract.** Item id, type, name, Target, Label, Need,
   Expected, and Acceptance are frozen inputs to SURVEY. If they are insufficient or
   impossible, route the item back to SHAPE; do not repair the meaning here.
 - **Map Supporting Runs, zero to many.** Each existing Run is
-  `Execution | Discovery · reuse | rerun | registered · bNNjNNtNNrNN`.
+  `Execution | Discovery · reuse | rerun | registered · bNNjNNtNNrNN`
+  for Task-backed work. An accepted Insight instance/item execution may also
+  supply a `reuse` route under `ref/item-table.md`; preserve its qualified
+  instance/version identity and validate its owner's Result gate.
   Read the actual Ticket, receipt, and Result before choosing: an accepted
   Result is `reuse`; a real Ticket with no completed attempt is `registered`
   and has the derived availability state `Ticket only`; a failed, smoke-only,
@@ -491,10 +495,9 @@ means that no Run Ticket exists.
   A Task-local route with no Ticket is
   `Page · Evidence Item · new-run · bNNjNNtNN`; LAND allocates the next `rNN`
   and writes back `bNNjNNtNNrNN`. Another Folder-local owner names its stable
-  Folder address and follows its Run Profile. Paper alone may reserve a full
-  compact `pjNNtNNrNN`, displayed as `P jNN.tNN.rNN`, before allocation: `P`
-  is the fixed Paper block, `jNN` indexes the Page, `tNN` preserves the stable
-  Evidence Item number, and `rNN` indexes the proposed attempt (`r01` first).
+  Folder address and follows its Run Profile. If that owner permits a full
+  reservation before allocation, preserve its exact address and cite the
+  owner's current naming contract; Page does not prescribe that namespace.
   In every dialect, `new-run` means proposed, not allocated.
   Do not use a free-text dash placeholder as an action. Its future frozen input envelope may
   include every Supporting Result plus local source material. Its future Result
@@ -505,9 +508,8 @@ means that no Run Ticket exists.
   must be executed again is `rerun`; a real never-attempted Ticket is
   `registered`. Changed target/input/acceptance needs a new designed route.
   Supporting `new-run`, `new-task`, `new-job`, and `new-block` routes remain
-  inventory findings and do not invent an external `rNN`. Paper-local
-  reservation is the bounded exception: SURVEY may reserve its full P/J/T/R
-  index, while LAND remains the first phase allowed to create its Ticket.
+  inventory findings and do not invent an external `rNN`. An owner-permitted
+  reservation remains a plan; LAND is the first phase allowed to create its Ticket.
   There is no `found`, `person`, or `none` action.
 - **Citations use the same graph.** A `CITE` item may reuse or commission a
   Discovery Run, then its local Page Evidence Item Run produces the focal,

@@ -1,81 +1,74 @@
-# Naming rules for block · job · task · run
+# Naming rules for Block · Job · Task · Run
 
-Every rule below came from a break this repo actually hit, and every one is
-checked mechanically by `ref/check_task_tree.py` (this skill's copy; a project may mirror it under `tasks/_tools/`).
+Every executable name follows one grammar:
 
-## The pattern
-
-```
-<letter><NN>_<STAGE>_<kind>_<subject>[_<what varies>]
-
-b03  CD  visit_pain                                   the study
-j01  C   data_table   visit_pain                      the stage's job
-t01  C   data         VisitLBP_1stPair                the cohort
-r01  C   data         VisitLBP_1stPair   2015_2020    the run
+```text
+bNN_<noun>_<qualifier>   Block
+jNN_<noun>_<qualifier>   Job
+tNN_<noun>_<qualifier>   Task
+rNN_<noun>_<qualifier>   Run
 ```
 
-## N1 · Every name must stand alone
+`NN` is a two-digit index unique within the parent. Names are snake_case and
+contain no hidden mapping from level letters to computational type.
 
-A name is not read only in its folder. A job name goes into a scheduler queue, a
-task name into `results/<task>/<run>/` and every log line, a run name into error
-text and `runtime.yaml`. So each must be readable with no path around it.
+## N1 — the stranger test
 
-⛔ `j01_C_data_table` — data table of what?
-✅ `j01_C_data_table_visit_pain`
+A name must answer two questions without surrounding path context:
 
-**Repetition with the parent is the PRICE of standing alone, and it is worth
-paying.** The old tree already knew this: `C01_data_pipeline_opioid`, not
-`C01_data_pipeline`.
+1. What concrete thing does this unit own or produce?
+2. Which source, grain, scope, or variant separates it from siblings?
 
-## N2 · Carry the stage letter at every level
+```text
+weak   j01_candidate_pool
+clear  j01_physician_candidates_by_region
 
-`b03_CD` · `j01_C` · `t01_C` · `r01_C`. A reader who sees only the run name still
-knows which stage produced it.
+weak   t01_analysis
+clear  t01_physician_rankings_compared
+```
 
-## N3 · Use the project's own vocabulary, never a nicer synonym
+## N2 — level and order are explicit
 
-✅ `lbp` `musc` `osteo` `ami` `VisitLBP_1stPair`
-⛔ `lowbackpain` `musculoskeletal` `heartattack`
+The first letter says the level; the index says order within its parent.
+Do not encode a stage or Task type in the level letter. Do not use bare letters,
+single-digit indices, or untagged numeric addresses.
 
-Every config, ticket, store asset and board page already says `VisitLBP`.
-Renaming it to something more readable only adds a translation layer. Where a
-task publishes a store asset, the task IS named for that asset.
+## N3 — use project vocabulary
 
-## N4 · Order is numeric, never alphabetical
+Use terms already defined by the Project's Board and data contracts. A clearer
+name may expand an abbreviation, but must not create a synonym that forces
+readers to maintain a translation table.
 
-`1_ols 2_iv 3_did 4_ols_windows`, taken from the project's own sequence. Sorted
-by name, `did` would come first, which is meaningless.
+## N4 — siblings are unique
 
-## N5 · A shape word alone is not a name
+Block names are unique in `tasks/`; Job names are unique within a Block; Task
+names are unique within a Job; Run names are unique within a Task. Cross-Job
+references use full relative paths or full b/j/t/r addresses.
 
-`data`, `table`, `pipeline`, `analysis`, `pool`, `rank` may FOLLOW a noun; they
-may never replace one.
+## N5 — shape words need a subject
 
-## N6 · Siblings must be unique across the whole block
+Words such as `data`, `table`, `pipeline`, `analysis`, `pool`, `rank`, `set`,
+and `baseline` may qualify a concrete noun but cannot stand alone.
 
-`t01_VisitLBP_1stPair` existed in both the C job and the D job. One rename map
-then hit both, and 175 regression configs were silently repointed at the data
-table task. Two tasks in one block never share a name.
+## N6 — Run pairing is exact
 
-## N7 · A ticket and its config share one stem
+The config and Ticket use the same `rNN_<run>` stem:
 
-`r01_D_reg_VisitLBP_1stPair_agre_af7d_ols.ps1` ↔ `...same....do`. Anything else
-makes the pair impossible to check.
+```text
+scripts/config/r03_physicians_healthgrades.yaml
+runs/r03_physicians_healthgrades.sh
+```
 
-## N8 · A name a script must know is FOUND, not spelled
+The matching Result and notebook repeat that stem beneath the Task name.
 
-Deriving `asset` from a folder name broke twice, the moment the folder gained a
-prefix. The runner now globs `config/` for the one non-`rNN` file instead. A
-script must never rebuild a name it can look up.
+## N7 — lookup names, do not reconstruct them
 
-## N9 · Never restate the tree in a file
+When a script needs an asset, Task, or config name, resolve the declared value
+and raise if it is absent. Never derive a name by slicing Folder text or silently
+fall back to a default.
 
-A file that lists every ticket only repeats what `t*/runs/` already says, and then
-must be kept in step with it. The guard such a file needs is the proof it should
-not exist: the tree IS the list.
+## N8 — the tree is the inventory
 
-⛔ `sbatch/all.ps1` listing 175 `Invoke-Run` lines, plus a count check to catch drift
-✅ `run_slice.ps1` with no filter runs everything; `-WhatIf` prints the plan from disk
-
-The same test applies anywhere: if keeping a file honest means re-deriving what is
-already on disk, delete the file and derive it at the moment of use.
+Do not hand-maintain a second file listing every Task or Ticket. A status view
+derives membership from disk at read time. If a presentation order is needed,
+store only the explicit ordering decision, not a copied inventory.

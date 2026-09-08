@@ -71,7 +71,8 @@ binds the visible render to its inputs.
 
 ## ❄️ Intake · a data unit freezes from its Local Input, never from the workspace
 
-The commonest question about a data-driven unit is where its numbers come from (JL 260817: "是不是 display 可以去 get 这个 probe 里面的东西，然后把 probe 里面的东西复制到 display 那个 folder 去，然后它再去做图?"). Yes, and the path is fixed:
+A data-driven unit takes its numbers from the Evidence Item's frozen Local
+Input through this path:
 
 ```text
   Supporting Execution/Discovery Result(s)
@@ -159,7 +160,11 @@ checks pass. Final Page closure and release still require the separate human
 THE PROJECTIONS INHERIT THE CITATION (JL 260816): the latex export embeds a cited unit as a real float after the citing paragraph (the winning asset, the unit's own caption and label), and the word export embeds the rasterized figure with the inline `(Figure n)` and a 🖼 Display comment on the sentence — the per-projection mechanics are Delivery's `ref/latex.md` and `ref/word.md`, not this file's.
 
 
-> Since 260831 this lane lives under the page's category folder (`evidence/` or `delivery/`, haipipe-page 0.47.0 §📁); a flat lane name on an unmigrated page, or a flat SYMLINK STUB on a migrated one, is the same lane during the migration.
+## Legacy compatibility only
+
+Old flat display lanes and symlink stubs are read-only migration inputs.
+Current writers use only `outline/evidence/display/`; historical locations
+do not qualify for the user-check packet and never become new write targets.
 
 ## 📂 Files and ownership
 

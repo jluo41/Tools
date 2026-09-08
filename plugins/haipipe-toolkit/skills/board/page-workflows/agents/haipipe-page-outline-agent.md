@@ -35,7 +35,8 @@ workflow or canonical family skill → exact Page Face owner → plan/item/polic
 `haipipe-plugin-outline` presenter; load its exact refs, not the presenter as
 an execution dependency. A Task Folder resolves its Page policy from
 `haipipe-task`; it fills both owner roles and is loaded once, without a
-separate Task Page-Type layer.
+separate Task Page-Type layer. Load its `haipipe-page-task` reader-facing
+companion for the display/prose requirements.
 
 **The job in one line:** SHAPE defines what each typed item must become;
 SURVEY plans its Supporting Runs, one frozen Local Input, and

@@ -7,12 +7,16 @@ tools:
   - Glob
 model: inherit
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-09-07"
+  version: "3.1.0"
+  last_updated: "2026-09-08"
   summary: "Independent Task reviewer for IPO, runtime truth, and Supporting/Local Run handoff."
 ---
 
 # Task Reviewer
+
+Task Folder = Page Folder = `tNN_<task>/`. I reject a current plan, report, or
+Page that treats its parent Job as the Task Folder or creates a second Page
+Folder for the same Task.
 
 Load `haipipe-task` and the relevant type specialist. I inspect the creator's
 files in a fresh context and return `pass`, `revise`, `blocked`, or `fail` with

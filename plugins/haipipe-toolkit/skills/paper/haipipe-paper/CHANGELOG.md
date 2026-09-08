@@ -1,5 +1,13 @@
 # CHANGELOG · haipipe-paper
 
+## 1.0.2 · 2026-09-08
+
+- Add the Paper Run naming authority: new Paper-local Evidence/Display Runs
+  use semantic `pm-`/`pa-`/`pr-` ids tied to Main/Appendix/Round Page names;
+  Page-local Division Writing keeps `rNN_page-division-writing_cNN`.
+- Mark `pjNNtNNrNN` Paper Run files as read-only historical dialect; no
+  ordinary Paper work renames or bulk-migrates them.
+
 ## 0.8.1 · 260907
 
 - P1 is Story: phase figure, one-liner, routing row, `/haipipe-paper story`

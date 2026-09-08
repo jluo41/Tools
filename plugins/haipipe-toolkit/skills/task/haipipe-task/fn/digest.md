@@ -41,7 +41,7 @@ No routing or merge logic is duplicated here. digest's only new job is turning a
    COMPOUND TURNS are the norm, not the exception: a single turn often bundles
    feedback + a one-off task instruction + a file path (e.g. "the figure
    renderer keeps emitting a broken .tex ... please go ahead and rebuild it, and
-   put the config in configs/v0618.yaml"). Extract ONLY the feedback clause(s);
+   put the config in scripts/config/r01_v0618.yaml"). Extract ONLY the feedback clause(s);
    DROP the task clause ("go rebuild it", "run X now"); a path is a location,
    not feedback. One turn may yield TWO feedback items (split them) or ZERO.
 3. DEDUP each candidate, and infer its target via the feedback router. ROUTING

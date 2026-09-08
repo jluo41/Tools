@@ -7,10 +7,10 @@ description: >-
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.9.0"
+  version: "0.9.1"
   last_updated: "2026-09-07"
   page_ruling: none
-  group-token: "S-<desk>-Main | S-<desk>-Appendix"
+  group-token: "S-<desk>-Main-<N> | S-<desk>-Appendix-<L>"
   outline:
     mode: resolved
     source: "paper/venue/bank/1-QBv-desks/QBv*/QBv*.md"
@@ -77,8 +77,8 @@ of the paper reading path without deleting their authority.
 
 ```text
 Paper-<Slug>/                                        groups at the paper root (0.8.0)
-├── Ba-<desk1>-Main/       S-<desk>-Main-<kind>       the desk's main reader order
-├── Bb-<desk1>-Appendix/   S-<desk>-Appendix-<slug>   its appendix sections
+├── Ba-<desk1>-Main/       S-<desk>-Main-<N>-<Title>   the desk's main reader order · N = the H1's §N · unnumbered pages keep title only
+├── Bb-<desk1>-Appendix/   S-<desk>-Appendix-<L>-<Title>  its appendix sections · L = the H1's Appendix L
 ├── Bc-<desk1>-Round/      RD<NN>-<event>    its rounds (P4)
 └── Bd-<desk2>-Main/ …     a later desk continues at the next free letter
 ```
@@ -91,12 +91,32 @@ projection supplies manuscript order; `board.md` is the Page roster.
 A Section is never renamed merely because another
 section is inserted.
 
+## ⚙️ Paper Section Run profile
+
+The Paper-local Evidence/Display naming dialect is owned by
+[`../../haipipe-paper/ref/run-naming.md`](../../haipipe-paper/ref/run-naming.md).
+For a Section Page, derive the lane from its semantic owner (`m` for
+`S-<desk>-Main-…`, `a` for `S-<desk>-Appendix-…`) and the page slug from the
+final semantic Page component. A new local Evidence Item Run therefore looks
+like `pm-introduction-e01-cite-prescribing-variation-r01` or
+`pa-robustness-e01-value-sensitivity-r01`, with the same stem for its Ticket,
+Result directory, and receipt.
+
+Division Writing is a different, Page-local target and keeps
+`rNN_page-division-writing_cNN`; its receipt records `page:` and
+`paper_lane:`. Never collapse an Evidence Result Run and a Division Writing
+Run merely because both are stored under one Section. Existing
+`pjNNtNNrNN` Paper tickets are historical/read-only and remain valid only when
+their owner path, receipt, and current acceptance contract are verified.
+
 **Where the words live (0.8.4 · JL 260907)**: on this page. The Section Page
 compiles its own deliverable through the page-level delivery plugin,
 `delivery/latex/<page>-complete.tex` with its `-complete.bib` and `.pdf`,
 wrapping the body fragment `delivery/latex/<page>.tex` that the paper build
 `\input`s; its `\includegraphics` paths resolve to its own accepted display units
-(`outline/evidence/display/<unit>/assets/figure.pdf`) and its citation keys to
+(`outline/evidence/display/Display<n>-<slug>/assets/figure.pdf`; the page id carries the
+section index, so the unit carries none; `S-Display-*`, `<PageID>-Display-*` and `Sec<N>-Display-*` are
+retired, JL 260908) and its citation keys to
 its own `-complete.bib`. The paper's `delivery/latex/` is regenerated FROM these
 files by `haipipe-paper-assemble`, never the other way round: a correction goes
 into this page and the paper folder is rebuilt whole. The old desk room

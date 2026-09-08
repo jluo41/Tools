@@ -89,11 +89,12 @@ being guessed.
    ```text
    context   ─▶ <page>/outline/<stem>-context.md, generated. It points to
                 source authorities and writes no plan, evidence, or Page prose.
-   outline   ─▶ <page>/outline/<stem>-outline-v<G>.<S>[.<E>].md, and NOTHING in the page
-                itself. Leave `approved:` UNTICKED: it is a person's.
+   outline   ─▶ versioned plan and authored Evidence Item specifications/routes
+                under outline/. No Page prose; transcribe only durable human approvals.
    evidence  ─▶ ready local Evidence Item Results and frozen inputs, plus
                 Result bindings in the authored item table. Leave CITE
-                `Verified`, legacy `read:`, and display `accepted:` UNTICKED.
+                `Verified` and display `accepted:` to their human authorities;
+                EMBED appends ready Result bindings in the next plan version.
    ```
 
    Stop before the returned route begins. Record a
@@ -105,13 +106,18 @@ being guessed.
    confirm nothing outside Opening changed. This check informs the return; it
    does not award a final pass.
 8. Write the target to the exact `path` given. During EVIDENCE you may also
-   create a `bibex/` entry landed verbatim from a person, and per unit in
+   create an `outline/evidence/bibex/` entry landed verbatim from a person, and per unit in
    `evidence_units` its `README.md`, `intake/`,
    `recipe/`, `assets/` and `preview.pdf`: render, pick and build are
    EVIDENCE's since 260819 (the LAND cycle). Never tick `accepted:`, which stays CHECK's.
-9. Return the contract below. Do not rebuild, do not run the independent check,
-   and do not announce
-   that the board is updated: you cannot see the board.
+9. Perform the generators/builds required by the current phase through its
+   declared mechanical builder. In a controller-dispatched pass, return the
+   source work and required build paths so that separate builder can regenerate,
+   check, and snapshot the version before the next phase. In a direct session,
+   complete those same build and rendered-inspection steps before claiming
+   completion. Record who built and what was actually inspected. CONTENT's
+   Build movement remains mandatory; a producer never impersonates the
+   independent CHECK judge or declares an unseen Board updated.
 
 ## House rules that fail review if broken
 
@@ -119,11 +125,12 @@ being guessed.
   is visibly broken on the page.
 - No em-dashes. Use a colon, semicolon, comma, parentheses, or a new sentence.
 - English only.
-- Real citations. A file path in `## Files` is a file you read, and every row
+- Real citations. A file path in `outline/<stem>-files.md` is a file you read, and every row
   says what that file does for this page.
 - The page's own words, not coined labels. Use the board's existing vocabulary.
-- ON A Q OR S PAGE, canonical Aims use stable ids (`A3.1`, `P1`) and no checkbox. Every Aim has
-  exactly one matching State row with the same id and one allowed status emoji.
+- On a Q or S Page, each Aim has a stable id, one status emoji, its target,
+  `Done when:`, and `Now:` in the same Aims row. Never create a separate
+  States section or mirror that row into another ledger.
 
 ## Return contract
 
@@ -148,7 +155,7 @@ route:    CONTEXT | OUTLINE | EVIDENCE | CONTENT | CHECK | HOLD
 next_cycle: PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE | CHECK
             (the cycle inside `route`; omit only when routing to HOLD)
 reason:   <which phase authority was exercised and why this route follows>
-reopens_promise: true | false
+reopens_promise: false (current grammar; name a promise change in reason and route to OUTLINE)
 artifacts: JSON LIST of repo-relative paths, every file written, target
            first; [] when none
 evidence:  JSON LIST of exact source locations or artifacts supporting the

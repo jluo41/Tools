@@ -9,7 +9,7 @@ description: >-
   workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.29.3"
+  version: "0.29.4"
   last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
@@ -121,7 +121,7 @@ any earlier owning phase.
 | `01A` | OUTLINE / SHAPE | `haipipe-page-outline` | plan + Evidence Item specification | none | approved evidence-aware Shape |
 | `01B` | OUTLINE / SURVEY | `haipipe-page-outline` | Supporting routes + Local Input + indexed Local Run plan | none | complete decided Run graph |
 | `02A` | EVIDENCE / LAND | `haipipe-page-evidence` | Tickets, Results, frozen input, bindings | `0..N` Supporting + `1` local per make-item | ready typed local Results |
-| `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | next working plan bindings | none | all ready Results folded; back to SHAPE |
+| `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | next working plan bindings | none | ready Results folded; G=0 → SHAPE; approved G>=1 → CONTENT |
 | `03` | CONTENT / WRITE | `haipipe-page-content` | Page Content + delivery + promotion trace | normally `1` Division Writing Run per commissioned division | fresh pre-check says ready |
 | `04` | CHECK / CHECK | `haipipe-page-check` | check receipt/findings only | none | CLOSE or a named backward route |
 
@@ -170,13 +170,15 @@ Use full real addresses for reuse and rerun:
 global Supporting Run    b01j02t03r04
 Task-local new-run plan  b01j02t03        parent until LAND allocates rNN
 Task-local allocated     b01j02t03r05
-Paper-local Run plan     pj01t03r01     shown as P j01.t03.r01 plan
+Other local Run plan     <owner-native parent or permitted reserved address> · plan
 local Ticket filename    r05_page-evidence-item_e03-cite-prior-work
 Division Writing Run     r06_page-division-writing_c02
 ```
 
-SURVEY names the real owner/parent for every new local route and may reserve a
-Paper-local address, but creates no Ticket. LAND allocates the owner-native
+SURVEY names the real owner/parent for every new local route. A full address
+may be reserved only when the Folder owner's current Run contract permits it;
+the route remains `new-run` with no Ticket. Read that owner's naming contract
+instead of defining a family namespace in Page skills. LAND allocates the owner-native
 Run id and creates the Evidence Item Ticket. CONTENT creates a Division Writing
 Ticket only when the work independently satisfies the `haipipe-run` tests.
 
@@ -211,7 +213,9 @@ haipipe-page
 ```
 
 Do not insert a separate Task Page-Type layer. `haipipe-task` is both canonical
-Folder owner and Page Face owner for a Task Folder, so load it once.
+Folder owner and Page Face owner for a Task Folder, so load it once. Also load
+its `haipipe-page-task` reader-facing companion for the Task Page's display
+and prose requirements; this companion adds no execution or closure authority.
 
 ## 🔀 Route by broken authority
 
@@ -230,14 +234,14 @@ Legal current-phase routes:
 ```text
 CONTEXT  → CONTEXT | OUTLINE | HOLD
 OUTLINE  → CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
-EVIDENCE → CONTEXT | OUTLINE | EVIDENCE | HOLD
+EVIDENCE → CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
 CONTENT  → CONTEXT | OUTLINE | EVIDENCE | CONTENT | CHECK | HOLD
 CHECK    → CLOSE | CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
 ```
 
-Stored DRAFT, REVISE, COMPILE, and PROBE receipts remain auditable through
-the compatibility rules in `ref/page-run-contract.md`; new dispatch never
-emits those phases.
+The EVIDENCE → CONTENT edge is only for a pure EMBED under an approved G>=1
+Shape. Stored retired-phase receipts are read-only input under
+`ref/page-run-contract.md#legacy-compatibility-only`.
 
 ## 👷 Actors
 

@@ -130,8 +130,12 @@ Local Run, decision, and `Has`. The page line reads
 **Files** is one record per file the page reads, writes, checks or keeps:
 `Path` and `Role` ∈ reads · writes · checks · contract · archive · related. A
 Related Board Page is `Role: related` with its row verbatim under it
-(`` `reads · EVIDENCE` · [QB7 §3](QB-research/QB7-literature.md) ``), the
-grammar `cli/pagecontext.py` reads.
+using the grammar `cli/pagecontext.py` reads. Illustrative syntax (replace
+the path with a real related Page before use):
+
+```markdown
+`reads · EVIDENCE` · [Related Page §3](<board-relative-existing-page.md>)
+```
 
 ## The three laws that hold every kind
 

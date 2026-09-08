@@ -55,12 +55,13 @@ nav button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
  padding:0 3px;border-radius:4px}
 #items h2{font-size:15px;margin:14px 0 4px}
 #items h3{font-size:13.5px;margin:12px 0 3px}
-#items .run-focus,#runs .run-focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:9px;scroll-margin-top:12px}
+#items .run-focus,#runs .run-focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:9px;scroll-margin-top:64px}
 #items ul{margin:4px 0;padding-left:22px}
 .evsummary{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 12px}
 .evsummary span{font-size:11.5px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:1px 7px}
 .evsummary .cycle{color:var(--acc);border-color:var(--acc);font-weight:650}.evsummary .approved{color:var(--ok);border-color:var(--ok)}
 .evcard{border:1px solid var(--line);border-radius:9px;margin:9px 0;background:var(--bg);overflow:hidden}
+.evrow.conflict{color:var(--warn,#9a6700)}.evrow.conflict pre{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
 .evhead{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;padding:9px 10px 7px}
 .evid{font:650 11px ui-monospace,Menlo,monospace;color:var(--acc);border:1px solid var(--line);border-radius:5px;padding:0 5px;white-space:nowrap}
 .evtitle{font-weight:650;line-height:1.4;flex:1;min-width:10em}.evaddr{color:var(--mut);font-size:12px;white-space:nowrap}
@@ -185,7 +186,17 @@ def _evidence_snapshot(text: str) -> tuple[str, list[dict[str, object]]]:
         match = _FIELD.match(stripped)
         if match and current is not None:
             current["fields"][match.group(1).strip().lower()] = match.group(2).strip()
-    return plan, records
+    # A stale snapshot can repeat an item at several Bullet targets. Keep one
+    # addressable card per immutable identity, but expose every conflicting
+    # source record instead of silently choosing a ready contract.
+    unique = {}
+    for record in records:
+        item_id = str(record["id"])
+        if item_id not in unique:
+            unique[item_id] = record
+        else:
+            unique[item_id].setdefault("duplicate_records", []).append(record)
+    return plan, list(unique.values())
 
 
 def _plan_chips(plan: str) -> str:
@@ -263,7 +274,8 @@ def _local_run_chip(value: str, evidence_id: str, context: dict[str, str]) -> st
 def _item_card(record: dict[str, object], binding: dict[str, object] | None = None) -> str:
     """Render one Evidence Item with every Run item grouped inside it."""
     fields = record["fields"]
-    status = str(fields.get("status", "open"))
+    duplicates = record.get("duplicate_records", [])
+    status = "conflicting records" if duplicates else str(fields.get("status", "open"))
     status_class = "ready" if any(word in status.lower() for word in ("ready", "accepted", "landed")) else "specified"
     type_ = str(fields.get("type", ""))
     evidence_id = str(record["id"])
@@ -279,6 +291,18 @@ def _item_card(record: dict[str, object], binding: dict[str, object] | None = No
         "local_input": str(fields.get("local input", "")),
     }
     rows = []
+    if duplicates:
+        conflicting = [{key: value for key, value in record.items()
+                        if key != "duplicate_records"}, *duplicates]
+        rows.append(
+            '<div class="evrow conflict" role="alert"><b>Duplicate identity</b>'
+            '<span>This Evidence ID has %d source records. Resolve its target '
+            'and contract in SHAPE before treating it as ready.'
+            '<details><summary>Conflicting source records</summary><pre>%s</pre>'
+            '</details></span></div>' % (
+                len(conflicting), html.escape(json.dumps(conflicting, ensure_ascii=False, indent=2))
+            )
+        )
     for label, key in (("Needed", "expected"), ("Ready when", "acceptance")):
         value = str(fields.get(key, ""))
         if value:
@@ -1105,8 +1129,6 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     if (local) {{
       match = text.match(/^P?\\s*\\.?j(\\d+)\\.?t(\\d+)\\.?r(\\d+)$/i);
       if (match) return 'j' + match[1] + '.t' + match[2] + '.r' + match[3];
-      match = text.match(/^b\\d+\\.?j(\\d+)\\.?t(\\d+)\\.?r(\\d+)$/i);
-      if (match) return 'j' + match[1] + '.t' + match[2] + '.r' + match[3];
     }}
     match = text.match(/^b(\\d+)\\.?j(\\d+)\\.?t(\\d+)(?:\\.?r(\\d+))?$/i);
     if (match) return 'b' + match[1] + '.j' + match[2] + '.t' + match[3]
@@ -1117,12 +1139,12 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     var runsButton = document.querySelector('nav button[data-seg="runs"]');
     if (runsButton) show('runs', runsButton);
     var cards = document.querySelectorAll('#runs .related-run-card[data-run-address]');
-    var wanted = runKey(address, local), target = null;
+    var target = null;
     for (var i = 0; i < cards.length; i++) {{
       var cardLocal = cards[i].getAttribute('data-run-kind') === 'local';
-      if (cardLocal !== local) continue;
+      if (local !== null && cardLocal !== local) continue;
       if (evidenceId && cards[i].getAttribute('data-evidence-id') !== evidenceId) continue;
-      if (runKey(cards[i].getAttribute('data-run-address') || '', cardLocal) !== wanted) continue;
+      if (runKey(cards[i].getAttribute('data-run-address') || '', cardLocal) !== runKey(address, cardLocal)) continue;
       target = cards[i];
       break;
     }}
@@ -1132,15 +1154,16 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     target.classList.add('run-focus');
     target.setAttribute('tabindex', '-1');
     target.focus({{preventScroll: true}});
-    target.scrollIntoView({{block: 'center', behavior: 'smooth'}});
+    target.scrollIntoView({{block: 'start', behavior: 'instant'}});
     return true;
   }}
   if (requestedFocus) {{
     setTimeout(function () {{
       if (requestedRun) {{
         var evidenceId = requestedFocus.replace(/^run-/, '');
-        var local = !/^b/i.test((requestedRun || '').replace(/^\\s+/, ''));
-        if (focusRelatedRun(requestedRun, local, evidenceId)) return;
+        /* A local Task Run also has a b/j/t/r address. Resolve its layer
+           from the mapped card, never from the spelling of its namespace. */
+        if (focusRelatedRun(requestedRun, null, evidenceId)) return;
       }}
       var target = document.getElementById(requestedFocus);
       if (target) {{

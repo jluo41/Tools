@@ -10,7 +10,7 @@ Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd (look for `examples/Proj*/`).
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **D**; scaffold a new `D{NN}_<block_name>/` if needed (see `../../../haipipe-task/fn/task-group.md`).
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK Block. Scaffold a canonical `bNN_<block_name>/` if needed (see `../../../haipipe-task/fn/block.md`).
 
 
 Step 2 — Collect metadata

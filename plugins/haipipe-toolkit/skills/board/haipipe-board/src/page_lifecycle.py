@@ -32,7 +32,7 @@ PAGE_RULINGS = {"none", "domain-gate", "local", "legacy-default"}
 LEGAL_ROUTES = {
     "CONTEXT": {"CONTEXT", "OUTLINE", "HOLD"},
     "OUTLINE": {"CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "DRAFT", "HOLD"},
-    "EVIDENCE": {"CONTEXT", "EVIDENCE", "OUTLINE", "HOLD"},
+    "EVIDENCE": {"CONTEXT", "EVIDENCE", "OUTLINE", "CONTENT", "HOLD"},
     "CONTENT": {"CONTEXT", "CONTENT", "OUTLINE", "EVIDENCE", "CHECK", "HOLD"},
     "DRAFT": {"DRAFT", "OUTLINE", "REVISE", "CHECK", "HOLD"},
     "REVISE": {"REVISE", "COMPILE", "OUTLINE", "EVIDENCE", "DRAFT", "CHECK", "HOLD"},
@@ -352,6 +352,11 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             findings.append(
                 _finding("illegal-route", index, f"{phase} cannot route to {route or '<missing>'}")
             )
+        if phase == "EVIDENCE" and route == "CONTENT" and cycle != "EMBED":
+            findings.append(_finding(
+                "evidence-content-without-embed", index,
+                "Only EVIDENCE/EMBED may hand an approved evidence fold to CONTENT",
+            ))
         if route in TERMINAL_ROUTES and "next_cycle" in receipt:
             findings.append(
                 _finding(

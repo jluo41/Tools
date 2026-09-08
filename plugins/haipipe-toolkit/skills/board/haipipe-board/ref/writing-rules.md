@@ -112,9 +112,13 @@ or an Outline record rather than under an arbitrary sentence.
 - No clause-packed figure rows.
 - No heading that is a full sentence.
 
-Titles use three to five visible words and never exceed six. A heading is a
-lookup key: it states the rule or purpose, contains no date, and does not refer
-to “this document.”
+Titles are functional labels, not headlines. Use three to five visible words
+and never exceed six. Name the Page's subject and the work or deliverable it
+owns in plain, objective language. Do not put a joke, marketing phrase,
+surprise, accusation, or unqualified finding in the title; put results,
+caveats, and interpretation in Opening or Content, where their scope can be
+stated. A heading is a lookup key: it states the rule or purpose, contains no
+date, and does not refer to “this document.”
 
 ## Finish on the rendered Page
 

@@ -11,8 +11,8 @@ answers, for every thing the approved outline needs:
    executes it.
 
 SHAPE and SURVEY are planning cycles. Neither scaffolds or executes a Level-4
-Run. SURVEY names the real owner/parent for each proposed local Run; Paper may
-reserve a complete P/J/T/R address as its explicit namespace exception. LAND
+Run. SURVEY names the real owner/parent for each proposed local Run; a full
+reservation requires the Folder owner's current naming contract. LAND
 is the first cycle that creates a Ticket/runtime receipt, executes it, or
 materializes a Result.
 
@@ -136,8 +136,8 @@ surveyed: YYMMDD HHMM · <who>
 
 This specimen is a Task-local plan: `b03j01t02` is the real parent, not an
 invented Run. LAND allocates its next `rNN` and writes the resulting full
-`b03j01t02rNN` identity back into `Local Run`. A Paper specimen may instead
-reserve `pj01t01r01` during SURVEY.
+`b03j01t02rNN` identity back into `Local Run`. Other owners keep their own
+namespace and any reservation rule declared in their current Run contract.
 
 A CITE row inserts one additional fixed field immediately after Acceptance:
 
@@ -173,13 +173,13 @@ failed, smoke-only, invalid, or explicitly stale attempt is `rerun`. `Ticket
 only` is a derived Result-availability state, not a competing action token. An
 absent external Ticket is displayed as `needs … Run` and never assigned an invented
 address. A proposed local Run uses its owning Folder's namespace. A Task route
-records parent `bNNjNNtNN` until LAND allocates its `rNN`; a Paper route may
-reserve its non-colliding `pjNNtNNrNN` identity and display
-`P jNN.tNN.rNN plan`. An unregistered `new-*` route is an honest SURVEY finding and may
+records parent `bNNjNNtNN` until LAND allocates its `rNN`; another owner may
+permit a full reserved address, displayed with that owner's label and `plan`.
+An unregistered `new-*` route is an honest SURVEY finding and may
 close SURVEY when its parent route and bounded design are explicit; LAND later
 allocates the `rNN`. The Page Outline grid has no
 separate item `Status` column: colour is only the compact signal. A Run
-popover separates its Purpose/Plan, Availability, and Next action; it never
+card separates its Purpose/Plan, Availability, and Next action; it never
 uses `new`, `rerun`, `run only`, or `ready` as one mixed status. `CITE`
 items share the Evidence column with VALUE and DISPLAY;
 several citation items may support one bullet.
@@ -207,7 +207,7 @@ collapsed `Run & Result paths` disclosure and must wrap within the card.
 | `Verified` | human at LAND; `CITE` only | `⬜` until a person signs `✅ <who> <timestamp>` after checking source identity, focal claim, and locator; omit on VALUE/DISPLAY |
 | `Supporting Runs` | SURVEY | `[]` or a semicolon-separated list of existing `Family · reuse/rerun/registered · full global Run id` and/or planned `Family · new-* · parent route` entries |
 | `Local Input` | SURVEY; LAND freezes | one envelope plan: Supporting Results plus named governed page-local paths when needed; LAND appends `→ <packet>#<sha256>` |
-| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one owner-native `Page · Evidence Item · <action> · <address> [→ Result]`; existing actions name a full Run id, Task `new-run` names parent `bNNjNNtNN`, and Paper `new-run` may reserve `pjNNtNNrNN`; `new-run` has no Ticket |
+| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one owner-native `Page · Evidence Item · <action> · <address> [→ Result]`; existing actions name a full Run id, Task `new-run` names parent `bNNjNNtNN`, and another owner may permit a full reserved address; `new-run` has no Ticket |
 | `Decide` | human gate | `☐ make` or signed `☑ make/defer/drop`; because this chooses a branch, auto never converts an owed decision into `make` |
 
 Comments hold rationale; they never replace an expected payload, acceptance
@@ -266,11 +266,10 @@ Local indexing is owner-native. A Job-backed Task uses the Task's normal
 `bNNjNNtNNrNN` identity; before allocation its `new-run` declaration names the
 real parent `bNNjNNtNN`, and LAND appends the next allocated `rNN`. A
 Folder-local Page uses its Folder address plus the local `rNN` assigned by its
-owner. Paper alone may reserve before LAND: `P` is the fixed Paper block,
-`jNN` indexes the Page, `tNN` preserves the Evidence Item number, and `rNN`
-indexes the attempt, so Abstract Page `j01`, item `E03`, first proposed attempt
-is `pj01t03r01`, shown as `P j01.t03.r01 plan`. The `p` namespace must never be
-rewritten as `b01`.
+owner. A full address may be reserved before LAND only when the Folder
+owner's current naming contract permits it. Preserve that exact identity,
+record its authority, and keep it labelled `plan` until a Ticket exists.
+Never translate a different owner's namespace into a BJTR id.
 
 ## Run detail · description, availability, and action are different facts
 
@@ -291,7 +290,9 @@ and Local Input defines the future frozen envelope. LAND creates the authored
 Run and generated Result at the addresses selected by the Folder owner's Run
 dialect. For a canonical Task, the Ticket is under the Task's `runs/` and the
 Result is under resolved `$OUTPUT_ROOT/results/<task>/<RUNNAME>/`. Raw paths are
-selectable text in the popover, never download anchors.
+selectable text in the Runs-lens card, never download anchors. A Run chip
+opens that exact card via `lens=workspace&seg=runs&focus=run-<item>&run=<address>`;
+an Evidence chip uses `seg=items` and opens the Evidence Item card instead.
 
 ## Families and actions are separate dimensions
 
@@ -318,14 +319,14 @@ The action vocabulary is:
 | `reuse` | an accepted Result already satisfies this support or local target | full global Run id and registered Ticket/receipt required |
 | `rerun` | the same frozen Run contract must execute again | full global Run id and registered Ticket/receipt required |
 | `registered` | a real Ticket exists but has not produced a completed attempt; LAND will execute it | full global Run id required |
-| `new-run` | no Run Ticket exists; LAND allocates/scaffolds | Supporting or Task-local: parent `bNNjNNtNN`; Paper-local may reserve `pjNNtNNrNN`; another Folder-local owner names its stable Folder address |
+| `new-run` | no Run Ticket exists; LAND allocates/scaffolds | Supporting or Task-local: parent `bNNjNNtNN`; other owners name a stable Folder address or a full reservation permitted by their current naming contract |
 | `new-task` | task does not exist; LAND scaffolds task and Run | parent `bNNjNN` |
 | `new-job` | job does not exist; LAND scaffolds job, task, and Run | parent `bNN` |
 | `new-block` | only a bounded planned block exists; LAND routes it through the owning workflow | planned block name |
 
 Supporting `reuse`, `rerun`, and `registered` name a full global id such as
-`b01j02t03r04`; local existing actions use the owner-native full id (Task
-`bNNjNNtNNrNN`, Paper `pjNNtNNrNN`). `rerun` means an execution was attempted or the existing
+`b01j02t03r04`; local existing actions use the owner-native full id (for a Task,
+`bNNjNNtNNrNN`). `rerun` means an execution was attempted or the existing
 historical Ticket is explicitly required to run fresh; a never-attempted real
 Ticket is `registered`. The derived phrase `Ticket only` describes missing
 Result availability and never replaces the action. `rerun` preserves the same
@@ -372,17 +373,15 @@ A governed static source already owned by this Page may be named directly in
 `Local Input` with its path and frozen hash. That exception does not authorize
 copying an external Result into the Page or using a whole Folder as evidence.
 
-Legacy rows containing `PageX Bindings` are migration input only. SURVEY must
-convert each evidentiary binding to a Supporting Run Result or, when it is
-truly page-local, to a governed Local Input path. New rows never write the
-field.
+For legacy binding migration only, read `evidence/pagex.md`. Its historical
+fields are not part of the current authored grammar.
 
 ## What SHAPE, SURVEY, LAND, and EMBED write
 
 | Cycle | Level-4 Runs? | Writes to this table |
 |---|---:|---|
 | SHAPE | none | item id/name/type, Target, Label, Need, Expected, Acceptance; initializes CITE `Verified: ⬜` |
-| SURVEY | none; Paper may reserve an address | classified existing/planned Supporting routes, one Local Input plan, exactly one owner-native Local Run declaration, Decide gate |
+| SURVEY | none; only owner-permitted address reservations | classified existing/planned Supporting routes, one Local Input plan, exactly one owner-native Local Run declaration, Decide gate |
 | LAND | allocate/scaffold planned routes, then execute/reuse | action transition `new-run → registered → reuse` (or `rerun` after failed/stale attempt), full allocated Run ids, frozen Local Input, `→ <Result>` on accepted bindings, and person-signed CITE `Verified` |
 | EMBED | none | nothing; it writes `Answered:` or `Drawn:` into the next `v<G>.<S>.<E+1>` evidence revision |
 
@@ -393,8 +392,8 @@ decision. Auto may prepare the whole proposed graph but must HOLD at SURVEY on
 an unsigned `Decide` unless a prior explicit durable owner policy supplies the
 choice; it never treats review debt as `make`. Existing Supporting routes carry full ids; planned Supporting routes
 carry only their real parent address or bounded block name. Every planned Local
-Run names the owner-native parent or, for Paper, its reserved `pjNNtNNrNN`
-address. `Ready` on a Run means its Ticket is
+Run names the owner-native parent or a full reservation permitted by that
+owner's current contract. `Ready` on a Run means its Ticket is
 ready to execute; evidence-item `ready` still requires a validated local
 Result. LAND refuses an undecided or ambiguous route, not an honestly planned
 unallocated route. Item graphs may execute in parallel,

@@ -1,27 +1,16 @@
 # =============================================================================
-# Template for configs/<NAME>.yaml
+# Template for <task>/scripts/config/<run>.yaml
 # =============================================================================
 # Every run MUST start from this template. Fill in `_meta:` before scheduling.
 # Actual config params for your training/eval script go BELOW the `_meta:` block.
-# After execution, runtime info lives in results/<NAME>/runtime.yaml — NOT here.
+# After execution, runtime info lives in
+# $OUTPUT_ROOT/results/<task>/<run>/runtime.yaml — NOT here.
 # This file is FROZEN once the run starts: never edit it post-execution.
 # =============================================================================
 
-# store — OPTIONAL, top level (NOT inside _meta: the run script greps it before
-# any YAML is parsed). Where this call's GENERATED output lands: results/,
-# notebooks/, workflow/, RUN_AUDIT.md. (CODE_REVIEW.md NEVER follows the store: it
-# reviews code at a git_sha and stays in the job — the pre-flight gate reads
-# $TASK_DIR/CODE_REVIEW.md only.) Repo-relative or absolute.
-# Omit it and output stays in the job, which is the default and what
-# most tasks want.
-#
-# Declare one when a CONSUMER owns the answers — an InsightBoard reading one
-# cohort, say. The task tree is then mirrored inside the store, so the same
-# job serves a second cohort under a second store without being copied.
-# A sibling task's output is store-keyed too: point at it relative to the store
-# root, never to the task tree. See ref/hierarchy.md § job.
-#
-# store: _WorkSpace/InsightBoardResult/A01_InsightBoard-SMSR2Full
+# Output routing belongs to the Job's src/config-defaults.yaml or to a
+# dispatching consumer's RESULT_STORE environment value. A Run config never
+# chooses its own store.
 
 _meta:
   # purpose — REQUIRED. One sentence: why does this run exist?

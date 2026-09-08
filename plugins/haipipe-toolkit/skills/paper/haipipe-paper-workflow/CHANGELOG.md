@@ -1,3 +1,31 @@
+## 1.1.6 · 2026-09-08
+
+- Used the exact `paper_page.state: blocked` field form in the G0 no-surrogate
+  rule.
+
+## 1.1.5 · 2026-09-08
+
+- Clarified that the Paper Ideation Page projects the I3 handoff but does not
+  own the I3 decision.
+- Made any Paper-side G0 record explicitly optional and pointer-only, avoiding
+  ambiguity with the sole I3 selection receipt.
+
+## 1.1.4 · 2026-09-08
+
+- Aligned G0 with the Ideation I3 single-authority chain: Paper validates the
+  final `handoff/paper-ideation.yaml`, its latest sync, sole
+  `workflow/selection.yaml` receipt, and reciprocal Story binding.
+- Clarified that Page Shape approval and Page CHECK are separate Page
+  decisions; Paper G0 creates no second selection receipt.
+- Preserved the blocked-page no-surrogate rule for the canonical Page path,
+  projection, and selection receipt.
+
+## 1.1.3 · 2026-09-08
+
+- Point the journey contract at the Paper-specific Run naming authority and
+  distinguish semantic Main/Appendix/Round lane qualifiers from physical
+  `Ba`/`Bb`/`Bc` shelves and `RD` Round Page ids.
+
 ## 1.1.2 · 260908
 - P1 Story id is `Story<Letter>-<desk>-<idea-slug>` (JL 260908); phase table and examples follow `haipipe-paper-story` 0.9.2.
 

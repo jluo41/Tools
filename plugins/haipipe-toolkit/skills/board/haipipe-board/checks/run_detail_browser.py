@@ -9,8 +9,9 @@ both Evidence chips must land on the real Evidences-lens item card with no
 popover; Feedback must land on its real Context record. This protects both the
 state-loss race and the mobile popover trap.
 
-The Run and Evidence cases are pinned to the MISQ Abstract's items.  The
-Feedback case discovers the first Feedback chip on the Page it is given; a
+Run and Evidence cases are discovered from the current rendered Outline.
+The selected item must expose Execution, Discovery, and a local Run so missing
+coverage fails explicitly. The Feedback case discovers the first chip; a
 Page whose plan carries no `Routed:` line has none, so pass `--feedback-url`
 naming a Page that does (the Abstract lost its `Routed:` lines at plan v1.4).
 """
@@ -18,19 +19,45 @@ naming a Page that does (the Abstract lost its `Routed:` lines at plan v1.4).
 import argparse
 import re
 from urllib.parse import parse_qs, urlparse
+from pathlib import Path
 
 from playwright.sync_api import TimeoutError as PlaywrightTimeout
 from playwright.sync_api import expect, sync_playwright
 
 
-CASES = (
-    ("Discovery supporting", "b01.j01.t04.r01", "b01.j01.t04.r01"),
-    ("Execution supporting", "b03.j01.t01.r01", "b03.j01.t01.r01"),
-    ("Page local", "j01.t02.r01", "pj01t02r01"),
-)
-FOCUS = "run-E02-VALUE-linked-design-counts"
-EVIDENCE_ID = FOCUS.removeprefix("run-")
-EVIDENCE_LABEL = "E2V.DesignCounts"
+def discover_cases(page_frame):
+    """Read identities from rendered links, not from a particular paper version."""
+    page_frame.locator('a[data-outline-run]').first.wait_for(timeout=30_000)
+    routes = page_frame.locator('a[data-outline-run]').evaluate_all("""links =>
+      links.map(a => ({
+        focus: a.dataset.outlineFocus,
+        address: a.dataset.outlineRun,
+        family: a.parentElement.querySelector('.outline-run-family')?.textContent || ''
+      }))""")
+    grouped = {}
+    for route in routes:
+        if route["address"] and route["family"] in {"D", "X", "P"}:
+            grouped.setdefault(route["focus"], {}).setdefault(route["family"], route)
+    for focus, families in grouped.items():
+        if {"D", "X", "P"} <= families.keys():
+            chip = page_frame.locator(
+                f'a.outline-evidence[data-outline-focus="{focus}"]').first
+            return focus, chip.inner_text().strip(), [
+                (label, families[family]["address"], family == "P")
+                for family, label in (("D", "Discovery supporting"),
+                                      ("X", "Execution supporting"),
+                                      ("P", "Page local"))
+            ]
+    raise AssertionError(
+        "Coverage missing: provide a Page with one Evidence Item mapping "
+        "Discovery, Execution, and local Page Run links")
+
+
+def normalized_address(value, local):
+    compact = re.sub(r"[.\s]", "", value).lower()
+    # Historical Page-local labels omit their fixed p prefix; preserve all
+    # other owner namespaces, including complete local Task BJTR identities.
+    return compact[1:] if local and compact.startswith("pj") else compact
 
 
 def split_url(url):
@@ -41,7 +68,8 @@ def split_url(url):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--url", required=True, help="the Abstract Board Page URL")
+    parser.add_argument("--url", required=True, help="the Board Page URL to inspect")
+    parser.add_argument("--screenshots", type=Path, help="save mobile screenshots here")
     parser.add_argument(
         "--engine", choices=("chromium", "webkit"), default="chromium"
     )
@@ -75,8 +103,12 @@ def main():
         evidence_frame = outline_frame.frame_locator(
             'iframe[title="Evidence Workspace"]'
         )
+        FOCUS, EVIDENCE_LABEL, cases = discover_cases(page_frame)
+        EVIDENCE_ID = FOCUS.removeprefix("run-")
+        if args.screenshots:
+            args.screenshots.mkdir(parents=True, exist_ok=True)
 
-        for index, (label, page_address, detail_address) in enumerate(CASES):
+        for index, (label, page_address, local) in enumerate(cases):
             link = page_frame.locator(
                 f'a[data-outline-focus="{FOCUS}"]'
                 f'[data-outline-run="{page_address}"]'
@@ -93,16 +125,25 @@ def main():
             runs_lens = evidence_frame.locator('nav button[data-seg="runs"]')
             expect(runs_lens).to_have_class(re.compile(r"\bon\b"), timeout=30_000)
             detail = evidence_frame.locator(
-                f'.related-run-card[data-evidence-id="{FOCUS.removeprefix("run-")}"]',
-                has_text=detail_address,
-            ).first
+                f'.related-run-card.run-focus[data-evidence-id="{EVIDENCE_ID}"]'
+            )
             expect(detail).to_be_visible(timeout=30_000)
             expect(detail).to_have_class(
                 re.compile(r"\brun-focus\b"), timeout=30_000
             )
+            detail_address = detail.get_attribute("data-run-address") or ""
+            if normalized_address(detail_address, local) != normalized_address(page_address, local):
+                raise AssertionError(f"{label}: wrong Run focused: {detail_address}")
+            expect(detail).to_have_attribute("data-run-kind", "local" if local else "supporting")
             expect(detail).to_contain_text(re.compile(r"Purpose|Plan"))
             expect(detail).to_contain_text("Availability")
             expect(detail).to_contain_text("Run & Result paths")
+            expect(detail.locator('.related-run-head')).to_be_in_viewport(ratio=0.5)
+            if not detail.locator('.related-run-head').evaluate(
+                "el => el.getBoundingClientRect().top >= "
+                "document.querySelector('nav').getBoundingClientRect().bottom"
+            ):
+                raise AssertionError(f"{label}: sticky navigation obscures the Run heading")
             expect(evidence_frame.locator(".run-popover:visible")).to_have_count(0)
 
             outline_href = outline_frame.locator("body").evaluate(
@@ -120,7 +161,9 @@ def main():
                 raise AssertionError(f"{label}: inner deep link lost: {evidence_href}")
 
             print(f"PASS {label:<22} {detail_address}")
-            if index + 1 < len(CASES):
+            if args.screenshots:
+                page.screenshot(path=str(args.screenshots / f"{args.engine}-run-{index}.png"))
+            if index + 1 < len(cases):
                 page.reload(wait_until="domcontentloaded")
                 page_frame.locator(
                     f'a[data-outline-focus="{FOCUS}"]'
@@ -220,8 +263,8 @@ def main():
                 % feedback_url)
         feedback_id = feedback.get_attribute("data-outline-focus") or ""
         feedback_row = feedback_id.removeprefix("feedback-")
-        if not re.fullmatch(r"S[A-Z0-9]+-PP\d+|R\d{2}", feedback_row):
-            raise AssertionError(f"Feedback: chip id is not a register row id: {feedback_id}")
+        if not feedback_row:
+            raise AssertionError("Feedback: chip has no record identity")
         feedback.tap()
         context_space = outline_frame.locator('button.space[data-space="context"]')
         expect(context_space).to_have_class(re.compile(r"\bon\b"), timeout=30_000)
@@ -235,10 +278,23 @@ def main():
         if "lens=fb" not in outline_href or f"focus={feedback_id}" not in outline_href:
             raise AssertionError(f"Feedback: outer deep link lost: {outline_href}")
         print(f"PASS {'Feedback':<22} {feedback_row}")
+        if args.screenshots:
+            page.screenshot(path=str(args.screenshots / f"{args.engine}-feedback.png"))
+
+        # A touch reader must be able to leave the drawer and reopen the
+        # exact record; navigation success alone does not test the close trap.
+        close = page.locator('button[data-close="outline"]')
+        expect(close).to_be_visible()
+        close.tap()
+        expect(page.locator('button.rpt[data-tab="outline"]')).to_have_count(0)
+        feedback.tap()
+        expect(outline_frame.locator(f"#{feedback_id}")).to_be_visible(timeout=30_000)
+        expect(page.locator('button[data-close="outline"]')).to_be_visible()
+        print("PASS mobile close and reopen Outline at exact Feedback record")
 
         mode = "fallback" if args.fallback_popover else "native"
         print(f"mobile {args.engine} Outline links OK · {mode} Popover API · "
-              "3 Runs + Evidence + Bullet Workspace chip + Feedback")
+              "3 Runs + Evidence + Bullet Workspace chip + Feedback + close/reopen")
         browser.close()
 
 

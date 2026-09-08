@@ -15,6 +15,17 @@ direction:
   scope: "population, data, setting, and time boundary"
   decision_rule: "what must be true before handoff"
 sources:
+  context:
+    - id: ctx01
+      kind: project-readme | user-brief | policy-context | discovery-page | task-page | paper-page
+      path: "README.md or owner Page"
+      address: bNN.jNN.tNN | null
+      locator: "section or supplied passage"
+      role: scope | terminology | constraint | landscape | opportunity-seed
+      status: reported | current | stale | blocked
+      owner_state: "verbatim owner state such as 🟡 PARTIAL, or null"
+      digest: "what this context says"
+      claim_support: false
   internal:
     - id: int01
       kind: task-result | task-report | task-page
@@ -57,11 +68,35 @@ created_at: "2026-09-07T12:00:00-04:00"
 updated_at: "2026-09-07T12:00:00-04:00"
 ```
 
-The exact path is resolved against the project root. `address` is always the
-full owner-native readable BJTR address: `bNN.jNN.tNN.rNN` for a Run/Result or
-`bNN.jNN.tNN` for a Page or report. A bare `rNN` or an empty
-address is never sufficient. If an owner artifact cannot be mapped to a full
-address, hold the bundle instead of inventing one.
+The exact path is resolved against the project root. For `internal` and
+`external` evidence, `address` is always the full owner-native readable BJTR
+address: `bNN.jNN.tNN.rNN` for a Run/Result or `bNN.jNN.tNN` for a Page or
+report. A bare `rNN` or an empty address is never sufficient. If an alleged
+evidence artifact cannot be mapped to a full address, hold it instead of
+inventing one.
+
+`sources.context` is explicitly non-evidentiary. It admits project READMEs,
+user briefs, policies, and aggregate Task, Discovery, or Paper Pages that help
+freeze scope, terminology, constraints, the Discovery Landscape, or an
+Opportunity Map. Context may have `address: null` when it is not a BJTR
+artifact, but it must retain a path or supplied-passage locator and
+`claim_support: false`. Context ids never appear in a Card's evidence list or
+close a novelty, feasibility, or venue gate.
+
+Context `status` records the consumer's current usability reading; it does not
+rename or upgrade the owner's state. Preserve the exact owner value in
+`owner_state`, then normalize as follows:
+
+| Owner reading | Context status |
+|---|---|
+| checked/current/complete with no known supersession | `current` |
+| draft/open/partial/held or merely described by the owner | `reported` |
+| superseded, explicitly stale, or known to lag its owner | `stale` |
+| missing, unreadable, access-denied, or structurally unusable | `blocked` |
+
+For example, a Task Page headed `🟡 PARTIAL` becomes `status: reported` plus
+`owner_state: "🟡 PARTIAL"`; it never becomes completed Task evidence by
+normalization.
 
 For a Discovery Result, `result_path`, `bib_path`, `runtime_path`, and `cite`
 are required for load-bearing use. `runtime_path` points to the same-stem
@@ -77,6 +112,14 @@ reference, but never as the only external lineage.
 A Bib file is a citation projection, not a source entry. Do not encode a
 Bib-only item as `kind: discovery-bib`; point to its owning Discovery Result
 and runtime instead.
+
+A checked Discovery synthesis Page may shape the Discovery Landscape and
+Opportunity Map, but its aggregate prose is not a substitute for the direct
+Results behind a load-bearing Core Claim. New bundles list that Page under
+`sources.context` and list each supporting Result under `sources.external`.
+Legacy `kind: discovery-page` entries under `external` remain readable as
+context-only until their direct Result/Bib/runtime/cite lineage is added; they
+cannot close a claim-level gate by themselves.
 
 For internal Task evidence, point to the owner’s Result or report and retain its
 full Run address, status, and a locator. Never invent a composite source: the
@@ -115,6 +158,9 @@ missing contract may guide a search but cannot satisfy deep fit or handoff.
    or material interpretation changes, refresh the bundle and re-run the owning
    workflow. Do not edit a frozen Run or Result in place; the owner’s
    `supersedes:` rule applies.
+8. **Context is not support.** A project README, user brief, policy note, or
+   aggregate synthesis may determine scope or suggest an opportunity, but only
+   owner evidence can establish a factual, novelty, feasibility, or desk claim.
 
 ## Request/reuse protocol
 

@@ -18,8 +18,6 @@ run_id: 260804-2130-QB5
 board: /absolute/path/to/board-folder
 page: /absolute/path/to/QB5-page-loop.md
 start_phase: CHECK             # CONTEXT | OUTLINE | EVIDENCE | CONTENT | CHECK
-                               # PROBE → EVIDENCE and DRAFT/REVISE/COMPILE →
-                               # CONTENT when reading historical inputs
 intent: audit and improve the automatic Page loop
 mode: copilot                  # copilot (default) | auto — see § below
 sources:                       # exact files the run may rely on
@@ -196,8 +194,8 @@ round                 first receipt: a positive integer; current   round-start �
                       reopen receipts retain their old +1 rule;    max-rounds-exceeded
                       never above limits.max_rounds
 phase                 current: CONTEXT OUTLINE EVIDENCE CONTENT    unknown-phase ·
-                      CHECK; historical DRAFT REVISE COMPILE and   route-phase-mismatch ·
-                      PROBE remain readable; must equal the
+                      CHECK; see legacy compatibility below       route-phase-mismatch ·
+                      for stored retired phases; must equal the
                       previous receipt's route; nothing may        receipt-after-terminal
                       follow a CLOSE or HOLD receipt
 cycle / next_cycle    cycle names the work performed; route names  controller rejects a
@@ -259,7 +257,7 @@ route is CLOSE (`status-route-mismatch`).
 ```text
 from CONTEXT  → CONTEXT | OUTLINE | HOLD
 from OUTLINE  → CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
-from EVIDENCE → CONTEXT | EVIDENCE | OUTLINE | HOLD
+from EVIDENCE → CONTEXT | EVIDENCE | OUTLINE | CONTENT | HOLD
 from CONTENT  → CONTEXT | CONTENT | OUTLINE | EVIDENCE | CHECK | HOLD
 from CHECK    → CLOSE | CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
 ```
@@ -272,6 +270,16 @@ a pending CONTEXT/OUTLINE/EVIDENCE HOLD that has neither `cycle` nor
 `next_cycle` may be followed by another historical receipt. The executable
 controller never emits that shape. A current HOLD always omits `next_cycle`
 and no receipt follows it.
+
+The EVIDENCE → CONTENT edge applies only to a pure EMBED under a directly or
+inherited approved G>=1 Shape. Generation zero and Shape changes return to
+OUTLINE. Current receipts carry `cycle:` and a nonterminal `next_cycle:`;
+SHAPE and LAND are cycles, never phase names.
+
+## Legacy compatibility only
+
+Read this section only when auditing stored receipts with retired phase names.
+It grants no current dispatch or write authority.
 
 Compatibility rows for DRAFT, REVISE, and COMPILE remain in the executable
 `LEGAL` table and auditor only because removing them would make stored receipts

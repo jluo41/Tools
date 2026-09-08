@@ -1,176 +1,87 @@
-fn/audit — Task Folder Run/Result consistency check
-====================================================
+# fn/audit — Task Folder Run/Result consistency
 
-Called by `/haipipe-task` as the first step on any existing
-`tNN_<task>/` Task Folder, which is also its Page Folder.
-Read-only scan that reports what's aligned and what's broken.
+Use for `/haipipe-task audit <task|job|block-path>`. The operation is read-only.
 
+## Scope
 
-> JL: One line one sentence. 
->> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
+- Task Folder: audit that Folder.
+- Job: enumerate its direct `tNN_*` Task Folders.
+- Block: enumerate `jNN_*/tNN_*` Task Folders.
 
+Every Task candidate must have a same-stem Page, `scripts/`,
+`scripts/config/`, and `runs/`. A container with no valid Task Folder is a
+finding, not an execution target.
 
-When to call
-------------
+## Discover Run names
 
-Automatically when `/haipipe-task` targets an existing Task Folder.
-Also callable standalone:
+For each Task Folder:
 
-```
-/haipipe-task audit <task-folder-path>
-/haipipe-task audit <job-or-block-path>   # aggregate each contained Task Folder
-```
-
-
-Procedure
----------
-
-### Step 1 — Discover run names
-
-Resolve the target before scanning.
-A direct `tNN_*` target is one canonical Task Folder.
-A canonical Job or Block target is only an aggregation request: enumerate its
-Task Folders and run this audit once per Folder.
-A pre-2026-08-29 flat Job may be read once as an implicit Task compatibility
-target; do not call that Job a Task Folder and do not emit its shape for new work.
-For aggregate reporting a Run key is `<task>/<run>`; inside one Task Folder it
-is simply `<run>`. Generated Results still resolve through `$OUTPUT_ROOT`.
-
-**Python/papermill tasks (FLAT):**
-```
-NAMES_FROM_CONFIGS   = stem of each configs/*.yaml
-NAMES_FROM_RUNS      = stem of each runs/*.{sh,ps1} (dedupe .sh/.ps1 pairs)
-NAMES_FROM_RESULTS   = name of each results/*/ subfolder
-NAMES_FROM_NOTEBOOKS = stem of each notebooks/*.ipynb
-
-ALL_NAMES = union of all four sets
+```text
+CONFIGS   stems of scripts/config/rNN_*.{yaml,yml,do}
+TICKETS   stems of runs/rNN_*.{sh,ps1}
+RESULTS   directory names in $OUTPUT_ROOT/results/<task>/
+NOTEBOOKS stems in $OUTPUT_ROOT/notebooks/<task>/*.ipynb, excluding _source
+ALL_RUNS  union of the four sets
 ```
 
-**Python/papermill Task Folder (canonical):**
-```
-NAMES_FROM_CONFIGS   = stem of each scripts/config/*.yaml
-NAMES_FROM_RUNS      = stem of each runs/*.{sh,ps1}
-NAMES_FROM_RESULTS   = name of each $OUTPUT_ROOT/results/<task>/*/
-NAMES_FROM_NOTEBOOKS = stem of each $OUTPUT_ROOT/notebooks/<task>/*.ipynb  (excl. _source)
-```
+Shared files in `scripts/config/` omit the `rNN_` prefix and are not Runs.
+Stata Tasks may omit notebooks; route engine-specific config semantics to
+`haipipe-task-for-stata`.
 
-**Stata tasks** (configs may be .do or .yaml, no notebooks):
-```
-NAMES_FROM_CONFIGS   = stem of each configs/*.{yaml,do}
-                       EXCLUDE shared configs: _source_*.do, bare <Cohort>.do
-                       (these are shared/selectors, not per-run configs)
-                       INCLUDE per-run configs: <Cohort>_{synth|full}_<year>.do
-NAMES_FROM_RUNS      = stem of each runs/*.ps1 (strip run_ prefix to match config stem)
-NAMES_FROM_RESULTS   = name of each results/*/ subfolder
-NAMES_FROM_LOGS      = stem of each results/*/log/*.txt (Stata log files)
+## Pairing checks
 
-ALL_NAMES = union of all sets
+For every Run:
+
+```text
+<task>/scripts/config/<run>.<engine-config>
+<task>/runs/<run>.<ticket-extension>
+$OUTPUT_ROOT/results/<task>/<run>/runtime.yaml
+$OUTPUT_ROOT/notebooks/<task>/<run>.ipynb   when notebook policy is not off
 ```
 
-Stata tasks may not have notebooks/ at all -- that's expected, not an issue.
+Check exact stem equality, `rNN_` grammar, receipt fields, config hash, Ticket
+path, Result path, terminal status, and required Result artifacts. A Result
+directory without `runtime.yaml` is always a finding.
 
-**Stata config matching rule:** for a run named `run_case_VisitLBP_synth_2015`, the matching config is `configs/VisitLBP_synth_2015.do` (strip the `run_case_` prefix).
-Shared configs (`VisitLBP.do`, `_source_synth.do`) are NOT per-run configs -- they are the base layer that per-run configs load via `do` include.
-A run without a matching per-run config is flagged `missing_config: FIXABLE`.
-The fix: generate a thin `.do` wrapper that loads the source selector + shared config + pins the year (see `8_stata/haipipe-task-for-stata/ref/config-seed-run.do`).
+## Classification
 
-### Step 2 — Check four-sister pairing
-
-For each name in ALL_NAMES, check sisters exist.
-The "four sisters" vary by engine:
-
-**Python (flat):**   configs/<NAME>.yaml + runs/<NAME>.sh + results/<NAME>/ + notebooks/<NAME>.ipynb
-**Python (canonical Task Folder):** scripts/config/<run>.yaml + runs/<run>.sh + $OUTPUT_ROOT/results/<task>/<run>/ + $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
-**Stata:**  configs/<NAME>.{yaml|do} + runs/<NAME>.ps1 + results/<NAME>/ + (log optional)
-
-```
-NAME              configs/  runs/   results/  notebooks/
-─────────────────────────────────────────────────────────
-run_build_physician  ❌       ✅ .sh+.ps1  ✅       ✅
-run_build_xwalk      ❌       ✅ .sh+.ps1  ✅       ✅
-run_build_cleanse    ❌       ✅ .sh only  ✅       ✅
-run_build_roberta    ❌       ❌           ✅       ❌
+```text
+missing_config     Ticket exists without its matching Run config
+missing_ticket     Run config exists without its matching Ticket
+missing_receipt    Result directory exists without runtime.yaml
+missing_result     terminal receipt names a required artifact that is absent
+missing_notebook   expected notebook record is absent
+orphan_result      Result exists without matching config and Ticket
+stale_review       CODE_REVIEW.md does not match current git SHA
+stale_reading      Task Page reading receipt predates a load-bearing Run
 ```
 
-### Step 3 — Classify issues
+Report each issue with the full Task and Run address plus exact path. Do not
+repair during audit.
 
-| Issue type | Pattern | Severity |
-|-----------|---------|----------|
-| **missing_config** | runs/ exists but configs/<NAME>.yaml missing | FIXABLE — generate from shared config |
-| **missing_run** | configs/ exists but runs/<NAME>.sh missing | FIXABLE — generate from template |
-| **missing_notebook** | runs/ + results/ exist but notebooks/ missing | INFO — notebook created at runtime |
-| **stale_result** | results/<NAME>/ exists but no runs/ or configs/ | WARN — orphaned, candidate for cleanup |
-| **shared_config** | one config serves multiple runs | FIXABLE — split into per-run configs |
-| **missing_ps1** | .sh exists but .ps1 missing (or vice versa) | FIXABLE — generate counterpart |
+## Workflow checks
 
-### Step 4 — Detect task type
+Read `workflow/plan.yaml` and `workflow/report.yaml` when present. Verify that
+the Report mirrors the Plan, every output claim names an existing artifact,
+and Task closure agrees with current Run and READING receipts.
 
-Use the router's inference cascade:
-1. Explicit: caller said type
-2. Script-inferred: read `<TASK>.py` and `scripts/*.py` imports/content
-   Abbreviated — the full cascade is SKILL.md Step 3a (single source):
-   - `from haipipe` / `SourceFn` / `RecordFn` → data
-   - `databricks` / `spark.sql` / `dbutils` → raw
-   - `import torch` / `Trainer` / `sweep` → fit
-   - `eval` / `metrics` / `score` → eval
-   - `plt.` / `fig` / `savefig` / `.tex` → display
-   - `Endpoint_Set` / `inference(` / deploy → endpoint
-   - `stata` / `.do` / `preserve` → stata (delegate)
-   - `agent` / `claude` / `anthropic` → agent
-3. Keyword-inferred: scan args for type keywords
-
-NOTE: do NOT infer type from the group letter (A00_, B01_, etc.).
-Group letters are project-specific organizational prefixes.
-
-### Step 5 — Check workflow/ folder
-
-```
-workflow/ exists?
-  ├── YES → read plan.yaml, check it matches current Task Folder state
-  │         (new runs added since plan was written? files moved?)
-  └── NO  → flag as "plan missing, will generate in stage-plan step"
-```
-
-### Step 6 — Report
-
-Output a structured audit:
-
-```
-📋 Audit: A01_build_physician
-   type: data (inferred from SourceFn import in the script)
-   
-   Four-sister check:
-     run_build_physician:  configs ❌  runs ✅  results ✅  notebooks ✅
-     run_build_xwalk:      configs ❌  runs ✅  results ✅  notebooks ✅
-     run_build_cleanse:    configs ❌  runs ✅  results ✅  notebooks ✅
-     run_build_roberta:    configs ❌  runs ❌  results ✅  notebooks ❌  (stale)
-   
-   Issues (3 fixable, 1 warn):
-     FIXABLE: 3 runs missing per-run configs (shared config: external_physician.yaml)
-     WARN:    run_build_roberta has results/ but no runner (stale?)
-   
-   Workflow: plan.yaml exists ✅ / missing ❌
-   
-   Next: /haipipe-task fix → /haipipe-task plan
-```
-
-
-Return contract
----------------
+## Return
 
 ```yaml
 status: ok | issues_found
-type: <detected task type>
-run_names: [run_build_physician, run_build_xwalk, run_build_cleanse, run_build_roberta]
-sisters:
-  run_build_physician: { config: false, run: true, result: true, notebook: true }
-  run_build_xwalk:     { config: false, run: true, result: true, notebook: true }
-  run_build_cleanse:   { config: false, run: true, result: true, notebook: true }
-  run_build_roberta:   { config: false, run: false, result: true, notebook: false }
-issues:
-  - { name: run_build_physician, type: missing_config, severity: fixable }
-  - { name: run_build_roberta, type: stale_result, severity: warn }
-shared_configs:
-  - { config: external_physician.yaml, serves: [run_build_physician, run_build_xwalk, run_build_cleanse] }
-workflow_exists: true | false
+task_folders:
+  - path: <full tNN path>
+    type: <detected type>
+    runs:
+      r01_example:
+        config: true
+        ticket: true
+        result: true
+        receipt: true
+        notebook: true
+    issues: []
+summary:
+  task_count: 1
+  run_count: 1
+  finding_count: 0
 ```

@@ -2,6 +2,33 @@
 
 Skill-scoped changelog (read on demand; not loaded at invocation).
 
+## 0.3.1 · 2026-09-08
+
+- Closed the second fresh-context field-test gaps: added Paper Page context,
+  owner-state normalization, exact novelty/pressure receipt schemas, and
+  explicit output-fenced Paper projection behavior.
+- Extended the mechanical Test gate to validate linked novelty and pressure
+  receipt identity, shape, coverage state, claim mapping, and pilot projection.
+
+## 0.3.0 · 2026-09-08
+
+- Split Ideation into Discovery-style numbered capability families:
+  `1_generate`, `2_test`, and `3_select`.
+- Added directly invocable specialists for candidate generation, test
+  orchestration, claim-level novelty checks, feasibility pressure testing,
+  journal fit, Nature-family editorial review, and human selection.
+- Added a deterministic stage-gate checker and an end-to-end specimen so the
+  family is executable rather than schema-only.
+- Added the I1/I2 `paper-ideation-sync` adapter so one evergreen Paper P0 Page
+  continuously presents the Discovery Landscape, Opportunity Map, changing
+  Idea portfolio, and Test Matrix before selection.
+- Kept `workflow/selection.yaml` as the single human decision authority; the
+  final handoff lets Paper project verdict/target/`went to` without creating a
+  second G0 decision.
+- Closed the first fresh-context field-test gaps with manifest/Generate/sync
+  schemas, context-only evidence entries, claim-to-matrix projection,
+  receipt-linked matrix rows, and clearer HOLD/checker behavior.
+
 ## 0.2.2 · 2026-09-08
 
 - Updated the Paper P0 handoff target to `haipipe-paper-ideation` after the

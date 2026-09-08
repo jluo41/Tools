@@ -119,7 +119,7 @@ const legalNextCycle = (route, nextCycle) =>
 const LEGAL = {
   CONTEXT: ['CONTEXT', 'OUTLINE', 'HOLD'],
   OUTLINE: ['CONTEXT', 'OUTLINE', 'EVIDENCE', 'CONTENT', 'DRAFT', 'HOLD'],
-  EVIDENCE: ['CONTEXT', 'EVIDENCE', 'OUTLINE', 'HOLD'],
+  EVIDENCE: ['CONTEXT', 'EVIDENCE', 'OUTLINE', 'CONTENT', 'HOLD'],
   CONTENT: ['CONTEXT', 'CONTENT', 'OUTLINE', 'EVIDENCE', 'CHECK', 'HOLD'],
   DRAFT: ['DRAFT', 'OUTLINE', 'REVISE', 'CHECK', 'HOLD'],
   REVISE: ['REVISE', 'COMPILE', 'OUTLINE', 'EVIDENCE', 'DRAFT', 'CHECK', 'HOLD'],
@@ -494,7 +494,8 @@ for (let step = 1; step <= maxSteps; step++) {
   let findings = producer.findings || []
   if (status !== 'ok') {
     route = 'HOLD'
-  } else if (producer.phase !== current || !LEGAL[current].includes(route) || route === 'CLOSE') {
+  } else if (producer.phase !== current || !LEGAL[current].includes(route) || route === 'CLOSE' ||
+      (current === 'EVIDENCE' && route === 'CONTENT' && producer.cycle !== 'EMBED')) {
     status = 'failed'
     route = 'HOLD'
     reason = `${reason}; producer returned a phase or route outside ${current} authority`

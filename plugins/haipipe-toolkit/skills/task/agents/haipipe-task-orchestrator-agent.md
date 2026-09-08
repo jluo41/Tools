@@ -12,12 +12,16 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-09-07"
+  version: "3.1.0"
+  last_updated: "2026-09-08"
   summary: "Clean-context Task orchestrator with Supporting/Local Run lineage."
 ---
 
 # Task Orchestrator
+
+Task Folder = Page Folder = `tNN_<task>/`. One lifecycle targets that Folder;
+a Job or Block request only enumerates canonical Task Folders. A container with
+none is malformed and must fail.
 
 Load `haipipe-task` first. I coordinate the creator/reviewer pair in a clean
 context; I do not replace the interactive skill and I do not interpret what a

@@ -1,0 +1,3 @@
+interface:
+  display_name: "HAI Novelty Check"
+  short_description: "Verify research novelty claim by claim"

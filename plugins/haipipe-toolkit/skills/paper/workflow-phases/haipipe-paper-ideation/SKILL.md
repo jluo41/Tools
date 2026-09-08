@@ -1,41 +1,84 @@
 ---
 name: haipipe-paper-ideation
 description: >-
-  Paper journey phase P0 (Ideation) and the Page Type contract for one research
-  direction's ideas, before any selected Story exists: generate, compare, and
-  optionally order a dynamic candidate set, novelty-check claims, record
-  pilots, compare journal fit, then eliminate, defer, or send selected
-  idea-and-target pairs to distinct Stories. Use when brainstorming a direction,
-  checking whether an idea has been done, or deciding where it fits. Trigger:
-  ideation page, find ideas, brainstorm, novelty check, journal fit, page-type
-  ideation.
+  Paper journey phase P0 and the reader-facing Page Type for one research
+  direction's evolving Idea portfolio. It projects haipipe-ideation I1/I2 sync
+  packets and the final I3 selection handoff into Direction, Discovery
+  Landscape, Opportunity Map, candidate comparisons, evidence gaps, and Story
+  routes without becoming a second semantic or selection authority. Use to
+  create, refresh, read, or check a Paper Ideation Page; route idea generation,
+  novelty testing, pressure testing, and selection to haipipe-ideation.
 metadata:
-  version: "0.9.1"
+  version: "1.0.0"
   last_updated: "2026-09-08"
   group-token: "Story00"
   outline:
     mode: grammar
     source: "this SKILL.md"
-    shape: "the Page Face is Opening → Outline → Content → Aims; Content division 1 is Direction, division 2 is Ideas (ranked) with a source bullet naming each ideation handoff or legacy IDEA_REPORT it drew from; for a dynamic set of K admitted ideas, divisions 3 through K+2 are Idea 1 through Idea K, each carrying Method · Hypothesis · Minimum experiment · Expected outcome · Core Claims / Novelty Check · Pilot result · Journal / Venue Fit · Risk · Reviewer's likely objection · Recommendation; division K+3 is Eliminated Ideas and K+4 is Suggested Execution Order (a retrofit page may nest its single idea under division 2)"
+    shape: "the Page Face is Opening → Outline → Content → Aims; Content division 1 is Direction, division 2 is Discovery Landscape, division 3 is Opportunity Map, and division 4 is Ideas (ranked); for a dynamic set of K admitted ideas, divisions 5 through K+4 are Idea 1 through Idea K, each carrying Origin / Opportunity · Research Question · Method · Hypothesis · Minimum Experiment · Expected Outcomes · Discovery Basis · Core Claims / Novelty Check · Counterevidence · Pilot Result · Journal / Venue Fit · Risk · Reviewer's Likely Objection · Recommendation · Next Evidence Action; division K+5 is Eliminated / Merged / Deferred Ideas, K+6 is Next Evidence Queue, and K+7 is Suggested Execution Order and G0 Readiness"
 ---
 
-# /haipipe-paper-ideation · one direction's ideas, in the reports' own words
+# /haipipe-paper-ideation · one evergreen Paper view of an evidence-tested direction
 
 Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
-Declare `page-type: ideation`.
+Declare `page-type: ideation`. Load `haipipe-ideation` and its
+`references/manifest-and-sync.md` for an I1/I2 sync; also read
+`references/receipts.md` for a final I3 handoff. The schemas stay with their
+semantic owner and are not copied into this skill.
 
 ## 🧭 Journey phase
 
-This skill is journey phase P0 Ideation (ideate) of the paper journey and owns
-the `page-type: ideation` contract below. The repo is minted WITH this page, so
-there is no entry gate. Exit through gate G0 for each selected idea: per-claim
-novelty bound to Supporting Run Results, a pilot result or explicit waiver, complete deep
-venue fit, and a person's PROCEED or risk-accepted PROCEED WITH CAUTION tick
-selecting the intended target/category
-and sending that idea to its own Story. `haipipe-paper-workflow`
-holds the full gate assertions; this block only places the phase. The page
-itself always runs through `/haipipe-page` and `haipipe-page-workflow`
-(OUTLINE → … → CHECK), never a private lifecycle.
+This skill is journey phase P0 Ideation of the paper journey and owns the
+`page-type: ideation` reader contract below. The repo is minted WITH this Page,
+so there is no entry gate and the Page may exist while every candidate is still
+unverified. `haipipe-ideation` is the sole semantic owner of Direction and Idea
+Cards, the I1 Generate and I2 Test state, the machine portfolio recommendation,
+and the I3 human selection receipt. This Page projects those records from I1
+onward; it does not regenerate them or make a second decision.
+
+Exit through gate G0 for each selected idea only after the final handoff points
+to the sole `workflow/selection.yaml`: per-claim novelty is bounded, a Task-owned
+pilot or explicit waiver exists, deep venue fit uses a current Venue contract,
+and the person selected the Idea plus intended target/category. The Page may
+then display verdict, target, and `went to` exactly as that receipt records
+them. `haipipe-paper-workflow` tests G0 from the same receipt and reciprocal
+Story links; it never asks for another selection tick. The Page itself always
+runs through `/haipipe-page` and `haipipe-page-workflow`
+(CONTEXT → OUTLINE → EVIDENCE → CONTENT → CHECK), never a private lifecycle.
+
+## 🔌 Semantic adapter and single authority
+
+One evergreen `Story00-ideation` Page receives two adapter states owned by
+`haipipe-ideation`:
+
+```text
+I1 GENERATE ─┐
+             ├─ projection/paper-ideation-sync.yaml ─▶ same Paper P0 Page
+I2 TEST ─────┘                                  revisions 1, 2, 3, ...
+
+I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
+                                             │
+                                             └─▶ verdict · target · went to
+```
+
+- `kind: paper-ideation-sync` is the working-state adapter. It carries the
+  Direction, Discovery Landscape, Opportunity Map, every admitted card and
+  test state, the canonical machine-only `portfolio_recommendation`, and open
+  gaps. Its `selection_authority.status` remains `none`; it cannot authorize a
+  Story.
+- `kind: paper-ideation-handoff` is the selected-state adapter. It points to
+  the latest sync plus the sole I3 selection receipt and selected Idea-target
+  routes. It does not create a second portfolio or decision.
+- Material Generate or Test changes increment `sync_revision` and refresh this
+  same Page. The Page workflow receipt records the packet path and projected
+  revision; a mismatched revision is stale, not current.
+- When `paper_page.state: missing`, use `/haipipe-page` to mint or bind the one
+  canonical P0 Page. When it is `blocked`, preserve the canonical path and last
+  actual revision, report the named gap, and do not mint a surrogate Page or a
+  second projection receipt.
+- Raw Result Cards, facts, BibTeX, Task output, Venue rules, and Discovery notes
+  remain with their owners. The adapter and Page carry interpretations and
+  pointers only.
 
 ## 🌱 Grain and home
 
@@ -93,112 +136,174 @@ remains a brief completion contract:
 ```text
 ## Opening   the direction question and why this decision needs a visible record
 ## Outline   the compact C/P/B · Feedback · Evidence · Supporting/Local Run projection
-## Content   the full Direction, candidate Ideas, novelty, pilots, and routing below
+## Content   the discovery landscape, opportunity map, candidate Ideas, tests,
+             evidence queue, and routing below
 ## Aims      short direction-level and Page-level done-when statements
 ```
 
 Do not promote Data, Preliminary Results, Novelty Check, Feedback, Display,
 States, Files, Log, or Discussion into additional top-level Page sections.
-Data and preliminary results live in each Idea's Method/Minimum experiment and
-Pilot result; Novelty Check lives under Core Claims; Journal / Venue Fit lives
-inside each Idea division; Feedback/Display/receipts remain in their owning
-Page workflow records.
+Data and preliminary results live in each Idea's Method/Minimum Experiment and
+Pilot Result; Novelty Check lives under Core Claims; Journal / Venue Fit lives
+inside each Idea division. Discovery Landscape and Opportunity Map are Content
+divisions, not new top-level sections. Feedback/Display/Page receipts remain in
+their owning Page workflow records.
 
-Page review and Paper selection are separate human decisions. The Page
+Page review and Ideation selection are separate human decisions. The Page
 workflow's `approved:` accepts the C/P/B Shape and its `accepted:` CHECK ruling
-accepts one readable Page version. Neither selects an Idea. G0's dated
-`PROCEED` or `PROCEED WITH CAUTION` verdict selects one Idea and authorizes its
-`went to` Story edge; it does not close this evergreen Ideation Page. Never
-infer either decision from the other.
+accepts one readable Page version. Neither selects an Idea. Only the I3
+`workflow/selection.yaml` receipt can record `PROCEED`, risk-accepted `PROCEED
+WITH CAUTION`, defer, or abandon and authorize a target plus `went to` Story
+edge. G0 consumes that receipt and does not close this evergreen Page. Never
+infer selection from Page approval, Page CHECK, comparison order, or a machine
+recommendation.
 
-## 📐 Content outline · the source reports' structure
+## 📐 Content outline · discovery to decision
 
-The divisions mirror IDEA_REPORT.md (idea-creator) section for section, with
-the Novelty Check Report's Core Claims and HAI Idea × Venue Fit projection
-folded into each idea's division. Let
-`K >= 1` be the number of admitted Idea Cards, including cards later
+The Page makes the reasoning chain readable before it presents candidate
+details: what the field establishes, what remains open, which Ideas those
+openings produced, what evidence changed them, and what should happen next.
+Let `K >= 1` be the number of admitted Idea Cards, including cards later
 eliminated whose divisions remain as history. The number is dynamic:
 
 ```text
-### 1 · Direction                    🔒 the research direction · why now ·
-                                        what makes an idea here worth a paper
-### 2 · Ideas (ranked)               🔥 summary table, one row per live idea
-                                        · one source bullet per ideation handoff
-### 3 … K+2 · Idea <n>: <title>      one division per admitted idea, in current
-                                        comparison order,
-                                        the report's own fields (list below)
-### K+3 · Eliminated Ideas           ♻️ the report's table: | Idea | Reason eliminated |
-                                        rows permanent
-### K+4 · Suggested Execution Order  ♻️ what to do first · who went to which Story
+### 1 · Direction                         🔒 bounded question · why now · admission rule
+### 2 · Discovery Landscape               🔎 direct evidence · analogues · convergence ·
+                                             contradiction · unresolved territory
+### 3 · Opportunity Map                   🧭 evidence-bounded openings and the Idea ids
+                                             each opens, narrows, exhausts, or contradicts
+### 4 · Ideas (ranked)                    🔥 one row per admitted Idea · current I1/I2/I3 state
+### 5 … K+4 · Idea <n>: <title>           one division per admitted Idea, in current
+                                             comparison order, using the fields below
+### K+5 · Eliminated / Merged / Deferred  ♻️ permanent disposition history and reason
+### K+6 · Next Evidence Queue             📮 Discovery · Task · Venue owner route per gap
+### K+7 · Suggested Execution Order       ♻️ machine attention order · G0 readiness · selected
+            and G0 Readiness                  Story routes only when I3 supplies them
 ```
 
-A retrofit page whose single idea already became the paper may nest that idea
-under division 2 (`#### 2.1 · Idea 1: <title>`); the field list still applies
-inside it.
+The Discovery Landscape and Opportunity Map are decision-facing syntheses,
+not a copied literature review. Landscape statements resolve to accepted
+Discovery synthesis Pages or direct bundle evidence ids and retain direct
+versus analogue status. Opportunity rows preserve the sync packet's id,
+interpretation, evidence ids, affected Idea ids, and
+`open | narrowed | exhausted | contradicted` status. Missing full-text depth,
+counterevidence, and unresolved territory remain visible rather than being
+smoothed into a novelty claim.
+
+A retrofit Page whose single Idea already became the paper may retain its
+historical nesting. On its next material revision, bind the available sync or
+handoff and add only fields the source artifacts support; do not invent an I1,
+I2, or I3 history.
 
 Admission is the stable boundary. An idea becomes admitted when the semantic
 layer assigns it a zero-padded `iNN` card (`i01`, `i02`, ...); from then on it
 keeps one division forever.
 A duplicate phrase, overbroad claim, or framing rejected before `iNN`
-assignment may appear only in Eliminated Ideas with its source and reason and
+assignment may appear only in the disposition division with its source and reason and
 does not owe a fabricated Idea division. The Page must state which kind each
 eliminated row is.
 
-## 📊 Ideas (ranked) · division 2
+## 🔎 Discovery Landscape and Opportunity Map
 
-The summary table, one row per live idea, every cell a state and never a
+Division 2 answers what the field currently establishes; division 3 answers
+what that evidence leaves worth pursuing. Keep the distinction visible:
+
+```text
+Discovery Landscape                         Opportunity Map
+accepted evidence and its limits            Ideation's bounded interpretation
+direct physician work vs analogues          one durable opportunity id
+convergent signals and contradictions       evidence ids + affected Idea ids
+unresolved territory and reading depth      open · narrowed · exhausted · contradicted
+```
+
+The Landscape projects `discovery_landscape` from the current sync. It may
+summarize an accepted Discovery synthesis Page and direct evidence ids, but it
+cannot turn an unverified source, search hit, or copied Bib entry into support.
+The Opportunity Map projects `opportunity_map` without adding new openings by
+Page-author intuition. When new evidence narrows or contradicts an opportunity,
+the affected Idea rows and divisions change on the same sync revision.
+
+## 📊 Ideas (ranked) · division 4
+
+The summary table, one row per admitted Idea, every cell a state and never a
 blank:
 
 ```text
 id  idea                 novelty       pilot        venue fit       verdict       target       went to
 ─────────────────────────────────────────────────────────────────────────────────────────────────────
-i01 <one sentence>       HIGH           ✅ Result     STRONG · vfit   ✅ PROCEED    JAMA · Art.  StoryA-<desk>-<idea-slug>
+i01 <one sentence>       partial        ✅ Result     strong · vfit   ✅ PROCEED    JAMA · Art.  StoryA-<desk>-<idea-slug>
 i02 <one sentence>       ⬜ unchecked   —            ⬜ pending      ⬜ open       —            —
 ```
 
-Verdict vocabulary — the Novelty Report's own recommendation words, decided
-by a person: `⬜ open`, `✅ PROCEED`, `⚠️ PROCEED WITH CAUTION` (the named
-risk accepted in the tick), `🚫 ABANDON`. An abandoned or merged idea moves
-its row to Eliminated Ideas with its reason; its division stays as history. A
-`—` cell is legal only where the verdict makes the column moot; on a live row
-every cell is a state or a bound path.
+Verdict vocabulary is projected from the I3 receipt: `⬜ open`, `✅ PROCEED`,
+`⚠️ PROCEED WITH CAUTION` with named accepted risk, `❄️ DEFER`, and
+`🚫 ABANDON`. Before I3 every row remains open regardless of the machine
+recommendation. An abandoned, merged, or deferred Idea is also recorded in the
+disposition table with its reason; its summary row and admitted Idea division
+stay as history. A `—` cell
+is legal only where the authoritative state makes the column moot; on a live
+row every cell is a state or a bound path.
 
-Each batch of ideas enters through a source bullet naming the IDEA_REPORT (or
-ideas.md) and its Run/Result receipt; ideas do not appear from nowhere.
+For current work, the source block names the exact
+`projection/paper-ideation-sync.yaml`, `sync_revision`, Ideation task address,
+Direction Card, and evidence bundle. A final selected view also names
+`handoff/paper-ideation.yaml` and its `workflow/selection.yaml`. Legacy
+IDEA_REPORT or `ideas.md` inputs remain readable, but a new Page does not bypass
+the adapter and let ideas appear from nowhere.
 
 The row order supports comparison and attention only. The first row is not
 automatically selected, and the page may end with no selected idea, one
-selected idea, or several selected ideas. Human verdict and `went to`, not
-position, record selection; several selected rows route to distinct Stories.
+selected idea, or several selected ideas. The I3 human receipt and `went to`,
+not position, record selection; several selected rows route to distinct Stories.
 For every admitted row, `venue fit` is a state backed by its Idea × Venue Fit
 Card. A selected row also names the person's target and article/category;
 machine recommendations stay inside the idea division.
 
-## 🧾 Each idea's division · the report's fields
+## 📮 Next Evidence Queue and execution order
 
-One division per idea, titled `Idea <n>: <title>`, carrying IDEA_REPORT.md's
-field names plus the explicit HAI Journal / Venue Fit field:
+Division K+6 groups every unresolved item by its native next owner: Discovery
+for external evidence, Task for a pilot or internal fact, Venue for a current
+desk contract, or Ideation for Generate/Test/Select work. Each row names the
+sync gap or Idea `next_route`, the exact card or opportunity it affects, and
+the Result/receipt condition that would close it. It creates no Paper-local
+execution Run.
+
+Division K+7 projects `portfolio_recommendation` as the suggested attention
+order and labels it machine-authored. Before I3, G0 readiness is only a gate
+reading and every verdict/target/Story cell remains open. After I3, the Page
+adds only the selected routes found in the final handoff and leaves deferred or
+abandoned history visible.
+
+## 🧾 Each Idea's division · one card under evidence
+
+One division per admitted card, titled `Idea <n>: <title>`. It projects the
+card, Test Matrix, fit card, and owner receipts without rewriting their
+conclusions:
 
 ```text
+Origin / Opportunity            which Opportunity Map row produced or changed it
+Research Question               the bounded question this Idea asks
 Method                        what we actually do, 2-4 concrete steps, plain language
 Hypothesis                    one sentence
-Minimum experiment            the smallest run that would show signal
-Expected outcome              what success/failure looks like
+Minimum Experiment            the smallest run that would show signal
+Expected Outcomes             what positive, null, contradictory, and failed execution mean
+Discovery Basis               direct work, analogues, convergence, contradiction, and open gap
 Core Claims / Novelty Check   one line per claim plus its exact search question,
                               closest verified work, remaining delta, limitation,
                               and novel/partial/preempted/inconclusive/unverified status
-                              📮 → /haipipe-ideation pressure-test + Discovery Search Run/Result
-Pilot result                  POSITIVE/NEGATIVE/SKIPPED + the receipt
+                              📮 → /haipipe-novelty-check + Discovery Run/Result
+Counterevidence               the strongest evidence-bound alternative or rejection
+Pilot Result                  POSITIVE/NEGATIVE/WAIVED/PENDING/HOLD + the receipt
                               📮 → task-layer Run/Result, or an explicit waiver
 Journal / Venue Fit           broad screen for every admitted idea; deep fit
                               for live finalists; candidate targets, article
                               type, desk risks, missing evidence, reroute,
                               current Venue contract, and machine recommendation
-                              📮 → /haipipe-ideation venue-fit
+                              📮 → /haipipe-journal-fit
 Risk                          what could sink it
-Reviewer's likely objection   the strongest counterargument
-Recommendation                the machine's PROCEED/CAUTION/ABANDON with reasons;
-                              the table's verdict cell is the person's answer to it
+Reviewer's Likely Objection   the strongest counterargument
+Recommendation               the sync packet's canonical machine-only recommendation
+Next Evidence Action         exact Discovery, Task, Venue, select, defer, or abandon route
 ```
 
 A retrofit page fills only the fields its receipts support and marks the rest
@@ -212,9 +317,10 @@ several claim-level passes.
 
 ## 🔬 Core Claims, checked one by one
 
-An idea is never novelty-checked as a blob. Its division states 3-5 Core
+An idea is never novelty-checked as a blob. Its division states 1-5 Core
 Claims that would need to be novel; each claim is checked separately and the
-table's novelty cell records the WORST of them:
+table's novelty cell records the Test Matrix reading supported by the worst
+claim:
 
 ```text
 claim → multi-source search (≥3 query shapes · recent-years window)
@@ -242,31 +348,34 @@ Task/Discovery-layer work, and their receipts are Run/Result records this page b
 path:
 
 ```text
-Core Claims lines   ← /haipipe-ideation pressure-test + Discovery Search Run/Result
-Ideas + divisions   ← /haipipe-ideation synthesize → Idea Cards + handoff
-Pilot result        ← task-layer Run/Result (small, budgeted, disposable run)
-Journal/Venue Fit   ← /haipipe-ideation venue-fit → Fit Card + Venue contract
+Direction                  ← Direction Card through paper-ideation-sync
+Discovery Landscape        ← accepted Discovery syntheses + evidence ids in sync
+Opportunity Map            ← Ideation interpretations + affected Idea ids in sync
+Ideas + test states         ← Idea Cards + Test Matrix through sync
+Core Claims lines          ← /haipipe-novelty-check + Discovery Run/Result
+Pilot Result               ← /haipipe-idea-pressure-test + Task Run/Result or waiver
+Journal / Venue Fit        ← /haipipe-journal-fit + Fit Card + Venue contract
+Verdict · target · went to ← final handoff + sole I3 selection receipt
 ```
 
-The standing semantic executor for both idea lanes is `/haipipe-ideation`.
+The standing semantic executor is `/haipipe-ideation`: I1 Generate authors
+cards, I2 Test reconciles novelty, pressure, feasibility, and venue fit, and I3
+Select owns the human receipt.
 External prior-work retrieval routes through `/haipipe-discovery-search`, and
 feasibility routes through the Task owner. The historical ARIS `idea-creator`
 and `novelty-check` skills (Tools/references/aris) remain methodology
 references: their output enters this page only after it has become an ideation
 card or a discovery-/task-layer Run/Result, never by direct write.
 
-Two grain adapters, because the executor speaks per-idea and this page reads
-per-claim: (1) claim-level novelty is achieved by DISPATCH GRAIN — each claim
-is commissioned as its own bounded question, so each gets its own Run/Result, matching
-the discovery layer's one-question-one-file law; (2) the executor's
-novelty_check vocabulary maps onto the page's reading as
-`novel → HIGH · partial → MEDIUM · preempted → LOW · inconclusive → stays ⬜
-(or [UNVERIFIED] when the prior work would not resolve)`, and the novelty
-cell keeps recording the WORST claim.
+The executor's `novel | partial | preempted | inconclusive | unverified`
+vocabulary is projected without inventing a second HIGH/MEDIUM/LOW scale. Each
+claim is commissioned as its own bounded Discovery question and retains its
+owner-native Result lineage; the Page summarizes but does not reinterpret the
+specialist receipt.
 
-A pilot is a feasibility receipt, not a result: budget it small, time-box it,
+A pilot is a feasibility Result, not a paper finding: budget it small, time-box it,
 and record a failed pilot as honestly as a passed one. A cell asserting a
-verdict with no Result path behind it is a defect.
+pilot result with no Task receipt or explicit waiver behind it is a defect.
 
 Existing regressions may be read as a retrospective pilot only through a
 Task-owned Run/Result receipt that names the bounded minimum experiment, exact output
@@ -274,9 +383,10 @@ paths and execution provenance, acceptance reading, and positive/negative
 result. An inherited `SKIPPED` line or manuscript claim does not satisfy G0;
 it needs that retrospective receipt, a new pilot, or an explicit human waiver.
 
-## 🎓 Sending selected ideas to Stories
+## 🎓 Projecting selected Ideas to Stories
 
-An idea's row may name a Story in `went to` only when all four hold:
+An Idea's row may name a Story in `went to` only when the final handoff and its
+sole I3 receipt establish all four:
 
 - its Core Claims each carry a novelty reading from an independent context,
 - its Pilot result binds a feasibility receipt (or records an explicit,
@@ -284,36 +394,39 @@ An idea's row may name a Story in `went to` only when all four hold:
 - its Venue Fit Card has a retained broad screen, complete deep fit against a
   current Venue contract, and the row names the person's intended
   target/category,
-- a person has ticked PROCEED on that row, or PROCEED WITH CAUTION with its
-  named risk accepted in the tick — the machine writes only the
-  Recommendation field; the verdict is human, and eliminated ideas never
+- the receipt records a person's `select` plus `proceed` or
+  `proceed-with-caution`, with every accepted risk named. The Page never turns
+  its machine Recommendation into the verdict, and eliminated Ideas never
   leave.
 
-It is a two-way act: `went to` names the Story — normally `StoryA-<desk>-<idea-slug>`, `StoryB-<desk>-<idea-slug>`,
-and so on beside this page, or the new repo when an idea leaves for a DIFFERENT
-paper — and that Story's C5 Source Pages and provenance subsection binds THIS page and its
-ideation handoff back. A row naming a Story that does not bind back, or a
-Story claiming an origin this page does not show, is a defect on whichever
-side is missing.
+It is a two-way act: `went to` copies the exact Story path already allocated in
+the receipt, normally `StoryA-<desk>-<idea-slug>`,
+`StoryB-<desk>-<idea-slug>`, and so on beside this Page, or the new repo when an
+Idea leaves for a different paper. That Story's C5 Source Pages and provenance
+bind this Page, the final handoff, and the I3 receipt back. A row naming a Story
+that does not bind back, or a Story claiming an origin this Page does not show,
+is a defect on whichever side is missing.
 
-Selection is per idea, not per comparison table. A person may select none,
-one, or several candidates; every selected candidate receives one distinct
-Story and passes G0 independently. The page never needs to declare one global
-best idea.
+Selection is per Idea, not per comparison table. I3 may record none, one, or
+several selected candidates; every selected candidate receives one distinct
+Story and passes G0 independently. The Page never declares one global best
+Idea and never edits the selection receipt.
 
 ## ✋ Human authority
 
-A machine may generate ideas, run searches and pilots through the proper
-layers, fill Core Claims lines, build Venue Fit Cards, and recommend target
-options. It may not tick a verdict, select a target/category, eliminate or
-defer an idea, or send a selected idea to a Story. Killing, deferring,
-targeting, and committing are all human acts.
+A machine may generate Ideas through I1, run I2 searches and pilots through
+the proper owners, fill Core Claims, build Venue Fit Cards, and write the one
+canonical portfolio recommendation in the sync packet. It may not author the
+I3 person's identity, date, verdict, target/category, accepted risks, or Story
+authorization. Selection, deferral, abandonment, targeting, and commitment are
+human acts recorded once by `haipipe-ideation-select`.
 
 Gate G0 (Ideation → Story; historical Seed wording remains readable) is tested
-on each selected idea's summary row and ticked by
-a person; its workflow receipt belongs to this Page's process records and
-states the gate, assertion results, and who ticked. It is not a top-level
-`## Log` section on the reader-facing Page.
+against each selected Idea's final handoff, its sole I3 selection receipt, and
+the reciprocal Story binding. The Page summary row is a projection of those
+records, not the place where another selection is minted. Paper Page workflow
+receipts record projection and review only; the I3 receipt remains in the
+Ideation unit.
 
 G0 is not the Page CHECK gate. A current Page version may be accepted while no
 Idea is selected, and a previously selected Story may remain valid while a
@@ -322,31 +435,36 @@ later Page version adds, defers, or eliminates other candidates.
 ## ✅ Closing checks
 
 - Division 1 names one direction and what would make an idea worth a paper.
+- Division 2 projects a Discovery Landscape from accepted syntheses and direct
+  evidence ids without copying their Results.
+- Division 3 projects the evidence-bound Opportunity Map and affected Idea ids.
 - The Page Face contains Opening, Outline, Content, and Aims; Outline and
   Content are the primary working surfaces.
-- Page Shape approval, Page CHECK acceptance, and per-Idea G0 selection remain
-  three distinct human receipts; none is inferred from another.
+- Page Shape approval, Page CHECK acceptance, and the sole I3 selection receipt
+  remain distinct; Paper creates no second G0 selection receipt.
+- The Page names the current `paper-ideation-sync` path and revision; a stale or
+  blocked sync is visible and no surrogate Page or projection receipt exists.
 - The number of Idea divisions is dynamic; every admitted Idea Card has one
   retained division, filled or honestly `⬜`.
-- Every Eliminated Ideas row states whether it is an admitted `iNN` card or a
+- Every disposition row states whether it is an admitted `iNN` card or a
   rejected pre-admission framing; only admitted cards owe retained divisions.
 - Every row in Ideas (ranked) has no blank cell; every verdict is from the
-  fixed vocabulary; every batch names its source IDEA_REPORT, or the page
-  states why none exists.
-- Comparison order is not treated as selection; only the human verdict and
-  `went to` authorize a Story.
-- Every idea division carries the report's fields, filled or honestly `⬜`.
+  fixed vocabulary and comes from I3 or remains open; current work names its
+  sync packet, while a legacy source is explicitly labeled legacy.
+- Comparison order and the canonical portfolio recommendation are not treated
+  as selection; only the I3 receipt and `went to` authorize a Story.
+- Every Idea division carries the card/test fields, filled or honestly `⬜`.
 - Every Core Claims / Novelty Check line traces to a per-claim Run/Result; every
   cited prior work is verified or marked `[UNVERIFIED]`.
-- Every Pilot result binds a Result path or an explicit waiver.
+- Every Pilot Result binds a Task Result path or an explicit waiver.
 - Every admitted Idea has a broad Venue screen; every selected Idea has a
   complete deep fit, current Venue contract, and human-selected target/category.
-- Every non-open human verdict carries a person's tick and date.
+- Every non-open human verdict projects the sole receipt's person and date.
 - Every `went to` names a distinct Story that binds this page back.
 - Historical SD-named instances preserve their paths unless an explicit
   migration is authorized; canonical roles and two-way bindings remain clear.
-- Eliminated Ideas holds every idea ever dropped, each with its reason;
-  nothing raised has vanished.
+- The disposition division holds every Idea ever merged, deferred, or dropped,
+  each with its reason; nothing raised has vanished.
 
 This variant owns no scripts. The generic Page template and workflow own the
 frame, plugins, receipts, and lifecycle.

@@ -1,4 +1,4 @@
-# Short purpose title
+# Short objective purpose title
 state: 🔴 OPEN
 owner: CC
 method: <optional one-line method; delete when unused>
@@ -15,6 +15,11 @@ Create an S Page as S-<Family>-<unit>-<slug>.md, preferably with stage.py.
 
 Keep the current Page Face:
   Opening → generated Outline → Content → Aims
+
+Title rule: use a short, objective label naming the Page's subject and the
+work or deliverable it owns. Keep it to three to five visible words. Do not
+encode a joke, marketing phrase, surprise, accusation, or unqualified finding
+in the title.
 
 Do not author ## Outline or ## Diagram. The current versioned plan under
 outline/ produces the Outline projection. Drawings live in studio/draw/.

@@ -142,6 +142,21 @@ class PageLifecycleAuditTest(unittest.TestCase):
     def codes(self, value):
         return {finding.code for finding in audit_run(value)}
 
+    def test_approved_evidence_fold_can_refresh_content(self):
+        fold = producer(1, "EVIDENCE", "v1.0", "v1.0.1", "CONTENT")
+        fold.update(cycle="EMBED", next_cycle="WRITE",
+                    evidence=["approved shape v1.0", "fold v1.0.1 inherits v1.0"])
+        write = producer(2, "CONTENT", "v1.0.1", "written", "CHECK")
+        write.update(cycle="WRITE", next_cycle="CHECK")
+        self.assertClean(run([fold, write, check(3, "written")]))
+
+    def test_land_cannot_skip_embed_to_write_content(self):
+        land = producer(1, "EVIDENCE", "v1", "v1", "CONTENT")
+        land.update(cycle="LAND", next_cycle="WRITE")
+        trace = run([land, producer(2, "CONTENT", "v1", "v2", "CHECK"),
+                     check(3, "v2")])
+        self.assertIn("evidence-content-without-embed", self.codes(trace))
+
     def test_current_full_page_route_closes(self):
         value = run(
             [

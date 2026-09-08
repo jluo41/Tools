@@ -40,14 +40,24 @@ the next outline version. CONTENT may then use it in prose.
 
 ## 📦 Result shape
 
-The local Result lives under the Page Folder's paired `results/` tree, never in
-a separate value plugin:
+The local Result lives at the governed Result address selected by its Folder
+owner (`results/` for a Folder-local dialect, or the resolved external Result
+store for a Job-backed Task), never in a separate value plugin. The example
+below extends the common `result.yaml` envelope in `../item-table.md`:
 
 ```yaml
 item: E01-VALUE-adjusted-effect
-run: pj01t01r01
+run: b03j01t02r01
 type: VALUE
 status: complete
+input:
+  path: <resolved-result>/input.yaml
+  sha256: <64-hex>
+supporting_results:
+  - run: b01j02t03r04
+    result: <supporting-result>/result.yaml
+    sha256: <64-hex>
+local_sources: []
 payload:
   estimate: 9.34
   interval: [7.81, 10.87]
@@ -61,6 +71,7 @@ provenance:
       sha256: <64-hex>
   local_input: results/r01_.../input.yaml#<sha256>
 acceptance:
+  passed: true
   recomputed: true
   aggregate_only: true
   checks: [estimate-present, interval-ordered, unit-present, population-present]
@@ -76,7 +87,7 @@ Evidence Workspace derives one row per VALUE item:
 
 ```text
 Item                          Supporting Runs   Local Run       State    Result
-E01-VALUE-adjusted-effect     1 Execution       pj01t01r01      ready    9.34 [7.81, 10.87] MME/visit
+E01-VALUE-adjusted-effect     1 Execution       b03j01t02r01   ready    9.34 [7.81, 10.87] MME/visit
 ```
 
 Clicking the item exposes the full Expected/Acceptance contract, Supporting

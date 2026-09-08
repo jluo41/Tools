@@ -7,7 +7,7 @@ description: >-
   compiled next. Trigger: paper journey, workflow, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "1.1.2"
+  version: "1.1.6"
   last_updated: "2026-09-08"
 ---
 
@@ -44,8 +44,8 @@ position                    authority / home                 produces
 ──────────────────────────────────────────────────────────────────────────────
 P0 Ideation                 Story00-ideation in A1-Story     ranked candidate
                                                               directions, venue fit,
-                                                              and a human-selected
-                                                              Story + target
+                                                              and an I3-authorized
+                                                              Story + target projection
 P1 Story                    Story<Letter>-<desk>-<idea-slug> in A1-Story       prospective paper:
                                                               Seed + RQs + evidence
                                                               basis + Discovery/Task
@@ -88,7 +88,7 @@ all intended Sections are CHECK-closed is explicitly a DRAFT.
 
 | Artifact | Owns | Does not own |
 |---|---|---|
-| Ideation Page | candidate directions, comparisons, venue-fit projection, human target decision, handoff to one Story | evidence execution, binding desk rules, or manuscript prose |
+| Ideation Page | candidate projections, comparisons, venue-fit projection, projection of the final I3 handoff, and its reciprocal route to one Story | owning the I3 decision, minting another selection, evidence execution, binding desk rules, or manuscript prose |
 | Venue Page | one target/category's typed and versioned external-desk contract | choosing the target or ranking Ideas |
 | Story Page | Seed C1–C5, Discovery Roadmap C6, Task Roadmap C7, Section Narrative C8, selected telling and compile projection | executing Runs, replacing work records, or storing manuscript Section prose |
 | Discovery block | external literature/source inquiry and its Results | changing the Story's claim state |
@@ -112,12 +112,22 @@ Every gate is testable by reading named files and ends in a human receipt.
 
 ```text
 G0  Ideation → Story
-    The selected idea has claim-level novelty/feasibility bounds, a pilot or
-    explicit waiver, complete deep fit against a current Venue contract, a
-    human PROCEED or risk-accepted PROCEED WITH CAUTION plus intended
-    target/category decision, and reciprocal links
-    among Story00-ideation, Story<Letter>-<desk>-<idea-slug>, and the named Venue contract.
-    The receipt records the canonical Story<Letter>-<desk>-<idea-slug> role and exact path.
+    Read the final handoff at handoff/paper-ideation.yaml. It must point to
+    the latest projection/paper-ideation-sync.yaml, the sole I3 selection
+    receipt at workflow/selection.yaml, the selected Idea, its intended
+    target/category, and the exact Story path. Validate the claim-level
+    novelty/feasibility bounds, pilot or explicit waiver, complete deep fit
+    against the current Venue contract, and the human PROCEED or
+    risk-accepted PROCEED WITH CAUTION recorded by I3.
+    Validate the reciprocal binding from Story<Letter>-<desk>-<idea-slug>
+    back to Story00-ideation, the final handoff, the sole I3 receipt, and the
+    named Venue contract. A Paper-side G0 record is validation/projection only:
+    it points to those records and never creates, requests, or overwrites a
+    second selection receipt. Page Shape approval and Page CHECK acceptance
+    remain separate Page decisions and cannot substitute for I3 or G0.
+    If `paper_page.state: blocked`, preserve the canonical Page path and last
+    actual revision, report the named gap, and create no surrogate Page,
+    projection receipt, or selection receipt.
 
 G1  Story → Evidence/Execution
     The reviewed Story plan names Seed identity and RQs, C5 evidence basis and
@@ -189,11 +199,26 @@ evidence remain with the owners. A
 Section's Page workflow still uses the common Evidence graph:
 `Supporting Run → Local Input → Local Run → typed Result`.
 
+### 🪪 Paper Run naming
+
+The Paper-specific Run dialect is defined in
+[`../haipipe-paper/ref/run-naming.md`](../haipipe-paper/ref/run-naming.md).
+Use `pm-<page>-<target>-rNN`, `pa-<page>-<target>-rNN`, or
+`pr-<round>-<target>-rNN` for new Paper-local Evidence/Display Runs. The
+Section's Page-local Division Writing Run remains
+`rNN_page-division-writing_cNN`; its owning semantic Page supplies the Main or
+Appendix meaning. `Ba`/`Bb`/`Bc` are shelf tokens, and `RD<NN>` is the Round
+Page token, not a Run id. Existing `pjNNtNNrNN` files are read-only historical
+Runs and are never bulk-renamed.
+
 ## 🧾 Receipts and phase reading
 
-The existing Story `outline/` log and shared `workflow/` receipts record G0,
-G1, G2 interpretations and G3 Section releases. These are authoring/execution
-records, not additional Story Content divisions. The
+The existing Story `outline/` log and shared `workflow/` receipts may record
+G0, G1, G2 interpretations and G3 Section releases. The Paper-side G0 record,
+when present, is only a validation/projection pointer to the final Ideation
+handoff and sole I3 selection receipt; it does not repeat the I3 verdict,
+target, or selection. These are authoring/execution records, not additional
+Story Content divisions. The
 Section Page records its own Page lifecycle and CHECK. Compile writes its
 build manifest and render receipt. The Round records G5 and the frozen build
 hashes. There is no separate child control-page receipt store.
@@ -221,10 +246,15 @@ not resolve retired child Page names or hidden compatibility paths.
 - The active journey names only Ideation, Story, Evidence/Execution, Section,
   Compile, and Round.
 - Each selected idea has one Story blueprint whose Content follows the Story contract.
-- Every Story admitted through G0 binds one human-selected target/category and
-  the current Venue contract that supported its deep fit.
-- Ideation owns the intended target decision at G0; Story confirms it as the
+- Every Story admitted through G0 traces its target/category and Venue contract
+  to the final handoff and sole I3 selection receipt, and binds back to them.
+- The I3 semantic owner records the intended target decision; the Paper
+  Ideation Page projects it, G0 validates it, and Story confirms it as the
   operational target and owns any later human-approved rebind.
+- Page Shape approval, Page CHECK acceptance, and the I3 selection receipt are
+  distinct decisions; the Paper workflow creates no second selection receipt.
+- When `paper_page.state: blocked`, the canonical Page path and last actual
+  revision remain visible and no surrogate Page or projection receipt is made.
 - Every central evidence gap has a substantive C6/C7 research need or an
   explicit scope decision; operations do not displace that explanation.
 - Story CHECK evaluates the blueprint's clarity and coverage, not completion

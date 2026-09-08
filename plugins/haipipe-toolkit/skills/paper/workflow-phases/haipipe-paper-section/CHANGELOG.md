@@ -1,3 +1,8 @@
+## 0.9.1 · 2026-09-08
+
+- Add the Paper Section Run profile: semantic `pm-`/`pa-` Evidence/Display
+  ids, shared Page-local Division Writing ids, and read-only `pj…` history.
+
 ## 0.9.0 · 260907
 
 - Journey position P4 → P3 and gates renumbered (G3 releases a row, G4 marks

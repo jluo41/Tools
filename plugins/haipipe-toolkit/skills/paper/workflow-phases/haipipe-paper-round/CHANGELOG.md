@@ -1,3 +1,29 @@
+## 0.7.0 · 2026-09-08
+
+- Round is explicitly a Page-level feedback control surface, not a Run or an
+  Evidence/Execution owner; new evidence routes to Story C5/C6/C7 and the
+  external Discovery/Task/Run owners.
+- `RD<NN>` remains the canonical, paper-wide unique Round token. The new Page
+  stem is `RD<NN>-<desk>-<event>-<YYYYMMDD>`, aligned with the desk's Main and
+  Appendix naming style; `R` and `RR` are not aliases.
+- The Page surface is fixed as `Opening → Outline → Content → Aims`, with the
+  seven Round roles inside Content. `Discussion`, `Files`, `States`, and `Log`
+  are outline records, not on-page sections.
+- An external response package has one immutable `response/` home beside the
+  manuscript snapshots; internal Rounds record `no external response required`
+  and omit that directory.
+- “Routed exactly once” now means one atomic ledger row and one route decision;
+  one decision may name a primary Page plus linked Story updates. `applied` is
+  non-terminal until the response is `answered`, and G5 records approver
+  identity and timestamp.
+- `sent/` and `released/` freeze the complete declared delivery output set,
+  including supplements, manifest, and display register; they are immutable.
+
+## 0.6.1 · 2026-09-08
+
+- Keep `RD<NN>` as the canonical Round Page token. The earlier Round-local
+  `pr-…` suggestion is superseded by 0.7.0: Round does not mint Runs.
+
 ## 0.6.0 · 260907
 
 - Journey position P5 → P4, close gate G7 → G5 (haipipe-paper-workflow 1.0.0).

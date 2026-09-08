@@ -52,6 +52,12 @@ Evidence Workspace. Supporting Run Results and the single Page-local Run
 provide the material; no `pagex/`, `probe/`, or standalone value lane is a
 current write target.
 
+Paper-local Evidence/Display Run ids are governed by
+`haipipe-paper/ref/run-naming.md`: `pm-…` (Main), `pa-…` (Appendix), and
+`pr-…` (Round). Page-local Division Writing keeps
+`rNN_page-division-writing_cNN`; existing `pjNNtNNrNN` files are historical
+and read-only.
+
 There is no View layer and no Paper-level Literature, Value, or Display Page
 Type or plugin. CITE, VALUE, and DISPLAY are typed Results presented in the
 Outline Evidence Workspace of the Page that consumes them.

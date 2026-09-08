@@ -7,7 +7,7 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "1.0.1"
+  version: "1.0.2"
   last_updated: "2026-09-08"
   summary: "Story absorbs Paper planning; Discovery/Task/Run execute outside the Paper Page graph; Compile remains a verb."
 ---
@@ -36,6 +36,7 @@ haipipe-page
     haipipe-paper-section · haipipe-paper-round, or haipipe-paper-venue
   → phase references / the Story's Section row and style policy
   → haipipe-run + selected workers, only where Runs exist
+  → paper/haipipe-paper/ref/run-naming.md when a Paper-local Run is planned
 ```
 
 For CONTEXT, OUTLINE, and EVIDENCE, the exact material contracts are
@@ -133,7 +134,7 @@ Evidence Items and the same Supporting-to-local Run graph.
 │   ├── <stem>-outline-vN.md   Bullet Workspace authority
 │   ├── <stem>-evidence-items.md  authored item/Run graph
 │   └── evidence/              Evidence Workspace material by VALUE/CITE/DISPLAY
-├── runs/                      Page-local L4 Run Tickets
+├── runs/                      Page-local or Paper-local L4 Run Tickets
 ├── results/                   paired local Results/runtime receipts
 └── delivery/                  generated Page-level TeX/PDF/DOCX when requested
 ```
@@ -142,6 +143,12 @@ Evidence Items and the same Supporting-to-local Run graph.
 VALUE, CITE, and DISPLAY are Result types inside Evidence Workspace, not
 separate plugins. Exact numbers and citation metadata live in accepted local
 Results; the Page cites their `E<NN>-<TYPE>-<slug>` and full Run/Result ids.
+
+Paper-local Evidence/Display Runs use the semantic lane-aware ids in
+[`ref/run-naming.md`](ref/run-naming.md): `pm-…` for Main, `pa-…` for
+Appendix, and `pr-…` for Round. Page-local Content Runs keep the shared
+`rNN_page-division-writing_cNN` grammar. The former `pjNNtNNrNN` form remains
+read-only history; Paper work never silently renames it.
 
 One Page may own many DISPLAY items. One local DISPLAY Result may contain
 several artifacts or panels, but it has one message, one frozen Local Input,
@@ -325,9 +332,10 @@ letter order across the board, ONE LETTER PER GROUP (JL 260831 "Ba to be Main,
 Bb to be Appendix, Bc to be Round"): the first desk takes `Ba-<desk>-Main` for
 the named Main units, `Bb-<desk>-Appendix` for its named Appendix units, and
 `Bc-<desk>-Round` for the `RD` pages; a second desk continues at the next free
-letter (`Bd-<desk2>-Main`, …). Section Pages use full semantic IDs:
-`S-<desk>-Main-<kind>` and `S-<desk>-Appendix-<slug>`. Thus a Round routes to
-`S-MISQ-Main-Results`, not to an opaque `SM05`; the selected Story C8
+letter (`Bd-<desk2>-Main`, …). Section Pages use full semantic IDs that carry the section index (JL 260908):
+`S-<desk>-Main-<N>-<Title>` and `S-<desk>-Appendix-<L>-<Title>`, N and L from the
+page H1; an unnumbered page keeps title only (`S-MISQ-Main-Abstract`). Thus a Round
+routes to `S-MISQ-Main-5-Results`, not to an opaque `SM05`; the selected Story C8
 compile-order block supplies reader order; `board.md` indexes the Pages. The
 `<desk>` name keeps its own capitals (`Ba-MISQ-Main`); only
 the group letter is lowercase.

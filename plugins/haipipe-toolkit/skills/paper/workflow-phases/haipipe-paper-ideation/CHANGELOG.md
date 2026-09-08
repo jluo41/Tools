@@ -1,3 +1,24 @@
+## 1.0.0 · 260908
+
+- Made `haipipe-ideation` the sole semantic owner of Direction/Idea Cards,
+  Generate/Test state, the canonical machine portfolio recommendation, and the
+  I3 human selection receipt.
+- Added the I1/I2 `paper-ideation-sync` adapter and final I3
+  `paper-ideation-handoff` adapter. One evergreen Story00 Page now refreshes by
+  sync revision and may project verdict, target, and `went to` only from the
+  final handoff's sole `workflow/selection.yaml`.
+- Expanded Content with reader-facing Discovery Landscape and Opportunity Map
+  divisions, plus an owner-routed Next Evidence Queue. These summarize accepted
+  evidence and interpretations by pointer without copying Discovery or Task
+  Results.
+- Removed the duplicate Paper-side G0 selection receipt and the parallel
+  HIGH/MEDIUM/LOW novelty scale. Page Shape approval and CHECK acceptance remain
+  Page decisions; G0 validates the independent I3 receipt and reciprocal Story
+  binding.
+- Defined output-fenced behavior: retain the canonical Page path and last actual
+  revision, report the blocked sync, and never mint a surrogate Page or second
+  projection receipt.
+
 ## 0.9.1 · 260908
 - `went to` names a Story by its full id `Story<Letter>-<desk>-<idea-slug>` (JL 260908); tree and examples updated, `Story-A`/`Story-B` bare letters removed.
 

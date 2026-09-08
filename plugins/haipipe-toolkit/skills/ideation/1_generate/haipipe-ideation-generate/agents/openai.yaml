@@ -1,0 +1,3 @@
+interface:
+  display_name: "HAI Idea Generate"
+  short_description: "Generate grounded, falsifiable research candidates"

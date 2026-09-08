@@ -13,8 +13,8 @@ description: >-
   Execute and closure. Trigger: Runs plugin, Runs tab, run overview, run status,
   run results, show the runs, /haipipe-plugin-runs.
 metadata:
-  version: "0.9.7"
-  last_updated: "2026-09-04"
+  version: "0.9.8"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -83,7 +83,7 @@ results/          paired generated page-local Results only
 
 The `🧭 Outline → Evidence Workspace` explains why an Evidence exists and
 groups its related Run cards by Evidence. Its internal `Runs` lens includes
-every mapped Supporting and Paper-local route, including planned routes, and
+every mapped Supporting and Page-local route, including planned routes, and
 reports mappings separately from unique Run identities. The top-level `⚙️ Runs`
 plugin lists only a
 physical Run found in the page's own
@@ -96,13 +96,21 @@ An empty local inventory is still a valid presenter state: render one compact
 “No local Run allocated” message. Do not hide the tab and do not infer that an
 external Supporting Run is local.
 
-Accordingly, a Run token in the Outline first deep-links to the owning
-Evidence Item card in the Outline workspace. From there, allocated Run,
+An Outline Run token opens `Outline → Evidence Workspace → Runs` at the
+exact mapped Run card, including when that Run is external or still planned.
+Its single URL carries `lens=workspace&seg=runs`, the owning Evidence Item
+`focus=run-<item-id>`, and the exact `run` address. An Evidence chip instead
+uses `seg=items` to focus its item card; a Feedback chip uses `lens=fb` and
+`focus=feedback-<record-id>` to open the exact Context record.
+Allocated Run,
 Result, and Runtime paths are displayed as selectable repository-relative text;
 they are not raw browser links because scripts and receipts may download rather
 than open. That evidence-side detail separates Purpose/Plan, Availability, and
 Next action; it does not misuse `new`, `rerun`, `run only`, and `ready` as one
-lifecycle status. Do not send an unallocated or external
+lifecycle status. Normal chip navigation opens no popover. If an unresolved
+address has no matching Runs card, any fallback inspector must explicitly
+report that fact and remain closable within the mobile viewport.
+Do not send an unallocated or external
 route to this local Runs overview merely because its text resembles a Run id.
 
 `scripts/`, config, and notebooks are optional projections. A Run may instead

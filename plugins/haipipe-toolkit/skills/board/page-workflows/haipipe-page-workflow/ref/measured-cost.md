@@ -1,8 +1,8 @@
-# What each phase actually costs, measured
+# Historical measurements · legacy compatibility only
 
-> Measured on the 260819-20 phase names; PROBE retired 260901 into SURVEY (the
-> item table, cheap) and LAND (the runs), so its rows are the upper bound of
-> what SURVEY+LAND cost today.
+> Read-only measurements from 260819-20. Retired phase names below are not
+> current dispatch options. Use `workflow-table.md` for today's phase grammar;
+> these past observations are neither a current benchmark nor an upper bound.
 
 Born 260820 when JL asked "could you document for each of them, how long it
 takes for us?", after asking earlier the same day "why the evidence takes such

@@ -1,5 +1,8 @@
 """Evidence run bindings are pointers, never copied run artifacts."""
 import importlib.util
+import re
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -32,6 +35,64 @@ page: S-Test
 
 
 class EvidenceRunBindingsTest(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("node"), "Node is needed to exercise browser routing")
+    def test_local_task_run_keeps_its_block_and_resolves_its_layer_from_the_card(self):
+        with tempfile.TemporaryDirectory() as temp:
+            page = Path(temp) / "Q1.md"
+            page.write_text("# Q1\n", encoding="utf-8")
+            rendered = render(page, "/board.md", "Q1.md")
+        routing = re.search(
+            r"  function runKey\(.*?(?=  if \(requestedFocus\))", rendered, re.S
+        ).group()
+        harness = r"""
+const assert = require('node:assert/strict');
+let focused = '';
+function card(address, layer) {
+  return {
+    getAttribute: name => ({'data-run-address': address, 'data-run-kind': layer,
+                            'data-evidence-id': 'E01-VALUE-result'})[name],
+    classList: {add() {}, remove() {}}, setAttribute() {}, scrollIntoView() {},
+    focus() { focused = address; }
+  };
+}
+const cards = [card('b01.j01.t01.r01', 'supporting'),
+               card('b02.j01.t01.r01', 'local'), card('b03.j01.t01.r01', 'local')];
+const document = {
+  querySelector: () => ({}),
+  querySelectorAll: selector => selector.includes('related-run-card') ? cards : []
+};
+function show() {}
+""" + routing + r"""
+assert.equal(focusRelatedRun('b02j01t01r01', null, 'E01-VALUE-result'), true);
+assert.equal(focused, 'b02.j01.t01.r01');
+assert.equal(focusRelatedRun('b03j01t01r01', true, 'E01-VALUE-result'), true);
+assert.equal(focused, 'b03.j01.t01.r01');
+assert.equal(focusRelatedRun('b04j01t01r01', null, 'E01-VALUE-result'), false);
+assert.equal(focusRelatedRun('b01j01t01r01', null, 'E01-VALUE-result'), true);
+assert.equal(focused, 'b01.j01.t01.r01');
+"""
+        subprocess.run([shutil.which("node"), "-e", harness], check=True,
+                       capture_output=True, text=True)
+
+    def test_duplicate_evidence_identity_has_one_anchor_and_visible_conflict(self):
+        first = """### E01-VALUE-result · C1.P1.B1 · first target
+- **Type**: VALUE
+- **Status**: ready
+- **Expected**: estimate
+- **Supporting Runs**: Execution · reuse · b01j01t01r01
+"""
+        second = first.replace("C1.P1.B1", "C1.P1.B2").replace("first target", "second target")
+        html = _evidence_cards(first + "\n" + second)
+        self.assertEqual(html.count('id="run-E01-VALUE-result"'), 1)
+        self.assertIn("Duplicate identity", html)
+        self.assertIn("conflicting records", html)
+        self.assertIn("C1.P1.B1", html)
+        self.assertIn("C1.P1.B2", html)
+        self.assertNotIn('class="evpill ready"', html)
+        runs, mappings = _related_run_cards(first + "\n" + second, "")
+        self.assertEqual(mappings, 1)
+        self.assertEqual(runs.count("class=related-run-card"), 1)
+
     def test_declared_versioned_historical_sidecar_is_preferred_and_partial_is_usable(self):
         with tempfile.TemporaryDirectory() as temp:
             run = Path(temp) / "run_model"

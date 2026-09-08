@@ -279,7 +279,14 @@ class WordTitleTest(unittest.TestCase):
         units = Fake()._page_units(self.page)
         self.assertEqual(len(units), 1)
         self.assertEqual(units[0][0], "QV2-Display1")
-        self.assertEqual(units[0][1]["aliases"], ["QV2-Display1", "Display1"])
+        self.assertEqual(units[0][1]["aliases"],
+                         ["QV2-Display1", "Display1", r"\ref{tab:qv2}"])
+        # Manuscript references must locate the same winning unit without
+        # requiring a Board-only Display token in reader prose.
+        mention = Fake()._first_unit_mention(
+            r"See Table \ref{tab:qv2} for the result.", units[0][1])
+        self.assertIsNotNone(mention)
+        self.assertEqual(mention.group(), r"\ref{tab:qv2}")
 
     def test_display_mentions_are_ranked_by_source_order(self):
         body = (

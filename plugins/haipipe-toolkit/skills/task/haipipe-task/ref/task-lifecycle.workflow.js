@@ -10,7 +10,7 @@ export const meta = {
 }
 
 const parsed = typeof args === 'string' ? JSON.parse(args) : (args || {})
-const taskFolder = parsed.task_folder ?? parsed.job // `job` is flat implicit-Task compatibility only
+const taskFolder = parsed.task_folder
 if (!taskFolder) { log('task-lifecycle: no task_folder in args'); return { status: 'blocked', reason: 'missing task_folder' } }
 const hintType = parsed.type || null
 const stages = parsed.stages || ['plan', 'build', 'execute', 'report']
@@ -20,6 +20,11 @@ const runPlan = stages.includes('plan')
 const runBuild = stages.includes('build')
 const runExecute = stages.includes('execute') && autoExecute
 const runReport = stages.includes('report')
+const shapeRule =
+  `\n\nTASK FOLDER SHAPE: input must be tNN_<task>/ with same-stem Page, ` +
+  `scripts/config/<run>.yaml, and runs/<run>.sh. Generated Results resolve at the parent Job's ` +
+  `results/<task>/<run>/ and notebooks/<task>/<run>.ipynb. Reject any input that does not ` +
+  `match the bNN/jNN/tNN hierarchy. See haipipe-task/ref/hierarchy.md.`
 log(`task-lifecycle: ${taskFolder}, type=${hintType || 'auto'}, stages=[${stages}], autoExecute=${autoExecute}, maxRetries=${maxRetries}`)
 
 const CREATOR_RESULT = {
@@ -148,22 +153,13 @@ phase('Build')
 for (let attempt = 0; attempt <= maxRetries; attempt++) {
   const retryNote = attempt > 0 ? `\n\nATTEMPT ${attempt + 1}. Reviewer feedback from previous attempt:\n${buildFeedback}\nAddress these specific issues.` : ''
 
-  // The canonical target is one tNN Task Folder. A pre-260829 flat Job may
-// enter only as an implicit-Task compatibility target.
-const shapeRule =
-  `\n\nTASK FOLDER SHAPE: canonical input is tNN_<task>/ with same-stem Page, ` +
-  `scripts/config/<run>.yaml, and runs/<run>.sh. Generated Results resolve at the parent Job's ` +
-  `results/<task>/<run>/ and notebooks/<task>/<run>.ipynb. A flat legacy Job may be read as one ` +
-  `implicit Task with configs/<run>.yaml and runs/<run>.sh; never emit that flat shape for new work. ` +
-  `See haipipe-task/ref/hierarchy.md "Two job shapes".`
-
 const templateRule = isTemplateBased
     ? `\n\nIMPORTANT: This is a TEMPLATE-BASED task (type=${detectedType}).` +
       `\nThe main .py script is an EXACT COPY of a template from code/scripts/haistepnb/.` +
       `\nDo NOT modify, rename, or recreate the .py file.` +
       `\nDo NOT create a new .py file — one already exists.` +
       `\nCONFIG is overridden at runtime by papermill, NOT by editing the file.` +
-      `\nOnly verify/fix the runname-spine structure (config · ticket · results · notebooks) in the job's own shape.`
+      `\nOnly verify/fix the Task Folder run spine: config · Ticket · Result · notebook.`
     : ''
 
   buildResult = await agent(
@@ -173,8 +169,8 @@ const templateRule = isTemplateBased
     (isTemplateBased
       ? `Verify the Task Folder structure (do NOT touch the .py script):\n` +
         `- Verify the main .py exists and is an exact template copy (DO NOT modify it)\n` +
-        `- Create missing config (<run>.yaml) and ticket (<run>.sh) in the job's shape if needed\n` +
-        `- Create missing notebooks/, results/ dirs\n` +
+        `- Create missing scripts/config/<run>.yaml and runs/<run>.sh if needed\n` +
+        `- Resolve notebooks/ and results/ beneath the parent Job's OUTPUT_ROOT\n` +
         `- Verify the run config has all required fields for this task type\n`
       : `Fix/scaffold the Task Folder structure:\n` +
         `- Add # %% cell markers at logical phase boundaries\n` +
@@ -200,13 +196,13 @@ const templateRule = isTemplateBased
     `Review the Task Folder:\n` +
     (isTemplateBased
       ? `1. Verify the .py is an unmodified template copy (DO NOT suggest edits to template code)\n` +
-        `2. Check runname-spine compliance (config + ticket + results + notebooks, in the job's shape)\n` +
+        `2. Check the Task Folder run spine (config + Ticket + Result + notebook)\n` +
         `3. Check that the run config has all required fields\n` +
         `4. Check that the ticket passes CONFIG correctly via papermill\n`
       : `1. Read the main .py script and its Intent docstring\n` +
         `2. Check for silent semantic bugs (scope, masking, metric units, split leaking)\n` +
-        `3. Check runname-spine compliance (config + ticket + results + notebooks, in the job's shape)\n` +
-        `4. Check that configs/<run>.yaml has all constants from the script\n`
+        `3. Check the Task Folder run spine (config + Ticket + Result + notebook)\n` +
+        `4. Check that scripts/config/<run>.yaml has all constants from the script\n`
     ) +
     `\nWrite CODE_REVIEW.md in the Task Folder.\n` +
     `Return verdict: pass, warn, revise (with feedback for creator), or fail (stop).`,
@@ -233,7 +229,7 @@ let runResult = null
 let executeReview = null
 
 if (!runExecute) {
-  log('Execute: skipped — run manually: bash runs/<RUN>.sh (nested: <task>/runs/<RUN>.sh)')
+  log('Execute: skipped — run manually: bash <task>/runs/<RUN>.sh')
   runResult = { status: 'skipped', note: 'run manually or set autoExecute=true' }
 } else {
   phase('Execute')

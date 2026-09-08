@@ -1,7 +1,7 @@
 # Task-tree checklist · the definition of done for a bNN/jNN/tNN/rNN tree
 
-JL 260904, after a restructure shipped with no `runs/` in 19 tasks, tickets off
-the `rNN_` grammar, results written inside tasks and `configs/` at task roots:
+JL 260904, after a restructure shipped with no `runs/` in 19 Tasks, Tickets off
+the `rNN_` grammar, Results written inside Tasks and config outside `scripts/`:
 "you didn't follow the /haipipe-task; we need to give it a checklist". This is
 that checklist. Every line is one thing a stranger can verify from disk, its
 finding code, and the command that checks it. A tree is DONE only when every
@@ -31,12 +31,14 @@ NAME · every folder passes the stranger test
 - [ ] N5  no name made of shape words only (data, table, pipeline, pool, rank, …)
 - [ ] —   Task names are unique within one Job; cross-Job repeats use full b/j/t addresses and relative paths
 - [ ] N9  every ticket in `runs/` is `rNN_<stem>.sh|.ps1`; the stem does not repeat `run_`
+- [ ] N10 each `rNN` index identifies exactly one Run stem inside its Task
 
 SHAPE · one grammar at every level
 - [ ] S18 every canonical b/j/t Block has `board.md` with exact `board-kind: task-block`
+- [ ] S20 no Block, Job, or Task root contains `README.md`; use Board, Page, or `diagram/`
 - [ ] S5  every task has `tNN_<task>.md` (the page a reader opens)
 - [ ] S10 a task's own code is `scripts/`; a job's shared code is `src/`; never the other way
-- [ ] S14 config sits INSIDE `scripts/config/`; no `configs/` or `config/` at the task root, no `"configs"` in code
+- [ ] S14 config sits inside `scripts/config/`; no config lane exists at the Task root
 - [ ] S11 a `.sh` that calls other tickets is a batcher: it lives in `sbatch/`, never in `runs/`
 - [ ] R02 every task has `runs/` with at least one `rNN_` ticket, config-less scripts included
 - [ ] S17 every job has `src/`, kept visible by a `.gitkeep` that names the slot; `results/` is never pre-created

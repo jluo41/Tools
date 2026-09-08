@@ -1,17 +1,17 @@
 ---
 name: haipipe-ideation
 description: >-
-  Semantic ideation layer that turns internal Task evidence and external
-  Discovery Results into grounded Direction and Idea Cards, pressure-tests
-  claims and journal fit, records a human idea-and-target selection, and
-  prepares a bounded handoff to haipipe-paper-ideation. Use for
-  evidence-grounded research directions, novelty review, and idea-to-venue
-  portfolios; use haipipe-discovery for external search/read/synthesis,
-  haipipe-paper-venue for one target's verified contract, and
-  haipipe-paper-ideation for the paper's P0 page.
+  One door over the three-stage Ideation family: 1 Generate evidence-grounded
+  candidates, 2 Test novelty, feasibility, journal fit, and Nature-level
+  editorial shape, then 3 Select idea-and-target pairs through a human gate
+  and hand them to Paper P0. Sync the evolving evidence landscape and
+  candidate portfolio to the same evergreen Paper P0 page from Stage 1 onward.
+  Use for research directions, idea generation, novelty checks, idea pressure
+  tests, journal targeting, Nature-paper fit, and idea portfolios; use
+  haipipe-discovery for external source execution.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.2"
+  version: "0.3.1"
   last_updated: "2026-09-08"
   folder_owner: canonical
   primary_face: direction
@@ -26,18 +26,58 @@ the Paper journey:
 
 ```text
 Task Run/Results ──┐
-                   ├─ evidence bundle → Direction Card → Idea Cards
-Discovery Results ┘                         │
-                                            ├─ novelty + feasibility
-                                            ├─ Idea × Venue Fit Cards
-                                            ├─ human idea + target selection
-                                            └─ bounded handoff → Paper P0
+                   ├─ 1 GENERATE ──▶ Direction + admitted Idea Cards
+Discovery Results ┘                            │
+                                               ▼
+                         sync ─────▶ Paper P0 cockpit
+                                               │
+                                               ▼
+                                      2 TEST each Idea
+                                  novelty · feasibility · journal fit
+                                               │
+                         sync ─────▶ same Paper P0 cockpit
+                                               │
+                                               ▼
+                                      3 SELECT portfolio
+                                  human idea + target decision
+                                               │
+                                               ▼
+                                      bounded handoff → Paper P0
 ```
 
-It owns the bundle, semantic synthesis, card vocabulary, comparative venue-fit
-reading, selection record, and Paper handoff. It does not own external source
-retrieval, internal computation, a binding venue contract, paper prose, a
-Story, or citation authority.
+It owns the three-stage state machine, bundle, semantic synthesis, card
+vocabulary, comparative venue-fit reading, Paper sync packet, sole human
+selection record, and final Paper handoff. Its numbered children own the craft
+inside each stage. It does not own external source retrieval, internal
+computation, a binding venue contract, Paper Page prose, a Story, or citation
+authority.
+
+## Numbered capability families
+
+The directory numbers follow the same law as Discovery's
+`1_search/2_review/3_synthesize`: they are capability groups, not BJTR levels,
+Run ids, or extra folders in a project artifact.
+
+```text
+ideation/
+├── haipipe-ideation/                         public door + shared contracts
+├── 1_generate/
+│   └── haipipe-ideation-generate/            evidence → diverse admitted cards
+├── 2_test/
+│   ├── haipipe-ideation-test/                stage router + test matrix
+│   ├── haipipe-novelty-check/                claim × closest-work verification
+│   ├── haipipe-idea-pressure-test/           falsifiability + feasibility
+│   ├── haipipe-journal-fit/                  broad screen + deep venue fit
+│   └── haipipe-nature-paper-review/          Nature-family editorial overlay
+└── 3_select/
+    └── haipipe-ideation-select/              portfolio + human gate + handoff
+```
+
+Load only the current stage. `haipipe-ideation-test` loads its specialist for
+the requested axis; a generic test loads novelty, pressure, and journal fit,
+while Nature review is loaded only when the user names Nature or a
+Nature-family target remains live. Each specialist is directly invocable for
+a one-off task without forcing the durable three-stage workflow.
 
 ## Boundary and loading order
 
@@ -62,9 +102,20 @@ Load the relevant owner before acting on that owner's artifact:
 4. `haipipe-paper-venue` when a shortlisted target needs a new or refreshed
    versioned Venue contract. It describes one desk; it never chooses the idea's
    target.
-5. `haipipe-paper-ideation` only at handoff, when selected cards are ready to
-   enter the Paper-specific P0 page. Load the base Page workflow only when
-   actually running a Page phase, not for an Ideation-only audit.
+5. `haipipe-paper-ideation` after Generate or Test when syncing the evolving
+   portfolio into the Paper-specific P0 cockpit, and after Select when
+   projecting the final verdict/target/`went to` edges. Load the base Page
+   workflow only when actually updating that Page, not for an Ideation-only
+   audit.
+
+Then load the current numbered capability owner:
+
+1. `haipipe-ideation-generate` for evidence-bounded candidate generation and
+   admission.
+2. `haipipe-ideation-test` for the test matrix, plus only the requested
+   novelty, pressure, journal, or Nature specialist.
+3. `haipipe-ideation-select` for comparison, the human decision receipt, and
+   Paper handoff.
 
 Discovery is the external-evidence executor: its live work is search, per-source
 review, and cross-Result evidence synthesis. A checked Discovery
@@ -96,8 +147,11 @@ When a project needs a persistent record, use an explicit BJTR container:
             ├── bundle/evidence-bundle.yaml
             ├── cards/direction.yaml
             ├── cards/i01_<idea>.yaml
+            ├── cards/test-matrix.yaml
             ├── cards/venue-fit/i01_venue-fit.yaml
-            ├── workflow/                         receipts and search requests
+            ├── workflow/                         generation, novelty, pressure,
+            │                                     Nature, selection, and search receipts
+            ├── projection/paper-ideation-sync.yaml  I1/I2 working-state adapter
             └── handoff/paper-ideation.yaml       only after human selection
 ```
 
@@ -121,17 +175,26 @@ for Direction/Idea Card fields, and [references/workflow-table.md](references/wo
 for the phase table and Run boundary. Read [references/receipts.md](references/receipts.md)
 when writing search/return, selection, or Paper handoff receipts. Read
 [references/venue-fit.md](references/venue-fit.md) whenever generating,
-reviewing, or selecting journal/venue candidates.
+reviewing, or selecting journal/venue candidates. Read
+[references/manifest-and-sync.md](references/manifest-and-sync.md) for the
+unit manifest, Generate receipt, and Paper P0 working-state adapter. Read
+[references/external-skill-map.md](references/external-skill-map.md) when
+auditing where the generation, novelty, EIC, or Nature procedures came from.
+Read
+[references/end-to-end-example.md](references/end-to-end-example.md) when a
+complete specimen is more useful than another abstract rule.
 
 ## Verbs and routing
 
 ```text
 /haipipe-ideation <direction>              inspect, bundle, synthesize
-/haipipe-ideation bundle <unit>            freeze internal + external inputs
-/haipipe-ideation search <unit>            reuse or request Discovery evidence
-/haipipe-ideation synthesize <unit>        write Direction + Idea Cards
-/haipipe-ideation pressure-test <unit>     fill evidence gaps through owners
-/haipipe-ideation venue-fit <unit>         broad-screen all ideas; deep-fit finalists
+/haipipe-ideation generate <unit>          run 1_generate
+/haipipe-ideation test <unit>              run the complete 2_test matrix
+/haipipe-ideation novelty-check <idea>     run the claim-level novelty specialist
+/haipipe-ideation pressure-test <idea>     run falsifiability + feasibility checks
+/haipipe-ideation journal-fit <idea>       broad-screen; deep-fit finalists
+/haipipe-ideation nature-review <idea>     apply the Nature editorial overlay
+/haipipe-ideation sync <unit>              refresh the evergreen Paper P0 projection
 /haipipe-ideation select <unit>            record the person's idea + target decision
 /haipipe-ideation handoff <unit>           emit the Paper P0 packet
 ```
@@ -149,30 +212,27 @@ Do not manufacture a local Result to make a card look supported.
 
 ## Semantic protocol
 
-Work in this order, repeating the search or pressure-test route when evidence
+Work through the numbered families, repeating an owner route when evidence
 changes:
 
-1. Freeze the direction question, scope, time boundary, and decision rule.
-2. Build the evidence bundle from owner artifacts. Keep observations,
-   interpretations, proposals, and unresolved gaps distinct.
-3. Cluster convergent signals and preserve contradictions; do not average away
-   disagreement or turn a search hit into a finding.
-4. Generate candidate Idea Cards from the bundle. Every material claim names
-   its supporting paths and whether the support is internal, external, or an
-   inference.
-5. Pressure-test each candidate claim-by-claim: prior work through Discovery,
-   feasibility and data availability through Task, and limits through the
-   source owners. A candidate is not evidence.
-6. Broad-screen every admitted Idea Card for field, audience, contribution
-   type, method/evidence shape, plausible article type, and obvious desk
-   mismatch. Keep the screen even when the idea is eliminated.
-7. Deep-fit the candidates that remain live against current versioned Venue
-   contracts. Compare scope, contribution significance, novelty delta,
-   method/design, evidence floor, article type, generality/impact, and
-   compliance/openness. Record desk risks, missing evidence, and a reroute.
-   Static rankings, remembered rules, and external skill packs may seed the
-   screen but cannot establish a binding desk fact.
-8. Compare and, when useful, order candidates by explicit novelty delta,
+1. **1 Generate:** freeze the direction, scope, time boundary, and decision
+   rule; build the evidence bundle; cluster signals without erasing
+   contradictions; generate diverse candidates; deduplicate; and admit only
+   cards with a falsifiable proposition, method, minimum experiment, expected
+   outcome, failure reading, and explicit Core Claims. New claims enter Test
+   as `unverified`, never as novel by construction.
+   Refresh `projection/paper-ideation-sync.yaml` and, when a Paper P0 path is
+   in scope, ask `haipipe-paper-ideation` to project the Direction, Discovery
+   Landscape, Opportunity Map, and candidate set into that same evergreen Page.
+2. **2 Test:** run every admitted card through claim-level closest-work
+   verification, falsifiability and feasibility review, and broad journal
+   screening. Deep-fit live finalists against current versioned Venue
+   contracts. Apply the Nature overlay only to a named Nature-family
+   candidate. Preserve the adversarial rejection, defense, unresolved gaps,
+   and reroute; do not collapse novelty and identification credibility.
+   Refresh the sync packet whenever evidence adds, changes, merges, eliminates,
+   or reorders an Idea.
+3. **3 Select:** compare and, when useful, order candidates by explicit novelty delta,
    testability, evidence coverage, cost, and risk. The machine may recommend;
    only a person may select, defer, abandon, choose the intended target and
    article category, or authorize the Paper handoff. `PROCEED` and
@@ -190,32 +250,61 @@ its owner path, status, and locator.
 
 ## Venue and Paper boundary
 
-Ideation stops at a human decision and, for every selected card, a complete
-handoff packet. It does not create a Paper repository, `Story00-ideation`,
-Story, Venue Page, binding desk rule, or manuscript content. It may recommend
-targets and records the person's intended target/category only after a current
-Venue contract supports the deep fit. `handoff/paper-ideation.yaml` contains
-paths, IDs, statuses, claim-level support, novelty readings,
-pilot/feasibility receipt or waiver, Venue Fit Card and contract paths, the
-human idea-and-target decision, and hard limits. It does not duplicate
-evidence or venue rules.
+Ideation exposes two pointer-only adapters with different authority:
 
-`haipipe-paper-ideation` consumes that packet, writes the Paper-specific P0
-page, and binds the origin in each selected Story direction. Multiple selected
-cards route to distinct Stories (`Story-A`, `Story-B`, ...); they do not become
-several competing ideas inside one Story. No handoff is emitted without a
-person's selection record and one selected target/category per selected card;
-an unselected or target-unresolved portfolio remains in ideation. A later
-target change requires a new human receipt and refreshed Story/Venue binding.
-Ideation owns the person's intended target at G0; the Story confirms that
-choice as its current operational target and owns every later rebind. A legacy
-Story path such as `Story01-seed` may satisfy G0 when the receipt records its
-canonical `Story-A` role and both artifacts link to each other; migration does
-not mint a duplicate Story or treat historical `pagex/` navigation as a
-selection receipt.
+```text
+projection/paper-ideation-sync.yaml   I1/I2 working state · no selection
+handoff/paper-ideation.yaml           I3 human-selected idea-target pairs
+```
+
+The sync packet begins after Generate and is refreshed through Test. It carries
+the Direction Card, accepted Discovery synthesis pointers, a Discovery
+Landscape summary, an Opportunity Map, every admitted/deferred/eliminated Idea
+Card, the current Test Matrix, and open gaps. `haipipe-paper-ideation` uses it
+to maintain one evergreen `Story00-ideation` reader-facing cockpit. The Page
+may summarize and display those pointers; it does not become a second Idea
+portfolio, evidence store, or selection authority.
+
+Stage 3's `workflow/selection.yaml` is the single human authority for selecting
+an Idea, target/category, accepted risks, and Story route. The Paper P0 Page
+only projects that receipt into verdict, target, and `went to` fields. Page
+approval or CHECK cannot create or override an Ideation selection.
+
+Ideation does not itself create the Paper repository, P0 Page, Story, Venue
+Page, binding desk rule, or manuscript content. After selection,
+`handoff/paper-ideation.yaml` contains paths, IDs, statuses, claim-level
+support, novelty readings, pilot/feasibility receipt or waiver, Venue Fit Card
+and contract paths, the sole human selection receipt, latest sync packet, and
+hard limits. It duplicates neither evidence nor venue rules.
+
+Multiple selected cards route to distinct Stories (`Story-A`, `Story-B`, ...);
+they do not become competing Ideas inside one Story. A later target change
+requires a new human receipt and refreshed Story/Venue binding. Ideation owns
+the person's intended target at G0; the Story confirms that choice as its
+current operational target and owns every later rebind. A legacy Story path
+such as `Story01-seed` may satisfy G0 when the receipt records its canonical
+`Story-A` role and both artifacts link to each other; migration does not mint a
+duplicate Story or treat historical `pagex/` navigation as a selection receipt.
 
 ## One-off mode
 
 For an inline brainstorm or evidence map, return Direction/Idea Card-shaped
 content without writing files. If the user asks to keep it, route through a
 durable BJTR unit and the same owner-bound evidence rules.
+
+## Mechanical gate check
+
+Run the checker before claiming a durable stage ready:
+
+```bash
+python scripts/check_ideation.py <ideation-unit> --gate generate
+python scripts/check_ideation.py <ideation-unit> --gate sync
+python scripts/check_ideation.py <ideation-unit> --gate test
+python scripts/check_ideation.py <ideation-unit> --gate select
+python scripts/check_ideation.py <ideation-unit> --gate handoff
+```
+
+The checker tests artifact shape and cross-file assertions; it cannot judge
+scientific novelty, editorial merit, or a person's decision. A green
+mechanical gate never upgrades an unverified source or substitutes for the
+specialist's evidence-bound reading.

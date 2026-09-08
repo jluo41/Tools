@@ -10,8 +10,8 @@ description: >-
   evidence, EVIDENCE phase, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.22.0"
-  last_updated: "2026-09-04"
+  version: "0.22.1"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -54,7 +54,8 @@ The `haipipe-page-context` PREPARE record must be fresh before this chain acts.
 Do not load or route through a separate Task Page-Type layer. The Folder owner
 and exact Page Face owner supply semantic policy; this skill owns only the Page
 EVIDENCE cycles. For a Task Folder, `haipipe-task` fills both roles and is
-loaded once.
+loaded once, with `haipipe-page-task` as its reader-facing companion for Page
+display and prose requirements, not another execution owner.
 
 ## ⚡ Phase card
 
@@ -110,7 +111,7 @@ render passes, and agent turns inside one Run do not add identities.
 ```text
 ALLOWED      operation: evidence-item; item type: VALUE | CITE | DISPLAY
 TARGET       exactly one E<NN>-<TYPE>-<slug>
-TICKET       Folder dialect selected by haipipe-run; global id bNNjNNtNNrNN
+TICKET       Folder dialect selected by haipipe-run; full owner-native Run id
 INPUTS       one frozen envelope: item contract + 0..N Supporting Result paths,
              Run ids, receipt hashes, and any governed page-local source pointers
 WORKER       haipipe-plugin-outline owns VALUE/CITE/DISPLAY payload rules;
@@ -153,10 +154,12 @@ For every item whose `Decide` is `☑ make`:
 2. **Resolve Supporting routes.** Work only the routes SURVEY selected:
    existing full Run ids classified `reuse`, `rerun`, or `registered`, plus
    bounded `new-run`, `new-task`, `new-job`, or `new-block` plans. Supporting families
-   are only Execution and Discovery. Search the governed current and old
+   are Execution and Discovery; an accepted Insight instance/item Result may
+   also be reused under `haipipe-plugin-outline/ref/item-table.md`'s qualified
+   identity and owner contract. Keep its instance/version intact. Search the governed current and old
    Result stores before concluding that a selected support is unavailable.
 3. **Allocate before execution.** An existing route keeps its registered
-   `bNNjNNtNNrNN`. For a planned route, invoke the owning Execution or
+   owner-native full id (`bNNjNNtNNrNN` for Task-backed work). For a planned route, invoke the owning Execution or
    Discovery workflow now to allocate one real `rNN`, scaffold its Ticket and
    planned runtime receipt, and write that full id back to the item lineage.
    A rerun uses the same target, frozen inputs, and acceptance contract; a
@@ -180,8 +183,9 @@ For every item whose `Decide` is `☑ make`:
    SURVEY found one; otherwise allocate one `rNN` and scaffold its Page ·
    Evidence Item Ticket from the bounded local declaration before execution.
    A Task declaration names parent `bNNjNNtNN` and LAND writes back the full
-   `bNNjNNtNNrNN`; a Paper reservation keeps its `pjNNtNNrNN`; another
-   Folder-local owner follows its declared Run Profile.
+   `bNNjNNtNNrNN`; another Folder-local owner follows its current naming
+   contract and Run Profile, preserving a reservation only when that owner
+   permits one. Page defines no separate family namespace.
    It targets this Evidence Item and emits one typed Result. The Run may invoke
    several scripts or calls internally; they remain one execution because
    target and Result gate are shared.
@@ -197,10 +201,11 @@ For every item whose `Decide` is `☑ make`:
    `Verified: ✅ <who> <timestamp>` on that item row. A machine never signs it,
    and the CITE item remains not-ready until it is signed.
 9. **Promote the verified bibliography entry.** After a CITE item is signed,
-   write its verified entry into the owning paper's room bibliography under
+   write its verified entry into the bibliography declared by the Page Face
+   owner (the Page's register, or a Paper room when that owner requires it) under
    the same citation key. If that key already exists with a different body,
    report the conflict and do not overwrite either entry. A ready CITE Result
-   is not complete for delivery while its verified key is absent from the room
+   is not complete for delivery while its verified key is absent from that
    bibliography.
 
 Different item graphs may run in parallel because cross-item local-Result

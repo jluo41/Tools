@@ -8,8 +8,8 @@ description: >-
   not for P-B-E-R execution or raw-data analysis.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-07"
+  version: "0.1.1"
+  last_updated: "2026-09-08"
   parent: haipipe-task
   scope: Task Page Face
 ---
@@ -150,13 +150,14 @@ must bind to the same exact coverage Result that supports that word.
    display-safe boundary, and any related Page.
 2. OUTLINE/SHAPE creates the display inventory and typed DISPLAY Items. It
    checks the table/figure/diagram baseline before prose is drafted.
-3. EVIDENCE/SURVEY and LAND bind Supporting Runs, freeze Local Inputs, and
-   admit the display Result. A unit may be rendered as a candidate while its
-   human accepted: gate remains open.
+3. OUTLINE/SURVEY plans the Supporting and local Run routes without executing
+   them. EVIDENCE/LAND validates Supporting Results, freezes Local Input, and
+   admits the local display Result; EVIDENCE/EMBED folds it into the plan.
+   A unit may be rendered as a candidate while its human accepted: gate remains open.
 4. CONTENT/WRITE places each display beside the paragraph that explains it,
    cites DisplayN, writes the caption, and keeps prose numbers aligned with
    the same Run and intake.
-5. CONTENT/BUILD regenerates every declared preview.pdf and the one-Page PDF.
+5. Build inside CONTENT/WRITE regenerates every declared preview.pdf and the one-Page PDF.
    The Page-level PDF must contain the winning floats, not only references to
    them.
 6. CHECK inspects the rendered Board Displays segment, each preview, the

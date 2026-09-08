@@ -1,219 +1,79 @@
-🚀 Running Process — One Job, End to End
-═══════════════════════════════════════════════════════════════
+TASK FOLDER EXECUTION
+=====================
 
-How a single execution flows from authored .py to reviewable notebook,
-with all four folders bound by one shared RUNNAME. Same process for
-every task-type — papermill, always.
-
-
-─§ Three-axis identity ─────────────────────────────────────
-
-  📌 Every execution is fully named by THREE axes.
-     Project + Task are folders. Run is a NAME (not a folder).
-
-  +-----------+----------------------------------------------------+
-  | 🏷️ Axis   | 📍 Where it lives                                  |
-  +-----------+----------------------------------------------------+
-  | 📦 Project| examples/Proj{Series}-{Cat}-{Num}-{Name}/          |
-  | 📁 Task   | tasks/{G}{NN}_{group}/{NN}_{task_name}/            |
-  | ▶️  Run    | <run_name>  (e.g. run_1m, run_eval_holdout)        |
-  +-----------+----------------------------------------------------+
-
-  🔑  (Project, Task, Run)  is the primary key for one execution.
-
-
-─§ Authoring loop (offline, before any run) ────────────────
-
-  The author iterates on the .py source.
-  The .ipynb template is for VISUAL REVIEW only — never edited by hand.
-
-           ┌─────────────────────────────────────┐
-           │                                     │
-           ▼                                     │
-  +----------------+                             │
-  | 🧑 author      |                             │
-  +----------------+                             │
-           │  ✏️  edits                           │
-           ▼                                     │
-  +-----------------------------------+          │
-  | 🐍 {task}/{NN}_{task_name}.py     |          │
-  |    (notebook-cell source)         |          │
-  |    # %% blocks · # %% [parameters]|          │
-  +-----------------------------------+          │
-           │  🔄 convert (auto by run.sh,        │
-           │     OR manual preview)              │
-           ▼                                     │
-  +-----------------------------------+          │
-  | 📓 {task}/{NN}_{task_name}.ipynb  |          │
-  |    (TEMPLATE — visual review)     |          │
-  +-----------------------------------+          │
-           │                                     │
-           │  👀 author reads .ipynb,            │
-           │     identifies what to change       │
-           └─────────────────────────────────────┘
-                       🔁 loop back to .py edits
-
-  ⚠️  NEVER edit either notebook by hand. Edit the .py.
-  💡  Whether the .py edits are typed directly or done with an assistant
-      is an implementation detail — the loop is the same.
+Project
+  |
+  +-- tasks/bNN_<block>/                         BLOCK = TASK BOARD
+        |
+        +-- jNN_<job>/                           JOB = BOARD GROUP
+              |
+              +-- src/                           shared Job code
+              |
+              +-- tNN_<task>/                    TASK FOLDER = PAGE FOLDER
+              |     |
+              |     +-- tNN_<task>.md            reader-facing Page
+              |     +-- workflow/                Plan and Report
+              |     +-- outline/                 Page evidence and reading
+              |     +-- scripts/<worker>.py      authored source
+              |     +-- scripts/config/rNN_<run>.yaml
+              |     +-- runs/rNN_<run>.sh        authored Ticket
+              |
+              +-- results/<task>/<run>/          generated Result
+              |     +-- runtime.yaml             identity and lifecycle receipt
+              |     +-- metrics.json             measured values
+              |
+              +-- notebooks/<task>/<run>.ipynb   generated execution record
 
 
-─§ RUNNAME spine — one name, four folders ─────────────────
-
-  RUNNAME = "run-xxxx"   threads through FOUR files in FOUR folders.
-  Pairing by name is mandatory. Tooling depends on it.
-
-                      🎯 RUNNAME = run-xxxx
-                              │
-        ┌───────────────┬─────┴──────┬───────────────┐
-        ▼               ▼            ▼               ▼
-  +---------------+ +-----------+ +---------+ +------------------+
-  | 📥 configs/   | | ▶️  runs/ | | 📊 res- | | 📓 notebooks/    |
-  | <run>.yaml    | | <run>.sh  | | ults/   | | <run>.ipynb      |
-  |               | |           | | <run>/  | |                  |
-  | INPUTS        | | ENTRY     | | LIGHT   | | EXECUTION RECORD |
-  | config + args | | bash      | | OUTPUTS | | papermill output |
-  +---------------+ +-----------+ +---------+ +------------------+
-
-  🔑  Change the run name → change all four together.
-  ❌  Orphans (run.sh without matching results/, etc.) are caught by -inspect.
+PLAN -> BUILD -> EXECUTE -> REPORT -> PAGE READING -> CHECK
+  |       |          |          |             |           |
+  |       |          |          |             |           +-- Folder may settle
+  |       |          |          |             +-- person reads exact Result
+  |       |          |          +-- mirror Plan against evidence
+  |       |          +-- Ticket writes running/terminal receipt
+  |       +-- worker + config + Ticket + code review
+  +-- IPO intent in workflow/
 
 
-─§ Two notebooks, two roles ────────────────────────────────
+ONE RUN, FOUR MATCHING PROJECTIONS
+==================================
 
-  📁 {task}/                        ← job root
-     │
-     ├── 🐍 {NN}_{task_name}.py     ← AUTHORED (diff-friendly, edit here)
-     │
-     ├── 📓 {NN}_{task_name}.ipynb  ← TEMPLATE
-     │      auto-converted from .py
-     │      regenerated every run (Step 1)
-     │      no execution state
-     │      role: visual review during authoring
-     │
-     └── 📁 notebooks/
-         │
-         ├── 📓 <run-1>.ipynb       ← EXECUTION RECORD #1
-         ├── 📓 <run-2>.ipynb       ← EXECUTION RECORD #2
-         └── 📓 <run-N>.ipynb       ← papermill output
-                                       contains: cell outputs, logs, errors
-                                       role: IS the run record
+scripts/config/r03_fold00_opus.yaml   frozen input
+             |
+runs/r03_fold00_opus.sh               execution door
+             |
+results/tNN_<task>/r03_fold00_opus/   Result + runtime.yaml
+             |
+notebooks/tNN_<task>/r03_fold00_opus.ipynb
 
-  +--------------+----------------------+----------------------+
-  | 🏷️ Notebook  | 📍 Where             | 🎬 Role              |
-  +--------------+----------------------+----------------------+
-  | 📓 TEMPLATE  | task root            | visual review        |
-  | 📓 EXECUTION | task/notebooks/      | run record           |
-  +--------------+----------------------+----------------------+
+Address: bNNjNNtNNr03
 
 
-─§ Execution flow — what run.sh does ───────────────────────
+OUTPUT ROOT
+===========
 
-   ▶️  bash runs/<run>.sh
-        │
-        │
-        ▼  📌 Step 1: convert .py → template .ipynb
-   +-----------------------------------------------------------+
-   | 🔄 python code/scripts/convert_to_notebooks.py            |
-   |        {task}/{NN}_{task_name}.py                         |
-   |     -o {task}/{NN}_{task_name}.ipynb                      |
-   +-----------------------------------------------------------+
-        │
-        │
-        ▼  📌 Step 2: papermill inject + execute
-   +-----------------------------------------------------------+
-   | 🚀 papermill                                              |
-   |       {task}/{NN}_{task_name}.ipynb     (template in)     |
-   |       {task}/notebooks/<run>.ipynb      (record out)      |
-   |    -p config configs/<run>.yaml                           |
-   |    -p key value ...                     (per task-type)   |
-   +-----------------------------------------------------------+
-        │
-        │
-        ▼  📤 outputs split by weight
-   ┌───────────────────────────────┬──────────────────────────────┐
-   ▼                               ▼                              ▼
-+---------------------------+  +---------------------------+  +---------------------+
-| 📊 LIGHT (in-repo)        |  | 📓 RECORD (in-repo)       |  | 💾 HEAVY (out-repo) |
-| {task}/results/<run>/     |  | {task}/notebooks/         |  | _WorkSpace/         |
-|   ├── eval.json           |  |   <run>.ipynb             |  |   {N}-*Store/       |
-|   ├── source_data.csv     |  |   (executed papermill)    |  |   ├── checkpoints   |
-|   ├── figure.pdf          |  |                           |  |   ├── tensors       |
-|   └── model_path.txt      |  |                           |  |   └── arrays        |
-+---------------------------+  +---------------------------+  +---------------------+
+RESULT_STORE supplied? -------- yes ----> consumer-owned store mirror
+          |
+          no
+          |
+Job src/config-defaults.yaml has store? - yes -> standing store mirror
+          |
+          no
+          |
+          +-----------------------------> Job directory
 
-  ✅  Every run leaves THREE artifacts: light results, execution notebook,
-      heavy artifacts (the last out-of-repo).
+The suffix is always results/<task>/<run>/ or notebooks/<task>/<run>.ipynb.
 
 
-─§ Light vs Heavy outputs ──────────────────────────────────
+TICKET FLOW
+===========
 
-  📊 LIGHT  →  in-repo, under {task}/results/<run>/
-  +----------------------+--------------------------------------+
-  | 🏷️ File              | 🎬 Purpose                            |
-  +----------------------+--------------------------------------+
-  | 📋 eval.json         | metrics                               |
-  | 📜 eval_log.txt      | per-step log lines                    |
-  | 📄 source_data.csv   | numbers behind a figure               |
-  | 🖼️  figure.pdf / .png | display task output                  |
-  | 📑 table.tex         | display task output                   |
-  | 📍 model_path.txt    | POINTER to the heavy artifact         |
-  +----------------------+--------------------------------------+
-
-  💾 HEAVY  →  out-of-repo, under _WorkSpace/{N}-*Store/
-  +----------------------+--------------------------------------+
-  | 🏷️ File              | 🎬 Purpose                            |
-  +----------------------+--------------------------------------+
-  | 🧠 *.pt / *.ckpt     | trained model checkpoints             |
-  | 🔒 *.safetensors     | model weights                         |
-  | 🔢 *.npy / *.pkl     | tensors / pickled arrays              |
-  | 📦 *.h5 / *.bin      | bulk numerical data                   |
-  | 📁 ModelInstance/    | full instance folder                  |
-  +----------------------+--------------------------------------+
-
-  ❌  Heavy artifacts in {task}/results/<run>/ is a HARD ERROR (-inspect).
-  ✅  Cross-link via a pointer file (model_path.txt) instead.
-
-
-─§ sbatch is exogenous to the task ─────────────────────────
-
-  📁 sbatch lives at the GROUP level — outside any single job.
-     It coordinates multiple runs across the group's tasks.
-
-   tasks/{G}{NN}_{group_name}/
-   │
-   ├── 📁 01_task_a/
-   │   ├── 🐍 01_task_a.py
-   │   ├── 📁 configs/
-   │   ├── 📁 runs/                       ▶️ run_1m.sh, run_10m.sh, ...
-   │   ├── 📁 results/
-   │   └── 📁 notebooks/
-   │
-   ├── 📁 02_task_b/
-   │   └── ...
-   │
-   └── 📁 sbatch/                         ⚙️ GROUP-LEVEL coordinator
-       ├── env.sh                         (shared env vars)
-       ├── phase1_all_models.sh           (sweeps run_*.sh across tasks)
-       └── phase2_eval.sh                 (chains across tasks)
-
-  🔑  Primary sbatch  →  GROUP level (cross-task batching).
-  🔧  Optional within-task sbatch is allowed only for GPU-partitioning
-      a single sweep within one task. Secondary, not primary.
-
-
-─§ One-line summary ────────────────────────────────────────
-
-  📦 Project   ▸  📁 Task   ▸  ▶️ Run
-                                  │
-                                  ▼
-                    🔄 convert .py → 📓 template
-                                  │
-                                  ▼
-                    🚀 papermill inject + execute
-                                  │
-            ┌─────────────────────┼─────────────────────┐
-            ▼                     ▼                     ▼
-       📊 results/<run>/    📓 notebooks/<run>.ipynb   💾 _WorkSpace/
-
-  Same process for every task-type. Type only changes inputs + destinations.
+1. Validate bNN/jNN/tNN/rNN path and same-stem Page.
+2. Resolve config, worker, output root, and execution address.
+3. Check CODE_REVIEW.md against the current git SHA.
+4. Write runtime.yaml with status running before expensive work.
+5. Convert the # %% worker to a generated notebook template.
+6. Execute with papermill and inject the exact Run config.
+7. Check required Result paths and the worker-specific Result gate.
+8. Atomically write the terminal receipt.
+9. Hand off to `/haipipe-task report <task-folder>`.
