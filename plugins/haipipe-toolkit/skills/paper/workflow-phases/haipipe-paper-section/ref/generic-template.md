@@ -9,7 +9,7 @@ generic outline into an invented venue rule.
 ```yaml
 page-type: section
 section_kind: <kind>
-story-row: <Story-<letter> C8 / <section-id> (resolve the actual row anchor) + Story version>
+story-row: <Story<Letter>-<desk>-<idea-slug> C8 / <section-id> (resolve the actual row anchor) + Story version>
 reader-question: <one question>
 entry-state: <reader state on entry>
 exit-state: <reader state on exit>

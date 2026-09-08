@@ -14,7 +14,7 @@ its authority page; the venue bank is a library outside the journey:
 ```text
 P0 Ideation (ideate)        Story00-ideation · the repo is minted with this page ·
                             sends one idea to its Story
-P1 Story (establish)        Story-<letter> · one idea, one prospective paper
+P1 Story (establish)        Story<Letter>-<desk>-<idea-slug> · one idea, one prospective paper
                             Seed C1–C5 · Discovery Roadmap C6 · Task Roadmap C7
                             Section Narrative C8 · derived compile-order block
 P2 Evidence/Execution       a work lane, not a page · Discovery blocks, Task
@@ -63,8 +63,8 @@ Paper-<Slug>/                        no 0-paperboard/ wrapper · board.md at the
 ├── board.md                         paper-root: .
 ├── A1-Story/
 │   ├── Story00-ideation/            the idea pool
-│   └── Story-A/                     one Story = one idea · prospective blueprint
-│       └── Story-A.md               Seed · Discovery / Task Roadmaps · Section
+│   └── StoryA-misq-phytrait-discretion/                     one Story = one idea · prospective blueprint
+│       └── StoryA-misq-phytrait-discretion.md               Seed · Discovery / Task Roadmaps · Section
 │                                    Narrative + derived compile-order block
 ├── Ba-<desk>-Main/  Bb-<desk>-Appendix/  Bc-<desk>-Round/
 └── delivery/                        GENERATED from the Section Pages' own

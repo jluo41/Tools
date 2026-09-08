@@ -7,8 +7,8 @@ description: >-
   compiled next. Trigger: paper journey, workflow, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "1.1.1"
-  last_updated: "2026-09-07"
+  version: "1.1.2"
+  last_updated: "2026-09-08"
 ---
 
 # /haipipe-paper-workflow · read the journey, test the gate, mint the next work
@@ -46,7 +46,7 @@ P0 Ideation                 Story00-ideation in A1-Story     ranked candidate
                                                               directions, venue fit,
                                                               and a human-selected
                                                               Story + target
-P1 Story                    Story-<letter> in A1-Story       prospective paper:
+P1 Story                    Story<Letter>-<desk>-<idea-slug> in A1-Story       prospective paper:
                                                               Seed + RQs + evidence
                                                               basis + Discovery/Task
                                                               Roadmaps + Section Narrative
@@ -116,8 +116,8 @@ G0  Ideation → Story
     explicit waiver, complete deep fit against a current Venue contract, a
     human PROCEED or risk-accepted PROCEED WITH CAUTION plus intended
     target/category decision, and reciprocal links
-    among Story00-ideation, Story-<letter>, and the named Venue contract.
-    The receipt records the canonical Story-<letter> role and exact path.
+    among Story00-ideation, Story<Letter>-<desk>-<idea-slug>, and the named Venue contract.
+    The receipt records the canonical Story<Letter>-<desk>-<idea-slug> role and exact path.
 
 G1  Story → Evidence/Execution
     The reviewed Story plan names Seed identity and RQs, C5 evidence basis and
@@ -165,8 +165,8 @@ Paper-<Slug>/
 ├── board.md
 ├── A1-Story/
 │   ├── Story00-ideation/
-│   └── Story-A/
-│       ├── Story-A.md                 Story prospective blueprint
+│   └── StoryA-misq-phytrait-discretion/
+│       ├── StoryA-misq-phytrait-discretion.md                 Story prospective blueprint
 │       ├── outline/                    Page 00–04 records
 │       └── studio/                     optional Story-local presentation lanes
 ├── Ba-<desk>-Main/                     Section Pages

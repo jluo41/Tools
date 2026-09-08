@@ -1,3 +1,6 @@
+## 0.9.2 · 260908
+- Story id grammar is `Story<Letter>-<desk>-<idea-slug>` (JL 260908: "letter should be good", after "why this is just A? really silly"): the letter orders, the desk names the telling, the slug names the idea; `Story-A` is out, `Story01-…` stays rejected. New "🔤 The Story id" block; group-token updated; first instance `StoryA-misq-phytrait-discretion`.
+
 ## 0.9.1 · 260908 · Paper Story naming correction
 
 - At the user's explicit request, renamed `haipipe-page-story` to

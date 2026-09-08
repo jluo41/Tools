@@ -309,12 +309,13 @@ def parse_dir(d):
         # zero pages: the roster was empty and every cross-board Related row
         # reported unregistered-related-page. The letter is the family and the
         # digits are the order, which is the same shape `qm` already uses.
-        # 260907, selected Story family (JL: "change Story 01 to Story A"): the
-        # paper journey's current id is `Story-<letter>`. Grandfathered boards
-        # may still carry role suffixes; current Story pages do not create them.
-        # The P0 pool keeps its separate `Story00-ideation` identity and remains
-        # covered by app_m below.
-        story_m = re.match(r"(Story)-([A-Za-z])(?:-(.+))?$", p.stem)
+        # 260907, selected Story family (JL: "change Story 01 to Story A"); 260908
+        # the id grew to `Story<Letter>-<desk>-<idea-slug>` (JL: a bare letter
+        # "says nothing"): `StoryA-misq-phytrait-discretion`. The hyphenated
+        # `Story-A[-suffix]` form still parses so grandfathered boards read; a
+        # new Story never mints it. The P0 pool keeps its separate
+        # `Story00-ideation` identity and remains covered by app_m below.
+        story_m = re.match(r"(Story)-?([A-Za-z])(?:-(.+))?$", p.stem)
         # 260831, the legacy Story family: old boards may still carry a
         # capitalised WORD plus digits (`Story00-ideation`, etc.).
         app_m = re.match(r"([A-Z]{1,2}|[A-Z][a-z]+)(\d+)-(.+)$", p.stem)

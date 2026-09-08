@@ -1,3 +1,6 @@
+## 0.9.1 · 260908
+- `went to` names a Story by its full id `Story<Letter>-<desk>-<idea-slug>` (JL 260908); tree and examples updated, `Story-A`/`Story-B` bare letters removed.
+
 ## 0.9.0 · 2026-09-08
 
 - Renamed `haipipe-page-ideation` to `haipipe-paper-ideation` and moved the

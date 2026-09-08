@@ -20,14 +20,14 @@ def paper(tmp_path, monkeypatch):
     delivery = root / "delivery"; delivery.mkdir(parents=True)
     (delivery / "paper-build.toml").write_text(
         '[paper]\nid = "Paper-T"\ntitle = "T"\n'
-        '[pages]\nmain = "../Ba-T-Main"\nappendix = "../Bb-T-Appendix"\norder = "../A1-Story/Story-A/Story-A.md"\n'
+        '[pages]\nmain = "../Ba-T-Main"\nappendix = "../Bb-T-Appendix"\norder = "../A1-Story/StoryA-t-fixture/StoryA-t-fixture.md"\n'
         '[source]\nroom = "latex"\nmaster = "master.tex"\nsections = "sections"\nappendices = "appendices"\n'
         'displays = "displays"\nbibliography = "reference.bib"\n'
         '[evidence]\nmode = "draft"\n'
         '[outputs]\nmain_pdf = "latex/T.pdf"\nmain_docx = "word/T.docx"\nmanifest = "build-manifest.json"\n')
-    story = root / "A1-Story" / "Story-A"; story.mkdir(parents=True)
-    (story / "Story-A.md").write_text(
-        "# Story-A\n<!-- haipipe:compile-order:start -->\nmain:\n- S-T-Main-Intro\n- S-T-Main-Methods\n"
+    story = root / "A1-Story" / "StoryA-t-fixture"; story.mkdir(parents=True)
+    (story / "StoryA-t-fixture.md").write_text(
+        "# StoryA-t-fixture\n<!-- haipipe:compile-order:start -->\nmain:\n- S-T-Main-Intro\n- S-T-Main-Methods\n"
         "appendix:\n<!-- haipipe:compile-order:end -->\n")
     (root / "Bb-T-Appendix").mkdir()
     # ready page: fragment embeds the float (as md2tex does) AND cites it

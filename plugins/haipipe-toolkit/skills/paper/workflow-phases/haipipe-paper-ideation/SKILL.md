@@ -10,7 +10,7 @@ description: >-
   ideation page, find ideas, brainstorm, novelty check, journal fit, page-type
   ideation.
 metadata:
-  version: "0.9.0"
+  version: "0.9.1"
   last_updated: "2026-09-08"
   group-token: "Story00"
   outline:
@@ -48,10 +48,10 @@ become, before them:
 Paper-<Slug>/
 └── A1-Story/                          the story group, at the paper root (0.8.0)
     ├── Story00-ideation/              THIS PAGE · one direction, its ideas, ranked
-    └── Story-A/                       what the first selected idea became:
-        ├── Story-A.md                 one idea · one prospective paper blueprint
+    └── StoryA-misq-phytrait-discretion/                       what the first selected idea became:
+        ├── StoryA-misq-phytrait-discretion.md                 one idea · one prospective paper blueprint
         └── outline/                   its Page workflow records
-    (a second surviving idea is Story-B/ · the letter identifies the Story)
+    (a second surviving idea is StoryB-<desk>-<idea-slug>/ · the letter identifies the Story)
 ```
 
 **The repo precedes the Story** (0.2.0): minting a paper's Ideation Page is
@@ -63,7 +63,7 @@ repo standing as its own record. **A board holds exactly ONE ideation page**
 genuinely forks is a new direction, so it mints its own `Paper-<Slug>/` with
 its own `Story00-ideation`, and the two pages cross-reference through the
 originating row's `went to`. Two ideas from the SAME direction that both
-survive are `Story-A` and `Story-B` in this board (0.9.0, JL 260907: the Story
+survive are `StoryA-<desk>-<idea-slug>` and `StoryB-<desk>-<idea-slug>` in this board (0.9.0, JL 260907: the Story
 letter identifies the selected Story); the `went to` cell names the Story page
 by id. Before 0.5.0 a fork could take "the next free SD number"; that reading
 died when the journey fixed the roles, and 0.8.0 gives the number back its
@@ -71,7 +71,7 @@ counting job at the idea level.
 
 Historical `SD00-ideation` / `SD01-seed` instances remain readable and are not
 renamed or moved merely to satisfy this contract. When such a Page is next
-revised, record its canonical `Story00-ideation` / `Story-<letter>` role and
+revised, record its canonical `Story00-ideation` / `Story<Letter>-<desk>-<idea-slug>` role and
 preserve two-way links. A filesystem rename is a separate, explicitly scoped
 migration, never an implicit Page or G0 action.
 
@@ -152,7 +152,7 @@ blank:
 ```text
 id  idea                 novelty       pilot        venue fit       verdict       target       went to
 ─────────────────────────────────────────────────────────────────────────────────────────────────────
-i01 <one sentence>       HIGH           ✅ Result     STRONG · vfit   ✅ PROCEED    JAMA · Art.  Story-A
+i01 <one sentence>       HIGH           ✅ Result     STRONG · vfit   ✅ PROCEED    JAMA · Art.  StoryA-<desk>-<idea-slug>
 i02 <one sentence>       ⬜ unchecked   —            ⬜ pending      ⬜ open       —            —
 ```
 
@@ -289,7 +289,7 @@ An idea's row may name a Story in `went to` only when all four hold:
   Recommendation field; the verdict is human, and eliminated ideas never
   leave.
 
-It is a two-way act: `went to` names the Story — normally `Story-A`, `Story-B`,
+It is a two-way act: `went to` names the Story — normally `StoryA-<desk>-<idea-slug>`, `StoryB-<desk>-<idea-slug>`,
 and so on beside this page, or the new repo when an idea leaves for a DIFFERENT
 paper — and that Story's C5 Source Pages and provenance subsection binds THIS page and its
 ideation handoff back. A row naming a Story that does not bind back, or a

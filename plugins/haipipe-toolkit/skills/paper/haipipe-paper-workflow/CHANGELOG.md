@@ -1,3 +1,6 @@
+## 1.1.2 · 260908
+- P1 Story id is `Story<Letter>-<desk>-<idea-slug>` (JL 260908); phase table and examples follow `haipipe-paper-story` 0.9.2.
+
 ## 1.1.1 · 2026-09-07
 
 - Clarified that both human PROCEED and risk-accepted PROCEED WITH CAUTION can

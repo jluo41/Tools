@@ -17,7 +17,7 @@ BLUEPRINT = (
 class StoryBlueprintTest(unittest.TestCase):
     def findings(self, divisions):
         with tempfile.TemporaryDirectory() as temporary:
-            page = Path(temporary) / "Story-A.md"
+            page = Path(temporary) / "StoryA-misq-phytrait-discretion.md"
             page.write_text("# Proposed paper\npage-type: story\n", encoding="utf-8")
             plan = "\n".join(
                 f"## C{i} · {title}" for i, title in enumerate(divisions, 1)

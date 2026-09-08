@@ -59,15 +59,15 @@ class TestSemanticSectionId(unittest.TestCase):
         self.assertEqual(warnings, [])
         self.assertEqual([item["id"] for item in pages], [page_id])
 
-    def test_lettered_story_control_and_child_pages_parse(self):
+    def test_lettered_story_ids_parse_new_grammar_and_grandfathered(self):
         with TemporaryDirectory() as root:
             board = Path(root)
             story_dir = board / "STORY"
             story_dir.mkdir()
             page_ids = [
-                "Story-A",
-                "Story-A-roadmap",
-                "Story-A-narrative-MISQ",
+                "StoryA-misq-phytrait-discretion",   # 260908 grammar Story<Letter>-<desk>-<idea-slug>
+                "StoryB-jama-phytrait-highdose",
+                "Story-C",                           # grandfathered bare-letter form still parses
             ]
             (board / "board.md").write_text(
                 "## Pages\n\n### STORY\n"

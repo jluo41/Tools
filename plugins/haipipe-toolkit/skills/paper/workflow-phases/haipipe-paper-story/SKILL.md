@@ -6,9 +6,9 @@ description: >-
   from questions and evidence needs to its intended argument, or to plan a
   new telling. Execution release and receipt handling use the Paper workflow.
 metadata:
-  version: "0.9.1"
+  version: "0.9.2"
   last_updated: "2026-09-08"
-  group-token: "Story-<letter>"
+  group-token: "Story<Letter>-<desk>-<idea-slug>"
   outline:
     mode: fixed
     title-match: exact
@@ -25,7 +25,29 @@ how the Story is authored; this skill defines what the Story says.
 For workflow, Section, or compiler integration, also read
 [ref/integration.md](ref/integration.md).
 Declare `page-type: story`. In a runtime paper board the page is:
-`A1-Story/Story-<letter>/Story-<letter>.md`.
+`A1-Story/Story<Letter>-<desk>-<idea-slug>/Story<Letter>-<desk>-<idea-slug>.md`, for example `A1-Story/StoryA-misq-phytrait-discretion/StoryA-misq-phytrait-discretion.md`.
+
+## 🔤 The Story id (JL 260908)
+
+A Story id is three words joined by hyphens, and every part is read by a
+stranger who never opened the folder:
+
+```text
+Story<Letter>-<desk>-<idea-slug>
+  Letter      A, B, C … orders the Stories beside Story00-ideation (the pool);
+              JL ruled letters, not numbers ("Story A, not Story 01", 260907)
+  desk        the venue this Story is told to, lowercase: misq · jama · isr
+  idea-slug   what the idea IS, two or three plain words: phytrait-discretion
+
+StoryA-misq-phytrait-discretion     ✅ the MISQ telling of physician trait × discretion
+StoryA-jama-phytrait-highdose       ✅ the JAMA telling, its own idea slug
+Story-A                             ⛔ a bare letter says nothing (JL: "why this is just A? really silly")
+Story01-agreeable-opioid            ⛔ numbers were rejected 260907
+```
+
+The folder, the page `.md`, every `outline/` stem and every `story-row:` path
+carry the full id. The board parser accepts the bare `Story-A` form only to read
+grandfathered boards; a new Story never mints one.
 
 ## 🧭 What the Story page IS
 
