@@ -220,7 +220,7 @@ def check(root):
     for p in root.parent.rglob("*") if root.name.startswith("b") else root.rglob("*"):
         if any(x in p.parts for x in ("results", ".git")): continue
         live.add(p.name); live.add(p.stem)
-    TOKEN = re.compile(r'\b([bjtr]\d\d_[A-Za-z0-9_][A-Za-z0-9_.-]*[A-Za-z0-9_]|[a-z][a-z0-9_]*\.ps1)\b')   # a stem may carry - and . (r01_v2026-07)
+    TOKEN = re.compile(r'\b([bjtr]\d\d_[A-Za-z0-9_][A-Za-z0-9_.-]*[A-Za-z0-9_]|[a-z][a-z0-9_]*\.(?:ps1|cmd))\b')   # a stem may carry - and . (r01_v2026-07); .cmd JL 260908
     # `<!-- s8-skip -->` on its own line exempts the NEXT fenced block, for the one
     # honest case: a snippet whose whole point is to CREATE the files it names.
     for md in sorted(root.rglob("*.md")):
@@ -264,7 +264,12 @@ def check(root):
                             bad("R01", f"{job.name}/results/{d.name}/{run.name}", "results folder without runtime.yaml")
             for t in tasks:
                 runs = t/"runs"
-                tickets = sorted(p for p in runs.glob("*") if p.is_file() and p.suffix in (".sh", ".ps1")) if runs.is_dir() else []
+                # .cmd is a first-class ticket dialect (JL 260908). On a locked-down
+                # Windows desktop a .ps1 is refused by PowerShell Constrained
+                # Language Mode and there is no bash, so .cmd is the ONLY thing a
+                # person can type; a task whose only ticket was a .cmd was reported
+                # as owing a ticket, and its configs as orphans.
+                tickets = sorted(p for p in runs.glob("*") if p.is_file() and p.suffix in (".sh", ".ps1", ".cmd")) if runs.is_dir() else []
                 if not any(TICKET.match(p.stem) for p in tickets):
                     bad("R02", t.name, "no runs/ ticket in rNN_ grammar: every task owes at least one")
                 for k in tickets:
