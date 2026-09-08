@@ -1,9 +1,17 @@
+## 0.172.2 · 2026-09-08
+
+- Story page ids follow `Story<Letter>-<desk>-<idea-slug>` (JL 260908): `src/parse.py` accepts `StoryA-misq-…` as a Story page and still reads the grandfathered `Story-A` form; tests updated.
+
 ## 0.172.1 · 2026-09-08
 
 - Remove the obsolete QA3 round gate, its unreferenced browser binding battery,
   and the live checker's former QA-probe pointer rule. Board completion now
   uses the current build/check tools plus the Page CHECK workflow; no QA
   command or QA-probe pointer is shipped.
+- Correct the live Page chat hint for `page-type: task` to load the canonical
+  `haipipe-page-task` door; it no longer points readers at the retired
+  `haipipe-page-for-task` name. Canonical `folder-kind: task|discovery` Pages
+  now receive the same direct Task/Discovery hint without a legacy alias.
 
 ## 0.172.0 · 2026-09-08
 

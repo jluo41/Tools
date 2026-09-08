@@ -22,9 +22,12 @@ metadata:
 
 # /haipipe-paper-section · execute one Story Section Narrative row
 
-Load `haipipe-page`, `haipipe-page-workflow`, the current Page phase, the
+For an actual Section Page RUN, load `haipipe-page`, `haipipe-page-workflow`, the current Page phase, the
 paper-owning workflow, this Page Type, and its phase references in that order.
 Declare `page-type: section` and `section_kind: <kind>`.
+Reading this contract for a prospective Story handoff does not start that RUN.
+Proposed bindings may remain unresolved until the relevant owner supplies them;
+do not invent Page paths, accepted Results, or a release to complete a proposal.
 
 ## 🧭 Journey phase
 
@@ -80,12 +83,12 @@ Paper-<Slug>/                                        groups at the paper root (0
 └── Bd-<desk2>-Main/ …     a later desk continues at the next free letter
 ```
 
-One B group per desk (journey 0.5.0): the desk's main units, appendix units,
-and rounds share the group, so one folder tells one desk's whole downstream
-story. Section IDs are semantic: `S-<desk>-Main-<kind>` and
+One B group per family within each desk: Main, Appendix and Round have separate
+group letters, as in Ba/Bb/Bc above. Section IDs are semantic: `S-<desk>-Main-<kind>` and
 `S-<desk>-Appendix-<slug>`. The ID must tell a reader the object, desk, lane,
-and page job without a numeric crosswalk. The ordered group in `board.md`
-supplies reading order; a new section is never renamed merely because another
+and page job without a numeric crosswalk. The selected Story C8 compile-order
+projection supplies manuscript order; `board.md` is the Page roster.
+A Section is never renamed merely because another
 section is inserted.
 
 **Where the words live (0.8.4 · JL 260907)**: on this page. The Section Page
@@ -99,18 +102,22 @@ files by `haipipe-paper-assemble`, never the other way round: a correction goes
 into this page and the paper folder is rebuilt whole. The old desk room
 (`<N>-<desk><year>/sections/*.tex`) is not a current source of record.
 
-**The milestone (JL 260907)**: this page is DONE, and admitted to the paper
-build, when three things exist: the outline table is approved
+**Mechanical assembly milestone**: this Page can supply a fragment to a draft
+build when three things exist: the current outline table is explicitly approved
 (`outline/<page>-outline-v*.md`, ticked), every display unit has its
 `preview.pdf`, and the page PDF compiles under `delivery/latex/`. A page
 missing any of the three is not ready, and the paper build says so.
+Those files do not make the Section DONE. Only current Page CHECK closure under
+the Section contract and accepted evidence bindings closes it; paper-level G4
+and the human submission decision remain separate. Follow
+`haipipe-paper-assemble` for exact-version admission and manifest checks.
 
 ## 📥 Required contract block
 
 Record these fields in the Page before drafting:
 
 ```text
-story-row           Story-<letter> C8 / <section-id> (resolve the actual row anchor) + the Story version
+story-row           Story<Letter>-<desk>-<idea-slug> C8 / <section-id> (resolve the actual row anchor) + the Story version
 section_kind        abstract · introduction · literature-review · theory ·
                     methods · results · discussion · conclusion · appendix ·
                     venue-specific kind · UNDERSCORE, matching the header key

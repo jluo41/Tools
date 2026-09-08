@@ -146,15 +146,17 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
             self.application / "workflow-phases"
             / "haipipe-insight-data" / "SKILL.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("relationship and live status through PageX", data)
-        self.assertIn("accepted QA answer through\nProbe", data)
+        self.assertIn("relationship and live status through the Folder's Run/Result", data)
+        self.assertIn("accepted Run/Result", data)
+        self.assertNotIn("PageX", data)
+        self.assertNotIn("Probe", data)
         self.assertIn("every D value is bound by path", data)
         self.assertNotIn("accepted QA/run artifact", data)
 
         workflow = (
             self.application / "haipipe-insight-workflow" / "SKILL.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("accepted QA answer backed by a named run", workflow)
+        self.assertIn("accepted source Result backed by a named run", workflow)
 
     def test_insight_gi5_exports_then_gi6_settles(self):
         workflow = (
@@ -467,7 +469,8 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn("folder_owner: canonical", task_skill)
         self.assertIn("primary_face: task", task_skill)
         self.assertIn("page_ruling: local", task_skill)
-        self.assertIn("there is no separate Task\nPage skill", task_skill)
+        self.assertIn("haipipe-page-task companion", task_skill)
+        self.assertNotIn("haipipe-page-for-task", task_skill)
         self.assertIn("Supporting Runs", task_contract)
         self.assertIn("<!-- realizes: C<n>.P<m>.B<k> -->", task_contract)
         self.assertIn("<task>.md#reading-current", task_contract)

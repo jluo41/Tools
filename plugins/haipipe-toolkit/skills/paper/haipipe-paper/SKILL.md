@@ -2,8 +2,8 @@
 name: haipipe-paper
 description: >-
   The one door for planning, writing, and revising a paper as a graph of Board
-  Pages. Routes Ideation, Story, Evidence/Execution, Section and Round Pages
-  to their contracts and runs each through the shared Page lifecycle.
+  Pages. Routes Ideation, Story, Section and Round Pages through the shared
+  Page lifecycle; Discovery and Task owners execute the external work lane.
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
@@ -55,7 +55,7 @@ the sole paper-level prospective blueprint.
 P0 Ideation (ideate)       💭 Story00-ideation · the repo is minted with this page ·
 │                             ideas cheap and disposable
 │                             gate G0: novelty per claim + pilot + human PROCEED
-P1 Story (plan)            🌱 Story-<letter> · one paper's prospective blueprint
+P1 Story (plan)            🌱 Story<Letter>-<desk>-<idea-slug> · one paper's prospective blueprint
 │                             Seed C1–C5 · Discovery Roadmap C6 · Task Roadmap C7
 │                             Section Narrative C8 · contract: haipipe-paper-story
 │                             gate G1: a reviewed research plan and explicit
@@ -87,7 +87,7 @@ The five Page Types, one line each:
   Story exists; eliminated ideas stay forever; the winning idea's `went to`
   names this board's Story (or, rarely, a sibling repo's).
   `haipipe-paper-ideation` (`paper/workflow-phases/`).
-- **Story** is one paper's prospective blueprint, `Story-<letter>.md`.
+- **Story** is one paper's prospective blueprint, `Story<Letter>-<desk>-<idea-slug>.md`.
   `haipipe-paper-story` owns its eight Content divisions: Seed C1–C5,
   Discovery Roadmap C6, Task Roadmap C7, and Section Narrative C8. It explains
   the question, contribution, present evidence, needed knowledge and study
@@ -263,8 +263,8 @@ Paper-<Slug>/
 ├── board/                      engine-generated HTML (build.py output)
 ├── A1-Story/
 │   ├── Story00-ideation/       P0 · the idea pool · exactly one
-│   └── Story-A/                P1 · one paper's prospective blueprint
-│       └── Story-A.md          Seed · Discovery Roadmap · Task Roadmap ·
+│   └── StoryA-misq-phytrait-discretion/                P1 · one paper's prospective blueprint
+│       └── StoryA-misq-phytrait-discretion.md          Seed · Discovery Roadmap · Task Roadmap ·
 │                               Section Narrative + selected compile order
 │   (a second surviving idea is Story-B/, same shape; no roadmap/narrative children)
 ├── Ba-<desk1>-Main/            P3 · first desk's named Main sections
@@ -301,7 +301,9 @@ build `\input`s. The paper's `delivery/latex/` is built FROM those fragments,
 in the Story's compile order (the C8 `haipipe:compile-order` projection): `master.tex` is generated, `sections/`
 and `appendices/` are copies of the fragments, `displays/` holds copies of
 accepted page-local DISPLAY floats and assets, and `reference.bib` is merged
-from the pages' `outline/evidence/bibex/<page>.bib`. Nothing under `delivery/` is hand-edited; a correction goes
+from the pages' `outline/evidence/bibex/<page>.bib`. Generated delivery artifacts
+are not hand-edited; `paper-build.toml` and the declared adapter remain maintained
+inputs. A prose or evidence correction goes
 back to the owning page and the folder is regenerated whole. `delivery/word/`
 is converted from `delivery/latex/` and never edited either. On send, a copy
 of the current build is frozen in the Round it opens (`RD<NN>/sent/`); on that
@@ -316,7 +318,7 @@ be migrated before current Paper commands are used.
 
 **Group-name grammar (JL 260824; Section IDs re-ruled 260901)** — one `A` group
 carries the per-paper journey: `A1-Story` holds `Story00-ideation` (the pool)
-and one `Story-<letter>` per surviving idea, the paper's prospective blueprint
+and one `Story<Letter>-<desk>-<idea-slug>` per surviving idea, the paper's prospective blueprint
 (JL 260907: the letter is the stable Story identity);
 `B` groups run in lowercase
 letter order across the board, ONE LETTER PER GROUP (JL 260831 "Ba to be Main,
@@ -435,6 +437,12 @@ Page, compatibility alias, or fallback source.
 ## ✅ Completion checks
 
 Before reporting Paper work complete:
+
+Apply these checks to the requested operation. A discussion, draft Story
+proposal, or planning handoff needs its semantic checks and explicit open
+decisions; it does not start a Page RUN, release a Section, require rendered
+deliverables, or close G4. The Page, evidence and assembly checks below apply
+when those artifacts are actually authored, executed or built.
 
 - The active Page Type and Page phase are explicit.
 - The Story passes its eight-division read-through test and preserves the

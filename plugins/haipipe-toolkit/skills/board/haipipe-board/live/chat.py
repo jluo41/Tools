@@ -471,16 +471,24 @@ def page_folder_context(f, root):
     try:
         head = f.read_text(encoding="utf-8", errors="ignore")[:1500]
         m = re.search(r"(?m)^page-type:\s*(\S+)", head)
+        field = "page-type"
+        if not m:
+            # Canonical Task/Discovery Pages use `folder-kind`; do not make
+            # the live hint depend on the retired `page-type: task` spelling.
+            m = re.search(r"(?m)^folder-kind:\s*(\S+)", head)
+            field = "folder-kind"
         if m:
             page_type = m.group(1)
-            # The task Insight Page uses the short public name. Other legacy
-            # Page Type variants retain their established `for-*` names.
-            page_skill = (
-                "haipipe-page-insight"
-                if page_type == "insight"
-                else f"haipipe-page-for-{page_type}"
-            )
-            out.append(f"  · page-type: {page_type}  (load {page_skill} before shaping anything)")
+            # These two Page Types have canonical public doors. Do not
+            # synthesize the retired `haipipe-page-for-task` name. Other
+            # historical Page Type variants retain their established
+            # `for-*` names until their migration is explicit.
+            page_skill = {
+                "insight": "haipipe-page-insight",
+                "task": "haipipe-page-task",
+                "discovery": "haipipe-discovery",
+            }.get(page_type, f"haipipe-page-for-{page_type}")
+            out.append(f"  · {field}: {page_type}  (load {page_skill} before shaping anything)")
     except Exception:
         pass
     o = d / "outline"
