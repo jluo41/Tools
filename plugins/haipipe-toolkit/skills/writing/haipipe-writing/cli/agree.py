@@ -53,13 +53,13 @@ EXT = (".py", ".md", ".yml", ".yaml", ".json", ".sh", ".ps1", ".tex", ".css",
 PLACEHOLDER = re.compile(r"^<[^>]+>/")
 # ONLY a path that points into the skills tree is checked. The first sweep
 # checked every path-shaped token and returned 1393 findings, of which the
-# common ones were `1-probes/`, `results/`, `runs/<RUN>.sh`: shapes a
+# common ones were `outline/evidence/`, `results/`, `runs/<RUN>.sh`: shapes a
 # skill DESCRIBES, folders a paper will grow or a run will produce. None of
 # them is a citation and none of them can resolve, so reporting them is the
 # crying-wolf failure this file's docstring promises not to commit.
 # A cross-skill citation is different: it names a real file, a reader is meant
 # to open it, and if it does not resolve the instruction cannot be followed.
-FAMILIES = {"paper", "board", "probe", "display", "writing", "task", "discovery",
+FAMILIES = {"paper", "board", "display", "writing", "task", "discovery",
             "application", "project", "0_connect", "0_utils", "skills"}
 
 

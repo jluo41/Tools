@@ -2,19 +2,19 @@
 name: haipipe-task
 description: >-
   Task-family door and canonical owner of Task Folder execution and closure:
-  runs Plan → Build → Execute → Report, keeps the run-bound technical Page Face, iterates blocks, answers source
+  a Task Folder is the same physical Folder as its Page Folder at tNN_<task>/.
+  Runs Plan → Build → Execute → Report on that Folder, keeps the run-bound technical Page Face, iterates blocks, answers source
   questions through bounded Runs/Results, creates topic-instance Insight Pages with item Runs through
   `insight`, and routes reader-facing Task Pages through the
   haipipe-page-task companion.
   Use for task execution, Task Board status, Run/Result interpretation, or
-  Supporting/Local Run wiring. Hierarchy: block to job to task to run (task-group and
-  task-folder are the pre-260829 names for block and job). Trigger: task,
+  Supporting/Local Run wiring. Hierarchy: block to job to Task Folder to run. Trigger: task,
   job, block, task folder, task group, Task Board, plan, build, execute,
   report, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.17.0"
-  last_updated: "2026-09-07"
+  version: "0.18.0"
+  last_updated: "2026-09-08"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -30,15 +30,19 @@ metadata:
 Skill: haipipe-task (orchestrator)
 ===========================================
 
-Build orchestrator organized around the **task hierarchy** (settled JL
-260829; old names: task-group = BLOCK, task-folder = JOB):
+Build orchestrator organized around the **task hierarchy**:
+
+**Task Folder = Page Folder = `tNN_<task>/`.** These are two names for the
+same physical Folder seen through its Task Face and Page Face. `jNN_<job>/` is
+only a Job, never a Task Folder. Do not create a second Page Folder inside or
+beside a Task Folder.
 
 
 ```
 project        examples/Proj{...}/
   └── block    tasks/bNN_{name}/           one large topic; prefer FEW blocks
         └── job    jNN_{name}/              self-contained, submittable (= Databricks Job)
-              ├── tNN_<task>/              TASK = PAGE, self-contained (260830):
+              ├── tNN_<task>/              TASK FOLDER = PAGE FOLDER, self-contained:
               │     ├── tNN_<task>.md          the page a reader opens
               │     ├── scripts/               THE TASK'S OWN CODE (260831); shared code is the job's src/
               │     │     ├── <stem>.py        the pipeline
@@ -71,9 +75,10 @@ project        examples/Proj{...}/
               and C3-Visual-ForecastScaling. Detect a job by STRUCTURE, never by name.
 ```
 
-This skill owns **job**, **block**, and the Task/Insights Board entry surface.
-For a job, it runs the 4-phase code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. 
-For a block, it iterates over each child job and runs the lifecycle on each one. Type specialists (one per type):
+This skill owns **Task Folder**, **job**, **block**, and the Task/Insights Board entry surface.
+For a Task Folder, it runs the 4-phase code lifecycle (Plan → Build → Execute → Report).
+For a Job or Block, it enumerates Task Folders and runs that lifecycle on each one; a pre-260829 flat Job remains readable as one implicit Task.
+For new scaffolding it dispatches to a type specialist, which creates a Job containing at least one Task Folder. Type specialists (one per type):
 
 ### A Block is a Task Block Board
 
@@ -126,21 +131,21 @@ Commands
 Each verb's full contract lives in its own `fn/` file (cited below) — read that, do not re-derive from here.
 
 ```
-/haipipe-task plan <job-path>                        Phase 1: design the IPO contract (fn/stage-plan.md)
-/haipipe-task build <job-path>                        Phase 2: implement the contract as code
-/haipipe-task execute <job-path>                      Phase 3: run the code (or human runs manually)
-/haipipe-task report <job-path>                       Phase 4: summarize results vs plan (fn/stage-report.md)
+/haipipe-task plan <task-folder-path>                 Phase 1: design the Task Folder IPO contract (fn/stage-plan.md)
+/haipipe-task build <task-folder-path>                Phase 2: implement the Task Folder contract as code
+/haipipe-task execute <task-folder-path>              Phase 3: run its ticket (or human runs manually)
+/haipipe-task report <task-folder-path>               Phase 4: summarize its Results vs plan (fn/stage-report.md)
 
-/haipipe-task <existing-job-path>                     full lifecycle (all 4 phases)
-/haipipe-task <existing-block-path>                   iterate: full lifecycle on each child job
-/haipipe-task <phase> <existing-block-path>           iterate: that phase on each child job
+/haipipe-task <existing-task-folder-path>             full lifecycle on one Task Folder
+/haipipe-task <existing-job-path>                     iterate its Task Folders; flat legacy Job = one implicit Task
+/haipipe-task <existing-block-path>                   iterate every Task Folder under its Jobs
+/haipipe-task <phase> <job-or-block-path>             iterate that phase over resolved Task Folders
 
 /haipipe-task job <type> [args...]                    scaffold a NEW job via type specialist
 /haipipe-task block <block-path|name>                 scaffold a NEW block (fn/task-group.md)
-   (`task-folder` and `task-group` are accepted ALIASES for `job` and `block` — the pre-260829 names)
 
-/haipipe-task run <job-path> [run-name]               execute one ticket with logging conventions (fn/run.md)
-/haipipe-task audit <block-or-job-path>               structural audit vs the runname-spine contract (fn/audit.md)
+/haipipe-task run <task-folder-path> [run-name]        execute one ticket with logging conventions (fn/run.md)
+/haipipe-task audit <task|job|block-path>              structural audit vs the runname-spine contract (fn/audit.md)
 /haipipe-task scan-status [project-path]              status scan across blocks (fn/scan-status.md)
 
 /haipipe-task insight "<topic>" [<board>]  create/resume an Insight instance and its item Runs (fn/insight.md)
@@ -464,19 +469,21 @@ Step 2: Resolve scope. Cascade:
         routes to `haipipe-page-insight`. There is no separate question verb.
   (0.7) KNOWLEDGE DOOR `insight` — first positional is `insight` → read `fn/insight.md`, resolve the Task/Insights Board, and create or resume a topic/data instance with item Runs through `haipipe-page-insight`. This is not a blanket P-B-E-R dispatch: return after the item's workflow has produced its next action or requested outcome.
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
-      - path is an existing job → scope=single-phase on that job (Step 3c).
-      - path is an existing block → scope=block-iterate with stages=[that stage] (Step 3d).
-  (2) `job` (alias `task-folder`) as first positional → scope=new job (scaffold). `block` (alias `task-group`) as first positional → scope=new block: read `fn/task-group.md` and run it inline. Stop.
+      - path is an existing Task Folder → scope=single-phase on that Folder (Step 3c).
+      - path is an existing Job or Block → scope=container-iterate with stages=[that stage] (Step 3d).
+  (2) `job` as first positional → scope=new job (scaffold). `block` as first positional → scope=new block: read `fn/task-group.md` and run it inline. Stop.
   (3) first positional is a known task-type (`data` / `raw` / `algo` / `fit` / `eval` / `display` / `individual` / `agent` / `endpoint` / `page`) → scope=job, task-type=that positional.
-  (4) first positional is a path to an existing block → scope=block-iterate (Step 3d).
-  (5) first positional is a path to an existing job → scope=full lifecycle (all 4 phases via Step 3c).
+  (4) first positional is a path to an existing Task Folder → scope=full lifecycle (all 4 phases via Step 3c).
+  (5) first positional is a path to an existing Job or Block → scope=container-iterate (Step 3d).
   (6) no args at all → default:
-      - cwd is inside a job → scope=full lifecycle (Step 3c).
-      - cwd is inside a block (but not inside a job) → scope=block-iterate (Step 3d).
+      - cwd is inside a Task Folder → scope=full lifecycle (Step 3c).
+      - cwd is inside a Job or Block → scope=container-iterate (Step 3d).
       - else → scope=job (scaffold).
   (7) still missing: AUTO → status: blocked. Interactive → ASK.
 
-  Block vs job — detect by STRUCTURE, never by NAME. A path is a JOB if it
+  Task Folder vs Job vs Block — detect by STRUCTURE first. A canonical Task
+  Folder is a direct Job child with a same-stem `.md`, `scripts/`, and `runs/`;
+  its `tNN_` prefix confirms, but does not replace, that structure. A path is a JOB if it
   holds a `.py` at its root (or `scripts/`, `src/`, `workflow/`, `results/`, `configs/`, `runs/`). It is a
   BLOCK if it holds jobs and has none of those of its own.
 
@@ -491,7 +498,7 @@ Step 3: Branch by scope:
   - scope=execute → run Stage 3 only (bash the ticket)
   - scope=report → run Stage 4 only (creator drafts report.yaml, reviewer checks)
   - scope=full lifecycle → run all 4 phases via Step 3c (Workflow tool)
-  - scope=block-iterate → enumerate children, run per-child via Step 3d
+  - scope=container-iterate → enumerate Task Folders, run per-Folder via Step 3d
   - scope=job (new) → resolve task-type via Step 3a cascade, then Skill("haipipe-task-for-<type>", args="<remaining_args> [--auto]")
 
 
@@ -499,7 +506,7 @@ Step 3a (scope=job only): Task-type inference cascade.
 
   Highest-to-lowest confidence:
 
-  (1) EXPLICIT — type given as positional after `job` (alias `task-folder`), or already pinned at Step 2 cascade (2). Done.
+  (1) EXPLICIT — type given as positional after `job`, or already pinned at Step 2 cascade (2). Done.
 
   (2) SCRIPT-INFERRED — if pwd is inside an existing job, read the main `*.py` script plus the task's `scripts/` and the job's `src/` code. Detect type from imports and content:
     - `from haipipe` / `SourceFn` / `RecordFn` → data
@@ -545,13 +552,18 @@ Step 3b (scope=job only): Parent existence cascade.
 
 Step 3c: Full lifecycle or single phase.
 
+  The canonical lifecycle target is one `tNN_<task>/` Task Folder. Its
+  `workflow/`, `scripts/`, `runs/`, `outline/`, and same-stem Page stay at that
+  address; generated Results resolve through the parent Job. A legacy flat Job
+  may be supplied only as one implicit Task compatibility target.
+
   Run via the Workflow tool:
 
   ```
   Workflow({
     scriptPath: "Tools/plugins/haipipe-toolkit/skills/task/haipipe-task/ref/task-lifecycle.workflow.js"
   }, {
-    task_folder: "<path>",
+    task_folder: "<path-to-tNN-task-folder>",
     type: "<detected from Step 3a, or null for auto-detect>",
     stages: ["plan", "build", "execute", "report"],
     autoExecute: false
@@ -563,35 +575,34 @@ Step 3c: Full lifecycle or single phase.
   All generated plan/report files follow the haipipe-workflow IPO schema at `task/haipipe-workflow/ref/plan-schema.md`. Every plan YAML starts with an IPO tree preview comment with emojis.
 
 
-Step 3d: Block iteration (scope=block-iterate).
+Step 3d: Container iteration (scope=container-iterate).
 
-  The lifecycle scope stays at job — this step just loops over children. No workflow/ artifacts are ever created at the block level.
+  The lifecycle scope stays at Task Folder. No lifecycle `workflow/` artifacts
+  are created at Job or Block level for new work.
 
-  (1) ENUMERATE — list child jobs in the block directory:
+  (1) ENUMERATE — resolve canonical Task Folders:
       ```
-      for d in <block-path>/*/; do
-        # a JOB is a directory that holds work — not one whose NAME matches a pattern
-        [ -n "$(find "$d" -maxdepth 1 -name '*.py' -print -quit)" ] || [ -d "$d/src" ] ||
-        [ -d "$d/scripts" ] || [ -d "$d/workflow" ] || [ -d "$d/results" ] ||
-        [ -d "$d/configs" ] || [ -d "$d/runs" ] || continue
-        echo "$d"
-      done | sort
+      # Job target: direct Task Folder children.
+      find <job-path> -mindepth 1 -maxdepth 1 -type d -name 't[0-9][0-9]_*' | sort
+
+      # Block target: Task Folders exactly one Job level below.
+      find <block-path> -mindepth 2 -maxdepth 2 -type d -name 't[0-9][0-9]_*' | sort
       ```
-      ⛔ Do NOT glob `{NN}_*/` — see the STRUCTURE-not-NAME rule in Step 2 (it skips 31% of
-      the bank). The structural test also excludes `__pycache__/`, `figures/`, `sbatch/` and
-      `diagram/` for free, because they hold no work.
+      Validate each candidate by same-stem Page + `scripts/` + `runs/`. If a
+      Job has no canonical Task child but has the flat legacy runtime shape,
+      yield that Job once as an implicit-Task compatibility target.
 
   (2) CONFIRM — log the block path, the N children found (numbered `[i/N]`), and the stages
       to run. In interactive mode, ASK to confirm before proceeding. In AUTO_MODE, proceed
       directly.
 
-  (3) ITERATE — for each child job, in order:
-      - Log: `── [i/N] <child_name> ──`
-      - Call the SAME `Workflow(...)` as Step 3c, with `task_folder: "<block-path>/<child>/"`,
+  (3) ITERATE — for each resolved Task Folder, in order:
+      - Log: `── [i/N] <job>/<task> ──`
+      - Call the SAME `Workflow(...)` as Step 3c, with `task_folder: "<task-folder-path>/"`,
         `type: null`, and the requested `stages` (default all four).
       - Collect the result. If a child fails (status=failed), log the failure and continue to the next child — do NOT stop the block iteration.
 
-  (4) AGGREGATE — after all children complete, emit a block summary: one `[i/N] <child> —
+  (4) AGGREGATE — after all children complete, emit a container summary: one `[i/N] <job>/<task> —
       ok|failed (<per-phase verdicts>)` line per child, then an `Overall: N ok, M failed` tally.
 
 
@@ -651,13 +662,15 @@ Invocation examples
 --------------------
 
 ```
-# the SAME path is a JOB or a BLOCK; the verb is identical, the scope differs
-/haipipe-task       .../tasks/b03_band4/j01_band4    JOB:   all 4 phases
-/haipipe-task plan  .../tasks/b03_band4/j01_band4    JOB:   one stage
-/haipipe-task       .../tasks/b03_band4              BLOCK: all 4 phases on EACH child
-/haipipe-task plan  .../tasks/b03_band4              BLOCK: that phase on EACH child
+# one Task Folder is one Page Folder and one lifecycle target
+/haipipe-task       .../tasks/b03_band4/j01_rank/t01_score_physicians
+/haipipe-task plan  .../tasks/b03_band4/j01_rank/t01_score_physicians
 
-# scaffold a NEW job (dispatches to the type specialist; `task-folder` = alias)
+# containers iterate their Task Folders
+/haipipe-task       .../tasks/b03_band4/j01_rank     JOB:   each Task Folder
+/haipipe-task plan  .../tasks/b03_band4              BLOCK: one phase on every Task Folder
+
+# scaffold a NEW Job containing a Task Folder
 /haipipe-task job data
 /haipipe-task job eval --project-id Project-REACH-ADHD --group b03_band4
 

@@ -72,7 +72,7 @@ The realization worker:
    paragraph/section move, and all evidence needed for its factual claims.
 2. Reads the exact folded Evidence Results and the host's requirements or venue
    policy. It does not treat a related link, a plausible fact, or an unfinished
-   probe as evidence.
+   Run as evidence.
 3. Writes the planned job in reader order. It may choose sentence shape,
    explanation, a content-bearing hinge, and paragraph rhythm; it may not add,
    reorder, broaden, or silently weaken the approved argument.
@@ -205,7 +205,7 @@ tests/test_roundtrip.py     does what `apply` writes, `check` accept?
 
 `agree.py` exists because three defects surfaced on 260802 in one afternoon and all three were one shape: two halves of a contract, stating one fact, disagreeing, with nothing comparing them. It compares the two that are static, a declared version against its changelog and a cited path against the disk. The third was a round trip, which no grep can see, so it is a test instead.
 
-⚠️ It is a FLOOR, not a proof. It checks the two disagreements that have actually bitten, and it stays quiet about path-shaped nouns a skill merely describes, such as `results/` or `1-probes/`, because a checker that cries wolf stops being read.
+⚠️ It is a FLOOR, not a proof. It checks the two disagreements that have actually bitten, and it stays quiet about path-shaped nouns a skill merely describes, such as `results/` or `outline/evidence/`, because a checker that cries wolf stops being read.
 
 ## 🚧 8 · What this does NOT own
 

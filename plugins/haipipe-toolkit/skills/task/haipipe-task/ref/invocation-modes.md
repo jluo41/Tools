@@ -24,7 +24,8 @@ The required inputs for a silent run:
 ```
 □ run NAME              (run_-prefixed, snake_case)
 □ _meta.purpose         (the one hard-required field)
-□ job target            (resolved, not "ASK from cwd")
+□ Job target            (resolved parent container, not "ASK from cwd")
+□ Task Folder target    (`tNN_<task>/`, also the Page Folder)
 □ type params           (the type's hyperparams / pipeline config)
 ```
 
@@ -57,12 +58,15 @@ a human):
 
 ```
 status:       ok | blocked | failed
-task_folder:  <absolute path to the scaffolded folder>     (on ok)
+job:          <absolute path to the parent jNN_<job>>      (on ok)
+task_folder:  <absolute path to tNN_<task>>                (on ok; same as Page Folder)
 run_name:     <NAME>
-files:        [configs/<NAME>.yaml, runs/<NAME>.sh, results/<NAME>/, notebooks/<NAME>.ipynb]
+files:        [scripts/config/<NAME>.yaml, runs/<NAME>.sh, $OUTPUT_ROOT/results/<task>/<NAME>/]
 missing:      [<field>, ...]                                (on blocked)
 note:         <one line>
 ```
 
-A creator agent reads `task_folder` to know where to author the `<TASK>.py`
-body; an interactive human just reads the prose.
+A creator agent reads `task_folder` to know where to author
+`scripts/<TASK>.py` and the same-stem Page. It reads `job` only for shared
+`src/`, batch orchestration, and resolved Result/Notebook roots. A new
+specialist may not return the Job path in `task_folder`.

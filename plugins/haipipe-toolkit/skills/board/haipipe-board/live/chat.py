@@ -464,8 +464,8 @@ def prime_context(f, board, root):
 
 def page_folder_context(f, root):
     """What the page's own folder says at connect time (Studio ref/chat.md §🧠):
-    page-type, the plan and its tick, open threads, open feedback rows, evidence
-    owed/landed, the page's skill list and task list. Read from disk, never
+    page-type/folder-kind, the plan and its tick, open threads, open feedback
+    rows, evidence owed/landed, the page's skill list and task list. Read from disk, never
     guessed; every part is optional so a page with none still boots."""
     f = Path(f); d = f.parent; stem = f.stem; out = []
     try:
@@ -633,7 +633,7 @@ under it) and the strip in your reply:
                                       or change Shape; v0 returns to SHAPE, G>=1 routes CONTENT
   03 CONTENT /haipipe-page-content    WRITE: Draft → Revise → Build → Pre-check; normally one
                                       Page Division Writing Run per commissioned division
-  04 CHECK   dispatch haipipe-page-check-agent (a fresh judge); whole-Page, read-only Quality Check
+  04 CHECK   dispatch haipipe-page-check-agent (a fresh judge); whole-Page, read-only CHECK gate
 Announce the phase/cycle on every reply (`01 OUTLINE / SURVEY · <page>`). SHAPE → SURVEY → LAND → EMBED → SHAPE
 until the plan and its runs agree; every evidence number is answered by a RUN, the run computes
 and the page interprets; WRITE runs without asking; never write the person's ticks (approved:,

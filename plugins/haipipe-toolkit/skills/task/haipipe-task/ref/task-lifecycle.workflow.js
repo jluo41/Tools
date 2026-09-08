@@ -1,6 +1,6 @@
 export const meta = {
   name: 'haipipe-task-lifecycle',
-  description: 'Four-stage code lifecycle for a task folder: Plan → Build → Execute → Report.',
+  description: 'Four-stage lifecycle for one tNN Task Folder / Page Folder: Plan → Build → Execute → Report.',
   phases: [
     { title: 'Plan', detail: 'creator drafts plan.yaml → reviewer checks → loop if revise' },
     { title: 'Build', detail: 'creator writes/fixes code → reviewer checks → loop if revise' },
@@ -10,8 +10,8 @@ export const meta = {
 }
 
 const parsed = typeof args === 'string' ? JSON.parse(args) : (args || {})
-const folder = parsed.job ?? parsed.task_folder   // `job` is the 260829 name; `task_folder` kept for existing callers
-if (!folder) { log('task-lifecycle: no task_folder in args'); return { status: 'blocked', reason: 'missing task_folder' } }
+const taskFolder = parsed.task_folder ?? parsed.job // `job` is flat implicit-Task compatibility only
+if (!taskFolder) { log('task-lifecycle: no task_folder in args'); return { status: 'blocked', reason: 'missing task_folder' } }
 const hintType = parsed.type || null
 const stages = parsed.stages || ['plan', 'build', 'execute', 'report']
 const autoExecute = !!parsed.autoExecute
@@ -20,7 +20,7 @@ const runPlan = stages.includes('plan')
 const runBuild = stages.includes('build')
 const runExecute = stages.includes('execute') && autoExecute
 const runReport = stages.includes('report')
-log(`task-lifecycle: ${folder}, type=${hintType || 'auto'}, stages=[${stages}], autoExecute=${autoExecute}, maxRetries=${maxRetries}`)
+log(`task-lifecycle: ${taskFolder}, type=${hintType || 'auto'}, stages=[${stages}], autoExecute=${autoExecute}, maxRetries=${maxRetries}`)
 
 const CREATOR_RESULT = {
   type: 'object', required: ['stage', 'status'],
@@ -31,7 +31,7 @@ const CREATOR_RESULT = {
     plan_path: { type: 'string' },
     script_plans: { type: 'array', items: { type: 'string' } },
     job: { type: 'string' },
-    task_folder: { type: 'string' },   // alias of `job` (pre-260829 name)
+    task_folder: { type: 'string' },
     files: { type: 'array', items: { type: 'string' } },
     report_path: { type: 'string' },
     phases: { type: 'number' },
@@ -71,7 +71,7 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
   const retryNote = attempt > 0 ? `\n\nATTEMPT ${attempt + 1}. Reviewer feedback from previous attempt:\n${planFeedback}\nAddress these specific issues.` : ''
 
   planResult = await agent(
-    `Stage: PLAN. Task folder: ${folder}. Type hint: ${hintType || 'auto-detect from script'}.\n\n` +
+    `Stage: PLAN. Task Folder: ${taskFolder}. Type hint: ${hintType || 'auto-detect from script'}.\n\n` +
     `Create IPO-compliant workflow plan files:\n` +
     `1. Check if workflow/plan.yaml already exists — if so, READ it and IMPROVE it (do not start from scratch)\n` +
     `2. Read the main .py script to understand phases\n` +
@@ -101,7 +101,7 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
   }
 
   planReview = await agent(
-    `Stage: PLAN review. Task folder: ${folder}.\n\n` +
+    `Stage: PLAN review. Task Folder: ${taskFolder}.\n\n` +
     `Review the plan files just created:\n` +
     `- workflow/plan.yaml\n` +
     `- workflow/plan-script-*.yaml\n\n` +
@@ -148,16 +148,13 @@ phase('Build')
 for (let attempt = 0; attempt <= maxRetries; attempt++) {
   const retryNote = attempt > 0 ? `\n\nATTEMPT ${attempt + 1}. Reviewer feedback from previous attempt:\n${buildFeedback}\nAddress these specific issues.` : ''
 
-  // Two job shapes (hierarchy.md "Two job shapes"): NESTED — <task>/config/<run>.yaml,
-// <task>/runs/<run>.sh, results/<task>/<run>/, notebooks/<task>/<run>.ipynb, shared src/;
-// FLAT legacy — configs/<run>.yaml + runs/<run>.sh at job root. Detect from the folder
-// (a tNN_* child dir at job root = nested 260830; a scripts/ dir with tNN_* children =
-// nested pre-260830; neither = flat) and verify the MATCHING structure.
+  // The canonical target is one tNN Task Folder. A pre-260829 flat Job may
+// enter only as an implicit-Task compatibility target.
 const shapeRule =
-  `\n\nJOB SHAPE: jobs are NESTED (<task>/config/<run>.yaml · <task>/runs/<run>.sh · ` +
-  `results/<task>/<run>/ · notebooks/<task>/<run>.ipynb) or FLAT legacy (configs/<run>.yaml · ` +
-  `runs/<run>.sh at job root). Detect the shape from the folder (scripts/ with {NN}_* children ` +
-  `= nested) and verify/create files in THAT shape — never "fix" a nested job flat. ` +
+  `\n\nTASK FOLDER SHAPE: canonical input is tNN_<task>/ with same-stem Page, ` +
+  `scripts/config/<run>.yaml, and runs/<run>.sh. Generated Results resolve at the parent Job's ` +
+  `results/<task>/<run>/ and notebooks/<task>/<run>.ipynb. A flat legacy Job may be read as one ` +
+  `implicit Task with configs/<run>.yaml and runs/<run>.sh; never emit that flat shape for new work. ` +
   `See haipipe-task/ref/hierarchy.md "Two job shapes".`
 
 const templateRule = isTemplateBased
@@ -170,16 +167,16 @@ const templateRule = isTemplateBased
     : ''
 
   buildResult = await agent(
-    `Stage: BUILD. Task folder: ${folder}. Type: ${detectedType}.` +
+    `Stage: BUILD. Task Folder: ${taskFolder}. Type: ${detectedType}.` +
     (isTemplateBased ? ' (template-based — DO NOT modify the .py script)' : '') +
     `\n\n` +
     (isTemplateBased
-      ? `Verify the job structure (do NOT touch the .py script):\n` +
+      ? `Verify the Task Folder structure (do NOT touch the .py script):\n` +
         `- Verify the main .py exists and is an exact template copy (DO NOT modify it)\n` +
         `- Create missing config (<run>.yaml) and ticket (<run>.sh) in the job's shape if needed\n` +
         `- Create missing notebooks/, results/ dirs\n` +
         `- Verify the run config has all required fields for this task type\n`
-      : `Fix/scaffold the job structure:\n` +
+      : `Fix/scaffold the Task Folder structure:\n` +
         `- Add # %% cell markers at logical phase boundaries\n` +
         `- Create missing run config (extract hardcoded constants)\n` +
         `- Create missing notebooks/, workflow/ dirs\n` +
@@ -197,10 +194,10 @@ const templateRule = isTemplateBased
   }
 
   buildReview = await agent(
-    `Stage: BUILD review (Gate 1). Task folder: ${folder}. Type: ${detectedType}.` +
+    `Stage: BUILD review (Gate 1). Task Folder: ${taskFolder}. Type: ${detectedType}.` +
     (isTemplateBased ? ' (template-based)' : '') +
     `\n\n` +
-    `Review the task folder:\n` +
+    `Review the Task Folder:\n` +
     (isTemplateBased
       ? `1. Verify the .py is an unmodified template copy (DO NOT suggest edits to template code)\n` +
         `2. Check runname-spine compliance (config + ticket + results + notebooks, in the job's shape)\n` +
@@ -211,7 +208,7 @@ const templateRule = isTemplateBased
         `3. Check runname-spine compliance (config + ticket + results + notebooks, in the job's shape)\n` +
         `4. Check that configs/<run>.yaml has all constants from the script\n`
     ) +
-    `\nWrite CODE_REVIEW.md in the task folder.\n` +
+    `\nWrite CODE_REVIEW.md in the Task Folder.\n` +
     `Return verdict: pass, warn, revise (with feedback for creator), or fail (stop).`,
     { label: `build:review:${attempt}`, phase: 'Build', agentType: 'haipipe-task-reviewer-agent', schema: REVIEWER_RESULT }
   )
@@ -241,14 +238,14 @@ if (!runExecute) {
 } else {
   phase('Execute')
   runResult = await agent(
-    `Stage: EXECUTE. Task folder: ${folder}.\n` +
-    `Run the job's ticket (runs/<RUN>.sh, or <task>/runs/<RUN>.sh in a nested job). Report status. Do NOT modify code.` + shapeRule,
+    `Stage: EXECUTE. Task Folder: ${taskFolder}.\n` +
+    `Run this Task Folder's runs/<RUN>.sh ticket. Report status. Do NOT modify code.` + shapeRule,
     { label: 'execute:run', phase: 'Execute', schema: RUN_RESULT }
   )
 
   if (runResult && runResult.status === 'ok') {
     executeReview = await agent(
-      `Stage: EXECUTE review (Gate 2). Task folder: ${folder}.\n\n` +
+      `Stage: EXECUTE review (Gate 2). Task Folder: ${taskFolder}.\n\n` +
       `Audit the run results:\n` +
       `1. All expected outputs exist per workflow/plan.yaml\n` +
       `2. metrics.json well-formed\n` +
@@ -284,7 +281,7 @@ if (!runReport) {
     ].join(', ')
 
     reportResult = await agent(
-      `Stage: REPORT. Task folder: ${folder}.\n\n` +
+      `Stage: REPORT. Task Folder: ${taskFolder}.\n\n` +
       `Generate report files mirroring the plan:\n` +
       `1. Read workflow/plan.yaml and workflow/plan-script-*.yaml\n` +
       `2. Read execution evidence: results/, CODE_REVIEW.md, RUN_AUDIT.md\n` +
@@ -307,7 +304,7 @@ if (!runReport) {
     if (!reportResult || reportResult.status !== 'ok') break
 
     reportReview = await agent(
-      `Stage: REPORT review. Task folder: ${folder}.\n\n` +
+      `Stage: REPORT review. Task Folder: ${taskFolder}.\n\n` +
       `Check the report files:\n` +
       `1. Does report mirror plan structure exactly (same phases, same steps)?\n` +
       `2. Is every step status accurate (done/skipped/failed matches reality)?\n` +
@@ -330,7 +327,7 @@ if (!runReport) {
 
 // ─── Output ────────────────────────────────────────────────────
 return {
-  task_folder: folder,
+  task_folder: taskFolder,
   type: detectedType,
   stages: {
     plan:    { creator: planResult ? planResult.status : null, reviewer: planReview ? planReview.verdict : null },

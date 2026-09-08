@@ -3,6 +3,16 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.18.0 · 2026-09-08
+
+- Make `Task Folder = Page Folder = tNN_<task>/` the canonical identity and
+  reserve `jNN_<job>/` for the parent Job container.
+- Move the current P-B-E-R target and workflow prompts to one Task Folder;
+  Jobs and Blocks now iterate Task Folders, while flat Jobs remain
+  implicit-Task compatibility inputs only.
+- Retire `task-folder` as a Job command alias and constrain the workflow's
+  legacy `job` argument to flat implicit-Task reads.
+
 ## 0.17.0 · 2026-09-08
 
 - Topic/data-instance Insight Pages contain independently runnable items and versioned Results.

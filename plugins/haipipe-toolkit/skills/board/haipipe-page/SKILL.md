@@ -7,8 +7,8 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.60.4"
-  last_updated: "2026-09-07"
+  version: "0.61.1"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -40,6 +40,11 @@ person can inspect the Outline table, the evidence that can be opened now
 compiled Page-level PDF without searching through process output.
 
 ## 📁 What a page is on disk
+
+For a canonical Task Page, **Task Folder = Page Folder =
+`tNN_<task>/`**. The same-stem Markdown, `outline/`, `workflow/`, `scripts/`,
+and `runs/` belong to that one Folder. Do not create a Page Folder beneath the
+Task Folder; the parent `jNN_<job>/` remains only the Job container.
 
 A page is one markdown file (the PRODUCT: what the page asserts) beside one
 process folder (how it came to assert it) and the plugin lanes it actually

@@ -61,8 +61,9 @@ BIB = LATEX / CFG["source"]["bibliography"]
 MASTER = LATEX / CFG["source"]["master"]
 OUT = CFG["outputs"]
 # 0.6.1 · paper-level switches, all opt-in through paper-build.toml (JL 260908, Paper-AgreeableOpioid-Jama):
-#   [evidence] draft_includes_unready = true   a DRAFT prints every page that has a body fragment, tagged
-#                                              "[DRAFT PAGE · reason]"; readiness accounting is unchanged
+#   [evidence] draft_includes_unready = true   a DRAFT prints every page that has a body fragment; the page's
+#                                              not-ready reasons stay in build-manifest.json and the display
+#                                              register, never inside the reader's PDF/DOCX (JL 260908)
 #   [source]   preamble = "preamble.tex"       a paper-owned preamble file beside paper-build.toml, inlined
 #                                              into the generated master (packages, column types, unicode maps)
 #   [paper]    venue_profile = "jama-internal-medicine"  title-page center block, JAMA section boundaries,
@@ -390,9 +391,6 @@ def write_master(main, appx, status, ready_n, total_n):
 """
     body = []
     for p, floats in main:
-        if p.get("included", p["ready"]) and not p["ready"]:
-            note = "; ".join(p["reasons"]).replace("_", r"\_").replace("<", r"$<$").replace(">", r"$>$")
-            body.append(r"\noindent\textcolor{red!70!black}{\small\textit{[DRAFT PAGE · " + note + "]}}")
         if p.get("included", p["ready"]) and p["id"].endswith("-Abstract"):
             body.append(rf"\input{{sections/{p['id']}}}"); body.append(""); continue
         if p.get("included", p["ready"]):
@@ -415,9 +413,6 @@ def write_master(main, appx, status, ready_n, total_n):
         tail += ["\\setcounter{table}{0}\\renewcommand{\\tablename}{eTable}\\renewcommand{\\thetable}{\\arabic{table}}",
                  "\\setcounter{figure}{0}\\renewcommand{\\figurename}{eFigure}\\renewcommand{\\thefigure}{\\arabic{figure}}", ""]
     for p, floats in appx:
-        if p.get("included", p["ready"]) and not p["ready"]:
-            note = "; ".join(p["reasons"]).replace("_", r"\_").replace("<", r"$<$").replace(">", r"$>$")
-            tail.append(r"\noindent\textcolor{red!70!black}{\small\textit{[DRAFT PAGE · " + note + "]}}")
         if p.get("included", p["ready"]):
             tail.append(rf"\input{{appendices/{p['id']}}}")
             tail += [rf"\input{{displays/{f}/float}}" for f in floats]

@@ -1,6 +1,6 @@
 # ─── Task Workflow Template ──────────────────────────────────────
-# Generic IPO template for any haipipe task folder.
-# Copy to <job>/workflow/plan.yaml and fill in the blanks.
+# Generic IPO template for one canonical haipipe Task Folder / Page Folder.
+# Copy to <job>/tNN_<task>/workflow/plan.yaml and fill in the blanks.
 #
 # Schema: task/haipipe-workflow/ref/plan-schema.md
 # Concepts: task/haipipe-workflow/ref/concepts.md
@@ -13,23 +13,17 @@
 name: <TASK_NAME>                        # kebab-case, e.g. eval-band4-vs-20arm
 purpose: "<one line: what and why>"
 skill: <TASK_TYPE_SKILL>                 # e.g. haipipe-task-for-eval
-task_folder: <PATH_TO_JOB>              # relative to project root. (The Workflow
-                                        # CALL argument accepts `job` as an alias of
-                                        # task_folder; this plan.yaml field itself is
-                                        # still spelled task_folder.)
-                                        # NESTED jobs (hierarchy.md "Two job shapes"):
-                                        # every files_in/files_out example below gains a
-                                        # task segment — <task>/config/<RUN>.yaml,
-                                        # results/<task>/<RUN>/..., notebooks/<task>/<RUN>.ipynb.
+task_folder: <PATH_TO_tNN_TASK_FOLDER>  # relative to project root; this is also
+                                        # the Page Folder, never the parent Job.
 
 # ─── I: Input ────────────────────────────────────────────────────
 input:
   args:
-    config: configs/<RUN>.yaml        # the frozen config for this task
+    config: scripts/config/<RUN>.yaml   # the frozen config for this Task
     # add task-specific args here
   files_in:
-    - <SCRIPT>.py                        # main computation script
-    - configs/<RUN>.yaml              # per-run config
+    - scripts/<SCRIPT>.py                # main computation script
+    - scripts/config/<RUN>.yaml          # per-Run config
     # - _WorkSpace/...                   # upstream data dependencies
 
 # ─── P: Phases ───────────────────────────────────────────────────
@@ -44,12 +38,12 @@ phases:
         prompt: |
           <What this step does. Be specific about computation.>
         files_in:
-          - <SCRIPT>.py
-          - configs/<RUN>.yaml
+          - scripts/<SCRIPT>.py
+          - scripts/config/<RUN>.yaml
           # - _WorkSpace/...             # upstream dependencies
         files_out:
-          - results/<RUN>/<OUTPUT>       # light artifacts (in-repo)
-          - notebooks/<RUN>.ipynb        # papermill execution record
+          - $OUTPUT_ROOT/results/<task>/<RUN>/<OUTPUT>
+          - $OUTPUT_ROOT/notebooks/<task>/<RUN>.ipynb
 
   - title: Gate1
     detail: "pre-run code quality review"
@@ -60,8 +54,8 @@ phases:
         agentType: haipipe-task-reviewer-agent
         prompt: "gate 1: review <SCRIPT>.py for intent-vs-implementation bugs"
         files_in:
-          - <SCRIPT>.py
-          - configs/<RUN>.yaml
+          - scripts/<SCRIPT>.py
+          - scripts/config/<RUN>.yaml
         files_out:
           - CODE_REVIEW.md
         schema:
@@ -81,7 +75,7 @@ phases:
         agentType: haipipe-task-reviewer-agent
         prompt: "gate 2: audit results of <RUN>"
         files_in:
-          - results/<RUN>/*
+          - $OUTPUT_ROOT/results/<task>/<RUN>/*
           - workflow/plan-script-<SCRIPT_NAME>.yaml
         files_out:
           - RUN_AUDIT.md
@@ -102,7 +96,7 @@ output:
     headline: "<one-line result summary>"
   files_out:
     # Union of all step files_out:
-    - results/<RUN>/<OUTPUT>
-    - notebooks/<RUN>.ipynb
+    - $OUTPUT_ROOT/results/<task>/<RUN>/<OUTPUT>
+    - $OUTPUT_ROOT/notebooks/<task>/<RUN>.ipynb
     - CODE_REVIEW.md
     - RUN_AUDIT.md

@@ -11,8 +11,8 @@ description: >-
   Trigger: folder contract, page face, task face, folder kind, phase-owned
   configuration, workflow phase, /haipipe-folder.
 metadata:
-  version: "0.5.1"
-  last_updated: "2026-09-05"
+  version: "0.6.0"
+  last_updated: "2026-09-08"
 ---
 
 # /haipipe-folder · one work object, two faces
@@ -20,6 +20,11 @@ metadata:
 A Folder is the addressable unit of work. It is not a Page with a Task
 attached, and it is not a Task with documentation attached. It owns two
 orthogonal faces:
+
+For `folder-kind: task`, **Task Folder = Page Folder = `tNN_<task>/`**. The
+two phrases select different faces of one address; they do not name nested or
+sibling directories. Its parent `jNN_<job>/` is a Job container, never a Task
+Folder.
 
 ```text
                          Folder kind

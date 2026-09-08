@@ -2,7 +2,9 @@ fn/stage-plan — audit + fix + generate plans
 =============================================
 
 Called by `/haipipe-task plan`.
-Runs the full pre-plan sequence: audit the task folder, fix fixable issues, then generate plans at two levels: per-script and task-level.
+Runs the full pre-plan sequence on one canonical `tNN_<task>/` Task Folder,
+which is also its Page Folder: audit it, fix fixable issues, then generate
+plans at two levels, per-script and Task-level.
 Both levels MUST follow the haipipe-workflow IPO schema.
 
 Schema source of truth:
@@ -23,7 +25,7 @@ Two-layer plan structure
 ┌────────┬──────────────────────────────────┬────────────────────────────────────┐
 │ Layer  │ File                             │ Answers                            │
 ├────────┼──────────────────────────────────┼────────────────────────────────────┤
-│ Task   │ workflow/plan.yaml               │ "What does this task folder do?"   │
+│ Task   │ workflow/plan.yaml               │ "What does this Task Folder do?"   │
 │        │                                  │ Full IPO: gates + run + report     │
 ├────────┼──────────────────────────────────┼────────────────────────────────────┤
 │ Script │ workflow/plan-script-<name>.yaml │ "What does this one script do?"    │
@@ -41,7 +43,7 @@ Both layers use the SAME schema shape from plan-schema.md:
 > JL: one line one sentences.
 >> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
 
-The config layer (configs/<run>.yaml) is an input FILE, not a separate plan layer.
+The config layer (`scripts/config/<run>.yaml`) is an input file, not a separate plan layer.
 It appears in `input.files_in`.
 
 
@@ -49,7 +51,7 @@ When to call
 ------------
 
 ```
-/haipipe-task plan <job-path>
+/haipipe-task plan <path-to-tNN_<task>>
 ```
 
 
@@ -58,7 +60,7 @@ Procedure
 
 ### Step 1 — Run audit first
 
-Execute `fn/audit.md` on the task folder (the full 6-step procedure).
+Execute `fn/audit.md` on the Task Folder (the full 6-step procedure).
 Collect: type, run_names, sisters, shared_configs, issues.
 
 Report the audit results to the user (the audit progress block).
@@ -88,7 +90,7 @@ Flag mismatches but do NOT rename existing notebooks.
 
 ### Step 5 — Generate per-script plans
 
-For EACH main `.py` (or `.do`) script in the task folder, generate a `workflow/plan-script-<name>.yaml`.
+For each main `.py` (or `.do`) script in the Task Folder's `scripts/`, generate a `workflow/plan-script-<name>.yaml`.
 
 **How to read a script's internal structure:**
 1. Read the full script file
@@ -121,11 +123,11 @@ skill: haipipe-task-for-<type>
 # ─── I: Input ────────────────────────────────────────────────────
 input:
   args:
-    config: configs/<run_name>.yaml
+    config: scripts/config/<run_name>.yaml
     run_trigger: runs/<run_name>.sh
   files_in:
-    - <script_name>.py
-    - configs/<run_name>.yaml
+    - scripts/<script_name>.py
+    - scripts/config/<run_name>.yaml
     - _WorkSpace/...                     # upstream data dependencies
 
 # ─── P: Phases ───────────────────────────────────────────────────
@@ -140,7 +142,7 @@ phases:
         prompt: "<what this step computes>"
         files_in:
           - _WorkSpace/...               # or [] if reads only in-memory
-        files_out: []                    # or [results/<run>/<file>]
+        files_out: []                    # or [$OUTPUT_ROOT/results/<task>/<run>/<file>]
 
       - label: "<phase>:<step-name>"
         type: agent
@@ -148,7 +150,7 @@ phases:
         prompt: "<what this step computes>"
         files_in: []
         files_out:
-          - results/<run>/<file>
+          - $OUTPUT_ROOT/results/<task>/<run>/<file>
 
   - title: <Next phase>
     detail: "..."
@@ -162,8 +164,8 @@ output:
     status: ok
     # task-specific return fields
   files_out:
-    - results/<run>/<file1>
-    - results/<run>/<file2>
+    - $OUTPUT_ROOT/results/<task>/<run>/<file1>
+    - $OUTPUT_ROOT/results/<task>/<run>/<file2>
 ```
 
 Write one `workflow/plan-script-<name>.yaml` per script.
@@ -186,35 +188,35 @@ Its phases are the high-level lifecycle steps (Run, Gate1, Gate2), not the scrip
 name: <task-name-kebab>
 purpose: "<one line: the research question or deliverable>"
 skill: haipipe-task-for-<type>
-task_folder: <path relative to project root>
+task_folder: <path to tNN_<task> relative to project root>
 
 # ─── I: Input ────────────────────────────────────────────────────
 input:
   args:
-    config: configs/<run_name>.yaml
+    config: scripts/config/<run_name>.yaml
   files_in:
-    - <script>.py
-    - configs/<run_name>.yaml
+    - scripts/<script>.py
+    - scripts/config/<run_name>.yaml
     - _WorkSpace/...                     # union of all script inputs
 
 # ─── P: Phases ───────────────────────────────────────────────────
 phases:
 
   - title: Run
-    detail: "execute <script>.py via papermill"
+    detail: "execute scripts/<script>.py via papermill"
     steps:
       - label: "run:<script-name>"
         type: agent
         required: true
         prompt: "<what the script does end-to-end>"
         files_in:
-          - <script>.py
-          - configs/<run_name>.yaml
+          - scripts/<script>.py
+          - scripts/config/<run_name>.yaml
           - _WorkSpace/...
         files_out:
-          - results/<run>/<file1>
-          - results/<run>/<file2>
-          - notebooks/<run>.ipynb
+          - $OUTPUT_ROOT/results/<task>/<run>/<file1>
+          - $OUTPUT_ROOT/results/<task>/<run>/<file2>
+          - $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
 
   - title: Gate1
     detail: "pre-run code quality review"
@@ -225,8 +227,8 @@ phases:
         agentType: haipipe-task-reviewer-agent
         prompt: "gate 1: review <script>.py for intent-vs-implementation bugs"
         files_in:
-          - <script>.py
-          - configs/<run_name>.yaml
+          - scripts/<script>.py
+          - scripts/config/<run_name>.yaml
         files_out:
           - CODE_REVIEW.md
         schema:
@@ -246,7 +248,7 @@ phases:
         agentType: haipipe-task-reviewer-agent
         prompt: "gate 2: audit results of <run_name>"
         files_in:
-          - results/<run>/*
+          - $OUTPUT_ROOT/results/<task>/<run>/*
           - workflow/plan-script-<name>.yaml
         files_out:
           - RUN_AUDIT.md
@@ -266,9 +268,9 @@ output:
     gate2_verdict: <pass | warn | fail>
     headline: "<one-line result summary>"
   files_out:
-    - results/<run>/<file1>
-    - results/<run>/<file2>
-    - notebooks/<run>.ipynb
+    - $OUTPUT_ROOT/results/<task>/<run>/<file1>
+    - $OUTPUT_ROOT/results/<task>/<run>/<file2>
+    - $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
     - CODE_REVIEW.md
     - RUN_AUDIT.md
 ```

@@ -1,3 +1,8 @@
+## 0.61.1 · 2026-09-08
+
+- Define a canonical Task Page as the Page Face of the same physical
+  `tNN_<task>/` Task Folder, never a nested Page Folder or the parent Job.
+
 ## 0.61.0 · 2026-09-07
 
 - Grow the user-check packet from three to four surfaces (JL 260907): the

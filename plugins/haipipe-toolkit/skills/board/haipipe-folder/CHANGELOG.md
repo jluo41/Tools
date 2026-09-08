@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0 · 2026-09-08
+
+- Fix `Task Folder = Page Folder = tNN_<task>/` as one physical Folder with
+  two faces; reserve Job for the parent `jNN_<job>/` container.
+
 ## 0.5.1 · 2026-09-05
 
 - Fix the future Board Tables row grain as one Board Page/Page Folder while

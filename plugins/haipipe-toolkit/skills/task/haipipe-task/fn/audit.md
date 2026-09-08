@@ -1,7 +1,8 @@
-fn/audit — four-sister consistency check
-=========================================
+fn/audit — Task Folder Run/Result consistency check
+====================================================
 
-Called by `/haipipe-task` as the first step on any existing task folder.
+Called by `/haipipe-task` as the first step on any existing
+`tNN_<task>/` Task Folder, which is also its Page Folder.
 Read-only scan that reports what's aligned and what's broken.
 
 
@@ -12,11 +13,12 @@ Read-only scan that reports what's aligned and what's broken.
 When to call
 ------------
 
-Automatically when `/haipipe-task` targets an existing task folder (not scaffolding a new one).
+Automatically when `/haipipe-task` targets an existing Task Folder.
 Also callable standalone:
 
 ```
-/haipipe-task audit <job-path>
+/haipipe-task audit <task-folder-path>
+/haipipe-task audit <job-or-block-path>   # aggregate each contained Task Folder
 ```
 
 
@@ -25,12 +27,14 @@ Procedure
 
 ### Step 1 — Discover run names
 
-Scan directories and collect all unique run names.
-First detect the Job SHAPE from structure: one or more direct `tNN_*` Task
-folders means canonical NESTED; otherwise use the FLAT legacy reader.
-In a nested Job a run's NAME is the PATH `<task>/<run>`, and every authored
-glob starts inside that Task while Results resolve through `$OUTPUT_ROOT`.
-A shallow Job-root audit would report a working nested Job as empty.
+Resolve the target before scanning.
+A direct `tNN_*` target is one canonical Task Folder.
+A canonical Job or Block target is only an aggregation request: enumerate its
+Task Folders and run this audit once per Folder.
+A pre-2026-08-29 flat Job may be read once as an implicit Task compatibility
+target; do not call that Job a Task Folder and do not emit its shape for new work.
+For aggregate reporting a Run key is `<task>/<run>`; inside one Task Folder it
+is simply `<run>`. Generated Results still resolve through `$OUTPUT_ROOT`.
 
 **Python/papermill tasks (FLAT):**
 ```
@@ -42,13 +46,12 @@ NAMES_FROM_NOTEBOOKS = stem of each notebooks/*.ipynb
 ALL_NAMES = union of all four sets
 ```
 
-**Python/papermill tasks (NESTED)** — same four sets, keyed by
-`<task>/<run>` (only direct `tNN_*` folders are Tasks):
+**Python/papermill Task Folder (canonical):**
 ```
-NAMES_FROM_CONFIGS   = <task>/<stem> of each <task>/scripts/config/*.yaml
-NAMES_FROM_RUNS      = <task>/<stem> of each <task>/runs/*.{sh,ps1}
-NAMES_FROM_RESULTS   = <task>/<name> of each $OUTPUT_ROOT/results/<task>/*/
-NAMES_FROM_NOTEBOOKS = <task>/<stem> of each $OUTPUT_ROOT/notebooks/<task>/*.ipynb  (excl. _source)
+NAMES_FROM_CONFIGS   = stem of each scripts/config/*.yaml
+NAMES_FROM_RUNS      = stem of each runs/*.{sh,ps1}
+NAMES_FROM_RESULTS   = name of each $OUTPUT_ROOT/results/<task>/*/
+NAMES_FROM_NOTEBOOKS = stem of each $OUTPUT_ROOT/notebooks/<task>/*.ipynb  (excl. _source)
 ```
 
 **Stata tasks** (configs may be .do or .yaml, no notebooks):
@@ -77,7 +80,7 @@ For each name in ALL_NAMES, check sisters exist.
 The "four sisters" vary by engine:
 
 **Python (flat):**   configs/<NAME>.yaml + runs/<NAME>.sh + results/<NAME>/ + notebooks/<NAME>.ipynb
-**Python (nested):** <task>/scripts/config/<run>.yaml + <task>/runs/<run>.sh + $OUTPUT_ROOT/results/<task>/<run>/ + $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
+**Python (canonical Task Folder):** scripts/config/<run>.yaml + runs/<run>.sh + $OUTPUT_ROOT/results/<task>/<run>/ + $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
 **Stata:**  configs/<NAME>.{yaml|do} + runs/<NAME>.ps1 + results/<NAME>/ + (log optional)
 
 ```
@@ -123,7 +126,7 @@ Group letters are project-specific organizational prefixes.
 
 ```
 workflow/ exists?
-  ├── YES → read plan.yaml, check it matches current task state
+  ├── YES → read plan.yaml, check it matches current Task Folder state
   │         (new runs added since plan was written? files moved?)
   └── NO  → flag as "plan missing, will generate in stage-plan step"
 ```

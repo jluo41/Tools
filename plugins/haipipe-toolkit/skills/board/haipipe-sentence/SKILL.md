@@ -161,8 +161,9 @@ A card has two sources and the same render:
    Words it cannot find render as a LOUD row in the drawer, never as silence.
 
 📐 a paper marker  \citep{} · {VAL:? …} · [Q-X-n] · displayNN · \ref{}
-   the marker names itself, and the build resolves it against .bib,
-   1-probes/ and displays/. The paper dialect stays deletable.
+   the marker names itself, and the build resolves it against the page's
+   `outline/evidence/bibex/` and `outline/evidence/display/` records plus the
+   generated delivery assets. The paper dialect stays deletable.
 ```
 
 The words KEEP THE PROSE'S OWN FONT, COLOUR AND WEIGHT and take one dotted underline. A box around them turns a paragraph into a row of buttons, which costs more attention than the card is worth.

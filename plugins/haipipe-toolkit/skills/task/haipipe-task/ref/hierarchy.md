@@ -9,6 +9,11 @@ Settled with JL 2026-08-29 (absorbing ref/block-job-task-run.md). Four levels,
 named against Databricks so one word never means two things in a workspace
 that deploys there:
 
+**Task Folder = Page Folder = `tNN_<task>/`.** It is one physical Folder with
+a Task Face and a Page Face. `jNN_<job>/` is only the parent Job container.
+Never use “Task Folder” as another name for Job, and never create a second
+Page Folder for a Task.
+
 ```
 LEVEL   FOLDER                                DATABRICKS      ONE-LINER
 ─────   ───────────────────────────────────   ─────────────   ─────────────────────────────
@@ -56,9 +61,11 @@ Nothing is computed, mapped or counted: `ls` shows the address. A legacy
 folder without a level letter (pre-260829 `A01_…/01_…`) still resolves as
 `A01.01`. Full rule: ref/block-job-task-run.md § Addressing.
 
-The old vocabulary maps 1:1 and appears throughout older files and boards:
-`task-group` = BLOCK, `task-folder` = JOB. The TASK level is NEW (2026-08-29);
-a legacy flat job is a job with one implicit task (see "Two job shapes").
+Retired pre-2026-08-29 documents may use `task-group` for Block and
+`task-folder` for Job. That language is compatibility evidence only; current
+authors and interfaces never emit it. A legacy flat Job remains readable as a
+Job with one implicit Task (see "Two job shapes"), but the Job itself does not
+become a Task Folder.
 
 
 Level 1: Project
