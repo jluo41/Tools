@@ -60,6 +60,17 @@ DISP = LATEX / CFG["source"]["displays"]
 BIB = LATEX / CFG["source"]["bibliography"]
 MASTER = LATEX / CFG["source"]["master"]
 OUT = CFG["outputs"]
+# 0.6.1 · paper-level switches, all opt-in through paper-build.toml (JL 260908, Paper-AgreeableOpioid-Jama):
+#   [evidence] draft_includes_unready = true   a DRAFT prints every page that has a body fragment, tagged
+#                                              "[DRAFT PAGE · reason]"; readiness accounting is unchanged
+#   [source]   preamble = "preamble.tex"       a paper-owned preamble file beside paper-build.toml, inlined
+#                                              into the generated master (packages, column types, unicode maps)
+#   [paper]    venue_profile = "jama-internal-medicine"  title-page center block, JAMA section boundaries,
+#                                              and the page's own \section*{Key Points}/\section*{Abstract} kept
+DRAFT_INCLUDES_UNREADY = bool(CFG.get("evidence", {}).get("draft_includes_unready", False))
+VENUE_PROFILE = str(CFG["paper"].get("venue_profile", "")).lower()
+JAMA = VENUE_PROFILE == "jama-internal-medicine"
+PREAMBLE_FILE = rel(CFG["source"]["preamble"]) if CFG.get("source", {}).get("preamble") else None
 
 # ── order ─────────────────────────────────────────────────────────────────────
 ORDER_BLOCK = re.compile(r"<!--\s*haipipe:compile-order:start\s*-->(.*?)<!--\s*haipipe:compile-order:end\s*-->", re.S)
@@ -71,7 +82,15 @@ def outline_key(path: Path):
 
 def latest_outline(group: Path, pid: str):
     candidates = list((group / pid / "outline").glob(f"{pid}-outline-v*.md"))
-    return max(candidates, key=outline_key) if candidates else None
+    superseded = set()
+    for plan in candidates:
+        header = re.split(r"(?m)^##\s", plan.read_text(encoding="utf-8"), maxsplit=1)[0]
+        superseded.update(re.findall(r"(?m)^supersedes:[ \t]*(v[0-9]+(?:\.[0-9]+)*)[ \t]*$", header))
+    current = [plan for plan in candidates
+               if "v" + ".".join(map(str, outline_key(plan))) not in superseded]
+    if candidates and not current:
+        raise RuntimeError(f"ambiguous outline lineage for {pid}: no current revision")
+    return max(current, key=outline_key) if current else None
 
 def read_order():
     """(main ids, appendix ids, source) from the Story's compile-order block."""
@@ -207,9 +226,12 @@ def copy_unit(u: Path) -> str:
     """copy one display unit into latex/displays/<unit>/ · returns the unit name"""
     dst = DISP / u.name; dst.mkdir(parents=True, exist_ok=True)
     fig = u / "assets" / "figure.pdf"
+    if not fig.exists(): fig = u / "figure.pdf"                  # flat unit layout (0.6.1)
     if not fig.exists(): fig = u / "preview.pdf"
     if fig.exists(): shutil.copy2(fig, dst / "figure.pdf")
-    for tb in (u / "assets").glob("table-body*.tex") if (u / "assets").exists() else []:
+    tbs = list((u / "assets").glob("table-body*.tex")) if (u / "assets").exists() else []
+    tbs += list(u.glob("table-body*.tex"))                       # flat unit layout (0.6.1)
+    for tb in tbs:
         shutil.copy2(tb, dst / tb.name)
     ft = u / "float.tex"
     if ft.exists():
@@ -224,7 +246,7 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
     t = p["fragment"].read_text(encoding="utf-8", errors="replace")
     def fix_input(m):
         path = m.group(1)
-        mm = re.search(r"display/([^/]+)/assets/([^/}]+)$", path)
+        mm = re.search(r"display/([^/]+)/(?:assets/)?([^/}]+?)(?:\.tex)?$", path)   # assets/ or flat; .tex optional
         if mm:
             unit, name = mm.groups()
             src = p["dir"] / "outline/evidence/display" / unit
@@ -241,8 +263,9 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
             return rf"\includegraphics{m.group(1) or ''}{{displays/{unit}/figure.pdf}}"
         return m.group(0)
     t = re.sub(r"\\includegraphics(\[[^\]]*\])?\{([^}]+)\}", fix_graphic, t)
-    if p["id"].endswith("-Abstract"):
-        # the Word engine and the venue both want a real abstract environment
+    if p["id"].endswith("-Abstract") and not JAMA:
+        # the generic Word engine wants a real abstract environment; the JAMA renderer instead
+        # parses the page's own \section*{Key Points} and \section*{Abstract} headings (0.6.1)
         body = re.sub(r"^%.*\n", "", t, flags=re.M)                       # generator comments
         body = re.sub(r"\\section\*?\{Abstract\}\s*", "", body)        # the heading
         lines = [l for l in body.strip().splitlines()]
@@ -289,6 +312,13 @@ def merge_bib(pages):
 def write_master(main, appx, status, ready_n, total_n):
     title = CFG["paper"].get("title", CFG["paper"]["id"])
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    paper_preamble = ("% paper-owned preamble · " + PREAMBLE_FILE.name + "\n" + PREAMBLE_FILE.read_text(encoding="utf-8")) \
+        if PREAMBLE_FILE and PREAMBLE_FILE.exists() else "% no paper preamble declared"
+    if JAMA:   # the JAMA Word renderer parses a title-page center block, not \maketitle
+        title_block = ("\\begin{document}\n\n\\begin{center}\n{\\Large\\bfseries " + title + "}\n\n\\vspace{1em}\n\n"
+                       "[Authors blinded for review]\n\n\\vspace{0.5em}\n\\end{center}")
+    else:
+        title_block = "\\title{" + title + "}\n\\author{}\n\\date{}\n\\begin{document}\n\\maketitle"
     head = rf"""% GENERATED by {ENGINE_TAG} on {stamp}
 % The pages own the words. Edit a Section Page, then rebuild; never edit this file.
 \documentclass[12pt]{{article}}
@@ -297,9 +327,11 @@ def write_master(main, appx, status, ready_n, total_n):
 \IfFontExistsTF{{TeX Gyre Termes}}{{\setmainfont{{TeX Gyre Termes}}}}{{\IfFontExistsTF{{Times New Roman}}{{\setmainfont{{Times New Roman}}}}{{}}}}
 \usepackage{{microtype}}
 \usepackage[authoryear,round]{{natbib}}
-\usepackage{{graphicx,booktabs,tabularx,multirow,amsmath,amssymb,setspace,caption,float}}
+\usepackage{{graphicx,booktabs,tabularx,multirow,amsmath,amssymb,setspace,caption,float,xcolor}}
 \usepackage[hidelinks]{{hyperref}}
 \usepackage{{fancyhdr}}
+\providecommand{{\displayroot}}{{displays/}}
+{paper_preamble}
 \onehalfspacing
 \setlength{{\parindent}}{{0.25in}}
 \setlength{{\parskip}}{{0.35em}}
@@ -307,19 +339,23 @@ def write_master(main, appx, status, ready_n, total_n):
 \pagestyle{{fancy}}\fancyhf{{}}
 \fancyhead[L]{{\small {status} · {ready_n}/{total_n} section pages ready · built {stamp}}}
 \fancyfoot[C]{{\thepage}}
-\title{{{title}}}
-\author{{}}
-\date{{}}
-\begin{{document}}
-\maketitle
+{title_block}
 \thispagestyle{{fancy}}
 
 """
     body = []
     for p, floats in main:
-        if p["ready"] and p["id"].endswith("-Abstract"):
+        if p.get("included") and not p["ready"]:
+            note = "; ".join(p["reasons"]).replace("_", r"\_").replace("<", r"$<$").replace(">", r"$>$")
+            body.append(r"\noindent\textcolor{red!70!black}{\small\textit{[DRAFT PAGE · " + note + "]}}")
+        if p.get("included") and p["id"].endswith("-Abstract"):
             body.append(rf"\input{{sections/{p['id']}}}"); body.append(""); continue
-        if p["ready"]:
+        if p.get("included"):
+            if JAMA:   # the JAMA Word renderer splits the body on these four headings
+                kind = p["id"].rsplit("-Main-", 1)[-1].replace("-", " ")
+                frag_txt = (SEC / f"{p['id']}.tex").read_text(encoding="utf-8", errors="replace")
+                if kind in ("Introduction", "Methods", "Results", "Discussion") and not re.search(rf"\\section\{{{kind}\}}", frag_txt):
+                    body.append(rf"\section{{{kind}}}")
             body.append(rf"\input{{sections/{p['id']}}}")
             body += [rf"\input{{displays/{f}/float}}" for f in floats]
         else:
@@ -331,7 +367,10 @@ def write_master(main, appx, status, ready_n, total_n):
     tail = ["\\section*{Acknowledgments}", "\\noindent\\textit{[Acknowledgments, funding and disclosures are written at submission; this build is a draft.]}", "",
             "\\clearpage", "\\bibliographystyle{apalike}", "\\bibliography{reference}", "", "\\clearpage", "\\appendix", ""]
     for p, floats in appx:
-        if p["ready"]:
+        if p.get("included") and not p["ready"]:
+            note = "; ".join(p["reasons"]).replace("_", r"\_").replace("<", r"$<$").replace(">", r"$>$")
+            tail.append(r"\noindent\textcolor{red!70!black}{\small\textit{[DRAFT PAGE · " + note + "]}}")
+        if p.get("included"):
             tail.append(rf"\input{{appendices/{p['id']}}}")
             tail += [rf"\input{{displays/{f}/float}}" for f in floats]
         else:
@@ -480,8 +519,10 @@ def build():
     appx = [inspect(i, G_APP) for i in appx_ids]
     pages = main + appx
     labels = label_index(pages); unresolved = []
-    main_f = [(p, place_fragment(p, SEC, labels, unresolved) if p["ready"] else []) for p in main]
-    appx_f = [(p, place_fragment(p, APP, labels, unresolved) if p["ready"] else []) for p in appx]
+    for p in pages:   # 0.6.1: a DRAFT may print an unready page's fragment when the paper opts in
+        p["included"] = p["ready"] or (DRAFT_INCLUDES_UNREADY and p["fragment"].exists())
+    main_f = [(p, place_fragment(p, SEC, labels, unresolved) if p["included"] else []) for p in main]
+    appx_f = [(p, place_fragment(p, APP, labels, unresolved) if p["included"] else []) for p in appx]
     nbib = merge_bib(pages)
     ready = [p for p in pages if p["ready"]]
     status = build_readiness(pages, unresolved)["status"]

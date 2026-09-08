@@ -1,5 +1,16 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.6.1 · 260908
+
+Paper-level opt-ins in `scripts/build_delivery.py`, driven by `paper-build.toml`; a paper that declares none of them builds exactly as 0.6.0.
+
+- `[evidence] draft_includes_unready = true`: a DRAFT prints every page that has a body fragment, prefixed `[DRAFT PAGE · reason]`, instead of a titled stub. Readiness accounting, the SUBMISSION-CANDIDATE rule, and the display register are unchanged. First user: Paper-AgreeableOpioid-Jama, whose 11 pages are all v0.x but hold a complete draft.
+- `[source] preamble = "preamble.tex"`: a paper-owned preamble beside `paper-build.toml` is inlined into the generated master after the engine's own packages, so a page fragment's `longtable`, `seqsplit`, `needspace`, `tikz`, column types, or unicode maps no longer break the whole-paper compile. The engine also always provides `\displayroot` (`displays/`) and loads `xcolor`.
+- `venue_profile = "jama-internal-medicine"` now shapes the master the JAMA Word renderer parses: a title-page `center` block instead of `\maketitle`, a `\section{Introduction|Methods|Results|Discussion}` boundary before any main fragment that lacks it, and the Abstract page's own `\section*{Key Points}` / `\section*{Abstract}` kept rather than rewritten into an `abstract` environment.
+- Display units in the flat layout (`figure.pdf`, `table-body*.tex`, `float.tex` at the unit root) are copied and retargeted like `assets/` units; a fragment's `\input` of `display/<unit>/float` or `…/table-body` resolves either way.
+
+Verified on both papers: Paper-AgreeableOpioid-Jama 25-page PDF + main and supplement DOCX (latexmk 0, docx 0); Paper-AgreeablePrescriptionDiscretion unchanged at 23 pages, 5/14 ready, `\maketitle` and `abstract` environment intact.
+
 ## 0.6.0 · 260908
 
 - Canonical engine `scripts/build_delivery.py` (was paper-local `delivery/build.py`

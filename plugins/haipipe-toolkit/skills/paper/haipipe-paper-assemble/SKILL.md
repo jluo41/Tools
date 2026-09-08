@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.6.0"
+  version: "0.6.1"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -32,7 +32,7 @@ The layers have different jobs:
 
 ```text
 Paper-<Slug>/                          the board at the paper root
-  ├── A1-Story/Story-<letter>/         boundary, claims, evidence, acceptance
+  ├── A1-Story/Story<Letter>-<desk>-<idea-slug>/         boundary, claims, evidence, acceptance
   │       §8 Section Narrative + haipipe:compile-order block = reading order
   └── Ba-<desk>-Main/<page>/           each Section Page owns its words:
         └── delivery/latex/            <page>.tex (body fragment, what the paper
@@ -77,14 +77,21 @@ Read the current outline's explicit `approved:` record, not merely its filename
 or an older approved outline. When an `outline-version:` is declared, it must
 match the file being admitted. An unsigned newer revision blocks admission;
 a filename, successful test, or complete set of render files grants no approval.
+The shared Page outline policy keeps `v0.x` unapproved; an inspection never
+promotes it. Honor explicit `supersedes:` lineage before choosing a current
+outline by numeric version, so a structural restart cannot revive an older
+approval. Ambiguous lineage requires repair, not a guessed current plan.
 Record the inspected outline path, version, approval, and content hash in the
 manifest. These mechanical milestones do not establish G4: missing checks for
 current Page CHECK closure, accepted evidence, or human submission approval
 must remain explicit blockers, and the build stays `DRAFT`.
 
-Generated DOCX, PDF, `draft-sections/*.docx`, copied assets, previews, and
-manifests are derived artifacts. They are never source of record and never
-become inputs to the next build.
+Generated complete-paper DOCX/PDF and `draft-sections/*.docx` are never wording
+sources for the next build. Section-owned body fragments and accepted display
+assets are intentional input projections; Page preview PDFs and receipts are
+read for the checks they actually support, not as new evidence or prose.
+A prior manifest may be inspected during an audit, but stale fields from a
+failed build must not be presented as freshly verified results.
 
 ## 🔀 Two Word lanes; do not merge them
 
@@ -184,7 +191,7 @@ venue_profile = "misq"
 # asset of every display unit its fragment \ref's.
 main = "../Ba-MISQ-Main"
 appendix = "../Bb-MISQ-Appendix"
-order = "../A1-Story/Story-A/Story-A.md"   # selected C8 compile-order block
+order = "../A1-Story/StoryA-misq-phytrait-discretion/StoryA-misq-phytrait-discretion.md"   # selected C8 compile-order block
 
 [source]
 # the GENERATED room; the builder writes it, nobody edits it
@@ -313,6 +320,12 @@ Instead:
 5. report stale/missing/mismatched outputs explicitly and name the source file
    that must change before a rebuild.
 
+If sources or receipts change during the audit, report the exact snapshot and
+its limits or repeat the comparison on a stable copy. Do not merge observations
+from different builds into a single currentness claim. A wrapper without an
+explicit read-only preflight must be inspected rather than invoked with its
+default build command.
+
 Run an actual build only when the user asks to assemble, regenerate, or update
 the delivery artifacts. A read-only audit may not alter `delivery/`, its
    manifests, or other generated receipts.
@@ -332,7 +345,9 @@ At minimum, a complete manuscript build records:
   and build status.
 
 The manifest is the sole delivery receipt; Page-level acceptance remains the
-`CHECK` phase. No sibling delivery report is emitted.
+`CHECK` phase. The display register is a derived reader index whose findings
+are also recorded in the manifest, not an independent acceptance or readiness
+receipt. Do not create a competing delivery-status authority.
 
 The manifest is provenance, not a second content store. A generated snapshot
 may be opened and marked up by a coauthor, but its corrections must be routed
@@ -353,6 +368,14 @@ otherwise
 Only a person declares the manuscript ready for upload. A successful Python
 run, a clean DOCX, or an attractive rendered page is not a human submission
 decision.
+
+The current `build_delivery.py` implements order, outline-admission and render
+checks but does not ingest current Page CHECK, accepted-evidence, or exact-build
+human submission receipts. Its `build_readiness()` therefore keeps `DRAFT` and
+names the missing validation. The DOCX adapter's lexical pending/citation flags
+are not substitutes for those semantic bindings; a `final` mode flag alone
+cannot close G4. Report missing validator coverage rather than treating a green
+syntax flag as complete evidence, venue, output, or provenance verification.
 
 ## ✅ Build checks
 
