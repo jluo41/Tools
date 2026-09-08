@@ -8,13 +8,13 @@ in `SKILL.md`, `board-form.md`, and `haipipe-page`.
 ```text
 01-entry-criteria-260905/
 ├── board.md
-├── 1-QA-eligibility/
-│   └── QA1-entry-rule/
-│       ├── QA1-entry-rule.md
+├── 1-G1-eligibility/
+│   └── G1-entry-rule/
+│       ├── G1-entry-rule.md
 │       └── outline/
-│           ├── QA1-entry-rule-outline-v0.1.md
-│           ├── QA1-entry-rule-files.md
-│           └── QA1-entry-rule-log.md
+│           ├── G1-entry-rule-outline-v0.1.md
+│           ├── G1-entry-rule-files.md
+│           └── G1-entry-rule-log.md
 └── board/                         generated
 ```
 
@@ -23,18 +23,18 @@ in `SKILL.md`, `board-form.md`, and `haipipe-page`.
 ```markdown
 # Analysis entry criteria
 spine: make the eligibility rule explicit enough to implement and review.
-close: QA1 is settled and its accepted rule is ready for downstream use.
+close: G1 is settled and its accepted rule is ready for downstream use.
 
 ## Topic
 This Board defines which records enter one analysis and why each condition is necessary.
 
 ## Pipeline
-QA1 settles the rule before downstream extraction begins.
+G1 settles the rule before downstream extraction begins.
 
 ## Pages
-### QA · Eligibility
+### G1 · Eligibility
 Define and verify the entry rule.
-QA1-entry-rule.md
+G1-entry-rule.md
 ```
 
 ## QA1-entry-rule.md
@@ -72,7 +72,7 @@ Each condition names its field, operator, threshold, and missing-value behavior.
   **Now:** Not started.
 ````
 
-## outline/QA1-entry-rule-outline-v0.1.md
+## outline/G1-entry-rule-outline-v0.1.md
 
 ```markdown
 # Outline v0.1
@@ -81,7 +81,7 @@ approved: ⬜
 
 | Address | Planned move | Evidence | Supporting Run | Local Run |
 |---|---|---|---|---|
-| C1.P1.B1 | State each executable condition. | E01-VALUE-condition-count | — | Page · Evidence Item · new-run · 1-QA-eligibility/QA1-entry-rule |
+| C1.P1.B1 | State each executable condition. | E01-VALUE-condition-count | — | Page · Evidence Item · new-run · 1-G1-eligibility/G1-entry-rule |
 ```
 
 The rendered Page generates its Outline from this plan. The Page source does

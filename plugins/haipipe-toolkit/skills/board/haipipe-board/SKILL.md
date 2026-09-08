@@ -7,7 +7,7 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.172.0"
+  version: "0.172.1"
   last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
@@ -91,9 +91,9 @@ close: <the observable condition that closes the Board>
 <optional ASCII relationship map; never a second roster>
 
 ## Pages
-### QA · <group title>
+### G1 · <group title>
 <optional group introduction>
-QA1-example.md
+G1-example.md
 ```
 
 `## Pages` groups and orders Pages. It does not copy their titles, state, or

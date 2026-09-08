@@ -23,7 +23,7 @@ naming the field rather than guessing it.
 required:
   operation:   create-page | revise-opening | context | outline | evidence | content
   path:        the exact file path to write, inside its group folder
-  id:          the page id (QA3, S-Main-2, ...)
+  id:          the page id (P01, S-Main-2, ...)
   title:       the short title, unique on this board
   board:       the board folder path, for relative links only
 optional:

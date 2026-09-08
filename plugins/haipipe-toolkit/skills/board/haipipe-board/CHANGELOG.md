@@ -1,3 +1,9 @@
+## 0.172.1 · 2026-09-08
+
+- Remove the obsolete QA3 round gate and its unreferenced browser binding
+  battery. Board completion now uses the current build/check tools plus the
+  Page CHECK workflow; no QA command is shipped.
+
 ## 0.172.0 · 2026-09-08
 
 - Project Insight instance manifests into an item table and exact-version Runs rows.
