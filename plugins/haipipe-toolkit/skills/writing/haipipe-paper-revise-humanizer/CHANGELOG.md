@@ -1,8 +1,14 @@
-## 0.2.6 — 2026-08-05
+## 0.3.0 · 260908
+- **`cli/slop.py`: the six-layer audit becomes CODE.** Until now this skill was `ref/` prose only, so nothing COUNTED anything and a 13/13-ready build reported 0 findings on prose the authors' professors called AI slop.
+- **The finding that mattered was the RHYTHM, not the words.** Measured on `Paper-AgreeablePrescriptionDiscretion` against the same authors' peer-reviewed npj introduction: MISQ §1 = 50 sentences, SD 4.2 words, 0% under 12 words, 0% over 40; §3 Theory = 114 sentences, SD **2.5**; the human npj sections = SD 12.8 to 21.9, 34% to 70% of sentences short-or-long. One plan bullet = one sentence produces a metronome. Twenty word-level humanizer swaps had already been applied to §1 and moved none of these numbers, because the defect lives at the sentence BOUNDARY, above the word.
+- **Gate thresholds are the human control's own numbers, and every one separates the two corpora with no overlap**: sentence-length SD ≥ 8, length variety (share ≤12w + share ≥40w) ≥ 25%, numbers ≥ 25/1k words, gated tells ≤ 3/1k.
+- **Only tells that are ZERO in every human section are gated**: trailing-disclaimer, glossary-voice, self-reference, process-word, roadmap-subject, em-dash. contrast-template, rule-of-three, hedge-stack and citation-stack are REPORTED but never gated, because the human limitations section uses five "rather than" in 370 words: stating a scope boundary IS that sentence shape, and gating it would fail correct prose.
 
 - Shared prose rules repointed to `paper/haipipe-paper/ref/prose-quality.md`
   (ex `paper/workers/REF/`, dissolved in thin-paper phase 2). Frontmatter also
   catches up with the 0.2.5 entry below, which had not been reflected there.
+
+## 0.2.6 — 2026-08-05
 
 ## 0.2.5 — 2026-08-01
 

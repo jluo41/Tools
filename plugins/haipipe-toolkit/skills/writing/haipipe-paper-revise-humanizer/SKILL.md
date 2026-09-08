@@ -9,7 +9,7 @@ description: >-
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   argument_hint: "[section-or-file] [--grant] [--venue <venue>]"
-  version: "0.2.6"
+  version: "0.3.0"
   last_updated: "2026-08-05"
   source: "Based on AIScientists-Dev/academic-humanizer (MIT license). Catalog VENDORED at ./ref/pattern-catalog.md (upstream submodule under references/ is provenance only)"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)

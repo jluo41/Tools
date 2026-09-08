@@ -832,13 +832,16 @@ def add_figure(doc: Document, display: Display, title: str = "", *, compact: boo
 
 
 def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool = True, compact: bool = False,
-               number_displays: bool = False) -> None:
+               number_displays: bool = False, main_numbering: bool = False) -> None:
     """0.7.1: ``number_displays`` gives every table/figure in this stream a running
     title ("Table S1.", "Figure S1."; prefixes from the profile), so a supplement
     table no longer prints its caption with no number."""
     counters = {"table": 0, "figure": 0}
     prefixes = {"table": str(PROFILE_CONFIG.get("supplement_table_prefix", "Table S")),
                 "figure": str(PROFILE_CONFIG.get("supplement_figure_prefix", "Figure S"))}
+    if main_numbering:
+        prefixes = {"table": str(PROFILE_CONFIG.get("main_table_prefix", "Table ")),
+                    "figure": str(PROFILE_CONFIG.get("main_figure_prefix", "Figure "))}
     for event in events:
         if event.kind == "heading":
             add_heading(doc, str(event.value), event.level)
@@ -886,14 +889,46 @@ def extract_highlights(body: str) -> list[str]:
 
 
 def add_title_page(doc: Document, title: str, running_title: str, word_count: int, table_count: int, figure_count: int, author: str) -> None:
-    add_text(doc, title, size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(doc, f"Running title: {running_title}", align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(doc, author or "[AUTHOR NAMES — first, middle, and last names]", align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(doc, str(PROFILE_CONFIG.get("affiliations_placeholder", "[AFFILIATIONS]")), align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(doc, str(PROFILE_CONFIG.get("corresponding_author_placeholder", "Corresponding author: [FULL NAME]; [email]")), align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(doc, f"Article type: {PROFILE_CONFIG.get('article_type', 'Research Article')}", align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(doc, f"Main-text word count (excluding tables, legends, title page, acknowledgments, and references): {word_count}", align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(doc, f"Number of main displays: {table_count + figure_count} ({table_count} tables, {figure_count} figures)", align=WD_ALIGN_PARAGRAPH.CENTER)
+    """The manuscript title page, as the VENUE declares it.
+
+    This used to hard-code the medical-journal page (running title, article type,
+    main-text word count, display count) for every profile whose layout was
+    "generic", so the MISQ build shipped a JAMA title page: a "Running title:"
+    line with no value under a profile that declares running_head = false, plus
+    two build counts inside the deliverable (JL 260908: a delivered PDF or Word
+    carries no process text). Fields are now named and ordered by the profile;
+    the default list is the old medical set, so every existing profile is
+    unchanged.
+    """
+    known = {
+        "title":       lambda: add_text(doc, title, size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER),
+        "running":     lambda: add_text(doc, f"Running title: {running_title}", align=WD_ALIGN_PARAGRAPH.CENTER),
+        "author":      lambda: add_text(doc, author or str(PROFILE_CONFIG.get(
+                           "author_placeholder", "[AUTHOR NAMES: first, middle, and last names]")),
+                           align=WD_ALIGN_PARAGRAPH.CENTER),
+        "affiliations": lambda: add_text(doc, str(PROFILE_CONFIG.get(
+                           "affiliations_placeholder", "[AFFILIATIONS]")), align=WD_ALIGN_PARAGRAPH.CENTER),
+        "corresponding": lambda: add_text(doc, str(PROFILE_CONFIG.get(
+                           "corresponding_author_placeholder", "Corresponding author: [FULL NAME]; [email]")),
+                           align=WD_ALIGN_PARAGRAPH.CENTER),
+        "article_type": lambda: add_text(doc, f"Article type: {PROFILE_CONFIG.get('article_type', 'Research Article')}",
+                           align=WD_ALIGN_PARAGRAPH.CENTER),
+        "word_count":  lambda: add_text(doc, "Main-text word count (excluding tables, legends, title page, "
+                           f"acknowledgments, and references): {word_count}", align=WD_ALIGN_PARAGRAPH.CENTER),
+        "display_count": lambda: add_text(doc, f"Number of main displays: {table_count + figure_count} "
+                           f"({table_count} tables, {figure_count} figures)", align=WD_ALIGN_PARAGRAPH.CENTER),
+        "keywords_hint": lambda: None,
+    }
+    fields = PROFILE_CONFIG.get("title_page_fields", ["title", "running", "author", "affiliations",
+                                                     "corresponding", "article_type", "word_count", "display_count"])
+    if not isinstance(fields, list):
+        fields = ["title"]
+    unknown = [f for f in fields if f not in known]
+    if unknown:
+        raise RuntimeError("profile title_page_fields names no such field: %s (have %s)"
+                           % (", ".join(unknown), ", ".join(sorted(known))))
+    for field in fields:
+        known[field]()
     action_fields = PROFILE_CONFIG.get("title_page_action_fields", [])
     if not isinstance(action_fields, list):
         action_fields = []
@@ -1353,18 +1388,31 @@ def build() -> tuple[Path, Path]:
     configure_document(main_doc)
     add_title_page(main_doc, title, running_title, word_count(main_events), len(main_tables), len(main_figures), author)
     add_abstract(main_doc, abstract)
-    add_heading(main_doc, "Article Highlights", 1)
-    for highlight in highlights:
-        add_bullet(main_doc, highlight)
-    add_events(main_doc, main_events, include_displays=False)
+    # An empty heading is a defect, not a section: the MISQ build printed
+    # "ARTICLE HIGHLIGHTS" with nothing under it, because the heading was
+    # unconditional and only the bullets came from the body (JL 260908).
+    if highlights:
+        add_heading(main_doc, str(PROFILE_CONFIG.get("highlights_heading", "Article Highlights")), 1)
+        for highlight in highlights:
+            add_bullet(main_doc, highlight)
+    inline_displays = str(PROFILE_CONFIG.get("displays_position", "end")).lower() == "inline"
+    add_events(main_doc, main_events, include_displays=inline_displays,
+               number_displays=inline_displays, main_numbering=True)
     add_events(main_doc, back_events, include_displays=False)
     add_references(main_doc)
-    add_heading(main_doc, "TABLES", 1)
-    for number, display in enumerate(main_tables, start=1):
-        add_table(main_doc, display, f"Table {number}")
-    add_heading(main_doc, "FIGURE LEGENDS", 1)
-    for number, display in enumerate(main_figures, start=1):
-        add_figure(main_doc, display, f"Figure {number}")
+    # Displays after the references is the MEDICAL convention. A venue whose
+    # profile places displays inline wants them where the prose cites them, and
+    # the MISQ profile already says displays = "inline" for the LaTeX lane; Word
+    # printed them twice as often as it should have (JL 260908).
+    if str(PROFILE_CONFIG.get("displays_position", "end")).lower() == "end":
+        if main_tables:
+            add_heading(main_doc, str(PROFILE_CONFIG.get("tables_heading", "TABLES")), 1)
+            for number, display in enumerate(main_tables, start=1):
+                add_table(main_doc, display, f"Table {number}")
+        if main_figures:
+            add_heading(main_doc, str(PROFILE_CONFIG.get("figures_heading", "FIGURE LEGENDS")), 1)
+            for number, display in enumerate(main_figures, start=1):
+                add_figure(main_doc, display, f"Figure {number}")
     main_doc.save(MAIN_PATH)
 
     supp_doc = Document()

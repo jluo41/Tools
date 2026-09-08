@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.7.6"
+  version: "0.7.8"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -172,10 +172,12 @@ B  a not-ready page keeps        its H1 declares number and title ("# S-<desk>-M
                                  parser: page_heading()
 C  the display register          delivery/display-register.md counts what the MASTER prints, walking
                                  master.tex in \input order, and compares with the number each unit's
-                                 README `## Placement` declares. Four teeth: declared ≠ printed · printed
+                                 README `## Placement` declares. Five teeth: declared ≠ printed · printed
                                  with no declared number · one label printed twice · one number claimed
                                  by 2+ units, scanned over ALL units on disk so a collision on a
-                                 not-ready page is visible before that page compiles.
+                                 not-ready page is visible before that page compiles · ONE WORK under
+                                 two bib keys, both cited, which apalike prints as 2018a + 2018b with
+                                 two entries in the reference list (staged-but-uncited = a warning).
                                  also in build-manifest.json under "displays"
 ```
 

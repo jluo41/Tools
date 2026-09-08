@@ -418,7 +418,10 @@ def merge_bib(pages):
 
 # ── master ───────────────────────────────────────────────────────────────────
 def write_master(main, appx, status, ready_n, total_n):
-    title = CFG["paper"].get("title", CFG["paper"]["id"])
+    # The Abstract PAGE is the title's authority; paper-build.toml is the fallback.
+    # Both carried a title and they drifted (JL 260908), so the pages win here for
+    # the same reason they win for every other word in the document.
+    title = declared_title([p for p, _ in main]) or CFG["paper"].get("title", CFG["paper"]["id"])
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
     # the reader's document carries only the status word, for every profile (0.7.0; JL 260908
     # "the delivered pdf or word must be clean"); counts and the build time live in build-manifest.json
@@ -562,8 +565,128 @@ def label_to_unit():
             out.setdefault(lab, f"{float_tex.parents[1].name}/{float_tex.parent.name}")
     return out
 
-def display_register(main, appx):
+CITE_CMD = re.compile(r"\\cite[a-zA-Z]*\{([^}]*)\}")
+
+def bib_entries(text):
+    """(key, body) for every top-level @entry, brace-balanced so a nested {M}edicare is safe."""
+    out = []
+    for m in re.finditer(r"@\w+\s*\{\s*([^,\s]+)\s*,", text):
+        i = text.index("{", m.start()); depth = 0
+        for j in range(i, len(text)):
+            if text[j] == "{": depth += 1
+            elif text[j] == "}":
+                depth -= 1
+                if depth == 0: break
+        out.append((m.group(1), text[m.start():j + 1]))
+    return out
+
+def duplicate_bib_works(cited):
+    """Two DIFFERENT keys for ONE work, which prints that work twice in the reference list.
+
+    merge_bib()'s tooth above only sees a key COLLISION. Two pages that spell the same
+    paper differently collide on nothing, so both reach \bibitem and apalike prints the
+    same article as (2018a) and (2018b) with two entries in the list -- exactly what
+    Buchmueller_2018 vs buchmueller2018pdmp did to §1 and §2 (JL 260908).
+
+    Identity uses BOTH signals and UNIONS them, never one or the other: the hand-written
+    entry usually carries no `doi` while its Crossref twin does, so a doi-first rule put
+    dowell2016cdc and Dowell_2016 in different buckets and found nothing. Signals are the
+    DOI and (first author's surname + 28 letters of the title, braces and case stripped so
+    `{CDC} guideline` matches `CDC Guideline`). Returns (both_cited, staged_only) groups.
+    """
+    if not BIB.exists(): return [], []
+    parent = {}
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x: parent[x] = parent[parent[x]]; x = parent[x]
+        return x
+    def union(a, b):
+        ra, rb = find(a), find(b)
+        if ra != rb: parent[ra] = rb
+    for key, body in bib_entries(BIB.read_text(encoding="utf-8", errors="replace")):
+        me = ("key", key); find(me)
+        doi = re.search(r"\b(?:doi|DOI)\s*=\s*[{\"]\s*([^}\"]+)", body)
+        if doi: union(me, ("doi", doi.group(1).strip().rstrip(".").lower()))
+        au = re.search(r"author\s*=\s*[{\"]([^,}\"]+)", body)
+        ti = re.search(r"title\s*=\s*[{\"](.{0,60})", body, re.S)
+        surname = re.sub(r"[^a-z-]", "", (au.group(1) if au else "?").lower())
+        head = re.sub(r"[^a-z0-9]", "", (ti.group(1) if ti else "").lower())[:28]
+        if surname and head: union(me, ("at", surname, head))
+    groups = {}
+    for node in list(parent):
+        if node[0] == "key": groups.setdefault(find(node), []).append(node[1])
+    both, staged = [], []
+    for _root, keys in sorted(groups.items(), key=lambda kv: sorted(kv[1])):
+        if len(keys) < 2: continue
+        keys = sorted(keys)
+        (both if len([k for k in keys if k in cited]) > 1 else staged).append(keys)
+    return both, staged
+
+def declared_title(pages):
+    """The title the ABSTRACT PAGE declares under `### Title`, if it declares one.
+
+    paper-build.toml also carries `[paper] title`, so the title had two sources of
+    truth and they drifted: the PDF and the .docx printed "Physician Personality
+    and Opioid Prescribing" while the page said "Physician Agreeableness and
+    Opioid Prescribing" (JL 260908).
+    """
+    for p in pages:
+        if not is_abstract(p):
+            continue
+        md = p["dir"] / f"{p['id']}.md"
+        if not md.exists():
+            continue
+        m = re.search(r"^###\s+Title\s*$(.*?)(?=^#{2,4}\s)", md.read_text(encoding="utf-8", errors="replace"),
+                      re.S | re.M)
+        if m:
+            for line in m.group(1).splitlines():
+                if line.strip() and not line.lstrip().startswith(("<!--", ">", "(")):
+                    return line.strip()
+    return None
+
+
+def venue_findings(pages, page_count=None):
+    """Check the manuscript against the numbers the VENUE PACK measured.
+
+    haipipe-paper-venue's store carried a measured MISQ pack (abstract 120-160
+    words, never past ~185, 4-7 sentences of unstructured prose, 40-50 pages)
+    while profiles/misq.toml was written from general knowledge; nothing in the
+    build read it, so a 168-word 11-sentence abstract passed every gate
+    (JL 260908). Any profile that declares these keys now gets the same check.
+    """
+    out = []
+    band = PROFILE.get("abstract_words")
+    hard = PROFILE.get("abstract_words_max")
+    sent_band = PROFILE.get("abstract_sentences")
+    pages_band = PROFILE.get("main_pages")
+    pack = PROFILE.get("venue_pack", "the venue profile")
+    abstract = next((p for p in pages if is_abstract(p)), None)
+    if abstract and (band or hard or sent_band):
+        frag = LATEX / f"sections/{abstract['id']}.tex"
+        if frag.exists():
+            raw = frag.read_text(encoding="utf-8", errors="replace")
+            # The keywords line must go BEFORE commands are stripped: stripping turns
+            # \textbf{Keywords:} into nothing and leaves the 18 bare keyword words,
+            # which counted a 168-word abstract as 186.
+            raw = re.split(r"\\smallskip|\\noindent\s*\\textbf\{\s*Keywords", raw)[0]
+            body = re.sub(r"\\[a-zA-Z]+\*?(\{[^}]*\})?", " ", raw)
+            words = len(re.findall(r"[A-Za-z][A-Za-z'-]*", body))
+            sents = len([x for x in re.split(r"(?<=[.!?])\s+", body)
+                         if len(re.findall(r"[A-Za-z][A-Za-z'-]*", x)) >= 4])
+            if hard and words > hard:
+                out.append(f"abstract is {words} words; {pack} says never exceed {hard}")
+            elif band and not (band[0] <= words <= band[1]):
+                out.append(f"abstract is {words} words; {pack} target is {band[0]}-{band[1]}")
+            if sent_band and not (sent_band[0] <= sents <= sent_band[1]):
+                out.append(f"abstract is {sents} sentences; {pack} target is {sent_band[0]}-{sent_band[1]}")
+    if pages_band and page_count and not (pages_band[0] <= page_count <= pages_band[1]):
+        out.append(f"main document is {page_count} pages; {pack} expects {pages_band[0]}-{pages_band[1]}")
+    return out
+
+
+def display_register(main, appx, extra_findings=()):
     units, counters, rows = label_to_unit(), {"figure": 0, "table": 0}, []
+    cited = set()
     # Count from the FINAL master in \\input order, not from the fragments. Counting
     # fragments measured what a page CONTAINS, never what the document PRINTS, so it
     # stayed blind to a float the master \\input a second time -- the exact bug this
@@ -573,7 +696,10 @@ def display_register(main, appx):
     for m in re.finditer(r"\\input\{([^}]+)\}", MASTER.read_text(encoding="utf-8", errors="replace")):
         target = LATEX / (m.group(1) + ".tex")
         if not target.exists(): continue
-        for kind, body in FLOAT_ENV.findall(target.read_text(encoding="utf-8", errors="replace")):
+        target_text = target.read_text(encoding="utf-8", errors="replace")
+        for group in CITE_CMD.findall(target_text):
+            cited.update(k.strip() for k in group.split(",") if k.strip())
+        for kind, body in FLOAT_ENV.findall(target_text):
             counters[kind] += 1
             hit = LABEL_CMD.search(body)
             lab = hit.group(1) if hit else ""
@@ -653,6 +779,14 @@ def display_register(main, appx):
     for number, owners in sorted(claimed.items()):
         if len(owners) > 1:
             findings.append(f"{number} claimed by {len(owners)} units: {', '.join(owners)}")
+    # 0.7.7 tooth: one work under two keys. Both cited = the reference list PRINTS it twice
+    # (a finding). Only one cited = the spare entry is still staged and the next author can
+    # pick the wrong key, so it is a warning rather than a finding.
+    dup_both, dup_staged = duplicate_bib_works(cited)
+    for keys in dup_both:
+        findings.append(f"one work cited under {len(keys)} keys, so the reference list prints it twice: {', '.join(keys)}")
+    for keys in dup_staged:
+        BUILD_WARNINGS.append(f"bib: one work staged under {len(keys)} keys ({', '.join(keys)}); only one is cited, drop the spare before someone cites it")
     lines = [f"# Display register · GENERATED by {ENGINE_TAG}, never hand-edited", "",
              f"Built {datetime.now().strftime('%Y-%m-%d %H:%M')} · "
              f"{counters['figure']} figure(s) + {counters['table']} table(s) printed.",
@@ -669,6 +803,16 @@ def display_register(main, appx):
         lines.append(f"{(r['printed'] or '(unnumbered)'):<12} {(r['declared'] or '—'):<12} "
                      f"{('yes' if r['ready'] else 'no'):<6} {r['title'][:44]:<44} {r['page']}{flag}")
     lines += ["```", ""]
+    findings.extend(extra_findings)
+    # Computed HERE, not by the caller: build() used to assemble these two and pass
+    # them in, so every other entry point (the test harness included) silently ran
+    # without them (found 260908 when both new teeth reported nothing under pytest).
+    all_pages = [q for q, _ in main] + [q for q, _ in appx]
+    page_title, cfg_title = declared_title(all_pages), CFG["paper"].get("title")
+    if page_title and cfg_title and page_title != cfg_title:
+        findings.append(f"title drift: the Abstract page says {page_title!r}, paper-build.toml says "
+                        f"{cfg_title!r}; the page is printed")
+    findings.extend(venue_findings(all_pages))
     lines.append("## Findings")
     lines += [f"- {f}" for f in findings] if findings else ["- none"]
     (HERE / "display-register.md").write_text("\n".join(lines) + "\n", encoding="utf-8")

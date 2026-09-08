@@ -1,3 +1,14 @@
+## 0.172.6 · 2026-09-08
+
+- Fresh-context validation caught the retired one-paragraph-per-Bullet rule. Align shared writing rules, the Page template and Task's Page-only trace reference with Cn.Pm paragraph groups and sentence-level Bullet traces.
+- Runs overview now shows Kind and Target; paragraph Markdown Runs expand to escaped instructions, prose and trace with mobile wrapping.
+- Missing paragraph/trace outputs cannot display Done. Test planned/completed Runs, safe previews and the encoded Runs route.
+- Page chat dispatch follows paragraph-scoped CONTENT writing; no research Pages regenerated.
+
+## 0.172.5 · 260908
+- `md2tex.py`'s refuse-to-regress guard compares the SET OF CITATION KEYS, not the number of `\citep` COMMANDS, and names the keys that would disappear. Counting commands blocked work that loses nothing: joining two sentences that both cite `Meyer_2009` drops one command and no key. On 260908 that refused the humanizing rewrite of `S-MISQ-Main-1-Introduction` (20 commands vs 22, zero keys lost).
+- `POST /_board/latex` now returns `ok:false` + HTTP 400 when md2tex prints REFUSED. md2tex exits 0 on a refusal, so neither the exit-code check nor `tex.is_file()` saw it and the STALE `.tex` satisfied both; the page kept its old prose through a full rebuild while the lane answered `ok:true`. Both proved by expect-fail against a planted key loss.
+
 ## 0.172.2 · 2026-09-08
 
 ## 0.172.4 · 2026-09-08

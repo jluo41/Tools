@@ -46,6 +46,14 @@ md2docx = _util.module_from_spec(_spec)
 _spec.loader.exec_module(md2docx)             # reuse the SAME reader
 
 CITE = re.compile(r"\\cite[tp]?\*?\{([^}]*)\}")
+
+
+def keys_of(text):
+    """every citation KEY in this text. A \\citep{a,b} is two keys, not one citation."""
+    out = set()
+    for group in CITE.findall(text):
+        out |= {k.strip() for k in group.split(",") if k.strip()}
+    return out
 REF = re.compile(r"\\(?:auto|C|c)?ref\{((?:tab|fig):[^}]*)\}")
 LEVEL = ("section", "subsection", "subsubsection")
 
@@ -350,13 +358,21 @@ def main():
         dest = os.path.join(outdir, stem + ".tex")
 
         # REFUSE TO REGRESS (QC5). Compare against whatever this would replace.
+        # It compares the SET OF KEYS, not the number of \citep COMMANDS. The
+        # failure this guard exists to stop is a WORK disappearing from a section's
+        # bibliography. Counting commands also stopped work that loses nothing:
+        # joining two sentences that both cite Meyer_2009 drops one command and no
+        # key, and on 260908 that blocked the humanizing rewrite of §1 while the
+        # board's /_board/latex lane still answered ok:true, so the page silently
+        # kept its old prose (20 commands vs 22, zero keys lost).
         prior = dest if os.path.exists(dest) else None
         if prior:
-            had = len(CITE.findall(open(prior, encoding="utf-8").read()))
-            if n < had:
-                report.append("REFUSED %s: %d citations, the file it replaces has "
-                              "%d. Sync is one-way; writing would empty the "
-                              "bibliography for that section." % (stem, n, had))
+            had = keys_of(open(prior, encoding="utf-8").read())
+            lost = sorted(had - keys_of(body))
+            if lost:
+                report.append("REFUSED %s: %d citation key(s) would disappear from this "
+                              "section's bibliography (%s). Sync is one-way."
+                              % (stem, len(lost), ", ".join(lost)))
                 continue
         with open(dest, "w", encoding="utf-8") as f:
             f.write("%% GENERATED from %s by md2tex.py. Do not hand-edit: sync is\n"

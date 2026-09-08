@@ -12,6 +12,37 @@ abstract_heading = "Abstract"
 references_heading = "References"
 include_main_displays = true
 
+# ── what the venue PACK already measured ────────────────────────────────────
+# Source of every number below: the haipipe-paper-venue store, which already held
+# a measured MISQ pack while 0.7.0 of this profile was written from general
+# knowledge instead (JL 260908: "Don't we have it in the haipipe-paper-venue???").
+#   Tools/plugins/haipipe-toolkit/skills/paper/venue/playbook-utd-is/README.md
+#   .../playbook-utd-is/MISQ/MISQ-abstract/style.md  (measured 2026-07-08 from
+#   published MISQ Research Articles: Liu 2021 ~125w, Yin 2014 ~120w)
+# MISQ takes WORD through ScholarOne and ships no LaTeX class, so the LaTeX lane is
+# a reading copy that reproduces the manuscript rules and the .docx is the
+# submission artifact. The four mechanical rules were verified 260908 against this
+# desk's own v0728 submission (Bc-MISQ-Round/RD01/feedback/): Times New Roman,
+# 12 pt, w:line=480 auto (double), pgMar 1440 twips (1 in) on all four sides.
+venue_pack = "playbook-utd-is/MISQ"
+abstract_words = [120, 160]      # target band; never exceed abstract_words_max
+abstract_words_max = 185
+abstract_sentences = [4, 7]      # one unstructured prose paragraph, no labeled fields
+main_pages = [40, 50]            # Research Article, double-spaced
+hero_display = "research model / theoretical framework figure"
+
+# ── the Word front matter, which is the SUBMISSION artifact ──────────────────
+# Before 0.7.8 this profile said layout = "generic", and "generic" in
+# latex_room_to_docx.py WAS the medical-journal title page: the MISQ build shipped
+# a "Running title:" line with no value (under running_head = false), an
+# "Article type" line, and two build counts inside the deliverable.
+title_page_fields = ["title", "author", "affiliations", "corresponding"]
+author_placeholder = "[AUTHOR NAMES: first, middle, and last names]"
+displays_position = "inline"     # v0728, the file MISQ received, interleaves its tables with the prose
+main_table_prefix = "Table "
+main_figure_prefix = "Figure "
+
+
 [latex]
 spacing = "double"          # double-spaced throughout, references included
 bibstyle = "apalike"        # closest stock author-date style; MISQ's own .bst is not shipped, journal names print as the .bib gives them

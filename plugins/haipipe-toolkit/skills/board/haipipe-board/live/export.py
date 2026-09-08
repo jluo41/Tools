@@ -296,6 +296,12 @@ document.getElementById('rebuild').onclick = function () {
             return None, "md2tex exited %s:\n" % code + log[-1500:]
         if not tex.is_file():
             return None, "md2tex wrote no .tex:\n" + log[-1500:]
+        # md2tex's refuse-to-regress guard prints REFUSED and exits 0, so neither
+        # check above sees it and the STALE .tex satisfies is_file(). On 260908 that
+        # cost a full rewrite round: §1's humanizing pass was refused, the POST
+        # answered ok:true, and the page kept its old prose through a whole rebuild.
+        if "REFUSED" in log:
+            return None, "md2tex REFUSED to overwrite the existing section:\n" + log[-1500:]
 
         # THE PAGE'S OWN EVIDENCE PRINTS (JL 260816: "both word and latex
         # didn't include the display?"): a unit the prose cites by short id

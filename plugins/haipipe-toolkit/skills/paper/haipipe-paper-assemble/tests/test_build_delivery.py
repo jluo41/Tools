@@ -221,6 +221,110 @@ def test_bib_key_collision_is_warned(paper):
     assert m.BIB.read_text().count("@article{k1") == 1
 
 
+def test_one_work_under_two_keys_is_a_finding_when_both_are_cited(paper):
+    """expect-fail proof for 0.7.7: this IS the broken state (§1 and §2 spell the same
+    article differently), and the register must say the reference list prints it twice."""
+    m = paper
+    doi = "10.1257/pol.20160094"
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    (intro / "outline" / "evidence" / "bibex").mkdir(parents=True)
+    (intro / "outline" / "evidence" / "bibex" / "a.bib").write_text(
+        "@article{Author_2018, title={The Effect}, author={Author, A.}, year={2018}, doi={%s}}\n" % doi)
+    (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
+        "\\section{Introduction}\n\\citep{Author_2018}\n")
+    _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{author2018effect}\n")
+    methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
+    (methods / "outline" / "evidence" / "bibex").mkdir(parents=True)
+    (methods / "outline" / "evidence" / "bibex" / "b.bib").write_text(
+        "@article{author2018effect, title={the effect}, author={Author, A}, year={2018}, doi={%s}}\n" % doi)
+    reg, _ = _assemble(m)
+    hit = [f for f in reg["findings"] if "prints it twice" in f]
+    assert hit, reg["findings"]
+    assert "Author_2018" in hit[0] and "author2018effect" in hit[0]
+
+
+def test_duplicate_work_is_found_when_only_one_twin_carries_a_doi(paper):
+    """the hole the first 0.7.7 draft had: a hand-written entry has no `doi` while its
+    Crossref twin does, so a doi-FIRST identity bucketed them apart and found nothing.
+    Titles also differ in case and brace protection ({CDC} vs CDC)."""
+    m = paper
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    (intro / "outline" / "evidence" / "bibex").mkdir(parents=True)
+    (intro / "outline" / "evidence" / "bibex" / "a.bib").write_text(
+        "@article{dowell2016cdc, title={{CDC} guideline for prescribing opioids}, author={Dowell, D}, year={2016}}\n")
+    (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
+        "\\section{Introduction}\n\\citep{dowell2016cdc}\n")
+    _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{Dowell_2016}\n")
+    methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
+    (methods / "outline" / "evidence" / "bibex").mkdir(parents=True)
+    (methods / "outline" / "evidence" / "bibex" / "b.bib").write_text(
+        "@article{Dowell_2016, title={CDC Guideline for Prescribing Opioids}, author={Dowell, Deborah}, "
+        "year={2016}, DOI={10.1001/jama.2016.1464}}\n")
+    reg, _ = _assemble(m)
+    hit = [f for f in reg["findings"] if "prints it twice" in f]
+    assert hit, reg["findings"]
+    assert "dowell2016cdc" in hit[0] and "Dowell_2016" in hit[0]
+
+
+def test_one_work_under_two_keys_is_only_a_warning_when_one_is_cited(paper):
+    """the spare key is staged but never cited: nothing prints twice yet, so it is a
+    warning about the trap, not a finding that blocks."""
+    m = paper
+    doi = "10.1257/pol.20160094"
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    (intro / "outline" / "evidence" / "bibex").mkdir(parents=True)
+    (intro / "outline" / "evidence" / "bibex" / "a.bib").write_text(
+        "@article{Author_2018, title={The Effect}, author={Author, A.}, year={2018}, doi={%s}}\n"
+        "@article{author2018effect, title={the effect}, author={Author, A}, year={2018}, doi={%s}}\n" % (doi, doi))
+    (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
+        "\\section{Introduction}\n\\citep{Author_2018}\n")
+    reg, _ = _assemble(m)
+    assert not [f for f in reg["findings"] if "prints it twice" in f], reg["findings"]
+    assert any("staged under 2 keys" in w for w in m.BUILD_WARNINGS), m.BUILD_WARNINGS
+
+
+def _abstract_page(m, prose, title=None):
+    """an Abstract page: no §, an abstract environment, optionally its own ### Title."""
+    d = _ready_page(m, "S-T-Main-Abstract", 0, "Abstract",
+                    "\\begin{abstract}\n" + prose + "\n\\end{abstract}\n")
+    head = "# S-T-Main-Abstract \u00b7 Abstract\n"
+    if title:
+        head += f"\n### Title\n\n{title}\n"
+    (d / "S-T-Main-Abstract.md").write_text(head + "\n## Content\n")
+    _order(m, ["S-T-Main-Abstract", "S-T-Main-1-Intro", "S-T-Main-2-Methods"])
+    return d
+
+
+def test_abstract_page_title_wins_over_the_config(paper):
+    """expect-fail proof for 0.7.8: paper-build.toml and the Abstract page both carry a
+    title and they drifted. The PAGE is printed, and the drift is a finding."""
+    m = paper
+    _ready_page(m, "S-T-Main-2-Methods", 2, "Methods", "\\section{Methods}\nText.\n")
+    _abstract_page(m, "One two three four five six seven eight nine ten.", title="The Page's Own Title")
+    reg, master = _assemble(m)
+    assert "The Page's Own Title" in master, master[:500]
+    assert any("title drift" in f for f in reg["findings"]), reg["findings"]
+
+
+def test_venue_pack_abstract_band_is_a_finding(paper, monkeypatch):
+    """the venue pack measured MISQ at 120-160 words and 4-7 sentences and NOTHING read
+    it, so a 168-word 10-sentence abstract passed every gate (JL 260908). The keyword
+    line must not be counted: stripping \\textbf{Keywords:} leaves the bare keywords."""
+    m = paper
+    monkeypatch.setitem(m.PROFILE, "abstract_words", [120, 160])
+    monkeypatch.setitem(m.PROFILE, "abstract_sentences", [4, 7])
+    monkeypatch.setitem(m.PROFILE, "venue_pack", "playbook-utd-is/MISQ")
+    _ready_page(m, "S-T-Main-2-Methods", 2, "Methods", "\\section{Methods}\nText.\n")
+    _abstract_page(m, "This sentence carries exactly seven ordinary words. " * 9
+                   + "\n\n\\smallskip\n\\noindent\\textbf{Keywords:} alpha, beta, gamma, delta, epsilon, zeta")
+    reg, _ = _assemble(m)
+    hits = [f for f in reg["findings"] if f.startswith("abstract is")]
+    assert any("sentences" in f for f in hits), reg["findings"]
+    assert all("playbook-utd-is/MISQ" in f for f in hits), hits
+    words = next((f for f in hits if "words" in f), "")
+    assert "63 words" in words, words   # 9 x 7, and NOT 69 with the six keywords
+
+
 def test_profile_latex_switches_reach_the_master(paper, monkeypatch):
     m = paper
     monkeypatch.setattr(m, "LATEX_SPACING", "double"); monkeypatch.setattr(m, "LATEX_DISPLAYS", "end")
