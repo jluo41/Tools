@@ -1,0 +1,22 @@
+# MIS Quarterly manuscript presentation rules, blind-review copy (0.7.0, JL 260908
+# "did you use the MISQ template?"). Venue behaviour only: prose, values, citations
+# and display choices stay on the Section Pages. Flat keys drive
+# scripts/latex_room_to_docx.py; the [latex] table drives write_master().
+layout = "generic"
+venue_label = "MIS Quarterly"
+font = "Times New Roman"
+line_numbers = false
+heading_style = "numbered"
+draft_label = "DRAFT — NOT SUBMISSION READY"
+abstract_heading = "Abstract"
+references_heading = "References"
+include_main_displays = true
+
+[latex]
+spacing = "double"          # double-spaced throughout, references included
+bibstyle = "apalike"        # closest stock author-date style; MISQ's own .bst is not shipped, journal names print as the .bib gives them
+displays = "inline"         # "inline": at first reference, for review · "end": every float on its own page after the text (endfloat), for production
+appendix_newpage = true     # lettered appendices after the references, each on a new page
+title_page = "separate"     # blind copy: the title alone on page 1
+abstract_page = true        # the abstract (and keywords) alone on its own page
+running_head = false        # no running head on the blind copy; the DRAFT word still prints while the build is a draft

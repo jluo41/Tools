@@ -1,5 +1,16 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.7.0 · 260908
+
+JL: "you go ahead to think how to make it as clean as enough." One pass over the whole engine.
+
+- **Venue profiles reach LaTeX.** `profiles/<name>.toml` now carries a `[latex]` table read by `write_master()` (spacing · bibstyle · displays inline|end via endfloat · appendix_newpage · title_page inline|separate · abstract_page · running_head); `[profile]` in paper-build.toml overrides single keys. New `profiles/misq.toml` (double-spaced, blind title page, abstract page, lettered appendices on new pages), asked for by Paper-MISQ-Board after JL: "did you use the MISQ template?". A paper with no profile builds as before.
+- **A display prints once in the whole document.** `prescan_embedded()` + `EMBEDDED_UNITS`/`PLACED_FLOATS`: a page that `\ref`s a float another page embeds never re-inputs it, whichever page comes first (tooth parametrised over both orders).
+- **The reader's document is clean for every profile.** The header carries the status word only; a not-ready page prints its own numbered heading plus one neutral line, `_stub()`; reasons, counts and build time live in build-manifest.json and the register.
+- **Bib key collisions warn.** Same key, different entry on two pages → document `warnings` (first page's entry kept) in the manifest and on the console.
+- **Missing tools are reported, not crashed.** `_run()` turns a missing `latexmk` or Word engine into `rc 127` with a message; the manifest and register are still written.
+- **Smaller:** `[pages].appendix` optional; `freeze` refuses without a built PDF and also freezes `display-register.md`; a display unit folder present on two pages is a register finding; `tests/run.sh` runs the teeth from the right directory. 17 teeth.
+
 ## 0.6.2 · 260908
 
 - Readiness rule (JL 260908, second defect found by Paper-MISQ-Board): a display unit gates a page only when the page CITES it (unit name in the fragment or `.md`, or a `\ref` to one of its `float.tex` labels) AND the unit is LIVE (no `state: 🟣`, not retired/folded under `## Placement`). Uncited or folded units are reported under the page's new `warnings` and never block. Before: every folder under `display/` demanded a preview.pdf, so a folded `S-Display-3a-funnel` blocked a fully written §4.

@@ -55,10 +55,12 @@ def paper(tmp_path, monkeypatch):
 
 def _assemble(m):
     """the engine's build() minus latexmk/docx: everything the register needs."""
+    m.reset_placement()
     main_ids, appx_ids, _ = m.read_order()
     for d in (m.SEC, m.APP, m.DISP): d.mkdir(parents=True, exist_ok=True)
     main = [m.inspect(i, m.rel(m.CFG["pages"]["main"])) for i in main_ids]
     appx = [m.inspect(i, m.rel(m.CFG["pages"]["appendix"])) for i in appx_ids]
+    m.prescan_embedded(main + appx)
     labels = m.label_index(main + appx); unresolved = []
     main_f = [(p, m.place_fragment(p, m.SEC, labels, unresolved) if p["ready"] else []) for p in main]
     appx_f = [(p, m.place_fragment(p, m.APP, labels, unresolved) if p["ready"] else []) for p in appx]
@@ -167,3 +169,81 @@ def test_stale_fragment_is_a_warning_not_a_blocker(paper):
     p = m.inspect("S-T-Main-Intro", m.rel(m.CFG["pages"]["main"]))
     assert p["ready"], p["reasons"]
     assert any("fragment may be stale" in w for w in p["warnings"])
+
+
+def _ready_page(m, pid, number, title, body, *, group="main"):
+    """a second ready page with an H1, approved outline, fragment and pdf"""
+    g = m.rel(m.CFG["pages"][group]); d = g / pid
+    (d / "outline").mkdir(parents=True, exist_ok=True); (d / "delivery" / "latex").mkdir(parents=True, exist_ok=True)
+    (d / f"{pid}.md").write_text(f"# {pid} · §{number} {title}\n")
+    (d / "outline" / f"{pid}-outline-v1.0.md").write_text("outline-version: v1.0\napproved: ✅ JL\n")
+    (d / "delivery" / "latex" / f"{pid}.tex").write_text(body)
+    (d / "delivery" / "latex" / f"{pid}.pdf").write_bytes(b"%PDF")
+    return d
+
+
+def _order(m, main_ids):
+    story = m.rel(m.CFG["pages"]["order"])
+    story.write_text("# StoryA-t-fixture\n<!-- haipipe:compile-order:start -->\nmain:\n" +
+                     "".join(f"- {i}\n" for i in main_ids) + "appendix:\n<!-- haipipe:compile-order:end -->\n")
+
+
+@pytest.mark.parametrize("citer_first", [False, True])
+def test_behavior_A_cross_page_ref_prints_the_display_once(paper, citer_first):
+    """page 2 \\ref's a figure page 1 embeds; whichever page comes first, one print."""
+    m = paper
+    _ready_page(m, "S-T-Main-Methods", 2, "Methods and Data", "\\section{Methods}\nAs Figure~\\ref{fig:one} showed.\n")
+    _order(m, ["S-T-Main-Methods", "S-T-Main-Intro"] if citer_first else ["S-T-Main-Intro", "S-T-Main-Methods"])
+    register, master = _assemble(m)
+    assert register["figures"] == 1, register["rows"]
+    assert not [f for f in register["findings"] if "printed twice" in f]
+    assert master.count("displays/S-Display-1-one/float") == 0
+
+
+def test_reader_document_carries_no_reasons_and_no_build_counts(paper):
+    register, master = _assemble(paper)
+    assert "[This section is not yet compiled into this build.]" in master
+    assert "outline not approved" not in master and "no body fragment" not in master
+    assert "pages ready" not in master and "built 20" not in master
+
+
+def test_bib_key_collision_is_warned(paper):
+    m = paper
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
+    (intro / "outline" / "evidence" / "bibex").mkdir(parents=True)
+    (intro / "outline" / "evidence" / "bibex" / "a.bib").write_text("@article{k1, title={One}, year={2020}}\n")
+    _ready_page(m, "S-T-Main-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{k1}\n")
+    methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Methods"
+    (methods / "outline" / "evidence" / "bibex").mkdir(parents=True)
+    (methods / "outline" / "evidence" / "bibex" / "b.bib").write_text("@article{k1, title={One, revised}, year={2021}}\n")
+    _assemble(m)
+    assert any("bib key k1 differs" in w for w in m.BUILD_WARNINGS)
+    assert m.BIB.read_text().count("@article{k1") == 1
+
+
+def test_profile_latex_switches_reach_the_master(paper, monkeypatch):
+    m = paper
+    monkeypatch.setattr(m, "LATEX_SPACING", "double"); monkeypatch.setattr(m, "LATEX_DISPLAYS", "end")
+    monkeypatch.setattr(m, "LATEX_APPENDIX_NEWPAGE", True); monkeypatch.setattr(m, "LATEX_TITLE_PAGE", "separate")
+    monkeypatch.setattr(m, "LATEX_ABSTRACT_PAGE", True); monkeypatch.setattr(m, "LATEX_BIBSTYLE", "plainnat")
+    _, master = _assemble(m)
+    assert "\\doublespacing" in master and "endfloat" in master and "\\bibliographystyle{plainnat}" in master
+    assert "\\maketitle\n\\thispagestyle{empty}\n\\clearpage" in master
+
+
+def test_misq_profile_ships_with_the_latex_table():
+    import tomllib
+    prof = tomllib.loads((ENGINE.parents[1] / "profiles" / "misq.toml").read_text())
+    assert prof["latex"]["spacing"] == "double" and prof["latex"]["appendix_newpage"] is True
+    assert prof["latex"]["displays"] in ("inline", "end") and prof["venue_label"] == "MIS Quarterly"
+
+
+def test_missing_latexmk_is_reported_not_a_traceback(paper, monkeypatch):
+    m = paper
+    def boom(cmd, **kw): raise FileNotFoundError(cmd[0])
+    monkeypatch.setattr(m.subprocess, "run", boom)
+    m.build()
+    import json
+    manifest = json.loads((m.HERE / "build-manifest.json").read_text())
+    assert manifest["render"]["latexmk_rc"] == 127 and manifest["status"] == "DRAFT"
+    assert "not found" in manifest["render"]["latexmk_tail"]

@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.6.2"
+  version: "0.7.0"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -164,7 +164,10 @@ A  print a display ONCE          md2tex already embeds a cited display as a real
                                  switch: DEDUPE_EMBEDDED_FLOATS
 B  a not-ready page keeps        its H1 declares number and title ("# S-<desk>-Main-X · §4 Title"):
    its number                    the master emits a real numbered \section{Title} plus one italic
-                                 "[Not yet compiled into this build: <reasons>]" line. An unnumbered
+                                 "[This section is not yet compiled into this build.]" line; the
+                                 REASONS live in build-manifest.json and the register, never in the
+                                 reader's PDF/DOCX (JL: "the delivered pdf or word must be clean").
+                                 An unnumbered
                                  "[NOT READY]" heading slid every later section down one number.
                                  parser: page_heading()
 C  the display register          delivery/display-register.md counts what the MASTER prints, walking
@@ -185,7 +188,41 @@ proven by making it fail first: `test_behavior_A_expect_fail_register_catches_th
 switches `DEDUPE_EMBEDDED_FLOATS` off and asserts the register reports the
 double print; only then does the positive test count. When you add a behavior,
 add the tooth that fails without it, and record both runs. Run the suite with
-`.venv/bin/python -m pytest Tools/plugins/haipipe-toolkit/skills/paper/haipipe-paper-assemble/tests -q`.
+`bash Tools/plugins/haipipe-toolkit/skills/paper/haipipe-paper-assemble/tests/run.sh`
+(it runs from the tests directory on purpose: the repository's `code/` package
+shadows the stdlib `code` module and breaks pytest startup from the repo root).
+
+Since 0.7.0 the engine also guarantees: a display prints once in the whole
+DOCUMENT, so a page that `\ref`s a float another page embeds never re-inputs it,
+whichever page comes first; a bib key that two pages define differently is a
+document warning (first page's entry kept); a missing `latexmk` or Word engine is
+reported as `rc 127` in the manifest, never a traceback; the master carries the
+status word only, never counts or build times.
+
+## 🎭 Venue profiles
+
+A profile is presentation, never claims: `profiles/<name>.toml`, selected by
+`[paper] venue_profile` in `paper-build.toml`; `[profile]` there may override
+single keys. Flat keys drive the Word engine (`layout`, `font`, `line_numbers`,
+`venue_label`, `draft_label`, `abstract_heading`, `references_heading`, …); the
+`[latex]` table drives `write_master()`:
+
+```text
+[latex] key          values                    what it does in the generated master
+spacing              single · onehalf · double  \setspace command
+bibstyle             a .bst name (apalike)      \bibliographystyle
+displays             inline · end               end = endfloat: every float on its own page after the text
+appendix_newpage     true · false               \clearpage before each lettered appendix
+title_page           inline · separate          separate = blind title page alone, then \clearpage
+abstract_page        true · false               abstract (+ keywords) alone on its page
+running_head         true · false               false = only the DRAFT word while drafting, nothing once clean
+```
+
+Shipped: `jama-internal-medicine` (Word-side layout, eTable/eFigure supplement)
+and `misq` (double-spaced, blind title page, abstract page, lettered appendices
+on new pages, `displays` switchable inline/end; `apalike` stands in for MISQ's
+author-date style because the desk's own `.bst` is not shipped). A paper with no
+profile builds as before 0.7.0.
 
 ## ⚙️ Canonical configuration
 
@@ -434,4 +471,6 @@ Before reporting assembly complete, name:
 - the generated main/supplement outputs and manifest;
 - word-count basis and result;
 - structural and visual check result;
-- unresolved author actions and whether G4 is still open.
+- unresolved author actions and whether G4 is still open;
+- the build's warnings (stale fragments, non-gating display units, bib key
+  collisions) and the display register's findings, or "none".

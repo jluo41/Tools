@@ -73,6 +73,46 @@ VENUE_PROFILE = str(CFG["paper"].get("venue_profile", "")).lower()
 JAMA = VENUE_PROFILE == "jama-internal-medicine"
 PREAMBLE_FILE = rel(CFG["source"]["preamble"]) if CFG.get("source", {}).get("preamble") else None
 
+# ── venue profile · presentation only, never claims (0.7.0) ──────────────────
+# profiles/<name>.toml carries the desk's typography; [profile] in paper-build.toml
+# may override single keys. The [latex] table drives write_master(); the flat keys
+# drive scripts/latex_room_to_docx.py. Shipped: jama-internal-medicine, misq.
+def load_profile(name: str) -> dict:
+    prof = {}
+    if name:
+        path = ENGINE_DIR.parent / "profiles" / f"{name}.toml"
+        if not path.exists(): sys.exit(f"venue profile not found: {path}")
+        prof = tomllib.loads(path.read_text(encoding="utf-8"))
+    inline = CFG.get("profile", {})
+    if isinstance(inline, dict): prof.update(inline)
+    return prof
+PROFILE = load_profile(VENUE_PROFILE)
+_L = PROFILE.get("latex", {}) if isinstance(PROFILE.get("latex"), dict) else {}
+LATEX_SPACING = str(_L.get("spacing", "onehalf"))            # single · onehalf · double
+LATEX_BIBSTYLE = str(_L.get("bibstyle", "apalike"))
+LATEX_DISPLAYS = str(_L.get("displays", "inline"))            # inline · end (endfloat: every float after the text)
+LATEX_APPENDIX_NEWPAGE = bool(_L.get("appendix_newpage", False))
+LATEX_TITLE_PAGE = str(_L.get("title_page", "inline"))        # inline · separate (blind title page alone)
+LATEX_ABSTRACT_PAGE = bool(_L.get("abstract_page", False))    # abstract (+ keywords) alone on its page
+LATEX_RUNNING_HEAD = bool(_L.get("running_head", True))       # False: header carries only the DRAFT word while drafting
+
+# ── document-wide placement state (0.7.0) ────────────────────────────────────
+# A display prints ONCE in the whole document, not once per fragment: a page
+# that \ref's a float another page embeds must not re-input it.
+EMBEDDED_UNITS: set = set()      # units some included fragment embeds as a real float
+PLACED_FLOATS: set = set()       # units the master already \input after a fragment
+BUILD_WARNINGS: list = []        # document-level warnings (bib collisions, …)
+
+def reset_placement():
+    EMBEDDED_UNITS.clear(); PLACED_FLOATS.clear(); BUILD_WARNINGS.clear()
+
+def prescan_embedded(pages):
+    """record every unit any INCLUDED fragment embeds, before any fragment is placed."""
+    for p in pages:
+        if p.get("included", p["ready"]) and p["fragment"].exists():
+            raw = p["fragment"].read_text(encoding="utf-8", errors="replace")
+            EMBEDDED_UNITS.update(re.findall(r"displays?/([^/}]+)/", raw))   # raw page path (display/) or final room path (displays/)
+
 # ── order ─────────────────────────────────────────────────────────────────────
 ORDER_BLOCK = re.compile(r"<!--\s*haipipe:compile-order:start\s*-->(.*?)<!--\s*haipipe:compile-order:end\s*-->", re.S)
 OUTLINE_VERSION = re.compile(r"-outline-v([0-9]+(?:\.[0-9]+)*)\.md$")
@@ -319,6 +359,7 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
             lines = lines[1:]                                             # stray title line from md2tex
         t = "\\begin{abstract}\n" + "\n".join(lines).strip() + "\n\\end{abstract}\n"
     (dest_dir / f"{p['id']}.tex").write_text(t, encoding="utf-8")
+    EMBEDDED_UNITS.update(re.findall(r"displays/([^/}]+)/", t))
     floats = []
     for lab in dict.fromkeys(re.findall(r"\\ref\{([^}]+)\}", t)):
         hit = labels.get(lab)
@@ -327,15 +368,18 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
             # behavior A · md2tex already embeds a cited display as a real float
             # INSIDE the fragment, so re-inputting the unit's float/ after it printed
             # every display twice: Figure 1 = Figure 2, Table 1 = Table 4 (260908).
-            if DEDUPE_EMBEDDED_FLOATS and f"displays/{name}/" in t: continue
-            if name not in floats: floats.append(name)
+            # 0.7.0: once in the whole DOCUMENT, so a cross-page \ref never re-inputs
+            # a float another page embeds, whichever page comes first.
+            if DEDUPE_EMBEDDED_FLOATS and (name in EMBEDDED_UNITS or name in PLACED_FLOATS): continue
+            if name not in floats:
+                floats.append(name); PLACED_FLOATS.add(name)
         else:
             unresolved.append({"page": p["id"], "ref": lab})
     return floats
 
 # ── bibliography ─────────────────────────────────────────────────────────────
 def merge_bib(pages):
-    seen, out = set(), []
+    seen, out, bodies = set(), [], {}
     for p in pages:
         # Page contract: the canonical evidence lane is the only bibliography source.
         lane = p["dir"] / "outline/evidence/bibex"
@@ -349,8 +393,14 @@ def merge_bib(pages):
                     elif txt[j] == "}":
                         depth -= 1
                         if depth == 0: break
+                body = txt[start:j+1]
+                norm = re.sub(r"\s+", " ", body).strip()
                 if key not in seen:
-                    seen.add(key); out.append(txt[start:j+1])
+                    seen.add(key); out.append(body); bodies[key] = (norm, p["id"])
+                elif bodies[key][0] != norm:
+                    # same key, different entry: the first page's version is printed, the
+                    # other page's citation data silently disappears unless someone is told
+                    BUILD_WARNINGS.append(f"bib key {key} differs between {bodies[key][1]} and {p['id']}; {bodies[key][1]}'s entry kept")
     BIB.write_text(f"% merged by {ENGINE_TAG} from every page's outline/evidence/bibex/*.bib · do not edit\n\n" + "\n\n".join(out) + "\n", encoding="utf-8")
     return len(out)
 
@@ -358,9 +408,11 @@ def merge_bib(pages):
 def write_master(main, appx, status, ready_n, total_n):
     title = CFG["paper"].get("title", CFG["paper"]["id"])
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-    # the reader's document carries only the status word; counts and the build time live in build-manifest.json
-    # (JL 260908 "the delivered pdf or word must be clean"); other profiles keep the 0.6.0 header
-    header = status if JAMA else f"{status} · {ready_n}/{total_n} section pages ready · built {stamp}"
+    # the reader's document carries only the status word, for every profile (0.7.0; JL 260908
+    # "the delivered pdf or word must be clean"); counts and the build time live in build-manifest.json
+    header = status
+    spacing_cmd = {"single": "\\singlespacing", "double": "\\doublespacing"}.get(LATEX_SPACING, "\\onehalfspacing")
+    endfloat = "\\usepackage[nolists,tablesfirst,nomarkers]{endfloat}" if LATEX_DISPLAYS == "end" else "% displays inline at first reference"
     paper_preamble = ("% paper-owned preamble · " + PREAMBLE_FILE.name + "\n" + PREAMBLE_FILE.read_text(encoding="utf-8")) \
         if PREAMBLE_FILE and PREAMBLE_FILE.exists() else "% no paper preamble declared"
     if JAMA:   # the JAMA Word renderer parses a title-page center block, not \maketitle
@@ -368,6 +420,8 @@ def write_master(main, appx, status, ready_n, total_n):
                        "[Authors blinded for review]\n\n\\vspace{0.5em}\n\\end{center}")
     else:
         title_block = "\\title{" + title + "}\n\\author{}\n\\date{}\n\\begin{document}\n\\maketitle"
+        if LATEX_TITLE_PAGE == "separate":       # blind copy: the title alone on page 1
+            title_block += "\n\\thispagestyle{empty}\n\\clearpage"
     head = rf"""% GENERATED by {ENGINE_TAG} on {stamp}
 % The pages own the words. Edit a Section Page, then rebuild; never edit this file.
 \documentclass[12pt]{{article}}
@@ -379,9 +433,10 @@ def write_master(main, appx, status, ready_n, total_n):
 \usepackage{{graphicx,booktabs,tabularx,multirow,amsmath,amssymb,setspace,caption,float,xcolor}}
 \usepackage[hidelinks]{{hyperref}}
 \usepackage{{fancyhdr}}
+{endfloat}
 \providecommand{{\displayroot}}{{displays/}}
 {paper_preamble}
-\onehalfspacing
+{spacing_cmd}
 \setlength{{\parindent}}{{0.25in}}
 \setlength{{\parskip}}{{0.35em}}
 \graphicspath{{{{./}}}}
@@ -395,7 +450,9 @@ def write_master(main, appx, status, ready_n, total_n):
     body = []
     for p, floats in main:
         if p.get("included", p["ready"]) and p["id"].endswith("-Abstract"):
-            body.append(rf"\input{{sections/{p['id']}}}"); body.append(""); continue
+            body.append(rf"\input{{sections/{p['id']}}}")
+            if LATEX_ABSTRACT_PAGE: body.append(r"\clearpage")   # abstract (+ keywords) alone on its page
+            body.append(""); continue
         if p.get("included", p["ready"]):
             if JAMA:   # the JAMA Word renderer splits the body on these four headings
                 kind = p["id"].rsplit("-Main-", 1)[-1].replace("-", " ")
@@ -405,27 +462,29 @@ def write_master(main, appx, status, ready_n, total_n):
             body.append(rf"\input{{sections/{p['id']}}}")
             body += [rf"\input{{displays/{f}/float}}" for f in floats]
         else:
-            _, title = page_heading(p)
-            body.append(rf"\section{{{tex_text(title)}}}" + "\n" +
-                        r"\noindent\textit{[Not yet compiled into this build: " +
-                        "; ".join(p["reasons"]).replace("_", r"\_").replace("<", r"$<$").replace(">", r"$>$") + "]}")
+            body.append(_stub(p))
         body.append("")
     tail = ["\\section*{Acknowledgments}", "\\noindent\\textit{[Acknowledgments, funding and disclosures are written at submission; this build is a draft.]}", "",
-            "\\clearpage", "\\bibliographystyle{apalike}", "\\bibliography{reference}", "", "\\clearpage", "\\appendix", ""]
+            "\\clearpage", "\\bibliographystyle{" + LATEX_BIBSTYLE + "}", "\\bibliography{reference}", "", "\\clearpage", "\\appendix", ""]
     if JAMA:   # JAMA supplements number their floats eTable 1… / eFigure 1…, restarting after the references
         tail += ["\\setcounter{table}{0}\\renewcommand{\\tablename}{eTable}\\renewcommand{\\thetable}{\\arabic{table}}",
                  "\\setcounter{figure}{0}\\renewcommand{\\figurename}{eFigure}\\renewcommand{\\thefigure}{\\arabic{figure}}", ""]
     for p, floats in appx:
+        if LATEX_APPENDIX_NEWPAGE: tail.append(r"\clearpage")      # each lettered appendix on a new page
         if p.get("included", p["ready"]):
             tail.append(rf"\input{{appendices/{p['id']}}}")
             tail += [rf"\input{{displays/{f}/float}}" for f in floats]
         else:
-            _, title = page_heading(p)
-            tail.append(rf"\section{{{tex_text(title)}}}" + "\n" +
-                        r"\noindent\textit{[Not yet compiled into this build: " +
-                        "; ".join(p["reasons"]).replace("_", r"\_").replace("<", r"$<$").replace(">", r"$>$") + "]}")
+            tail.append(_stub(p))
         tail.append("")
     MASTER.write_text(head + "\n".join(body) + "\n" + "\n".join(tail) + "\n\\end{document}\n", encoding="utf-8")
+
+def _stub(p) -> str:
+    """a not-ready page: its own numbered heading plus ONE neutral line. The reasons
+    are build scaffolding and live in build-manifest.json and the display register,
+    never in the reader's PDF/DOCX (JL 260908: "the delivered pdf or word must be clean")."""
+    _, title = page_heading(p)
+    return rf"\section{{{tex_text(title)}}}" + "\n" + r"\noindent\textit{[This section is not yet compiled into this build.]}"
 
 # ── the page's own heading ───────────────────────────────────────────────────
 # Every Section Page's H1 declares the number and title the paper intends:
@@ -526,10 +585,15 @@ def display_register(main, appx):
         seen_label.setdefault(r["label"], r["printed"])
     # every unit ON DISK, not only the ones this build copied: a collision on a
     # NOT-READY page is exactly the one that detonates later, when it compiles.
+    homes = {}
     for readme in sorted(ROOT.glob("B*/*/outline/evidence/display/*/README.md")):
         unit = readme.parent.name
+        homes.setdefault(unit, []).append(readme.parents[4].name)
         d = declared_number(unit)
         if d: claimed.setdefault(d, []).append(unit)
+    for unit, pages_ in sorted(homes.items()):
+        if len(pages_) > 1:   # declared_number() reads the first README it finds; two homes make that a guess
+            findings.append(f"unit {unit} exists on {len(pages_)} pages: {', '.join(pages_)}")
     for number, owners in sorted(claimed.items()):
         if len(owners) > 1:
             findings.append(f"{number} claimed by {len(owners)} units: {', '.join(owners)}")
@@ -556,17 +620,30 @@ def display_register(main, appx):
             "rows": rows, "sections": secs, "findings": findings}
 
 # ── build ────────────────────────────────────────────────────────────────────
+class _Missing:
+    """stands in for a CompletedProcess when the tool itself is not installed."""
+    def __init__(self, tool): self.returncode, self.stdout, self.stderr = 127, "", f"{tool} not found on PATH; install it or run on a machine that has it"
+
+def _run(cmd, **kw):
+    try: return subprocess.run(cmd, **kw)
+    except FileNotFoundError: return _Missing(cmd[0])
+
 def build():
+    reset_placement()
     main_ids, appx_ids, order_source = read_order()
-    G_MAIN, G_APP = rel(CFG["pages"]["main"]), rel(CFG["pages"]["appendix"])
+    G_MAIN = rel(CFG["pages"]["main"])
+    G_APP = rel(CFG["pages"]["appendix"]) if CFG["pages"].get("appendix") else None   # 0.7.0: appendix group optional
+    if appx_ids and G_APP is None:
+        raise RuntimeError("the compile-order block lists appendix Sections but paper-build.toml [pages] declares no appendix group")
     if LATEX.exists(): shutil.rmtree(LATEX)
     for d in (SEC, APP, DISP): d.mkdir(parents=True, exist_ok=True)
     main = [inspect(i, G_MAIN) for i in main_ids]
-    appx = [inspect(i, G_APP) for i in appx_ids]
+    appx = [inspect(i, G_APP) for i in appx_ids] if G_APP else []
     pages = main + appx
     labels = label_index(pages); unresolved = []
     for p in pages:   # 0.6.1: a DRAFT may print an unready page's fragment when the paper opts in
         p["included"] = p["ready"] or (DRAFT_INCLUDES_UNREADY and p["fragment"].exists())
+    prescan_embedded(pages)
     main_f = [(p, place_fragment(p, SEC, labels, unresolved) if p["included"] else []) for p in main]
     appx_f = [(p, place_fragment(p, APP, labels, unresolved) if p["included"] else []) for p in appx]
     nbib = merge_bib(pages)
@@ -575,8 +652,8 @@ def build():
     write_master(main_f, appx_f, status, len(ready), len(pages))
     register = display_register(main_f, appx_f)
     # compile
-    rc = subprocess.run(["latexmk", "-xelatex", "-interaction=nonstopmode", "-halt-on-error", "-quiet", MASTER.name],
-                        cwd=LATEX, capture_output=True, text=True)
+    rc = _run(["latexmk", "-xelatex", "-interaction=nonstopmode", "-halt-on-error", "-quiet", MASTER.name],
+              cwd=LATEX, capture_output=True, text=True)
     pdf = LATEX / "master.pdf"; main_pdf = rel(OUT["main_pdf"])
     if pdf.exists(): shutil.copy2(pdf, main_pdf)
     for junk in LATEX.glob("master.*"):
@@ -585,7 +662,7 @@ def build():
     docx_rc, docx_err = None, None
     if DOCX_ENGINE.exists():
         env = dict(os.environ, HAIPIPE_PAPER_BUILD_CONFIG=str(HERE / "paper-build.toml"))
-        r = subprocess.run([sys.executable, str(DOCX_ENGINE)], cwd=HERE, env=env, capture_output=True, text=True)
+        r = _run([sys.executable, str(DOCX_ENGINE)], cwd=HERE, env=env, capture_output=True, text=True)
         docx_rc, docx_err = r.returncode, (r.stderr or r.stdout)[-1500:]
     manifest_path = HERE / OUT["manifest"]
     try:
@@ -602,7 +679,11 @@ def build():
                    "outline": p["outline"],
                    "fragment": str(p["fragment"].relative_to(ROOT)) if p["fragment"].exists() else None} for p in pages],
         "submission_readiness": submission_readiness,
-        "unresolved_refs": unresolved, "bib_entries": nbib, "displays": register,
+        "unresolved_refs": unresolved, "bib_entries": nbib, "displays": register, "warnings": list(BUILD_WARNINGS),
+        "venue_profile": VENUE_PROFILE or None,
+        "latex_profile": {"spacing": LATEX_SPACING, "bibstyle": LATEX_BIBSTYLE, "displays": LATEX_DISPLAYS,
+                          "appendix_newpage": LATEX_APPENDIX_NEWPAGE, "title_page": LATEX_TITLE_PAGE,
+                          "abstract_page": LATEX_ABSTRACT_PAGE, "running_head": LATEX_RUNNING_HEAD},
         "outputs": {"pdf": OUT["main_pdf"] if main_pdf.exists() else None,
                     "docx": OUT["main_docx"] if rel(OUT["main_docx"]).exists() else None},
     })
@@ -632,13 +713,15 @@ def build():
         if not p["ready"]: print(f"  ⬜ {p['id']}: {'; '.join(p['reasons'])}")
     for p in pages:
         for w in p.get("warnings", []): print(f"  ⚠ {p['id']}: {w}")
+    for w in BUILD_WARNINGS: print(f"  ⚠ document: {w}")
 
 def freeze(kind: str, rd: str):
     rounds = list(ROOT.glob(f"B*-*-Round/{rd}-*"))
     if len(rounds) != 1: sys.exit(f"expected one Round folder for {rd}, found {len(rounds)}")
+    if not rel(OUT["main_pdf"]).exists():
+        sys.exit(f"nothing to freeze: {OUT['main_pdf']} does not exist; run the build first")
     dst = rounds[0] / kind; dst.mkdir(exist_ok=True)
-    for key in ("main_pdf", "main_docx", "manifest"):
-        src = rel(OUT[key])
+    for src in [rel(OUT[k]) for k in ("main_pdf", "main_docx", "manifest")] + [HERE / "display-register.md"]:
         if src.exists(): shutil.copy2(src, dst / src.name); print(f"  → {dst.relative_to(ROOT)}/{src.name}")
     print(f"{kind}/ frozen for {rounds[0].name} · hash {sha(rel(OUT['manifest']))}")
 
