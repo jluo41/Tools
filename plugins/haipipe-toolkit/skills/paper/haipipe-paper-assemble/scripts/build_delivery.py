@@ -178,10 +178,55 @@ def inspect(pid: str, group: Path):
         reasons.append(f"outline not approved (latest {plan.name} has no unambiguous approval)")
     if not frag.exists(): reasons.append("no body fragment delivery/latex/<page>.tex")
     if not any(p.exists() for p in pdfs): reasons.append("no page PDF")
-    missing_prev = [u.name for u in units if not (u / "preview.pdf").exists()]
-    if missing_prev: reasons.append(f"display preview.pdf missing: {', '.join(missing_prev)}")
-    return {"id": pid, "dir": d, "fragment": frag, "units": units, "ready": not reasons, "reasons": reasons,
+    # 0.6.2 (JL 260908, Paper-MISQ-Board): a display unit gates the page only if
+    # the page CITES it and the unit is LIVE. An uncited folder, or a unit folded
+    # into another (state 🟣) or retired, is dead weight, not a gate; before this
+    # rule S-Display-3a-funnel (folded, cited by nothing) blocked a fully written
+    # §4 on a missing preview.pdf.
+    frag_text = frag.read_text(encoding="utf-8", errors="replace") if frag.exists() else ""
+    md_path = d / f"{pid}.md"
+    md_text = md_path.read_text(encoding="utf-8", errors="replace") if md_path.exists() else ""
+    cited, folded, uncited = [], [], []
+    for u in units:
+        state = unit_state(u)
+        if state != "live":
+            folded.append(f"{u.name} ({state})"); continue
+        if unit_is_cited(u, frag_text, md_text): cited.append(u)
+        else: uncited.append(u.name)
+    missing_prev = [u.name for u in cited if not (u / "preview.pdf").exists()]
+    if missing_prev: reasons.append(f"display preview.pdf missing for cited unit: {', '.join(missing_prev)}")
+    warnings = []
+    if folded: warnings.append(f"display units not gating (folded/retired): {', '.join(folded)}")
+    if uncited: warnings.append(f"display units not gating (cited by nothing): {', '.join(uncited)}")
+    # a fragment is DERIVED from the page .md by the LaTeX lane; when the .md is
+    # newer the fragment silently prints yesterday's words. Reported, not a
+    # blocker: mtimes are unreliable after a clone or a bulk rename sweep.
+    if frag.exists() and md_path.exists() and md_path.stat().st_mtime > frag.stat().st_mtime + 1:
+        warnings.append("fragment may be stale: the page .md is newer than delivery/latex/<page>.tex; rerun the LaTeX lane")
+    return {"id": pid, "dir": d, "fragment": frag, "units": units, "cited_units": cited,
+            "ready": not reasons, "reasons": reasons, "warnings": warnings,
             "sha256": sha(frag) if frag.exists() else None, "outline": outline}
+
+
+def unit_state(u: Path) -> str:
+    """'live' unless the unit's own records say it is folded (state 🟣) or retired."""
+    for f in [u / "README.md", *sorted(u.glob("*.md"))]:
+        if not f.exists(): continue
+        t = f.read_text(encoding="utf-8", errors="replace")
+        if re.search(r"(?m)^state:\s*🟣", t): return "folded"
+        m = re.search(r"(?ms)^## Placement\s*\n(.*?)(?=^## |\Z)", t)
+        if m and re.search(r"\b(retired|folded into|no standalone display)\b", m.group(1), re.I): return "retired"
+    return "live"
+
+
+def unit_is_cited(u: Path, frag_text: str, md_text: str) -> bool:
+    """the page names the unit in its fragment or its .md, or \\ref's one of the unit's labels."""
+    if u.name in frag_text or u.name in md_text: return True
+    ft = u / "float.tex"
+    if ft.exists():
+        for lab in re.findall(r"\\label\{([^}]+)\}", ft.read_text(encoding="utf-8", errors="replace")):
+            if re.search(r"\\ref\{" + re.escape(lab) + r"\}", frag_text): return True
+    return False
 
 
 def build_readiness(pages, unresolved=(), latex_rc=None, docx_rc=None):
@@ -555,7 +600,7 @@ def build():
     manifest.update({
         "built": datetime.now().isoformat(timespec="seconds"), "engine": ENGINE_TAG,
         "status": status, "order": {"main": main_ids, "appendix": appx_ids}, "order_source": order_source,
-        "pages": [{"id": p["id"], "ready": p["ready"], "reasons": p["reasons"], "fragment_sha256": p["sha256"],
+        "pages": [{"id": p["id"], "ready": p["ready"], "reasons": p["reasons"], "warnings": p.get("warnings", []), "fragment_sha256": p["sha256"],
                    "outline": p["outline"],
                    "fragment": str(p["fragment"].relative_to(ROOT)) if p["fragment"].exists() else None} for p in pages],
         "submission_readiness": submission_readiness,
@@ -587,6 +632,8 @@ def build():
     print(f"docx: {'✅ ' + OUT['main_docx'] if rel(OUT['main_docx']).exists() else '❌ rc=' + str(docx_rc)}")
     for p in pages:
         if not p["ready"]: print(f"  ⬜ {p['id']}: {'; '.join(p['reasons'])}")
+    for p in pages:
+        for w in p.get("warnings", []): print(f"  ⚠ {p['id']}: {w}")
 
 def freeze(kind: str, rd: str):
     rounds = list(ROOT.glob(f"B*-*-Round/{rd}-*"))

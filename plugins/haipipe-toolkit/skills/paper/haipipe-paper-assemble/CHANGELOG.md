@@ -1,5 +1,11 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.6.2 · 260908
+
+- Readiness rule (JL 260908, second defect found by Paper-MISQ-Board): a display unit gates a page only when the page CITES it (unit name in the fragment or `.md`, or a `\ref` to one of its `float.tex` labels) AND the unit is LIVE (no `state: 🟣`, not retired/folded under `## Placement`). Uncited or folded units are reported under the page's new `warnings` and never block. Before: every folder under `display/` demanded a preview.pdf, so a folded `S-Display-3a-funnel` blocked a fully written §4.
+- `warnings` per page in the manifest and on the console: also `fragment may be stale` when the page `.md` is newer than its `delivery/latex/<page>.tex` (a warning, not a blocker; mtimes lie after clone or rename sweeps).
+- Four teeth added: uncited-no-preview does not gate; folded-no-preview does not gate; cited live no-preview still gates; stale fragment warns and stays ready.
+
 ## 0.6.1 · 260908
 
 Paper-level opt-ins in `scripts/build_delivery.py`, driven by `paper-build.toml`; a paper that declares none of them builds exactly as 0.6.0.

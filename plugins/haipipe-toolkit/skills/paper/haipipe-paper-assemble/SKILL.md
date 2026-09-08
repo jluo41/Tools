@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.6.1"
+  version: "0.6.2"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -68,10 +68,26 @@ the source with prose mined from Word.
 
 A Section Page enters the build when three things exist on it: an approved
 outline table (`outline/<page>-outline-v*.md` with its tick), a preview PDF for
-every display unit (`outline/evidence/display/<unit>/preview.pdf`), and its own
-compiled page PDF (`delivery/latex/<page>.pdf` or `<page>-complete.pdf`). A
-page missing any of the three is listed in the build manifest as not ready and
-the build is `DRAFT`; the builder never substitutes an older desk-room copy for it.
+every display unit the page CITES and that is LIVE
+(`outline/evidence/display/<unit>/preview.pdf`), and its own compiled page PDF
+(`delivery/latex/<page>.pdf` or `<page>-complete.pdf`). A page missing any of
+the three is listed in the build manifest as not ready and the build is
+`DRAFT`; the builder never substitutes an older desk-room copy for it.
+
+**A display unit gates only when cited and live (0.6.2, JL 260908).** Cited
+means the page's fragment or `.md` names the unit, or the fragment `\ref`s one
+of the unit's `float.tex` labels. Live means the unit's own records do not say
+`state: 🟣` (folded into another unit) or, under `## Placement`, retired / folded
+into / no standalone display. An uncited folder or a folded unit is dead
+weight, not a gate: it is reported under the page's `warnings` in the manifest
+and never blocks. Before this rule a folded, uncited `S-Display-3a-funnel`
+blocked a fully written §4 on a missing preview.
+
+**A stale fragment is a warning, never silent.** The body fragment is DERIVED
+from the page `.md` by the LaTeX lane; when the `.md` is newer than
+`delivery/latex/<page>.tex` the build would print yesterday's words. The engine
+reports `fragment may be stale` under `warnings` (a warning, not a blocker,
+because mtimes lie after a clone or a bulk rename sweep); rerun the lane.
 
 Read the current outline's explicit `approved:` record, not merely its filename
 or an older approved outline. When an `outline-version:` is declared, it must

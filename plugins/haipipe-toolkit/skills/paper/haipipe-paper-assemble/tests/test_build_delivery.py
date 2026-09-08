@@ -114,3 +114,56 @@ def test_order_block_must_be_exactly_one(paper):
     story.write_text(story.read_text() + "\n<!-- haipipe:compile-order:start -->\n")
     with pytest.raises(RuntimeError):
         paper.read_order()
+
+
+def _add_unit(page_dir, name, *, preview=True, cite_in_fragment=True, state_line=None, placement="Main; Introduction, Figure 9"):
+    """a display unit on a page; optionally without preview, uncited, or folded"""
+    u = page_dir / "outline" / "evidence" / "display" / name
+    (u / "assets").mkdir(parents=True, exist_ok=True)
+    (u / "float.tex").write_text("\\begin{figure}\\caption{x}\\label{fig:" + name + "}\\end{figure}\n")
+    if preview: (u / "preview.pdf").write_bytes(b"%PDF")
+    head = f"# {name}\n" + (f"{state_line}\n" if state_line else "")
+    (u / "README.md").write_text(head + "\n## Placement\n" + placement + "\n")
+    if cite_in_fragment:
+        frag = page_dir / "delivery" / "latex" / f"{page_dir.name}.tex"
+        frag.write_text(frag.read_text() + f"\nSee \\ref{{fig:{name}}}.\n")
+    return u
+
+
+def test_behavior_D_uncited_unit_without_preview_does_not_gate(paper):
+    m = paper
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
+    _add_unit(intro, "S-Display-9-orphan", preview=False, cite_in_fragment=False)
+    p = m.inspect("S-T-Main-Intro", m.rel(m.CFG["pages"]["main"]))
+    assert p["ready"], p["reasons"]
+    assert any("cited by nothing" in w and "S-Display-9-orphan" in w for w in p["warnings"])
+
+
+def test_behavior_D_folded_unit_without_preview_does_not_gate(paper):
+    m = paper
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
+    _add_unit(intro, "S-Display-3a-funnel", preview=False, cite_in_fragment=True,
+              state_line="state: 🟣 folded into S-Display-1-one · no standalone display")
+    p = m.inspect("S-T-Main-Intro", m.rel(m.CFG["pages"]["main"]))
+    assert p["ready"], p["reasons"]
+    assert any("folded" in w and "S-Display-3a-funnel" in w for w in p["warnings"])
+
+
+def test_behavior_D_cited_live_unit_without_preview_still_gates(paper):
+    m = paper
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
+    _add_unit(intro, "S-Display-2-live", preview=False, cite_in_fragment=True)
+    p = m.inspect("S-T-Main-Intro", m.rel(m.CFG["pages"]["main"]))
+    assert not p["ready"]
+    assert any("preview.pdf missing for cited unit" in r and "S-Display-2-live" in r for r in p["reasons"])
+
+
+def test_stale_fragment_is_a_warning_not_a_blocker(paper):
+    m = paper
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
+    frag = intro / "delivery" / "latex" / "S-T-Main-Intro.tex"
+    old = frag.stat().st_mtime - 600
+    os.utime(frag, (old, old))                      # the .md is now newer than its fragment
+    p = m.inspect("S-T-Main-Intro", m.rel(m.CFG["pages"]["main"]))
+    assert p["ready"], p["reasons"]
+    assert any("fragment may be stale" in w for w in p["warnings"])
