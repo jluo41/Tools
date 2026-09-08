@@ -65,10 +65,10 @@ e.g. A00_rawstore_<cohort>/ — full dialect: ref/databricks-execution.md):
                                into Databricks standalone, where diagram/
                                .txt files don't render.
 
-Workflow artifacts (written by /haipipe-workflow when it plans/audits a
-block): stage-report.md at block root, workflow/ inside jobs. Legitimate
-residents — do not flag them as structure violations; they are generated
-records, regenerate rather than hand-edit.
+Canonical lifecycle artifacts live in each Task Folder's `workflow/` lane.
+Job- or Block-level reports may aggregate those receipts without becoming a
+second lifecycle authority. Existing Job-level `workflow/` directories are
+legacy read inputs; do not scaffold them for new nested work.
 
 ---
 
@@ -97,8 +97,9 @@ valid, detected by tooling from the ticket's own path.
 NESTED (canonical):
 
   tNN_*/          TASKS, directly under the job (260830), one script pipeline
-                  each, holding scripts/ (with config/ INSIDE it) + runs/ +
-                  the page tNN_*.md (nothing generated).
+                  each. Task Folder = Page Folder: it holds its same-stem Page,
+                  outline/, workflow/, scripts/ (with config/ inside), runs/,
+                  and optional task-scoped sbatch/.
   src/            SHARED by more than one task in this job — job-wide libs plus
                   the defaults that carry the job's `store:`. ONE name for every
                   engine, Stata included. TWO WORDS ON PURPOSE (JL 260831):
@@ -120,7 +121,6 @@ NESTED (canonical):
   sbatch/         OPTIONAL: submit this job's own DAG, or split this job's
                   runs across GPUs. The only sbatch there is: a batcher that
                   would span jobs says those jobs are one job.
-  workflow/       plan/report artifacts (haipipe-workflow).
   diagram/        OPTIONAL: only when this job diverges from the block
                   narrative. If block/diagram/ covers it, skip.
 
@@ -132,7 +132,7 @@ to nested rather than piling a second .py at root.
 JOBS DO NOT HAVE A README.md. The doc surface is block/diagram/ (cohesive
 blocks) or job/diagram/ (divergent jobs).
 
-Task-folder rules (tNN_{task_name}/):
+Task Folder rules (`tNN_{task_name}/`, the same physical Page Folder):
   - scripts/config/ is ALWAYS a folder, even holding one file; the STEM is the run
     name. Prompts are config: scripts/config/prompts/<x>.md beside the config that
     names it, resolved relative to the config file (JL 260830). A config is EXECUTED (or `include`d), not passed as a payload, so it

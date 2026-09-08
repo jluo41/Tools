@@ -483,9 +483,11 @@ Step 2: Resolve scope. Cascade:
 
   Task Folder vs Job vs Block — detect by STRUCTURE first. A canonical Task
   Folder is a direct Job child with a same-stem `.md`, `scripts/`, and `runs/`;
-  its `tNN_` prefix confirms, but does not replace, that structure. A path is a JOB if it
-  holds a `.py` at its root (or `scripts/`, `src/`, `workflow/`, `results/`, `configs/`, `runs/`). It is a
-  BLOCK if it holds jobs and has none of those of its own.
+  its `tNN_` prefix confirms, but does not replace, that structure. After
+  excluding that Task shape, a path is a Job when it owns direct `tNN_*`
+  children or Job lanes such as `src/`, `sbatch/`, `results/`, and
+  `notebooks/`; a flat legacy Job may instead hold root `.py`, `configs/`, and
+  `runs/`. A Block holds Jobs and none of those runnable lanes itself.
 
   ⛔ NEVER key this on a name pattern. `{NN}_<name>` is the majority convention (235 of 342 real
   jobs) but it is NOT a law: `B4_fit_scaling_law`, `C3-Visual-ForecastScaling`, `B6f_crosscompare`

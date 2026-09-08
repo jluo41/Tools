@@ -2,7 +2,8 @@ fn/stage-report — generate reports mirroring plans
 ===================================================
 
 Called by `/haipipe-task report`.
-Generates reports at two levels: per-script and task-level.
+Generates reports inside one `tNN_<task>/` Task Folder / Page Folder at two
+levels: per-script and Task-level.
 Each report mirrors its corresponding plan — same phases, same steps — filled with what actually happened.
 
 Schema source of truth:
@@ -32,7 +33,7 @@ When to call
 ------------
 
 ```
-/haipipe-task report <job-path>
+/haipipe-task report <path-to-tNN_<task>>
 ```
 
 
@@ -50,12 +51,12 @@ For each `plan-script-<name>.yaml`, gather evidence:
 
 | Source | What it gives |
 |--------|--------------|
-| `results/<run>/manifest.json` | finished timestamp, paths |
-| `results/<run>/log/*.txt` | step-level stdout, errors |
-| `notebooks/<run>.ipynb` | cell outputs (row counts, print statements) |
-| `results/<run>/*.csv` | actual file sizes, row counts |
-| `results/<run>/figures/*.png` | figure file sizes |
-| `results/<run>/config_snapshot.yaml` | config used |
+| `$OUTPUT_ROOT/results/<task>/<run>/manifest.json` | finished timestamp, paths |
+| `$OUTPUT_ROOT/results/<task>/<run>/log/*.txt` | step-level stdout, errors |
+| `$OUTPUT_ROOT/notebooks/<task>/<run>.ipynb` | cell outputs (row counts, print statements) |
+| `$OUTPUT_ROOT/results/<task>/<run>/*.csv` | actual file sizes, row counts |
+| `$OUTPUT_ROOT/results/<task>/<run>/figures/*.png` | figure file sizes |
+| `$OUTPUT_ROOT/results/<task>/<run>/config_snapshot.yaml` | config used |
 
 ### Step 3 — Generate per-script reports
 
@@ -103,7 +104,7 @@ phases:
         status: done
         files_in: []
         files_out:
-          - results/<run>/<file>
+          - $OUTPUT_ROOT/results/<task>/<run>/<file>
         output: { key: value }
 
       - label: "<phase>:<step-name>"
@@ -125,8 +126,8 @@ summary:
   steps_skipped: Y
   steps_failed: 0
   files_created:
-    - results/<run>/<file1>
-    - results/<run>/<file2>
+    - $OUTPUT_ROOT/results/<task>/<run>/<file1>
+    - $OUTPUT_ROOT/results/<task>/<run>/<file2>
   verdict: <pass | warn | fail | inconclusive>
   issues: []
 ```
@@ -151,12 +152,12 @@ phases:
       - label: "run:<script-name>"
         status: done
         files_in:
-          - <script>.py
-          - configs/<run_name>.yaml
+          - scripts/<script>.py
+          - scripts/config/<run_name>.yaml
           - _WorkSpace/...
         files_out:
-          - results/<run>/<file1>
-          - results/<run>/<file2>
+          - $OUTPUT_ROOT/results/<task>/<run>/<file1>
+          - $OUTPUT_ROOT/results/<task>/<run>/<file2>
         note: "238s, N test rows"
 
   - title: Gate1
@@ -164,8 +165,8 @@ phases:
       - label: "gate1:code-review"
         status: done
         files_in:
-          - <script>.py
-          - configs/<run_name>.yaml
+          - scripts/<script>.py
+          - scripts/config/<run_name>.yaml
         files_out:
           - CODE_REVIEW.md
         output: { verdict: warn, issues: ["..."] }
@@ -176,7 +177,7 @@ phases:
       - label: "gate2:result-audit"
         status: done
         files_in:
-          - results/<run>/*
+          - $OUTPUT_ROOT/results/<task>/<run>/*
           - workflow/plan-script-<name>.yaml
         files_out:
           - RUN_AUDIT.md
@@ -190,7 +191,7 @@ summary:
   steps_skipped: Y
   steps_failed: 0
   files_created:
-    - results/<run>/<file1>
+    - $OUTPUT_ROOT/results/<task>/<run>/<file1>
     - CODE_REVIEW.md
     - RUN_AUDIT.md
   verdict: <pass | warn | fail>
