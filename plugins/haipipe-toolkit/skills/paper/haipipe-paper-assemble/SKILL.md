@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.7.4"
+  version: "0.7.5"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -34,7 +34,7 @@ The layers have different jobs:
 Paper-<Slug>/                          the board at the paper root
   ├── A1-Story/Story<Letter>-<desk>-<idea-slug>/         boundary, claims, evidence, acceptance
   │       §8 Section Narrative + haipipe:compile-order block = reading order
-  └── Ba-<desk>-Main/<page>/           each Section Page owns its words:
+  └── Ba-<desk>-Main/S-<desk>-Main-<N>-<Title>/   each Section Page owns its words (id carries §N):
         └── delivery/latex/            <page>.tex (body fragment, what the paper
                                        \inputs) · <page>-complete.tex/.pdf (the
                                        page's own standalone deliverable)
@@ -216,26 +216,29 @@ never a caption with nothing under it (found by Paper-MISQ-Board, 260908: 3 of 4
 main tables and 7 of 12 appendix tables were lost). `tests/test_latex_room_to_docx.py`
 drives the real engine over a room with those exact column specs.
 
-## 🗂 Display unit folders (0.7.4 · JL 260908 "use the section index")
+## 🗂 Section page ids and display unit folders (0.7.5 · JL 260908, third and final naming pass)
 
-A display unit folder under a paper Section page is named by the section index
-its page declares in its H1, never by the long page id:
+The PAGE carries the section index; the UNIT carries none:
 
 ```text
-Sec<N>-Display<n>-<slug>    under a main Section page whose H1 says "§N …"        Sec4-Display1-research-design
-App<L>-Display<n>-<slug>    under an appendix page whose H1 says "Appendix L …"   AppD-Display1-iv-outcomes
+S-<desk>-Main-<N>-<Title>          S-MISQ-Main-4-Empirical-Strategy · S-MISQ-Main-5-Results     N = the H1's §N
+S-<desk>-Appendix-<L>-<Title>      S-MISQ-Appendix-D-Instrumental-Variables                     L = the H1's Appendix L
+unnumbered page: title only        S-MISQ-Main-Abstract · S-JAMA-IM-Main-Key-Points · -Back-Matter
+<page>/outline/evidence/display/Display<n>-<slug>/        Display1-research-design · Display2-main-regression
+delivery/latex/displays/<page-id>/<unit>/                  displays/S-MISQ-Main-4-Empirical-Strategy/Display1-research-design/
 ```
 
-`Display<n>` counts the page's units in its own order; the slug names the unit.
-`S-Display-<code>-<slug>` and the earlier `<PageID>-Display<n>-<slug>` are
-RETIRED. The display register reads every unit folder on disk, derives the
-expected prefix from the owning page's H1 (the same `page_heading()` the master
-uses), and lists as a finding: a legacy name, a right-shaped name whose Sec/App
-does not match the page (the compile order moved and the unit kept its old
-number), a page whose H1 declares no §N or Appendix L yet holds units, and a
-unit without a `README.md`. Findings never block a build; they name the debt.
-The known cost, chosen by JL over the page-id form: a section number moves when
-the compile order changes, so units under that page are renamed then.
+The H1 keeps its declared value (`# S-MISQ-Main-4-Empirical-Strategy · §4 Empirical
+Strategy and Data`) so the register can compare the folder index with the H1.
+Retired: `S-Display-<code>-<slug>`, `<PageID>-Display<n>-<slug>`,
+`Sec<N>-/App<L>-Display<n>-<slug>`. Because `Display<n>-<slug>` is unique only
+inside its page, every engine key is `<page-id>/<unit>` (register rows,
+findings, `declared_number`, the placed floats). The register lists as a
+finding: a page whose folder index disagrees with its H1, a numbered H1 whose id
+carries no index, a folder index on an unnumbered H1, a unit whose folder still
+carries any prefix, and a unit without `README.md`. Findings never block; they
+name the debt. Known cost, chosen by JL: a moved compile order renames the page
+and its units.
 
 ## 🎭 Venue profiles
 

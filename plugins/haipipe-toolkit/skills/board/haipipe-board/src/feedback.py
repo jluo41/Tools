@@ -22,7 +22,7 @@ from pathlib import Path
 
 LEGACY_PAGE_ID = r"[A-Z]{2}\d{2}"
 SEMANTIC_SECTION_ID = (
-    r"S-[A-Za-z][A-Za-z0-9-]*?-(?:Main|Appendix)-[A-Za-z][A-Za-z0-9-]*"
+    r"S-[A-Za-z][A-Za-z0-9-]*?-(?:Main|Appendix)-(?:(?:\d+|[A-Z])-)?[A-Za-z][A-Za-z0-9-]*"   # 260908: optional section index
 )
 PAGE_ID_TOKEN = rf"(?:{SEMANTIC_SECTION_ID}|{LEGACY_PAGE_ID})"
 PAGE_ID = re.compile(rf"(?<![A-Za-z0-9-])({PAGE_ID_TOKEN})(?![A-Za-z0-9-])")

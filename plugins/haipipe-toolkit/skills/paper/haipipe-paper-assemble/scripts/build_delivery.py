@@ -111,7 +111,10 @@ def prescan_embedded(pages):
     for p in pages:
         if p.get("included", p["ready"]) and p["fragment"].exists():
             raw = p["fragment"].read_text(encoding="utf-8", errors="replace")
-            EMBEDDED_UNITS.update(re.findall(r"displays?/([^/}]+)/", raw))   # raw page path (display/) or final room path (displays/)
+            # raw page path  …/outline/evidence/display/<unit>/…  → this page's unit
+            EMBEDDED_UNITS.update(f"{p['id']}/{u}" for u in re.findall(r"(?<!s)display/([^/}]+)/", raw))
+            # final room path displays/<page>/<unit>/…            → already keyed
+            EMBEDDED_UNITS.update(f"{pg}/{u}" for pg, u in re.findall(r"displays/([^/}]+)/([^/}]+)/", raw))
 
 # ── order ─────────────────────────────────────────────────────────────────────
 ORDER_BLOCK = re.compile(r"<!--\s*haipipe:compile-order:start\s*-->(.*?)<!--\s*haipipe:compile-order:end\s*-->", re.S)
@@ -308,9 +311,18 @@ def label_index(pages):
                 idx.setdefault(lab, (pid, u))
     return idx
 
+def unit_page(u: Path) -> str:
+    """the Section Page that owns a unit folder: <page>/outline/evidence/display/<unit>"""
+    return u.parents[3].name
+
+def unit_key(u: Path) -> str:
+    """'<page-id>/<unit>' · 0.7.5: Display<n>-<slug> is unique only inside its page (JL 260908)"""
+    return f"{unit_page(u)}/{u.name}"
+
 def copy_unit(u: Path) -> str:
-    """copy one display unit into latex/displays/<unit>/ · returns the unit name"""
-    dst = DISP / u.name; dst.mkdir(parents=True, exist_ok=True)
+    """copy one display unit into latex/displays/<page-id>/<unit>/ · returns '<page-id>/<unit>'"""
+    key = unit_key(u)
+    dst = DISP / unit_page(u) / u.name; dst.mkdir(parents=True, exist_ok=True)
     fig = u / "assets" / "figure.pdf"
     if not fig.exists(): fig = u / "figure.pdf"                  # flat unit layout (0.6.1)
     if not fig.exists(): fig = u / "preview.pdf"
@@ -322,10 +334,10 @@ def copy_unit(u: Path) -> str:
     ft = u / "float.tex"
     if ft.exists():
         t = ft.read_text(encoding="utf-8", errors="replace")
-        t = re.sub(r"(\\includegraphics(?:\[[^\]]*\])?)\{[^}]*\}", rf"\1{{displays/{u.name}/figure.pdf}}", t)
-        t = re.sub(r"\\input\{[^}]*?(table-body[^}/]*)\}", rf"\\input{{displays/{u.name}/\1}}", t)
+        t = re.sub(r"(\\includegraphics(?:\[[^\]]*\])?)\{[^}]*\}", rf"\1{{displays/{key}/figure.pdf}}", t)
+        t = re.sub(r"\\input\{[^}]*?(table-body[^}/]*)\}", rf"\\input{{displays/{key}/\1}}", t)
         (dst / "float.tex").write_text(t, encoding="utf-8")
-    return u.name
+    return key
 
 def place_fragment(p, dest_dir: Path, labels, unresolved):
     """copy the fragment, retarget its \\input paths, return the list of floats to \\input after it"""
@@ -337,7 +349,7 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
             unit, name = mm.groups()
             src = p["dir"] / "outline/evidence/display" / unit
             if src.exists(): copy_unit(src)
-            return rf"\input{{displays/{unit}/{name}}}"
+            return rf"\input{{displays/{p['id']}/{unit}/{name}}}"
         return m.group(0)
     t = re.sub(r"\\input\{([^}]+)\}", fix_input, t)
     def fix_graphic(m):
@@ -346,10 +358,10 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
             unit, name = mm.groups()
             src = p["dir"] / "outline/evidence/display" / unit
             if src.exists(): copy_unit(src)
-            return rf"\includegraphics{m.group(1) or ''}{{displays/{unit}/figure.pdf}}"
+            return rf"\includegraphics{m.group(1) or ''}{{displays/{p['id']}/{unit}/figure.pdf}}"
         return m.group(0)
     t = re.sub(r"\\includegraphics(\[[^\]]*\])?\{([^}]+)\}", fix_graphic, t)
-    if p["id"].endswith("-Abstract") and not JAMA:
+    if is_abstract(p) and not JAMA:
         # the generic Word engine wants a real abstract environment; the JAMA renderer instead
         # parses the page's own \section*{Key Points} and \section*{Abstract} headings (0.6.1)
         body = re.sub(r"^%.*\n", "", t, flags=re.M)                       # generator comments
@@ -359,7 +371,7 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
             lines = lines[1:]                                             # stray title line from md2tex
         t = "\\begin{abstract}\n" + "\n".join(lines).strip() + "\n\\end{abstract}\n"
     (dest_dir / f"{p['id']}.tex").write_text(t, encoding="utf-8")
-    EMBEDDED_UNITS.update(re.findall(r"displays/([^/}]+)/", t))
+    EMBEDDED_UNITS.update(f"{pg}/{u}" for pg, u in re.findall(r"displays/([^/}]+)/([^/}]+)/", t))
     floats = []
     for lab in dict.fromkeys(re.findall(r"\\ref\{([^}]+)\}", t)):
         hit = labels.get(lab)
@@ -449,13 +461,13 @@ def write_master(main, appx, status, ready_n, total_n):
 """
     body = []
     for p, floats in main:
-        if p.get("included", p["ready"]) and p["id"].endswith("-Abstract"):
+        if p.get("included", p["ready"]) and is_abstract(p):
             body.append(rf"\input{{sections/{p['id']}}}")
             if LATEX_ABSTRACT_PAGE: body.append(r"\clearpage")   # abstract (+ keywords) alone on its page
             body.append(""); continue
         if p.get("included", p["ready"]):
             if JAMA:   # the JAMA Word renderer splits the body on these four headings
-                kind = p["id"].rsplit("-Main-", 1)[-1].replace("-", " ")
+                kind = re.sub(r"^(\d+|[A-Z])-", "", p["id"].rsplit("-Main-", 1)[-1]).replace("-", " ")   # 0.7.5: drop the page index
                 frag_txt = (SEC / f"{p['id']}.tex").read_text(encoding="utf-8", errors="replace")
                 if kind in ("Introduction", "Methods", "Results", "Discussion") and not re.search(rf"\\section\{{{kind}\}}", frag_txt):
                     body.append(rf"\section{{{kind}}}")
@@ -505,6 +517,18 @@ def page_heading(p):
     if m: return m.group(1), (parts[2] if len(parts) > 2 else parts[1])
     return "", parts[1]
 
+PAGE_INDEX = re.compile(r"^S-.+?-(?:Main|Appendix)-(\d+|[A-Z])-")
+
+def page_index(pid: str) -> str:
+    """the index a page id carries: S-<desk>-Main-<N>-<Title> → 'N', S-<desk>-Appendix-<L>-<Title> → 'L', else ''
+    (0.7.5, JL 260908: the page folder carries the section index; unnumbered pages keep title only)"""
+    m = PAGE_INDEX.match(pid)
+    return m.group(1) if m else ""
+
+def is_abstract(p) -> bool:
+    """the Abstract is an unnumbered page whose H1 title is Abstract (or a legacy id ending -Abstract)"""
+    return p["id"].endswith("-Abstract") or page_heading(p)[1].strip().lower() == "abstract"
+
 def tex_text(value):
     return value.replace("\\", "").replace("&", r"\&").replace("%", r"\%").replace("_", r"\_").replace("#", r"\#")
 
@@ -520,8 +544,9 @@ PLACEMENT_NUM = re.compile(r"\b(Table|Figure)\s+([A-Z]?\d+)\b")
 LABEL_CMD = re.compile(r"\\label\{([^}]+)\}")
 
 def declared_number(unit):
-    """the paper-level number a unit claims, read from its README ## Placement."""
-    hits = list(ROOT.glob(f"B*/*/outline/evidence/display/{unit}/README.md"))
+    """the paper-level number a unit claims, read from its README ## Placement. `unit` is '<page-id>/<unit>' (0.7.5)."""
+    page, _, name = unit.partition("/")
+    hits = list(ROOT.glob(f"B*/{page}/outline/evidence/display/{name}/README.md")) if name else []
     if not hits: return None
     block = re.search(r"^## Placement\s*(.*?)(?=^## |\Z)",
                       hits[0].read_text(encoding="utf-8", errors="replace"), re.S | re.M)
@@ -532,9 +557,9 @@ def declared_number(unit):
 def label_to_unit():
     """which unit declares each label, read from the float.tex files this build copied."""
     out = {}
-    for float_tex in sorted(DISP.glob("*/float.tex")):
+    for float_tex in sorted(DISP.glob("*/*/float.tex")):
         for lab in LABEL_CMD.findall(float_tex.read_text(encoding="utf-8", errors="replace")):
-            out.setdefault(lab, float_tex.parent.name)
+            out.setdefault(lab, f"{float_tex.parents[1].name}/{float_tex.parent.name}")
     return out
 
 def display_register(main, appx):
@@ -557,23 +582,33 @@ def display_register(main, appx):
                          "label": lab, "unit": unit,
                          "page": owner.get(m.group(1), m.group(1)),
                          "declared": declared_number(unit) if unit else None})
-    # sections: the twin of the display problem, same root cause and same tooth
+    # sections: what LaTeX NUMBERS is every unstarred \section{...} in \input order; a page whose
+    # fragment (or stub) prints only \section*{...} (Key Points, an abstract) gets no number.
+    # 0.7.5: the declared value is the H1's §N / Appendix L; the page id carries the same index.
+    def _numbered(rel):
+        f = LATEX / (rel + ".tex")
+        return bool(f.exists() and re.search(r"\\section\{", f.read_text(encoding="utf-8", errors="replace")))
     secs, n, letter = [], 0, 0
+    def _prints_number(p_, rel):
+        # a not-included page is a stub in master.tex, always an unstarred \section → numbered
+        return _numbered(rel) if p_.get("included", p_["ready"]) else True
     for p_, _ in main:
-        if p_["id"].endswith("-Abstract"): continue
-        n += 1
         dec, title = page_heading(p_)
-        secs.append({"printed": f"§{n}", "declared": f"§{dec}" if dec else None,
-                     "title": title, "page": p_["id"], "ready": p_["ready"]})
+        printed = None
+        if _prints_number(p_, f"sections/{p_['id']}"):
+            n += 1; printed = f"§{n}"
+        secs.append({"printed": printed, "declared": f"§{dec}" if dec and dec.isdigit() else None,
+                     "index": page_index(p_["id"]), "title": title, "page": p_["id"], "ready": p_["ready"]})
     for p_, _ in appx:
         dec, title = page_heading(p_)
-        letter += 1
-        printed = f"Appendix {chr(64 + letter)}"
-        secs.append({"printed": printed, "declared": f"Appendix {dec}" if dec else None,
-                     "title": title, "page": p_["id"], "ready": p_["ready"]})
+        printed = None
+        if _prints_number(p_, f"appendices/{p_['id']}"):
+            letter += 1; printed = f"Appendix {chr(64 + letter)}"
+        secs.append({"printed": printed, "declared": f"Appendix {dec}" if dec and dec.isalpha() else None,
+                     "index": page_index(p_["id"]), "title": title, "page": p_["id"], "ready": p_["ready"]})
     findings, seen_label, claimed = [], {}, {}
     for r in secs:
-        if r["declared"] and r["declared"] != r["printed"]:
+        if r["declared"] and r["printed"] and r["declared"] != r["printed"]:
             findings.append(f"{r['page']}: page H1 says {r['declared']}, prints {r['printed']}")
     for r in rows:
         if r["declared"] and r["declared"] != r["printed"]:
@@ -583,33 +618,32 @@ def display_register(main, appx):
         if r["label"] and r["label"] in seen_label:
             findings.append(f"label {r['label']} printed twice: {seen_label[r['label']]} and {r['printed']}")
         seen_label.setdefault(r["label"], r["printed"])
-    # every unit ON DISK, not only the ones this build copied: a collision on a
-    # NOT-READY page is exactly the one that detonates later, when it compiles.
-    homes = {}
-    for unit_dir in sorted(p_ for p_ in ROOT.glob("B*/*/outline/evidence/display/*/") if p_.is_dir()):
-        unit, page = unit_dir.name, unit_dir.parents[3].name
-        homes.setdefault(unit, []).append(page)
-        # 0.7.4 (JL 260908 "it is too long, how about we just use the section index"): a display
-        # unit folder is Sec<N>-Display<n>-<slug> under a main Section page whose H1 says §N, or
-        # App<L>-Display<n>-<slug> under an appendix page whose H1 says Appendix L. The expected
-        # prefix is DERIVED from the owning page's H1 (page_heading), so the tooth also catches a
-        # unit that kept an old number after the compile order moved. S-Display-* and the
-        # one-hour <PageID>-Display-* form are legacy.
-        dec, _ = page_heading({"dir": unit_dir.parents[3], "id": page})
-        if not dec:
-            findings.append(f"{page} declares no §N or Appendix L in its H1, so its unit {unit} cannot be named Sec/App")
-        else:
-            prefix = f"App{dec}" if dec.isalpha() else f"Sec{dec}"
-            if not re.fullmatch(re.escape(prefix) + r"-Display\d+-[A-Za-z0-9][A-Za-z0-9-]*", unit):
-                findings.append(f"legacy unit name {unit} on {page} ({'Appendix ' + dec if dec.isalpha() else '§' + dec}): rename to {prefix}-Display<n>-<slug>")
-        if not (unit_dir / "README.md").exists():
-            findings.append(f"{unit} on {page} has no README.md, so it can declare no number")
-            continue
-        d = declared_number(unit)
-        if d: claimed.setdefault(d, []).append(unit)
-    for unit, pages_ in sorted(homes.items()):
-        if len(pages_) > 1:   # declared_number() reads the first README it finds; two homes make that a guess
-            findings.append(f"unit {unit} exists on {len(pages_)} pages: {', '.join(pages_)}")
+    # every Section page and every unit ON DISK, not only what this build copied: a collision or a
+    # wrong index on a NOT-READY page is exactly the one that detonates later, when it compiles.
+    # 0.7.5 tooth (JL 260908, third naming pass): the page id carries the section index
+    # (S-<desk>-Main-<N>-<Title>, S-<desk>-Appendix-<L>-<Title>); a unit is Display<n>-<slug>.
+    for page_dir in sorted(q for q in ROOT.glob("B*-*-Main/*/") if q.is_dir() and not q.name.startswith(("_", "."))) + \
+                    sorted(q for q in ROOT.glob("B*-*-Appendix/*/") if q.is_dir() and not q.name.startswith(("_", "."))):
+        page = page_dir.name
+        if not page.startswith("S-"): continue
+        dec, _t = page_heading({"dir": page_dir, "id": page})
+        idx = page_index(page)
+        if idx and dec and idx != dec:
+            findings.append(f"{page}: folder index {idx} but its H1 says {'Appendix ' + dec if dec.isalpha() else '§' + dec}")
+        elif idx and not dec:
+            findings.append(f"{page}: folder index {idx} but its H1 declares no § or Appendix letter")
+        elif dec and not idx and not is_abstract({"dir": page_dir, "id": page}):
+            findings.append(f"{page}: H1 says {'Appendix ' + dec if dec.isalpha() else '§' + dec} but the page id carries no index (want S-<desk>-{'Appendix' if dec.isalpha() else 'Main'}-{dec}-<Title>)")
+        disp = page_dir / "outline" / "evidence" / "display"
+        for unit_dir in sorted(u for u in disp.glob("*/") if u.is_dir()) if disp.exists() else []:
+            unit = unit_dir.name; key = f"{page}/{unit}"
+            if not re.fullmatch(r"Display\d+-[A-Za-z0-9][A-Za-z0-9-]*", unit):
+                findings.append(f"legacy unit name {key}: rename to Display<n>-<slug> (the page folder carries the index)")
+            if not (unit_dir / "README.md").exists():
+                findings.append(f"{key} has no README.md, so it can declare no number")
+                continue
+            d = declared_number(key)
+            if d: claimed.setdefault(d, []).append(key)
     for number, owners in sorted(claimed.items()):
         if len(owners) > 1:
             findings.append(f"{number} claimed by {len(owners)} units: {', '.join(owners)}")
@@ -618,15 +652,15 @@ def display_register(main, appx):
              f"{counters['figure']} figure(s) + {counters['table']} table(s) printed.",
              "A number here is provisional while any page is NOT READY: a page that starts",
              "compiling inserts its floats and renumbers everything after it.", "", "```text"]
-    lines.append(f"{'PRINTED':<10} {'DECLARED':<10} {'LABEL':<34} {'UNIT':<44} PAGE")
+    lines.append(f"{'PRINTED':<10} {'DECLARED':<10} {'LABEL':<34} {'UNIT (page/Display<n>-slug)':<64} PAGE")
     for r in rows:
         flag = "" if (r["declared"] or "") in ("", r["printed"]) else "  ⛔"
-        lines.append(f"{r['printed']:<10} {(r['declared'] or '—'):<10} {r['label']:<34} {r['unit'] or '—':<44} {r['page']}{flag}")
+        lines.append(f"{r['printed']:<10} {(r['declared'] or '—'):<10} {r['label']:<34} {r['unit'] or '—':<64} {r['page']}{flag}")
     lines += ["```", "", "## Sections", "", "```text"]
     lines.append(f"{'PRINTED':<12} {'DECLARED':<12} {'READY':<6} {'TITLE':<44} PAGE")
     for r in secs:
-        flag = "" if (r["declared"] or r["printed"]) == r["printed"] else "  ⛔"
-        lines.append(f"{r['printed']:<12} {(r['declared'] or '—'):<12} "
+        flag = "" if (r["declared"] or r["printed"] or "") == (r["printed"] or r["declared"] or "") else "  ⛔"
+        lines.append(f"{(r['printed'] or '(unnumbered)'):<12} {(r['declared'] or '—'):<12} "
                      f"{('yes' if r['ready'] else 'no'):<6} {r['title'][:44]:<44} {r['page']}{flag}")
     lines += ["```", ""]
     lines.append("## Findings")

@@ -1,5 +1,8 @@
 # haipipe-display · Changelog
 
+## 0.3.5 · 2026-09-08
+- Third naming pass (JL 260908): under a Paper Section page the unit is `Display<n>-<slug>`; the page id carries the index. Same in ref/display-unit-output-contract.md and ref/display-intake-contract.md.
+
 ## 0.3.4 · 2026-09-08
 - Paper Section pages name a display unit `Sec<N>-Display<n>-<slug>` / `App<L>-Display<n>-<slug>` from the page H1 (JL 260908); `S-Display-*` retired. Stated in SKILL "Where the unit lands", ref/display-unit-output-contract.md, ref/display-intake-contract.md.
 

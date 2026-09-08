@@ -12,8 +12,8 @@ loose file.
 
 A View-owned unit lives directly at
 `views/<ViewPageStem>/output/<PageID>-Display<n>-<slug>/` (under a PAPER Section
-page the unit is instead `Sec<N>-Display<n>-<slug>` or `App<L>-Display<n>-<slug>`,
-N and L from the page's H1, JL 260908). It may add
+page the unit is instead `Display<n>-<slug>`, because the page id already carries
+the section index, `S-<desk>-Main-<N>-<Title>`; JL 260908). It may add
 `output.md` as the View-owned semantic brief. This is still the one generic
 unit directory: do not mirror it into a second renderer adapter folder. The
 View builder may project only `manifest.json`, `float.tex`, winning `assets/`,

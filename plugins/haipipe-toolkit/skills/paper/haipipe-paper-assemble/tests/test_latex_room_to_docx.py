@@ -31,24 +31,24 @@ X_SPEC_TABLE = (
 @pytest.fixture
 def room(tmp_path):
     root = tmp_path / "Paper-D"; latex = root / "delivery" / "latex"
-    for d in ("sections", "appendices", "displays/u1", "displays/u2"):
+    for d in ("sections", "appendices", "displays/S-D-Main-1-Results/Display1-main", "displays/S-D-Appendix-A-Validation/Display1-perf"):
         (latex / d).mkdir(parents=True)
-    (latex / "sections" / "S-D-Main-Results.tex").write_text(
+    (latex / "sections" / "S-D-Main-1-Results.tex").write_text(
         "\\section{Results}\nTable~\\ref{tab:main} shows it.\n"
-        "\\begin{table}[H]\\centering\\input{displays/u1/table-body}\\caption{Main regression.}\\label{tab:main}\\end{table}\n")
-    (latex / "displays" / "u1" / "table-body.tex").write_text(P_SPEC_TABLE)
-    (latex / "appendices" / "S-D-Appendix-Validation.tex").write_text(
+        "\\begin{table}[H]\\centering\\input{displays/S-D-Main-1-Results/Display1-main/table-body}\\caption{Main regression.}\\label{tab:main}\\end{table}\n")
+    (latex / "displays" / "S-D-Main-1-Results" / "Display1-main" / "table-body.tex").write_text(P_SPEC_TABLE)
+    (latex / "appendices" / "S-D-Appendix-A-Validation.tex").write_text(
         "\\section{Validation}\nSee Table~\\ref{tab:a1}.\n"
-        "\\begin{table}[p]\\centering\\caption{Model performance.}\\label{tab:a1}\\input{displays/u2/table-body}\\end{table}\n")
-    (latex / "displays" / "u2" / "table-body.tex").write_text(X_SPEC_TABLE)
+        "\\begin{table}[p]\\centering\\caption{Model performance.}\\label{tab:a1}\\input{displays/S-D-Appendix-A-Validation/Display1-perf/table-body}\\end{table}\n")
+    (latex / "displays" / "S-D-Appendix-A-Validation" / "Display1-perf" / "table-body.tex").write_text(X_SPEC_TABLE)
     (latex / "reference.bib").write_text("")
     (latex / "master.tex").write_text(
         "\\documentclass{article}\\title{D}\\author{}\\date{}\\begin{document}\\maketitle\n"
         "\\begin{abstract}One sentence.\\end{abstract}\n"
-        "\\input{sections/S-D-Main-Results}\n"
+        "\\input{sections/S-D-Main-1-Results}\n"
         "\\section*{Acknowledgments}\n\\noindent\\textit{[draft]}\n"
         "\\clearpage\\bibliographystyle{apalike}\\bibliography{reference}\n"
-        "\\clearpage\\appendix\n\\input{appendices/S-D-Appendix-Validation}\n\\end{document}\n")
+        "\\clearpage\\appendix\n\\input{appendices/S-D-Appendix-A-Validation}\n\\end{document}\n")
     (root / "delivery" / "paper-build.toml").write_text(
         '[paper]\nid = "Paper-D"\ntitle = "D"\nsource_format = "latex-room"\nvenue_profile = ""\n'
         '[profile]\nvenue_label = "Test"\n'

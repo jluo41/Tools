@@ -27,26 +27,26 @@ def paper(tmp_path, monkeypatch):
         '[outputs]\nmain_pdf = "latex/T.pdf"\nmain_docx = "word/T.docx"\nmanifest = "build-manifest.json"\n')
     story = root / "A1-Story" / "StoryA-t-fixture"; story.mkdir(parents=True)
     (story / "StoryA-t-fixture.md").write_text(
-        "# StoryA-t-fixture\n<!-- haipipe:compile-order:start -->\nmain:\n- S-T-Main-Intro\n- S-T-Main-Methods\n"
+        "# StoryA-t-fixture\n<!-- haipipe:compile-order:start -->\nmain:\n- S-T-Main-1-Intro\n- S-T-Main-2-Methods\n"
         "appendix:\n<!-- haipipe:compile-order:end -->\n")
     (root / "Bb-T-Appendix").mkdir()
     # ready page: fragment embeds the float (as md2tex does) AND cites it
-    intro = root / "Ba-T-Main" / "S-T-Main-Intro"
+    intro = root / "Ba-T-Main" / "S-T-Main-1-Intro"
     (intro / "outline").mkdir(parents=True); (intro / "delivery" / "latex").mkdir(parents=True)
-    (intro / "S-T-Main-Intro.md").write_text("# S-T-Main-Intro · §1 Introduction\n")
-    (intro / "outline" / "S-T-Main-Intro-outline-v1.0.md").write_text("outline-version: v1.0\napproved: ✅ JL\n")
-    unit = intro / "outline" / "evidence" / "display" / "S-Display-1-one"
+    (intro / "S-T-Main-1-Intro.md").write_text("# S-T-Main-1-Intro · §1 Introduction\n")
+    (intro / "outline" / "S-T-Main-1-Intro-outline-v1.0.md").write_text("outline-version: v1.0\napproved: ✅ JL\n")
+    unit = intro / "outline" / "evidence" / "display" / "Display1-one"
     (unit / "assets").mkdir(parents=True)
-    (unit / "float.tex").write_text("\\begin{figure}\\includegraphics{x/S-Display-1-one/assets/figure.pdf}\\caption{one}\\label{fig:one}\\end{figure}\n")
+    (unit / "float.tex").write_text("\\begin{figure}\\includegraphics{x/Display1-one/assets/figure.pdf}\\caption{one}\\label{fig:one}\\end{figure}\n")
     (unit / "preview.pdf").write_bytes(b"%PDF"); (unit / "assets" / "figure.pdf").write_bytes(b"%PDF")
     (unit / "README.md").write_text("# unit\n\n## Placement\nMain; Introduction, Figure 1\n")
-    (intro / "delivery" / "latex" / "S-T-Main-Intro.tex").write_text(
+    (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
         "\\section{Introduction}\nSee Figure~\\ref{fig:one}.\n"
-        "\\begin{figure}\\includegraphics{displays/S-Display-1-one/figure.pdf}\\caption{one}\\label{fig:one}\\end{figure}\n")
-    (intro / "delivery" / "latex" / "S-T-Main-Intro.pdf").write_bytes(b"%PDF")
+        "\\begin{figure}\\includegraphics{displays/S-T-Main-1-Intro/Display1-one/figure.pdf}\\caption{one}\\label{fig:one}\\end{figure}\n")
+    (intro / "delivery" / "latex" / "S-T-Main-1-Intro.pdf").write_bytes(b"%PDF")
     # not-ready page: has a declared H1 but no fragment
-    methods = root / "Ba-T-Main" / "S-T-Main-Methods"; (methods / "outline").mkdir(parents=True)
-    (methods / "S-T-Main-Methods.md").write_text("# S-T-Main-Methods · §2 Methods and Data\n")
+    methods = root / "Ba-T-Main" / "S-T-Main-2-Methods"; (methods / "outline").mkdir(parents=True)
+    (methods / "S-T-Main-2-Methods.md").write_text("# S-T-Main-2-Methods · §2 Methods and Data\n")
     monkeypatch.setenv("HAIPIPE_PAPER_BUILD_CONFIG", str(delivery / "paper-build.toml"))
     spec = importlib.util.spec_from_file_location("build_delivery_under_test", ENGINE)
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
@@ -78,7 +78,7 @@ def test_behavior_A_embedded_display_prints_once(paper):
     register, master = _assemble(paper)
     assert register["figures"] == 1
     assert not [f for f in register["findings"] if "printed twice" in f]
-    assert "displays/S-Display-1-one/float" not in master
+    assert "displays/S-T-Main-1-Intro/Display1-one/float" not in master
 
 
 def test_behavior_A_expect_fail_register_catches_the_double_print(paper):
@@ -87,7 +87,7 @@ def test_behavior_A_expect_fail_register_catches_the_double_print(paper):
     register, master = _assemble(paper)
     assert register["figures"] == 2
     assert any("printed twice" in f for f in register["findings"])
-    assert "displays/S-Display-1-one/float" in master
+    assert "displays/S-T-Main-1-Intro/Display1-one/float" in master
 
 
 def test_behavior_B_not_ready_page_keeps_its_number(paper):
@@ -95,16 +95,16 @@ def test_behavior_B_not_ready_page_keeps_its_number(paper):
     assert "NOT READY" not in master
     assert "\\section{Methods and Data}" in master
     secs = {s["page"]: s for s in register["sections"]}
-    assert secs["S-T-Main-Methods"]["printed"] == "§2" and secs["S-T-Main-Methods"]["declared"] == "§2"
-    assert not [f for f in register["findings"] if "S-T-Main-Methods" in f]
+    assert secs["S-T-Main-2-Methods"]["printed"] == "§2" and secs["S-T-Main-2-Methods"]["declared"] == "§2"
+    assert not [f for f in register["findings"] if "S-T-Main-2-Methods" in f]
 
 
 def test_behavior_C_declared_vs_printed_and_collisions(paper):
     register, _ = _assemble(paper)
-    row = next(r for r in register["rows"] if r["unit"] == "S-Display-1-one")
+    row = next(r for r in register["rows"] if r["unit"] == "S-T-Main-1-Intro/Display1-one")
     assert row["declared"] == "Figure 1" and row["printed"] == "Figure 1"
     # a second unit on disk claiming the same number is a finding even if never printed
-    other = paper.ROOT / "Ba-T-Main" / "S-T-Main-Methods" / "outline" / "evidence" / "display" / "S-Display-2-two"
+    other = paper.ROOT / "Ba-T-Main" / "S-T-Main-2-Methods" / "outline" / "evidence" / "display" / "Display2-two"
     other.mkdir(parents=True)
     (other / "README.md").write_text("## Placement\nMain; Methods, Figure 1\n")
     register, _ = _assemble(paper)
@@ -134,39 +134,39 @@ def _add_unit(page_dir, name, *, preview=True, cite_in_fragment=True, state_line
 
 def test_behavior_D_uncited_unit_without_preview_does_not_gate(paper):
     m = paper
-    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
-    _add_unit(intro, "S-Display-9-orphan", preview=False, cite_in_fragment=False)
-    p = m.inspect("S-T-Main-Intro", m.rel(m.CFG["pages"]["main"]))
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    _add_unit(intro, "Display9-orphan", preview=False, cite_in_fragment=False)
+    p = m.inspect("S-T-Main-1-Intro", m.rel(m.CFG["pages"]["main"]))
     assert p["ready"], p["reasons"]
-    assert any("cited by nothing" in w and "S-Display-9-orphan" in w for w in p["warnings"])
+    assert any("cited by nothing" in w and "Display9-orphan" in w for w in p["warnings"])
 
 
 def test_behavior_D_folded_unit_without_preview_does_not_gate(paper):
     m = paper
-    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
-    _add_unit(intro, "S-Display-3a-funnel", preview=False, cite_in_fragment=True,
-              state_line="state: 🟣 folded into S-Display-1-one · no standalone display")
-    p = m.inspect("S-T-Main-Intro", m.rel(m.CFG["pages"]["main"]))
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    _add_unit(intro, "Display3-funnel", preview=False, cite_in_fragment=True,
+              state_line="state: 🟣 folded into Display1-one · no standalone display")
+    p = m.inspect("S-T-Main-1-Intro", m.rel(m.CFG["pages"]["main"]))
     assert p["ready"], p["reasons"]
-    assert any("folded" in w and "S-Display-3a-funnel" in w for w in p["warnings"])
+    assert any("folded" in w and "Display3-funnel" in w for w in p["warnings"])
 
 
 def test_behavior_D_cited_live_unit_without_preview_still_gates(paper):
     m = paper
-    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
-    _add_unit(intro, "S-Display-2-live", preview=False, cite_in_fragment=True)
-    p = m.inspect("S-T-Main-Intro", m.rel(m.CFG["pages"]["main"]))
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    _add_unit(intro, "Display2-live", preview=False, cite_in_fragment=True)
+    p = m.inspect("S-T-Main-1-Intro", m.rel(m.CFG["pages"]["main"]))
     assert not p["ready"]
-    assert any("preview.pdf missing for cited unit" in r and "S-Display-2-live" in r for r in p["reasons"])
+    assert any("preview.pdf missing for cited unit" in r and "Display2-live" in r for r in p["reasons"])
 
 
 def test_stale_fragment_is_a_warning_not_a_blocker(paper):
     m = paper
-    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
-    frag = intro / "delivery" / "latex" / "S-T-Main-Intro.tex"
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    frag = intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex"
     old = frag.stat().st_mtime - 600
     os.utime(frag, (old, old))                      # the .md is now newer than its fragment
-    p = m.inspect("S-T-Main-Intro", m.rel(m.CFG["pages"]["main"]))
+    p = m.inspect("S-T-Main-1-Intro", m.rel(m.CFG["pages"]["main"]))
     assert p["ready"], p["reasons"]
     assert any("fragment may be stale" in w for w in p["warnings"])
 
@@ -192,12 +192,12 @@ def _order(m, main_ids):
 def test_behavior_A_cross_page_ref_prints_the_display_once(paper, citer_first):
     """page 2 \\ref's a figure page 1 embeds; whichever page comes first, one print."""
     m = paper
-    _ready_page(m, "S-T-Main-Methods", 2, "Methods and Data", "\\section{Methods}\nAs Figure~\\ref{fig:one} showed.\n")
-    _order(m, ["S-T-Main-Methods", "S-T-Main-Intro"] if citer_first else ["S-T-Main-Intro", "S-T-Main-Methods"])
+    _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\nAs Figure~\\ref{fig:one} showed.\n")
+    _order(m, ["S-T-Main-2-Methods", "S-T-Main-1-Intro"] if citer_first else ["S-T-Main-1-Intro", "S-T-Main-2-Methods"])
     register, master = _assemble(m)
     assert register["figures"] == 1, register["rows"]
     assert not [f for f in register["findings"] if "printed twice" in f]
-    assert master.count("displays/S-Display-1-one/float") == 0
+    assert master.count("displays/S-T-Main-1-Intro/Display1-one/float") == 0
 
 
 def test_reader_document_carries_no_reasons_and_no_build_counts(paper):
@@ -209,11 +209,11 @@ def test_reader_document_carries_no_reasons_and_no_build_counts(paper):
 
 def test_bib_key_collision_is_warned(paper):
     m = paper
-    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
     (intro / "outline" / "evidence" / "bibex").mkdir(parents=True)
     (intro / "outline" / "evidence" / "bibex" / "a.bib").write_text("@article{k1, title={One}, year={2020}}\n")
-    _ready_page(m, "S-T-Main-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{k1}\n")
-    methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Methods"
+    _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{k1}\n")
+    methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
     (methods / "outline" / "evidence" / "bibex").mkdir(parents=True)
     (methods / "outline" / "evidence" / "bibex" / "b.bib").write_text("@article{k1, title={One, revised}, year={2021}}\n")
     _assemble(m)
@@ -278,18 +278,33 @@ def test_round_freeze_copies_all_declared_outputs_and_is_immutable(paper):
 
 
 def test_display_unit_folder_grammar_is_a_register_tooth(paper):
-    """Sec<N>-Display<n>-<slug> (N from the page H1) passes; S-Display-* and <PageID>-Display-* are findings.
+    """0.7.5 (JL 260908, third pass): page id carries the index (S-T-Main-1-Intro), unit is Display<n>-<slug>.
 
-    JL 260908: "unify them", then "it is too long, how about we just use the section index".
+    Legacy shapes (S-Display-*, Sec1-Display1-*, <PageID>-Display1-*) are findings; a page whose folder
+    index disagrees with its H1, or whose H1 is numbered while the id carries no index, is a finding.
     """
     m = paper
-    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"          # H1 says §1
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"          # H1 says §1, id says 1 → agree
     disp = intro / "outline" / "evidence" / "display"
-    for name in ("Sec1-Display2-good", "S-T-Main-Intro-Display3-pageid-form", "Sec4-Display1-wrong-section"):
+    for name in ("Display2-good", "Sec1-Display3-old-second-pass", "S-Display-4-oldest", "S-T-Main-1-Intro-Display5-pageid"):
         (disp / name).mkdir(parents=True); (disp / name / "README.md").write_text("## Placement\nMain; Introduction, Figure 7\n")
+    wrong = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-9-Wrong"; wrong.mkdir()
+    (wrong / "S-T-Main-9-Wrong.md").write_text("# S-T-Main-9-Wrong · §3 Wrong Index\n")
+    noidx = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Unindexed"; noidx.mkdir()
+    (noidx / "S-T-Main-Unindexed.md").write_text("# S-T-Main-Unindexed · §4 Needs An Index\n")
     register, _ = _assemble(m)
-    legacy = [f for f in register["findings"] if f.startswith("legacy unit name")]
-    assert any("S-Display-1-one" in f and "Sec1-Display<n>-<slug>" in f for f in legacy)   # fixture unit: legacy on purpose
-    assert any("S-T-Main-Intro-Display3-pageid-form" in f for f in legacy)                 # the one-hour PageID form: legacy
-    assert any("Sec4-Display1-wrong-section" in f for f in legacy)                          # right shape, wrong section number
-    assert not any("Sec1-Display2-good" in f for f in legacy)
+    F = register["findings"]
+    assert not any("Display2-good" in f and "legacy" in f for f in F)
+    for bad in ("Sec1-Display3-old-second-pass", "S-Display-4-oldest", "S-T-Main-1-Intro-Display5-pageid"):
+        assert any(f.startswith("legacy unit name") and bad in f for f in F), bad
+    assert any("S-T-Main-9-Wrong: folder index 9 but its H1 says §3" in f for f in F)
+    assert any("S-T-Main-Unindexed: H1 says §4 but the page id carries no index" in f for f in F)
+
+
+def test_conforming_unit_is_not_a_finding_and_unnumbered_pages_are_allowed(paper):
+    m = paper
+    abstract = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Abstract"; abstract.mkdir()
+    (abstract / "S-T-Main-Abstract.md").write_text("# S-T-Main-Abstract · Abstract\n")
+    register, _ = _assemble(m)
+    assert not any("Display1-one" in f and "legacy" in f for f in register["findings"])
+    assert not any("S-T-Main-Abstract" in f for f in register["findings"])

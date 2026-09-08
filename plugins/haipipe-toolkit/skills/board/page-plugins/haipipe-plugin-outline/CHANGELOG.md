@@ -1,5 +1,8 @@
 ## 0.46.1 · 2026-09-06
 
+## 0.46.2 · 2026-09-08
+- ref/evidence/displays.md: under a Paper Section page the unit is `Display<n>-<slug>`; the page id carries the section index (JL 260908).
+
 ## 0.46.1 · 2026-09-08
 - ref/evidence/displays.md: a Paper Section page names its display unit `Sec<N>-Display<n>-<slug>` / `App<L>-Display<n>-<slug>` from its H1 (JL 260908); other pages keep `<stem>-Display<n>-<slug>`.
 

@@ -1,5 +1,9 @@
 ## 0.172.2 · 2026-09-08
 
+## 0.172.3 · 2026-09-08
+
+- Section page ids may carry the section index after the lane, `S-<desk>-Main-<N>-<Title>` / `S-<desk>-Appendix-<L>-<Title>` (JL 260908 third naming pass); `src/parse.py` and the shared `SEMANTIC_SECTION_ID` in `src/feedback.py` accept it, the fallback sort key orders by that index, unnumbered ids keep parsing.
+
 - Story page ids follow `Story<Letter>-<desk>-<idea-slug>` (JL 260908): `src/parse.py` accepts `StoryA-misq-…` as a Story page and still reads the grandfathered `Story-A` form; tests updated.
 
 ## 0.172.1 · 2026-09-08

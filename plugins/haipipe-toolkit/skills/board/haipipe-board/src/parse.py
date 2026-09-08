@@ -263,9 +263,14 @@ def parse_dir(d):
         # `S-MISQ-Main-Results` says its object, desk, manuscript lane, and
         # reader-facing job without consulting a crosswalk. The old SM/SA
         # forms remain below for existing boards and archives.
+        # 260908 (JL, third naming pass): the id carries the section index right
+        # after the lane, `S-MISQ-Main-4-Empirical-Strategy`,
+        # `S-MISQ-Appendix-D-Instrumental-Variables`; an unnumbered page keeps
+        # title only (`S-MISQ-Main-Abstract`, `S-JAMA-IM-Main-Key-Points`).
         semantic_section = re.match(
             r"S-(?P<desk>[A-Za-z][A-Za-z0-9-]*?)-"
             r"(?P<section_family>Main|Appendix)-"
+            r"(?:(?P<section_index>\d+|[A-Z])-)?"
             r"(?P<section_name>[A-Za-z][A-Za-z0-9-]*)$",
             p.stem,
         )
@@ -379,10 +384,13 @@ def parse_dir(d):
                 family = semantic_section.group("section_family").lower()
                 desk = semantic_section.group("desk")
                 unit = semantic_section.group("section_name")
+                index = semantic_section.group("section_index") or ""
                 family_order = {"main": 6, "appendix": 7}[family]
                 # Semantic units are ordered by the explicit board.md reader
-                # map; this key merely provides a deterministic fallback.
-                key = (1, family_order, 2, desk.casefold(), unit.casefold())
+                # map; this key merely provides a deterministic fallback, and
+                # since 260908 the page's own index comes before its title.
+                idx_key = (0, int(index)) if index.isdigit() else ((0, ord(index)) if index else (1, 0))
+                key = (1, family_order, 2, desk.casefold(), idx_key, unit.casefold())
                 page_id = p.stem
                 kind = "stage"
             elif full_sm:

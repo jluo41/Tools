@@ -13,9 +13,9 @@ The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-
 
 ```text
 <page>/outline/evidence/display/
-└── Sec<N>-Display<n>-<slug>/     the unit · a PAPER Section page names it by the § its H1
-                                  declares (App<L>-… for an appendix page); any other page
-                                  uses <stem>-Display<n>-<slug> · JL 260908
+└── Display<n>-<slug>/            the unit · under a PAPER Section page, whose id already
+                                  carries the section index (S-<desk>-Main-<N>-<Title>);
+                                  any other page uses <stem>-Display<n>-<slug> · JL 260908
     ├── README.md                 claim · kind · source Result · accepted:
     ├── intake/                   🧑 manifest.yaml + small approved extracts
     ├── recipe/                   🎨 renderer-owned script, spec, receipts

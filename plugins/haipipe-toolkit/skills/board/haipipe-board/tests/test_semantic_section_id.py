@@ -105,3 +105,21 @@ class TestSemanticSectionId(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_indexed_section_ids_parse_and_sort_by_index(self):
+        """260908 third naming pass: S-<desk>-Main-<N>-<Title>, S-<desk>-Appendix-<L>-<Title>; unnumbered keep title."""
+        with TemporaryDirectory() as root:
+            board = Path(root)
+            ids = ["S-MISQ-Main-Abstract", "S-MISQ-Main-5-Results", "S-MISQ-Main-4-Empirical-Strategy",
+                   "S-MISQ-Appendix-D-Instrumental-Variables", "S-JAMA-IM-Main-Key-Points"]
+            (board / "board.md").write_text("## Pages\n\n### MAIN\n" + "\n".join(f"{i}.md" for i in ids) + "\n", encoding="utf-8")
+            for i in ids:
+                d = board / "Ba-X-Main" / i; d.mkdir(parents=True)
+                (d / f"{i}.md").write_text(f"# {i} · Section\nstate: 🟡 PARTIAL\n", encoding="utf-8")
+            _board, pages, warnings = parse_dir(board)
+        self.assertEqual(warnings, [])
+        self.assertEqual(sorted(p["id"] for p in pages), sorted(ids))
+        self.assertTrue(all(p["kind"] == "stage" for p in pages))
+        self.assertEqual(expand_ids("S-MISQ-Main-4-Empirical-Strategy + S-MISQ-Appendix-D-Instrumental-Variables"),
+                         {"S-MISQ-Main-4-Empirical-Strategy", "S-MISQ-Appendix-D-Instrumental-Variables"})
