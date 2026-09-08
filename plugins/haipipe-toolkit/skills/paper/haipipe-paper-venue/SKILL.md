@@ -3,11 +3,11 @@ name: haipipe-paper-venue
 description: >-
   Paper Page Type for one external submission target: a journal, funder, or
   patent office. Separates binding desk rules from observed venue patterns,
-  records provenance, and hands a verified venue contract to Narrative and
+  records provenance, and hands a verified venue contract to the Story's Section Control rows and
   Section Pages. Use when researching, creating, refreshing, or comparing a
   venue Page.
 metadata:
-  version: "0.6.0"
+  version: "0.7.0"
   last_updated: "2026-09-04"
   page_ruling: none
   outline:
@@ -27,12 +27,12 @@ resolver.
 ## 🏛 Grain and boundary
 
 One Venue Page describes one submission target. It does not choose the paper's
-target and does not write the paper's Narrative.
+target and does not write the paper's Story or its Section Control rows.
 
 ```text
 Venue Page   what this external desk requires, rewards, rejects, and costs
-Narrative    how this paper is told for that desk
-Section      how one unit satisfies its Narrative row and desk constraints
+Story        how this paper is told for that desk (§8 Section Control rows)
+Section      how one unit satisfies its Story row and desk constraints
 ```
 
 A target may be a journal, funder, conference, regulator, or patent office. Use
@@ -41,8 +41,8 @@ the target's own document units when journal section kinds do not apply.
 **The bank is a library, not a phase** (JL 260823). Venue Pages live in the
 shared QBv bank and sit outside the paper journey: nothing about a paper
 advances by writing one. The decision to target a desk lives on that paper's
-Narrative §1, which binds the bank page and never restates it; a missing desk
-gets its bank page minted as a sub-step of starting that Narrative.
+the Story's §8 Section Control rows, which bind the bank page and never restate it; a missing desk
+gets its bank page minted as a sub-step of naming that target.
 
 ## 📚 Two profiles (0.4.0)
 
@@ -104,7 +104,7 @@ the desk wins for compliance and the disagreement remains visible.
    fees · review timing · reported acceptance information · uncertainty
 
 7  Gaps and Handoff
-   stale or missing facts · desk/pack conflicts · verified contract consumed by Narrative
+   stale or missing facts · desk/pack conflicts · verified contract consumed by the Story's Section Control rows
 ```
 
 The exact number of Unit Guidance divisions may vary with the target. Keep the
@@ -134,7 +134,7 @@ Run/Result identity. A bare uncited number is an open obligation.
 
 ## 📤 Handoff
 
-Narrative and Section Pages consume a versioned Venue contract rather than
+The Story's Section Control rows and Section Pages consume a versioned Venue contract rather than
 copying the whole Page:
 
 ```text
@@ -154,12 +154,12 @@ known conflicts, unknowns, and refresh date
 - Every desk rule has an enforcement moment.
 - Desk/pack disagreements and missing facts remain visible.
 - Structure totals and per-unit guidance are reconciled or explicitly conflict.
-- Narrative can consume a bounded, versioned venue contract.
+- The Story's Section Control rows can consume a bounded, versioned venue contract.
 - CHECK judges the rendered Page and its linked evidence before closure.
 
 `page_ruling: none` is explicit: Venue CHECK may close the bank Page when its
 semantic/mechanical contract and artifact-specific gates pass. A later
-Narrative target decision remains owned by the paper journey and is not a
+The target decision (a Story §8 row) remains owned by the paper journey and is not a
 second Venue-page approval.
 
 `template.md` is the scaffold for a new Venue Page. This variant owns no

@@ -7,7 +7,7 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.60.3"
+  version: "0.60.4"
   last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -35,7 +35,8 @@ this contract cites it and never forks it.
 
 The reader-facing completion packet is defined in
 `ref/user-check-packet.md`. Every Page-changing reply uses that contract so a
-person can inspect the Outline table, the current Display PDF(s), and the
+person can inspect the Outline table, the evidence that can be opened now
+(Display PDFs, citations, value cards), the Content state after Revise, and the
 compiled Page-level PDF without searching through process output.
 
 ## 📁 What a page is on disk
@@ -186,15 +187,16 @@ insight      task          ✓       `page-type:` line
 knowledge    application   ✓       `page-type:` line
 labeling     —             ✓       `page-type:` line
 meta         application   ✓       `page-type:` line
-narrative    paper         ✓       `page-type:` line
+narrative    —             ✓       `page-type:` line
 opening      —             ✓       `page-type:` line
 question     application   ✓       `page-type:` line
-roadmap      paper         ✓       `page-type:` line
+roadmap      —             ✓       `page-type:` line
 round        paper         ✓       `page-type:` line
 section      paper         ✓       `page-type:` line
-seed         paper         ✓       `page-type:` line
+seed         —             ✓       `page-type:` line
 slide        —             ✓       `page-type:` line
-stage        board         ✓       filename S-<Family>-<unit>-
+stage        —             ✓       filename S-<Family>-<unit>-
+story        paper         ✓       `page-type:` line
 task         task          ✓       `page-type:` line
 venue        paper         ✓       filename QBv<n>-
 view         —             ✓       `page-type:` line
@@ -210,6 +212,10 @@ or canonical family skill that owns the Folder kind; an unmigrated Page Type
 remains a base variant under `page-types/`. Load the semantic owner before
 writing. After moving a skill, re-run `install.sh --global` so the installed
 symlink follows it.
+For `folder-kind: task`, the canonical Folder owner remains `haipipe-task`;
+the reader-facing companion `haipipe-page-task` adds the Task Page's
+display-rich table, figure, and diagram contract. The companion refines the
+Task Page surface and never creates a second Page frame or execution owner.
 
 ## 🎭 Page phases, independent of Folder kind
 
@@ -299,9 +305,10 @@ separate Status column or Page popover is shown. A Page
 Type may define one generated
 executive projection from its own authoritative Content records. When it does,
 that projection appears first and the generic plan table remains available in
-a closed evidence drawer. The Narrative type uses this exception for its
-Section-control table. No projection is copied into a Page-authored `##
-Outline`, and a Page-authored narrative map does not exist. Content, Aims,
+a closed evidence drawer. The retired Narrative type used this exception for
+its Section-control table; since 260907 the paper family's Story type carries
+that table as §8 Section Control. No projection is copied into a Page-authored
+`## Outline`, and a Page-authored narrative map does not exist. Content, Aims,
 References, and every other optional fold start shut. The `outline/` folder
 remains the authority for every plan, writing rule, evidence, feedback,
 requirement, discussion, file, and log record.
@@ -407,10 +414,15 @@ After any Page, plan, Page-local evidence, DISPLAY, Content, or derived
 projection change, return the compact packet in
 `ref/user-check-packet.md`, in this order:
 
-1. the verified Board Page URL, labelled **Outline table**;
-2. one current standalone `preview.pdf` link for each declared DISPLAY unit,
-   labelled **Latest Display PDF(s)**;
-3. the current one-Page compiled PDF, labelled **Latest Page-level PDF**.
+1. the verified Board Page URL, labelled **Outline table** (this is the Page
+   link);
+2. **Evidence you can open now**: one Evidence Workspace link plus, per ready
+   typed Evidence Item, the DISPLAY unit's `preview.pdf`, the Page's citation
+   register, or the VALUE item card deep link;
+3. **Content state**: the Page version and whether Revise ran (humanizer and
+   the fresh-context style verdict); a first draft is labelled as such;
+4. the current one-Page compiled PDF, labelled **Latest Page-level PDF**, the
+   delivery surface shown after Revise.
 
 “Page-level” means this Page or Section Page only. It is not the paper master,
 the desk-room build, a Display preview, or a configuration file. Keep raw
@@ -418,8 +430,9 @@ receipts, logs, TeX sources, manifests, and unrelated outputs out of the
 primary completion block. If any requested surface is missing or stale, say so
 explicitly and name the blocker instead of presenting an older file as current.
 The user-check packet is new-layout-only: it accepts only
-`outline/evidence/display/<unit>/preview.pdf` and
-`delivery/latex/<stem>.pdf`; legacy locations do not qualify.
+`outline/evidence/display/<unit>/preview.pdf`,
+`outline/evidence/bibex/<stem>-bib.html`, the Evidence Workspace one-URL
+route, and `delivery/latex/<stem>.pdf`; legacy locations do not qualify.
 
 **Create**: resolve the board and group (ask only when the group is genuinely
 ambiguous) · pick the id and copy `haipipe-board/ref/page-template.md`, never
@@ -554,7 +567,7 @@ Every id inside a fenced figure renders as a link.
 haipipe-page/
 ├── SKILL.md            this contract
 ├── ref/glossary.md     every word this family uses, with the path it names
-├── ref/user-check-packet.md  the three-surface reader-facing completion packet
+├── ref/user-check-packet.md  the four-surface reader-facing completion packet
 ├── ref/type-registry.md  compatibility key records + phase-owner arguments
 └── CHANGELOG.md        version history, and the only home for retired rules
 ```

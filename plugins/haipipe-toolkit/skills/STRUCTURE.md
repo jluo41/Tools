@@ -20,13 +20,29 @@ paper /     composition layer  selects typed Pages and assembles accepted output
 application                    owns its own audience-specific artifacts
 page        durable work       each Page runs OUTLINE/PROBE/EVIDENCE/DRAFT/REVISE/CHECK
 probe       evidence router    PageX for accepted Pages; QA crossing for Task/Discovery
-discovery   outside evidence   sources, notes, prior art, novelty, verdicts
-task        inside execution   code, runs, metrics, reports
+  discovery   outside evidence   sources, notes, prior art, verdicts
+  ideation    semantic bridge    evidence bundles, directions, idea cards
+  task        inside execution   code, runs, metrics, reports
 ```
 
-`discovery` and `task` are sibling EXECUTION layers — the two EXECUTORS. Same
-shape, same rules. A probe may point at one or many of either, or a mix. The
-probe does not contain them; it points at their artifacts by PATH.
+`discovery` and `task` are sibling EXECUTION layers — the two EXECUTORS. They
+share the BJTR envelope, but not the domain contract: Task runs technical
+Plan → Build → Execute → Report, while Discovery runs D1 SCOPE → PREPARE? →
+ACQUIRE ↔ SYNTHESIZE → CLOSE and hands its Page through the shared Page
+workflow. A probe may point at one or many of either, or a mix. The probe does
+not contain them; it points at their artifacts by PATH.
+
+```text
+work address (both layers): discoveries/tasks → bNN Block → jNN Job
+                              → tNN Task Page → rNN Run
+Discovery capability labels: 1_search · 2_review · 3_synthesize
+Discovery Page records:       00 CONTEXT · 01 OUTLINE · 02 EVIDENCE
+                              · 03 CONTENT · 04 CHECK
+```
+
+The numbered capability labels and Page records are views over a BJTR unit,
+never extra folder levels. Discovery's complete crosswalk is
+`discovery/haipipe-discovery/ref/bjtr-alignment.md`.
 
 
 The probe, in six lines
@@ -97,7 +113,8 @@ board        cross-cutting Board skill + read-only reviewer agent
 diagrams     working design Boards, kept outside delivery skills
 project      project container setup
 task         inside-execution layer: lifecycle hub + task-domain families
-discovery    outside-evidence layer: Search / Review / Idea
+discovery    outside-evidence layer: Search / Review / Synthesize
+ideation     semantic layer: evidence bundles / directions / ideas
 probe        Page evidence router: PageX lane + Task/Discovery QA lane
 paper        academic composition over six current Page Types
 application  report / message / UI deliverables
@@ -115,8 +132,14 @@ checks; `board/agents/` owns the read-only fresh-context reviewer. The Board use
 to design that package remains at `diagrams/BoardSkillBoard-260722/`, because working
 design records and delivery skills have different lifecycles.
 
-There is no top-level `narrative` bucket. Narrative is one Paper journey-phase
-skill under `paper/workflow-phases/` (page-types/ replaced 260831); the
+There is no top-level `narrative` bucket, and since 260907 no active Narrative
+skill: the Paper journey is Ideation → Story → Evidence/Execution → Section →
+Compile → Round under `paper/` (the Story page absorbed Roadmap and Narrative;
+their contracts are parked at `paper/_old/retired-workflow-phases-260907/`).
+Ideation and Story are Page Types at `paper/page-types/haipipe-page-ideation`
+and `paper/page-types/haipipe-page-story` (JL 260907, named like every other
+`haipipe-page-<type>`); Section and Round stay journey-phase skills under
+`paper/workflow-phases/`. The
 top-level evidence executor bucket is `discovery`, not `discover`.
 
 There is no live `insight` bucket either — the insight layer (D/I/K/W cards) was

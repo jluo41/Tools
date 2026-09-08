@@ -10,6 +10,7 @@ haipipe-discovery/SKILL.md
 haipipe-discovery/ref/lifecycle-map.md
 haipipe-discovery/ref/paper-run-contract.md
 haipipe-discovery/ref/discovery-yaml-schema.md
+haipipe-discovery/ref/bjtr-alignment.md
 ~~~
 
 This file explains their relationship; when details differ, those runtime refs
@@ -27,19 +28,34 @@ discovery/
 ├── 1_search/                                  acquisition family
 │   ├── haipipe-discovery-search/              family router
 │   └── source FIND/READ workers
-├── 2_review/                                  synthesis family
+│       (arxiv, semantic-scholar, exa-search, openalex, gemini-search,
+│        alphaxiv, deepxiv, paper-analyzer)
+├── 2_review/                                  per-Subject review family
 │   ├── haipipe-discovery-review/              family router
 │   └── review workers
-├── 3_idea/                                    ideation family
-│   ├── haipipe-discovery-idea/                family router
-│   └── idea/novelty workers
+├── 3_synthesize/                              cross-Result synthesis family
+│   └── haipipe-discovery-synthesize/          family router
 └── agents/                                    execution roles
+~~~
+
+Semantic ideation is a sibling layer, not a Discovery capability family:
+
+~~~text
+ideation/haipipe-ideation
+  Task Results / QA + Discovery Result/Bib pointers
+  -> evidence bundle -> Direction/Idea Cards -> Paper P0 handoff
 ~~~
 
 The numeric prefixes order and group the skill bank, like `task/1_data`,
 `task/2_nn`, and `task/3_end`. They are not executable phase numbers and must
 not be renamed to a parallel `routes/` hierarchy. Runtime phase ownership is
 declared only under `workflow-phases/`; for Discovery that owner is D1 Inquiry.
+
+The retrofit rule is recorded in `haipipe-discovery/ref/bjtr-alignment.md`:
+project work is addressed only as Block -> Job -> Task Page -> Run, while
+numbered skill families, D1 cycles, and Page 00-04 remain orthogonal views.
+The former Idea family is deleted; it is not a route, migration target, or
+compatibility surface.
 
 ## Four levels
 
@@ -80,15 +96,16 @@ Domain      D1 SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
 Page        shared 00 CONTEXT -> 01 OUTLINE -> 02 EVIDENCE ->
             03 CONTENT -> 04 CHECK
 Page Type   source-map | source-reading | topic-summary | prior-art-verdict |
-            counterevidence-review | landscape-review | benchmark-landscape |
-            ideation | novelty-verdict
+            counterevidence-review | landscape-review | benchmark-landscape
 ~~~
 
 The Page Type says what article the root Page is writing. It does not add a
-folder level and it does not define a Run. Search, Review, and Idea remain
-specialist routes: Search resolves evidence Subjects, Review synthesizes
-completed Results, and Idea works at Topic level while using Paper Runs for
-novelty evidence. Worker/API/CLI calls are runtime detail inside a Run receipt.
+folder level and it does not define a Run. Search, Review, and Synthesize are
+the live Discovery specialist routes: Search resolves evidence Subjects,
+Review inspects one source/Result at a time, and Synthesize combines accepted
+Results into the root article. Semantic ideation consumes Discovery and Task
+evidence in `haipipe-ideation` after this workflow; it is not a Discovery
+family. Worker/API/CLI calls are runtime detail inside a Run receipt.
 
 ## D1 domain-cycle × Run map
 
@@ -102,7 +119,7 @@ CLOSE       no Run; reconciles the already-CHECKed Page and Task Face
 Total R = N admitted canonical Subjects
 ~~~
 
-Search queries, candidate rows, synthesis passes, and idea generation are not
+Search queries, candidate rows, synthesis passes, and direction generation are not
 Runs. A Run begins only after one canonical evidence Subject is admitted.
 
 The canonical table, Runs Overview, Human Actions, and Skill Coverage live at
@@ -110,6 +127,10 @@ The canonical table, Runs Overview, Human Actions, and Skill Coverage live at
 separate Discovery workflow skill; D1 owns the domain workflow and the shared
 Page workflow owns Page artifacts. The D1 root uses the permitted no-Run route;
 consumer Pages own any Page-family Runs they commission.
+
+The pinned upstream source and compatibility decisions for external workers
+live in `haipipe-discovery/ref/external-skill-map.md`. External workers are
+read-only scouts; they never bypass the local Subject, Run/Result, or Bib gates.
 
 ## Trigger and Subject
 
@@ -143,14 +164,15 @@ lineage for Page Evidence Items, not a second Discovery Run inventory.
 
 Topic Content and Paper Results are many-to-many. A paper may support several
 divisions, and a division normally synthesizes several papers. The root Page
-is always the human-facing article. Optional `summary.md`, `verdict.md`,
-`landscape.md`, and `ideas.md` are typed Task-side synthesis records, not rival
-Pages or Runs. The Page links to Results; it does not copy their entire
-readouts into a flat notes ledger.
+is always the human-facing article. Optional `summary.md`, `verdict.md`, and
+`landscape.md` are typed Task-side synthesis records, not rival Pages or Runs.
+The Page links to Results; it does not copy their entire readouts into a flat
+notes ledger.
 
-## Compatibility
+## Migration boundary
 
-Existing sources.md and notes.md remain readable as legacy/derived indexes.
-They are not the authority for new evidence. Old prose is not mass-converted:
-a paper earns a Result only when canonical identity and authoritative BibTeX
-can be verified.
+Existing sources.md and notes.md remain readable as migration inputs. They are
+not the authority for new evidence. Old prose is not mass-converted: a paper
+earns a Result only when canonical identity and authoritative BibTeX can be
+verified. An old Idea Page or 3_idea path is rejected rather than redirected;
+start a new synthesis Page or use the separate haipipe-ideation skill.

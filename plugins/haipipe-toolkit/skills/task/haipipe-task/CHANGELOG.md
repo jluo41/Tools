@@ -3,6 +3,12 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.15.2 · 2026-09-07
+
+- Add `haipipe-page-task` as the reader-facing companion for Task Pages.
+- Keep `haipipe-task` as the canonical execution/closure owner while routing
+  visual evidence density to the companion contract.
+
 ## 0.15.1 · 2026-09-05
 
 - Enforce one Board per canonical Task Block even when its Jobs still use the

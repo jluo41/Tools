@@ -720,7 +720,7 @@ class PaperRunContractTest(unittest.TestCase):
                 )
             )
 
-    def test_canonical_and_legacy_type_must_agree(self) -> None:
+    def test_idea_legacy_type_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             topic = make_topic_path(Path(temp))
             make_topic_contract(topic, discovery_type="topic-summary")
@@ -733,7 +733,7 @@ class PaperRunContractTest(unittest.TestCase):
             errors, _, _ = paper_runs.check_topic(topic)
             self.assertTrue(
                 any(
-                    error.startswith("manifest-discovery-type-conflict:")
+                    error.startswith("manifest-legacy-type-invalid:")
                     for error in errors
                 )
             )

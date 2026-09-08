@@ -54,7 +54,7 @@
     "imports": [
       {
         "page": "QC1",
-        "source": "../QC1-codeshape/draw/QC1.excalidraw",
+        "source": "../QC1-codeshape/studio/draw/QC1.excalidraw",
         "placement": {
           "x": 2407.0,
           "y": 1905.0,
@@ -64,7 +64,7 @@
       },
       {
         "page": "QC1a",
-        "source": "../QC1a-buildsplit/draw/QC1a.excalidraw",
+        "source": "../QC1a-buildsplit/studio/draw/QC1a.excalidraw",
         "placement": {
           "x": 3246.0,
           "y": 1905.0,
@@ -74,7 +74,7 @@
       },
       {
         "page": "QC1b",
-        "source": "../QC1b-srcsplit/draw/QC1b.excalidraw",
+        "source": "../QC1b-srcsplit/studio/draw/QC1b.excalidraw",
         "placement": {
           "x": 4048.0,
           "y": 1905.0,
@@ -84,7 +84,7 @@
       },
       {
         "page": "QC1c",
-        "source": "../QC1c-livesplit/draw/QC1c.excalidraw",
+        "source": "../QC1c-livesplit/studio/draw/QC1c.excalidraw",
         "placement": {
           "x": 4498.0,
           "y": 1905.0,
@@ -94,7 +94,7 @@
       },
       {
         "page": "QC2",
-        "source": "../QC2-generate/draw/QC2.excalidraw",
+        "source": "../QC2-generate/studio/draw/QC2.excalidraw",
         "placement": {
           "x": 1821.0,
           "y": 0.0,
@@ -104,7 +104,7 @@
       },
       {
         "page": "QC2a",
-        "source": "../QC2a-skill-to-page/draw/QC2a.excalidraw",
+        "source": "../QC2a-skill-to-page/studio/draw/QC2a.excalidraw",
         "placement": {
           "x": 6147.0,
           "y": 1905.0,
@@ -114,7 +114,7 @@
       },
       {
         "page": "QC2b",
-        "source": "../QC2b-meetingnote/draw/QC2b.excalidraw",
+        "source": "../QC2b-meetingnote/studio/draw/QC2b.excalidraw",
         "placement": {
           "x": 6869.0,
           "y": 1905.0,
@@ -124,7 +124,7 @@
       },
       {
         "page": "QC3",
-        "source": "../QC3-roundtrip/draw/QC3.excalidraw",
+        "source": "../QC3-roundtrip/studio/draw/QC3.excalidraw",
         "placement": {
           "x": 4752.0,
           "y": 975.0,
@@ -134,7 +134,7 @@
       },
       {
         "page": "QC3a",
-        "source": "../QC3a-writepath/draw/QC3a.excalidraw",
+        "source": "../QC3a-writepath/studio/draw/QC3a.excalidraw",
         "placement": {
           "x": 8306.0,
           "y": 1905.0,
@@ -144,7 +144,7 @@
       },
       {
         "page": "QC4",
-        "source": "../QC4-identity-and-scope/draw/QC4.excalidraw",
+        "source": "../QC4-identity-and-scope/studio/draw/QC4.excalidraw",
         "placement": {
           "x": 0,
           "y": 0,

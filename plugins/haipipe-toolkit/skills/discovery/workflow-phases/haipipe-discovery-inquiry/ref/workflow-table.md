@@ -17,10 +17,47 @@ stable name remains the Folder-contract registry identity, while this D1 phase
 owns the domain Workflow Table. The Page workflow remains a separate shared
 authority, not a second Discovery workflow skill.
 
-The on-disk `1_search`, `2_review`, and `3_idea` directories are numbered
-skill-family groups, following `haipipe-task`. They organize capability routers
-and workers; they are not additional workflow phases. Executable phase
-ownership lives only under `workflow-phases/`.
+The on-disk `1_search`, `2_review`, and `3_synthesize` directories are numbered
+skill-family groups, following `haipipe-task`. Search resolves candidates,
+Review inspects one source/Result, and Synthesize combines accepted Results.
+Semantic ideation is a separate sibling skill, not a Discovery family. These
+groups organize capability routers and workers; they are not additional
+workflow phases. Executable phase ownership lives only under
+`workflow-phases/`.
+
+The optional external source adapters are part of the FIND family: Gemini
+expands aliases and neighboring subproblems; OpenAlex contributes structured
+metadata and citation-graph coverage. Both return read-only candidate harvests
+to the same resolver and do not change the Run cardinality law.
+For clinical or biomedical scopes, the same FIND family records medRxiv as a
+relevant preprint channel and PubMed/Crossref as index and identity fallbacks;
+they are coverage channels, not additional Run types.
+
+## BJTR Alignment Crosswalk
+
+The earlier Discovery descriptions used 0/1/2/3 or 1/2/3/4 labels for a mix of
+Page records and capability families. This table is the repair: only the first
+column is the durable work address. The complete retrofit, legacy mapping, and
+worked route are in `../../../haipipe-discovery/ref/bjtr-alignment.md`.
+
+| Object | Physical location or label | Owner | Cardinality / relation | Correct interpretation |
+|---|---|---|---|---|
+| Bank | discoveries/ | Discovery bank | many Blocks | Root collection; it is not a Block level |
+| Block | bNN_<block>/ | D1 + Board contract | contains Jobs | Board/program; group related inquiry campaigns here |
+| Job | jNN_<job>/ | D1 | contains Task Pages | Self-contained inquiry or campaign group |
+| Task Page | tNN_<task>/ | D1 + shared Page workflow | contains many Runs | One article-shaped question and one discovery_type; has Page and Task Faces |
+| Run | runs/rNN_*.sh | D1 ACQUIRE + haipipe-run | one admitted canonical Subject | One paper/source analysis ticket; full address is bNN.jNN.tNN.rNN |
+| Result | results/rNN_*/ | Run contract | exact same-stem pair with one Run | Readout projection; not a fifth hierarchy level |
+| D1 cycle | SCOPE, PREPARE, ACQUIRE, SYNTHESIZE, CLOSE | workflow-phases/ | temporal route over one Task | Lifecycle timing; never a b/j/t/r segment |
+| Page record | 00 CONTEXT through 04 CHECK | haipipe-page-workflow | one Page workflow | Page authoring/check sequence; never a Run |
+| Search family | 1_search | FIND and identity workers | many calls per acquisition | Capability family, chiefly D1 ACQUIRE; never Job j01 |
+| Review family | 2_review | per-Subject review workers | one packet per admitted source | Capability family, chiefly D1 ACQUIRE; never Job j02 |
+| Synthesize family | 3_synthesize | cross-Result synthesis router | one Page synthesis over many Results | Capability family, chiefly D1 SYNTHESIZE/CONTENT; never Run r03 |
+
+The hierarchy answers “where,” D1 answers “when,” Page 00–04 answers “how the
+Page is authored,” and the Page type answers “what article is promised.” A
+Search query, API call, worker turn, reviewer pass, or Bib build remains receipt
+detail inside its owning cycle; none receives a new BJTR address.
 
 ## Full Workflow Table
 
@@ -28,8 +65,8 @@ ownership lives only under `workflow-phases/`.
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | d1.scope | Discovery | D1 Inquiry | SCOPE | Freeze BJTR identity, question, discovery_type, source boundary, and admission rule. | Parent Block/Job; request; source policy; preserved records. | haipipe-discovery -> haipipe-discovery-inquiry -> haipipe-discovery/ref/discovery-yaml-schema.md | Discovery creator | discovery.yaml intent and Task identity only. Opening the Folder may scaffold the same-stem Page, but SCOPE does not author Page Content. | none | Scoped D1 Folder and Page-workflow input. | Path, manifest, type, question, boundary, and admission rule agree. | d1.prepare, d1.acquire, or HOLD; Page 00 CONTEXT may now resolve D1 as owner. | Resolve a material scope ambiguity only when policy cannot. |
 | d1.prepare | Discovery | D1 Inquiry | PREPARE | Author reusable search, extraction, or synthesis support only when needed. | Frozen scope and instrument declaration. | haipipe-discovery -> haipipe-discovery-inquiry | Discovery creator | Optional used scripts/; no empty lane and no Page mutation. | none | Declared instrument or explicit omission. | Declared path exists and is reusable, or instrument.needed: false. | d1.acquire or HOLD. | none |
-| d1.acquire | Discovery | D1 Inquiry | ACQUIRE | Resolve Triggers, admit canonical Subjects, and produce one truthful analysis Result per Subject. | Scope/admission rule; Trigger provenance; Paper Run contract; optional instrument. | haipipe-discovery -> haipipe-discovery-inquiry -> haipipe-run -> haipipe-discovery-search -> FIND (arxiv / semantic-scholar / exa-search) -> READ (alphaxiv / deepxiv / paper-analyzer) | Discovery creator; source workers are read-only helpers | Task progress and receipt links only; root Page claims remain unchanged. | Discovery paper-analysis or source-analysis x N_admitted; exactly one Subject per Run. | Reused or new same-stem Run/Result pairs plus Trigger dispositions. | Every admitted Subject has one valid pair; zero-Subject and unchanged duplicate Triggers open no Run; failures remain truthful. | d1.acquire, d1.synthesize, or HOLD. | Verify each complete Result citation in its own runtime before epistemic closure. |
-| d1.synthesize | Discovery | D1 Inquiry | SYNTHESIZE | Hand completed Results to the Page workflow and ensure the promised article is realized. This cycle orchestrates; Page phases own every Page mutation. | Accepted Results; type promise; manifest; current Page receipts. | haipipe-discovery -> haipipe-discovery-inquiry -> haipipe-page -> haipipe-page-workflow -> current Page phase -> haipipe-discovery-search / haipipe-discovery-review / haipipe-discovery-idea -> declared craft worker | Discovery orchestrator plus current Page-phase producer/checker | Discovery cycle writes only Task-side progress and optional typed record. Page 00–04 owns Context, Outline, Content, and Check artifacts; D1's direct Result/cite lineage makes Page EVIDENCE skippable. | none; the D1 Folder reserves its local Run inventory for Discovery Paper/Source Runs, and CONTENT records an explicit no-Run rationale. | A CHECKed root Page, optional typed Task record, derived Bib, and exact Result/cite lineage. | Page workflow reaches 04 CHECK; every factual claim resolves to completed Discovery Results; missing evidence routes back to ACQUIRE. | d1.acquire, d1.close, or HOLD. | Shared Page gates apply inside Page workflow; D1 adds no duplicate Page ruling. |
+| d1.acquire | Discovery | D1 Inquiry | ACQUIRE | Resolve Triggers, admit canonical Subjects, and produce one truthful analysis Result per Subject. | Scope/admission rule; Trigger provenance; Paper Run contract; optional instrument. | haipipe-discovery -> haipipe-discovery-inquiry -> haipipe-run -> haipipe-discovery-search -> FIND (arxiv / medRxiv when clinical / semantic-scholar / Crossref+PubMed resolver / exa-search / openalex / gemini-search) -> haipipe-discovery-review -> READ (alphaxiv / deepxiv / paper-analyzer) | Discovery creator; source workers are read-only helpers | Task progress and receipt links only; root Page claims remain unchanged. | Discovery paper-analysis or source-analysis x N_admitted; exactly one Subject per Run. | Reused or new same-stem Run/Result pairs plus Trigger dispositions and review packets. | Every admitted Subject has one valid pair; zero-Subject and unchanged duplicate Triggers open no Run; failures remain truthful. | d1.acquire, d1.synthesize, or HOLD. | Verify each complete Result citation in its own runtime before epistemic closure. |
+| d1.synthesize | Discovery | D1 Inquiry | SYNTHESIZE | Combine completed Review packets and Results into the promised article. This cycle orchestrates; Page phases own every Page mutation. | Accepted Results; review packets; type promise; manifest; current Page receipts. | haipipe-discovery -> haipipe-discovery-inquiry -> haipipe-discovery-synthesize -> haipipe-page -> haipipe-page-workflow -> current Page phase -> declared craft worker | Discovery orchestrator plus current Page-phase producer/checker | Discovery cycle writes only Task-side progress and optional typed record. Page 00–04 owns Context, Outline, Content, and Check artifacts; D1's direct Result/cite lineage makes Page EVIDENCE skippable. | none; the D1 Folder reserves its local Run inventory for Discovery Paper/Source Runs, and CONTENT records an explicit no-Run rationale. | A CHECKed root Page, optional typed Task record, derived Bib, and exact Result/cite lineage. | Page workflow reaches 04 CHECK; every factual claim resolves to completed Discovery Results; missing evidence routes back to ACQUIRE. | d1.acquire, d1.close, or HOLD. | Shared Page gates apply inside Page workflow; D1 adds no duplicate Page ruling. |
 | d1.close | Discovery | D1 Inquiry | CLOSE | Reconcile the Task Face against the already-CHECKed Page and publish the domain outcome/receipt. | Page CHECK receipt; manifest; Run inventory; derived Bib; verification receipts; checker output. | haipipe-discovery -> haipipe-discovery-inquiry -> haipipe-discovery/scripts/paper_runs.py check | Discovery creator after fresh Page checker | discovery.yaml report/status, final Task receipt, and handoff pointers; Page remains read-only here. | none | ok, inconclusive, blocked, or named backward route. | Checker passes; material Discovery Runs resolved; Page CHECK closed; Page/Task states agree; aggregated complete Result Bibs are verified. | CLOSE, d1.acquire, d1.synthesize, or HOLD. | none beyond unresolved Result-Bib verification; Page acceptance belongs to Page CHECK. |
 
 Terminal classification is exact:
@@ -40,6 +77,18 @@ Terminal classification is exact:
   cannot establish the substantive answer.
 - `blocked`: an operational dependency, unresolved material Run, Page gate, or
   citation-verification debt remains.
+
+## Cross-layer handoffs
+
+These are handoffs between authorities, not additional D1 cycles or Discovery
+levels.
+
+| Handoff | Input | Receiving owner | Writes | Return route |
+|---|---|---|---|---|
+| d1.synthesize → haipipe-ideation | accepted Discovery Result/Card/Bib pointers plus Task Results and QA | sibling haipipe-ideation | evidence bundle, Direction Cards, Idea Cards, pressure-test receipts | missing external evidence → d1.acquire; selected direction → haipipe-paper P0 |
+
+Discovery does not contain an Idea Page type or compatibility route. Semantic
+direction work begins only through the sibling `haipipe-ideation` handoff.
 
 ## Page Workflow Crosswalk
 
@@ -53,7 +102,7 @@ table at `haipipe-page-workflow/ref/workflow-table.md`.
 | 01B OUTLINE / SURVEY | Decide whether existing Discovery Results suffice or D1 must acquire more. The D1 root Page does not create a redundant local Evidence Item graph. | Direct Result/cite routes and new Discovery requests. | none | new Discovery hands off to d1.acquire; completed Results return to SHAPE. |
 | 02A EVIDENCE / LAND | Skipped in the D1 root Folder because its admitted Paper/Source Results are already the authoritative evidence objects. | none | none | A consumer Page that needs a typed Evidence Item owns its separate local Page Run in the consumer Folder. |
 | 02B EVIDENCE / EMBED | Skipped without a local make-item. D1 SYNTHESIZE rebuilds the derived aggregate Bib through the Outline citation authority; SHAPE records direct Result/cite lineage. | none beyond the derived Bib projection owned by Outline. | none | CONTENT consumes the approved directly supported Shape. |
-| 03 CONTENT / WRITE | Realize the discovery_type article from the approved Result-backed plan. | Root Page Content/Aims, delivery, build, and promotion trace. | none; each division records the Page CONTENT explicit no-Run rationale because one-Subject Discovery Results are the independently closable units. | Missing evidence routes to OUTLINE and D1 ACQUIRE. |
+| 03 CONTENT / WRITE | Realize the discovery_type article from the approved Result-backed synthesis plan. | Root Page Content/Aims, delivery, build, and promotion trace. | none; each division records the Page CONTENT explicit no-Run rationale because one-Subject Discovery Results are the independently closable units. | Missing evidence routes to OUTLINE and D1 ACQUIRE. |
 | 04 CHECK / CHECK | Judge one exact built Page version. | Check receipt/findings only. | none | A closed Page returns its receipt to d1.close; findings route to their owning Page phase. |
 
 ## Runs Overview
@@ -131,35 +180,38 @@ the Page workflow's own person-reserved acts.
 `?` means the shared skill was not independently field-tested in this
 Discovery revision. Paths are literal relative to
 `Tools/plugins/haipipe-toolkit/`; paths, versions, and line counts were
-observed on disk on 2026-09-04. Statuses marked valid come from
-`quick_validate.py`, and row use is derived from the Full Workflow Table.
+observed on disk on 2026-09-07. Some shared Page/Task rows may include a
+working-tree snapshot while their owning session is still changing them;
+that does not count as a release or a field-test. Statuses marked valid come
+from `quick_validate.py`, and row use is derived from the Full Workflow Table.
 
 | Skill | Path | Role | Used by Phase/Cycle | Status | Version | SKILL.md lines | Quality / completeness | Field-test | Gap / next action |
 |---|---|---|---|---|---:|---:|---|---|---|
-| haipipe-discovery | skills/discovery/haipipe-discovery/SKILL.md | door | d1.scope, d1.prepare, d1.acquire, d1.synthesize, d1.close | ✅ structurally valid | 0.9.1 | 397 | ?; static quality not assessed | fresh-context 2026-09-04 PASS; skills/discovery/haipipe-discovery/feedback/2026-09-04-workflow-field-test.md | none observed in scoped behavior test |
-| haipipe-discovery-inquiry | skills/discovery/workflow-phases/haipipe-discovery-inquiry/SKILL.md | phase machine / Folder contract | d1.scope, d1.prepare, d1.acquire, d1.synthesize, d1.close | ✅ structurally valid | 0.4.1 | 169 | ?; static quality not assessed | fresh-context 2026-09-04 PASS; skills/discovery/haipipe-discovery/feedback/2026-09-04-workflow-field-test.md | none observed in scoped behavior test |
-| haipipe-folder | skills/board/haipipe-folder/SKILL.md | neutral Folder contract | d1.scope, d1.close | ? unknown | 0.4.1 | 229 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-page | skills/board/haipipe-page/SKILL.md | Page door | d1.synthesize | ? unknown | 0.57.3 | 494 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-page-workflow | skills/board/page-workflows/haipipe-page-workflow/SKILL.md | Page phase machine | d1.synthesize | ? unknown | 0.26.2 | 333 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-page-context | skills/board/page-workflows/haipipe-page-context/SKILL.md | Page phase contract | d1.synthesize | ? unknown | 0.1.2 | 200 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-page-outline | skills/board/page-workflows/haipipe-page-outline/SKILL.md | Page phase contract | d1.synthesize | ? unknown | 0.23.2 | 471 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-page-evidence | skills/board/page-workflows/haipipe-page-evidence/SKILL.md | skipped Page phase contract | d1.synthesize | ? unknown | 0.19.2 | 272 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-page-content | skills/board/page-workflows/haipipe-page-content/SKILL.md | Page phase contract | d1.synthesize | ? unknown | 0.2.0 | 183 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-page-check | skills/board/page-workflows/haipipe-page-check/SKILL.md | Page phase contract | d1.synthesize | ? unknown | 0.7.2 | 343 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-plugin-outline | skills/board/page-plugins/haipipe-plugin-outline/SKILL.md | Outline/Evidence artifact contract | d1.synthesize | ? unknown | 0.35.0 | 379 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-run | skills/run/haipipe-run/SKILL.md | Level-4 contract | d1.acquire | ? unknown | 0.6.1 | 373 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-plugin-runs | skills/board/page-plugins/haipipe-plugin-runs/SKILL.md | read-only presenter | d1.acquire, d1.close | ? unknown | 0.9.6 | 233 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
-| haipipe-discovery-search | skills/discovery/1_search/haipipe-discovery-search/SKILL.md | acquisition/source craft router | d1.acquire, d1.synthesize | ✅ structurally valid | 0.5.0 | 82 | ?; static quality not assessed | ? | field-test when acquisition route changes |
+| haipipe-discovery | skills/discovery/haipipe-discovery/SKILL.md | door | d1.scope, d1.prepare, d1.acquire, d1.synthesize, d1.close | ✅ structurally valid | 0.10.0 | 437 | ?; static quality not assessed | fresh-context 2026-09-04 PASS; skills/discovery/haipipe-discovery/feedback/2026-09-04-workflow-field-test.md; fresh-context 2026-09-07 PASS (/root/discovery_external_refresh_fieldtest); fresh-context 2026-09-07 PASS (/root/discovery_final_fieldtest) | Gemini unavailable in test; optional live-source execution remains to be exercised |
+| haipipe-discovery-inquiry | skills/discovery/workflow-phases/haipipe-discovery-inquiry/SKILL.md | phase machine / Folder contract | d1.scope, d1.prepare, d1.acquire, d1.synthesize, d1.close | ✅ structurally valid | 0.5.0 | 177 | ?; static quality not assessed | fresh-context 2026-09-04 PASS; skills/discovery/haipipe-discovery/feedback/2026-09-04-workflow-field-test.md; fresh-context 2026-09-07 PASS (/root/discovery_external_refresh_fieldtest) | Gemini unavailable in test; optional live-source execution remains to be exercised |
+| haipipe-folder | skills/board/haipipe-folder/SKILL.md | neutral Folder contract | d1.scope, d1.close | ? unknown | 0.5.1 | 296 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-page | skills/board/haipipe-page/SKILL.md | Page door | d1.synthesize | ? unknown | 0.60.4 | 569 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-page-workflow | skills/board/page-workflows/haipipe-page-workflow/SKILL.md | Page phase machine | d1.synthesize | ? unknown | 0.29.1 | 345 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-page-context | skills/board/page-workflows/haipipe-page-context/SKILL.md | Page phase contract | d1.synthesize | ? unknown | 0.1.3 | 204 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-page-outline | skills/board/page-workflows/haipipe-page-outline/SKILL.md | Page phase contract | d1.synthesize | ? unknown | 0.32.1 | 612 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-page-evidence | skills/board/page-workflows/haipipe-page-evidence/SKILL.md | skipped Page phase contract | d1.synthesize | ? unknown | 0.22.0 | 337 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-page-content | skills/board/page-workflows/haipipe-page-content/SKILL.md | Page phase contract | d1.synthesize | ? unknown | 0.8.3 | 320 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-page-check | skills/board/page-workflows/haipipe-page-check/SKILL.md | Page phase contract | d1.synthesize | ? unknown | 0.8.1 | 346 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-plugin-outline | skills/board/page-plugins/haipipe-plugin-outline/SKILL.md | Outline/Evidence artifact contract | d1.synthesize | ? unknown | 0.46.0 | 444 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-run | skills/run/haipipe-run/SKILL.md | Level-4 contract | d1.acquire | ? unknown | 0.6.5 | 391 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-plugin-runs | skills/board/page-plugins/haipipe-plugin-runs/SKILL.md | read-only presenter | d1.acquire, d1.close | ? unknown | 0.9.7 | 233 | ?; not assessed in this revision | ? | re-audit on shared-contract change |
+| haipipe-discovery-search | skills/discovery/1_search/haipipe-discovery-search/SKILL.md | acquisition/identity router | d1.acquire | ✅ structurally valid | 0.6.0 | 113 | ?; static quality not assessed | fresh-context 2026-09-07 PASS (/root/discovery_external_refresh_fieldtest); fresh-context 2026-09-07 PASS (/root/discovery_final_fieldtest); fresh-context 2026-09-07 PASS (/root/discovery_search_credential_final); fresh-context 2026-09-07 PASS (/root/discovery_external_inventory_final) | Gemini unavailable in test; optional live-source execution remains to be exercised |
 | arxiv | skills/discovery/1_search/arxiv/SKILL.md | preprint FIND worker | d1.acquire | ✅ structurally valid | 0.1.1 | 203 | ?; static quality not assessed | ? | field-test when worker changes |
 | semantic-scholar | skills/discovery/1_search/semantic-scholar/SKILL.md | venue FIND worker | d1.acquire | ✅ structurally valid | 0.1.1 | 210 | ?; static quality not assessed | ? | field-test when worker changes |
 | exa-search | skills/discovery/1_search/exa-search/SKILL.md | web FIND worker | d1.acquire | ✅ structurally valid | 0.1.1 | 177 | ?; static quality not assessed | ? | field-test when worker changes |
+| openalex | skills/discovery/1_search/openalex/SKILL.md | optional structured metadata/citation FIND worker | d1.acquire | ✅ structurally valid | 0.1.0 | 86 | ?; static quality not assessed | fresh-context 2026-09-07 PASS (/root/discovery_external_refresh_fieldtest); fresh-context 2026-09-07 PASS (/root/discovery_final_fieldtest); helper --help green; fresh-context 2026-09-07 PASS (/root/discovery_external_inventory_final) | Live API/query not exercised; run a bounded fixture/API smoke when credentials/network are available |
+| gemini-search | skills/discovery/1_search/gemini-search/SKILL.md | optional alias/subproblem FIND worker | d1.acquire | ✅ structurally valid | 0.1.0 | 66 | ?; static quality not assessed | fresh-context 2026-09-07 PASS (/root/discovery_external_refresh_fieldtest); fresh-context 2026-09-07 PASS (/root/discovery_final_fieldtest); unavailable-source behavior inspected | MCP/CLI unavailable in test; run a live optional-source smoke when configured |
 | alphaxiv | skills/discovery/1_search/alphaxiv/SKILL.md | quick READ worker | d1.acquire | ✅ structurally valid | 0.1.1 | 174 | ?; static quality not assessed | ? | field-test when worker changes |
 | deepxiv | skills/discovery/1_search/deepxiv/SKILL.md | progressive READ worker | d1.acquire | ✅ structurally valid | 0.1.1 | 223 | ?; static quality not assessed | ? | field-test when worker changes |
 | paper-analyzer | skills/discovery/1_search/paper-analyzer/SKILL.md | deep READ worker | d1.acquire | ✅ structurally valid | 0.1.0 | 52 | ?; static quality not assessed | ? | field-test when worker changes |
-| haipipe-discovery-review | skills/discovery/2_review/haipipe-discovery-review/SKILL.md | review-synthesis craft router | d1.synthesize | ✅ structurally valid | 0.5.0 | 71 | ?; static quality not assessed | ? | field-test when review route changes |
-| research-lit | skills/discovery/2_review/research-lit/SKILL.md | multi-source review worker | d1.synthesize | ✅ structurally valid | 0.1.1 | 336 | ?; static quality not assessed | ? | field-test when worker changes |
+| haipipe-discovery-review | skills/discovery/2_review/haipipe-discovery-review/SKILL.md | per-Subject review router | d1.acquire | ✅ structurally valid | 0.6.0 | 76 | ?; static quality not assessed | fresh-context 2026-09-07 PASS (/root/discovery_final_fieldtest) | fresh-context review-only validation remains to be exercised |
+| research-lit | skills/discovery/2_review/research-lit/SKILL.md | multi-source review worker | d1.synthesize | ✅ structurally valid | 0.2.2 | 432 | ?; static quality not assessed | fresh-context 2026-09-07 PASS (/root/discovery_final_fieldtest); fresh-context 2026-09-07 PASS (/root/discovery_external_inventory_final) | no route divergence observed; optional live-source execution remains to be exercised |
 | comm-lit-review | skills/discovery/2_review/comm-lit-review/SKILL.md | communications review worker | d1.synthesize | ✅ structurally valid | 0.1.0 | 312 | ?; static quality not assessed | ? | field-test when worker changes |
 | academic-researcher | skills/discovery/2_review/academic-researcher/SKILL.md | cross-discipline review worker | d1.synthesize | ✅ structurally valid | 0.1.0 | 265 | ?; static quality not assessed | ? | field-test when worker changes |
-| haipipe-discovery-idea | skills/discovery/3_idea/haipipe-discovery-idea/SKILL.md | ideation/novelty craft router | d1.synthesize | ✅ structurally valid | 0.5.0 | 52 | ?; static quality not assessed | ? | field-test when idea route changes |
-| idea-creator | skills/discovery/3_idea/idea-creator/SKILL.md | ideation worker | d1.synthesize | ✅ structurally valid | 0.1.1 | 320 | ?; static quality not assessed | ? | field-test when worker changes |
-| novelty-check | skills/discovery/3_idea/novelty-check/SKILL.md | novelty worker | d1.synthesize | ✅ structurally valid | 0.2.1 | 112 | ?; static quality not assessed | ? | field-test when worker changes |
+| haipipe-discovery-synthesize | skills/discovery/3_synthesize/haipipe-discovery-synthesize/SKILL.md | cross-Result synthesis router | d1.synthesize | ✅ structurally valid | 0.1.0 | 139 | ?; static quality not assessed | fresh-context synthesis validation required | ensure every Page claim maps to accepted Results; no local Run |
+| haipipe-ideation | skills/ideation/haipipe-ideation/SKILL.md | sibling semantic direction/idea handoff | d1.synthesize → Paper P0 | ✅ structurally valid | 0.1.5 | 160 | ?; static quality not assessed | fresh-context 2026-09-07 PASS (/root/ideation_release_validation); fresh-context 2026-09-07 PASS (/root/ideation_bjtr_handoff_validation) | Task/Discovery pointer bundle and human selection remain required; no local Discovery Run |

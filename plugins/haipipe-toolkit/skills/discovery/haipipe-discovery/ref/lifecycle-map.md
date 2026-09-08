@@ -1,9 +1,11 @@
-# Discovery Lifecycle Map (v7 — D1 Task workflow × Page workflow × BJTR Runs)
+# Discovery Lifecycle Map (v8 — D1 Task workflow × Page workflow × BJTR Runs)
 
 A Discovery `tNN_` Folder is one durable research article/question with BOTH a
 Page Face and a Task Face. It is a Task Page, not a flat citation note. This file
 is the canonical authority for the lifecycle/type cross; Level-4 mechanics live
-only in `paper-run-contract.md`.
+only in `paper-run-contract.md`. When an older numbered description conflicts
+with the path model, `bjtr-alignment.md` is the retrofit addendum: the
+Block–Job–Task–Run address is independent of capability and phase numbering.
 
 ## Three independent dimensions
 
@@ -96,21 +98,28 @@ allocated Tickets with runtime receipts.
 The exact article-form table lives in `page-types.md`; the manifest schema lives
 in `discovery-yaml-schema.md`.
 
-- **Search route** serves source-map and source-reading Pages.
-- **Review route** serves topic summaries, prior-art/counterevidence verdicts,
-  and literature/benchmark landscapes.
-- **Idea route** serves ideation and novelty-verdict Pages.
+- **Search route** serves source-map Pages and resolves candidate Subjects.
+- **Review route** reads and checks one admitted source/Result at a time,
+  serving source-reading Pages.
+- **Synthesize route** combines accepted Results into topic summaries,
+  prior-art/counterevidence verdicts, and literature/benchmark landscapes.
+- Semantic direction work belongs to the sibling `haipipe-ideation` skill after
+  synthesis; Discovery has no Idea route or compatibility redirect.
 
-Every route writes the root Page. Optional `summary.md`, `verdict.md`,
-`landscape.md`, or `ideas.md` files are typed Task-side records, not rival Pages
-or Level-4 Results. Missing evidence always creates another Paper/Source Run;
-it is never pasted into one monolithic notes file.
+Every route writes or contributes to the root Page through the shared Page
+workflow. Optional `summary.md`, `verdict.md`, or `landscape.md` files are
+typed Task-side records, not rival Pages or Level-4 Results. Missing evidence
+always creates another Paper/Source Run; it is never pasted into one monolithic
+notes file.
 
-The chain remains:
+The live chain remains:
 
 ```text
-Source Results -> Review/Summary Page -> Ideation/Novelty Page
+Source Results -> Review packets -> Synthesize Page -> haipipe-ideation -> Paper P0
 ```
+
+A semantic handoff consumes Result/Bib pointers and does not create a
+Discovery Run or Result.
 
 Folders may reference another Topic's Page or typed record from their own side. A
 Discovery Folder remains probe-unaware and never tracks its consumers.

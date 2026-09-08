@@ -1,0 +1,88 @@
+# 260907 · page-root cleanup receipt
+
+Page folders brought to the haipipe-page folder contract: studio/ owns chat+draw, outline/evidence/bibex/ owns citations, delivery/ holds only its four lanes, workflow/receipts/ holds check notes, backups live under _archive/.
+
+- bibex-moved · 1-QA-constitution/QA00-overview/bibex/QA00-overview-bib.html -> 1-QA-constitution/QA00-overview/outline/evidence/bibex/QA00-overview-bib.html
+- bibex-moved · 1-QA-constitution/QA00-overview/bibex/QA00-overview.bib -> 1-QA-constitution/QA00-overview/outline/evidence/bibex/QA00-overview.bib
+- flat-draw-moved · 1-QA-constitution/QA2-board-life/draw/QA2.excalidraw -> 1-QA-constitution/QA2-board-life/studio/draw/QA2.excalidraw
+- flat-draw-moved · 1-QA-constitution/QA3-the-round/draw/QA3.excalidraw -> 1-QA-constitution/QA3-the-round/studio/draw/QA3.excalidraw
+- flat-draw-moved · 1-QA-constitution/QA6-skillfamily/draw/QA6.excalidraw -> 1-QA-constitution/QA6-skillfamily/studio/draw/QA6.excalidraw
+- flat-draw-moved · 2-QB-board/QB1-form/draw/QB1.excalidraw -> 2-QB-board/QB1-form/studio/draw/QB1.excalidraw
+- flat-draw-moved · 2-QB-board/QB1a-standing/draw/QB1a.excalidraw -> 2-QB-board/QB1a-standing/studio/draw/QB1a.excalidraw
+- flat-draw-moved · 2-QB-board/QB2-board-webpage-design/draw/QB2.excalidraw -> 2-QB-board/QB2-board-webpage-design/studio/draw/QB2.excalidraw
+- flat-draw-moved · 2-QB-board/QB2a-sidebar/draw/QB2a.excalidraw -> 2-QB-board/QB2a-sidebar/studio/draw/QB2a.excalidraw
+- flat-draw-moved · 3-QPs-page-structure/QPs1-overall/draw/QPs1.excalidraw -> 3-QPs-page-structure/QPs1-overall/studio/draw/QPs1.excalidraw
+- flat-draw-moved · 3-QPs-page-structure/QPs2-page-types/draw/QPs2.excalidraw -> 3-QPs-page-structure/QPs2-page-types/studio/draw/QPs2.excalidraw
+- flat-draw-moved · 3-QPs-page-structure/QPs3-for-stage/draw/QPs3.excalidraw -> 3-QPs-page-structure/QPs3-for-stage/studio/draw/QPs3.excalidraw
+- flat-draw-moved · 3-QPs-page-structure/QPs4-for-design/draw/QPs4.excalidraw -> 3-QPs-page-structure/QPs4-for-design/studio/draw/QPs4.excalidraw
+- stub-removed · 4-QPf-page-folder/QPf1-folder/draw (-> studio/draw) -> _archive/260907-page-root-cleanup/
+- flat-draw-moved · 4-QPf-page-folder/QPf2-draw-attach/draw/QPf2.excalidraw -> 4-QPf-page-folder/QPf2-draw-attach/studio/draw/QPf2.excalidraw
+- bibex-moved · 4-QPf-page-folder/QPf2-draw-attach/bibex/QPf2-diagramattach-bib.html -> 4-QPf-page-folder/QPf2-draw-attach/outline/evidence/bibex/QPf2-diagramattach-bib.html
+- bibex-moved · 4-QPf-page-folder/QPf2-draw-attach/bibex/QPf2-diagramattach.bib -> 4-QPf-page-folder/QPf2-draw-attach/outline/evidence/bibex/QPf2-diagramattach.bib
+- bibex-moved · 4-QPf-page-folder/QPf2-draw-attach/bibex/QPf2-draw-attach-bib.html -> 4-QPf-page-folder/QPf2-draw-attach/outline/evidence/bibex/QPf2-draw-attach-bib.html
+- bibex-moved · 4-QPf-page-folder/QPf2-draw-attach/bibex/QPf2-draw-attach.bib -> 4-QPf-page-folder/QPf2-draw-attach/outline/evidence/bibex/QPf2-draw-attach.bib
+- flat-draw-moved · 4-QPf-page-folder/QPf3-slide/draw/QPf3.excalidraw -> 4-QPf-page-folder/QPf3-slide/studio/draw/QPf3.excalidraw
+- bibex-moved · 4-QPf-page-folder/QPf3-slide/bibex/QPf3-slide-bib.html -> 4-QPf-page-folder/QPf3-slide/outline/evidence/bibex/QPf3-slide-bib.html
+- bibex-moved · 4-QPf-page-folder/QPf3-slide/bibex/QPf3-slide.bib -> 4-QPf-page-folder/QPf3-slide/outline/evidence/bibex/QPf3-slide.bib
+- flat-chat-moved · 4-QPf-page-folder/QPf4-chat/chat/260815-0457-82681719 -> 4-QPf-page-folder/QPf4-chat/studio/chat/260815-0457-82681719
+- flat-draw-moved · 4-QPf-page-folder/QPf4-chat/draw/QPf4.excalidraw -> 4-QPf-page-folder/QPf4-chat/studio/draw/QPf4.excalidraw
+- bibex-moved · 4-QPf-page-folder/QPf4-chat/bibex/QPf4-chat-bib.html -> 4-QPf-page-folder/QPf4-chat/outline/evidence/bibex/QPf4-chat-bib.html
+- bibex-moved · 4-QPf-page-folder/QPf4-chat/bibex/QPf4-chat.bib -> 4-QPf-page-folder/QPf4-chat/outline/evidence/bibex/QPf4-chat.bib
+- flat-draw-moved · 4-QPf-page-folder/QPf4a-chat-per-question/draw/QPf4a.excalidraw -> 4-QPf-page-folder/QPf4a-chat-per-question/studio/draw/QPf4a.excalidraw
+- flat-draw-moved · 4-QPf-page-folder/QPf4b-chat-sdk/draw/QPf4b.excalidraw -> 4-QPf-page-folder/QPf4b-chat-sdk/studio/draw/QPf4b.excalidraw
+- bibex-moved · 4-QPf-page-folder/QPf4b-chat-sdk/bibex/QPf4b-chat-sdk-bib.html -> 4-QPf-page-folder/QPf4b-chat-sdk/outline/evidence/bibex/QPf4b-chat-sdk-bib.html
+- bibex-moved · 4-QPf-page-folder/QPf4b-chat-sdk/bibex/QPf4b-chat-sdk.bib -> 4-QPf-page-folder/QPf4b-chat-sdk/outline/evidence/bibex/QPf4b-chat-sdk.bib
+- flat-draw-moved · 4-QPf-page-folder/QPf4c-chat-terminal/draw/QPf4c.excalidraw -> 4-QPf-page-folder/QPf4c-chat-terminal/studio/draw/QPf4c.excalidraw
+- flat-draw-moved · 4-QPf-page-folder/QPf4d-chat-terminal-design/draw/QPf4d.excalidraw -> 4-QPf-page-folder/QPf4d-chat-terminal-design/studio/draw/QPf4d.excalidraw
+- flat-draw-moved · 4-QPf-page-folder/QPf5-display/draw/QPf5.excalidraw -> 4-QPf-page-folder/QPf5-display/studio/draw/QPf5.excalidraw
+- bibex-moved · 4-QPf-page-folder/QPf5-display/bibex/QPf5-display-bib.html -> 4-QPf-page-folder/QPf5-display/outline/evidence/bibex/QPf5-display-bib.html
+- bibex-moved · 4-QPf-page-folder/QPf5-display/bibex/QPf5-display.bib -> 4-QPf-page-folder/QPf5-display/outline/evidence/bibex/QPf5-display.bib
+- flat-draw-moved · 4-QPf-page-folder/QPf6-latex/draw/QPf6.excalidraw -> 4-QPf-page-folder/QPf6-latex/studio/draw/QPf6.excalidraw
+- flat-draw-moved · 4-QPf-page-folder/QPf8-bibex/draw/QPf8.excalidraw -> 4-QPf-page-folder/QPf8-bibex/studio/draw/QPf8.excalidraw
+- bibex-moved · 4-QPf-page-folder/QPf8-bibex/bibex/.board-refs.bbl -> 4-QPf-page-folder/QPf8-bibex/outline/evidence/bibex/.board-refs.bbl
+- bibex-moved · 4-QPf-page-folder/QPf8-bibex/bibex/QPf8-bibex-bib.html -> 4-QPf-page-folder/QPf8-bibex/outline/evidence/bibex/QPf8-bibex-bib.html
+- bibex-moved · 4-QPf-page-folder/QPf8-bibex/bibex/QPf8-bibex.bib -> 4-QPf-page-folder/QPf8-bibex/outline/evidence/bibex/QPf8-bibex.bib
+- flat-draw-moved · 5-QPw-page-workflow/QPw00-page-loop/draw/QPw00.excalidraw -> 5-QPw-page-workflow/QPw00-page-loop/studio/draw/QPw00.excalidraw
+- bibex-moved · 5-QPw-page-workflow/QPw00-page-loop/bibex/.board-refs.bbl -> 5-QPw-page-workflow/QPw00-page-loop/outline/evidence/bibex/.board-refs.bbl
+- bibex-moved · 5-QPw-page-workflow/QPw00-page-loop/bibex/3-dist -> 5-QPw-page-workflow/QPw00-page-loop/outline/evidence/bibex/3-dist
+- bibex-moved · 5-QPw-page-workflow/QPw00-page-loop/bibex/QPw00-page-loop-bib.html -> 5-QPw-page-workflow/QPw00-page-loop/outline/evidence/bibex/QPw00-page-loop-bib.html
+- bibex-moved · 5-QPw-page-workflow/QPw00-page-loop/bibex/QPw00-page-loop.bib -> 5-QPw-page-workflow/QPw00-page-loop/outline/evidence/bibex/QPw00-page-loop.bib
+- flat-draw-moved · 5-QPw-page-workflow/QPw00a-page-agents/draw/QPw00a.excalidraw -> 5-QPw-page-workflow/QPw00a-page-agents/studio/draw/QPw00a.excalidraw
+- flat-draw-moved · 6-QS-sentence/QS1-overview/draw/QS1.excalidraw -> 6-QS-sentence/QS1-overview/studio/draw/QS1.excalidraw
+- flat-draw-moved · 6-QS-sentence/QS2-sentence-details-lifecycle/draw/QS2.excalidraw -> 6-QS-sentence/QS2-sentence-details-lifecycle/studio/draw/QS2.excalidraw
+- flat-draw-moved · 6-QS-sentence/QS3-sentence-address/draw/QS3.excalidraw -> 6-QS-sentence/QS3-sentence-address/studio/draw/QS3.excalidraw
+- flat-draw-moved · 6-QS-sentence/QS4-sentence-run/draw/QS4.excalidraw -> 6-QS-sentence/QS4-sentence-run/studio/draw/QS4.excalidraw
+- flat-draw-moved · 6-QS-sentence/QS5-writing/draw/QS5.excalidraw -> 6-QS-sentence/QS5-writing/studio/draw/QS5.excalidraw
+- flat-draw-moved · 7-QC-engine/QC1-codeshape/draw/QC1.excalidraw -> 7-QC-engine/QC1-codeshape/studio/draw/QC1.excalidraw
+- flat-draw-moved · 7-QC-engine/QC1a-buildsplit/draw/QC1a.excalidraw -> 7-QC-engine/QC1a-buildsplit/studio/draw/QC1a.excalidraw
+- flat-draw-moved · 7-QC-engine/QC1b-srcsplit/draw/QC1b.excalidraw -> 7-QC-engine/QC1b-srcsplit/studio/draw/QC1b.excalidraw
+- flat-draw-moved · 7-QC-engine/QC1c-livesplit/draw/QC1c.excalidraw -> 7-QC-engine/QC1c-livesplit/studio/draw/QC1c.excalidraw
+- flat-draw-moved · 7-QC-engine/QC2-generate/draw/QC2.excalidraw -> 7-QC-engine/QC2-generate/studio/draw/QC2.excalidraw
+- flat-draw-moved · 7-QC-engine/QC2a-skill-to-page/draw/QC2a.excalidraw -> 7-QC-engine/QC2a-skill-to-page/studio/draw/QC2a.excalidraw
+- flat-draw-moved · 7-QC-engine/QC2b-meetingnote/draw/QC2b.excalidraw -> 7-QC-engine/QC2b-meetingnote/studio/draw/QC2b.excalidraw
+- flat-draw-moved · 7-QC-engine/QC3-roundtrip/draw/QC3.excalidraw -> 7-QC-engine/QC3-roundtrip/studio/draw/QC3.excalidraw
+- flat-draw-moved · 7-QC-engine/QC3a-writepath/draw/QC3a.excalidraw -> 7-QC-engine/QC3a-writepath/studio/draw/QC3a.excalidraw
+- flat-draw-moved · 7-QC-engine/QC4-identity-and-scope/draw/QC4.excalidraw -> 7-QC-engine/QC4-identity-and-scope/studio/draw/QC4.excalidraw
+- flat-draw-moved · 8-QO-operating/QO1-split-workspace/draw/QO1.excalidraw -> 8-QO-operating/QO1-split-workspace/studio/draw/QO1.excalidraw
+- flat-draw-moved · 8-QO-operating/QO2-session-status-strip/draw/QO2.excalidraw -> 8-QO-operating/QO2-session-status-strip/studio/draw/QO2.excalidraw
+- flat-draw-moved · 8-QO-operating/QO3-pagecost/draw/QO3.excalidraw -> 8-QO-operating/QO3-pagecost/studio/draw/QO3.excalidraw
+- flat-draw-moved · 8-QO-operating/QO4-hosting/draw/QO4.excalidraw -> 8-QO-operating/QO4-hosting/studio/draw/QO4.excalidraw
+- flat-draw-moved · 8-QO-operating/QO5-mountspace/draw/QO5.excalidraw -> 8-QO-operating/QO5-mountspace/studio/draw/QO5.excalidraw
+- flat-draw-moved · 8-QO-operating/QO6-whereitruns/draw/QO6.excalidraw -> 8-QO-operating/QO6-whereitruns/studio/draw/QO6.excalidraw
+- flat-draw-moved · 8-QO-operating/QO7-editlock/draw/QO7.excalidraw -> 8-QO-operating/QO7-editlock/studio/draw/QO7.excalidraw
+- flat-draw-moved · 8-QO-operating/QO8-consolescope/draw/QO8.excalidraw -> 8-QO-operating/QO8-consolescope/studio/draw/QO8.excalidraw
+- flat-draw-moved · 8-QO-operating/QO9-bindaddress/draw/QO9.excalidraw -> 8-QO-operating/QO9-bindaddress/studio/draw/QO9.excalidraw
+- flat-draw-moved · 9-QF-execute/QF1-acceptance/draw/QF1.excalidraw -> 9-QF-execute/QF1-acceptance/studio/draw/QF1.excalidraw
+- flat-draw-moved · 9-QF-execute/QF2-newcomer/draw/QF2.excalidraw -> 9-QF-execute/QF2-newcomer/studio/draw/QF2.excalidraw
+- flat-draw-moved · 9-QF-execute/QF3-browser-run/draw/QF3.excalidraw -> 9-QF-execute/QF3-browser-run/studio/draw/QF3.excalidraw
+- flat-draw-moved · 9-QF-execute/QF4-talk-run/draw/QF4.excalidraw -> 9-QF-execute/QF4-talk-run/studio/draw/QF4.excalidraw
+- manifest-pointer-rewritten · 1-QA-constitution/draw/group.excalidraw: 3 source path(s) -> studio/draw/
+- manifest-pointer-rewritten · 2-QB-board/draw/group.excalidraw: 5 source path(s) -> studio/draw/
+- manifest-pointer-rewritten · 3-QPs-page-structure/draw/group.excalidraw: 4 source path(s) -> studio/draw/
+- manifest-pointer-rewritten · 4-QPf-page-folder/draw/group.excalidraw: 3 source path(s) -> studio/draw/
+- manifest-pointer-rewritten · 5-QPw-page-workflow/draw/group.excalidraw: 2 source path(s) -> studio/draw/
+- manifest-pointer-rewritten · 6-QS-sentence/draw/group.excalidraw: 5 source path(s) -> studio/draw/
+- manifest-pointer-rewritten · 7-QC-engine/draw/group.excalidraw: 10 source path(s) -> studio/draw/
+- manifest-pointer-rewritten · 8-QO-operating/draw/group.excalidraw: 9 source path(s) -> studio/draw/
+- manifest-pointer-rewritten · 9-QF-execute/draw/group.excalidraw: 4 source path(s) -> studio/draw/
+- board.md-path-rewritten · QPf2 scene path -> studio/draw/

@@ -1,9 +1,10 @@
 # Task Folder Page Face
 
 Load this reference when creating, reading, repairing, or checking the
-same-stem Page inside one executable Task Folder. `haipipe-task` owns this
-contract; `haipipe-page` supplies the shared Page frame and
-`haipipe-page-workflow` supplies CONTEXT through CHECK.
+same-stem Page inside one executable Task Folder. `haipipe-task` owns the Task
+Folder identity, execution, and closure; `haipipe-page-task` supplies the
+display-rich reader extension; `haipipe-page` supplies the shared Page frame
+and `haipipe-page-workflow` supplies CONTEXT through CHECK.
 
 ## Ownership and identity
 
@@ -20,6 +21,12 @@ declares:
 folder-kind: task
 task: .
 ```
+
+The execution contract remains owned by `haipipe-task`. Load the
+reader-facing companion `haipipe-page-task` when creating, outlining,
+writing, reviewing, or delivering this Page. It adds the visual evidence
+contract: a numeric Task Page is not prose-only and must plan substantive
+tables, figures, and method/provenance diagrams.
 
 Add the exact `task-type:` when a specialist owns the executable dialect.
 `page-type: task`, `job:`, and `task-folder:` are legacy spellings accepted on
@@ -84,6 +91,13 @@ Each Content division begins with one captioned face diagram that previews the
 division's argument. Do not create a separate Page-level `## Diagram` section.
 The shared Page renderer generates `## Outline` from
 `outline/<stem>-outline-v<N>.md`; the authored Page must not duplicate it.
+
+For a data-bearing or empirical Task Page, the face diagram is only one part
+of the visual contract. SHAPE also plans at least one exact-audit table, one
+result/distribution figure or replacement result table, and one
+method/provenance/boundary diagram across the Page. Every Data or Result
+division receives the table or figure needed for its reader move. An inline
+fenced text map is a sketch, not a completed DISPLAY unit.
 
 For this non-Section Page, the normal realization unit is one prose paragraph
 per plan Bullet; the paragraph may contain one or more sentences. Its final
@@ -205,6 +219,12 @@ template. Then run the Page workflow and the Task tree checker. Before closure:
 - every Content division follows the chosen FLAT or NESTED grammar;
 - every Content division opens with one captioned face diagram, with no
   standalone Page-level Diagram or authored Outline section;
+- the SHAPE plan contains typed DISPLAY Items for the substantive tables,
+  figures, and diagrams, and every Data/Result division has its required
+  display;
+- every declared display resolves to
+  `outline/evidence/display/<stem>-Display<N>-<slug>/` with a current
+  preview and a provenance-bound intake;
 - every typed item has the declared Supporting/local Run graph and accepted
   Result;
 - every shown number resolves to a full Run id;

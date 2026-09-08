@@ -1,13 +1,13 @@
 ---
 name: haipipe-paper-section
 description: >-
-  Paper journey phase P4 (Section) and the Page Type contract for one
+  Paper journey phase P3 (Section) and the Page Type contract for one
   reader-ordered manuscript or appendix Section. It executes exactly one
-  current Narrative row, resolves venue-and-kind structure, and binds prose to
+  current Story Section Control row, resolves venue-and-kind structure, and binds prose to
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.8.4"
+  version: "0.9.0"
   last_updated: "2026-09-07"
   page_ruling: none
   group-token: "S-<desk>-Main | S-<desk>-Appendix"
@@ -17,10 +17,10 @@ metadata:
     resolver: "cli/resolve-structure.py <QBv page> <section page> · prints structure-source (the bound QBv FILE) and structure-division (its `§<n> Sec-<n>-<Kind>` row)"
     marker: "section-page-template: 1"
     fallback: "paper/workflow-phases/haipipe-paper-section/ref/generic-template.md"
-    shape: "current Narrative row overlaid on the resolved venue Sec- division or the explicit generic fallback"
+    shape: "current Story Section Control row overlaid on the resolved venue Sec- division or the explicit generic fallback"
 ---
 
-# /haipipe-paper-section · execute one Narrative row
+# /haipipe-paper-section · execute one Story Section Control row
 
 Load `haipipe-page`, `haipipe-page-workflow`, the current Page phase, the
 paper-owning workflow, this Page Type, and its phase references in that order.
@@ -28,11 +28,12 @@ Declare `page-type: section` and `section_kind: <kind>`.
 
 ## 🧭 Journey phase
 
-This skill is journey phase P4 Section (realize) of the paper journey and owns
-the `page-type: section` contract below. Enter through gate G5, one page per
-Narrative map row. Gate G6 marks the assembled build SUBMISSION-READY versus
-DRAFT; assemble itself is a verb, not a phase, and runs anytime from the desk
-room. `haipipe-paper-workflow` holds the full gate assertions; this block only
+This skill is journey phase P3 Section (realize) of the paper journey and owns
+the `page-type: section` contract below. Enter through gate G3, one page per
+Story §8 Section Control row, each row released by a person independently.
+Gate G4 marks the assembled build SUBMISSION-READY versus DRAFT; assemble
+itself is a verb, not a phase, and runs anytime from `delivery/` on the Story's
+compile-order block. `haipipe-paper-workflow` holds the full gate assertions; this block only
 places the phase. The page itself always runs through `/haipipe-page` and
 `haipipe-page-workflow` (CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK),
 never a private lifecycle.
@@ -46,15 +47,15 @@ differ.
 Authority order:
 
 ```text
-Seed boundary
+Story Seed divisions (§1–§7: identity, evidence boundary)
   → selected Venue rules
-  → current Narrative row and version
+  → current Story §8 Section Control row and Story version
   → venue × section-kind structure/template
   → landed Page-local evidence
   → current prose
 ```
 
-Prose never outranks a changed Narrative row or binding desk rule.
+Prose never outranks a changed Section Control row or binding desk rule.
 
 ## 🚪 Opening stays with the reader
 
@@ -75,7 +76,7 @@ of the paper reading path without deleting their authority.
 Paper-<Slug>/                                        groups at the paper root (0.8.0)
 ├── Ba-<desk1>-Main/       S-<desk>-Main-<kind>       the desk's main reader order
 ├── Bb-<desk1>-Appendix/   S-<desk>-Appendix-<slug>   its appendix sections
-├── Bc-<desk1>-Round/      RD<NN>-<event>    its rounds (P6)
+├── Bc-<desk1>-Round/      RD<NN>-<event>    its rounds (P4)
 └── Bd-<desk2>-Main/ …     a later desk continues at the next free letter
 ```
 
@@ -115,14 +116,16 @@ explicit request.
 Record these fields in the Page before drafting:
 
 ```text
-narrative-row       id + version
+story-row           Story-<letter> §8.1 / <section-id> + the Story version
+                    (`narrative-row` is the pre-260907 name of this field and
+                    is read as an alias on unmigrated pages)
 section_kind        abstract · introduction · literature-review · theory ·
                     methods · results · discussion · conclusion · appendix ·
                     venue-specific kind · UNDERSCORE, matching the header key
 reader-question     the one question this Section answers
 entry-state         what the reader already believes/knows
 exit-state          what must be established on exit
-claim-ids           exact Narrative claims landing here
+claim-ids           exact Story claim / E ids from the row
 venue-allocation    binding desk rules + observed pack guidance, distinguished
 structure-source    the bound QBv page FILE, e.g. `paper/venue/bank/1-QBv-desks/
                     QBv1-misq/QBv1-misq.md`, or `ref/generic-template.md`; a
@@ -134,13 +137,14 @@ evidence-allowlist  typed Evidence Item ids and accepted local Result ids
 transition-in/out   required joins to neighboring Sections
 ```
 
-If a Narrative row is missing or stale, CONTEXT records its exact source and
-returns `HOLD` to `haipipe-paper-narrative`, the paper-journey owner. If Venue
+If the Section Control row is missing or stale, CONTEXT records its exact
+source and returns `HOLD` to `haipipe-page-story`, the owner of the Story page
+and its §8 table. If Venue
 authority is missing or stale, it returns `HOLD` to
 `haipipe-paper-venue`, the owning QBv bank Page Type; Venue is a library, not
 a journey phase. After the exact owner repairs and versions the source, the
 Section resumes at CONTEXT/PREPARE. A Section phase never repairs upstream
-Narrative or Venue policy itself.
+Story or Venue policy itself.
 
 ## 🧱 Content outline
 
@@ -151,8 +155,8 @@ Narrative or Venue policy itself.
 flat section is `C1` with one paragraph group per move · one bullet per
 sentence slot.
 
-Resolve paragraph or move divisions from the QBv Venue Page bound by the
-governing Narrative's division 1. **Address the division by grep, never by a
+Resolve paragraph or move divisions from the QBv Venue Page named by the
+governing Story §8 row's `target` column. **Address the division by grep, never by a
 remembered name or number** (0.5.0):
 
 ```bash
@@ -213,12 +217,12 @@ EXACT               one kind, one Sec- division            resolve · cite the
 SHARED              one division serves several Pages      resolve · SPLIT the
                     methods → Sec-3-Methods (2 Pages)      division's word and
                     appendix → Sec-A-Appendix (6 Pages)    move budget on the
-                                                           Narrative row, never
+                                                           Story §8 row, never
                                                            give each Page the
                                                            whole budget
 ABSENT BY DESIGN    the desk HAS no such unit and the      fallback · record the
                     paper keeps the section anyway         DEVIATION on the
-                    literature-review at MISQ              Narrative · do NOT
+                    literature-review at MISQ              Story §8 row · do NOT
                                                            raise a QBv gap
 MISSING             the desk should have the division      fallback · raise the
                     but the page has not been written      gap on the QBv page
@@ -229,7 +233,7 @@ MISSING             the desk should have the division      fallback · raise the
 related-work unit, and a paper may still keep one as a deliberate deviation a
 person ruled. Raising that as a gap tells the venue bank to invent a division
 the desk does not have, which corrupts a consumer-neutral asset to suit one
-paper. The deviation belongs on the Narrative, where the venue decision lives.
+paper. The deviation belongs on the Story's §8 row, where the target decision lives.
 
 **Eight desks resolve to nothing today** (QBv5-jama, QBv7-jama-network-open,
 QBv8-npj-digital-medicine, QBv9 partially, QBv11-nature-human-behaviour,
@@ -295,7 +299,7 @@ separate Page Types or plugins. The Section uses the same Outline plugin as the
 other Page phases:
 
 ```text
-Context Workspace    Narrative, Venue, requirements, and bounded related links
+Context Workspace    Story Section Control row, Venue, requirements, and bounded related links
 Bullet Workspace     sentence slots and their Evidence Item ids
 Evidence Workspace   Supporting Runs → Local Input → Local Run → typed Result
 ```
@@ -322,7 +326,7 @@ local display items, one typed contract and local Run per item.
 
 On a venue change:
 
-1. Bind the Section to the new Narrative row.
+1. Bind the Section to the new Story Section Control row.
 2. Re-resolve venue × kind structure and hard constraints.
 3. Preserve Evidence Item/Result ids whose meaning and scope remain valid.
 4. Return changed item meaning to OUTLINE/SHAPE, changed Run design to
@@ -331,7 +335,7 @@ On a venue change:
 
 ## ✅ Closing checks
 
-- Exactly one current Narrative row governs the Page.
+- Exactly one current Story Section Control row governs the Page.
 - Reader entry and exit states match neighboring rows.
 - Every claim and consequential sentence has inspectable support or an open
   obligation.
@@ -342,7 +346,7 @@ On a venue change:
 - CHECK, not prose completion, closes the Section.
 
 `page_ruling: none` is explicit for the per-Section Page. CHECK may close one
-unit when its Section contract and artifact-specific gates pass. Paper gate G6
+unit when its Section contract and artifact-specific gates pass. Paper gate G4
 is separate and non-circular: it waits until every mapped Section is closed,
 then governs whether the assembled paper is SUBMISSION-READY and receives the
 paper-level human decision.

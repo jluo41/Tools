@@ -33,7 +33,7 @@ task execution / discovery work
    any governed page-local source in the Local Input. LAND completes the
    Supporting Runs and one local Page Evidence Item Run per make-item; it never
    reads a producing Folder invisibly.
-7. Run the Page workflow and close only under `haipipe-page-for-insight`'s
+7. Run the Page workflow and close only under `haipipe-page-insight`'s
    fixed task-only outline: Division 1 is Origin and Division 8 is Reusable
    Findings.
 

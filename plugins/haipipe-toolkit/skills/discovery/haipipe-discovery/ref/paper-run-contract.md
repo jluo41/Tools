@@ -4,7 +4,9 @@ Load `../../../run/haipipe-run/SKILL.md` first for the neutral Level-4 identity,
 Ticket/Result pairing, lifecycle, and audit invariants. This file is the ONE
 authority for the Discovery Paper specialization inside a Discovery `tNN_`
 Task Page. The lifecycle and type axes point here; specialists do not restate this
-contract.
+contract. If an older numbered description is encountered, use
+`bjtr-alignment.md` for the hierarchy/capability retrofit; this file remains
+the Level-4 Run/Result authority.
 
 ## The unit
 
@@ -175,6 +177,13 @@ search URLs. These search URLs help a person inspect or export a record; they
 are not authoritative source or claim support. Historical Results without a
 `result_contract` remain readable under the preceding contract and must not be
 silently rewritten.
+
+The checker is intentionally compatibility-tolerant: it cannot infer from a
+filesystem alone whether an omitted contract is historical or a newly authored
+Result. Therefore the D1 creator/search route is the enforcement point for new
+paper Results and MUST hold a new completion that lacks
+`result_contract: paper-source-v2`; a green compatibility check alone is not
+evidence that the new paper-source contract was satisfied.
 
 `paper.pdf`, `trigger.md`, and `raw.md` are optional. An `unresolved` or
 `blocked` Result is a truthful receipt, not a completed Paper Result; it is not

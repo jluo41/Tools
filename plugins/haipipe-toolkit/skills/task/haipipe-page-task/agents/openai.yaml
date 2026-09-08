@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Page"
+  short_description: "Build evidence-rich Task Pages with tables and figures"
+  default_prompt: "Use $haipipe-page-task to create or repair a Task Page with the required evidence tables, figures, diagrams, and reader-facing delivery."

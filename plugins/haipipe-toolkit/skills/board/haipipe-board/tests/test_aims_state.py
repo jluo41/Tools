@@ -86,18 +86,37 @@ class AimsStateTest(unittest.TestCase):
         self.assertFalse((root / "cli" / "meetingpage.py").exists())
         self.assertTrue((root / "legacy" / "meetingpage.py").is_file())
 
-    def test_public_paper_door_routes_the_six_current_page_types(self):
+    def test_public_paper_door_routes_the_four_current_page_types(self):
+        # 260907 (haipipe-paper-workflow 1.0.0): the journey is Ideation → Story
+        # → Evidence/Execution → Section → Compile → Round; Roadmap and
+        # Narrative are retired and parked under _old/, never routed.
         root = Path(__file__).resolve().parent.parent  # the engine dir
         paper_root = root.parents[1] / "paper"
         door = (paper_root / "haipipe-paper" / "SKILL.md").read_text(
             encoding="utf-8"
         )
-        for page_type in ("ideation", "seed", "roadmap", "narrative", "section", "round"):
+        for page_type in ("ideation", "story"):          # Page Types, paper/page-types/
+            with self.subTest(page_type=page_type):
+                self.assertIn(f"haipipe-page-{page_type}", door)
+                self.assertNotIn(f"haipipe-paper-{page_type}`", door)
+                self.assertTrue(
+                    (paper_root / "page-types" / f"haipipe-page-{page_type}" / "SKILL.md").is_file()
+                )
+        for page_type in ("section", "round"):           # journey phases, paper/workflow-phases/
             with self.subTest(page_type=page_type):
                 self.assertIn(f"haipipe-paper-{page_type}", door)
                 self.assertTrue(
                     (paper_root / "workflow-phases" / f"haipipe-paper-{page_type}" / "SKILL.md").is_file()
                 )
+        retired = paper_root / "_old" / "retired-workflow-phases-260907"
+        for page_type in ("roadmap", "narrative"):
+            with self.subTest(page_type=page_type):
+                self.assertFalse(
+                    (paper_root / "workflow-phases" / f"haipipe-paper-{page_type}").exists()
+                )
+                self.assertTrue((retired / f"haipipe-paper-{page_type}" / "SKILL.md").is_file())
+                self.assertNotIn(f"| `haipipe-paper-{page_type}` |", door)
+        self.assertIn("retired-workflow-phases-260907", door)
         self.assertIn("haipipe-paper-venue", door)
         self.assertTrue(
             (paper_root / "haipipe-paper-venue" / "SKILL.md").is_file()
@@ -109,6 +128,7 @@ class AimsStateTest(unittest.TestCase):
         root = Path(__file__).resolve().parent.parent  # the engine dir
         paper = root.parents[1] / "paper"
         for path in (list(paper.glob("workflow-phases/haipipe-paper-*/SKILL.md"))
+                     + list(paper.glob("page-types/haipipe-page-*/SKILL.md"))
                      + [paper / "haipipe-paper-venue" / "SKILL.md"]):
             text = path.read_text(encoding="utf-8")
             self.assertNotIn("## Items to Finish", text, path.as_posix())

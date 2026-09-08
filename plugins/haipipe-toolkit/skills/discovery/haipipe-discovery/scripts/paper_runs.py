@@ -87,8 +87,6 @@ DISCOVERY_TYPES = {
     "counterevidence-review",
     "landscape-review",
     "benchmark-landscape",
-    "ideation",
-    "novelty-verdict",
 }
 LEGACY_DISCOVERY_TYPES = {
     ("search", "source_gather"): "source-map",
@@ -99,8 +97,6 @@ LEGACY_DISCOVERY_TYPES = {
     ("review", "counterevidence"): "counterevidence-review",
     ("review", "landscape_review"): "landscape-review",
     ("review", "benchmark_landscape"): "benchmark-landscape",
-    ("idea", "idea_generation"): "ideation",
-    ("idea", "novelty_check"): "novelty-verdict",
 }
 ALLOWED_OPERATIONS = {"paper-analysis", "source-analysis"}
 DISCOVERY_PAGE_ROLES = (

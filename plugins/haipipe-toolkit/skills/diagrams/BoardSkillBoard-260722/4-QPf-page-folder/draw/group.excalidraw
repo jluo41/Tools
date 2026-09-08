@@ -18,7 +18,7 @@
   "imports": [
    {
     "page": "QPf1",
-    "source": "../QPf1-folder/draw/QPf1.excalidraw",
+    "source": "../QPf1-folder/studio/draw/QPf1.excalidraw",
     "placement": {
      "x": 1517.0,
      "y": 2475.0,
@@ -28,7 +28,7 @@
    },
    {
     "page": "QPf2",
-    "source": "../QPf2-draw-attach/draw/QPf2.excalidraw",
+    "source": "../QPf2-draw-attach/studio/draw/QPf2.excalidraw",
     "placement": {
      "x": 0,
      "y": 0,
@@ -38,7 +38,7 @@
    },
    {
     "page": "QPf3",
-    "source": "../QPf3-slide/draw/QPf3.excalidraw",
+    "source": "../QPf3-slide/studio/draw/QPf3.excalidraw",
     "placement": {
      "x": 0,
      "y": 0,

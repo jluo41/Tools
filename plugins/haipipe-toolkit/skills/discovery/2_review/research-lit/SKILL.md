@@ -1,11 +1,11 @@
 ---
 name: research-lit
 description: Search and analyze research papers, find related work, summarize key ideas. Use when user says "find papers", "related work", "literature review", "what does this paper say", or needs to understand academic papers.
-allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp__zotero__*, mcp__obsidian-vault__*
+allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, Skill, mcp__zotero__*, mcp__obsidian-vault__*, mcp__gemini-cli__*
 metadata:
   argument_hint: "[paper-topic-or-url]"
-  version: "0.1.1"
-  last_updated: "2026-09-04"
+  version: "0.2.2"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -33,6 +33,10 @@ Research topic: $ARGUMENTS
 > - `/research-lit "topic" — sources: web, semantic-scholar` — also search Semantic Scholar for published venue papers (IEEE, ACM, etc.)
 > - `/research-lit "topic" — sources: deepxiv` — only search via DeepXiv progressive retrieval
 > - `/research-lit "topic" — sources: all, deepxiv` — use default sources plus DeepXiv
+> - `/research-lit "topic" — sources: openalex` — OpenAlex metadata/citation graph only
+> - `/research-lit "topic" — sources: gemini` — Gemini alias/subproblem discovery only
+> - `/research-lit "topic" — sources: gemini-search` — alias for the Gemini Discovery adapter
+> - `/research-lit "topic" — sources: gemini, openalex, semantic-scholar` — broad recall plus structured verification
 > - `/research-lit "topic" — arxiv download: true` — download top relevant arXiv PDFs
 > - `/research-lit "topic" — arxiv download: true, max download: 10` — download up to 10 PDFs
 > - `/research-lit "topic" — venues: utd24-is` — restrict S2 to UTD24 IS journals (MISQ, ISR, MS); see `0_venue/utd24-is-venues.md`
@@ -55,9 +59,11 @@ If no `— venues:` directive is given, skip this filter entirely (default behav
 
 ### Source Selection
 
-Parse `$ARGUMENTS` for a `— sources:` directive:
-- **If `— sources:` is specified**: Only search the listed sources (comma-separated). Valid values: `zotero`, `obsidian`, `local`, `web`, `semantic-scholar`, `deepxiv`, `exa`, `all`.
-- **If not specified**: Default to `all` — search every available source in priority order (`semantic-scholar`, `deepxiv`, and `exa` are **excluded** from `all`; they must be explicitly listed).
+Parse `$ARGUMENTS` for a `— sources:` directive. Normalize the Discovery worker
+name `gemini-search` to the worker source ID `gemini` before dispatch (the two
+names are aliases, not separate sweeps):
+- **If `— sources:` is specified**: Only search the listed sources (comma-separated). Valid values: `zotero`, `obsidian`, `local`, `web`, `semantic-scholar`, `deepxiv`, `exa`, `openalex`, `gemini`, `gemini-search`, `all`.
+- **If not specified**: Default to `all` — search every available source in priority order (`semantic-scholar`, `deepxiv`, `exa`, `openalex`, and `gemini` are **excluded** from `all`; they must be explicitly listed).
 
 Examples:
 ```
@@ -73,6 +79,9 @@ Examples:
 /research-lit "topic" — sources: all, semantic-scholar              → all + S2 API
 /research-lit "topic" — sources: exa                               → Exa only (broad web + content extraction)
 /research-lit "topic" — sources: all, exa                          → default sources + Exa web search
+/research-lit "topic" — sources: openalex                         → OpenAlex structured metadata/citation graph
+/research-lit "topic" — sources: gemini                           → Gemini broad discovery (verify before citing)
+/research-lit "topic" — sources: all, gemini, openalex              → default sources + both optional adapters
 ```
 
 ### Source Table
@@ -82,12 +91,36 @@ Examples:
 | 1 | **Zotero** (via MCP) | `zotero` | Try calling any `mcp__zotero__*` tool — if unavailable, skip | Collections, tags, annotations, PDF highlights, BibTeX, semantic search |
 | 2 | **Obsidian** (via MCP) | `obsidian` | Try calling any `mcp__obsidian-vault__*` tool — if unavailable, skip | Research notes, paper summaries, tagged references, wikilinks |
 | 3 | **Local PDFs** | `local` | `Glob: papers/**/*.pdf, literature/**/*.pdf` | Raw PDF content (first 3 pages) |
-| 4 | **Web search** | `web` | Always available (WebSearch) | arXiv, Semantic Scholar, Google Scholar |
+| 4 | **Web search** | `web` | Always available (WebSearch) | arXiv, PubMed, medRxiv, Semantic Scholar, Google Scholar |
 | 5 | **Semantic Scholar API** | `semantic-scholar` | `tools/semantic_scholar_fetch.py` exists | Published venue papers (IEEE, ACM, Springer) with structured metadata: citation counts, venue info, TLDR. **Only runs when explicitly requested** via `— sources: semantic-scholar` or `— sources: web, semantic-scholar` |
 | 6 | **DeepXiv CLI** | `deepxiv` | `tools/deepxiv_fetch.py` and installed `deepxiv` CLI | Progressive paper retrieval: search, brief, head, section, trending, web search. **Only runs when explicitly requested** via `— sources: deepxiv` or `— sources: all, deepxiv` |
 | 7 | **Exa Search** | `exa` | `tools/exa_search.py` and installed `exa-py` SDK | AI-powered broad web search with content extraction (highlights, text, summaries). Covers blogs, docs, news, companies, and research papers beyond arXiv/S2. **Only runs when explicitly requested** via `— sources: exa` or `— sources: all, exa` |
+| 8 | **OpenAlex** | `openalex` | `Tools/references/aris/tools/openalex_fetch.py` or project-local helper | Open citation graph, affiliations, funding, topics, work type, OA status, and cross-discipline metadata. **Only runs when explicitly requested** via `— sources: openalex` or `— sources: all, openalex` |
+| 9 | **Gemini search** | `gemini` | Gemini MCP or authenticated `gemini` CLI | AI-assisted alias, subproblem, venue, and neighboring-task discovery. **Only runs when explicitly requested** via `— sources: gemini` or `— sources: all, gemini` |
 
 > **Graceful degradation**: If no MCP servers are configured, the skill works exactly as before (local PDFs + web search). Zotero and Obsidian are pure additions.
+
+> **Discovery durability**: When this worker is dispatched from a Discovery
+> Task, it returns a candidate harvest to `haipipe-discovery-search`. The
+> dispatcher owns canonical Subject resolution, one Run/Result per admitted
+> paper, and the authoritative Bib. Gemini and OpenAlex rows alone never
+> become durable evidence.
+
+> **Cross-Task boundary**: `sources.from_topic` is read-only supporting context.
+> Do not copy an upstream Result or cite its key as if it belonged to the
+> current Task. When an upstream paper is load-bearing for this Page, ask the
+> dispatcher to admit a local `paper-analysis` Run with an explicit upstream
+> Result reference; only that local completed Result Bib enters the current
+> `outline/evidence/bibex/` aggregate. A non-paper upstream source may use
+> `source-analysis` when its Subject kind requires it.
+
+> **Prior-work grounding lens**: When the Discovery type asks what is already
+> established, search and synthesize four separate targets: accepted methods
+> and their assumptions, known confounds or artifacts, prior effect sizes when
+> quantitative estimates matter, and the honest relationship to prior work
+> (replication, extension, new population, or new result). In durable mode,
+> bind every field to a local completed Result Card and exact `@cite`; this
+> lens informs design and positioning but does not issue the novelty verdict.
 
 ## Workflow
 
@@ -243,6 +276,46 @@ If `tools/exa_search.py` or the `exa-py` SDK is unavailable, skip this source gr
 - If Exa returns an arXiv paper already found by arXiv/S2, prefer the structured metadata from those sources
 - Exa results from non-academic domains (blogs, docs, news) are unique value not covered by other sources
 
+**Clinical and biomedical coverage** (when the topic is clinical, health, or
+biomedical):
+
+- Include a PubMed query and a medRxiv query in the external sweep when those
+  channels are relevant to the frozen scope; record each as searched or not
+  searched in the Discovery source-map coverage declaration.
+- Use the Discovery `paper_source_access.py` resolver for DOI, Crossref, and
+  PubMed identity links. These services are verification/index fallbacks, not
+  substitutes for the required independent preprint and journal-index passes.
+- A missing field-specific channel is a declared coverage gap. It does not
+  justify inventing a Result or silently claiming exhaustive coverage.
+
+**OpenAlex search** (only when `openalex` is in sources):
+
+Use the HAI adapter at `../../1_search/openalex/SKILL.md`. Resolve the pinned
+helper at `Tools/references/aris/tools/openalex_fetch.py` when the workspace
+root is current, or `references/aris/tools/openalex_fetch.py` when the Tools
+subrepository is current (or use a project-local helper). Run a bounded search
+with any requested year, type, OA, citation, or sort filters. Keep OpenAlex's
+affiliations, topics, funding, and OA fields as supplemental metadata.
+Cross-reference DOI, arXiv ID, or normalized title with another resolver before
+a paper enters the Discovery Result/Bib spine.
+
+**Gemini search** (only when `gemini` is in sources):
+
+Use the HAI adapter at `../../1_search/gemini-search/SKILL.md`. Ask Gemini for
+multiple query angles, aliases, neighboring subproblems, recent preprints,
+surveys, and venue variants. Normalize its title/author/year/venue/DOI/arXiv
+fields, then verify exact identity through arXiv, Semantic Scholar, OpenAlex,
+Crossref, or the publisher. Treat Gemini as recall expansion, never as
+citation-count authority or a standalone Bib source.
+
+**De-duplication across the optional adapters**:
+- Match by DOI first, then arXiv ID, publisher URL, and normalized title.
+- Prefer published venue metadata from Semantic Scholar/Crossref when a work
+  appears in multiple indexes; retain OpenAlex affiliations/funding and Gemini
+  query provenance as supplemental fields.
+- Record unavailable optional channels in the coverage declaration instead of
+  failing the review or inventing a result.
+
 **Optional PDF download** (only when `ARXIV_DOWNLOAD = true`):
 
 After all sources are searched and papers are ranked by relevance:
@@ -261,7 +334,7 @@ For each relevant paper (from all sources), extract:
 - **Method**: Core technical contribution (1-2 sentences)
 - **Results**: Key numbers/claims
 - **Relevance**: How does it relate to our work?
-- **Source**: Where we found it (Zotero/Obsidian/local/web) — helps user know what they already have vs what's new
+- **Source**: Where we found it (Zotero/Obsidian/local/web/Semantic Scholar/DeepXiv/Exa/OpenAlex/Gemini) — helps user know what they already have vs what's new
 
 ### Step 3: Synthesize
 - Group papers by approach/theme
@@ -270,7 +343,8 @@ For each relevant paper (from all sources), extract:
 - If Obsidian notes exist, incorporate the user's own insights into the synthesis
 
 ### Step 4: Output
-Present as a structured literature table:
+
+For standalone calls, present as a structured literature table:
 
 ```
 | Paper | Venue | Method | Key Result | Relevance to Us | Source |
@@ -279,17 +353,39 @@ Present as a structured literature table:
 
 Plus a narrative summary of the landscape (3-5 paragraphs).
 
-If Zotero BibTeX was exported, include a `references.bib` snippet for direct use in paper writing.
+If this is a standalone call (not a durable Discovery dispatch) and Zotero
+BibTeX was exported, include a `references.bib` snippet for direct use in paper
+writing. Durable Discovery mode never writes a competing `references.bib`.
+
+For a durable Discovery dispatch, use the HAI output mode instead of the wide
+table and standalone `references.bib` file:
+
+1. Return a grouped synthesis packet organized by findings/themes, with every
+   evidence statement carrying the owning Result Card path and exact `@cite`
+   key. Keep disagreements and unresolved coverage visible.
+2. Do not create Runs, Result Cards, or BibTeX in this worker. The Search route
+   admits canonical Subjects; D1 SYNTHESIZE writes the root Page, optional
+   typed record, and derived aggregate Bib.
+3. Return the searched/not-searched channels, candidate and admitted counts,
+   unresolved items, and the paths/keys needed by the dispatcher. A wide
+   citation table may be shown to a human as a view, but it is not a durable
+   citation authority.
 
 ### Step 5: Save (if requested)
 - Save paper PDFs to `literature/` or `papers/`
 - Update related work notes in project memory
 - If Obsidian is available, optionally create a literature review note in the vault
 
-### Step 6: Update Research Wiki
+### Step 6: Update Research Wiki (standalone mode only)
 
-**Required when `research-wiki/` exists.** Skip entirely (no action, no
-error) if the directory is absent. Per
+This step is optional for standalone calls and only runs when the user asks for
+Research Wiki ingestion. **Durable Discovery dispatches must skip this step**:
+Research Wiki writes are outside the D1 Folder and cannot become a competing
+Run, Result, or Bib authority. If a project wants a wiki projection, create a
+separate post-closure maintenance task after the Discovery receipt is closed.
+
+When running standalone, skip entirely (no action, no error) if the directory
+is absent. Per
 [`integration-contract.md`](../../../../../../references/aris/skills/shared-references/integration-contract.md),
 this step follows the canonical ingest contract — business logic lives
 in `tools/research_wiki.py`, not in this prose.

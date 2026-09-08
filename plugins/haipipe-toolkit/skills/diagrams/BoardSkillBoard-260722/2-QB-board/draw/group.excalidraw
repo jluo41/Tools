@@ -54,7 +54,7 @@
   "imports": [
    {
     "page": "QB1",
-    "source": "../QB1-form/draw/QB1.excalidraw",
+    "source": "../QB1-form/studio/draw/QB1.excalidraw",
     "placement": {
      "x": 0.0,
      "y": 2475.0,
@@ -64,7 +64,7 @@
    },
    {
     "page": "QB2",
-    "source": "../QB2-board-webpage-design/draw/QB2.excalidraw",
+    "source": "../QB2-board-webpage-design/studio/draw/QB2.excalidraw",
     "placement": {
      "x": 890.0,
      "y": 2475.0,
@@ -74,7 +74,7 @@
    },
    {
     "page": "QB2a",
-    "source": "../QB2a-sidebar/draw/QB2a.excalidraw",
+    "source": "../QB2a-sidebar/studio/draw/QB2a.excalidraw",
     "placement": {
      "x": 1436.0,
      "y": 1050.0,
@@ -84,7 +84,7 @@
    },
    {
     "page": "Design-1",
-    "source": "../Design-1-haipipe-board/draw/Design-1.excalidraw",
+    "source": "../Design-1-haipipe-board/studio/draw/Design-1.excalidraw",
     "placement": {
      "x": 9013.0,
      "y": 1905.0,
@@ -94,7 +94,7 @@
    },
    {
     "page": "Design-2",
-    "source": "../Design-2-haipipe-board-routing/draw/Design-2.excalidraw",
+    "source": "../Design-2-haipipe-board-routing/studio/draw/Design-2.excalidraw",
     "placement": {
      "x": 11683.0,
      "y": 1905.0,

@@ -7,6 +7,10 @@ Tracked here so future sessions can pick them up without re-discovering.
 Roadmap: draw the plan, do not hand-write a mechanics diagram
 ---------------------------------------------------------------
 
+(RETIRED CONTEXT 260907: the Roadmap page no longer exists; if this idea is
+revived it applies to the Story's §6.4 Work Control register, whose rows carry
+the same columns.)
+
 JL 260824, on seeing the first minted `SD02-roadmap`: "roadmap 比较像是一个 plan,
 能不能每次创建它的时候,都自动把那个图画好?" Deferred by JL to a later session.
 
@@ -23,7 +27,7 @@ JL 260824, on seeing the first minted `SD02-roadmap`: "roadmap 比较像是一�
       into the Seed's E-rows):
 
       ```text
-      Story01 §6      R1 claim novelty   ⬜ proposed   6 claim QAs
+      Story-A §6      R1 claim novelty   ⬜ proposed   6 claim QAs
         E1 ◀────────────┤
         E2 ◀────────────┤
         E3 ◀────────────┘
@@ -43,6 +47,9 @@ JL 260824, on seeing the first minted `SD02-roadmap`: "roadmap 比较像是一�
 Receipt teeth for the establish loop (260827, from the lap-L1 field test)
 -------------------------------------------------------------------------
 
+(RETIRED CONTEXT 260907: read "Roadmap page / lap" as the Story's §6.4 Work
+Control rows and the Story Log's G1/G2 receipts.)
+
 - [ ] Three grep-shaped checks, mirroring the application board's set-diff hardening:
       ① a Roadmap page containing a `▶️ released`/`🔵 running`/`✅ landed` row must have
       a Log row recording the release (the G2 receipt); ② every `landed` QA path on a
@@ -52,5 +59,5 @@ Receipt teeth for the establish loop (260827, from the lap-L1 field test)
       paper-family rules — decide between a page-type-aware rule pack the checker loads
       from the contract, or a small board-local script the paper board declares.
 - [ ] Each tooth must be proven to FAIL first on a known-broken sample; the 260827
-      pre-repair Story02 (released rows + "Nothing released" Log) is the stored specimen
+      pre-repair numbered Story (released rows + "Nothing released" Log) is the stored specimen
       for tooth ①.

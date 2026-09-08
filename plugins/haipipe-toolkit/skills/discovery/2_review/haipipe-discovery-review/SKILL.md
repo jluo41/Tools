@@ -1,45 +1,39 @@
 ---
 name: haipipe-discovery-review
-description: "Review-route specialist for topic-summary, verdict, and landscape Discovery Pages: synthesize completed Paper/Source Results into the root article and optional typed record. Missing evidence becomes one numbered Run per canonical Subject. Trigger: topic summary, judge claim, prior art, counterevidence, landscape, lit review for a discovery, /haipipe-discovery-review."
+description: "Review-route specialist for source-reading Discovery Pages: inspect one admitted Paper/Source Result at a time, extract reliable claims and limitations, and return a verified review packet. Trigger: read this paper, review this source, inspect a Result, source reading, /haipipe-discovery-review."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-04"
+  version: "0.6.0"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md
 ---
 
-# /haipipe-discovery-review · Review type specialist
+# /haipipe-discovery-review · per-Subject review specialist
 
-Owns `03 CONTENT / WRITE` craft for `topic-summary`, `prior-art-verdict`,
-`counterevidence-review`, `landscape-review`, and `benchmark-landscape`.
-Every type writes the root Page; summary/verdict/landscape files are optional
-typed Task-side records selected by
-`../../haipipe-discovery/ref/page-types.md`.
+Owns the `source-reading` route and the review leg of D1 `ACQUIRE`: inspect one
+admitted canonical Subject, identify what the source actually establishes, and
+return a bounded packet for the Page or `3_synthesize` family. The containing
+`2_review/` directory is a review capability family, not a Block, Job, Task,
+Run, or synthesis level. Use `../../haipipe-discovery/ref/bjtr-alignment.md`
+when an older numbered description is ambiguous.
 
-Workers: research-lit (default multi-source), comm-lit-review
-(communications), and academic-researcher (cross-discipline).
+Source-level deep reading may use the read workers under `1_search/`, while
+multi-source craft workers are dispatched by `3_synthesize`.
 
 ## Durable procedure
 
-1. Read `discovery_type` from discovery.yaml (or normalize its legacy
-   Review/role pair), the Task Page, and all completed
-   results/*/<RUNNAME>.md plus facts.md. If sources.from_topic names another
-   Discovery Task Page, read its root Page, typed record, and completed Results; never depend on
-   its legacy notes.md.
-2. Test evidence sufficiency. When new papers are required, route to D1 ACQUIRE;
-   Search resolves candidates and adds one paired Run/Result per Subject.
-   Inline worker calls and search queries are not Runs.
-3. Dispatch the review worker with the output contract below. Write the root
-   Page first. Write `summary.md`, `verdict.md`, or `landscape.md` only when the
-   selected type declares that typed record.
-4. Every evidence statement links to a Result Card and uses that Result's cite
-   key. Counterevidence is retained, and scope never exceeds the underlying
-   Results.
-5. Run the deterministic spine check and consume the D1 SYNTHESIZE aggregate
-   at `outline/evidence/bibex/`; do not create a second rebuild authority.
-6. Return the Page path, optional typed-record path, outcome (or cluster/gap counts), complete and
-   unresolved Run counts, and aggregate Bib path. The orchestrator owns topic
-   status and CLOSE.
+1. Read the Task manifest, Page question, admission rule, and the assigned
+   Result/runtime. A source-reading Page may contain one or several explicitly
+   admitted sources, but each source remains a separate Subject and Run.
+2. Check identity, reading depth, locators, methods, claims, limitations,
+   disagreement with the source's own framing, and the exact cite key. Do not
+   infer a topic conclusion from one source.
+3. Return a review packet or write the source-reading Page through the current
+   shared Page phase. If a required source is missing, route to D1 `ACQUIRE`;
+   do not allocate a Run from inside this skill.
+4. Hand accepted packets to `haipipe-discovery-synthesize` when the Page
+   promise requires combining multiple Results. The synthesis family owns
+   topic-level organization and Page CONTENT.
 
 ## Review Output Contract
 
@@ -50,22 +44,18 @@ Workers: research-lit (default multi-source), comm-lit-review
    DOI/arXiv/publisher locator. Prose tags may be short only when unambiguous.
 3. EXACT CITE KEY. Every @Key equals the paired one-entry Result Bib key and
    therefore resolves in the derived Task Page Evidence Bib.
-4. PLAIN FINDING. State one jargon-free finding and its relevant anchor before
-   drawing a Topic-level conclusion.
+4. PLAIN FINDING. State one jargon-free finding and its relevant anchor;
+   leave cross-paper conclusions to `3_synthesize`.
 5. DISAGREEMENT SURVIVES. Conflicting Results are shown, not averaged away.
 6. VERIFICATION GATE. NEEDS-VERIFICATION or unresolved Results cannot support a
    reported factual conclusion.
 ~~~
 
-Use one source per subsection/card, never a wide citation table. For a
-systematic review requiring a deeper protocol, escalate to the deep-research
-literature pipeline while preserving this Run/Result storage contract.
-
-For `topic-summary`, organize the Page by findings/themes rather than by paper.
-It is a bounded synthesis Page, not a weaker landscape and not one giant Paper
-Run.
+Use one source per subsection/card, never a wide citation table. This skill
+does not create an aggregate Bib or a cross-paper synthesis record; those are
+owned by Outline and `3_synthesize`.
 
 ## One-off mode
 
-Return the verdict/landscape inline and write no files. Durable use requires a
-Task Page Folder and numbered Paper Runs.
+Return the review packet inline and write no files. Durable use requires a Task
+Page Folder and a D1-owned numbered Paper Run.

@@ -9,8 +9,8 @@ tools:
   - Skill
 model: haiku
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-09-01"
+  version: "1.3.1"
+  last_updated: "2026-09-07"
   summary: "Read-only candidate and canonical-identity worker."
 ---
 
@@ -23,7 +23,7 @@ the orchestrator/creator curates candidates and owns every write.
 
 ~~~text
 job:      sweep | verify | resolve-trigger
-channel:  arxiv | semantic-scholar | openalex/crossref | exa/web | top-venue
+channel:  arxiv | medrxiv | semantic-scholar | crossref/pubmed | openalex | exa/web | top-venue
 queries:  explicit query strings or identities
 topic:    short context
 cap:      maximum returned candidates, default 15
@@ -44,7 +44,13 @@ Environment rules:
 
 - Use SEMANTIC_SCHOLAR_API_KEY when present; never print it.
 - If EXA_API_KEY is absent, return channel unavailable immediately.
-- Add OPENALEX_MAILTO when present; never print private environment values.
+- Use OPENALEX_EMAIL for the OpenAlex polite-pool mailto User-Agent when
+  present; the pinned helper has no OPENALEX_MAILTO fallback. Never print
+  private environment values.
+- For clinical/biomedical sweeps, treat medRxiv as a relevant preprint channel
+  and PubMed as a biomedical index/resolution channel when the dispatcher asks
+  for them. Report both in `coverage` and `not_searched`; never imply that a
+  Crossref or PubMed lookup replaced the required preprint/journal sweep.
 
 ## Forbidden
 

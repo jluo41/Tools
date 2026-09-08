@@ -25,8 +25,6 @@ LEGACY_TYPE_MAP = {
     ("review", "counterevidence"): "counterevidence-review",
     ("review", "landscape_review"): "landscape-review",
     ("review", "benchmark_landscape"): "benchmark-landscape",
-    ("idea", "idea_generation"): "ideation",
-    ("idea", "novelty_check"): "novelty-verdict",
 }
 TEXT_SUFFIXES = {
     ".bib",
@@ -45,7 +43,7 @@ TEXT_SUFFIXES = {
     ".yaml",
     ".yml",
 }
-RECORD_NAMES = ("summary.md", "verdict.md", "landscape.md", "ideas.md")
+RECORD_NAMES = ("summary.md", "verdict.md", "landscape.md")
 READABLE_NAMES = RECORD_NAMES + ("notes.md", "sources.md")
 DISPLAY_WORDS = {
     "ai": "AI",
@@ -201,8 +199,6 @@ def typed_record(task_path: Path, discovery_type: str) -> str | None:
         "counterevidence-review": "verdict.md",
         "landscape-review": "landscape.md",
         "benchmark-landscape": "landscape.md",
-        "ideation": "ideas.md",
-        "novelty-verdict": "verdict.md",
     }.get(discovery_type)
     if preferred and (task_path / preferred).is_file():
         return preferred

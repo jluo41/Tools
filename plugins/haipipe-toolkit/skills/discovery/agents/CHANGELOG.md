@@ -3,6 +3,15 @@ discovery agents — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match the skill frontmatter `version:`. Newest first.
 
+## 2026-09-07 · BJTR alignment addendum
+
+- Make the Block -> Job -> Task Page -> Run address the only project hierarchy.
+- Route old numbered skill families and Page records through the explicit
+  compatibility crosswalk; semantic idea work belongs to sibling
+  `haipipe-ideation`.
+- Creator 1.16.0, orchestrator 2.6.1, and reviewer 1.9.3 load the same
+  retrofit authority.
+
 ## 2026-09-04 · Page workflow unification
 
 - Preserve `1_search`, `2_review`, and `3_idea` as numbered skill-family

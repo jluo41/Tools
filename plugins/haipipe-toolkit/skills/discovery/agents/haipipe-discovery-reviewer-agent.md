@@ -7,8 +7,8 @@ tools:
   - Glob
 model: inherit
 metadata:
-  version: "1.9.2"
-  last_updated: "2026-09-04"
+  version: "1.9.3"
+  last_updated: "2026-09-07"
   summary: "Reviewer for BJTR Task Page + Paper Run architecture."
 ---
 
@@ -84,13 +84,18 @@ landscape-review / benchmark-landscape:
 [ ] conclusion scope does not exceed Result evidence
 ~~~
 
-ideation / novelty-verdict:
+historical ideation / novelty-verdict:
 
 ~~~text
-[ ] idea generation did not create fake Paper Runs
-[ ] every prior-work paper used for novelty has its own completed Result
-[ ] unresolved candidates remain caveats
+[ ] page is identified as a historical compatibility record
+[ ] any prior-work paper cited by the legacy page has its own completed Result
+[ ] unresolved candidates remain caveats; no new Discovery Run is inferred
+[ ] new semantic direction/idea work is routed to haipipe-ideation for its own gate
 ~~~
+
+The reviewer does not audit a live Discovery Idea route: semantic ideation is a
+sibling layer. Use `../haipipe-discovery/ref/bjtr-alignment.md` when an old
+numbered route is mistaken for a Block, Job, Task, or Run.
 
 ## Bib gate
 

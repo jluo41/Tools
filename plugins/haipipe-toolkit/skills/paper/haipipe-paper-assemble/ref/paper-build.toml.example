@@ -17,7 +17,6 @@ supplement_docx = "<stem>-online-supplement-draft.docx"
 section_snapshots = "draft-sections"
 assets = "submission-assets"
 manifest = "build-manifest.json"
-qa_report = "build-qa.json"
 
 # Optional profile overrides belong here only when the venue profile declares
 # them configurable. They never hold manuscript prose or evidence.

@@ -1702,7 +1702,9 @@ PAGE_TYPE_LINE = re.compile(r"(?m)^page-type:\s*(\S+)\s*$")
 # 260824, paper journey 0.5.0: `roadmap` and `collection` joined as the two
 # working pages of the establish loop (the Seed states the gaps, the Roadmap
 # plans the errands, the Collection registers the receipts).
-PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed",
+# 260907, paper journey 1.0.0: `story` is the Story page's own key (seed stays
+# as its alias); roadmap/narrative stay accepted for grandfathered boards.
+PAGE_TYPE_VALUES = ("display", "slide", "design", "opening", "venue", "seed", "story",
                     "section", "round", "labeling", "narrative", "dash", "task", "insight",
                     "meta", "question", "data", "information", "knowledge",
                     "wisdom", "brief", "view", "stage", "ideation",
@@ -2346,8 +2348,11 @@ def check_page(d, rep):
     # because the site still pointed at page-types deleted upstream. Say so
     # first, so nobody debugs the sources for a finding the build owns.
     built = (site / "index.html").stat().st_mtime
+    # 260907: a dangling symlink inside an archived page (pagex/ links follow
+    # a page that was renamed) must not crash the whole checker; skip it here,
+    # dead-href reporting owns broken links.
     newer = [f for f in d.rglob("*.md")
-             if "/board/" not in f.as_posix() and f.stat().st_mtime > built]
+             if "/board/" not in f.as_posix() and f.exists() and f.stat().st_mtime > built]
     if newer:
         rep.add(WARN, "board-build-stale", "board/index.html",
                 f"{len(newer)} source .md newer than the render "

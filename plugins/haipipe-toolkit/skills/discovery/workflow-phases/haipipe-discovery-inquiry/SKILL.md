@@ -7,8 +7,8 @@ description: >-
   and evidence handoff. Use when resolving,
   scaffolding, checking, or closing one BJTR Discovery Task Page Folder.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-04"
+  version: "0.5.0"
+  last_updated: "2026-09-07"
   workflow: haipipe-discovery-workflow
   phase: D1
   folder_kind: discovery
@@ -37,13 +37,19 @@ it does not write Page artifacts through a private lifecycle. Each admitted
 canonical paper or source is one Discovery Level-4 Run. The D1 root uses the
 Page CONTENT no-Run route; consumer Pages own any Page-family Runs they need.
 
-At the skill-bank level, `1_search`, `2_review`, and `3_idea` are numbered
-capability families analogous to the numbered groups under `haipipe-task`.
-They select specialist craft; they do not add D1/D2/D3 phases. Only this skill
-under `workflow-phases/` owns the Discovery phase contract.
+At the skill-bank level, `1_search`, `2_review`, and `3_synthesize` are the
+live numbered capability families analogous to the numbered groups under
+`haipipe-task`. Search resolves candidates, Review inspects one source/Result,
+and Synthesize combines accepted Results into the Page. These groups do not
+add D1/D2/D3 phases. Only this skill under `workflow-phases/` owns the
+Discovery phase contract.
 
 The canonical Phase × Run declaration, Runs Overview, Human Actions, and Skill
 Coverage live in `ref/workflow-table.md`.
+
+The retrofit of earlier 0/1/2/3 or 1/2/3/4 descriptions is authoritative in
+`../../haipipe-discovery/ref/bjtr-alignment.md`: D1 owns the domain cycles,
+while the project address remains Block -> Job -> Task Page -> Run.
 
 ## Folder Kind
 
@@ -69,7 +75,7 @@ the inquiry:
 
 ```text
 1 · Question and boundary · <the exact inquiry and evidence population>
-2 · Type payload · <the source map, reading, summary, verdict, landscape, or ideas>
+  2 · Type payload · <the source map, source reading, summary, verdict, or landscape>
 3 · Evidence map · <the claims, Result Cards, cite keys, disagreements, and gaps>
 4 · Limits and next move · <what is not established and the next lawful route>
 ```
@@ -156,6 +162,8 @@ limits. A consumer never treats a legacy source index as a Result receipt.
 
 - `ref/workflow-table.md` — canonical Discovery specialization of the shared
   Page phases, Runs Overview, Human Actions, and Skill Coverage.
+- `../../haipipe-discovery/ref/bjtr-alignment.md` — numbered-family retrofit and
+  BJTR crosswalk.
 - `../../haipipe-discovery/SKILL.md` — user door, executor, and compatibility
   verbs.
 - `../../haipipe-discovery/ref/page-types.md` — type-specific payload promises.

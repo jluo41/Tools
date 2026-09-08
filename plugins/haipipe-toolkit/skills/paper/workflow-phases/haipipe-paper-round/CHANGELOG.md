@@ -1,3 +1,11 @@
+## 0.6.0 · 260907
+
+- Journey position P5 → P4, close gate G7 → G5 (haipipe-paper-workflow 1.0.0).
+- Routes point at the Story: new evidence → the Story's §6 Evidence Board and a
+  §6.4 work row; contribution/order → a Story §8 Section Control row; the
+  identity block's `narrative` field becomes `story` (old name read as alias).
+  Written by Claude Peer.
+
 ## 0.5.0 · 260907
 - A Round begins with a delivery and ends with one (JL 260907): `sent/` (the
   PDF+DOCX that drew the comments), `feedback/` (what came back; was `files/`),

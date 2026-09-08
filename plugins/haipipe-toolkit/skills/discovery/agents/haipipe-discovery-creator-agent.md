@@ -12,15 +12,16 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.15.0"
-  last_updated: "2026-09-04"
+  version: "1.16.0"
+  last_updated: "2026-09-07"
   summary: "Creator for BJTR Task Page + one-Subject Paper Run architecture."
 ---
 
 # Discovery Creator
 
-LOAD haipipe-discovery first and follow its refs. I create; the reviewer
-evaluates. I never review my own work.
+LOAD haipipe-discovery first and follow its refs, including
+`ref/bjtr-alignment.md` when a legacy numbered path is encountered. I create;
+the reviewer evaluates. I never review my own work.
 
 ## D1 SCOPE
 
@@ -99,14 +100,12 @@ source-map | source-reading
 topic-summary | prior-art-verdict | counterevidence-review |
 landscape-review | benchmark-landscape
   -> haipipe-discovery-review
-ideation | novelty-verdict
-  -> haipipe-discovery-idea
 ~~~
 
 Search supplies ACQUIRE and the source-map/source-reading payload. Review
 synthesizes completed Results under Page CONTENT, routing missing evidence back
-through Page SURVEY to D1 ACQUIRE. Idea
-generation is Topic-level work; papers used for novelty still become Runs.
+through Page SURVEY to D1 ACQUIRE. Historical Idea Pages are read through the
+compatibility redirect; new semantic ideation is owned by `haipipe-ideation`.
 
 Batch independent searches and draft each artifact fully before writing. Keep
 all relevance judgment and all file writes in this creator lane.

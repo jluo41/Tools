@@ -66,9 +66,10 @@ Revise are no longer Page phases. They are movements inside CONTENT/WRITE.
 
 Every user-facing completion after a Page-changing action follows
 `../../haipipe-page/ref/user-check-packet.md`: verified Board URL for the
-Outline table, current standalone Display PDF(s), and the current Page-level
-PDF. Only the new `outline/evidence/display/` and `delivery/latex/` lanes are
-eligible. The workflow receipt remains the audit record; it is not the primary
+Outline table, the evidence that can be opened now (Display PDFs, the citation
+register, VALUE item cards), the Content state after Revise, and the current
+Page-level PDF. Only the new `outline/evidence/display/`,
+`outline/evidence/bibex/` and `delivery/latex/` lanes are eligible. The workflow receipt remains the audit record; it is not the primary
 user-facing answer.
 
 ## 🧭 One Outline plugin serves three phases
@@ -204,7 +205,7 @@ haipipe-page
   → haipipe-page-outline
   → haipipe-paper-workflow
   → haipipe-paper-section
-  → haipipe-paper-narrative
+  → haipipe-page-story             (the §8 Section Control row the Section executes)
   → haipipe-plugin-outline/ref/plan-grammar.md
   → haipipe-plugin-outline/ref/item-table.md
 ```

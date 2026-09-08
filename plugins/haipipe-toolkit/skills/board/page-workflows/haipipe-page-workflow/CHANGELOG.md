@@ -1,3 +1,9 @@
+## 0.29.2 — 2026-09-07
+
+- Follow the four-surface user-check packet: evidence that can be opened now
+  and the Content state after Revise join the Outline table link and the
+  Page-level PDF.
+
 ## 0.29.1 — 2026-09-07
 
 - Route the user-check packet through the new Display and Page-level delivery

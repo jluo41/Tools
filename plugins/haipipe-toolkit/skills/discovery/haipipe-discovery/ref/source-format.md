@@ -39,6 +39,12 @@ facts, authoritative one-entry Bib, and runtime receipt are all present; it
 does prevent the Discovery Task from claiming an epistemic `ok` or
 `inconclusive` close. Keep the Task blocked/held and show the verification debt.
 
+The short `run:` value is a local display stem. In a durable receipt or
+cross-Folder reference, also show the full readable and compact BJTR addresses
+(for example b01.j02.t03.r01 and b01j02t03r01); a bare rNN is never a global
+identity. The old numbered skill-family labels are not substitutes for that
+address; see `bjtr-alignment.md`.
+
 Every new paper Result exposes clickable DOI/publisher, PubMed-or-query,
 exact-title Google Scholar, exact-title Google, authoritative BibTeX, and any
 lawful full-text route through `source-access.md`. Always name the actual

@@ -18,7 +18,7 @@
   "imports": [
    {
     "page": "QPw1",
-    "source": "../QPw1-page-loop/draw/QPw1.excalidraw",
+    "source": "../QPw1-page-loop/studio/draw/QPw1.excalidraw",
     "placement": {
      "x": 3085.0,
      "y": 2475.0,
@@ -28,7 +28,7 @@
    },
    {
     "page": "Design-6",
-    "source": "../Design-6-page-workflow/draw/Design-6.excalidraw",
+    "source": "../Design-6-page-workflow/studio/draw/Design-6.excalidraw",
     "placement": {
      "x": 12566.0,
      "y": 1905.0,

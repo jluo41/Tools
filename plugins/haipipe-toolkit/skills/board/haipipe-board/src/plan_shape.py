@@ -78,6 +78,9 @@ def type_outline(kind: str, skills_root: pathlib.Path) -> dict:
     )
     canonical = _canonical_owners(kind, skills_root)
     hits = ([phase.path] if phase else canonical
+            # Insight is the first Page Type using the shorter public name;
+            # keep the legacy fallback for remaining unmigrated variants.
+            or list(skills_root.glob("*/page-types/haipipe-page-%s/SKILL.md" % kind))
             or list(skills_root.glob("*/page-types/haipipe-page-for-%s/SKILL.md" % kind))
             # paper ships its types as journey-phase skills since 260831
             or list(skills_root.glob("*/workflow-phases/haipipe-paper-%s/SKILL.md" % kind))
@@ -486,10 +489,11 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
     # A 📚 whose key sits in this page's own bibex/ needs no card: a person
     # lands bib entries by hand (the docstring said so; the code now does).
     bib_keys = set()
-    for bib in sorted(page_src.parent.glob("bibex/*.bib")):
-        bib_keys |= set(re.findall(r"@\w+\s*\{\s*([^,\s]+)",
-                                   bib.read_text(encoding="utf-8",
-                                                 errors="replace")))
+    for lane in evidence_lane_dirs(page_src.parent, "bibex"):
+        for bib in sorted(lane.glob("*.bib")):
+            bib_keys |= set(re.findall(r"@\w+\s*\{\s*([^,\s]+)",
+                                       bib.read_text(encoding="utf-8",
+                                                     errors="replace")))
 
     # `PP<NN>` standing alone: `Routed: RD01 S1-PP5` is a Round row id, not a card
 

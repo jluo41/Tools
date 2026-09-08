@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper Story Page"
+  short_description: "Plan the whole paper from questions to sections"
+  default_prompt: "Use $haipipe-page-story to create or repair a paper's prospective blueprint: its Seed, Discovery Roadmap, Task Roadmap, and Section Narrative."

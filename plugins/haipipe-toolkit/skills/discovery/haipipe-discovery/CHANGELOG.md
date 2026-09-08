@@ -8,6 +8,43 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.10.0 · 2026-09-07
+
+- Delete the Discovery Idea family and remove its compatibility route and Page
+  types; unsupported Idea manifests now fail validation.
+- Add live `3_synthesize` for cross-Result integration and Page CONTENT,
+  separating it from `2_review` per-Subject source inspection.
+- Align the D1 workflow table, BJTR addendum, migration helper, and agents with
+  Search → Review → Synthesize.
+
+## 0.9.7 · 2026-09-07
+
+- Add the BJTR alignment addendum and crosswalk old numbered descriptions
+  against the canonical Block -> Job -> Task Page -> Run work address.
+- Clarify that capability families, D1 cycles, and Page 00-04 records are
+  orthogonal views; historical Idea remains compatibility-only and semantic
+  ideation belongs to sibling `haipipe-ideation`.
+
+## 0.9.6 · 2026-09-07
+
+- Split semantic direction and idea synthesis into sibling `haipipe-ideation`;
+  Discovery remains the external search/read/review executor and retains the
+  old Idea route only for historical compatibility.
+- Add a novelty-verdict typed-record template and document the compatibility
+  checker's historical `paper-source-v2` exception.
+
+## 0.9.5 · 2026-09-07
+
+- Clarify cross-Task source provenance: load-bearing papers are re-admitted as
+  local paper-analysis Runs, while non-paper Subjects retain source-analysis.
+
+## 0.9.4 · 2026-09-07
+
+- Pin the external ARIS reference at `0472e53` and document its Discovery
+  compatibility map.
+- Promote HAI adapters for optional Gemini recall and OpenAlex metadata while
+  keeping D1/Page/Run/Result/Bib authority local.
+
 ## [0.9.3] — 2026-09-06
 
 - Restore the source-card requirement for an exact-title Google Scholar link

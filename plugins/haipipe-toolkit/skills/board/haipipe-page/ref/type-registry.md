@@ -36,51 +36,50 @@ a `registry-gap` — usage without law. Gaps print under `--check`;
 ideation:
   owner: paper            # standing: contract
   standing: contract
-  token: SD
+  token: Story00
   mode: grammar
-  evidence: "one source bullet per idea naming its IDEA_REPORT; novelty per claim from discovery QA"
-  closing: "G0: novelty per claim + pilot + human PROCEED; the winning idea's went-to names the Seed"
-  law: paper/workflow-phases/haipipe-paper-ideation
+  evidence: "one source bullet per admitted idea batch naming its ideation handoff or legacy IDEA_REPORT; Core Claims carry per-claim Novelty Check from Discovery QA; pilots come from Task receipts"
+  closing: "Page CHECK accepts a readable version but does not select; G0 per selected idea requires resolved claim novelty + pilot or waiver + human PROCEED, and every selected row's went-to names one distinct Story that binds back"
+  law: paper/page-types/haipipe-page-ideation
 story:
-  owner: paper            # paper 0.8.x: the Story page = one idea's control center
+  owner: paper            # paper 1.0.0 (260907): the Story page is the paper's only control page
   standing: contract
-  token: Story<NN>
+  token: Story-<letter>
   mode: fixed
-  evidence: "§3 Research Question table (⬜/🔨/✅ · collect · show) drives the roadmap child; source pages resolve through Context; evidentiary reuse enters through typed Supporting/local Run Results; Establishment Board E-rows carry the novelty column, one E-row per RQ"
-  closing: "G4: ticked outline, every ✅ RQ lands on a narrative section row, novelty column filled, pitch sells only ✅ rows"
-  law: paper/workflow-phases/haipipe-paper-story
+  evidence: "the Research Question table sends typed Discovery/Task/Run work rows out from the Story; every E-row settles only from an owner-native receipt cited on the Story; source pages resolve through Context; Section Control rows and the haipipe:compile-order block are order projections, never evidence"
+  closing: "G1: approved outline, every open RQ/E-row served by a work row or a human waiver, pitch sells only ✅ rows; G3 releases each Section Control row by a person; Page CHECK closes the built version"
+  law: paper/page-types/haipipe-page-story
 seed:
   owner: paper            # 0.5–0.7 name of story; accepted as alias, same law
-  standing: contract
-  token: Story<NN>
+  standing: record-only   # alias key: no folder of its own, the law is page-types/haipipe-page-story
+  token: Story-<letter>
   mode: fixed
   alias-of: story
   evidence: "as story"
   closing: "as story"
-  law: paper/workflow-phases/haipipe-paper-story
 roadmap:
   owner: paper
-  standing: contract
+  standing: record-only   # RETIRED 260907: folded into the Story's Work Control; grandfathered pages only
   token: SD
   mode: grammar
   evidence: "BLOCK rows each serve a Seed E-row with executor, done-when, budget; dispatch receipts land on lap divisions"
   closing: "G2+G3: every 🔨/⬜ E-row has a ▶️ row or waiver; done-when holds and the settle is written on the Seed"
-  law: paper/workflow-phases/haipipe-paper-roadmap
+  retired: paper/_old/retired-workflow-phases-260907/haipipe-paper-roadmap
 narrative:
   owner: paper
-  standing: contract
+  standing: record-only   # RETIRED 260907: folded into the Story's Section Control; grandfathered pages only
   token: NA
   mode: grammar
   evidence: "the venue bank page resolved through Context at §1; claims parented to Seed E-rows; typed Evidence Items use Supporting/local Results; map rows budgeted"
   closing: "G5: bank page bound, claims parented, map rows budgeted"
-  law: paper/workflow-phases/haipipe-paper-narrative
+  retired: paper/_old/retired-workflow-phases-260907/haipipe-paper-narrative
 section:
   owner: paper
   standing: contract
   token: "S<D> | SA"
   mode: resolved
   evidence: "typed E<NN>-VALUE|CITE|DISPLAY items; each make-item has 0..N Supporting Runs, one frozen Local Input, one local Page Run, and one accepted Result"
-  closing: "per-unit CHECK ✅ against the resolved QBv division and the current Narrative row"
+  closing: "per-unit CHECK ✅ against the resolved QBv division and the current Story Section Control row"
   law: paper/workflow-phases/haipipe-paper-section
 round:
   owner: paper
@@ -114,7 +113,7 @@ insight:
   mode: fixed
   evidence: "Task/Discovery evidence enters through full Supporting Run Results and one local Evidence Item Run; the D → I → K → W trace stays version-bound"
   closing: "the trace is complete and Reusable Findings stand alone (provisional)"
-  law: task/page-types/haipipe-page-for-insight
+  law: task/page-types/haipipe-page-insight
 # ── board ──────────────────────────────────────────────────────────────
 stage:
   owner: board

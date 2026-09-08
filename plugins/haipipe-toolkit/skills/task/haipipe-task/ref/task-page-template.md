@@ -23,6 +23,14 @@ task: .
      do not author a second ## Outline section here. Each prose paragraph
      realizes exactly one plan Bullet and ends on its final source line with
      the HTML-comment backlink specified in ref/task-page.md. -->
+<!-- A data-bearing Task Page is not prose-only. Before CONTENT, SHAPE must
+     plan typed DISPLAY Items for at least one exact-audit table, one useful
+     result/distribution figure (or a second result table when no plot is
+     meaningful), and one method/provenance/boundary diagram. Every Data or
+     Result division needs the display its reader move requires. The inline
+     Division map below is only a sketch; the final display is a governed
+     unit under outline/evidence/display/ with intake, recipe, asset, and
+     preview.pdf. -->
 
 ### 1 · Introduction · <what this Folder was run to settle and what the report claims>
 <!-- Every division begins with one captioned face diagram that previews this

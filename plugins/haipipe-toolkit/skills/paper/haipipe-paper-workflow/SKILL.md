@@ -1,287 +1,217 @@
 ---
 name: haipipe-paper-workflow
 description: >-
-  The paper-level phase machine: six phases (Ideation → Story → Roadmap →
-  Narrative → Section → Round; Seed is Story's 0.5–0.7 name) with a checkable gate between each. Use when
-  asking where a paper is, whether it may advance, or what to mint next.
-  Trigger: paper journey, what phase are we in, phase gate,
+  The paper-level journey: Ideation → Story → Evidence/Execution → Section →
+  Compile → Round, with checkable human gates. Use when asking where a paper
+  is, what the Story controls, whether work may be released, or what may be
+  compiled next. Trigger: paper journey, workflow, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "0.8.1"
+  version: "1.0.0"
   last_updated: "2026-09-07"
 ---
 
-# /haipipe-paper-workflow · know the phase, test the gate, mint the next page
+# /haipipe-paper-workflow · read the journey, test the gate, mint the next work
 
-For a paper-journey question, enter through `haipipe-paper`; this file is its
-phase authority. Inside one concrete Page RUN, the already-selected
-`haipipe-page-workflow` loads this file as the Folder-owning workflow after the
-current Page-phase skill and before the exact Paper Page Type. It never edits a
-Page, runs the Page lifecycle, or judges content.
+For a paper-journey question, enter through `haipipe-paper`; this file is the
+cross-paper authority. It says which artifact owns each decision and when the
+next artifact may be released. It does not write a Page, execute a Task or
+Discovery, run a Page lifecycle, or judge manuscript prose.
 
-## 🔤 Terminology law
+## 🔤 Two meanings of workflow
 
-A **journey phase** is one of the six positions below (P0–P5). A **Page
-phase** is one step of `haipipe-page-workflow`'s CONTEXT…CHECK loop. Every
-`[phase]` argument in the door's verbs is a PAGE phase; a bare "phase" in any
-Paper document must be readable as exactly one of the two, or it is a defect —
-the same law the Round contract holds for "Paper Round" versus "workflow
-round". Prefer "journey" when speaking of P0–P5.
-
-**The naming law (0.5.0)**: a journey phase is NAMED BY ITS AUTHORITY PAGE
-TYPE — Ideation, Story, Roadmap, Narrative, Section, Round — so nobody
-maintains a second vocabulary. Each phase keeps its old verb as a
-parenthesized ALIAS — Ideation (ideate), Story (establish; "Seed" is its 0.5–0.7 name and still resolves), Roadmap (route),
-Narrative (tell), Section (realize), Round (respond) — legal in prose, never
-in a folder or page id. A future phase inherits this law: it takes its
-authority page's name and may carry one verb alias.
-
-## 🧭 Why this is not the retired stage lane
-
-The deleted S01–S10 machinery owned ten content contracts, a resolver, and
-per-stage tooling. This file owns none of that: content lives in the Page
-Type contracts, and this file only states WHICH page holds authority in each
-phase and WHEN the next one may be minted. Deleting this file would lose no
-content rule — that is the test it must keep passing.
-
-## 🗺 The six phases
-
-Each phase's own law ships as one skill under `workflow-phases/`
-(`haipipe-paper-ideation` … `haipipe-paper-round`); this file keeps only the
-cross-phase journey: names, gates, groups, receipts.
+A **journey phase** is one position in the paper journey below. A **Page phase**
+is one step of the shared Page lifecycle:
 
 ```text
-phase                     authority page                 what the phase produces
+Page lifecycle:   00 CONTEXT → 01 OUTLINE → 02 EVIDENCE → 03 CONTENT → 04 CHECK
+Paper journey:    P0 Ideation → P1 Story → P2 Evidence/Execution →
+                  P3 Section → Compile → P4 Round
+```
+
+`P2 Evidence/Execution` is a work lane, not a Paper Page Type. Discovery
+blocks, Task blocks, and Runs keep their own native contracts; the Story page
+records their assignment, state, receipt, and effect on the paper. There is no
+active Paper Roadmap Page and no active Paper Narrative Page.
+
+## 🗺 Active paper journey
+
+```text
+position                    authority / home                 produces
 ──────────────────────────────────────────────────────────────────────────────
-P0 Ideation (ideate)      ideation   (A1-Story/Story00)  a winning idea sent to
-                                                         its Seed · the repo is
-                                                         minted WITH this page
-P1 Story (establish)      story      (A1-Story/Story<NN>) one idea's control
-                          (seed =    the Story page      center: identity (the
-                          alias)                         Seed) + RQ table + E-board
-P2 Roadmap (route)        roadmap    (Story<NN>/          released blocks: where
-                                       Story<NN>-roadmap)
-                                                         to go, who runs it,
-                                                         done-when · then the
-                                                         landed QA receipts,
-                                                         lap by lap, settled
-                                                         back onto the Seed
-   ↺ P1↔P2 is the ESTABLISH LOOP · exits only through the Seed at G4
-P3 Narrative (tell)       narrative  (Story<NN>/          a desk decision +
-                                       Story<NN>-narrative- section map
-                                       <desk>, 1/desk)
-P4 Section (realize)      section    (B group, per row)  signed-off units
-   P4.9                   assemble — a VERB, not a phase the built deliverable ·
-                                                         DRAFT until G6 holds
-P5 Round (respond)        round      (in the desk's B)   routed concerns +
-                                                         response
-
-library                   venue      (QBv bank)          consulted at P3 §1 ·
-                                                         never a phase
+P0 Ideation                 Story00-ideation in A1-Story     ranked candidate
+                                                              directions and a
+                                                              human-selected Story
+P1 Story                    Story-<letter> in A1-Story       one paper's control
+                                                              center: Seed + RQ +
+                                                              evidence/work board +
+                                                              section/compile map
+P2 Evidence / Execution     external Discovery blocks,        released and landed
+                            Task blocks, and Run receipts     evidence; no Paper
+                                                              phase page is minted
+P3 Section                  Ba/Bb Section Pages               one checked manuscript
+                                                              or appendix unit per row
+Compile                     haipipe-paper-assemble             generated delivery
+                                                              projection; DRAFT or
+                                                              SUBMISSION-READY
+P4 Round                    Bc Round Pages                     frozen feedback cycle,
+                                                              response, and next route
 ```
 
-P0 and P5 are the cheap loop zones: ideas are disposable, rounds recur.
-P1–P2 cycle as one loop; P3–P4 are the expensive one-way street the later
-gates protect. A round may reopen P1, P3, or P4; a retarget mints a new P3
-from the unchanged seed.
-
-## 🔁 The establish loop (P1 → P2 → P1)
-
-The Seed is the scoreboard; the Roadmap is the campaign plan AND the intake
-desk, one page. One lap:
+The live shape is deliberately overlapping:
 
 ```text
-Seed §6 states the gaps (⬜/🔨 E-rows)
-   → Roadmap proposes BLOCK rows · a person releases them, block by block (G2)
-   → the Roadmap's Page loop SURVEYs the Supporting/local Run graph and LANDs
-     typed Results · receipts land on its lap divisions (G3)
-   → settle: the Seed's E-rows flip ✅ citing accepted Result ids and paths
-   → gaps remain → next lap on the Roadmap · gaps closed or waived → face G4
+Idea pool ──G0──▶ Story control ──G1──▶ Discovery/Task/Run work
+                         ▲                       │
+                         └──────G2 receipts─────┘
+                                  │ G3, per Section row
+                                  ▼
+                           Section Page 00–04
+                                  │
+                     Compile anytime; G4 for ready status
+                                  │
+                                  ▼
+                              Round ──▶ Story or Section
 ```
 
-Two pens, never crossed: the Roadmap plans and registers; the Seed alone
-writes E-row flips. The join is one string on two pages: an E-row's cite =
-the block row's receipt = the lap's QA path (the last two on the same page).
-The loop's only exit is through the Seed at G4 — a Narrative reads the Seed's
-§8 handoff and never reads the Roadmap directly, so two tellings can never
-keep separate books.
+The former “run to 70%” is a useful human readiness signal, not a global
+arithmetic gate. A person may release a Section as soon as that row has a
+stable reader question, claim/evidence bindings, and a workable outline;
+other Discovery/Task/Run work may continue in parallel. A compile made before
+all intended Sections are CHECK-closed is explicitly a DRAFT.
 
-## 🚪 The gates
+## 🧩 Ownership map
 
-Each gate is an assertion over pages that already exist. A gate that cannot be
-tested by reading named files is misdesigned.
+| Artifact | Owns | Does not own |
+|---|---|---|
+| Ideation Page | candidate directions, comparisons, handoff to one Story | evidence execution or manuscript prose |
+| Story Page | Seed, RQs, E-rows, Discovery/Task/Run assignments, section rows, compile order | executing Runs or storing section prose |
+| Discovery block | external literature/source inquiry and its Results | changing the Story's claim state |
+| Task block | jobs, configurations, and execution Runs | silently releasing itself or rewriting Story rows |
+| Run receipt | what actually ran, its provenance, QA, and Result | deciding how the paper should be told |
+| Section Page | local outline, evidence bindings, prose, displays, page deliverable | changing the Story's identity or RQ text |
+| Compile | generated manuscript projection and build manifest | becoming a source of wording or evidence |
+| Round Page | feedback ledger, dispositions, checked response package | becoming a second home for revised prose |
+
+The Story is the control center. It links outward to work and Sections, then
+receives receipts back. A link is not a Result: a Story row may become
+`✅ answered` only after the named Discovery/Task/Run receipt is accepted and a
+person records the settlement.
+
+## 🚪 Gates
+
+Every gate is testable by reading named files and ends in a human receipt.
 
 ```text
-G0  Ideation → Seed        precondition, tested on the idea's summary row
-                           alone: per-claim novelty bound to QA files · a
-                           pilot result or explicit waiver · a person's
-                           PROCEED tick (or PROCEED WITH CAUTION with its risk
-                           accepted in the tick) · receipt, recorded after the
-                           act: Story<NN>-<idea-slug> exists in this board's
-                           A1-Story, its §5 first row binds Story00-ideation
-                           back, and the idea's `went to` cell names it (an idea that went
-                           to a DIFFERENT paper adds: that new repo exists as
-                           a submodule)
+G0  Ideation → Story
+    The selected idea has claim-level novelty/feasibility bounds, a pilot or
+    explicit waiver, a human PROCEED decision, and a reciprocal link between
+    Story00-ideation and Story-<letter>.
 
-G1  Seed → Roadmap         the Seed skeleton stands: its outline is
-                           human-ticked and §6 states every proposition as an
-                           ⬜/🔨/✅ row, so the gap list is readable
+G1  Story → Evidence/Execution
+    Story has an approved outline containing the Seed identity, stable RQ
+    text, one E-row per proposition/RQ, typed Discovery/Task/Run work rows for
+    open debts, and visible Section placeholders. A human releases the work.
 
-G2  Roadmap plan →         every 🔨/⬜ E-row names a ▶️ released block row
-    dispatch               that serves it, or carries an explicit waiver on
-                           the Seed's Log · release is a person's act, block
-                           by block — a machine proposes and never releases
+G2  Evidence/Execution → Story
+    Every released block has an owner-native Run/Discovery receipt, a
+    done-when/acceptance reading, and a full path or id. The Story updates the
+    work state, RQ state, and E-row status; unsupported claims stay open.
+    This is a repeatable settle loop, not an automatic phase advance.
 
-G3  lap → Seed             the lap's done-when tests hold · every dispatched
-                           item binds an accepted local Result path · the settle is written
-                           on the Seed: each flipped E-row cites the QA file
-its block row landed · gaps remain → the next lap
-                           on the Roadmap
+G3  Story → Section
+    A person releases each Section row independently. The row names its
+    reader question, claim role, entry/exit state, required evidence/display
+    ids, target desk if any, and open risks. No fixed percentage is required.
 
-G4  Seed → Narrative       the Seed's current outline is human-ticked · every
-                           ✅/🔨 E-row cites a §5 asset and carries its novelty
-                           reading · the pitch sells nothing beyond ✅ rows
-                           (placeholders visible otherwise)
+G4  Section → Compile
+    Every Section admitted to a ready build has an approved outline, accepted
+    evidence bindings, current delivery output, and Page CHECK closure. The
+    assembler may run earlier, but the receipt must say DRAFT until the full
+    intended set is closed; only a human may label the build ready.
 
-G5  Narrative → Section    the Narrative's §1 binds one bank page · every claim
-                           row names an E-row parent · every section-map row
-                           names its unit page and budget
-
-G6  Section → assemble     every map row's unit page is CHECK-closed
-                           (✅ SETTLED) · `/haipipe-paper-assemble` itself
-                           RUNS ANYTIME from the Section Pages' own
-                           delivery/latex/ outputs — a
-                           build made while G6 fails is watermarked DRAFT in
-                           its receipt, one made while it holds is
-                           SUBMISSION-READY · the gate informs, the person
-                           decides, and the upload is a human act either way
-
-G7  Round (per round)      every received concern appears exactly once in the
-                           ledger and routes exactly once — to the Seed when it
-                           demands evidence the paper does not hold, to the
-                           Narrative for a retelling, to a Section for a rework
-                           — the Round's sent/ and released/ each hold one
-                           frozen build with its manifest hash · and a person
-                           approves the response receipt
+G5  Round → next route
+    Each concern in the feedback batch appears once, is routed once to the
+    Story or owning Section, and returns with a checked version or explicit
+    disposition. The Round freezes both the build that drew feedback and the
+    answering build.
 ```
 
-Gate numbers are stable across 0.6.0: G2 and G3 both read the Roadmap now
-(its plan face and its lap face), and no other gate moved.
+Gates do not run on timers. An agent may report that G2 or G3 is still open;
+only the named human receipt can release or close it.
 
-## 🗃 Group mapping (JL 260828)
+## 🗃 File-system projection
 
 ```text
-P0      A1-Story/Story00-ideation/         the idea pool · exactly one per board
-P1–P3   A1-Story/Story<NN>-<idea-slug>/     ONE STORY = ONE IDEA (JL 260907) · NN
-        │                                   is the idea counter, 01 first · the
-        │                                   Story page carries the Seed and the
-        │                                   Research Question table
-        ├── Story<NN>-roadmap/              child page · the plan to COLLECT
-        └── Story<NN>-narrative-<desk>/     child page · the plan to SHOW · one
-                                            per desk, arrival order
-P4–P5   Ba-<desk>-Main/      the desk's S<D> main sections
-        Bb-<desk>-Appendix/  its SA appendix sections
-        Bc-<desk>-Round/     its RD rounds (JL 260831: one letter per group;
-                             a second desk continues at Bd; shared-letter and
-                             combined B<x>-<desk> layouts are grandfathered)
+Paper-<Slug>/
+├── board.md
+├── A1-Story/
+│   ├── Story00-ideation/
+│   └── Story-A/
+│       ├── Story-A.md                 Story control center
+│       ├── outline/                    Page 00–04 records
+│       └── studio/                     optional Story-local presentation lanes
+├── Ba-<desk>-Main/                     Section Pages
+├── Bb-<desk>-Appendix/                 Section Pages
+├── Bc-<desk>-Round/                    Round Pages
+└── delivery/                           generated Compile projection
 ```
 
-A foreign-desk round (feedback from a desk this board never told) mints that
-desk's B group even when the group holds only RD pages. Grandfathered, migrating
-only on explicit request: the pre-0.5.0 grammar (narratives inside the SD story
-group, a lone C1-RD-round group); the 0.5.0–0.7.x flat story group
-(`Story01-seed`, `Story02-roadmap`, `Story03-narrative-<desk>` as siblings,
-phase-numbered); and the `0-paperboard/` wrapper with `<N>-<desk><year>/` desk
-rooms beside it. The Collection page is retired; a board still holding one
-reads it as history.
-
-## 🧩 Story = one idea (0.8.0 · JL 260907)
-
-The story group's number is the IDEA COUNTER, not the phase. `Story00` is the
-pool every idea comes from; `Story01-<idea-slug>` is the first idea that
-survived it, `Story02-<slug>` the second. One Story is one paper's control
-center: its own page carries the Seed (identity, boundary, the Research
-Question table, the Establishment Board), and its two child pages are its two
-PLANS, which differ only in direction:
+Evidence execution remains outside the Paper folder:
 
 ```text
-Story<NN>-<idea-slug>.md          the Story · seed + RQ table · what this paper IS
-├── Story<NN>-roadmap             plan to COLLECT · runs backward to the data ·
-│                                 points at examples/<Project>/tasks/ and
-│                                 discoveries/ · fills the RQ table's "collect"
-└── Story<NN>-narrative-<desk>    plan to SHOW · runs forward to the reader ·
-                                  points at Ba-<desk>-Main/ and Bb-<desk>-Appendix/
-                                  · fills the RQ table's "show"
+examples/<Project>/
+├── discoveries/<discovery-block>/      Discovery block + inquiry Results
+└── tasks/<task-block>/                 Task block + jobs + Run receipts
 ```
 
-A child page carries its parent's NN so its id says which Story it serves; a
-second desk for the same idea is a second `Story<NN>-narrative-<desk>` inside
-the same Story, never a new Story. A Research Question is a QUESTION the paper
-goes out to explore (⬜ open · 🔨 exploring · ✅ answered); the Establishment
-Board's E-row is the backward record of what came back, one E-row per RQ.
-`haipipe-paper-story` owns the table's shape.
+The Story stores pointers and status, not copied evidence tables or raw PHI. A
+Section's Page workflow still uses the common Evidence graph:
+`Supporting Run → Local Input → Local Run → typed Result`.
 
-## 📜 Gazette of retired names
+## 🧾 Receipts and phase reading
 
-Documents dated before the version shown use the old vocabulary; read them
-against this table and do not rewrite frozen files:
+The Story Log records G0, G1, G2 settlements, and G3 Section releases. The
+Section Page records its own Page lifecycle and CHECK. Compile writes its
+build manifest and render receipt. The Round records G5 and the frozen build hashes. No
+separate Roadmap or Narrative receipt store exists.
+
+The current position is read, not guessed from a folder name:
+
+- before G0: P0 Ideation;
+- after G0 but before work release: P1 Story;
+- while released work lacks settled receipts: P2 Evidence/Execution;
+- once individual rows are released: P3 Section may run in parallel;
+- after a build: read its DRAFT/ready receipt, not a phase number;
+- after feedback arrives: P4 Round, with each concern routed back to Story or
+  a Section.
+
+## 🧳 Retired phase machinery
+
+The following names are removed from the active Paper router on 2026-09-07:
 
 ```text
-old phase name        new phase (alias)          old gate         new gate
-──────────────────────────────────────────────────────────────────────────
-— 0.8.1 (260907): P1 renamed Story; haipipe-paper-seed → haipipe-paper-story —
-P1 Seed (establish)   P1 Story (establish)       G1 · G4          G1 · G4
-page-type: seed       page-type: story (seed
-                      accepted as alias)
-— 0.8.0 (260907): Story = one idea; 0-paperboard and desk rooms retired ——
-Story01-seed          Story<NN>-<idea-slug>      (unchanged)      (unchanged)
-                      · the Story page itself
-Story02-roadmap       Story<NN>-roadmap · child
-Story<NN>-narrative-  Story<NN>-narrative-<desk>
-<desk> (sibling)      · child of its Story
-0-paperboard/         the paper root · board.md
-                      and groups sit there
-<N>-<desk><year>/     delivery/ · generated from
-(desk room)           the Section Pages' own tex
-— 0.6.0 (260828): the Collection page folded into the Roadmap ——————————
-P3 Collection         P2 Roadmap (route) ·       G3 (unchanged    G3
-   (collect)          its lap divisions          number)
-P4 Narrative (tell)   P3 Narrative (tell)        G5               G5
-P5 Section (realize)  P4 Section (realize)       G6               G6
-P6 Round (respond)    P5 Round (respond)         G7               G7
-— 0.5.0 (260824) ————————————————————————————————————————————————————————
-P0 Ideate / Explore   P0 Ideation (ideate)       G0               G0
-P1 Establish          P1 Seed (establish)        G1 (est→tell)    G4
-P2 Tell               P4 Narrative (tell)        G2               G5
-P3 Realize            P5 Section (realize)       G3               G6
-P4 Respond            P6 Round (respond)         G4               G7
-(none)                P2 Roadmap (route)         (none)           G1 · G2
-(none)                P3 Collection (collect)    (none)           G3
+haipipe-paper-roadmap       → paper/_old/retired-workflow-phases-260907/
+haipipe-paper-narrative     → paper/_old/retired-workflow-phases-260907/
+Story-A-roadmap             → paper instance _archive/retired-workflow-pages-260907/
+Story-A-narrative-<desk>    → paper instance _archive/retired-workflow-pages-260907/
 ```
 
-## 🧾 Phase receipts
+They are preserved as migration history, never loaded as current authority.
+“Narrative” may still occur as an ordinary writing concept or in frozen
+historical/venue material; it is no longer a Paper Page Type or a journey
+phase. “Roadmap” may occur in venue prose as a reader-facing organization
+paragraph; it is no longer a Paper control page.
 
-A phase transition leaves exactly one receipt: a dated Log row on the page
-that granted it (the Ideation Page for G0, the Seed for G1 and G4, the
-Roadmap for G2 and G3, the Narrative for G5 and G6, the Round for G7),
-stating the gate, the assertion results, and who ticked. No separate receipt
-store exists; the pages are the record.
+## ✅ Completion checks
 
-## ⏱ Advancement is never scheduled
-
-A gate test may be run any time; a gate may only be DECLARED passed by the
-human tick or CHECK verdict it names. Nothing in this file may be wired to a
-timer, a heartbeat, or a loop that advances phases on wall-clock time — a
-recurring job may report "gate G6 still fails: SM04 not settled", never "gate
-passed". (Adopted from the ARIS external-cadence rule: a heartbeat may say
-keep going, never good enough.)
-
-## 🔀 Resolving "what phase are we in"
-
-Phase is read, not stored: it is the highest gate whose assertion currently
-holds, per telling. Inside the establish loop the reading is the lap: a paper
-with released blocks still running sits at P2 with cards out; one whose last
-lap settled and left gaps sits at P2 planning the next release. Two tellings
-of one paper may sit in different phases — the MS telling in P5 while a WISE
-telling is in P4 — because P3 onward is per-narrative. P0 is per-board; P1–P2
-are per-Story and shared by that Story's tellings.
+- The active journey names only Ideation, Story, Evidence/Execution, Section,
+  Compile, and Round.
+- Story-A is the only active Paper control page after Ideation.
+- Every open RQ/E-row has a typed Discovery or Task/Run work row, or an
+  explicit human waiver.
+- Every landed receipt points back to a Story row without copying its result.
+- Every Section row is independently releasable and runs Page 00–04.
+- Compile reads Story's machine-readable section order and Section-owned
+  delivery fragments; it never reads a retired child page.
+- Static validation and a fresh-context field test pass after this skill edit.

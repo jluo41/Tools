@@ -3,10 +3,16 @@
 The agents execute the contract owned by haipipe-discovery. They do not define
 an alternate folder shape.
 
-The numbered `1_search`, `2_review`, and `3_idea` directories are skill-family
-groups, matching the organization of `haipipe-task`; they are not agent stages
-or D1 phases. Agents dispatch into those families while D1 remains the sole
-Discovery workflow phase.
+The numbered `1_search`, `2_review`, and `3_synthesize` directories are the
+live skill-family groups, matching the organization of `haipipe-task`. Search
+resolves candidates, Review inspects one source/Result, and Synthesize combines
+accepted Results. They are not agent stages or D1 phases. Agents dispatch into
+the live families while D1 remains the sole Discovery workflow phase.
+
+If a legacy description uses 0/1/2/3 or 1/2/3/4 as if those were folders, use
+`../haipipe-discovery/ref/bjtr-alignment.md`. The project address is always
+Block -> Job -> Task Page -> Run; skill-family and Page-phase numbers stay
+orthogonal.
 
 ~~~text
 discoveries/ -> bNN_ Block -> jNN_ Job -> tNN_ Task Page -> rNN_ Run
@@ -33,10 +39,12 @@ Page CHECK     fresh Page checker
 D1 CLOSE       creator reconciles Task Face -> reviewer
 ~~~
 
-`discovery_type` chooses the root article form; Search, Review, and Idea are
-derived specialist routes. Only D1 ACQUIRE creates local Runs, one for each
-admitted canonical Subject. SCOPE, PREPARE, SYNTHESIZE, Page phases, and CLOSE
-do not create Runs in the D1 root Folder.
+`discovery_type` chooses the root article form; Search, Review, and Synthesize
+are the live specialist routes. Semantic ideation uses the separate
+`haipipe-ideation` skill after Discovery synthesis; Discovery has no Idea route.
+Only D1 ACQUIRE creates local Runs, one for each admitted canonical Subject.
+SCOPE, PREPARE, SYNTHESIZE, Page phases, and CLOSE do not create Runs in the
+D1 root Folder.
 
 ENRICH follows the same Level-4 law but adds the minimum new Paper Runs to an
 existing Task Page. It never appends anonymous source prose.

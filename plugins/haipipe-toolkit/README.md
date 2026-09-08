@@ -23,8 +23,8 @@ The research lifecycle, in one screen
 --------------------------------------
 
 The current research stack is Page-first. Task and Discovery execute work;
-Probe routes evidence into the Page that consumes it; Paper composes accepted
-Pages.
+Ideation turns their accepted evidence into research directions; Probe routes
+evidence into the Page that consumes it; Paper composes accepted Pages.
 
 ```
 ⚙️ EXECUTORS                         📄 CONSUMING PAGE
@@ -68,16 +68,24 @@ Commands
                       Three callers: a human exploring · the orchestrator
                       itself (self-directed) · a paper's probe DISPATCH.
 
-/haipipe-discovery    the external executor — Search | Review | Idea
+/haipipe-discovery    the external executor — Search | Review
+/haipipe-ideation     the semantic bridge — evidence bundle | ideas | Paper handoff
 /haipipe-discovery qa "<question>" [<leaf>]     ← the symmetric door
 
 /haipipe-probe        evidence router: PageX for accepted Pages; QA Probe for
                       Task/Discovery. The layer never runs bank work itself.
 
-/haipipe-paper        thin academic router over Seed, Venue, Narrative,
-                      Section, Round, and Dash Pages
+/haipipe-paper        thin academic router over Ideation, Story, Venue,
+                      Section, and Round Pages (Roadmap/Narrative retired 260907)
 /haipipe-application  the non-academic consumer — same model, venue-gated
 ```
+
+Discovery work is addressed as discoveries → bNN Block → jNN Job → tNN Task
+Page → rNN Run. Its 1_search, 2_review, and 3_synthesize folders are live
+capability families, not additional levels: Search finds, Review inspects one
+source, and Synthesize combines accepted Results. The D1 and Page 00–04
+workflows are separate axes. See
+`skills/discovery/haipipe-discovery/ref/bjtr-alignment.md`.
 
 **Engineering axis:**
 
@@ -115,7 +123,8 @@ skills/
 │   ├── 1_data/ 2_nn/ 3_end/ 4_individual/    the task-domain families
 │   └── agents/             orchestrator · creator · reviewer
 │
-├── discovery/         🔍 external evidence — Search | Review | Idea + the `qa` verb
+├── discovery/         🔍 external evidence — Search | Review + the `qa` verb
+├── ideation/          💡 semantic research directions over Task + Discovery evidence
 ├── probe/             🃏 evidence router: PageX + Task/Discovery QA
 ├── paper/             📄 academic composition over six Page Types
 ├── application/       📱 non-academic consumer — venue-gated

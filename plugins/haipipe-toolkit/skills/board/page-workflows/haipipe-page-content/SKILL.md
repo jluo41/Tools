@@ -9,7 +9,7 @@ description: >-
   phase split. Trigger: page content, CONTENT phase, WRITE cycle, division
   writing, draft page, revise page, build page, /haipipe-page-content.
 metadata:
-  version: "0.8.2"
+  version: "0.8.3"
   last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md
 ---
@@ -21,6 +21,9 @@ Folder-owning workflow or canonical family skill, the exact Page Face owner,
 `haipipe-plugin-outline/ref/plan-grammar.md`, applicable narrative/style
 policy, `haipipe-run`, and the writing/build workers selected by that owner.
 Load the owner once when one skill fills both Folder and Page Face roles.
+For `folder-kind: task`, also load the reader-facing `haipipe-page-task`
+companion; it supplies the Task Page's display-density and display-unit
+contract without taking ownership of P-B-E-R.
 
 CONTENT is one phase with one cycle. Drafting, revising, building, and
 pre-checking are movements inside that cycle, not four Page phases:
@@ -149,6 +152,12 @@ or its syntax obscures the main claim.
 
 ## ① Draft
 
+For a `folder-kind: task` Page, apply `haipipe-page-task` before drafting:
+the display inventory is part of SHAPE, and numeric/empirical Content may
+not be finalized as prose-only. Each Data or Result division needs its
+substantive table or figure, and the method/provenance argument needs its
+diagram when that visual carries reader meaning.
+
 - Enter only when Context is resolved and the plan has `G>=1`. Use either an
   explicitly approved Shape version or an evidence revision that declares and
   inherits that Shape approval. Never write or refresh Content from `v0.*`.
@@ -226,8 +235,13 @@ After Build, assemble the user-check packet from
 `../../haipipe-page/ref/user-check-packet.md`: rebuild affected DISPLAY
 previews, rebuild the one-Page LaTeX PDF when Page prose or an embedded display
 changed, and give the verified Board Page URL where the generated Outline table
-can be read. The packet's third link is the Page/Section PDF, never the paper
-master.
+can be read. Surface 2 lists the evidence a person can open now (Display
+PDFs, the citation register, VALUE item cards); surface 3 states whether
+Revise ran, so a first draft is never shown as final; surface 4, the
+Page/Section PDF, is the delivery shown after Revise, never the paper master.
+For a Task Page, this build is incomplete if the declared table, figure, or
+diagram units lack current `preview.pdf` files or the Page-level PDF contains
+only their references instead of the winning floats.
 
 When the person asks for a complete version, deliver the requested LaTeX/PDF
 and Word projections, report the PDF page count, and return the reader-facing
@@ -274,7 +288,7 @@ division_runs: [<RUNNAME → Result → promoted C<n>>]
 page: <source version before → after>
 delivery: [<artifact paths>]
 delivery_report: PDF pages · reader-facing viewer link · draft/final mode
-user_check_packet: Board Outline URL · current Display PDF(s) · current Page-level PDF
+user_check_packet: Board Outline URL · evidence to open now (Display PDFs · citations · value cards) · Content state after Revise · current Page-level PDF
 revise: humanizer receipt · fresh-context MISQ style verdict
 pre_check: ready | another-pass | blocked
 artifacts: [<every written path>]

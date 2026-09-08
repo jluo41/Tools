@@ -2,14 +2,14 @@
 name: haipipe-paper
 description: >-
   The one door for planning, writing, and revising a paper as a graph of Board
-  Pages. Routes Ideation, Story, Roadmap, Venue, Narrative, Section and Round
-  Pages to their contracts and runs each through the page lifecycle.
+  Pages. Routes Ideation, Story, Evidence/Execution, Section and Round Pages
+  to their contracts and runs each through the shared Page lifecycle.
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "0.8.1"
+  version: "1.0.0"
   last_updated: "2026-09-07"
-  summary: "page-types/ replaced by workflow-phases/: six haipipe-paper-<phase> skills; venue contract moved beside its bank."
+  summary: "Story absorbs Paper planning; Discovery/Task/Run execute outside the Paper Page graph; Compile remains a verb."
 ---
 
 # /haipipe-paper · compose a paper from evidence-bearing Pages
@@ -32,8 +32,9 @@ haipipe-page
   → haipipe-page-workflow
   → current Page phase
   → haipipe-paper-workflow (Folder-owning workflow)
-  → exact haipipe-paper-<phase> Page Type, or haipipe-paper-venue
-  → phase references / narrative-style policy
+  → the exact Page Type: haipipe-page-ideation · haipipe-page-story ·
+    haipipe-paper-section · haipipe-paper-round, or haipipe-paper-venue
+  → phase references / the Story's Section Control row and style policy
   → haipipe-run + selected workers, only where Runs exist
 ```
 
@@ -44,78 +45,71 @@ shared Outline presenter; it is not a final execution dependency.
 `haipipe-paper-assemble` is a separate complete-paper verb after routing; it is
 not inserted into a Page phase.
 
-## 🧭 The six-phase journey (JL 260828)
+## 🧭 The journey (JL 260828 · rebuilt 260907)
 
 `haipipe-paper-workflow` owns the gates; this figure is the reading order.
-Every phase is named by its authority page (the naming law), with the old
-verb kept as a parenthesized alias.
+Every position is named by its authority page (the naming law). Roadmap and
+Narrative are no longer positions: the Story page absorbed both on 260907.
 
 ```text
-P0 Ideation (ideate)      💭 Story00 · the repo is minted with this page ·
-│                            ideas cheap and disposable
-│                            gate G0: novelty per claim + pilot + human PROCEED
-P1 Story (establish)      🌱 Story<NN>-<idea> · THE STORY PAGE · one idea = one
-│                            paper · holds the Seed (identity) · RQ table · E-board
-│                            gate G1: skeleton stands · gap list readable
-P2 Roadmap (route)        🗺 Story<NN>-roadmap · child of its Story · plan to
-│                            COLLECT · BLOCK rows serving RQ/E-rows · ✋ released ·
-│                            then the receipts land on its lap divisions
-│                            gate G2: every 🔨/⬜ E-row has a ▶️ row or waiver
-│                            gate G3: done-when holds · settle written on Seed
-│  ↺ P1↔P2 = the establish loop · exits only through the Seed:
-│                            gate G4: ticked outline · novelty column ·
-│                            pitch sells only ✅ rows
-P3 Narrative (tell)       🧭 Story<NN>-narrative-<desk> · child of its Story ·
-│                            plan to SHOW · one per desk · §1 IS the venue decision
-│                            gate G5: bank page bound · claims parented ·
-│                            map rows budgeted
-P4 Section (realize)      📄 one per map row · sign-off = per-unit CHECK ✅
-│  P4.9                      assemble — a verb, not a phase · runs anytime;
-│                            G6 marks the build SUBMISSION-READY vs DRAFT ·
-│                            the upload is a human act
-P5 Round (respond)        🔁 routes each concern once → seed / narrative /
-                             section · gate G7: every concern ledgered and
-                             routed exactly once · a person approves the
-                             response receipt
+P0 Ideation (ideate)       💭 Story00-ideation · the repo is minted with this page ·
+│                             ideas cheap and disposable
+│                             gate G0: novelty per claim + pilot + human PROCEED
+P1 Story (establish)       🌱 Story-<letter> · THE ONLY CONTROL PAGE · one idea = one
+│                             paper · Seed (identity) · RQ table · §6 Evidence and
+│                             Work Control · §8 Section Control + compile order
+│                             gate G1: approved outline · every open RQ/E-row has a
+│                             typed work row or waiver · a person releases the work
+P2 Evidence/Execution      🧰 a WORK LANE, not a page · Discovery blocks, Task
+│                             blocks, Runs in examples/<Project>/ · receipts land
+│                             back on the Story
+│  ↺ P1↔P2 = the settle loop  gate G2: every released block has an owner-native
+│                             receipt · the Story updates RQ/E-row state
+P3 Section (realize)       📄 one page per §8 Section Control row · a person
+│                             releases each row independently (gate G3) · sign-off
+│                             = per-unit CHECK ✅
+│  Compile                    assemble — a verb, not a phase · runs anytime from the
+│                             Story's compile-order block · gate G4 marks the build
+│                             SUBMISSION-READY vs DRAFT · the upload is a human act
+P4 Round (respond)         🔁 routes each concern once → Story (§6 evidence or §8
+                              row) / Section · gate G5: every concern ledgered and
+                              routed exactly once · a person approves the receipt
 
-   📚 venue = library, never a phase: the QBv bank is consulted at P3 §1,
-      and a missing desk gets its bank page minted as a sub-step.
+   📚 venue = library, never a phase: the QBv bank is consulted when a §8 row
+      names its target, and a missing desk gets its bank page minted as a sub-step.
 ```
 
-The seven Page Types, one line each:
+The five Page Types, one line each:
 
 - **Ideation** is one research direction's ideas, ranked in the source
   reports' own structure (IDEA_REPORT / Novelty Check Report fields), the
   story group's page zero (`Story00-ideation`), minted with the repo before any
-  Seed exists; eliminated ideas stay forever; the winning idea's `went to`
-  names this board's Seed (or, rarely, a sibling repo's).
-- **Story** is one idea's control center, `Story<NN>-<idea-slug>.md` (JL
-  260907): it holds the Seed (venue-free identity, pitch, stakes, boundaries),
-  the Research Question table that drives the work, the Establishment Board
-  that records what came back, and the handoff to its two child plans; it
-  survives retargeting unchanged and binds its Ideation origin as a birth
-  certificate. `haipipe-paper-story` (was `haipipe-paper-seed`).
-- **Roadmap** is one paper's plan to COLLECT, a child page of its Story
-  (`Story<NN>-roadmap`), campaign and intake on one page: BLOCK
-  rows (data, model, analysis, …) each serving a Seed E-row, with executor,
-  done-when, budget, and a person's block-by-block release — a block is a
-  task group, its jobs are task folders, its runs are configurations,
-  addressed `B<n>T<n>r<n>` — then one dispatch card per released block, the
-  landed QA receipts registered lap by lap, and settle PROPOSALS the Seed
-  alone writes; QA files stay the substance — register, never restate; the
-  page plans and registers, and never executes.
+  Story exists; eliminated ideas stay forever; the winning idea's `went to`
+  names this board's Story (or, rarely, a sibling repo's).
+  `haipipe-page-ideation` (`paper/page-types/`).
+- **Story** is one idea's control center, `Story-<letter>.md` (JL 260907): the
+  letter is its stable identity and the idea slug is not part of the address.
+  It holds the Seed (venue-free identity, pitch, stakes, boundaries), the
+  Research Question table that sends work out, §6 Evidence and Work Control
+  (E-rows plus the Discovery/Task/Run register that replaced the Roadmap page),
+  and §8 Section Control (one row per Section Page, the target desk, and the
+  `haipipe:compile-order` block that replaced the Narrative page). It survives
+  retargeting unchanged in §1–§7 and binds its Ideation origin as a birth
+  certificate. `haipipe-page-story` (`paper/page-types/`; was `haipipe-paper-seed`,
+  then `haipipe-page-story`).
 - **Venue** is one evidence-backed desk record in the shared bank — a library
-  asset outside the journey; the decision to target it lives on a Narrative.
-- **Narrative** is one desk's telling and the paper's plan to SHOW, a child
-  page of its Story (`Story<NN>-narrative-<desk>`): venue decision, claim
-  system, argument order, and the one-row-per-section map. One desk, one page;
-  retargeting mints a sibling child from the same Story.
+  asset outside the journey; the decision to target it lives on the Story's §8
+  rows.
 - **Section** is one reader-ordered manuscript or appendix unit executing one
-  Narrative row; the tex owns the words, the page owns the tracking.
-- **Round** is one bounded feedback batch parented to a named Narrative. It
-  routes every concern exactly once — to the Seed when new evidence is
-  demanded, to the Narrative for retelling, to a Section for rework — and
-  closes with a checked response receipt.
+  Story §8 Section Control row; the page owns the words and the tracking.
+- **Round** is one bounded feedback batch parented to the Story and the build
+  it reviewed. It routes every concern exactly once — to the Story's §6 when
+  new evidence is demanded, to a §8 row for retelling, to a Section for rework
+  — and closes with a checked response receipt.
+- **Retired 260907**: Roadmap (plan to collect) and Narrative (plan to show)
+  are no longer Page Types. Their contracts are parked at
+  `paper/_old/retired-workflow-phases-260907/`, a paper's old child pages at that
+  paper's `_archive/`; both are migration history, never current authority.
 
 `/haipipe-paper status [paper] [section|evidence|citation|display]` regenerates
 the same rollup a Dash Page used to hold, as an optional drill-down on the
@@ -126,12 +120,13 @@ covered four families and only one of them — section — was ever
 Narrative-shaped; folding it into Narrative would have stranded the other
 three with no owner).
 
-Retargeting keeps Seed, binds the target's SHARED Venue Page (creating one in
-the venue bank only when the desk has none), and creates a new Narrative. A
-Venue Page is consumer-neutral and refreshes on the desk's clock, never a
-paper's. Retargeting does not rewrite the stable paper identity merely to
-imitate a new desk. Closed Round Pages remain bound to the Venue, Narrative,
-and build they actually reviewed.
+Retargeting keeps the Story's Seed divisions, binds the target's SHARED Venue
+Page (creating one in the venue bank only when the desk has none), and adds a
+sibling set of §8 Section Control rows with the new target and its own
+compile-order block. A Venue Page is consumer-neutral and refreshes on the
+desk's clock, never a paper's. Retargeting does not rewrite the stable paper
+identity merely to imitate a new desk. Closed Round Pages remain bound to the
+Venue, the Story version, and the build they actually reviewed.
 
 ## 🃏 Evidence belongs to the Page that uses it
 
@@ -208,19 +203,18 @@ Resolve the paper root and target Page before changing anything.
 
 | User intent | Route |
 |---|---|
-| brainstorm, novelty-check, eliminate an idea, or send one to a Seed | `haipipe-paper-ideation` |
+| brainstorm, novelty-check, eliminate an idea, or send one to a Seed | `haipipe-page-ideation` |
 | ask where a paper is in the journey, or test a gate | `haipipe-paper-workflow` |
-| start a paper, read where one idea stands, repair its identity or RQ table | `haipipe-paper-story` (`seed` still routes here) |
-| plan the campaign, release a block, register receipts, close a lap | `haipipe-paper-roadmap` |
+| start a paper, read where one idea stands, repair its identity or RQ table | `haipipe-page-story` (`seed` still routes here) |
+| release a work block, register a receipt, settle an E-row, release a Section row | `haipipe-page-story` (§6 Work Control · §8 Section Control) |
 | inspect or record a target venue | `haipipe-paper-venue` (library lane, not a phase) |
-| design claims, arc, or per-section outline | `haipipe-paper-narrative` |
 | write or revise one manuscript/appendix unit | `haipipe-paper-section` |
 | triage or answer one feedback/review cycle | `haipipe-paper-round` |
 | check paper or one family's status | `/haipipe-paper status` (command, not a Page Type) |
 | run one Page through its lifecycle | `haipipe-page-workflow` |
 | compile or export one Page | Page-local `latex/` or `word/` plugin |
 | assemble the paper | `haipipe-paper-assemble` from the Section Pages' own `delivery/latex/` outputs and accepted bindings |
-| respond to reviewers | a Round Page plus affected Narrative/Sections |
+| respond to reviewers | a Round Page plus the affected Story rows and Sections |
 
 ### Paper verbs
 
@@ -231,16 +225,14 @@ Resolve the paper root and target Page before changing anything.
 /haipipe-paper journey [paper]         read the journey position · test the gates ·
                                        never advances anything
 /haipipe-paper story [paper] [phase]    (`seed` accepted as alias)
-/haipipe-paper roadmap [paper] [phase]
 /haipipe-paper venue <target> [phase]
-/haipipe-paper narrative <target> [phase]
 /haipipe-paper section <section-id> [phase]
 /haipipe-paper round <new|id>
 /haipipe-paper assemble [paper]        runs anytime · a build made while gate G6
                                        fails is watermarked DRAFT in its receipt
 ```
 
-Every `[phase]` above is a PAGE phase (CONTEXT…CHECK). The journey's six
+Every `[phase]` above is a PAGE phase (CONTEXT…CHECK). The journey's
 positions are never called by that word in a verb; `haipipe-paper-workflow`
 carries the terminology law.
 
@@ -248,25 +240,29 @@ When the user names a concrete Page, prefer that Page over inferring a phase
 from a broad verb. When a phase is omitted for an existing Page, inspect its
 latest receipt and use the shared workflow's authority test.
 
-## 📐 The Narrative contract controls the paper
+## 📐 The Story's Section Control controls the paper
 
-The Narrative Page is not a paragraph summary. Its governing artifact is a
-detailed section map with one row per reader-ordered section:
+The Story page's §8 Section Control is not a paragraph summary. Its governing
+artifact is a table with one row per reader-ordered section, plus a
+machine-readable compile order:
 
 ```text
-section-id | reader question | claim role | must establish | evidence ids |
-display ids | paragraph/move outline | enters from | hands to | open risk
+target | order | section-id | reader question | claim / E ids | evidence/run ids |
+state | open risk
+<!-- haipipe:compile-order:start --> main: … appendix: … <!-- …:end -->
 ```
 
-Every Section Page points to exactly one current row. A changed Narrative row
-reopens the affected Section; a prose draft never outranks the current map.
+Every Section Page points to exactly one current row (`story-row:` on the
+Section; `narrative-row:` is the pre-260907 name and reads as an alias). A
+changed row reopens the affected Section; a prose draft never outranks the
+current row. The compile-order block is an order projection of the table, read
+by `haipipe-paper-assemble`; it never carries prose.
 
-Narrative itself may make factual claims—for example, that a result is the
-paper's peak claim or that a mechanism is sufficiently established. Those
-claims must carry typed Evidence Items and accepted local Results just like
-claims on any other Page.
-Narrative does not become evidence-free merely because its output is an
-outline.
+A Story row may make factual claims — that a result is the paper's peak claim,
+that a mechanism is sufficiently established. Those claims resolve to the
+Story's §6 E-rows and their accepted receipts, like claims on any other Page.
+A control table does not become evidence-free merely because its output is an
+order.
 
 ## 📂 Paper folder scaffold (JL 260823 · groups at the root and delivery/ JL 260907)
 
@@ -282,14 +278,13 @@ Paper-<Slug>/
 ├── board/                      engine-generated HTML (build.py output)
 ├── A1-Story/
 │   ├── Story00-ideation/       P0 · the idea pool · exactly one
-│   └── Story01-<idea-slug>/    P1 · ONE STORY = ONE IDEA · the Story page carries
-│       │                       the Seed and the Research Question table
-│       ├── Story01-roadmap/            P2 · child · plan to COLLECT
-│       └── Story01-narrative-<desk>/   P3 · child · plan to SHOW · one per desk
-│   (a second surviving idea is Story02-<slug>/, same shape)
-├── Ba-<desk1>-Main/            P4 · first desk's named Main sections
-├── Bb-<desk1>-Appendix/        P4 · its named Appendix sections
-├── Bc-<desk1>-Round/           P5 · its RD<NN> rounds, one page per batch ·
+│   └── Story-A/                P1 · ONE STORY = ONE IDEA · the only control page:
+│       └── Story-A.md          Seed · RQ table · §6 Evidence and Work Control ·
+│                               §8 Section Control + haipipe:compile-order block
+│   (a second surviving idea is Story-B/, same shape; no roadmap/narrative children)
+├── Ba-<desk1>-Main/            P3 · first desk's named Main sections
+├── Bb-<desk1>-Appendix/        P3 · its named Appendix sections
+├── Bc-<desk1>-Round/           P4 · its RD<NN> rounds, one page per batch ·
 │   └── RD<NN>-<event>-<date>/  each holds sent/ · feedback/ · released/ (the
 │                               frozen PDF+DOCX that drew comments, what came
 │                               back, the PDF+DOCX that answered them)
@@ -301,6 +296,8 @@ Paper-<Slug>/
 │   │                           <page>.tex fragments) + displays/ + reference.bib,
 │   │                           all copied from the pages · the compiled paper PDF
 │   └── word/                   .docx converted from latex/
+├── _archive/                   HISTORY only, read by nothing · e.g.
+│                               retired-workflow-pages-260907/ (old child pages)
 └── README.md
 ```
 
@@ -309,7 +306,7 @@ TASK LAYER's own home, `examples/<Project>/tasks/{G}{NN}_<name>/`, never inside
 the paper repo. The symmetry is with discoveries — evidence layers are
 consumer-neutral and a page binds them by path, so a task inside the paper
 would make the paper both the consumer of its evidence and the executor of it.
-`haipipe-paper-roadmap` carries the law and the which-project test.
+The Story's §6 Work Control (`haipipe-page-story`) carries the law and the which-project test.
 
 **The delivery law (JL 260907; replaces the room law of 260824)**: the words
 live on the Section Pages. Each Section Page compiles its own
@@ -317,7 +314,7 @@ live on the Section Pages. Each Section Page compiles its own
 page-level delivery plugin, and that PDF is the page's own deliverable; the
 body fragment beside it, `delivery/latex/<page>.tex`, is what the paper
 build `\input`s. The paper's `delivery/latex/` is built FROM those fragments,
-in the Narrative's section-map order: `master.tex` is generated, `sections/`
+in the Story's compile order (the §8.2 `haipipe:compile-order` block): `master.tex` is generated, `sections/`
 and `appendices/` are copies of the fragments, `displays/` holds copies of
 accepted page-local DISPLAY floats and assets, and `reference.bib` is merged
 from the pages' `bibex/<page>.bib`. Nothing under `delivery/` is hand-edited; a correction goes
@@ -335,9 +332,10 @@ grandfathered where they exist.
 
 **Group-name grammar (JL 260824; Section IDs re-ruled 260901)** — one `A` group
 carries the per-paper journey: `A1-Story` holds `Story00-ideation` (the pool)
-and one `Story<NN>-<idea-slug>` per surviving idea, each holding its
-`Story<NN>-roadmap` and `Story<NN>-narrative-<desk>` children (JL 260907: the
-number is the idea counter; `SD`/`NA` tokens are retired); `B` groups run in lowercase
+and one `Story-<letter>` per surviving idea, the paper's only control page (JL
+260907: the letter is the stable Story identity; `SD`/`NA` tokens are retired;
+the roadmap/narrative children retired the same day into `_archive/`);
+`B` groups run in lowercase
 letter order across the board, ONE LETTER PER GROUP (JL 260831 "Ba to be Main,
 Bb to be Appendix, Bc to be Round"): the first desk takes `Ba-<desk>-Main` for
 the named Main units, `Bb-<desk>-Appendix` for its named Appendix units, and
@@ -358,12 +356,13 @@ folder, never at the repo root. Existing repos (`0-<Slug>PaperBoard/`, bare
 `paperboard/`, `0-sections/`, `0-display/`, a shared root `reference.bib`,
 `SC`/`A<D>`/`SD`/`NA` tokens, a separate `A2-NA-narrative` group, a lone `C1-RD-round`
 group, a story group holding a separate `SD03-collection` page, the
-`0-paperboard/` wrapper with `<N>-<desk><year>/` desk rooms beside it, and the
-flat phase-numbered story group `Story01-seed` / `Story02-roadmap` /
-`Story03-narrative-<desk>`) are grandfathered and migrate only on explicit
+`0-paperboard/` wrapper with `<N>-<desk><year>/` desk rooms beside it, the
+flat phase-numbered Story/Seed/Roadmap/Narrative sibling group, and a Story
+still holding `Story-<letter>-roadmap` / `-narrative-<desk>` children) are
+grandfathered and migrate only on explicit
 request, because the rename touches tex `\input` paths, legacy PageX
 symlinks, and compile scripts. `Paper-AgreeablePrescription` is the first
-repo on the 0.8.0 layout.
+repo on the 1.0.0 single-Story layout.
 
 ## 📦 Assembly and delivery
 
@@ -389,12 +388,12 @@ acceptance · display bindings        + .bib · accepted display assets
 The Page-local `delivery/word/` snapshot remains useful for a coauthor
 reading one Section Page. It is not the complete-paper input. The complete
 paper builder reads each Section Page's `delivery/latex/<page>-complete.tex`
-in the Narrative's order, regenerates `delivery/latex/` from them, and
+in the Story's compile order, regenerates `delivery/latex/` from them, and
 converts `delivery/word/` from that. The pages own the wording; `delivery/`
 is a projection and is never edited by hand.
 
 The paper declares one `delivery/paper-build.toml` containing the page groups
-and the Narrative that orders them, the display and bibliography sources,
+and the Story page whose compile-order block orders them, the display and bibliography sources,
 output names, and venue profile. The reusable engine owns parsing, document events, rendering,
 manifests, and QA; the paper contributes configuration and only a narrowly
 scoped adapter for unusual constructs. See
@@ -451,10 +450,20 @@ topic-entry tooling, stage-specific craft, and their helper scripts are
 retired, and were DELETED 260822 rather than parked; this door never loaded them.
 
 An existing paper that still uses those files is migrated only on explicit
-request. Migration reads the old pages as evidence, creates current Seed,
-Venue, Narrative, and Section Pages, verifies the new build, and preserves the
-old tree under that paper's archive. Ordinary writing never silently revives a
-retired stage lane.
+request. Migration reads the old pages as evidence, creates the current Story,
+Venue, and Section Pages, verifies the new build, and preserves the old tree
+under that paper's archive. Ordinary writing never silently revives a retired
+stage lane.
+
+On 2026-09-07 the Roadmap and Narrative journey phases were retired as well:
+`haipipe-paper-roadmap` and `haipipe-paper-narrative` moved to
+`paper/_old/retired-workflow-phases-260907/`, and their duties moved onto the
+Story page (§6 Evidence and Work Control, §8 Section Control with the
+compile-order block). A paper still carrying `Story-<letter>-roadmap` /
+`-narrative-<desk>` child pages is grandfathered and migrates on explicit
+request, the children going to that paper's `_archive/`; `board.md`, Section
+`story-row:` fields, and `delivery/paper-build.toml` `order` then point at the
+Story page.
 
 ## ✅ Completion checks
 
@@ -462,9 +471,9 @@ Before reporting Paper work complete:
 
 - The active Page Type and Page phase are explicit.
 - The Story page contains no venue-specific promise, no prose, no run.
-- Each Narrative names its venue and carries claims plus one detailed row per
-  Section.
-- Every Section resolves to one Narrative row and every consequential sentence
+- The Story's §8 Section Control names the target desk and carries one row per
+  Section, and its compile-order block lists only real Section ids.
+- Every Section resolves to one Story Section Control row and every consequential sentence
   resolves to evidence or is visibly marked as an unsupported obligation.
 - Citation, value, and display bindings live on the consuming Page; each one
   resolves to a typed Evidence Item, full local Run id, and accepted Result.
@@ -489,10 +498,17 @@ Before reporting Paper work complete:
 ```text
 paper/
 ├── haipipe-paper/          public door; one routing contract
-├── haipipe-paper-workflow/ the six-phase gate machine; owns transitions only
+├── haipipe-paper-workflow/ the journey gate machine (Ideation → Story →
+│                           Evidence/Execution → Section → Compile → Round);
+│                           owns transitions only
 ├── haipipe-paper-assemble/  complete-paper DOCX/PDF/supplement build contract
-├── workflow-phases/        six journey-phase skills, haipipe-paper-ideation
-│                           … haipipe-paper-round; each owns its page-type key
+├── page-types/             the two Paper Page Types, named like every other
+│                           haipipe-page-<type> (JL 260907): haipipe-page-ideation ·
+│                           haipipe-page-story; each owns its page-type key
+├── workflow-phases/        the two journey-phase skills that are also Page Types:
+│                           haipipe-paper-section · haipipe-paper-round
+├── _old/                   retired-workflow-phases-260907/ (roadmap, narrative) ·
+│                           history only, never loaded
 ├── haipipe-paper-venue/ the one non-phase Page Type: a QBv bank record
 ├── venue/                  the shared QBv desk bank (bank/), prose playbooks,
 │                           and the literature bank

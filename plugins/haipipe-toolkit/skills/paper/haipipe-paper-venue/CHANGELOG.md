@@ -1,3 +1,9 @@
+## 260907 · consumer renamed
+
+- The venue contract's consumer is the Story's §8 Section Control row (and the
+  Section Pages it licenses); the Narrative Page retired 260907
+  (haipipe-paper-workflow 1.0.0). Bank-page duties unchanged. Written by Claude Peer.
+
 ## 0.6.0 — 2026-09-04
 
 - Enter concrete Venue work through the canonical five-phase Page chain.

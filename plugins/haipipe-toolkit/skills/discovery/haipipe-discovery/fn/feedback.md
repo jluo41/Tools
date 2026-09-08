@@ -11,7 +11,7 @@ Captures feedback about the discovery SKILL (confusing dashboard, clunky stage,
 missing verb, bad routing, hard-to-read output) and FILES IT NEXT TO THE CODE
 THAT NEEDS FIXING. Does NOT fix anything; fixing is a separate revision pass.
 Distinguish from a discovery FINDING: feedback is about the TOOL, not the
-sources/verdict/landscape/ideas the discovery produces.
+sources/verdict/landscape the discovery produces.
 
 Capture-time routing: each complaint is inferred to a specific bucket unit and
 written into THAT unit's `feedback/` folder. When no unit matches (cross-cutting
@@ -21,9 +21,11 @@ it lands in the orchestrator fallback `feedback/`. The folder a file lives in IS
 the record of which unit it concerns; there is no separate `skill:` field.
 
 The routable UNIT is the BUCKET FOLDER (each groups several capability skills),
-plus the shared `agents/` folder. Four routable units total (1_search, 2_review,
-3_idea, agents); the orchestrator fallback inbox is the catch-all DESTINATION
-for cross-cutting items, not a fifth unit.
+plus the shared `agents/` folder. Four Discovery routable units total
+(1_search, 2_review, 3_synthesize, agents); the orchestrator fallback inbox is
+the catch-all DESTINATION for cross-cutting items, not a fifth unit. Semantic
+ideation is a sibling skill, not a Discovery inbox: feedback about Direction
+Cards, evidence bundles, or Paper handoff belongs to `haipipe-ideation`.
 
 ## Capture: `/haipipe-discovery feedback "<text>"`
 
@@ -91,7 +93,7 @@ resolve:
            discovery.yaml schema, the report block, the stage
            strip, the dashboard, the group-letter hints, the project.log.jsonl.
        Rule of thumb: "would this complaint be equally true for a Search folder,
-       a Review folder, AND an Idea folder?" If yes, it is cross-cutting.
+       a Review folder, AND a Synthesize folder?" If yes, it is cross-cutting.
        Contrast: "the type: field shouldn't be a Chinese glyph" -> fallback
        (the type axis is layer-wide schema); "sources.md is an unreadable wide
        table" -> 1_search (one bucket's output).
@@ -104,9 +106,10 @@ Keyword -> unit map (first/most-specific match wins; unit = the bucket folder):
 
 ```
 search, find paper, arxiv, semantic scholar, exa, sources.md,
-read, summarize paper, alphaxiv, deepxiv, analyze paper, notes -> 1_search/feedback/
-review, lit review, landscape, verdict, synthesize            -> 2_review/feedback/
-idea, idea-creator, generate ideas, ideas.md, novelty, 查新    -> 3_idea/feedback/
+read, summarize paper, alphaxiv, deepxiv, analyze paper        -> 1_search/feedback/
+review, source reading, inspect Result, analyze source        -> 2_review/feedback/
+lit review, landscape, verdict, synthesize, combine papers    -> 3_synthesize/feedback/
+Direction Card, evidence bundle, semantic idea, Paper handoff -> haipipe-ideation owner (outside Discovery)
 creator/orchestrator/reviewer agent, dispatch                 -> agents/feedback/
 --------------------------------------------------------------------------------
 NO MATCH (cross-cutting: the D1 Task/Page workflow handoff, the
@@ -151,10 +154,11 @@ capture, so a mapped folder not existing yet is expected, not an error. Do NOT
 pre-create empty inboxes; create one only when a file is actually filed there.
 
 ```
-1_search    (arxiv, semantic-scholar, exa-search,
-             alphaxiv, deepxiv, paper-analyzer)                1_search/feedback/
-2_review    (research-lit, comm-lit-review, academic-research) 2_review/feedback/
-3_idea      (idea-creator, novelty-check)                      3_idea/feedback/
+1_search    (arxiv, semantic-scholar, exa-search, openalex,
+             gemini-search, alphaxiv, deepxiv, paper-analyzer) 1_search/feedback/
+2_review    (source review, Result inspection)                  2_review/feedback/
+3_synthesize (research-lit, comm-lit-review, academic-research) 3_synthesize/feedback/
+ideation    (semantic direction, cards, bundle, handoff)      outside Discovery; route to haipipe-ideation
 agents      (creator / orchestrator / reviewer dispatch)       agents/feedback/
 ORCHESTRATOR FALLBACK                                          haipipe-discovery/feedback/
 ```

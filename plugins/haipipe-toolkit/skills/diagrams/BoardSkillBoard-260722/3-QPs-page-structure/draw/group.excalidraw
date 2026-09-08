@@ -18,7 +18,7 @@
     "imports": [
       {
         "page": "QPs1",
-        "source": "../QPs1-overall/draw/QPs1.excalidraw",
+        "source": "../QPs1-overall/studio/draw/QPs1.excalidraw",
         "placement": {
           "x": 2283.0,
           "y": 2475.0,
@@ -28,7 +28,7 @@
       },
       {
         "page": "QPs2",
-        "source": "../QPs2-page-types/draw/QPs2.excalidraw",
+        "source": "../QPs2-page-types/studio/draw/QPs2.excalidraw",
         "placement": {
           "x": 0,
           "y": 0,
@@ -38,7 +38,7 @@
       },
       {
         "page": "QPs3",
-        "source": "../QPs3-for-stage/draw/QPs3.excalidraw",
+        "source": "../QPs3-for-stage/studio/draw/QPs3.excalidraw",
         "placement": {
           "x": 0,
           "y": 0,
@@ -48,7 +48,7 @@
       },
       {
         "page": "QPs4",
-        "source": "../QPs4-for-design/draw/QPs4.excalidraw",
+        "source": "../QPs4-for-design/studio/draw/QPs4.excalidraw",
         "placement": {
           "x": 0,
           "y": 0,

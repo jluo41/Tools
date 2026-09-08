@@ -3,6 +3,45 @@ haipipe-toolkit — Changelog
 
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
+### Paper journey 1.0.0 · single-Story control · 2026-09-07
+
+- The paper journey is Ideation → Story → Evidence/Execution → Section →
+  Compile → Round (haipipe-paper-workflow 1.0.0). Roadmap and Narrative are
+  retired: `haipipe-paper-roadmap` and `haipipe-paper-narrative` parked at
+  `paper/_old/retired-workflow-phases-260907/`; the Story page carries §6
+  Evidence and Work Control and §8 Section Control with a
+  `haipipe:compile-order` block that `haipipe-paper-assemble` reads.
+- Router 1.0.0, section 0.9.0 (`story-row:`, `narrative-row` alias), round
+  0.6.0 (P4, G5, `story` field), README/TODO, board tooling
+  (`context-record.py` retired owners, `check.py` skips dangling symlinks,
+  `test_aims_state.py` four current types), page-context/page-workflow/
+  haipipe-page prose, STRUCTURE and README (Claude Peer, pair
+  haipipe-paper-workflow-redesign). First migrated paper:
+  `Paper-AgreeablePrescription`. Same session, second slice: the Page Types
+  are `paper/page-types/haipipe-page-ideation` (0.7.3) and
+  `paper/page-types/haipipe-page-story` (0.9.1); the registry, context-record
+  owners, router, tests, and `.codex/.claude` symlinks follow; the 14 live
+  Section pages carry `story-row:`; assemble 0.5.0 and the venue contract
+  read the Story's compile order / Section Control rows.
+
+### Discovery external-source refresh · 2026-09-07
+
+- Pulled the pinned ARIS reference to `0472e53`.
+- Refreshed the related external research references (academic-research-skills,
+  Auto-Empirical-Research-Skills, AER-Skills, Auto-Research-Skills,
+  literature-source-tracing, research-agent-skills, research-co-pilot,
+  paper-rag-skill, research-genealogy, Science Superpowers,
+  Superpower Social Science, and PaperJury); the exact tips and promotion
+  decisions are recorded in discovery/haipipe-discovery/ref/external-skill-map.md.
+- Added HAI adapters for optional Gemini broad recall and OpenAlex structured
+  metadata, and wired them into the Discovery D1 workflow table.
+- Synchronized idea-creator and novelty-check with ARIS's latest calibrated
+  model/triage guidance while preserving HAI Page/Run/Result/Bib authority.
+- Made Gemini naming, clinical medRxiv/PubMed/Crossref coverage, Discovery
+  review output, novelty Result/cite binding, and cross-Task provenance
+  explicit; new paper Results require paper-source-v2 while historical Results
+  remain checker-compatible.
+
 ## [Unreleased] — 2026-07-26 — Board becomes a first-class family
 
 - Added the Page-level `RUN` router: a bounded Workflow composes DRAFT, PROBE,

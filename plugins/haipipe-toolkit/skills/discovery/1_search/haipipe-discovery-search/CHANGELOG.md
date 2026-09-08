@@ -3,6 +3,37 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.6.0 · 2026-09-07
+
+- Narrow the Search family to candidate discovery and canonical Subject
+  resolution; per-Subject reading now belongs to `2_review`.
+
+## 0.5.4 · 2026-09-07
+
+- Mark 1_search as a capability family rather than a BJTR level and link the
+  shared Discovery retrofit crosswalk.
+
+## 0.5.3 · 2026-09-07
+
+- Align the OpenAlex credential wording with the pinned ARIS helper:
+  OPENALEX_API_KEY is the API parameter and OPENALEX_EMAIL is the only polite
+  pool mailto variable; OPENALEX_MAILTO is not supported.
+
+## 0.5.2 · 2026-09-07
+
+- Make Crossref/PubMed fallback and field-relevant medRxiv coverage explicit in
+  the channel law and canonical-identity resolution.
+- Preserve the ARIS Gemini/OpenAlex adapters as optional FIND scouts and keep
+  their failures non-blocking.
+- State the creation-time requirement for `paper-source-v2` on new paper
+  Results, while leaving the checker backward-compatible for historical ones.
+
+## 0.5.1 · 2026-09-07
+
+- Add the ARIS-derived Gemini and OpenAlex adapters as optional FIND channels.
+- Keep required preprint + journal-index coverage, independent identity
+  verification, and Discovery-owned Run/Result/Bib writes unchanged.
+
 ## 0.5.0 · 2026-09-04
 
 - Keep acquisition under D1 `ACQUIRE`, route source-map/source-reading craft

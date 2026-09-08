@@ -1,3 +1,13 @@
+## 0.9.0 · 260907
+
+- Journey position P4 → P3 and gates renumbered (G3 releases a row, G4 marks
+  the build) after Roadmap and Narrative retired (haipipe-paper-workflow 1.0.0).
+- The governing row is the Story's §8 Section Control row: `story-row:`
+  replaces `narrative-row:` (read as an alias on unmigrated pages); HOLD for a
+  stale row returns to `haipipe-paper-story`; deviations and budget splits are
+  recorded on the Story row; `ref/generic-template.md` and
+  `cli/resolve-structure.py` say so. Written by Claude Peer.
+
 ## 0.8.4 · 260907
 - Runtime home at the paper root, no `0-paperboard/`. "Where the words live"
   rewritten: on this page, as `delivery/latex/<page>.tex` (fragment the paper

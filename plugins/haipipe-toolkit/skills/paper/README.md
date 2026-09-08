@@ -2,30 +2,30 @@
 
 `paper/` composes a manuscript from evidence-bearing Board Pages. The active
 architecture is Page-first. The former numbered S-stage runtime was retired
-and DELETED 260822 rather than parked; no `_old/` archive exists here.
+and DELETED 260822 rather than parked. On 260907 the Roadmap and Narrative
+journey phases were retired too; their contracts are parked, not deleted, at
+`_old/retired-workflow-phases-260907/` as migration history.
 
 ## Active architecture
 
-Six phases, each named by its authority page, gated by
-`haipipe-paper-workflow` (journey 0.6.0, JL 260828); the venue bank is a
-library outside the journey:
+The journey (haipipe-paper-workflow 1.0.0, JL 260907), each position named by
+its authority page; the venue bank is a library outside the journey:
 
 ```text
-P0 Ideation (ideate)     Story00 · the repo is minted with this page · sends one
-                         idea to its Seed
-P1 Story (establish)     Story<NN>-<idea> · THE STORY PAGE · one idea = one
-                         paper (0.8.0) · holds the Seed (identity) · Research
-                         Question table · E-board with novelty column
-P2 Roadmap (route)       Story<NN>-roadmap · child of its Story · plan to COLLECT
-                         · block rows serving RQ/E-rows · person-released · then
-                         dispatch cards and receipts, lap by lap, on the same page
-   ↺ P1↔P2 = the establish loop · exits only through the Seed at G4
-P3 Narrative (tell)      Story<NN>-narrative-<desk> · child of its Story · plan
-                         to SHOW · one per desk · §1 binds a bank Venue Page
-P4 Section (realize)     one per map row · then assemble (a verb) at G6
-P5 Round (respond)       in the desk's B group · routes each concern once →
-                         Seed / Narrative / Section · gates G0-G7 in the
-                         workflow file
+P0 Ideation (ideate)        Story00-ideation · the repo is minted with this page ·
+                            sends one idea to its Story
+P1 Story (establish)        Story-<letter> · THE ONLY CONTROL PAGE · one idea = one
+                            paper · Seed (identity) · RQ table · §6 Evidence and
+                            Work Control (E-rows + Discovery/Task/Run register) ·
+                            §8 Section Control + haipipe:compile-order block
+P2 Evidence/Execution       a work lane, not a page · Discovery blocks, Task
+                            blocks, Runs in examples/<Project>/ · receipts land
+   ↺ P1↔P2 = the settle loop   back on the Story (G2)
+P3 Section (realize)        one page per §8 row · a person releases each row (G3)
+   Compile (a verb)         haipipe-paper-assemble · anytime · G4 READY vs DRAFT
+P4 Round (respond)          in the desk's Bc group · routes each concern once →
+                            Story §6 / Story §8 row / Section · gates G0-G5 in
+                            the workflow file
 ```
 
 Each Page runs the shared workflow and owns the evidence it uses:
@@ -39,33 +39,35 @@ Evidence Item graph
 
 <page-dir>/
 ├── <page>.md
-├── outline/
-├── pagex/       Probe's accepted-Page lane
-├── probe/       Probe's Task/Discovery QA cards, proof, and values
-├── bibex/       citation cards and bibliography material
-├── display/     zero or more independently accepted displays
-├── latex/       generated when requested
-└── word/        generated when requested
+├── outline/     plan + nested Evidence Workspace (CITE/VALUE/DISPLAY + Run lineage)
+├── workflow/    machine-readable phase receipts
+├── scripts/     optional owned implementation
+├── runs/        optional authored Run tickets
+├── results/     Folder-local Results
+├── delivery/    page-level render outputs (latex/ · word/ · render/)
+└── studio/      human chat and drawing room
 ```
 
-Values have a Page-local surface but no `value/` storage folder: each value
-lives inside one probe card's proof and `## Values` block and is cited as
-`PP<NN>.v<n>`.
+Evidence Items are typed (`CITE`, `VALUE`, `DISPLAY`) and live in the nested
+Evidence Workspace. Supporting Run Results and the single Page-local Run
+provide the material; no `pagex/`, `probe/`, or standalone value lane is a
+current write target.
 
 There is no View layer. Literature, Value, and Display are Page-local plugin
 lanes, not Page Types.
 
-## Paper layout (0.8.0 · JL 260907)
+## Paper layout (1.0.0 · JL 260907)
 
 ```text
 Paper-<Slug>/                        no 0-paperboard/ wrapper · board.md at the root
 ├── board.md                         paper-root: .
 ├── A1-Story/
 │   ├── Story00-ideation/            the idea pool
-│   └── Story01-<idea-slug>/         one Story = one idea · seed + RQ table
-│       ├── Story01-roadmap/         plan to collect → tasks/ · discoveries/
-│       └── Story01-narrative-<desk>/  plan to show → Ba/Bb
+│   └── Story-A/                     one Story = one idea · the only control page
+│       └── Story-A.md               seed + RQ table + §6 Work Control + §8 Section
+│                                    Control + compile-order block
 ├── Ba-<desk>-Main/  Bb-<desk>-Appendix/  Bc-<desk>-Round/
+├── _archive/                        history only · e.g. retired-workflow-pages-260907/
 └── delivery/                        GENERATED from the Section Pages' own
     ├── paper-build.toml             delivery/latex/<page>.tex fragments
     ├── latex/                       master.tex · sections/ · displays/ · .bib · PDF
@@ -79,18 +81,22 @@ paper/
 ├── haipipe-paper/
 │   └── SKILL.md              one public Paper door and routing contract
 ├── haipipe-paper-workflow/
-│   └── SKILL.md              the six-phase gate machine; transitions only
+│   └── SKILL.md              the journey gate machine (Ideation → Story →
+│                             Evidence/Execution → Section → Compile → Round)
 ├── haipipe-paper-assemble/
 │   ├── SKILL.md              complete-paper source-driven DOCX/PDF contract
 │   └── ref/                   config example and assembly references
-├── workflow-phases/          six journey-phase skills, each owning its
-│   ├── haipipe-paper-ideation/     page-type key (JL 260831: replaces page-types/)
-│   ├── haipipe-paper-story/       (was haipipe-paper-seed until 0.8.0)
-│   ├── haipipe-paper-roadmap/
-│   ├── haipipe-paper-narrative/
+├── page-types/               the two Paper Page Types (JL 260907: named like
+│   ├── haipipe-page-ideation/      every other haipipe-page-<type>) · P0 · was
+│   │                               workflow-phases/haipipe-paper-ideation
+│   └── haipipe-page-story/         P1 · was haipipe-paper-seed, then haipipe-paper-story
+├── workflow-phases/          two journey-phase skills, each owning its page-type key
 │   ├── haipipe-paper-section/
 │   └── haipipe-paper-round/
 │                             (retired literature/value/display/dash Page Types deleted 260822)
+├── _old/
+│   └── retired-workflow-phases-260907/   haipipe-paper-roadmap · haipipe-paper-narrative ·
+│                                          parked 260907, history only, never loaded
 ├── haipipe-paper-venue/   the one non-phase Page Type: a QBv bank record
 ├── venue/                    the shared QBv desk bank (bank/), prose playbooks,
 │                             and the literature bank
@@ -99,31 +105,32 @@ paper/
 
 ## Family status
 
-as of 2026-09-07 · regenerate with `/workflow-table paper` · this block is a dated receipt, never a second authority
+as of 2026-09-07 22:40 · regenerate with `/workflow-table paper` · this block is a dated receipt, never a second authority
 
 ```text
-Part      Phase / Cycle            skill                    ver     L3 content it changes                      L4 Runs               human gate
-A1-Story  P0 Ideation              haipipe-paper-ideation   0.6.2   Story00-ideation.md                        Discovery 0..N        G0 PROCEED
-A1-Story  P1 Story (seed alias)    haipipe-paper-story      0.8.0   Story<NN>-<idea>.md · §3 RQ table · §6     Page Evidence 0..N    G1 outline tick
-A1-Story  P2 Roadmap · collect     haipipe-paper-roadmap    0.6.3   Story<NN>-roadmap.md · parent "collect"    Execution/Discovery   G2 release blocks
-A1-Story  P3 Narrative · show      haipipe-paper-narrative  0.8.3   Story<NN>-narrative-<desk>.md · "show"     none                  G4/G5 venue decision
-Ba/Bb     P4 Section               haipipe-paper-section    0.8.4   S-<desk>-*.md · delivery/latex/<page>.tex  Page Evidence/Writing  outline v1.0 mint
-delivery  assemble (verb)          haipipe-paper-assemble   0.3.0   none · writes build-manifest/qa            Delivery 1 per build  G6 decide to send
-Bc        P5 Round send/respond/   haipipe-paper-round      0.5.0   RD<NN>.md · sent/ feedback/ released/      none                  G7 dispositions
-          release
-gates     all                      haipipe-paper-workflow   0.8.1   none                                       none                  —
-door      all                      haipipe-paper            0.8.1   none                                       none                  —
-library   consulted at P3          haipipe-paper-venue      0.6.0   QBv bank page                              none                  —
+Part      Phase / Cycle            skill                    ver     L3 content it changes                        L4 Runs               human gate
+A1-Story  P0 Ideation              haipipe-page-ideation    0.7.3   Story00-ideation.md                          Discovery 0..N        G0 PROCEED
+A1-Story  P1 Story (seed alias)    haipipe-page-story       0.9.x   Story-<letter>.md · §3 RQ · §6 E-rows + work   Page Evidence 0..N    G1 release work
+                                                                    register · §8 Section Control + compile order
+external  P2 Evidence/Execution    haipipe-task ·           —       none on the paper · receipts land on Story §6  Execution/Discovery   G2 settle (person
+                                   haipipe-discovery                                                                                    records it)
+Ba/Bb     P3 Section               haipipe-paper-section    0.9.0   S-<desk>-*.md · delivery/latex/<page>.tex    Page Evidence/Writing  G3 row release ·
+                                                                                                                                       outline v1.0 mint
+delivery  Compile (verb)           haipipe-paper-assemble   0.4.x   none · writes one build-manifest               Delivery 1 per build  G4 decide to send
+Bc        P4 Round                 haipipe-paper-round      0.6.0   RD<NN>.md · sent/ feedback/ released/        none                  G5 dispositions
+gates     all                      haipipe-paper-workflow   1.0.0   none                                         none                  —
+door      all                      haipipe-paper            1.0.0   none                                         none                  —
+library   consulted by §8 rows     haipipe-paper-venue      0.6.x   QBv bank page                                none                  —
 ```
 
-First repo on this layout: `examples/Project-Personality-OpioidRx/papers/Paper-AgreeablePrescription`. Static quality and fresh-context field tests have not been run for 0.8.x.
+First repo on this layout: `examples/Project-Personality-OpioidRx/papers/Paper-AgreeablePrescription` (migrated 260907: `Story-A.md` carries §6.4 Work Control and §8 Section Control; its old roadmap/narrative children sit in `_archive/retired-workflow-pages-260907/`; `delivery/build.py` reads the compile-order block). A fresh-context field test of the 1.0.0 journey is still owed.
 
 ## Complete-paper document build
 
 There are two different Word exports. `haipipe-plugin-delivery/ref/word.md` renders one Page
 for coauthor review. `haipipe-paper-assemble` builds the complete manuscript
 from the Section Pages' own `delivery/latex/<page>-complete.tex` files,
-regenerating the paper's `delivery/latex/` whole (0.3.0). The latter is
+regenerating the paper's `delivery/latex/` whole (0.4.0). The latter is
 deterministic and source-driven: generated Word files and section snapshots
 are outputs only, never inputs. New papers should provide a small
 `paper-build.toml` and select a venue profile; they should not copy a large

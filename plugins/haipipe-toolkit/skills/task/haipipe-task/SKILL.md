@@ -1,9 +1,11 @@
 ---
 name: haipipe-task
 description: >-
-  Task-family door and owner of both Task Folder faces: runs Plan → Build →
-  Execute → Report, keeps the run-bound technical Page Face, iterates blocks, answers source
-  questions through `qa`, and creates DIKW Insight Pages through `insight`.
+  Task-family door and canonical owner of Task Folder execution and closure:
+  runs Plan → Build → Execute → Report, keeps the run-bound technical Page Face, iterates blocks, answers source
+  questions through `qa`, creates DIKW Insight Pages through
+  `insight`, and routes reader-facing Task Pages through the
+  haipipe-page-task companion.
   Use for task execution, Task Board status, QA files, or result
   interpretation. Hierarchy: block to job to task to run (task-group and
   task-folder are the pre-260829 names for block and job). Trigger: task,
@@ -11,8 +13,8 @@ description: >-
   report, qa, insight, DIKW, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "0.15.1"
-  last_updated: "2026-09-04"
+  version: "0.15.2"
+  last_updated: "2026-09-07"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -234,7 +236,10 @@ LAND admits for Page citation remains under the Task Page's
 `outline/evidence/display/<unit>/`. It is a governed Page projection, not the
 Task Result store. The paired Result envelope and runtime receipt still live
 under `$OUTPUT_ROOT/results/<task>/<run>/` and record the unit pointer and
-hashes. No other generated/data-dependent artifact earns this exception.
+hashes. No other generated/data-dependent artifact earns this exception. The
+reader-facing display-density and table/figure/diagram requirement for a Task
+Page is owned by `haipipe-page-task`; it does not change the numeric
+provenance or Result-store boundary here.
 
 **QA is the DIRECTION-POINTER above the four phases — it WRAPS them and decides whether to enter them at all.** 
 A `qa` question hits a 3-way gate: ① an existing `QA/` answer → return it; ② the answer already sits in `results/` → digest it, no run; ③ neither → ENTER Plan → Build → Execute → Report at the shallowest depth that answers it. 
@@ -249,13 +254,16 @@ in the Page family's record shape
 (`haipipe-plugin-outline/ref/record-shape.md`). The same-stem
 `tNN_<task>.md` is the Page Face a reader opens. Its technical-report grammar,
 Run-reading rule, and current template are owned here in
-`ref/task-page.md` and `ref/task-page-template.md`; there is no separate Task
-Page skill.
+`ref/task-page.md` and `ref/task-page-template.md`. The reader-facing visual
+contract is the companion `haipipe-page-task`: it requires a planned mix of
+tables, figures, and method/provenance diagrams, while this skill remains the
+owner of Task identity, execution, and closure.
 
 New Task Pages declare `folder-kind: task`. Existing `page-type: task` pages
 remain readable through `metadata.legacy_page_type`; do not add that legacy key
 to a new page. Load `haipipe-page` and `haipipe-page-workflow` before changing
-the Page Face, then load `ref/task-page.md` for the Task-specific promise.
+the Page Face, then load `haipipe-page-task` and `ref/task-page.md` for the
+Task-specific promise.
 
 This is a canonical family-owned Folder rather than a domain phase-owned
 Folder: `folder_owner: canonical` makes `haipipe-task` the owner of both faces,

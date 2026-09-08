@@ -12,8 +12,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.6.0"
-  last_updated: "2026-09-04"
+  version: "2.6.1"
+  last_updated: "2026-09-07"
   summary: "Discovery orchestrator for explicit Block-Job-Task-Run addresses."
 ---
 
@@ -50,8 +50,14 @@ creator       haipipe-discovery-creator-agent
 reviewer      haipipe-discovery-reviewer-agent
 search fanout haipipe-discovery-search-worker-agent
 D1 ACQUIRE   haipipe-discovery-search
-Page CONTENT haipipe-discovery-search | -review | -idea
+Page CONTENT haipipe-discovery-synthesize
 ~~~
+
+`haipipe-discovery-review` supplies per-Subject source packets during ACQUIRE.
+`haipipe-discovery-synthesize` combines accepted Results during SYNTHESIZE.
+Semantic direction work is handed to sibling `haipipe-ideation` after the
+Discovery Page is checked. The numbered families are not BJTR levels; see
+`../haipipe-discovery/ref/bjtr-alignment.md` when a numbered path is unclear.
 
 Mechanical channel workers return candidates only. The orchestrator/creator
 owns relevance, Subject resolution, deduplication, Run allocation, and writes.
@@ -69,9 +75,9 @@ owns relevance, Subject resolution, deduplication, Run allocation, and writes.
    one Subject creates one same-stem Run/Result pair.
 5. Creator executes pending tickets through Search. Reviewer checks every
    complete Result.
-6. Creator runs D1 SYNTHESIZE, which dispatches the shared Page workflow and
-   type specialist; Page phases own root Page writes while D1 records the
-   CONTENT no-Run rationale.
+6. Creator runs D1 SYNTHESIZE, which dispatches
+   `haipipe-discovery-synthesize` and the shared Page workflow; Page phases own
+   root Page writes while D1 records the CONTENT no-Run rationale.
 7. After Page `04 CHECK` closes the Page, creator runs D1 CLOSE and reconciles
    the Task Face; any hard failure routes backward and CLOSE cannot claim ok;
    when commissioned, it completes the already-claimed QA ticket. Reviewer

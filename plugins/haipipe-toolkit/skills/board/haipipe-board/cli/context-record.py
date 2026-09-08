@@ -43,16 +43,18 @@ from src.outline_version import latest_outline, version_tag  # noqa: E402
 # page-type -> (Folder-owning workflow, Page Face owner), from
 # haipipe-page/ref/type-registry.md `law:` rows.
 OWNERS = {
-    "ideation": ("haipipe-paper-workflow", "haipipe-paper-ideation"),
-    "seed": ("haipipe-paper-workflow", "haipipe-paper-story"),   # 0.7.x alias of story
-    "story": ("haipipe-paper-workflow", "haipipe-paper-story"),
-    "roadmap": ("haipipe-paper-workflow", "haipipe-paper-roadmap"),
-    "narrative": ("haipipe-paper-workflow", "haipipe-paper-narrative"),
+    "ideation": ("haipipe-paper-workflow", "haipipe-page-ideation"),   # paper/page-types/ (260907)
+    "seed": ("haipipe-paper-workflow", "haipipe-page-story"),   # 0.7.x alias of story
+    "story": ("haipipe-paper-workflow", "haipipe-page-story"),
+    # retired 260907: Roadmap and Narrative folded into the Story page; the
+    # law is parked, and a page still declaring these keys is grandfathered.
+    "roadmap": ("haipipe-paper-workflow", "retired 260907 · paper/_old/retired-workflow-phases-260907/haipipe-paper-roadmap"),
+    "narrative": ("haipipe-paper-workflow", "retired 260907 · paper/_old/retired-workflow-phases-260907/haipipe-paper-narrative"),
     "section": ("haipipe-paper-workflow", "haipipe-paper-section"),
     "round": ("haipipe-paper-workflow", "haipipe-paper-round"),
     "venue": ("haipipe-paper-workflow", "haipipe-paper-venue"),
     "task": ("haipipe-task", "haipipe-task"),
-    "insight": ("haipipe-task", "haipipe-page-for-insight"),
+    "insight": ("haipipe-task", "haipipe-page-insight"),
     "discovery": ("haipipe-discovery-workflow", "haipipe-discovery-inquiry"),
 }
 NONE = "none"
@@ -168,7 +170,7 @@ def build(page_md: Path, board: Path) -> str:
                     f"`{structure}`" + (f" · {division}" if division else "") if structure
                     else f"{face_owner} contract"),
                    ("Narrative/style policy",
-                    f"{style} · haipipe-paper-narrative" if style else NONE),
+                    f"{style} · Story §8 Section Control (haipipe-page-story)" if style else NONE),
                    ("Requirements",
                     f"`outline/{req.name}` · {len(v_ids)} V · {len(w_ids)} W"
                     if req.is_file() else "none generated"),

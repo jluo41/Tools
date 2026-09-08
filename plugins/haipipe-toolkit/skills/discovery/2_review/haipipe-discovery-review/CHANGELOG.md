@@ -3,6 +3,23 @@ haipipe-discovery-review — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.6.0 · 2026-09-07
+
+- Narrow the live Review family to per-Subject source reading and Result
+  inspection.
+- Move cross-Result article composition to the new `3_synthesize` family.
+
+## 0.5.2 · 2026-09-07
+
+- Mark 2_review as a synthesis capability family rather than a BJTR level and
+  link the shared Discovery retrofit crosswalk.
+
+## 0.5.1 · 2026-09-07
+
+- Clarify that cross-Task Results are read-only supporting context; load-bearing
+  papers must be re-admitted as local paper-analysis Runs before entering the
+  current Task's derived Bib (non-paper Subjects use source-analysis).
+
 ## 0.5.0 · 2026-09-04
 
 - Route review synthesis through Page `03 CONTENT / WRITE`, missing evidence

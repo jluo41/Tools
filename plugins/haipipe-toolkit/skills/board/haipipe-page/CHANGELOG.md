@@ -1,3 +1,18 @@
+## 0.61.0 · 2026-09-07
+
+- Grow the user-check packet from three to four surfaces (JL 260907): the
+  Outline table link is the Page link; a new "Evidence you can open now"
+  surface lists, per ready typed Evidence Item, the Display `preview.pdf`, the
+  Page's citation register `outline/evidence/bibex/<stem>-bib.html`, or the
+  VALUE item card deep link, plus one Evidence Workspace link; a "Content
+  state" surface says whether Revise ran; the Page-level PDF is the delivery
+  shown after Revise, labelled `draft PDF` before it.
+
+## 0.60.4 · 2026-09-07
+
+- Register `haipipe-page-task` as the Task Page's reader-facing companion
+  without changing the canonical `haipipe-task` Folder owner.
+
 ## 0.60.3 · 2026-09-07
 
 - Type registry: `story` added (law `paper/workflow-phases/haipipe-paper-story`,

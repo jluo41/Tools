@@ -72,12 +72,19 @@ appended and existing ids are not renumbered.
 task/haipipe-task/ref/
 └── task-page.md                 one Task Folder and a run-bound human reading
 
+task/haipipe-page-task/
+└── SKILL.md                     display-rich reader contract for Task Pages
+
 task/page-types/
-└── haipipe-page-for-insight/   one reusable DIKW chain around one question
+└── haipipe-page-insight/       one reusable DIKW chain around one question
 ```
 
-An Insight Page may read several Task Pages, Task `QA/` answers, Discovery
-Pages, or prior Insight Pages. It remains consumer-neutral and exports RF.
+`haipipe-task` remains the canonical owner of Task Folder identity, execution,
+results, and closure. `haipipe-page-task` extends the same-stem reader Page
+with the required evidence-display inventory: substantive tables, figures, and
+method/provenance diagrams. An Insight Page may read several Task Pages, Task
+`QA/` answers, Discovery Pages, or prior Insight Pages. It remains
+consumer-neutral and exports RF.
 Paper and Application may bind that exact RF version, but neither downstream
 stake is written into the Insight Page; an Application must turn it into its
 own contextual, signed I5 handoff before Design may use it.

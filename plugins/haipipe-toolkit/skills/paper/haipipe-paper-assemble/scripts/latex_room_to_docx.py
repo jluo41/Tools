@@ -89,7 +89,6 @@ SUPP_PDF_PATH = output_path("supplement_pdf", SUPP_PATH.with_suffix(".pdf").name
 DRAFT_SECTION_ROOM = output_path("section_snapshots", "draft-sections")
 ASSET_DIR = output_path("assets", "submission-assets")
 MANIFEST_PATH = output_path("manifest", "build-manifest.json")
-QA_REPORT_PATH = output_path("qa_report", "build-qa.json")
 RUNNING_TITLE_FALLBACK = str(
     PROFILE_CONFIG.get(
         "running_title_fallback",
@@ -1107,7 +1106,6 @@ def source_manifest() -> dict[str, object]:
             str(SUPP_PDF_PATH.relative_to(ROOT)),
             str(DRAFT_SECTION_ROOM.relative_to(ROOT)),
             str(MANIFEST_PATH.relative_to(ROOT)),
-            str(QA_REPORT_PATH.relative_to(ROOT)),
         ],
         "output_sha256": output_hashes,
         "files": files,
@@ -1166,9 +1164,8 @@ def write_common_receipts(main_events: list[Event], main_displays: list[Display]
     ASSET_DIR.mkdir(parents=True, exist_ok=True)
     manifest = source_manifest()
     manifest["evidence"] = evidence
-    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     word_limit = PROFILE_CONFIG.get("main_text_word_limit")
-    qa_report = {
+    manifest["build"] = {
         "status": "DRAFT" if evidence.get("pending_markers") or evidence.get("unaccepted_items") else "CANDIDATE",
         "source_of_record": str(MASTER.relative_to(ROOT)),
         "venue_profile": PROFILE_NAME,
@@ -1193,8 +1190,8 @@ def write_common_receipts(main_events: list[Event], main_displays: list[Display]
             "g6_human_decision": False,
         },
     }
-    QA_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    QA_REPORT_PATH.write_text(json.dumps(qa_report, indent=2) + "\n", encoding="utf-8")
+    manifest["render"] = pdf_report
+    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
 def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -> tuple[Path, Path]:
@@ -1323,7 +1320,6 @@ def main() -> None:
     print(f"Wrote {supp_path}")
     print(f"Wrote section snapshots to {DRAFT_SECTION_ROOM}")
     print(f"Wrote source manifest to {MANIFEST_PATH}")
-    print(f"Wrote QA report to {QA_REPORT_PATH}")
     print(f"Citation count: {len(CITATION_NUMBERS)}")
 
 

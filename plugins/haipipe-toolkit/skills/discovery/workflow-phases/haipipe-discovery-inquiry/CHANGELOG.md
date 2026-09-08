@@ -1,3 +1,24 @@
+## 0.5.0 · 2026-09-07
+
+- Replace the retired Idea family with the live `3_synthesize` family.
+- Make D1 `SYNTHESIZE` the cross-Result integration handoff after `2_review`
+  source packets.
+
+## 0.4.4 · 2026-09-07
+
+- Add the BJTR alignment addendum and make the old numbered layout explicitly
+  orthogonal to D1 and Page workflows.
+
+## 0.4.3 · 2026-09-07
+
+- Keep the historical `3_idea` family readable while routing new semantic
+  ideation to sibling `haipipe-ideation`.
+
+## 0.4.2 · 2026-09-07
+
+- Register optional ARIS-derived Gemini and OpenAlex FIND adapters in the
+  canonical workflow table without changing D1 Run cardinality or authority.
+
 ## 0.4.1 · 2026-09-04
 
 - Clarify that `1_search`, `2_review`, and `3_idea` are numbered capability

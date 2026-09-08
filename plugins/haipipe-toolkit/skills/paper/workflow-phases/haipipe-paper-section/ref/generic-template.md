@@ -9,19 +9,19 @@ generic outline into an invented venue rule.
 ```yaml
 page-type: section
 section_kind: <kind>
-narrative-row: <row id and version>
+story-row: <Story-<letter> §8.1 / <section-id> + Story version>
 reader-question: <one question>
 entry-state: <reader state on entry>
 exit-state: <reader state on exit>
-claim-ids: [<exact Narrative ids>]
+claim-ids: [<exact Story claim / E ids>]
 venue-allocation: <binding rules; pack observations labeled separately>
 structure-source: ref/generic-template.md · <why: ABSENT BY DESIGN or MISSING>
 evidence-items:
   - <E01-VALUE-readable-name>
   - <E02-CITE-readable-name>
   - <E03-DISPLAY-readable-name>
-transition-in: <join from prior Narrative row>
-transition-out: <join to next Narrative row>
+transition-in: <join from the prior Section Control row>
+transition-out: <join to the next Section Control row>
 ```
 
 ## Opening
@@ -31,7 +31,7 @@ Do not restate the paper abstract or preview evidence that has not landed.
 
 ## Move outline
 
-Create only the moves required by the current Narrative row. For each move:
+Create only the moves required by the current Story Section Control row. For each move:
 
 ```text
 reader move
@@ -48,7 +48,7 @@ introducing a new claim.
 
 ## Exit check
 
-- Every move traces to the current Narrative row.
+- Every move traces to the current Story Section Control row.
 - Every consequential statement has inspectable support or remains visibly open.
 - Every typed Evidence Item names its Supporting Run ids, one frozen Local
   Input, one local Page Run, and one accepted local Result in the Evidence

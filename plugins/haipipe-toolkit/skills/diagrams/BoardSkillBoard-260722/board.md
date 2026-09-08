@@ -493,7 +493,7 @@ test_linked_drawings.py ../../board/haipipe-board/tests/test_linked_drawings.py
 live/xcal.py          ../../board/haipipe-board/live/xcal.py
 board.excalidraw      board.excalidraw
 8-QO-operating/draw/group.excalidraw 8-QO-operating/draw/group.excalidraw
-QPf2a.excalidraw    4-QPf-page-folder/QPf2-draw-attach/draw/QPf2.excalidraw
+QPf2a.excalidraw    4-QPf-page-folder/QPf2-draw-attach/studio/draw/QPf2.excalidraw
 QC5                 7-QC-engine/QC2-generate/QC2-generate.md
 QC5a                7-QC-engine/QC2a-skill-to-page/QC2a-skill-to-page.md
 QC5b                7-QC-engine/QC2b-meetingnote/QC2b-meetingnote.md

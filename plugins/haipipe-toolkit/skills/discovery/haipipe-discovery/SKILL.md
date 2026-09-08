@@ -6,14 +6,15 @@ description: >-
   source is analyzed through a numbered shell ticket and its exact same-stem
   Result directory containing a Result Card, facts, runtime receipt, and
   one-entry BibTeX. Use to add a paper/link/PDF, find and read literature,
-  review a claim or field, check novelty, build an evidence Bib, or answer a
-  discovery QA question. Trigger: discover, find paper, add paper, paper run,
-  source link, lit review, 找idea, 查新, verdict, landscape, qa,
+  review a source or field, synthesize prior work, build an evidence Bib, or
+  answer a discovery QA question. Trigger: discover, find paper, add paper,
+  paper run, source link, lit review, review, synthesize, 查文献, verdict,
+  landscape, qa,
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.9.3"
-  last_updated: "2026-09-06"
+  version: "0.10.0"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md
 ---
 
@@ -34,12 +35,14 @@ owner. Then read only the relevant Discovery authorities:
 
 ~~~text
 ref/lifecycle-map.md           hierarchy × lifecycle × type
+ref/bjtr-alignment.md          retrofit of old numbering to BJTR
 ../workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md
                                 canonical Page-phase × Discovery-Run table
 ref/page-types.md              Discovery article forms and Page/Run boundary
 ref/paper-run-contract.md      Level-4 Run/Result/Bib law
 ref/discovery-yaml-schema.md   Task manifest + typed records
 ref/source-format.md           human source presentation
+ref/external-skill-map.md      ARIS pin, promoted adapters, and boundaries
 ../../board/page-plugins/haipipe-plugin-outline/ref/item-table.md
                                 typed Evidence Item and Run-lineage grammar
 ../../board/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md
@@ -96,26 +99,38 @@ Three independent dimensions:
 HIERARCHY       Block -> Job -> Task Page -> Paper/Source Run
 DOMAIN WORKFLOW D1: SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
 PAGE WORKFLOW   independent Page Face: 00 CONTEXT -> ... -> 04 CHECK
-DISCOVERY TYPE  source-map | source-reading | topic-summary | verdict |
-                landscape | ideation variants in ref/page-types.md
+DISCOVERY TYPE  source-map | source-reading | topic-summary | prior-art-verdict |
+                counterevidence-review | landscape-review | benchmark-landscape
+                in ref/page-types.md
 ~~~
 
 The skill-set folders use the same numbered family convention as
-`haipipe-task`. `1_search`, `2_review`, and `3_idea` are ordered capability
-groups, not D1 phases:
+`haipipe-task`. Discovery has three live capability groups:
 
 ~~~text
 discovery/
 ├── haipipe-discovery/                         public door
 ├── workflow-phases/haipipe-discovery-inquiry/ sole D1 phase
 ├── 1_search/                                  acquisition family + workers
-├── 2_review/                                  synthesis family + workers
-├── 3_idea/                                    ideation family + workers
+├── 2_review/                                  per-Subject review family
+├── 3_synthesize/                              cross-Result synthesis family
 └── agents/                                    execution roles
 ~~~
 
+The external ARIS reference is pinned at `Tools/references/aris` and is pulled
+before each compatibility review. The active Discovery family promotes only
+the narrow adapters it can honor: `gemini-search` for optional broad recall
+and `openalex` for optional structured metadata. Their upstream source, commit,
+and the skills intentionally kept reference-only are listed in
+`ref/external-skill-map.md`.
+
 Do not replace these numbered groups with `routes/`. Only
 `workflow-phases/` declares executable phase ownership.
+
+When an older 0/1/2/3 or 1/2/3/4 description is encountered, use
+`ref/bjtr-alignment.md` as the retrofit authority. It maps the old labels to
+capability families or workflow records without turning them into Block, Job,
+Task, or Run folders.
 
 `discoveries/` is the bank, not a Block. Every address-bearing level uses the
 same grammar: `<level-letter><NN>_<noun>_<qualifier>`.
@@ -136,7 +151,7 @@ discoveries/
             ├── scripts/                           optional instrument
             ├── runs/r01_<author><year>_<paper>.sh
             ├── results/r01_<author><year>_<paper>/
-            ├── summary.md | verdict.md | landscape.md | ideas.md
+            ├── summary.md | verdict.md | landscape.md
             └── QA/
 ~~~
 
@@ -196,27 +211,28 @@ Full law: ref/paper-run-contract.md. Never improvise another durable shape.
 ## Discovery Page Types
 
 ~~~text
-Search route   source-map · source-reading
-Review route   topic-summary · prior-art-verdict · counterevidence-review
-               landscape-review · benchmark-landscape
-Idea route     ideation · novelty-verdict
+Search route              source-map
+Review route              source-reading
+Synthesize route          topic-summary · prior-art-verdict · counterevidence-review
+                          landscape-review · benchmark-landscape
 ~~~
 
 `discovery_type` names what kind of article the root `tNN_<task>.md` promises to
 the reader. The Page writes `folder-kind: discovery` and never
 `page-type: task`. `discovery_type` is a domain field, not a Board `page-type:` key, Folder level,
-phase, or Run. Search/Review/Idea are internal specialist routes derived from
-that field:
+phase, or Run. Search/Review/Synthesize are internal specialist routes derived
+from that field:
 
 ~~~text
 Search -> haipipe-discovery-search
 Review -> haipipe-discovery-review
-Idea   -> haipipe-discovery-idea
+Synthesize -> haipipe-discovery-synthesize
+Semantic direction work after an accepted synthesis -> haipipe-ideation (sibling layer)
 ~~~
 
 The root Page is always the human-facing article. `summary.md`, `verdict.md`,
-`landscape.md`, and `ideas.md` are optional typed Task-side synthesis records;
-they never replace the Page or become Runs. Full grammar and legacy
+and `landscape.md` are optional typed Task-side synthesis records; they never
+replace the Page or become Runs. Full article grammar and permitted
 `type`/`role` normalization: `ref/page-types.md`.
 
 Page-local evidence follows the shared Page contract: use `outline/evidence/`,
@@ -238,16 +254,17 @@ Page phase owns every Page mutation. Never mint an umbrella Discovery Run.
 3. A workflow/run verb operates on a durable `tNN_` Task Page Folder.
 4. Existing Task, Job, and Block paths are detected by structure; Task runs the
    D1 workflow plus its Page handoff, while Job/Block iterate their child Tasks.
-5. open accepts a `jNN_` parent plus canonical `discovery_type`; legacy
-   Search/Review/Idea plus
-   role inputs normalize through `ref/page-types.md`.
+5. open accepts a `jNN_` parent plus canonical `discovery_type`; permitted
+   Search/Review role inputs normalize through `ref/page-types.md`.
 6. A URL, DOI, PDF path, citation, or pasted source WITH a Task path routes to
    add. The Trigger is resolved before RUNNAME allocation.
 7. A bare arXiv/DOI/URL without a Task Page is a one-off lookup unless the user
    asks to keep it. Keeping it requires choosing/opening a Task Page and then add.
 8. Specialist or bucket names dispatch one-off work with no folder.
-9. Natural language maps to Search (gather), Review (judge/map), or Idea
-   (generate/check). Ask only when the type materially changes the output.
+9. Natural language maps to Search (gather), Review (inspect a source), or
+   Synthesize (combine accepted Results). Prior-work evidence remains in
+   Discovery; semantic direction generation and pressure-testing route to the
+   sibling `haipipe-ideation` skill after synthesis.
 
 ## Durable protocol
 
@@ -330,8 +347,9 @@ claim complete around missing evidence.
 Derive the specialist route from `discovery_type`, then enter or resume
 `haipipe-page-workflow` at the authority that owns the next change. Search
 owns acquisition craft and materializes admitted candidates as Runs. Review
-and Idea contribute craft under the current Page phase. Missing evidence
-routes back through Page SURVEY to D1 ACQUIRE. D1 records only Task-side
+extracts and checks one source at a time; Synthesize combines those accepted
+Results under the current Page phase. Missing evidence routes back through
+Page SURVEY to D1 ACQUIRE. D1 records only Task-side
 progress and an optional typed record; CONTEXT, OUTLINE, CONTENT, and CHECK own
 their respective Page artifacts. The D1 root Page skips EVIDENCE because it
 uses already-authoritative direct Result/cite lineage, and CONTENT records its
@@ -406,9 +424,10 @@ writes Discovery QA files.
 
 ## One-off work
 
-One-off searches, readings, reviews, and ideas return inline and write no
-durable files. If the user chooses to keep evidence, route through a Task Page's add
-verb so the canonical Subject receives a numbered Run, paired Result, and Bib.
+One-off searches, readings, reviews, and syntheses return inline and write no
+durable files. If the user chooses to keep evidence, route through a Task Page's
+add verb so the canonical Subject receives a numbered Run, paired Result, and
+Bib.
 
 ## Feedback
 

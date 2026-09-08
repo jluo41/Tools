@@ -324,17 +324,16 @@ document.getElementById('rebuild').onclick = function () {
                     # regular top float can leap to the beginning of a later
                     # page, visually preceding the section that introduces
                     # it.  Keep the unit at its first substantive citation.
-                    # A unit is drawn against its OWN preview page, which
-                    # is as wide as the table needs; the master's text block
-                    # is not, and an over-wide table does not wrap, it runs
-                    # off the paper (QC1-visitlbp Table 3: the GUARD column,
-                    # the whole point of that table, was cut in half). Shrink
-                    # ONLY when it does not fit, so a table that already fits
-                    # keeps its own size.
+                    # The table body owns its layout (currently a
+                    # threeparttable/tabularx unit).  Do not wrap it in an
+                    # outer resizebox: graphicx treats the nested table as a
+                    # boxed object and the body can disappear from the
+                    # Page-level PDF even though the unit preview is correct.
+                    # tabularx already sizes itself to the master's
+                    # linewidth, so direct input preserves the headers,
+                    # rules, and table notes.
                     block = ("\\begin{table}[H]\n\\centering\n"
-                             "\\resizebox{\\ifdim\\width>\\linewidth"
-                             "\\linewidth\\else\\width\\fi}{!}{%%\n"
-                             "\\input{%s/assets/table-body}}\n"
+                             "\\input{%s/assets/table-body}\n"
                              "\\caption{%s}\n%s\\end{table}"
                              % (rel, u["caption"], lab))
                 elif next((f for f in ("figure.pdf", "figure.png", "figure.jpg")
@@ -444,7 +443,7 @@ document.getElementById('rebuild').onclick = function () {
         master = out_dir / (stem + "-master.tex")
         head = ["\\documentclass[11pt]{article}",
                 "\\usepackage[margin=1in]{geometry}",
-                "\\usepackage{graphicx,booktabs,longtable,float,tabularx,pifont}",
+                "\\usepackage{graphicx,booktabs,longtable,float,tabularx,pifont,threeparttable}",
                 # A long code span with no internal space (a path, a
                 # brace-expansion glob) is one unbreakable TeX word and runs
                 # off the margin instead of wrapping; md2tex.py's

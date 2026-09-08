@@ -3,10 +3,10 @@
 Capture complaints, confusions, and wishes about the discovery SKILL (its output
 is hard to read, a step is clunky, a verb is missing) while using it, then fix
 them later in a skill-revision pass. This is feedback about the TOOL, not the
-discovery findings it produces (sources / verdict / landscape / ideas).
+discovery findings it produces (sources / verdict / landscape).
 
 Feedback is ROUTED at capture time to the specific bucket unit it concerns. Each
-unit (1_search, 2_review, 3_idea, agents) keeps its OWN `feedback/`
+unit (1_search, 2_review, 3_synthesize, agents) keeps its OWN `feedback/`
 folder so the report sits next to the code that needs fixing. THIS folder is the
 **fallback**: it holds cross-cutting discipline that no single bucket owns (the
 D1 Task workflow and its shared Page 00–04 handoff, the Discovery Page Type field and route map,

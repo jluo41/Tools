@@ -1,4 +1,4 @@
-# discovery.yaml — Discovery BJTR Task Manifest (v6.0)
+# discovery.yaml — Discovery BJTR Task Manifest (v6.0 + BJTR alignment addendum)
 
 One research article/question = one `tNN_` Discovery Task Page. `discovery.yaml`
 is its Task Face manifest; `tNN_<task>.md` and its lanes are the Page Face. Neither Face
@@ -18,7 +18,7 @@ discoveries/                                  bank
             ├── scripts/                      optional instrument
             ├── runs/r01_<author><year>_<paper>.sh
             ├── results/r01_<author><year>_<paper>/
-            ├── summary.md | verdict.md | landscape.md | ideas.md
+            ├── summary.md | verdict.md | landscape.md
             └── QA/
 ```
 
@@ -27,6 +27,10 @@ not a Block. The path is the identity: `b01j01t01r01` compact and
 `b01.j01.t01.r01` readable. A bare `01_` at any addressed level is invalid.
 
 Full Level-4 contract: `paper-run-contract.md`.
+
+The old 0/1/2/3 and 1/2/3/4 labels are not manifest levels. See
+`bjtr-alignment.md` for the retrofit: the path is always Block bNN, Job jNN,
+Task tNN, and Run rNN; D1 and Page numbers remain workflow records.
 
 New manifests point `report.evidence_bib` to the Outline-owned
 `outline/evidence/bibex/` lane. A legacy root `evidence/bibex/` path may be
@@ -38,22 +42,22 @@ The checker rejects a root `<task>/evidence/` lane in a current v6 Task.
 ```text
 discovery_type          route    question                              typed record
 ----------------------  -------  ------------------------------------  ----------------
-source-map              Search   what relevant sources exist?          none
-source-reading          Search   what do the selected sources say?     none
-topic-summary           Review   what is known about this topic?       summary.md optional
-prior-art-verdict       Review   does the named claim already exist?   verdict.md
-counterevidence-review  Review   what argues against the claim?        verdict.md
-landscape-review        Review   map approaches / disagreements / gaps landscape.md
-benchmark-landscape     Review   compare standard evaluation setups    landscape.md
-ideation                Idea     generate + rank candidate claims      ideas.md
-novelty-verdict         Idea     is this idea new enough?              verdict.md
+source-map              Search      what relevant sources exist?          none
+source-reading          Review      what does one selected source say?    none
+topic-summary           Synthesize  what is known about this topic?       summary.md optional
+prior-art-verdict       Synthesize  does the named claim already exist?   verdict.md
+counterevidence-review  Synthesize  what argues against the claim?        verdict.md
+landscape-review        Synthesize  map approaches / disagreements / gaps landscape.md
+benchmark-landscape     Synthesize  compare standard evaluation setups    landscape.md
 ```
 
 The root `tNN_<task>.md` is the Page and human-facing article for every type.
 Typed records are Task-side synthesis receipts, not rival Pages or Level-4
 Results. Paper/Source Cards are Level-4 Result readouts. Search candidate
-discovery, topic synthesis, and idea generation are Page work; only selected
-canonical Subjects become Runs. Full article grammar and legacy mapping:
+discovery and cross-source synthesis are Page work; only selected canonical
+Subjects become Runs. Semantic direction and idea generation is handled by
+sibling `haipipe-ideation` after Discovery synthesis.
+Full article grammar and permitted normalization:
 `page-types.md`.
 
 ## Fields
@@ -73,16 +77,31 @@ canonical Subjects become Runs. Full article grammar and legacy mapping:
 | `question` | yes | external-world research question |
 | `sources` | optional | coverage and candidate-selection policy |
 | `instrument` | optional | `{needed, path}` under `scripts/` |
-| `typed_record` | optional | `summary.md`, `verdict.md`, `landscape.md`, or `ideas.md` when the type owns one |
+| `typed_record` | optional | `summary.md`, `verdict.md`, or `landscape.md` when the type owns one |
 | `report` | at D1 `CLOSE` | appended outcome block; absent before CLOSE |
 | `created_at`, `updated_at` | yes | quoted ISO8601 strings |
+
+`sources.requested` may name any active Discovery worker, including the
+optional `openalex` and `gemini-search` adapters. These adapters only extend
+candidate coverage or metadata; they never create a Run, alter the one-Subject
+per-Run cardinality, or make a candidate evidentiary without independent
+identity and content verification.
+
+`sources.from_topic` is a read-only supporting reference to another Discovery
+Task. Its Results and Bib entries are not copied into this Task's aggregate. If
+one upstream paper becomes load-bearing, D1 ACQUIRE must admit a local
+`paper-analysis` Run carrying the upstream Result path as provenance (or
+`source-analysis` only for a genuinely non-paper Subject); only the local
+completed Result Bib may enter this Task's
+`outline/evidence/bibex/<task>.bib`.
 
 No `runs:` list. No `expected_outputs:` list of per-paper files. The filesystem
 is authoritative for both. No `parent` or `consumed_by` field: the Discovery
 bank remains probe-unaware.
 
-Legacy manifests using `type` + `role` remain readable through the exact map in
-`page-types.md`. Legacy group/`01_` paths remain inspectable but must migrate to
+Manifests using `type` + `role` may normalize only through the permitted map in
+`page-types.md`. Idea-typed manifests are unsupported and fail validation;
+there is no Idea compatibility route. Legacy group/`01_` paths must migrate to
 explicit b/j/t addresses before the v6 checker accepts them. New manifests
 write `discovery_type` only. If both type forms are present they must normalize
 to the same value.
@@ -179,11 +198,10 @@ held load-bearing Aim.
 ## CLOSE outcomes
 
 ```text
-source-map · source-reading                        gathered
+source-map                                          gathered
+source-reading                                      reviewed
 topic-summary · landscape-review · benchmark-landscape mapped
-prior-art-verdict · counterevidence-review        supports | contradicts | inconclusive
-ideation                                             generated
-novelty-verdict                                     novel | partial | preempted | inconclusive
+prior-art-verdict · counterevidence-review          supports | contradicts | inconclusive
 ```
 
 Common fields: `outcome`, `summary`, `confidence`, `completed_runs`,
@@ -241,15 +259,6 @@ One paragraph answering the Topic question.
 
 ## Gaps
 - <gap> — why it remains open
-```
-
-### ideas.md
-
-```md
-# Ideas: <prompt>
-
-## Candidates
-1. <claim> — rationale — novelty — testability — grounding Result links
 ```
 
 Search and every other type write their reader-facing synthesis into the root

@@ -398,7 +398,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
     def test_task_insight_page_is_task_only(self):
         insight = (
             self.skills / "task" / "page-types"
-            / "haipipe-page-for-insight" / "SKILL.md"
+            / "haipipe-page-insight" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("The task-only Page Type", insight)
         self.assertIn("scope: task", insight)
@@ -416,7 +416,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
 
         manifest = (
             self.skills / "task" / "page-types"
-            / "haipipe-page-for-insight" / "agents" / "openai.yaml"
+            / "haipipe-page-insight" / "agents" / "openai.yaml"
         ).read_text(encoding="utf-8")
         self.assertIn('display_name: "Task Insight Page"', manifest)
         self.assertIn("Reusable Findings", manifest)

@@ -246,7 +246,7 @@ remains the route when the Task Page is incomplete, stale, below Wisdom, or
 does not answer the registered need.
 
 These routes do not share a Page Type. Task owns the one-page
-`haipipe-page-for-insight` contract. An Application owns an I1 Question
+`haipipe-page-insight` contract. An Application owns an I1 Question
 register plus separate I2 Data, I3 Information, I4 Knowledge, and I5 Wisdom
 Folder contracts under `haipipe-insight-workflow`.
 

@@ -59,6 +59,35 @@ class TestSemanticSectionId(unittest.TestCase):
         self.assertEqual(warnings, [])
         self.assertEqual([item["id"] for item in pages], [page_id])
 
+    def test_lettered_story_control_and_child_pages_parse(self):
+        with TemporaryDirectory() as root:
+            board = Path(root)
+            story_dir = board / "STORY"
+            story_dir.mkdir()
+            page_ids = [
+                "Story-A",
+                "Story-A-roadmap",
+                "Story-A-narrative-MISQ",
+            ]
+            (board / "board.md").write_text(
+                "## Pages\n\n### STORY\n"
+                + "\n".join(f"{page_id}.md" for page_id in page_ids)
+                + "\n",
+                encoding="utf-8",
+            )
+            for page_id in page_ids:
+                page = story_dir / page_id
+                page.mkdir()
+                (page / f"{page_id}.md").write_text(
+                    f"# {page_id} · Story\nstate: 🟡 PARTIAL\n",
+                    encoding="utf-8",
+                )
+            _board, pages, warnings = parse_dir(board)
+
+        self.assertEqual(warnings, [])
+        self.assertEqual([item["id"] for item in pages], page_ids)
+        self.assertTrue(all(item["kind"] == "stage" for item in pages))
+
     def test_feedback_router_reads_named_section_ids(self):
         ids = expand_ids(
             "S-MISQ-Main-Results + S-MISQ-Appendix-Validation + "

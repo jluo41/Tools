@@ -54,7 +54,7 @@
     "imports": [
       {
         "page": "QA2",
-        "source": "../QA2-board-life/draw/QA2.excalidraw",
+        "source": "../QA2-board-life/studio/draw/QA2.excalidraw",
         "placement": {
           "x": 1150.0,
           "y": 0.0,
@@ -64,7 +64,7 @@
       },
       {
         "page": "QA3",
-        "source": "../QA3-the-round/draw/QA3.excalidraw",
+        "source": "../QA3-the-round/studio/draw/QA3.excalidraw",
         "placement": {
           "x": 1624.0,
           "y": 0.0,
@@ -74,7 +74,7 @@
       },
       {
         "page": "QA6",
-        "source": "../QA6-skillfamily/draw/QA6.excalidraw",
+        "source": "../QA6-skillfamily/studio/draw/QA6.excalidraw",
         "placement": {
           "x": 0.0,
           "y": 1905.0,

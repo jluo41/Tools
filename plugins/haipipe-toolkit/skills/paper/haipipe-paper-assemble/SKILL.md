@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.3.0"
+  version: "0.5.0"
   last_updated: "2026-09-07"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -19,7 +19,7 @@ metadata:
 
 This is the paper-level document contract. It is different from
 `haipipe-plugin-delivery/ref/word.md`, which exports one Board Page for a coauthor. Assembly
-combines the accepted Narrative/Section graph into the complete deliverable
+combines the Story's Section Control rows and the Section Pages into the complete deliverable
 for one desk.
 
 The public Paper door routes `assemble` here. The implementation is expected to
@@ -32,8 +32,8 @@ The layers have different jobs:
 
 ```text
 Paper-<Slug>/                          the board at the paper root
-  ├── A1-Story/Story<NN>-<idea>/       boundary, claims, evidence, acceptance
-  │   └── Story<NN>-narrative-<desk>   the section map = reading order
+  ├── A1-Story/Story-<letter>/         boundary, claims, evidence, acceptance
+  │       §8 Section Control + haipipe:compile-order block = reading order
   └── Ba-<desk>-Main/<page>/           each Section Page owns its words:
         └── delivery/latex/            <page>.tex (body fragment, what the paper
                                        \inputs) · <page>-complete.tex/.pdf (the
@@ -42,20 +42,20 @@ Paper-<Slug>/                          the board at the paper root
 delivery/paper-build.toml              paper configuration
               ↓
 delivery/latex/                        GENERATED whole from the pages
-  ├── master.tex                       one \input per page, Narrative order
+  ├── master.tex                       one \input per page, Story compile order
   ├── sections/ · appendices/          copies of the pages' <page>.tex fragments
   ├── displays/                        copies of accepted display floats + assets
   └── reference.bib                    merged from the pages' bibex/<page>.bib
               ↓
 shared assembly engine + venue profile
               ↓
-DOCX / PDF / supplement / snapshots / manifest / QA report
+DOCX / PDF / supplement / snapshots / build manifest
 ```
 
 The Board and Page files decide what the paper is allowed to claim and whether
 the relevant Section is CHECK-closed. Each Section Page's own
 `delivery/latex/<page>-complete.tex` owns that page's reader-facing wording;
-the Narrative's section map owns the order. `delivery/latex/` is regenerated
+the Story's compile-order block owns the order. `delivery/latex/` is regenerated
 from them and is never edited by hand (JL 260907; this replaces the 260824
 desk-room law, under which `<N>-<desk><year>/sections/*.tex` was the source of
 record). A builder may refuse or watermark a build when a page's deliverable is
@@ -68,8 +68,8 @@ A Section Page enters the build when three things exist on it: an approved
 outline table (`outline/<page>-outline-v*.md` with its tick), a preview PDF for
 every display unit (`outline/evidence/display/<unit>/preview.pdf`), and its own
 compiled page PDF (`delivery/latex/<page>.pdf` or `<page>-complete.pdf`). A
-page missing any of the three is listed in the build QA as not ready and the
-build is `DRAFT`; the builder never substitutes an older desk-room copy for it.
+page missing any of the three is listed in the build manifest as not ready and
+the build is `DRAFT`; the builder never substitutes an older desk-room copy for it.
 
 Generated DOCX, PDF, `draft-sections/*.docx`, copied assets, previews, and
 manifests are derived artifacts. They are never source of record and never
@@ -128,13 +128,13 @@ source_format = "latex-room"
 venue_profile = "misq"
 
 [pages]
-# where the words come from: the Section Page groups, and the Narrative whose
-# section map fixes the reading order. Each page contributes its body fragment
+# where the words come from: the Section Page groups, and the Story page whose
+# `haipipe:compile-order` block fixes the reading order. Each page contributes its body fragment
 # <page>/delivery/latex/<page>.tex, its bibex/<page>.bib, and the float.tex +
 # asset of every display unit its fragment \ref's.
 main = "../Ba-MISQ-Main"
 appendix = "../Bb-MISQ-Appendix"
-order = "../A1-Story/Story01-agreeable-opioid/Story01-narrative-MISQ/Story01-narrative-MISQ.md"
+order = "../A1-Story/Story-A/Story-A.md"   # the compile-order block; a legacy 📖 map is a fallback only
 
 [source]
 # the GENERATED room; the builder writes it, nobody edits it
@@ -159,7 +159,6 @@ supplement_pdf = "latex/Paper-AgreeablePrescription-supplement-draft.pdf"
 section_snapshots = "word/draft-sections"
 assets = "latex/submission-assets"
 manifest = "build-manifest.json"
-qa_report = "build-qa.json"
 ```
 
 A grandfathered desk-room paper keeps its `<desk>-word/paper-build.toml` with
@@ -199,14 +198,14 @@ The public operation is `assemble`:
 resolve Paper and its delivery/
   → load delivery/paper-build.toml
   → read the [pages] groups · check each page's milestone (outline tick,
-    display PDFs, page PDF) · read the Narrative section map for order
+    display PDFs, page PDF) · read the Story's compile-order block for order
   → regenerate delivery/latex/ whole: master.tex · sections/ · appendices/ ·
     displays/ · reference.bib, all copied from the pages
   → verify source files and accepted bindings
   → parse source with the selected adapter
   → render main manuscript and online supplement
   → render optional section snapshots
-  → write assets, manifest, and QA report
+  → write assets and the build manifest
   → render DOCX/PDF previews and inspect layout when requested
   → ON SEND (a person's act): mint or name the Round, copy the current
     PDF + DOCX + build-manifest into B<x>-<desk>-Round/RD<NN>/sent/
@@ -249,8 +248,8 @@ Instead:
    bibliography, profile, evidence lock, and output paths;
 2. inspect `build-manifest.json` and compare its config/source/profile/output
    hashes against the declared files currently on disk;
-3. inspect `build-qa.json` for evidence state, unresolved references, renderer
-   availability, PDF outcome, and G6 status;
+3. inspect the readiness, evidence, unresolved-reference, and renderer fields
+   in `build-manifest.json`;
 4. if appropriate, invoke only the wrapper's early environment preflight;
    never invoke the renderer merely to answer an audit question;
 5. report stale/missing/mismatched outputs explicitly and name the source file
@@ -258,7 +257,7 @@ Instead:
 
 Run an actual build only when the user asks to assemble, regenerate, or update
 the delivery artifacts. A read-only audit may not alter `delivery/`, its
-manifests, or QA receipts.
+   manifests, or other generated receipts.
 
 ## 📦 Required outputs
 
@@ -270,8 +269,9 @@ At minimum, a complete manuscript build records:
 - copied or normalized submission assets;
 - `build-manifest.json` or equivalent containing engine/profile versions,
   config hash, source paths and source hashes, and output paths;
-- a machine-readable QA report containing counts, unresolved references,
-  missing assets, word-count results, and build status.
+- a machine-readable `build-manifest.json` containing page readiness, counts,
+  unresolved references, missing assets, word-count results, renderer outcomes,
+  and build status.
 
 The manifest is provenance, not a second content store. A generated snapshot
 may be opened and marked up by a coauthor, but its corrections must be routed
@@ -283,10 +283,10 @@ Assembly can run at any time. It does not itself pass G6. The output status is
 derived from the declared checks:
 
 ```text
-Section Pages CHECK-closed + source bindings current + build QA passes
+Section Pages CHECK-closed + source bindings current + build manifest has no blockers
     → SUBMISSION-READY candidate
 otherwise
-    → DRAFT, with the failing checks visible in the receipt/QA report
+    → DRAFT, with the blockers visible in the build manifest
 ```
 
 Only a person declares the manuscript ready for upload. A successful Python
@@ -333,5 +333,5 @@ Before reporting assembly complete, name:
 - the engine and venue profile versions;
 - the generated main/supplement outputs and manifest;
 - word-count basis and result;
-- structural and visual QA result;
+- structural and visual check result;
 - unresolved author actions and whether G6 is still open.

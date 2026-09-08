@@ -1,5 +1,19 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.5.0 · 260907
+
+- Reading order comes from the Story page's `haipipe:compile-order` block
+  (`[pages].order = ../A1-Story/Story-<letter>/Story-<letter>.md`), never from a
+  Narrative page: Roadmap and Narrative retired 260907 (haipipe-paper-workflow
+  1.0.0). A retired Narrative's 📖 section map is parsed only as a legacy
+  fallback so an archived page can be rebuilt for comparison; the board roster
+  is the last resort. Written by Claude Peer.
+
+## 0.4.0 · 260907
+
+- Paths in `paper-build.toml` resolve relative to `delivery/`; the page
+  milestone and ON SEND / ON ROUND CLOSE protocol as shipped.
+
 ## 0.3.0 · 260907
 
 - Source of record moves from the desk room to the Section Pages (JL 260907):

@@ -1,3 +1,14 @@
+## 0.8.4 · 2026-09-07
+
+- After Build, return the four-surface user-check packet: evidence to open now,
+  whether Revise ran (a first draft is never presented as final), then the
+  Page-level PDF as the delivery surface.
+
+## 0.8.3 · 2026-09-07
+
+- Load the Task Page companion and require its display inventory and
+  table/figure/diagram gate during CONTENT drafting and Build.
+
 ## 0.8.2 · 2026-09-07
 
 - Require CONTENT/Build to return the shared user-check packet with the

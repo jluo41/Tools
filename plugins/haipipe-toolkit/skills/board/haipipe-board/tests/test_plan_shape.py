@@ -87,6 +87,14 @@ class ResolvedSectionShapeTest(unittest.TestCase):
             findings = check(page, broken, SKILLS_ROOT)
             self.assertTrue(any("outside the closed set" in item for item in findings))
 
+    def test_insight_page_type_resolves_to_short_public_skill_name(self):
+        declaration = type_outline("insight", SKILLS_ROOT)
+        self.assertTrue(
+            declaration["type_path"].endswith(
+                "task/page-types/haipipe-page-insight/SKILL.md"
+            )
+        )
+
     def test_legacy_task_page_type_uses_the_same_canonical_owner(self):
         with tempfile.TemporaryDirectory() as temporary:
             page = Path(temporary) / "t01_model.md"

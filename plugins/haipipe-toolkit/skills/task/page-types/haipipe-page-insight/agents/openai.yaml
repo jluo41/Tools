@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Insight Page"
+  short_description: "Turn evidence into reusable DIKW findings"
+  default_prompt: "Use $haipipe-page-insight to create or repair one task-only, consumer-neutral DIKW Insight Page ending in Reusable Findings."

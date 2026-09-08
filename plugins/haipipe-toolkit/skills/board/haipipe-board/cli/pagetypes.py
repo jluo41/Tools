@@ -13,7 +13,8 @@ Three sources, and each answers a different question:
 
     the OWNERS    workflow phase `legacy_page_type` metadata    who maintains it
                   + skills/*/haipipe-*/ `legacy_page_type`      canonical family owner
-                  + skills/*/page-types/haipipe-page-for-<key>/ (unmigrated)
+                  + skills/*/page-types/haipipe-page-<key>/ (unmigrated)
+                    (legacy `haipipe-page-for-<key>` is also accepted)
                   + paper/workflow-phases/haipipe-paper-<key>/  (paper, 260831)
                   + paper/haipipe-paper-venue/
     the ENGINE    cli/check.py PAGE_TYPE_VALUES                 what resolves
@@ -76,10 +77,11 @@ def contract_keys() -> dict[str, str]:
         match = re.search(r"(?m)^  legacy_page_type:\s*['\"]?([^'\"\s]+)", front[1])
         if owner and match:
             found[match.group(1)] = path.parents[1].name
-    for d in sorted(SKILLS.glob("*/page-types/haipipe-page-for-*")):
+    for d in sorted(SKILLS.glob("*/page-types/haipipe-page-*")):
         if not d.is_dir() or not (d / "SKILL.md").exists():
             continue
-        found[d.name.removeprefix("haipipe-page-for-")] = d.parents[1].name
+        name = d.name.removeprefix("haipipe-page-")
+        found[name.removeprefix("for-")] = d.parents[1].name
     for d in sorted(SKILLS.glob("*/workflow-phases/haipipe-paper-*")):
         if not d.is_dir() or not (d / "SKILL.md").exists():
             continue

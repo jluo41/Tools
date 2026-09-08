@@ -472,7 +472,15 @@ def page_folder_context(f, root):
         head = f.read_text(encoding="utf-8", errors="ignore")[:1500]
         m = re.search(r"(?m)^page-type:\s*(\S+)", head)
         if m:
-            out.append(f"  · page-type: {m.group(1)}  (load haipipe-page-for-{m.group(1)} before shaping anything)")
+            page_type = m.group(1)
+            # The task Insight Page uses the short public name. Other legacy
+            # Page Type variants retain their established `for-*` names.
+            page_skill = (
+                "haipipe-page-insight"
+                if page_type == "insight"
+                else f"haipipe-page-for-{page_type}"
+            )
+            out.append(f"  · page-type: {page_type}  (load {page_skill} before shaping anything)")
     except Exception:
         pass
     o = d / "outline"
