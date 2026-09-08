@@ -399,38 +399,86 @@ def find_asset(reference: str) -> Path | None:
     return matches[0].resolve() if matches else None
 
 
+TABULAR_BEGIN = re.compile(r"\\begin\{(tabularx|tabular\*|tabular|longtable|array)\}")
+
+
+def _split_depth0(text: str, sep: str) -> list[str]:
+    """split on ``sep`` only at brace depth 0 and not escaped; ``sep`` is "\\\\" or "&"."""
+    parts, depth, cur, i = [], 0, [], 0
+    while i < len(text):
+        ch = text[i]
+        esc = i > 0 and text[i - 1] == "\\"
+        if ch == "{" and not esc: depth += 1
+        elif ch == "}" and not esc: depth -= 1
+        if depth == 0 and text.startswith(sep, i) and not esc:
+            parts.append("".join(cur)); cur = []; i += len(sep)
+            if sep == "\\\\":                                   # optional [skip] after a row break
+                m = re.match(r"\s*\[[^\]]*\]", text[i:])
+                if m: i += m.end()
+            continue
+        cur.append(ch); i += 1
+    parts.append("".join(cur))
+    return parts
+
+
+def _expand_cell(cell: str) -> list[str]:
+    """one LaTeX cell -> its text, padded with empties for a \\multicolumn span."""
+    span = 1
+    m = re.match(r"\s*\\multicolumn\s*\{\s*(\d+)\s*\}", cell)
+    if m:
+        span = int(m.group(1))
+        g1 = parse_group_at(cell, m.end())          # the column spec
+        g2 = parse_group_at(cell, g1[1]) if g1 else None
+        cell = g2[0] if g2 else cell
+    # \shortstack{a\\b} stacks lines inside ONE cell; keep it one cell
+    while True:
+        m2 = re.search(r"\\shortstack(?:\[[^\]]*\])?", cell)
+        if not m2: break
+        g = parse_group_at(cell, m2.end())
+        if not g: break
+        cell = cell[:m2.start()] + g[0].replace("\\\\", " ") + cell[g[1]:]
+    text = latex_to_text(cell).strip()
+    return [text] + [""] * (span - 1)
+
+
 def parse_table_rows(block: str) -> list[list[str]]:
-    # `tabularx` has a width argument plus a column specification; ordinary
-    # `tabular`/`longtable` have only the latter.  Keeping those declarations
-    # outside the captured body prevents column specs such as ``X r X`` from
-    # becoming a spurious first table row in Word.
-    match = re.search(
-        r"\\begin\{tabularx\}\{[^{}]*\}\{[^{}]*\}(.*?)\\end\{tabularx\}", block, re.S
-    )
-    if match is None:
-        match = re.search(
-            r"\\begin\{(tabular|longtable)\}\{[^{}]*\}(.*?)\\end\{\1\}", block, re.S
-        )
-    if match is None:
+    r"""Rows of the first tabular-like environment in ``block``.
+
+    0.7.1: brace-aware. The old regex read the column spec as ``\{[^{}]*\}`` and so
+    returned NO rows for any spec with nested braces (``p{3cm}``, ``@{}``,
+    ``>{\\raggedright\\arraybackslash}``, ``*{6}{X}``), which is most real
+    tables; Word then got the caption with nothing under it. Rows also split on
+    ``\\\\`` only at depth 0, so ``\\shortstack{a\\\\b}`` stays one cell, and a
+    ``\\multicolumn{n}`` cell pads ``n-1`` empties so columns line up.
+    """
+    m = TABULAR_BEGIN.search(block)
+    if m is None:
         return []
-    body = match.group(1) if "tabularx" in match.group(0).split("}", 1)[0] else match.group(2)
+    env = m.group(1)
+    pos = m.end()
+    opt = re.match(r"\s*\[[^\]]*\]", block[pos:])            # [t] / [h] position
+    if opt: pos += opt.end()
+    if env in ("tabularx", "tabular*"):                          # width argument first
+        g = parse_group_at(block, pos)
+        if g is None: return []
+        pos = g[1]
+    g = parse_group_at(block, pos)                               # the column spec, braces and all
+    if g is None: return []
+    pos = g[1]
+    end = re.compile(r"\\end\{" + re.escape(env) + r"\}").search(block, pos)
+    body = block[pos:end.start()] if end else block[pos:]
     body = re.sub(
-        r"\\(?:toprule|midrule|bottomrule|hline|addlinespace|cline\{[^}]*\}|cmidrule(?:\([^)]*\))?\{[^}]*\})",
-        "",
-        body,
+        r"\\(?:toprule|midrule|bottomrule|hline|addlinespace(?:\[[^\]]*\])?|cline\{[^}]*\}|cmidrule(?:\([^)]*\))?\{[^}]*\})",
+        "", body,
     )
     rows: list[list[str]] = []
-    for raw in re.split(r"(?<!\\)\\\\(?:\s*\[[^]]*\])?", body):
+    for raw in _split_depth0(body, "\\\\"):
         raw = raw.strip()
-        if not raw or raw.startswith("\\"):
+        if not raw or re.fullmatch(r"(?:\\\w+\s*)+", raw):    # rule-only leftovers
             continue
         cells: list[str] = []
-        cursor = 0
-        for index, char in enumerate(raw):
-            if char == "&" and (index == 0 or raw[index - 1] != "\\"):
-                cells.append(latex_to_text(raw[cursor:index]))
-                cursor = index + 1
-        cells.append(latex_to_text(raw[cursor:]))
+        for cell in _split_depth0(raw, "&"):
+            cells.extend(_expand_cell(cell))
         if any(cells):
             rows.append(cells)
     width = max((len(row) for row in rows), default=0)
@@ -783,7 +831,14 @@ def add_figure(doc: Document, display: Display, title: str = "", *, compact: boo
     add_text(doc, caption.strip(), size=10 if compact else 11, style="Caption")
 
 
-def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool = True, compact: bool = False) -> None:
+def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool = True, compact: bool = False,
+               number_displays: bool = False) -> None:
+    """0.7.1: ``number_displays`` gives every table/figure in this stream a running
+    title ("Table S1.", "Figure S1."; prefixes from the profile), so a supplement
+    table no longer prints its caption with no number."""
+    counters = {"table": 0, "figure": 0}
+    prefixes = {"table": str(PROFILE_CONFIG.get("supplement_table_prefix", "Table S")),
+                "figure": str(PROFILE_CONFIG.get("supplement_figure_prefix", "Figure S"))}
     for event in events:
         if event.kind == "heading":
             add_heading(doc, str(event.value), event.level)
@@ -795,10 +850,14 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
         elif event.kind == "display" and include_displays:
             display = event.value
             if isinstance(display, Display):
+                title = ""
+                if number_displays:
+                    counters[display.kind] += 1
+                    title = f"{prefixes[display.kind]}{counters[display.kind]}"
                 if display.kind == "table":
-                    add_table(doc, display, compact=compact)
+                    add_table(doc, display, title, compact=compact)
                 else:
-                    add_figure(doc, display, compact=compact)
+                    add_figure(doc, display, title, compact=compact)
 
 
 def add_abstract(doc: Document, block: str) -> None:
@@ -1314,12 +1373,43 @@ def build() -> tuple[Path, Path]:
     add_text(supp_doc, str(PROFILE_CONFIG.get("supplement_title", "ONLINE-ONLY SUPPLEMENTAL MATERIAL")), bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_text(supp_doc, "[AUTHOR ACTION REQUIRED: confirm that all supplement citations, table labels, and figure labels match the final main manuscript]", size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
     supp_doc.add_page_break()
-    add_events(supp_doc, supplement_events, include_displays=True, compact=True)
+    add_events(supp_doc, supplement_events, include_displays=True, compact=True, number_displays=True)
     supp_doc.save(SUPP_PATH)
 
     pdf_report = render_submission_pdfs()
     write_common_receipts(main_events, main_displays, supplement_events, running_title, evidence, pdf_report)
+    # 0.7.1 tooth (Paper-MISQ-Board, JL 260908): every table float the master prints must
+    # arrive in a Word file as a real <w:tbl>. Counted AFTER the files are written, so
+    # the evidence is on disk; a mismatch is loud (non-zero exit), never a silent gap.
+    supp_tables = sum(1 for e in supplement_events if e.kind == "display" and isinstance(e.value, Display) and e.value.kind == "table")
+    master_tables = len([1 for m_ in DISPLAY_PATTERN.finditer(body) if m_.group(1).startswith("table")])
+    report = {"main": {"expected": len(main_tables), "found": docx_table_count(MAIN_PATH)},
+              "supplement": {"expected": supp_tables, "found": docx_table_count(SUPP_PATH)},
+              "master_table_floats": master_tables}
+    ok = (report["main"]["expected"] == report["main"]["found"]
+          and report["supplement"]["expected"] == report["supplement"]["found"]
+          and master_tables == len(main_tables) + supp_tables)
+    report["ok"] = ok
+    record_tables_rendered(report)
+    if not ok:
+        raise RuntimeError(f"Word tables lost: {json.dumps(report)}")
     return MAIN_PATH, SUPP_PATH
+
+
+def docx_table_count(path: Path) -> int:
+    """how many real tables (<w:tbl>) a .docx carries; the Word-side truth."""
+    import zipfile
+    with zipfile.ZipFile(path) as z:
+        return z.read("word/document.xml").decode("utf-8", "replace").count("<w:tbl>")
+
+
+def record_tables_rendered(report: dict) -> None:
+    try:
+        manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return
+    manifest.setdefault("build", {}).setdefault("checks", {})["tables_rendered"] = report
+    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> None:

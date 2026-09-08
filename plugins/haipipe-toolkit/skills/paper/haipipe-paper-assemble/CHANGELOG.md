@@ -1,5 +1,11 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.7.1 · 260908
+
+- **Word tables arrive** (Paper-MISQ-Board: 3 of 4 main tables and 7 of 12 appendix tables reached Word as a caption with nothing under it, or not at all). `parse_table_rows` in `scripts/latex_room_to_docx.py` is brace-aware: the column spec is read as a balanced group (`p{3cm}`, `@{}`, `>{…}`, `*{6}{X}`, `tabularx`/`tabular*` width argument, `longtable`, `array`), rows split on `\\` only at depth 0 (`\shortstack` stays one cell), `\multicolumn{n}` pads `n-1` cells. The old regex `\{[^{}]*\}` returned no rows for any nested-brace spec.
+- Supplement displays are numbered (`Table S1.`, `Figure S1.`; profile keys `supplement_table_prefix` / `supplement_figure_prefix`) instead of printing an unnumbered caption.
+- New tooth `build.checks.tables_rendered`: `<w:tbl>` count per `.docx` vs the table displays emitted vs the master's table floats; a mismatch exits non-zero after the files are written. `tests/test_latex_room_to_docx.py` drives the real engine over a room with the failing column specs (3 tests, incl. the expect-fail on the old regex).
+
 ## 0.7.0 · 260908
 
 JL: "you go ahead to think how to make it as clean as enough." One pass over the whole engine.

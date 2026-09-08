@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.7.0"
+  version: "0.7.1"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -198,6 +198,23 @@ whichever page comes first; a bib key that two pages define differently is a
 document warning (first page's entry kept); a missing `latexmk` or Word engine is
 reported as `rc 127` in the manifest, never a traceback; the master carries the
 status word only, never counts or build times.
+
+## 📊 Tables must arrive in Word (0.7.1)
+
+The Word engine parses each `table` float into rows itself. Its column-spec
+reader is brace-aware (`p{3cm}`, `@{}`, `>{\raggedright\arraybackslash}`,
+`*{6}{X}`, `tabularx` width argument, `tabular*`, `longtable`); rows split on
+`\\` only at brace depth 0 so `\shortstack{a\\b}` stays one cell; a
+`\multicolumn{n}` cell pads `n-1` empties. Supplement displays are numbered
+(`Table S1.`, `Figure S1.`; profile keys `supplement_table_prefix`,
+`supplement_figure_prefix`). After both `.docx` files are written the engine
+counts their real `<w:tbl>` elements against the table displays it meant to
+emit and against the master's table floats, records
+`build.checks.tables_rendered` in the manifest, and exits non-zero on any
+mismatch: a table that reaches the PDF and not the Word file is a loud failure,
+never a caption with nothing under it (found by Paper-MISQ-Board, 260908: 3 of 4
+main tables and 7 of 12 appendix tables were lost). `tests/test_latex_room_to_docx.py`
+drives the real engine over a room with those exact column specs.
 
 ## 🎭 Venue profiles
 
