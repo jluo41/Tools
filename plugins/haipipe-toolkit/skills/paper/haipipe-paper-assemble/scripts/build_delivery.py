@@ -358,6 +358,9 @@ def merge_bib(pages):
 def write_master(main, appx, status, ready_n, total_n):
     title = CFG["paper"].get("title", CFG["paper"]["id"])
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    # the reader's document carries only the status word; counts and the build time live in build-manifest.json
+    # (JL 260908 "the delivered pdf or word must be clean"); other profiles keep the 0.6.0 header
+    header = status if JAMA else f"{status} · {ready_n}/{total_n} section pages ready · built {stamp}"
     paper_preamble = ("% paper-owned preamble · " + PREAMBLE_FILE.name + "\n" + PREAMBLE_FILE.read_text(encoding="utf-8")) \
         if PREAMBLE_FILE and PREAMBLE_FILE.exists() else "% no paper preamble declared"
     if JAMA:   # the JAMA Word renderer parses a title-page center block, not \maketitle
@@ -383,7 +386,7 @@ def write_master(main, appx, status, ready_n, total_n):
 \setlength{{\parskip}}{{0.35em}}
 \graphicspath{{{{./}}}}
 \pagestyle{{fancy}}\fancyhf{{}}
-\fancyhead[L]{{\small {status} · {ready_n}/{total_n} section pages ready · built {stamp}}}
+\fancyhead[L]{{\small {header}}}
 \fancyfoot[C]{{\thepage}}
 {title_block}
 \thispagestyle{{fancy}}

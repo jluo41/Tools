@@ -19,6 +19,8 @@ Fix (same day, 4929a597 follow-up): the `included` flag was set only inside `bui
 
 JAMA supplement numbering (same day): under `venue_profile = "jama-internal-medicine"` the generated master resets the table and figure counters after `\appendix` and renames them `eTable` / `eFigure`, so supplement floats print `eFigure 1…` as the desk expects; other profiles are untouched, suite 6/6.
 
+Clean deliverables (same day, JL: "the delivered pdf or word must be clean"): the in-body `[DRAFT PAGE · reason]` tag that `draft_includes_unready` printed is gone for every profile; a page's not-ready reasons live only in `build-manifest.json` and the display register. Under the JAMA profile the running header carries the status word alone (`DRAFT` / `SUBMISSION-CANDIDATE`), without page counts or build time; other profiles keep the 0.6.0 header. Suite 10/10.
+
 Verified on both papers: Paper-AgreeableOpioid-Jama 25-page PDF + main and supplement DOCX (latexmk 0, docx 0); Paper-AgreeablePrescriptionDiscretion unchanged at 23 pages, 5/14 ready, `\maketitle` and `abstract` environment intact.
 
 ## 0.6.0 · 260908
