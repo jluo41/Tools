@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.7.5"
+  version: "0.7.6"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -239,6 +239,14 @@ carries no index, a folder index on an unnumbered H1, a unit whose folder still
 carries any prefix, and a unit without `README.md`. Findings never block; they
 name the debt. Known cost, chosen by JL: a moved compile order renames the page
 and its units.
+
+**Printed section numbers count what LaTeX numbers (0.7.6).** The register
+counts every unstarred `\section{` in each placed fragment, in `\input` order,
+and gives the page the first one; a fragment whose inner divisions use
+`\section` (md2tex mapping `###` that way) prints several numbered sections,
+shifts every later page, and is reported: `its fragment prints N numbered
+sections; inner divisions should be \subsection`. A page whose fragment has only
+`\section*` prints no number and is shown as `(unnumbered)`.
 
 ## 🎭 Venue profiles
 

@@ -308,3 +308,17 @@ def test_conforming_unit_is_not_a_finding_and_unnumbered_pages_are_allowed(paper
     register, _ = _assemble(m)
     assert not any("Display1-one" in f and "legacy" in f for f in register["findings"])
     assert not any("S-T-Main-Abstract" in f for f in register["findings"])
+
+
+def test_inner_section_headings_shift_numbers_and_are_a_finding(paper):
+    """a fragment whose inner divisions use \\section prints several numbered sections (0.7.6 tooth)."""
+    m = paper
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    frag = intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex"
+    frag.write_text(frag.read_text() + "\n\\section{Study design}\nInner text.\n")
+    register, _ = _assemble(m)
+    secs = {s_["page"]: s_ for s_ in register["sections"]}
+    assert secs["S-T-Main-1-Intro"]["printed"] == "§1"
+    assert secs["S-T-Main-2-Methods"]["printed"] == "§3"                      # shifted by the inner \\section
+    assert any("S-T-Main-1-Intro: its fragment prints 2 numbered sections" in f for f in register["findings"])
+    assert any("S-T-Main-2-Methods: page H1 says §2, prints §3" in f for f in register["findings"])

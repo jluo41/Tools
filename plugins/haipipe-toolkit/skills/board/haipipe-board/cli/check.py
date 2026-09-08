@@ -57,6 +57,7 @@ from src.item_table import bullets as typed_evidence_bullets, evidence_none_targ
 from src.parse import parse_dir  # noqa: E402
 from legacy.topic_entry_contract import check_topic_entries  # noqa: E402
 from src.page_evidence import check_page_evidence  # noqa: E402
+from src.feedback import SEMANTIC_SECTION_ID  # noqa: E402  · the one section-id grammar
 from src.feedback import (rounds as _rounds, parse_round, register_path,  # noqa: E402
                           register_ids, routed_rows)
 
@@ -64,9 +65,11 @@ ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 MAX_PAGE_TITLE_WORDS = 6
 # `Q<group><n>-<slug>` or `S-<Family>-<unit>-<slug>`, as the heading writes it.
 PAGE_ID_RE = re.compile(r"Q[A-Za-z]*\d+[\w-]*|S-[\w-]+")
-SEMANTIC_SECTION_PAGE = re.compile(
-    r"^S-[A-Za-z][A-Za-z0-9-]*?-(?:Main|Appendix)-[A-Za-z][A-Za-z0-9-]*\.md$"
-)
+# One grammar, one place: src/feedback.py's SEMANTIC_SECTION_ID (260908 it gained
+# the optional section index, `S-<desk>-Main-<N>-<Title>`). This checker kept a
+# private copy and so read `S-JAMA-IM-Main-1-Introduction` as a legacy stage page
+# and demanded a Stage Contract from a paper section (Paper-JAMA-Board, 260908).
+SEMANTIC_SECTION_PAGE = re.compile(rf"^{SEMANTIC_SECTION_ID}\.md$")
 STATE_LABELS = {"✅": "SETTLED", "🟡": "PARTIAL", "🔴": "OPEN", "⏸": "ON HOLD"}
 # The generated Board site can link to live server routes. They do not resolve
 # as files beside an HTML page, so checker must recognize them rather than

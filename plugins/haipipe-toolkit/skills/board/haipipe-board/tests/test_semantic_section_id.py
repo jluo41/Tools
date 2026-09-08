@@ -123,3 +123,17 @@ if __name__ == "__main__":
         self.assertTrue(all(p["kind"] == "stage" for p in pages))
         self.assertEqual(expand_ids("S-MISQ-Main-4-Empirical-Strategy + S-MISQ-Appendix-D-Instrumental-Variables"),
                          {"S-MISQ-Main-4-Empirical-Strategy", "S-MISQ-Appendix-D-Instrumental-Variables"})
+
+
+    def test_checker_exempts_indexed_paper_sections_from_the_stage_contract(self):
+        """check.py reads the one shared grammar, so S-<desk>-Main-<N>-<Title> is a paper section, not a stage page."""
+        import importlib.util, sys as _sys
+        cli = Path(__file__).resolve().parent.parent / "cli"
+        _sys.path.insert(0, str(cli))
+        spec = importlib.util.spec_from_file_location("check_under_test", cli / "check.py")
+        mod = importlib.util.module_from_spec(spec); _sys.modules[spec.name] = mod; spec.loader.exec_module(mod)
+        for ok in ("S-JAMA-IM-Main-1-Introduction.md", "S-MISQ-Appendix-D-Instrumental-Variables.md",
+                   "S-MISQ-Main-Abstract.md", "S-JAMA-IM-Main-Key-Points.md"):
+            self.assertIsNotNone(mod.SEMANTIC_SECTION_PAGE.fullmatch(ok), ok)
+        for stage in ("S-Work-R1.md", "S03.md", "S-Main-Dash.md"):
+            self.assertIsNone(mod.SEMANTIC_SECTION_PAGE.fullmatch(stage), stage)

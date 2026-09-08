@@ -585,28 +585,34 @@ def display_register(main, appx):
     # sections: what LaTeX NUMBERS is every unstarred \section{...} in \input order; a page whose
     # fragment (or stub) prints only \section*{...} (Key Points, an abstract) gets no number.
     # 0.7.5: the declared value is the H1's §N / Appendix L; the page id carries the same index.
-    def _numbered(rel):
+    def _numbered_count(p_, rel):
+        """how many sections LaTeX will NUMBER for this page: every unstarred \\section{ in its placed
+        file; a not-included page is a stub in master.tex with exactly one. 0.7.6: counting, not a
+        flag, because a fragment whose inner divisions use \\section (md2tex mapped ### that way)
+        shifts every later section number, and the register must print what the reader sees."""
+        if not p_.get("included", p_["ready"]): return 1
         f = LATEX / (rel + ".tex")
-        return bool(f.exists() and re.search(r"\\section\{", f.read_text(encoding="utf-8", errors="replace")))
-    secs, n, letter = [], 0, 0
-    def _prints_number(p_, rel):
-        # a not-included page is a stub in master.tex, always an unstarred \section → numbered
-        return _numbered(rel) if p_.get("included", p_["ready"]) else True
+        return len(re.findall(r"\\section\{", f.read_text(encoding="utf-8", errors="replace"))) if f.exists() else 0
+    secs, n, letter, overnumbered = [], 0, 0, []
     for p_, _ in main:
         dec, title = page_heading(p_)
-        printed = None
-        if _prints_number(p_, f"sections/{p_['id']}"):
-            n += 1; printed = f"§{n}"
+        k = _numbered_count(p_, f"sections/{p_['id']}")
+        printed = f"§{n + 1}" if k else None
+        if k > 1: overnumbered.append((p_["id"], k))
+        n += k
         secs.append({"printed": printed, "declared": f"§{dec}" if dec and dec.isdigit() else None,
                      "index": page_index(p_["id"]), "title": title, "page": p_["id"], "ready": p_["ready"]})
     for p_, _ in appx:
         dec, title = page_heading(p_)
-        printed = None
-        if _prints_number(p_, f"appendices/{p_['id']}"):
-            letter += 1; printed = f"Appendix {chr(64 + letter)}"
+        k = _numbered_count(p_, f"appendices/{p_['id']}")
+        printed = f"Appendix {chr(64 + letter + 1)}" if k else None
+        if k > 1: overnumbered.append((p_["id"], k))
+        letter += k
         secs.append({"printed": printed, "declared": f"Appendix {dec}" if dec and dec.isalpha() else None,
                      "index": page_index(p_["id"]), "title": title, "page": p_["id"], "ready": p_["ready"]})
     findings, seen_label, claimed = [], {}, {}
+    for pid_, k in overnumbered:
+        findings.append(f"{pid_}: its fragment prints {k} numbered sections; inner divisions should be \\subsection so the page is one §")
     for r in secs:
         if r["declared"] and r["printed"] and r["declared"] != r["printed"]:
             findings.append(f"{r['page']}: page H1 says {r['declared']}, prints {r['printed']}")

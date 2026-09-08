@@ -1,5 +1,9 @@
 ## 0.172.2 · 2026-09-08
 
+## 0.172.4 · 2026-09-08
+
+- `cli/check.py` reads the shared `SEMANTIC_SECTION_ID` instead of a private copy, so an indexed paper section (`S-JAMA-IM-Main-1-Introduction`) is exempt from the Stage Contract rule like every other paper section (Paper-JAMA-Board found `missing-stage-section` firing on the four numbered JAMA main pages).
+
 ## 0.172.3 · 2026-09-08
 
 - Section page ids may carry the section index after the lane, `S-<desk>-Main-<N>-<Title>` / `S-<desk>-Appendix-<L>-<Title>` (JL 260908 third naming pass); `src/parse.py` and the shared `SEMANTIC_SECTION_ID` in `src/feedback.py` accept it, the fallback sort key orders by that index, unnumbered ids keep parsing.

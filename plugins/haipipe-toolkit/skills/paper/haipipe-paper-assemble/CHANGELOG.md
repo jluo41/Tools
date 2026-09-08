@@ -1,5 +1,8 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.7.6 · 260908
+- Register prints what LaTeX numbers: every unstarred `\section{` per placed fragment is counted in `\input` order (a stub counts one); a page printing more than one is a finding (`inner divisions should be \subsection`), found by Paper-JAMA-Board when md2tex's `###` mapped to `\section` and shifted every later number. 24 teeth.
+
 ## 0.7.5 · 260908
 - Third naming pass (JL 260908 "okay, good, this might be much better"): the Section PAGE id carries the index (`S-<desk>-Main-<N>-<Title>`, `S-<desk>-Appendix-<L>-<Title>`, unnumbered pages keep title only) and the UNIT drops every prefix (`Display<n>-<slug>`); delivery mirrors the page (`displays/<page-id>/<unit>/`). Every engine key is `<page-id>/<unit>`: `copy_unit`, `place_fragment` rewrites, `EMBEDDED_UNITS`/`PLACED_FLOATS`, `label_to_unit`, page-scoped `declared_number`, register rows and findings. New `page_index()` / `is_abstract()`; the JAMA heading kind strips the index; printed section numbers now count unstarred `\section{` in \input order (an unnumbered page prints none). Register teeth: folder index ≠ H1, numbered H1 without index, index on unnumbered H1, prefixed unit, unit without README. Tests and the docx room fixture follow the grammar.
 
