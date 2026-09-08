@@ -586,9 +586,16 @@ def display_register(main, appx):
     # every unit ON DISK, not only the ones this build copied: a collision on a
     # NOT-READY page is exactly the one that detonates later, when it compiles.
     homes = {}
-    for readme in sorted(ROOT.glob("B*/*/outline/evidence/display/*/README.md")):
-        unit = readme.parent.name
-        homes.setdefault(unit, []).append(readme.parents[4].name)
+    for unit_dir in sorted(p_ for p_ in ROOT.glob("B*/*/outline/evidence/display/*/") if p_.is_dir()):
+        unit, page = unit_dir.name, unit_dir.parents[3].name
+        homes.setdefault(unit, []).append(page)
+        # 0.7.3 (JL 260908 "unify them"): a display unit folder is <PageID>-Display<N>-<slug>;
+        # the S-Display-* shape is retired paper-side naming and reads as legacy here
+        if not re.fullmatch(re.escape(page) + r"-Display\d+-[A-Za-z0-9][A-Za-z0-9-]*", unit):
+            findings.append(f"legacy unit name {unit} on {page}: rename to {page}-Display<N>-<slug>")
+        if not (unit_dir / "README.md").exists():
+            findings.append(f"{unit} on {page} has no README.md, so it can declare no number")
+            continue
         d = declared_number(unit)
         if d: claimed.setdefault(d, []).append(unit)
     for unit, pages_ in sorted(homes.items()):

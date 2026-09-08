@@ -10,7 +10,7 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.7.2"
+  version: "0.7.3"
   last_updated: "2026-09-08"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
@@ -215,6 +215,18 @@ mismatch: a table that reaches the PDF and not the Word file is a loud failure,
 never a caption with nothing under it (found by Paper-MISQ-Board, 260908: 3 of 4
 main tables and 7 of 12 appendix tables were lost). `tests/test_latex_room_to_docx.py`
 drives the real engine over a room with those exact column specs.
+
+## 🗂 Display unit folders (0.7.3 · JL 260908 "unify them")
+
+A display unit folder is `<PageID>-Display<N>-<slug>` under the owning page's
+`outline/evidence/display/` (the law of `haipipe-display`'s
+display-unit-output-contract and `haipipe-plugin-outline`'s displays ref):
+`S-JAMA-IM-Main-Results-Display1-forest`, `S-MISQ-Main-Introduction-Display1-linked-study-design`.
+The `S-Display-<code>-<slug>` shape is RETIRED. The display register reads every
+unit folder on disk and lists a non-conforming name as a finding (`legacy unit
+name … rename to <PageID>-Display<N>-<slug>`), and a unit without a `README.md`
+as a finding too, since it can declare no number. Findings never block a build;
+they name the debt.
 
 ## 🎭 Venue profiles
 

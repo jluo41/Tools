@@ -275,3 +275,15 @@ def test_round_freeze_copies_all_declared_outputs_and_is_immutable(paper):
 
     with pytest.raises(SystemExit, match="immutable"):
         m.freeze("sent", "RD01")
+
+
+def test_display_unit_folder_grammar_is_a_register_tooth(paper):
+    """<PageID>-Display<N>-<slug> passes; the retired S-Display-* shape is a finding (JL 260908: unify)."""
+    m = paper
+    intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Intro"
+    good = intro / "outline" / "evidence" / "display" / "S-T-Main-Intro-Display2-good"
+    good.mkdir(parents=True); (good / "README.md").write_text("## Placement\nMain; Introduction, Figure 7\n")
+    register, _ = _assemble(m)
+    legacy = [f for f in register["findings"] if f.startswith("legacy unit name")]
+    assert any("S-Display-1-one" in f for f in legacy)          # the fixture's own unit is legacy-named on purpose
+    assert not any("S-T-Main-Intro-Display2-good" in f for f in legacy)

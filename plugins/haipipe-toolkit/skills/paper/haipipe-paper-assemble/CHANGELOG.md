@@ -1,5 +1,8 @@
 # CHANGELOG · haipipe-paper-assemble
 
+## 0.7.3 · 260908
+- Display unit folder grammar `<PageID>-Display<N>-<slug>` is a register tooth (JL 260908 "unify them", relayed by Paper-JAMA-Board): every unit folder on disk is scanned, a `S-Display-*` or other non-conforming name is a `legacy unit name` finding, a unit without README.md is a finding. New "🗂 Display unit folders" section.
+
 ## 0.7.2 · 260908
 
 - Round snapshots now freeze every output declared in `delivery/paper-build.toml`,
