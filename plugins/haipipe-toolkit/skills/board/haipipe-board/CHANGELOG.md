@@ -1,3 +1,16 @@
+## 0.173.0 · 2026-09-08
+
+- Outline plugin, Bullet Workspace: every `C<n>.P<m>` paragraph is a native
+  expand/collapse group holding its own Bullets; each Bullet has an in-browser
+  editor and each paragraph an append control. Writes go through
+  `POST /_board/outline` with `action: edit-bullet | append-bullet` into the
+  Markdown Shape only; the first write against an approved plan copies it to
+  the next bounded unapproved Shape (`v1.1` → `v1.2`, `approved: ⬜`,
+  `working-copy-of`), later writes reuse that file, and the approved file
+  stays byte-for-byte. The server rebuilds the Board after a Bullet write so
+  the compact Page table follows. Editor ids follow the file's own `B<n>`.
+- Compact Page Outline table: the `Planned move` column is now `Bullet`.
+
 ## 0.172.6 · 2026-09-08
 
 - Fresh-context validation caught the retired one-paragraph-per-Bullet rule. Align shared writing rules, the Page template and Task's Page-only trace reference with Cn.Pm paragraph groups and sentence-level Bullet traces.

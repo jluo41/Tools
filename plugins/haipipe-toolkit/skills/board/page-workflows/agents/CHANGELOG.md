@@ -1,3 +1,7 @@
+## haipipe-page-content-agent 0.2.0 · 2026-09-08
+
+- Dispatch paragraph-scoped writing Runs through the CONTENT profile; retain phase and independent CHECK boundaries.
+
 ## 2026-09-04 · canonical Page dependency order
 
 - Align all five phase agents with Page → router → phase → owning workflow →

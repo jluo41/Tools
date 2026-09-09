@@ -51,17 +51,26 @@ paragraph_job:  the one job this paragraph performs
 planned_move:   the approved order of explanation
 claims:         stable claim ids and their exact propositions
 evidence:       folded Evidence Result ids and source pointers
+narrative_decision:
+                 optional Page Outline decision id/scope/summary/source;
+                 approved reason for this paragraph's reader order or form
 must_establish: what the reader should understand at exit
 must_not_say:   unlicensed scope, causal, or generality extensions
 handoff:        what the next unit may assume
 requirements:   venue, host, language, and formatting rules
 voice:          optional author or team profile
+writing_dna:    optional frozen Writing DNA packet; see ref/writing-dna-adapter.md
 ```
 
 The packet is complete only when the worker can answer both questions:
 
 1. Is there enough material to write without inventing facts?
 2. Is the unit's message specific enough to write in one sentence?
+
+The approved proposition must also fit the strength of its bound Evidence
+Results. A stronger plan verb is not permission to downgrade the prose, and a
+style profile is not permission to upgrade it; a mismatch routes to OUTLINE or
+EVIDENCE before realization.
 
 Failure of the first question routes to EVIDENCE. Failure of the second routes
 to OUTLINE or the host's planning owner. Do not compensate with a generic
@@ -72,11 +81,17 @@ introduction or defensive caveat.
 ### 3.1 Shape from the existing plan
 
 Read the plan row, claim system, argument arc, and evidence allocation as one
-input. A logic graph is useful here as a read-only projection:
+input. Check that the approved proposition and its verb strength fit the bound
+Evidence Results. A logic graph is useful here as a read-only projection:
 
 ```text
 reader question → paragraph job → claim → evidence → reader exit
 ```
+
+When a Page supplies a `Narrative Decision`, treat it as the approved reason
+for the paragraph's organization. Honor its scope and reader order; do not
+mint one from raw feedback or rewrite it during realization. A conflict with
+the approved Outline routes to OUTLINE before prose is drafted.
 
 Use the graph to find an uncovered claim, an orphaned Evidence Result, a broken
 handoff, or a promise with no support. Do not generate a competing outline from
@@ -104,17 +119,30 @@ new universal style law.
 
 ### 3.3 Apply voice and surface rules
 
-An optional Writing DNA profile calibrates language, paragraph rhythm, and
-recurring structural choices. It never supplies facts from its source corpus.
-The priority order is:
+If the packet carries Writing DNA, use the adapter in
+[`ref/writing-dna-adapter.md`](writing-dna-adapter.md). Read the frozen
+profile's five distilled artifacts and the selected raw exemplars before
+rendering the paragraph. The profile may calibrate language, paragraph rhythm,
+and compatible structural choices; it never supplies facts from its source
+corpus. Apply it after a neutral content pass has established the approved
+claims and evidence order.
+
+For a fixed content commission, the priority order is:
 
 ```text
-explicit user request
-  > approved outline/evidence and venue contract
-  > paragraph job and claim strength
-  > author/team voice profile
-  > readability and de-template rules
+Context, discipline, and venue contract          HARD
+approved outline, Evidence, and claim strength   HARD
+Page Narrative Decision, when declared            HARD
+paragraph job and neighboring seam                HARD
+explicit user request about surface or voice     STRONG
+Writing DNA profile                               SOFT
+readability and de-template checks                DIAGNOSTIC
 ```
+
+An explicit request that changes the topic, promise, claim order, or evidence
+boundary is a content request, not a style override; route it back to the
+owning phase. If DNA conflicts with a higher-authority rule, keep the higher
+authority and record the decision in the Run trace.
 
 For paper or technical prose, use the structure-before-surface idea only as a
 discourse check after the approved argument is fixed. Do not apply narrative
@@ -122,16 +150,20 @@ rules that would break scientific reader order or causal meaning.
 
 ### 3.4 Write and trace
 
-Write the complete unit, then check it against the packet. For a revision, pass
-the old and new prose to `cli/wdiff.py`; the model does not hand-author the
-word-level record. For a first draft, keep the plan/evidence addresses in the
-host writing receipt so the realization remains reviewable.
+For a first draft, complete the evidence-bound content pass before the DNA
+surface pass, then check the rendered unit against the packet. Keep the
+plan/evidence addresses, any Narrative Decision, and the Writing DNA identity,
+artifacts, exemplars, and conflicts in the host writing receipt or `trace.md`
+so the realization remains reviewable. For a revision, pass the old and new prose to
+`cli/wdiff.py`; the model does not hand-author the word-level record.
 
 ## 4. Final audit
 
 Before promoting the prose, confirm:
 
 - every planned job and required claim is covered;
+- any declared Narrative Decision is honored and traceable, or is recorded as
+  `not specified`;
 - every factual claim maps to the named Evidence Result or declared static source;
 - no number, citation, defined term, display reference, or causal qualifier was
   changed without authority;

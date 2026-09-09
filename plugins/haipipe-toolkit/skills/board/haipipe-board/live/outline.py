@@ -15,9 +15,10 @@ the aim-to-division tie is read from the material, two grammars deep —
 No claude call at render time. A bad anchor renders as a named ❌, and the
 🌐 card doubles as the worklist for anchoring the page.
 
-LIVE AND STORAGE-LESS, the QPf1 folderstat precedent: rendered from the .md
-on every open, written nowhere, so it can never be stale. The POST twin
-exists only so the shell's `tab: {url, write}` contract holds.
+LIVE AND STORAGE-LESS for reads, the QPf1 folderstat precedent: rendered from
+the .md on every open, so it can never be stale. The POST twin keeps the
+shell's `tab: {url, write}` contract and is also the bounded Bullet editor;
+only an explicit edit/append action writes an unapproved working Shape.
 
 TWO LENSES, one parse (QPf12 §2): 🧭 By division and 🚦 By progress are the
 same data sorted twice, both rendered server-side, toggled client-side by
@@ -28,6 +29,7 @@ import html
 import json
 import pathlib
 import re
+import datetime as dt
 from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
@@ -280,6 +282,37 @@ details.brow>summary .addr{{font:500 11.5px ui-monospace,Menlo,monospace;
  background:var(--acc);border-radius:2px}}
 .prow .mut{{font-weight:650;font-size:13.5px;color:var(--fg);
  letter-spacing:.01em}}
+.paragraph-group{{margin:8px 0 10px;border:1px solid var(--line);border-radius:8px;
+ background:color-mix(in srgb,var(--acc) 2%,var(--card));overflow:hidden}}
+details.paragraph-group>summary{{list-style:none!important;display:flex;gap:8px;
+ align-items:baseline;cursor:pointer;padding:7px 9px;margin:0;background:var(--card);
+ border:0;font-size:13.5px;line-height:1.45;font-weight:650;color:var(--fg)}}
+details.paragraph-group>summary::-webkit-details-marker{{display:none!important}}
+details.paragraph-group>summary::before{{content:"▸";color:var(--acc);flex:none;width:10px}}
+details.paragraph-group[open]>summary::before{{content:"▾"}}
+details.paragraph-group>summary:hover{{background:color-mix(in srgb,var(--acc) 7%,var(--card))}}
+.paragraph-group .prow{{margin:0;padding:0;border:0;background:none}}
+.paragraph-group .prow::before{{display:none}}
+.paragraph-bullets{{padding:4px 9px 7px;border-top:1px solid var(--line)}}
+.bullet-edit-toggle,.bullet-add-trigger,.bullet-add button,.bullet-form button{{flex:none;border:1px solid var(--line);
+ border-radius:6px;background:var(--card);color:var(--acc);font:600 11px -apple-system,sans-serif;
+ padding:3px 7px;cursor:pointer;min-height:28px}}
+.bullet-edit-toggle{{margin-left:4px;opacity:.78}}
+.bullet-edit-toggle:hover,.bullet-add-trigger:hover,.bullet-add button:hover,.bullet-form button:hover{{border-color:var(--acc);opacity:1}}
+.bullet-form,.bullet-add{{display:none;margin:5px 0 7px 84px;padding:7px 8px;border:1px solid var(--line);
+ border-radius:7px;background:color-mix(in srgb,var(--acc) 4%,var(--card))}}
+.bullet-form.show,.bullet-add.show{{display:block}}
+.bullet-form textarea,.bullet-add input{{display:block;width:100%;box-sizing:border-box;border:1px solid var(--line);
+ border-radius:5px;padding:6px 7px;background:var(--bg);color:var(--fg);font:13px/1.45 inherit}}
+.bullet-form textarea{{min-height:54px;resize:vertical}}
+.bullet-form .form-actions,.bullet-add .form-actions{{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}}
+.bullet-form .cancel-bullet{{color:var(--mut)}}
+.bullet-form .form-status,.bullet-add .form-status{{font-size:12px;color:var(--mut)}}
+.bullet-add{{margin:7px 0 0 84px;background:transparent;border-style:dashed}}
+.bullet-add input{{display:inline-block;width:calc(100% - 86px);margin-right:4px}}
+@media(max-width:560px){{.bullet-form,.bullet-add{{margin-left:0}}
+ .bullet-edit-toggle{{min-height:32px;padding:4px 8px}}
+ .bullet-add input{{width:100%;margin:0 0 5px}}}}
 /* the host shell draws its drawer triangle with ::before, which ::marker
    rules never touch — kill every pseudo that could carry a glyph */
 details.brow>summary::before{{content:none!important;display:none!important}}
@@ -543,6 +576,53 @@ document.addEventListener('click',function(ev){{
 if(requested)activateLens(requested);
 if(requestedFocus&&requested!=='workspace')setTimeout(function(){{
   focusRecord(requestedFocus);}},0);
+/* Bullet editing is deliberately a small JSON write-back to the server that
+   owns the Markdown.  The form never writes generated HTML or a browser file.
+   A successful write reloads this live projection so the new working Shape is
+   immediately visible and the approved source remains inspectable. */
+document.addEventListener('click',function(ev){{
+  var toggle=ev.target.closest?ev.target.closest('[data-bullet-edit]'):null;
+  if(toggle){{
+    ev.preventDefault();
+    var form=document.getElementById(toggle.getAttribute('data-bullet-edit'));
+    if(form){{
+      form.classList.toggle('show');
+      if(form.classList.contains('show')){{
+        var area=form.querySelector('textarea'); if(area)area.focus();
+      }}
+    }}
+    return;
+  }}
+  var cancel=ev.target.closest?ev.target.closest('[data-bullet-cancel]'):null;
+  if(cancel){{
+    ev.preventDefault();
+    var cf=cancel.closest('form'); if(cf)cf.classList.remove('show');
+  }}
+  var add=ev.target.closest?ev.target.closest('[data-bullet-add]'):null;
+  if(add){{
+    ev.preventDefault();
+    var af=document.getElementById(add.getAttribute('data-bullet-add'));
+    if(af){{af.classList.toggle('show'); if(af.classList.contains('show')){{
+      var input=af.querySelector('input'); if(input)input.focus();
+    }}}}
+  }}
+}});
+document.addEventListener('submit',function(ev){{
+  var form=ev.target.closest?ev.target.closest('form[data-bullet-write]'):null;
+  if(!form)return;
+  ev.preventDefault();
+  var status=form.querySelector('.form-status');
+  if(status)status.textContent='Saving…';
+  var payload={{}};
+  new FormData(form).forEach(function(value,key){{payload[key]=value;}});
+  fetch('/_board/outline',{{method:'POST',headers:{{'Content-Type':'application/json'}},
+    body:JSON.stringify(payload)}}).then(function(resp){{return resp.json().then(function(body){{
+      if(!resp.ok||!body.ok)throw new Error(body.err||'write failed'); return body;
+    }});}}).then(function(body){{
+      if(status)status.textContent=(body.version?'Saved '+body.version:'Saved')+' · reloading';
+      location.reload();
+  }}).catch(function(err){{if(status)status.textContent='Not saved: '+err.message;}});
+}});
 </script>
 </body></html>"""
 
@@ -831,6 +911,8 @@ def _outline_cycle_strip(cycle):
 # The OUTLINE phase's own file, `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`
 # (haipipe-plugin-outline §🗂, JL 260817). It is AUTHORED, frozen once its
 # `approved:` line is ticked, and progress is NEVER written back into it.
+# An explicit Bullet editor write creates a new unapproved Shape first; that
+# working copy is the only plan this renderer is allowed to update.
 # So this card renders two things side by side: what the plan SAID, and what
 # is on disk NOW. The gap between them is the whole point of the card.
 
@@ -858,6 +940,251 @@ def _latest_plan(page_src):
     if best is None:
         return None, ""
     return best, version_tag(best) or best.stem.split("-outline-")[-1]
+
+
+_PLAN_VERSION_RE = re.compile(r"^v(?P<generation>\d+)(?:\.(?P<shape>\d+))?(?:\.(?P<evidence>\d+))?$")
+
+
+def _next_shape_version(tag):
+    """Return the next bounded Shape version for a plan tag.
+
+    A Bullet edit is a Shape change, never an evidence-only fold.  Legacy
+    integer plans remain readable, but the first working edit gives them an
+    explicit Shape component (``v1`` -> ``v1.1``).
+    """
+    m = _PLAN_VERSION_RE.fullmatch(tag or "")
+    if not m:
+        return "v1.1"
+    generation = int(m.group("generation"))
+    shape = int(m.group("shape") or 0)
+    return "v%d.%d" % (generation, shape + 1)
+
+
+def _replace_header(text, key, value):
+    """Replace one plan header row, inserting it after the version when absent."""
+    pat = re.compile(r"(?m)^%s:.*$" % re.escape(key))
+    line = "%s: %s" % (key, value)
+    if pat.search(text):
+        return pat.sub(line, text, count=1)
+    lines = text.splitlines()
+    at = 1 if lines and lines[0].startswith("#") else 0
+    lines.insert(at, line)
+    return "\n".join(lines) + ("\n" if text.endswith("\n") else "")
+
+
+def _working_plan_text(text, old_tag, new_tag, action, paragraph, bullet):
+    """Turn an approved plan into an explicitly unapproved working Shape."""
+    text = re.sub(
+        r"(?m)^(#.*?\boutline\s+)v\d+(?:\.\d+){0,2}(.*)$",
+        lambda m: "%sv%s%s" % (m.group(1), new_tag[1:], m.group(2)),
+        text,
+        count=1,
+    )
+    text = _replace_header(text, "outline-version", new_tag)
+    text = _replace_header(
+        text, "supersedes",
+        "%s · working Shape copy created by the Outline Bullet editor" % old_tag,
+    )
+    text = _replace_header(text, "working-copy-of", old_tag)
+    text = _replace_header(text, "approved", "⬜")
+    text = _replace_header(text, "shape-accepted", "⬜ · pending human review")
+    text = _replace_header(
+        text, "date", dt.datetime.now().strftime("%y%m%d"),
+    )
+    text = _replace_header(
+        text, "status",
+        "OUTLINE · %s working Shape; Bullet %s %s pending review"
+        % (new_tag, paragraph, bullet),
+    )
+    return text
+
+
+def _plan_region(lines, paragraph):
+    """Return the heading and exclusive end indexes for one C.P paragraph."""
+    wanted = (paragraph or "").strip()
+    if not re.fullmatch(r"C\d+\.P\d+", wanted):
+        return None, "paragraph must be a C<n>.P<m> address"
+    heading = re.compile(r"^###\s+%s\s*(?:·|$)" % re.escape(wanted))
+    start = next((i for i, line in enumerate(lines) if heading.match(line)), None)
+    if start is None:
+        return None, "paragraph %s was not found in the current Shape" % wanted
+    end = len(lines)
+    for i in range(start + 1, len(lines)):
+        if lines[i].startswith("### ") or lines[i].startswith("## "):
+            end = i
+            break
+    return (start, end), None
+
+
+def _bullet_line(line):
+    return re.match(r"^(?P<prefix>-\s+B(?P<number>\d+)\s*·\s*)(?P<body>.*)$", line)
+
+
+def _normalise_head(value):
+    # A Bullet head is one Markdown line.  Newlines from a mobile textarea are
+    # intentionally folded rather than allowed to create accidental records.
+    return " ".join((value or "").replace("\r", " ").replace("\n", " ").split())
+
+
+def _edit_plan_bullet(page_src, action, paragraph, bullet, head,
+                      note="", evidence="", accept="", structured=False):
+    """Edit/append one Bullet, preserving an approved plan byte-for-byte.
+
+    Returns a small receipt for the Board endpoint.  The first write against an
+    approved plan creates the next bounded, unapproved Shape; subsequent writes
+    reuse that working file.  No generated Board HTML is touched here.
+    """
+    plan, old_tag = _latest_plan(page_src)
+    if plan is None:
+        return None, "this Page has no Outline Shape plan"
+    raw_head = _normalise_head(head)
+    if not raw_head:
+        return None, "Bullet text is empty"
+    text = plan.read_text(encoding="utf-8", errors="replace")
+    # Validate the address before making any working copy. A mistyped mobile
+    # submission must be a no-op, including when the current plan is approved.
+    pre_region, pre_err = _plan_region(text.splitlines(), paragraph)
+    if pre_err:
+        return None, pre_err
+    if action == "edit-bullet":
+        wanted = (bullet or "").strip()
+        if not re.fullmatch(r"B\d+", wanted):
+            return None, "bullet must be a B<n> address"
+        if not any(
+            (m := _bullet_line(line)) and "B%s" % m.group("number") == wanted
+            for line in text.splitlines()[pre_region[0] + 1:pre_region[1]]
+        ):
+            return None, "%s was not found under %s" % (wanted, paragraph)
+    elif action != "append-bullet":
+        return None, "unknown Bullet action"
+    approved = bool(re.search(r"(?m)^approved:\s*✅", text))
+    destination = plan
+    new_tag = old_tag
+    created = False
+    if approved:
+        new_tag = _next_shape_version(old_tag)
+        destination = plan.parent / ("%s-outline-%s.md" % (page_src.stem, new_tag))
+        # Never overwrite an existing plan while resolving a concurrent request;
+        # advance until a free Shape filename is found rather than ever
+        # mutating an already-approved file.
+        if destination.exists():
+            while destination.exists():
+                new_tag = _next_shape_version(new_tag)
+                destination = plan.parent / ("%s-outline-%s.md" % (page_src.stem, new_tag))
+            text = _working_plan_text(text, old_tag, new_tag, action, paragraph, bullet)
+            created = True
+        else:
+            text = _working_plan_text(text, old_tag, new_tag, action, paragraph, bullet)
+            created = True
+
+    lines = text.splitlines()
+    region, err = _plan_region(lines, paragraph)
+    if err:
+        return None, err
+    start, end = region
+    if action == "edit-bullet":
+        wanted = (bullet or "").strip()
+        if not re.fullmatch(r"B\d+", wanted):
+            return None, "bullet must be a B<n> address"
+        hit = None
+        for i in range(start + 1, end):
+            m = _bullet_line(lines[i])
+            if m and "B%s" % m.group("number") == wanted:
+                hit = i
+                break
+        if hit is None:
+            return None, "%s was not found under %s" % (wanted, paragraph)
+        m = _bullet_line(lines[hit])
+        slot = re.match(r"(S\d+\s*·\s*)", m.group("body"))
+        if slot and not re.match(r"^S\d+\s*·\s*", raw_head):
+            raw_head = slot.group(1) + raw_head
+        lines[hit] = m.group("prefix") + raw_head
+        changed = True
+    elif action == "append-bullet":
+        note = _normalise_head(note)
+        evidence = _normalise_head(evidence)
+        accept = _normalise_head(accept)
+        # Direct callers that supply the structured fields are opting into the
+        # same Note/Evidence contract as the browser form.  Keep the legacy
+        # head-only helper path for internal callers and existing plans.
+        structured = bool(structured or note or evidence or accept)
+        if structured:
+            if not note:
+                return None, "a new Bullet needs a Note"
+            if not re.match(
+                r"^(?:none|E\d+-(?:VALUE|CITE|DISPLAY)-[a-z0-9]+(?:-[a-z0-9]+)*)\s+·\s+\S",
+                evidence,
+                re.I,
+            ):
+                return None, "Evidence must be `none · reason` or a typed E<n>-TYPE-name declaration"
+            if not evidence.lower().startswith("none") and not accept:
+                return None, "typed Evidence needs an Accept contract"
+        numbers = []
+        sentence_numbers = []
+        last = None
+        for i in range(start + 1, end):
+            m = _bullet_line(lines[i])
+            if not m:
+                continue
+            numbers.append(int(m.group("number")))
+            sm = re.search(r"\bS(\d+)\s*·", m.group("body"))
+            if sm:
+                sentence_numbers.append(int(sm.group(1)))
+            last = i
+        number = max(numbers or [0]) + 1
+        sentence = max(sentence_numbers or [0]) + 1
+        raw_head = re.sub(r"^S\d+\s*·\s*", "", raw_head)
+        new_line = "- B%d · S%d · %s" % (number, sentence, raw_head)
+        if last is None:
+            insert_at = start + 1
+        else:
+            insert_at = last + 1
+            # Keep the new Bullet after the existing Bullet's indented Note /
+            # Evidence / Result lines, while not swallowing the next heading.
+            while insert_at < end:
+                if lines[insert_at].startswith("  "):
+                    insert_at += 1
+                    continue
+                if (not lines[insert_at].strip() and insert_at + 1 < end
+                        and lines[insert_at + 1].startswith("  ")):
+                    insert_at += 1
+                    continue
+                break
+        # Bullets follow one another directly in a Shape file; a blank line
+        # belongs only before the next heading, never between Bullets.
+        additions = [new_line]
+        if structured:
+            additions.extend(["  Note: %s" % note, "  Evidence: %s" % evidence])
+            if not evidence.lower().startswith("none"):
+                additions.append("  Accept: %s" % accept)
+        lines[insert_at:insert_at] = additions
+        bullet = "B%d" % number
+        changed = True
+    else:
+        return None, "unknown Bullet action"
+
+    if not changed:
+        return None, "nothing changed"
+    updated = "\n".join(lines) + ("\n" if text.endswith("\n") else "")
+    # Atomic replace keeps a mobile double-tap from leaving a truncated plan.
+    tmp = destination.with_name(destination.name + ".tmp-%d" % id(lines))
+    tmp.write_text(updated, encoding="utf-8")
+    tmp.replace(destination)
+    log = page_src.parent / "outline" / (page_src.stem + "-log.md")
+    if created and log.is_file():
+        stamp = dt.datetime.now().strftime("%y%m%d %H%M")
+        with log.open("a", encoding="utf-8") as fh:
+            fh.write("\n### %s · working Shape %s created from %s\n"
+                     "- **Action**: %s %s %s\n" %
+                     (stamp, new_tag, old_tag, action, paragraph, bullet))
+    return {
+        "version": new_tag,
+        "plan": str(destination),
+        "created_working_shape": created,
+        "approved_plan": old_tag if created else "",
+        "paragraph": paragraph,
+        "bullet": bullet,
+    }, None
 
 
 def _typed_item_review(page_src, plan, plan_text, approved):
@@ -1500,6 +1827,64 @@ def plan_card(page_src, root=None, path_q="", file_q=""):
     # into several scaffolds (`realizes: C3.P1.B2`); the outline surface keeps
     # the stable Point join and does not pretend to own those later splits.
     rows, tally, cited, bundle_rows = [], {}, set(), []
+    paragraph_bullets = []
+    current_paragraph = ""
+    current_paragraph_title = ""
+
+    def _bullet_form(form_id, action, paragraph, bullet_id, value=""):
+        """Small mobile-safe editor whose only authority is Markdown."""
+        hidden = (
+            '<input type="hidden" name="path" value="%s">'
+            '<input type="hidden" name="file" value="%s">'
+            '<input type="hidden" name="action" value="%s">'
+            '<input type="hidden" name="paragraph" value="%s">'
+            '<input type="hidden" name="bullet" value="%s">'
+            % (_e(path_q), _e(file_q), _e(action), _e(paragraph), _e(bullet_id))
+        )
+        if action == "edit-bullet":
+            field = '<textarea name="head" aria-label="Bullet text">%s</textarea>' % _e(value)
+            submit = "Save Bullet"
+            cls = "bullet-form"
+        else:
+            field = (
+                '<input type="hidden" name="structured" value="1">'
+                '<input name="head" aria-label="New Bullet text" placeholder="New Bullet text" autocomplete="off">'
+                '<input name="note" aria-label="Bullet Note" placeholder="Note · why this point belongs" autocomplete="off">'
+                '<input name="evidence" aria-label="Evidence decision" placeholder="Evidence: none · reason, or E01-CITE-name · expectation" autocomplete="off">'
+                '<input name="accept" aria-label="Evidence acceptance" placeholder="Accept · required for typed Evidence" autocomplete="off">'
+            )
+            submit = "Add Bullet"
+            cls = "bullet-add"
+        return (
+            '<form id="%s" class="%s" data-bullet-write method="post">%s%s'
+            '<div class="form-actions"><button type="submit">%s</button>'
+            '<button type="button" class="cancel-bullet" data-bullet-cancel>Cancel</button>'
+            '<span class="form-status" role="status"></span></div></form>'
+            % (_e(form_id), cls, hidden, field, submit)
+        )
+
+    def _flush_paragraph():
+        """Close one paragraph group, keeping all its Bullets inside it."""
+        nonlocal paragraph_bullets, current_paragraph, current_paragraph_title
+        if not current_paragraph:
+            return
+        form_id = "add-bullet-%s" % current_paragraph.replace(".", "-")
+        add = _bullet_form(form_id, "append-bullet", current_paragraph, "")
+        rows.append(
+            '<details class="paragraph-group" open data-paragraph="%s">'
+            '<summary class="prow"><span class=addr>%s</span>'
+            '<span class=mut>%s</span></summary>'
+            '<div class=paragraph-bullets>%s'
+            '<button type="button" class="bullet-add-trigger" data-bullet-add="%s">+ Bullet</button>'
+            '%s</div></details>'
+            % (_e(current_paragraph), _e(current_paragraph),
+               _e(current_paragraph_title), "".join(paragraph_bullets),
+               _e(form_id), add)
+        )
+        paragraph_bullets = []
+        current_paragraph = ""
+        current_paragraph_title = ""
+
     cn = pn = sn = nid = 0
     for line in joined:
         # A `## ` that is NOT `## C<n>` ENDS the plan's divisions. The plan's
@@ -1509,29 +1894,35 @@ def plan_card(page_src, root=None, path_q="", file_q=""):
         # paragraph"). Counting only `## C<n>` as a division was half the fix;
         # stopping at the first other `## ` is the other half.
         if line.startswith("## ") and not re.match(r"^## C\d+\b", line):
+            _flush_paragraph()
             break
         if re.match(r"^## C\d+\b", line):
+            _flush_paragraph()
             cn += 1; pn = 0
             rows.append('<div class=row style="margin-top:9px">'
                         '<span class="addr sec">C%d</span><b>%s</b></div>'
                         % (cn, _e(re.sub(r"^C\d+\s*·\s*", "", line[3:].strip()))))
             continue
         if line.startswith("### "):
+            _flush_paragraph()
             pn += 1; sn = 0
             # The paragraph row carries its OWN address in the same column the
             # bullets use (JL 260819, on reading a paragraph title as a broken
             # bullet: "how do you think we can add the Cx.Px to the paragraph
             # sentence as well"). The address was in the file all along; the
             # renderer used to strip it.
-            rows.append('<div class="row prow"><span class=addr>C%d.P%d</span>'
-                        '<span class=mut>%s</span></div>'
-                        % (cn, max(pn, 1),
-                           _e(re.sub(r"^C\d+\.P\d+\s*·\s*", "",
-                                     line[4:].strip()))))
+            current_paragraph = "C%d.P%d" % (cn, max(pn, 1))
+            current_paragraph_title = re.sub(
+                r"^C\d+\.P\d+\s*·\s*", "", line[4:].strip()
+            )
             continue
         if not line.startswith("- "):
             continue
         sn += 1
+        # The editor addresses the Bullet the file NAMES (`- B3 ·`); the
+        # position counter is only the fallback for an unnumbered plan.
+        explicit = re.match(r"^-\s+B(\d+)\s*·", line)
+        bullet_id = "B%s" % explicit.group(1) if explicit else "B%d" % sn
         body = re.sub(r"^[SB]\d+\s*·\s*", "", line[2:].strip())
         # The FULL address on every row. It was shortened to P<n>.B<n> once
         # (JL 260817: "为什么还要保留 C1") and JL reversed it on 260819
@@ -1602,14 +1993,18 @@ def plan_card(page_src, root=None, path_q="", file_q=""):
             at = body.rfind(emo)
             if at > hit_at and at >= 0 and len(body) - at <= 64:
                 hit, hit_at = (emo, kind), at
-        def _bullet_row(head_raw, chips_html):
+        def _bullet_row(head_raw, chips_html, bullet_id, edit_value=None):
             """One bullet row; Answered:/Drawn:/Note: text folds behind a
             click (JL 260819), so the pane shows only the terse head."""
             m2 = re.search(r'\s(Answered:|Drawn:|Note:|More:|Routed:)\s', head_raw)
+            form_id = "edit-bullet-%s-%s" % (current_paragraph.replace(".", "-"), bullet_id)
+            edit = _bullet_form(form_id, "edit-bullet", current_paragraph,
+                                bullet_id, edit_value if edit_value is not None else head_raw)
+            button = '<button type="button" class="bullet-edit-toggle" data-bullet-edit="%s">Edit</button>' % _e(form_id)
             if not m2:
                 return ('<div class=row><span class=addr>%s</span>'
-                        '<span class=x>%s %s</span></div>'
-                        % (addr, _e(head_raw), chips_html))
+                        '<span class=x>%s %s</span>%s</div>%s'
+                        % (addr, _e(head_raw), chips_html, button, edit))
             head, detail = head_raw[:m2.start()], head_raw[m2.start():].strip()
             # No marker of any kind (JL 260819: "without '>'"): the row reads
             # exactly like a plain one; hover + cursor are the affordance, and
@@ -1617,17 +2012,22 @@ def plan_card(page_src, root=None, path_q="", file_q=""):
             detail = re.sub(r'^(Note|More):\s*', '', detail)
             return ('<details class=brow><summary class=row>'
                     '<span class=addr>%s</span><span class=x>%s %s</span>'
-                    '</summary><div class=bdetail>%s</div></details>'
-                    % (addr, _e(head.strip()), chips_html, _e(detail)))
+                    '</summary><div class=bdetail>%s</div></details>%s%s'
+                    % (addr, _e(head.strip()), chips_html, _e(detail), button, edit))
 
         if hit is None:
             # A plain sentence is the NORMAL case, not a defect. Requiring a
             # tag on every line was wrong (JL 260817) and made the plan
             # unreadable: the plan is prose, the notes are the exception.
             tally["plain point"] = tally.get("plain point", 0) + 1
-            rows.append(_bullet_row(body, " ".join(
+            edit_head = re.split(
+                r"\s+(?=(?:Note|Evidence|Accept|Answered|Drawn|Routed|More):)",
+                body,
+                maxsplit=1,
+            )[0]
+            paragraph_bullets.append(_bullet_row(body, " ".join(
                 [chip for chip in [_backlink(), *typed_chips] if chip]
-            )))
+            ), bullet_id, edit_head))
             continue
         emo, kind = hit
         tally[kind] = tally.get(kind, 0) + 1
@@ -1742,7 +2142,14 @@ def plan_card(page_src, root=None, path_q="", file_q=""):
         # sentence got squeezed into half the pane and the plan stopped being
         # skimmable (JL 260817, with a screenshot: "你把这些 outline 都给挤得
         # 不知道去哪儿了"). Inline, they sit at the end of the last line.
-        rows.append(_bullet_row(raw_said, " ".join(chips)))
+        edit_head = re.split(
+            r"\s+(?=(?:Note|Evidence|Accept|Answered|Drawn|Routed|More):)",
+            body,
+            maxsplit=1,
+        )[0]
+        paragraph_bullets.append(_bullet_row(raw_said, " ".join(chips), bullet_id, edit_head))
+
+    _flush_paragraph()
 
     # ── the join runs BOTH ways ────────────────────────────────────────
     # Bullet → disk catches "we promised a display and built none". Disk →
@@ -2290,11 +2697,22 @@ class OutlineMixin:
 
     # ---- POST /_board/outline — the shell's write() twin ---------------
     def plug_outline(self, p):
-        """{path, file} -> {ok, url}. Nothing is written: the GET renders
-        live. This exists so the tab spec's write() has something to call."""
+        """Render the live tab, or write one Bullet through its safe editor.
+
+        The normal plugin write remains a no-op URL registration for the shell.
+        Explicit ``edit-bullet``/``append-bullet`` actions are the only writes:
+        they target the Markdown Shape and create a new unapproved version when
+        the selected plan is approved.
+        """
         got = self.target(p)
         if got[0] is None:
             return None, got[1]
+        if p.get("action") in {"edit-bullet", "append-bullet"}:
+            return _edit_plan_bullet(
+                got[0], p.get("action"), p.get("paragraph"),
+                p.get("bullet"), p.get("head"), p.get("note"),
+                p.get("evidence"), p.get("accept"), p.get("structured"),
+            )
         url = ("/_board/outline?path=%s&file=%s"
                % (quote(p.get("path") or ""), quote(p.get("file") or "")))
         return {"url": url}, None

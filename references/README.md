@@ -13,6 +13,10 @@ These entries are tracked as Git submodules so their upstream history stays sepa
 - Figure, visualization, and methodology skills: `scipilot-figure-skill`, `intelligrapher`, `happy-figure-skill`, `science-superpowers`, `superpower-socialscience-skills`.
 - Math skills: `mathmodel-skill`, `claude-code-math-skills`.
 - Agent governance and writing-style skills: `sepia`, `stop-that-shit`, `stop-slop`, `stop-slop-zh`, `llm-wiki-skill`.
+- Anti-AI writing comparison shelf: [`anti-ai-writing-skills.md`](anti-ai-writing-skills.md); it records the ten screenshot items and the exact `SKILL.md` path for each source.
+- HAI integration: `haipipe-writing/ref/anti-slop-adapter.md` and its
+  read-only `cli/anti_slop.py` adapter consume one selected reference after
+  paragraph drafting; the references here remain independently updateable.
 - Tool libraries used as references: `tools/statsmodels`, `tools/dowhy`, `tools/causalml`, `tools/econml`, `tools/python-causality-handbook`, `tools/chatgpt-comparison-detection`.
 
 Use this after cloning the parent repository:

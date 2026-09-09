@@ -175,12 +175,12 @@ l4_run_profile:
   cardinality: "0"
   owner_contract: none
 
-# One logical Run per ready division
+# One logical Run per commissioned paragraph
 l4_run_profile:
-  families: ["Page · Division Writing"]
-  operations: ["write-division"]
-  target: "C<NN>"
-  cardinality: "N_ready_divisions"
+  families: ["Page · Paragraph Writing"]
+  operations: ["paragraph-writing"]
+  target: "C<n>.P<m>"
+  cardinality: "N_commissioned_paragraphs"
   owner_contract: haipipe-run
 ```
 
@@ -197,7 +197,7 @@ l4_run_profile:
 ```
 
 The actual count comes only from allocated Run identities and valid receipts.
-Never convert `N_ready_divisions` or `sum(S_i)` into “12 completed” without
+Never convert `N_commissioned_paragraphs` or `sum(S_i)` into “12 completed” without
 receipt-backed inventory.
 
 ### Gate and route fields
@@ -212,7 +212,7 @@ visible:
 
 ```yaml
 next_route:
-  - draft.write
+  - content.write
   - outline.survey
   - outline.shape
 ```
@@ -234,8 +234,8 @@ workflow must supply its own names and semantics.
 | `outline.survey` | Outline | OUTLINE | SURVEY | item table: route, Local Input, Local Run plan, decision | none; defines demand | every item graph is valid and decided | make / defer / drop |
 | `evidence.land` | Outline | EVIDENCE | LAND | item table gains allocated Run IDs and Result pointers | Supporting Execution/Discovery `0..N` + one local item Run per make-item | every make-item has a valid local Result | none |
 | `evidence.embed` | Outline | EVIDENCE | EMBED | outline v<N+1> gains folded answers and bindings | none | every required Result is folded | none |
-| `draft.write` | Draft | DRAFT | WRITE | Page Content divisions after promotion | Page · Division Writing, one per ready division | built candidate passes internal checks | none |
-| `draft.check` | Draft | CHECK | CHECK | acceptance/feedback record; never producer prose | none by default | Page accepted or routed backward | accept or give feedback |
+| `content.write` | Content | CONTENT | WRITE | Page Content paragraphs after promotion | Page · Paragraph Writing, one per commissioned paragraph | built candidate passes internal checks | none |
+| `page.check` | Check | CHECK | CHECK | acceptance/feedback record; never producer prose | none by default | Page accepted or routed backward | accept or give feedback |
 
 The Page example demonstrates the key distinction:
 

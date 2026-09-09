@@ -1,3 +1,8 @@
+## 0.10.0 · 2026-09-08
+
+- Present Paragraph Writing targets and inline, escaped Markdown instructions, paragraph and trace beneath the compact Run row.
+- Keep missing writing outputs Held and preserve existing evidence navigation and Folder/Job result ownership.
+
 # Changelog · haipipe-plugin-runs
 
 ## 0.9.7 — 2026-09-04

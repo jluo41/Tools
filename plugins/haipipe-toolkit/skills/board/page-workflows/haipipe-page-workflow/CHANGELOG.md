@@ -1,3 +1,7 @@
+## 0.30.0 · 2026-09-08
+
+- Align CONTENT maps, phase cards and producer dispatch with paragraph writing, P commissioned paragraph Runs, and an internal whole-Page continuity pass.
+
 ## 0.29.3 — 2026-09-08
 
 - Accept exact, checked Insight item executions as Supporting Runs alongside Execution and Discovery; preserve the local typed Evidence Item boundary.

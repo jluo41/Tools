@@ -23,10 +23,13 @@ until the missing dependency is resolved or explicitly removed by its owner.
 
 ## 2. Canonical rendered view
 
+Example projection only, not a completed audit. Paths below are relative to this file;
+fill metrics and verdicts from the actual inspection rather than copying them.
+
 | Skill | Path | Role | Used by Phase/Cycle | Status | Version | `SKILL.md` lines | Quality / completeness | Field-test | Gap / next action |
 |---|---|---|---|---|---|---:|---|---|---|
-| `haipipe-page` | `skills/.../haipipe-page/SKILL.md` | contract | `draft.write`, `draft.check` | `✅ structurally valid` | `0.8.0` | `248` | `CONTRACT; 7/8, ◐ receipt-duty` | `✅ FT-2026-08-31` | `add page receipt sentence` |
-| `haipipe-run` | `skills/.../haipipe-run/SKILL.md` | contract | `evidence.land` | `? unknown` | `?` | `?` | `?` | `?` | `run inspection before release` |
+| `haipipe-page` | `../../../board/haipipe-page/SKILL.md` | contract | `content.write`, `page.check` | `? unknown` | `?` | `?` | `?` | `?` | `inspect current Page contract` |
+| `haipipe-run` | `../../../run/haipipe-run/SKILL.md` | contract | `evidence.land`, `content.write` | `? unknown` | `?` | `?` | `?` | `?` | `inspect current Run contract` |
 
 The table is compact enough to show alongside the Workflow Table. If a review
 needs detail, expand the `Quality / completeness` and `Field-test` cells with

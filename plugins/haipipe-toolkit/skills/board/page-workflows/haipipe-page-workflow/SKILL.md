@@ -9,7 +9,7 @@ description: >-
   workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.29.4"
+  version: "0.30.0"
   last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md
 ---
@@ -122,7 +122,7 @@ any earlier owning phase.
 | `01B` | OUTLINE / SURVEY | `haipipe-page-outline` | Supporting routes + Local Input + indexed Local Run plan | none | complete decided Run graph |
 | `02A` | EVIDENCE / LAND | `haipipe-page-evidence` | Tickets, Results, frozen input, bindings | `0..N` Supporting + `1` local per make-item | ready typed local Results |
 | `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | next working plan bindings | none | ready Results folded; G=0 → SHAPE; approved G>=1 → CONTENT |
-| `03` | CONTENT / WRITE | `haipipe-page-content` | Page Content + delivery + promotion trace | normally `1` Division Writing Run per commissioned division | fresh pre-check says ready |
+| `03` | CONTENT / WRITE | `haipipe-page-content` | Page Content + delivery + promotion trace | normally `1` Paragraph Writing Run per commissioned paragraph | fresh pre-check says ready |
 | `04` | CHECK / CHECK | `haipipe-page-check` | check receipt/findings only | none | CLOSE or a named backward route |
 
 Do not use this compact table for design decisions. Use
@@ -140,7 +140,7 @@ SHAPE        no Run; it defines Bullet and Evidence Item contracts
 SURVEY       no Run; it inventories/references/reserves the graph
 LAND         Runs exist: Supporting Execution/Discovery/Insight, then local Evidence Item
 EMBED        no Run; it interprets ready Results into the plan
-CONTENT      Division Writing Runs exist when divisions are independently closable
+CONTENT      Paragraph Writing Runs target one C<n>.P<m> each
 CHECK        no Run; it is a version gate
 ```
 
@@ -172,14 +172,14 @@ Task-local new-run plan  b01j02t03        parent until LAND allocates rNN
 Task-local allocated     b01j02t03r05
 Other local Run plan     <owner-native parent or permitted reserved address> · plan
 local Ticket filename    r05_page-evidence-item_e03-cite-prior-work
-Division Writing Run     r06_page-division-writing_c02
+Paragraph Writing Run    r06_page-writing_c02-p01
 ```
 
 SURVEY names the real owner/parent for every new local route. A full address
 may be reserved only when the Folder owner's current Run contract permits it;
 the route remains `new-run` with no Ticket. Read that owner's naming contract
 instead of defining a family namespace in Page skills. LAND allocates the owner-native
-Run id and creates the Evidence Item Ticket. CONTENT creates a Division Writing
+Run id and creates the Evidence Item Ticket. CONTENT creates a Paragraph Writing
 Ticket only when the work independently satisfies the `haipipe-run` tests.
 
 ## 🧠 Exact skill routing
@@ -224,7 +224,7 @@ and prose requirements; this companion adds no execution or closure authority.
 | Page/Folder identity, policy, requirements, related context, or context freshness | CONTEXT |
 | argument, division shape, Bullet contract, item expectation, or Aim promise | OUTLINE |
 | Supporting/local evidence graph, input, Result, acceptance, or fold freshness | EVIDENCE |
-| prose realization, citations in prose, caption, build, or division promotion | CONTENT |
+| prose realization, citations in prose, caption, build, or paragraph promotion | CONTENT |
 | exact built version needs independent judgment | CHECK |
 | all closing rules and human gates pass | CLOSE, from CHECK only |
 | required authority/input cannot safely resolve | HOLD |

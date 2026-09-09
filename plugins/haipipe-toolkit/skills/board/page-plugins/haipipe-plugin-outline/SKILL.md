@@ -5,11 +5,11 @@ description: >-
   its nine process-record kinds, nested Skill record, three workspaces, and the 🧭
   tab that reads Shape, evidence, and feedback together; first and default on
   every page. The main Page keeps only the compact Outline Table.
-  Read-only surface shared by CONTEXT, OUTLINE, and EVIDENCE. Trigger: outline
+  Read/write surface shared by CONTEXT, OUTLINE, and EVIDENCE. Trigger: outline
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.46.3"
+  version: "0.47.0"
   last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -87,8 +87,8 @@ use Supporting Run Results; Related Page links appear in Context Workspace.
   are `*-outline-*.md`.
 - **The page keeps four on-stage sections**, 🚪 Opening · 🧭 Outline · Content ·
   Aims, and nothing this folder holds. Opening stays visible and the Page's
-  `🧭 Outline` opens by default and renders only the read-only current-plan
-  table. The grid is `Address · Planned move · Feedback · Evidence · Supporting
+  `🧭 Outline` opens by default and renders the current-plan table. The grid is
+  `Address · Bullet · Feedback · Evidence · Supporting
   Runs · Local Run`: C/P headers keep the plan's reader order and B rows join
   routed Feedback, typed Evidence Items, their surveyed Supporting Runs, and
   local route in separate columns. A Feedback token opens the exact record in
@@ -308,8 +308,9 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
 - **Both failure modes render as a named row, never a blank**: 🕳 owed and
   nothing there (a bullet cites `Display2` and no unit folder exists) · 🎈
   there and uncited (a card no bullet names).
-- **The tab writes nothing and calls no model.** It reads the plan, the page,
-  the record files and the sibling lanes on every open, so it cannot be stale.
+- **The tab calls no model.** It reads the plan, the page, the record files and
+  the sibling lanes on every open, so it cannot be stale. Its only writes are
+  the bounded Bullet edits above; all other records remain read-only here.
   The Aims are read from the page first; a plan row fills only an id the page
   lacks.
 - **The answer comes first**: the page's own question, then one line of counts
@@ -318,7 +319,7 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
 
 The built Board page also carries a smaller, always-visible **Page Outline
 table** (`haipipe-board/src/page_question.py::_outline_grid`). It is a compact
-projection, not a second full tab: `Address · Planned move · Feedback ·
+projection, not a second full tab: `Address · Bullet · Feedback ·
 Evidence · Supporting Runs · Local Run`. It deliberately omits aggregate state
 counts and the broader sibling-material bundle. Those remain in the richer
 live 🧭 tab; item state on the compact table is conveyed only by chip colour
@@ -327,7 +328,25 @@ Local Run) is a deep link into the one live 🧭 tab rather than a card of its o
 
 In that compact Evidence column, a valid source-free Bullet renders `none` and
 exposes its reason on hover. An omitted evidence decision renders `missing` as
-a defect; it is never visually conflated with an intentional source-free move.
+  a defect; it is never visually conflated with an intentional source-free move.
+
+### ✍️ Bullet editing boundary
+
+The Bullet Workspace makes each `C<n>.P<m>` paragraph heading a native
+expand/collapse control. Its Bullets remain grouped inside that paragraph, and
+each Bullet exposes a small editor plus an append control. The controls submit
+JSON to the server that owns the Markdown; they never edit generated Board HTML
+or a browser-local copy. Editing changes the Bullet head and preserves its
+indented Note/Evidence/Answered/Routed records. Appending allocates the next
+`B<n>`/`S<n>` position in that paragraph.
+
+An approved Shape is immutable. The first successful Bullet write copies the
+selected approved plan to the next bounded Shape version (for example `v1.1`
+→ `v1.2`), marks the copy `approved: ⬜`, records `working-copy-of`, and leaves
+the approved file byte-for-byte unchanged. Later writes reuse that unapproved
+working file. The server returns the working version and rebuilds the Board;
+the live tab re-reads it on reload. This is a narrow SHAPE edit surface, not a
+CONTENT writer and not a replacement for human approval.
 
 ### 🤝 Human review packet · the chat counterpart of the tab
 
@@ -404,7 +423,7 @@ VALUE and CITE Results receive no analogous copied payload lane.
 ```text
 file            written by                                    regenerate with
 ────────────────────────────────────────────────────────────────────────────────────────────────
-plan            SHAPE (in session or haipipe-page-outline-agent); EMBED's fold appends   never
+plan            SHAPE (in session or haipipe-page-outline-agent); the Bullet editor may create/revise an unapproved working Shape; EMBED's fold appends   never
 context         CONTEXT/PREPARE; generated source-bound projection         haipipe-page-context
 requirement V   the generator; V1 always, V2–V4 only when     cli/requirement.py <page>.md
                 the bound venue source supplies their material
@@ -420,8 +439,8 @@ log             every phase and the page chat, append only    never (authored)
 skills          scan seed + person's rank/add/remove gestures  /_board/skill (embedded sibling store)
 ```
 
-`POST /_board/outline` exists only so the shell's `tab: {url, write}` contract
-holds; it writes nothing.
+`POST /_board/outline` keeps the shell's `tab: {url, write}` contract and also
+accepts the bounded `edit-bullet` and `append-bullet` actions described above.
 
 After SHAPE, SURVEY, or EMBED changes a plan or Evidence Item record, run the
 Outline generators, rebuild the Board, open the 🧭 tab, and confirm the updated

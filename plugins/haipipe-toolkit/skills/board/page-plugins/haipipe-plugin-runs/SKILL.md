@@ -5,7 +5,7 @@ description: >-
   tickets and their paired generated Results. Its neutral overview schema groups
   Runs as Execution, Discovery, Page, or Labeling when the owning Folder surface
   exposes those families; Page divides into Evidence
-  Item, Division Writing, and Display, while Labeling groups its independently
+  Item, Paragraph Writing, and Display, while Labeling groups its independently
   closable operations by P0-P5 episode. A second, collapsible Scripts region shows freestyle
   implementation files when present. Use for Discovery Paper Runs, Task Page
   runs, Labeling Runs, model/data jobs, run status tables, result details, or any Folder that
@@ -13,7 +13,7 @@ description: >-
   Execute and closure. Trigger: Runs plugin, Runs tab, run overview, run status,
   run results, show the runs, /haipipe-plugin-runs.
 metadata:
-  version: "0.9.8"
+  version: "0.10.0"
   last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -51,6 +51,10 @@ Folder. Detect the dialect from the surrounding contract:
 FOLDER-LOCAL · Discovery and standalone Folder
   <folder>/runs/<run>.sh
   <folder>/results/<run>/
+
+PAGE PARAGRAPH WRITING · same Folder, Markdown commission
+  <folder>/runs/rNN_page-writing_cNN-pNN.md     includes input references + prompt
+  <resolved-result>/paragraph.md + trace.md + runtime.yaml
 
 JOB-BACKED TASK · canonical haipipe Task Page
   <job>/<task>/runs/<run>.sh
@@ -127,7 +131,7 @@ ticket's actual command is the authority for which files a Run invokes.
 │   ├── Discovery                 search · papers · external evidence
 │   ├── Page
 │       ├── Evidence Item          one focal ready VALUE/CITE/DISPLAY Result
-│       ├── Division Writing
+│       ├── Paragraph Writing
 │       └── Display
 │   └── Labeling
 │       ├── P0 Contract operations
@@ -150,7 +154,7 @@ Run   Kind                       Target       Status       Result
 r01   Execution                  Model fit    ✅ Done      4 files
 r02   Discovery                  Smith 2025   🔄 Running   —
 r03   Page · Evidence Item        E01-VALUE…   ✅ Done      ready value
-r04   Page · Division Writing     C02          ⏸ Held      candidate
+r04   Page · Paragraph Writing     C2.P1        ⏸ Held      paragraph
 r05   Page · Display              C02.F01      ✅ Done      preview
 r06   Labeling · Human Calibration round_03    ⏸ Held      human gate
 r07   Labeling · Scan Shard       shard_01     ✅ Done      1 pointer
@@ -171,6 +175,14 @@ log or error, and selectable text for any script/config/notebook paths the Run
 actually uses. Do not link directly to raw Run or Result files; the Runs
 surface must not trigger downloads. Do not put commands, logs, actor metadata, or full output trees
 in the overview.
+
+For Paragraph Writing, show `C<n>.P<m>` as Target. Expanding the row reads the
+Markdown Run's instructions/prompt, `paragraph.md`, and `trace.md` inside the
+Runs surface, without a raw-file link, download or popover. Render the text
+safely and wrap it on mobile. A writing Ticket missing its runtime receipt
+displays Held with a missing-receipt finding. A complete receipt missing either paragraph or
+trace displays Held; file presence does not itself establish semantic quality
+or promotion into Content. Writing Results are prose, not Evidence Items.
 
 For Page · Evidence Item rows, the overview shows the actual local Run,
 paired Result, status, and any explicitly bound Evidence Item ids. The

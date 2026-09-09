@@ -1,3 +1,12 @@
+## 0.47.0 · 2026-09-08
+
+- Make each `C<n>.P<m>` heading a native Bullet group that expands/collapses
+  its own Bullets in the live Outline workspace.
+- Add a server-backed Bullet editor and append control. The first write copies
+  an approved Shape to the next unapproved bounded Shape version and preserves
+  the approved file; later writes reuse the working version.
+- Rename the compact Page table's `Planned move` column to `Bullet`.
+
 ## 0.46.3 · 2026-09-08
 
 - Delegate Run namespaces and form budgets to the resolved owner; keep legacy

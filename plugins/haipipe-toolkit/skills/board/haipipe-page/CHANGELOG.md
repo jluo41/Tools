@@ -1,3 +1,21 @@
+## 0.61.6 · 2026-09-08
+
+- Align the compact Page Outline table with the shared `Bullet` label.
+- Document the server-backed paragraph-group Bullet editor and the immutable
+  approved-Shape → unapproved-working-Shape first-write boundary.
+
+## 0.61.5 · 2026-09-08
+
+- Carry an optional frozen Writing DNA packet from resolved Page Context into
+  each CONTENT Paragraph Writing Run, while keeping Outline, Evidence, claim
+  strength, and Page CHECK as the higher authorities. Carry the optional
+  Page-owned Narrative Decision alongside it so CONTENT knows the approved
+  reason for the paragraph's organization.
+
+## 0.61.4 · 2026-09-08
+
+- Make paragraph writing the CONTENT default and keep Bullet-to-sentence trace inside its parent paragraph; division/Aim identity is unchanged.
+
 ## 0.61.3 · 2026-09-08
 
 - Scope the user-check packet's revision status to the resolved Page owner's

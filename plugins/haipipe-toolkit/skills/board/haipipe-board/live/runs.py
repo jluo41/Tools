@@ -15,7 +15,7 @@ from __future__ import annotations
 import html
 import re
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
 from src.item_table import (compact_global_run, compact_paper_run, read_items,
                             readable_global_run, readable_paper_route, repo_root)
@@ -43,12 +43,14 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,
 table{width:100%;border-collapse:collapse;font-size:12.5px}th,td{text-align:left;vertical-align:top;
  border-bottom:1px solid var(--line);padding:8px 6px}th{font-size:11px;color:var(--mut);
  text-transform:uppercase;letter-spacing:.035em}tr.run{cursor:pointer}tr.run:hover td{background:var(--card)}
-code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.route{font-weight:650}.state{font-weight:650;white-space:nowrap}
+code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.route{font-weight:650;overflow-wrap:anywhere}.state{font-weight:650;white-space:nowrap}
 .state.ready{color:var(--acc)}.state.running{color:var(--warn)}.state.done{color:var(--ok)}.state.failed,.state.held{color:var(--bad)}
 .repo-path{white-space:normal;overflow-wrap:anywhere;word-break:break-word;user-select:text}.detail[hidden]{display:none}
 .detail td{padding:0 7px 10px;background:var(--card)}.detailbox{border-left:3px solid var(--acc);padding:7px 9px;margin:3px 0;font-size:12.5px}
 .detailbox p{margin:3px 0}.detailbox b{display:inline-block;min-width:82px;color:var(--mut)}.refs{margin:5px 0 0;padding-left:18px}
 .empty{max-width:620px;margin:30px auto;padding:14px 16px;border:1px solid var(--line);border-radius:8px;color:var(--mut)}
+.run-preview{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;font-size:13px;line-height:1.6;margin:8px 0}
+.detailbox h2{font-size:14px;margin:14px 0 5px}.summary{flex-wrap:wrap}
 """
 
 
@@ -57,18 +59,34 @@ def _fields(runtime: Path | None) -> dict[str, str]:
     if runtime is None or not runtime.is_file():
         return {}
     text = runtime.read_text(encoding="utf-8", errors="replace")
+    if runtime.suffix == ".md":
+        front = re.match(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)", text, re.S)
+        text = front.group(1) if front else ""
 
     def field(name: str) -> str:
-        hit = re.search(rf"^{re.escape(name)}:\s*(.+?)\s*$", text, re.M)
-        return hit.group(1).strip().strip('"') if hit else ""
+        hit = re.search(rf"^{re.escape(name)}:[ \t]*(.*?)[ \t]*$", text, re.M)
+        return hit.group(1).strip().strip("\"'") if hit else ""
 
     return {name: field(name) for name in
-            ("global_id", "status", "target", "result", "ticket", "family")}
+            ("global_id", "status", "target", "result", "ticket", "family", "operation")}
+
+
+def _preview_text(path: Path, boundary: Path) -> str:
+    """Bounded plain-text preview of an owned file, never a referenced external path."""
+    try:
+        if not path.resolve().is_relative_to(boundary.resolve()) or not path.is_file():
+            return ""
+        with path.open("rb") as stream:
+            data = stream.read(65537)
+        text = data[:65536].decode("utf-8", errors="replace")
+        return text + ("\n[Preview truncated at 64 KiB]" if len(data) > 65536 else "")
+    except OSError:
+        return ""
 
 
 def _status(runtime: Path | None, fields: dict[str, str]) -> str:
     if runtime is None:
-        return "Ready"
+        return "Held" if fields.get("operation") == "paragraph-writing" else "Ready"
     status = fields.get("status", "").lower()
     if status in {"planned", "ticket", "queued"}:
         return "Ready"
@@ -79,6 +97,10 @@ def _status(runtime: Path | None, fields: dict[str, str]) -> str:
     if status in {"blocked", "held", "rerun", "incomplete"}:
         return "Held"
     if status in {"complete", "completed", "done"}:
+        if fields.get("operation") == "paragraph-writing":
+            # Structural availability only; the writer owns semantic acceptance.
+            return "Done" if all(_preview_text(runtime.parent / name, runtime.parent).strip()
+                                 for name in ("paragraph.md", "trace.md")) else "Held"
         has_output = any(child.is_file() and child.name not in {"runtime.yaml", "receipt.yaml"}
                          for child in runtime.parent.iterdir())
         return "Done" if has_output else "Held"
@@ -163,6 +185,13 @@ def local_runs(page_src: Path) -> list[dict]:
             continue
         runtime = _runtime_for(ticket, runs_dir, results_dir)
         fields = _fields(runtime)
+        ticket_fields = _fields(ticket) if ticket.suffix == ".md" else {}
+        for key in ("target", "family", "operation"):
+            fields[key] = fields.get(key) or ticket_fields.get(key, "")
+        if not fields.get("operation") and re.fullmatch(r"r\d+_page-writing_c\d+-p\d+", ticket.stem):
+            fields["operation"] = "paragraph-writing"
+        kind = ("Page · Paragraph Writing" if fields.get("operation") == "paragraph-writing"
+                else fields.get("operation") or fields.get("family") or "Local Run")
         if task_info:
             compact = (compact_global_run(fields.get("global_id", ""))
                        or compact_global_run(ticket.stem))
@@ -197,6 +226,8 @@ def local_runs(page_src: Path) -> list[dict]:
             "runtime": runtime,
             "result": fields.get("result", "") or _fallback_result(runtime, result_base),
             "target": fields.get("target", "") or "page-local work",
+            "kind": kind,
+            "operation": fields.get("operation", ""),
             "status": _status(runtime, fields),
             "refs": _evidence_refs(
                 page_src,
@@ -256,8 +287,9 @@ def _shown_path(path: Path | None, root: Path) -> str:
 
 def _detail(row: dict, root: Path) -> str:
     fields = [
-        ("Run", _linked(row["ticket"], label=_shown_path(row["ticket"], root), root=root)),
-        ("Result", _linked(row["runtime"], label=_shown_path(row["runtime"], root), root=root)),
+        ("Run", html.escape(row["run_id"])),
+        ("Run path", _linked(row["ticket"], label=_shown_path(row["ticket"], root), root=root)),
+        ("Result path", _linked(row["runtime"], label=_shown_path(row["runtime"], root), root=root)),
         ("Output", html.escape(row["result"] or "not written yet")),
         ("Target", html.escape(row["target"])),
     ]
@@ -268,6 +300,18 @@ def _detail(row: dict, root: Path) -> str:
         ))
     else:
         chunks.append("<p><b>Evidence</b><span>no item binding recorded</span></p>")
+    if row.get("operation") == "paragraph-writing":
+        if row["runtime"] is None:
+            chunks.append("<p class=note>Missing runtime.yaml: this writing Run has no lifecycle receipt.</p>")
+        previews = [("Writing instructions / Prompt", row["ticket"], row["ticket"].parent)]
+        if row["runtime"]:
+            directory = row["runtime"].parent
+            previews.extend((label, directory / name, directory) for label, name in
+                            (("Paragraph", "paragraph.md"), ("Trace / Review", "trace.md")))
+        for label, path, boundary in previews:
+            text = _preview_text(path, boundary)
+            chunks.append("<h2>%s</h2><pre class=run-preview>%s</pre>" %
+                          (label, html.escape(text or "Not available yet.")))
     return "<div class=detailbox>%s</div>" % "".join(chunks)
 
 
@@ -279,35 +323,39 @@ def render(page_src: Path, _path_q: str, _file_q: str) -> str:
     if rows:
         table_rows = []
         for index, row in enumerate(rows):
-            run_label = _shown_path(row["ticket"], root)
-            result_label = _shown_path(row["runtime"], root)
             state = row["status"].lower()
+            label = row["run_id"]
+            if row.get("operation") == "paragraph-writing":
+                local_id = re.match(r"r\d+(?=_)", row["ticket"].stem)
+                if local_id:
+                    label = local_id.group(0)  # Page-scoped overview; full id in detail.
+            output = ("paragraph" if row.get("operation") == "paragraph-writing" and row["status"] == "Done"
+                      else "inspect" if row["runtime"] else "—")
             table_rows.append(
-                '<tr class="run" data-i="%d" tabindex="0"><td><code class=route>%s</code></td>'
-                '<td>%s</td><td>%s</td><td><span class="state %s">%s</span></td></tr>'
-                '<tr class="detail" data-i="%d" hidden><td colspan=4>%s</td></tr>' % (
-                    index, html.escape(row["run_id"]),
-                    _linked(row["ticket"], label=run_label, root=root),
-                    _linked(row["runtime"], label=result_label, root=root),
-                    html.escape(state), html.escape(row["status"]), index, _detail(row, root)))
+                '<tr class="run" data-i="%d" tabindex="0" aria-expanded="false"><td><code class=route>%s</code></td>'
+                '<td>%s</td><td>%s</td><td><span class="state %s">%s</span></td><td>%s</td></tr>'
+                '<tr class="detail" data-i="%d" hidden><td colspan=5>%s</td></tr>' % (
+                    index, html.escape(label),
+                    html.escape(row.get("kind", "Local Run")), html.escape(row["target"]),
+                    html.escape(state), html.escape(row["status"]), output, index, _detail(row, root)))
         main = ("<div class=summary><b>%d local runs</b><span>Ready %d</span><span>Running %d</span>"
                 "<span>Done %d</span><span>Failed %d</span><span>Held %d</span></div>"
-                "<div class=wrap><p class=note>Click a row for the exact Run and Result paths and any Evidence Item binding. "
+                "<div class=wrap><p class=note>Click a row for Run details; paragraph writing also shows its prompt, prose, and review. "
                 "Supporting Runs and unallocated plans stay in 🧾 Evidence Items.</p>"
-                "<table><thead><tr><th>Run</th><th>Run path</th><th>Result path</th><th>Status</th></tr></thead>"
+                "<table><thead><tr><th>Run</th><th>Kind</th><th>Target</th><th>Status</th><th>Result</th></tr></thead>"
                 "<tbody id=rows>%s</tbody></table></div>" %
                 (len(rows), counts["Ready"], counts["Running"], counts["Done"], counts["Failed"], counts["Held"], "".join(table_rows)))
     else:
         main = ("<div class=empty><b>No local Run allocated.</b><br>"
                 "This page has no real Run in <code>runs/</code> yet. Supporting Runs, rerun findings, and <code>new-*</code> plans are Evidence lineage—not local Runs. "
                 "Allocate a Run only when you are ready to execute it; its paired Result belongs at the Folder dialect's resolved Result address.</div>")
-    return f"""<!doctype html><meta charset=utf-8>
+    return f"""<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1">
 <title>⚙️ Runs · {html.escape(page_src.stem)}</title><style>{_CSS}</style>
 <header><h1>⚙️ Runs · {html.escape(page_src.stem)}</h1>
 <p class=lead>allocated Folder-owned Run → Result pairs · read-only</p></header>{main}
 <script>
 (function () {{ var rows=document.getElementById('rows'); if(!rows)return;
- function toggle(i){{var d=rows.querySelector('tr.detail[data-i="'+i+'"]');if(d)d.hidden=!d.hidden;}}
+ function toggle(i){{var d=rows.querySelector('tr.detail[data-i="'+i+'"]');var r=rows.querySelector('tr.run[data-i="'+i+'"]');if(d){{d.hidden=!d.hidden;if(r)r.setAttribute('aria-expanded',String(!d.hidden));}}}}
  rows.addEventListener('click',function(e){{var r=e.target.closest('tr.run');if(r)toggle(r.dataset.i);}});
  rows.addEventListener('keydown',function(e){{var r=e.target.closest('tr.run');if(r&&(e.key==='Enter'||e.key===' ')){{e.preventDefault();toggle(r.dataset.i);}}}}); }})();
 </script>"""

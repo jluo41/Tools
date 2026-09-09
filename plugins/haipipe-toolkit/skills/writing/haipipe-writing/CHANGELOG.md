@@ -1,4 +1,40 @@
 # haipipe-writing
+## 0.9.0 — 2026-09-08
+
+**Add an optional anti-slop audit adapter without bypassing HAI write paths.**
+
+Added `cli/anti_slop.py`, a Python stdlib diagnostic that ports the useful
+rules-as-data, transparent pattern/structure signals, and preservation-sensitive
+fact comparison from the referenced MIT-licensed humanizer tools. It also
+tracks author-year citation tokens so a rewrite cannot silently swap a cited
+source. The copied rule data lives in `ref/anti-slop-rules.json` with
+provenance and notices; the adapter never rewrites prose, never treats a score
+as acceptance, and never writes a Page. Paragraph Runs may record
+`anti-slop.json`, route findings back to CONTENT for a bounded revision,
+compare facts, and then use `wdiff.py` for the durable `✎` trail.
+
+## 0.8.1 — 2026-09-08
+
+**Carry Page-level narrative organization into paragraph realization.**
+
+The Writing DNA adapter now treats the Page's optional `Narrative Decision` as
+an approved paragraph-organization input. It explains why the paragraph has
+its selected reader order or form, while remaining separate from Evidence and
+from the style-only DNA profile. A Paragraph Run may honor or report a
+conflict with that decision, but it may not invent or rewrite it.
+
+## 0.8.0 — 2026-09-08
+
+**Make Writing DNA operational at the paragraph Run boundary.**
+
+Added `ref/writing-dna-adapter.md`, which defines the frozen adapter packet
+between the external `writing-dna-skill` and HAI paragraph realization. It
+separates a three-pass content/style/audit workflow, preserves Outline and
+Evidence authority, specifies missing/partial-profile routing, and adds a
+recoverable style trace for profile artifacts, selected exemplars, observable
+choices, and conflicts. The adapter remains documentation-only and does not
+make the distiller a runtime dependency.
+
 ## 0.7.0 — 2026-09-04
 
 **Make writing plan/evidence-aware without taking ownership of either.**

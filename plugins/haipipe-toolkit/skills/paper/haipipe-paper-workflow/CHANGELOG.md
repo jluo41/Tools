@@ -1,3 +1,7 @@
+## 1.1.7 · 2026-09-08
+
+- Point Page-local Section writing to the paragraph-scoped CONTENT contract without changing Paper journey gates or Evidence/Display namespaces.
+
 ## 1.1.6 · 2026-09-08
 
 - Used the exact `paper_page.state: blocked` field form in the G0 no-surrogate

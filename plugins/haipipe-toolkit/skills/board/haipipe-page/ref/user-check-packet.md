@@ -37,7 +37,10 @@ records and may be mentioned only when they explain a missing or stale surface.
 3. Content state
    after CONTENT/WRITE: the Page version and whether Revise ran
    (`revised · owner policy checked · style verdict ✓`) or not (`first draft · not yet
-   revised`). A first draft is never presented as final content.
+   revised`). When Writing DNA is used, the Content state may also name its
+   frozen profile and `full`/`partial` status; detailed artifact and exemplar
+   provenance remains in the Paragraph Run trace. A first draft is never
+   presented as final content.
 
 4. Latest Page-level PDF (delivery)
    the compiled PDF for THIS Page/Section from `delivery/latex/<stem>.pdf`,

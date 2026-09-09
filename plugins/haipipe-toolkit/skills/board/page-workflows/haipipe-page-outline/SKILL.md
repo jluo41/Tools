@@ -13,7 +13,7 @@ description: >-
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.32.2"
+  version: "0.32.3"
   last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -192,6 +192,12 @@ baseline; approve that exact version only after reviewing the redesign.
 Steps 2 and 4 are the chat's verbs (`propose`, `revise`); step 3 is the person
 on the 🧭 tab. "Draft" and "Brief" are not cycle names: Draft is an internal
 movement of the later CONTENT/WRITE phase, while Brief is SHAPE input.
+
+The live Bullet Workspace also provides a bounded SHAPE hand-edit path: a
+person may revise one Bullet or append one to a paragraph. The first write
+against an approved plan creates the next unapproved Shape version and leaves
+the approved file untouched; later writes stay on that working version. This
+editor changes no Page prose, Evidence Result, or generated Board HTML.
 
 ### ① Prepare · one command runs the mechanical half
 

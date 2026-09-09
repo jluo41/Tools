@@ -1,3 +1,7 @@
+## 0.4.2 · 2026-09-08
+
+- Update the Page CONTENT example to Paragraph Writing with Cn.Pm targets and paragraph cardinality; remove the retired DRAFT phase from that example.
+
 # Changelog · workflow-table
 
 ## 0.4.1 · 2026-09-05

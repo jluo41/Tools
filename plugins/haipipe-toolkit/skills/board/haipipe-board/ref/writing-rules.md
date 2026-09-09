@@ -61,17 +61,21 @@ figures narrow and copy-safe; stack trees instead of drawing ambiguous columns.
 
 ## Trace prose to the plan
 
-When the Page-owner contract uses Bullet realization, one normal prose
-paragraph realizes one Bullet. Put the exact backlink on the paragraph's last
-source line:
+When the Page-owner contract uses Bullet realization, one paragraph realizes
+the approved Bullets under its `C<n>.P<m>` group. A Bullet is a trace unit,
+not another paragraph. Write one sentence per source line and put the exact
+backlink on each sentence that realizes that Bullet:
 
 ```html
 <!-- realizes: C<n>.P<m>.B<k> -->
 ```
 
-One paragraph cannot realize two Bullets. Several paragraphs may repeat the
-same backlink. Headings, diagrams, machinery, and ruling tables are not prose
-realization units.
+A paragraph may cover several Bullets while keeping each sentence's support
+local to its own Bullet. For a Section, use the owner's sentence-slot rule;
+for other Pages, one Bullet may require one or more sentences within the
+planned paragraph. Do not split or merge approved paragraph groups just to
+satisfy a writing worker; a changed paragraph job or structure returns to SHAPE.
+Headings, diagrams, machinery, and ruling tables are not prose realization units.
 
 ## Write one Aim as one row
 

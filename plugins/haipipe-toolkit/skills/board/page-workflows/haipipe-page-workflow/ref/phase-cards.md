@@ -129,13 +129,13 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
             evidence-aware plan supports?
 📥 READS    fresh Context · approved folded plan · ready Evidence Results ·
             Page Face owner and narrative/style policy · current Page
-📤 WRITES   Page Content and authorized Opening/Aims · Division Writing
+📤 WRITES   Page Content and authorized Opening/Aims · Paragraph Writing
             Tickets/Results and promotion trace · current delivery artifacts · Log
-🚪 EXITS    commissioned divisions accepted/promoted; artifacts current; a
+🚪 EXITS    commissioned paragraphs accepted/promoted; artifacts current; a
             fresh pre-check says ready
 ✋ TICK     none
 🔀 ROUTES   CHECK · CONTENT · CONTEXT · OUTLINE · EVIDENCE · HOLD
-⚙ RUNS     normally one Page Division Writing Run per commissioned division;
+⚙ RUNS     normally one Page Paragraph Writing Run per commissioned paragraph;
             Draft/Revise/Build/Pre-check are internal movements
 ```
 

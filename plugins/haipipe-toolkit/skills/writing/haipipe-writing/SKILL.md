@@ -4,13 +4,13 @@ description: >-
   The WRITING verb: turn an approved outline and evidence packet into readable
   prose, or revise prose someone already wrote for a weak-English reader,
   recording every edit as a word-level change under the sentence it changed.
-  The core operations are `score`, `rewrite`, and `check`; plan-aware
+  The core operations are `score`, `audit`, `rewrite`, and `check`; plan-aware
   realization is an input path, not a second planning authority. Trigger:
   write from an outline, draft from evidence, rewrite this, make this readable,
   too long, sounds like AI, plain English, ✎, /haipipe-writing.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-04"
+  version: "0.9.0"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -79,13 +79,61 @@ The realization worker:
 4. Applies optional voice and surface rules only after the content job is
    stable. A style profile changes how the assigned material is expressed, not
    which facts or claims are present.
-5. Audits coverage, claim/evidence fit, protected numbers and citations, holes,
+5. If the Ticket names the HAI anti-slop adapter, runs its read-only audit
+   after the candidate exists. It reports exact spans and structure signals;
+   it does not rewrite, gate acceptance, or decide that text is human.
+6. Audits coverage, claim/evidence fit, protected numbers and citations, holes,
    and introduced AI tells. If the problem is the plan, evidence, or promise,
    route back to the owning phase instead of repairing it in prose.
 
 For a first draft, the writing run/host receipt is the trace of realization. For
 a revision of existing prose, `wdiff.py` is the only writer of the word-level
 `✎` record.
+
+### 🧬 Writing DNA is a frozen Run input
+
+When the host commissions one paragraph, read
+[`ref/writing-dna-adapter.md`](ref/writing-dna-adapter.md) if a Writing DNA
+profile is supplied. The profile is a versioned style input, not a source of
+facts or a second outline. Prepare the paragraph in three passes:
+
+1. **Map content**: bind the reader job and each planned Bullet to its folded
+   Evidence Result, adjacent seam, and handoff.
+2. **Draft truthfully**: write the assigned point, evidence, interpretation,
+   and handoff in the approved order; the paragraph must work with style
+   removed.
+3. **Render and audit style**: apply observable language, rhythm, and
+   structure choices from the frozen DNA packet, then record the artifacts,
+   selected raw exemplars, applied choices, and any conflicts in `trace.md`.
+
+If the profile would require a new fact, citation, number, example, claim, or
+reader-order change, keep the higher-authority content contract and record the
+conflict. A named style without its required profile or exemplars routes to
+CONTEXT/HOLD; an optional unspecified voice does not block the Run.
+
+### 🧹 Anti-slop is a post-draft diagnostic
+
+The external anti-slop references are combined through the HAI adapter in
+[`ref/anti-slop-adapter.md`](ref/anti-slop-adapter.md). The adapter carries
+forward two useful pieces of code: a rules-as-data scanner with transparent
+pattern/structure signals, and a preservation-sensitive fact comparison for a
+before/after rewrite. Its rules and provenance are in
+`ref/anti-slop-rules.json` and `ref/anti-slop-attribution.md`.
+
+Run it only when the current Ticket or revision request selects the adapter:
+
+```bash
+python3 cli/anti_slop.py audit <result>/paragraph.md --format json \
+  > <result>/anti-slop.json
+python3 cli/anti_slop.py compare --before <old.md> --after <new.md> \
+  --check-facts --format json
+```
+
+The report is a diagnostic Result artifact. A finding routes to CONTENT for a
+bounded revision; it is not an AI detector, an undetectability promise, or an
+acceptance threshold. If a revision changes prose, run the fact comparison,
+then let `wdiff.py` compute and place the `✎` record. Do not use an external
+auto-fix command or edit the Page directly from this audit.
 
 ## ⚖️ 2 · Why the diff is code
 
@@ -154,6 +202,9 @@ They are not invented here. They were ruled by JL while rewriting `QB4` and they
   Ranks prose against the weak-English test. Read-only, and it never rewrites.
 - `cli/holes.py`
   Audits placeholders both ways: unowned holes, and holes pointing at an owner that does not exist. Read-only.
+- `cli/anti_slop.py`
+  Audits exact AI-tell spans and transparent structure signals, and compares
+  preservation-sensitive fact tokens across a rewrite. Read-only.
 - `cli/agree.py`
   Two statements of one fact, compared: a skill's declared version against its changelog, and every cross-skill path citation against what is on disk. Read-only.
   `python3 cli/agree.py --all --quiet <skills-root>`
@@ -173,6 +224,16 @@ They are not invented here. They were ruled by JL while rewriting `QB4` and they
   How to realize an approved outline/evidence slice without creating a second
   plan, claim ledger, or evidence authority; includes the recipe and routing
   rules for optional style methods.
+- `ref/writing-dna-adapter.md`
+  The adapter for the external `writing-dna-skill`: its frozen paragraph-Run
+  packet, three-pass realization method, conflict rules, and style trace.
+- `ref/anti-slop-adapter.md`
+  The optional post-draft audit seam between external anti-slop references and
+  a HAI Paragraph Run.
+- `ref/anti-slop-rules.json`
+  Versioned rules-as-data used by `cli/anti_slop.py`.
+- `ref/anti-slop-attribution.md`
+  Provenance and license notices for adapted MIT-licensed material.
 
 ## 🔗 6 · It plugs into an apparatus that already exists
 
@@ -199,6 +260,7 @@ lines than it started with.
 ```
 cli/wdiff.py check FILE     is every record well-formed and anchored?
 cli/holes.py       FILE     does every hole in ONE file have a real owner?
+cli/anti_slop.py   FILE     what exact AI-tell spans need a second look?
 cli/agree.py       DIR...   do TWO files stating one fact agree?
 tests/test_roundtrip.py     does what `apply` writes, `check` accept?
 ```

@@ -264,6 +264,36 @@ class ResolvedSectionShapeTest(unittest.TestCase):
                 for _level, code, _where, _message in report.rows
             ))
 
+    def test_one_paragraph_keeps_two_bullets_and_their_evidence_separate(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            page = folder / "Q-section.md"
+            page.write_text("# Fixture\npage-type: section\n", encoding="utf-8")
+            outline = folder / "outline"
+            outline.mkdir()
+            (outline / "Q-section-outline-v1.0.md").write_text(
+                "# Q · outline v1.0\noutline-version: v1.0\napproved: ✅ TEST\n\n"
+                "## C1 · Interpretation\n### C1.P1 · Explain the distinction\n"
+                "- B1 · State the source definition\n  Note: source definition\n"
+                "  Evidence: E01-CITE-source · verified definition\n  Accept: definition supported\n"
+                "- B2 · Explain the reading instruction\n  Note: instruction\n"
+                "  Evidence: none · no external claim\n", encoding="utf-8")
+            content = (
+                "# Fixture\npage-type: section\n\n## Content\n"
+                "The source defines an empty field \\citep{source}. <!-- realizes: C1.P1.B1 -->\n"
+                "Read that field accordingly. <!-- realizes: C1.P1.B2 -->\n"
+            )
+            report = Report()
+            check_section_sentences(content, page, page.name, report)
+            self.assertEqual(report.rows, [])
+            # The second sentence cannot borrow the first Bullet's CITE item.
+            changed = content.replace("accordingly.", "accordingly \\citep{source}.")
+            report = Report()
+            check_section_sentences(changed, page, page.name, report)
+            findings = [row for row in report.rows if row[1] == "citation-without-bullet-evidence"]
+            self.assertEqual(len(findings), 1)
+            self.assertIn("C1.P1.B2", findings[0][3])
+
 
 if __name__ == "__main__":
     unittest.main()

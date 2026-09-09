@@ -7,8 +7,8 @@ description: >-
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.9.1"
-  last_updated: "2026-09-07"
+  version: "0.9.2"
+  last_updated: "2026-09-08"
   page_ruling: none
   group-token: "S-<desk>-Main-<N> | S-<desk>-Appendix-<L>"
   outline:
@@ -102,9 +102,9 @@ like `pm-introduction-e01-cite-prescribing-variation-r01` or
 `pa-robustness-e01-value-sensitivity-r01`, with the same stem for its Ticket,
 Result directory, and receipt.
 
-Division Writing is a different, Page-local target and keeps
-`rNN_page-division-writing_cNN`; its receipt records `page:` and
-`paper_lane:`. Never collapse an Evidence Result Run and a Division Writing
+Paragraph Writing is a different, Page-local target and keeps
+`rNN_page-writing_cNN-pNN.md`, governed by `haipipe-page-content`; its receipt records `page:` and
+`paper_lane:`. Never collapse an Evidence Result Run and a Paragraph Writing
 Run merely because both are stored under one Section. Existing
 `pjNNtNNrNN` Paper tickets are historical/read-only and remain valid only when
 their owner path, receipt, and current acceptance contract are verified.

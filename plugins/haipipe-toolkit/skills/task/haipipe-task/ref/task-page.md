@@ -94,16 +94,18 @@ method/provenance/boundary diagram across the Page. Every Data or Result
 division receives the table or figure needed for its reader move. An inline
 fenced text map is a sketch, not a completed DISPLAY unit.
 
-For this non-Section Page, the normal realization unit is one prose paragraph
-per plan Bullet; the paragraph may contain one or more sentences. Its final
-source line ends with the invisible stable backlink:
+For this non-Section Page, one planned `C<n>.P<m>` paragraph realizes its own
+Bullets; each Bullet may take one or more sentences in that paragraph. Each
+sentence's source line ends with its exact invisible stable backlink:
 
 ```html
 <!-- realizes: C<n>.P<m>.B<k> -->
 ```
 
-Do not make one paragraph realize two Bullets; split it. When one Bullet needs
-several paragraphs, each paragraph repeats the same backlink. Diagrams,
+Follow `haipipe-page-content` for paragraph-scoped writing commissions; a
+paragraph may realize several Bullets without pooling their evidence. A change
+to approved paragraph groups returns to SHAPE. This refines only the Task's
+Page Face, not its executable lifecycle or Result-store dialect. Diagrams,
 headings, the READING table, and Task machinery are not prose realization
 units and do not carry `realizes:`.
 

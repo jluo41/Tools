@@ -632,7 +632,9 @@ under it) and the strip in your reply:
                                       v<G>.<S>.<E+1> evidence revision, never restructure
                                       or change Shape; v0 returns to SHAPE, G>=1 routes CONTENT
   03 CONTENT /haipipe-page-content    WRITE: Draft → Revise → Build → Pre-check; normally one
-                                      Page Division Writing Run per commissioned division
+                                      Page Paragraph Writing Run per commissioned C<n>.P<m>
+                                      (Markdown Run with embedded prompt → paragraph Result);
+                                      read the assembled Page for continuity before Build
   04 CHECK   dispatch haipipe-page-check-agent (a fresh judge); whole-Page, read-only CHECK gate
 Announce the phase/cycle on every reply (`01 OUTLINE / SURVEY · <page>`). SHAPE → SURVEY → LAND → EMBED → SHAPE
 until the plan and its runs agree; every evidence number is answered by a RUN, the run computes

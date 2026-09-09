@@ -7,7 +7,7 @@ description: >-
   compiled next. Trigger: paper journey, workflow, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "1.1.6"
+  version: "1.1.7"
   last_updated: "2026-09-08"
 ---
 
@@ -205,8 +205,8 @@ The Paper-specific Run dialect is defined in
 [`../haipipe-paper/ref/run-naming.md`](../haipipe-paper/ref/run-naming.md).
 Use `pm-<page>-<target>-rNN`, `pa-<page>-<target>-rNN`, or
 `pr-<round>-<target>-rNN` for new Paper-local Evidence/Display Runs. The
-Section's Page-local Division Writing Run remains
-`rNN_page-division-writing_cNN`; its owning semantic Page supplies the Main or
+Section's Page-local Paragraph Writing Run follows `haipipe-page-content`:
+`rNN_page-writing_cNN-pNN.md`; its owning semantic Page supplies the Main or
 Appendix meaning. `Ba`/`Bb`/`Bc` are shelf tokens, and `RD<NN>` is the Round
 Page token, not a Run id. Existing `pjNNtNNrNN` files are read-only historical
 Runs and are never bulk-renamed.

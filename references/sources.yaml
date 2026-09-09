@@ -153,6 +153,69 @@ references:
     license: MIT
     notes: "Skill file for removing common AI tells from prose."
 
+  - name: no-ai-slop
+    path: references/no-ai-slop
+    type: git-submodule
+    url: https://github.com/petergyang/no-ai-slop
+    license: MIT
+    notes: "Anti-AI-slop writing skill; exact skill at skills/no-ai-slop/SKILL.md."
+
+  - name: humanizer-blader
+    path: references/humanizer-blader
+    type: git-submodule
+    url: https://github.com/blader/humanizer
+    license: MIT
+    notes: "Pattern-catalog humanizer identified as humanizer · blader in the screenshot list."
+
+  - name: cursor-plugins
+    path: references/cursor-plugins
+    type: git-submodule
+    url: https://github.com/cursor/plugins
+    license: MIT
+    notes: "Cursor plugin collection; the referenced skill is pstack/skills/unslop/SKILL.md."
+
+  - name: slopkit
+    path: references/slopkit
+    type: git-submodule
+    url: https://github.com/ehmo/slopkit
+    license: MIT
+    notes: "Anti-slop skill collection; the referenced skill is skills/slopbeth/SKILL.md."
+
+  - name: humanizer-adam
+    path: references/humanizer-adam
+    type: git-submodule
+    url: https://github.com/Aboudjem/humanizer-skill
+    license: MIT
+    notes: "Adam Boudjemaa's humanizer skill, identified as humanizer · Adam."
+
+  - name: stephenturner-skills
+    path: references/stephenturner-skills
+    type: git-submodule
+    url: https://github.com/stephenturner/skills
+    license: MIT
+    notes: "Personal skill collection; the referenced skill is deslop/SKILL.md."
+
+  - name: elithrar-dotfiles
+    path: references/elithrar-dotfiles
+    type: git-submodule
+    url: https://github.com/elithrar/dotfiles
+    license: MIT
+    notes: "Dotfiles collection; the referenced skill is .agents/skills/anti-slop/SKILL.md."
+
+  - name: soundshuman
+    path: references/soundshuman
+    type: git-submodule
+    url: https://github.com/aashaexo/soundshuman
+    license: MIT
+    notes: "Humanize/anti-slop writing skill and repo scanner, identified as humanize."
+
+  - name: anti-ai-slop-writing
+    path: references/anti-ai-slop-writing
+    type: git-submodule
+    url: https://github.com/jalaalrd/anti-ai-slop-writing
+    license: unknown
+    notes: "Anti-AI-slop writing skill; exact skill at skills/anti-ai-slop-writing/SKILL.md."
+
   - name: sepia
     path: references/sepia
     type: git-submodule
@@ -325,3 +388,8 @@ candidates_from_screenshots:
   - name: social-science tool list
     status: added
     paths: [references/auto-empirical-research-skills, references/statspai, references/awesome-journal-skills, references/aer-skills, references/auto-research-skills, references/tools/statsmodels, references/tools/dowhy, references/tools/causalml, references/tools/econml, references/tools/python-causality-handbook]
+  - name: anti-AI writing skill list
+    status: added
+    path: references/anti-ai-writing-skills.md
+    paths: [references/stop-slop, references/no-ai-slop, references/humanizer-blader, references/cursor-plugins, references/slopkit, references/humanizer-adam, references/stephenturner-skills, references/elithrar-dotfiles, references/soundshuman, references/anti-ai-slop-writing]
+    notes: "Ten-item reference map from the attached anti-AI-writing recommendation image; monorepo entries record the exact nested SKILL.md path."

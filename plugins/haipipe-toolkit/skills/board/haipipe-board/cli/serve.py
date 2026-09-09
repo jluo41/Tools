@@ -27,6 +27,9 @@ regenerates board/ so a plain reload shows the rendered comment.
     POST /_board/stop      {path, file}                -> ask that turn to stop
     POST /_board/term      {path, file}                -> start a ttyd for that question
     POST /_board/release   {path, file}                -> hand the session back
+    POST /_board/outline   {path, file}                -> live Outline URL;
+                            action=edit-bullet|append-bullet edits Markdown
+                            through the bounded Shape editor
     POST /_board/structure {path, op, ...}             -> add/archive groups and questions
                             op: add_group {title, letter?, hook?, body?}
                                 add_question {group, title}
@@ -54,8 +57,9 @@ Deliberately narrow, because this is a write endpoint:
     to the whole local network.
   · the target must sit inside --root, in a folder containing board.md
     · the filename must match Q*.md or S*.md
-  · writes are limited to sentence-adjacent comments, one-sentence edits, and
-    the pre-existing narrowly scoped page actions below
+  · writes are limited to sentence-adjacent comments, one-sentence edits,
+    bounded Outline Bullet edits, and the pre-existing narrowly scoped page
+    actions below
 """
 import argparse
 import atexit
@@ -517,6 +521,10 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/outline":     # 🧭 the same live twin (QPf12)
             res, err = self.plug_outline(p)
+            if not err and (res or {}).get("version"):
+                # A Bullet write changed the Markdown Shape: rebuild so the
+                # Page's compact Outline table shows the working version too.
+                res["build"] = self.rebuild(board)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/value":       # 🔢 the same live twin (QPw4v)

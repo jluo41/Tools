@@ -54,8 +54,8 @@ current write target.
 
 Paper-local Evidence/Display Run ids are governed by
 `haipipe-paper/ref/run-naming.md`: `pm-…` (Main), `pa-…` (Appendix), and
-`pr-…` (Round). Page-local Division Writing keeps
-`rNN_page-division-writing_cNN`; existing `pjNNtNNrNN` files are historical
+`pr-…` (Round). Page-local Paragraph Writing keeps
+`rNN_page-writing_cNN-pNN.md`; existing `pjNNtNNrNN` files are historical
 and read-only.
 
 There is no View layer and no Paper-level Literature, Value, or Display Page

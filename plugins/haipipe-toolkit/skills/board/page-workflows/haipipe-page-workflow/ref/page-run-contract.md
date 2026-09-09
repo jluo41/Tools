@@ -337,12 +337,12 @@ line is unaffected either way.
 CONTENT is one lifecycle phase. Its internal movements are Draft, Revise,
 Build, and Pre-check. Those movements are not independent lifecycle phases and
 do not create extra L4 Run identities. A normal commission creates one
-`Page · Division Writing` Run per division and promotes its accepted Result
+`Page · Paragraph Writing` Run per paragraph and promotes its accepted Result
 into Page Content before CHECK judges the whole built Page.
 
 ```text
 L3 phase receipt       one CONTENT receipt per lifecycle pass
-L4 writing work        one indexed Run per commissioned division
+L4 writing work        one indexed Run per commissioned paragraph
 internal movements     Draft → Revise → Build → Pre-check
 backward routes        CONTEXT for stale policy; OUTLINE for wrong plan;
                        EVIDENCE for missing/invalid Result

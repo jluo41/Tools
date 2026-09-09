@@ -1,3 +1,8 @@
+## 0.32.3 · 2026-09-08
+
+- Define the live Bullet Workspace editor as a bounded SHAPE write: paragraph
+  groups, Bullet edits, append, and approved-Shape preservation are explicit.
+
 ## 0.32.1 · 2026-09-07
 
 - Route manuscript subsection naming to the Section owner's reader-facing

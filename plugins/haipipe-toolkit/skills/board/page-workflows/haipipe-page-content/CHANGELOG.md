@@ -1,3 +1,36 @@
+## 0.9.2 · 2026-09-08
+
+- Connect the optional HAI anti-slop adapter to Paragraph Writing Runs as a
+  post-draft diagnostic artifact, without making its score an acceptance gate
+  or allowing external auto-fix commands to bypass `wdiff.py` and promotion.
+- Record the selected audit/report in the CONTENT receipt and route findings to
+  bounded CONTENT revisions while preserving plan, evidence, claim strength,
+  citations, numbers, and neighboring seams.
+
+## 0.9.1 · 2026-09-08
+
+- Add the deterministic `cli/promote_paragraph.py` CONTENT write path for
+  moving one accepted Paragraph Result back into its exact `C<n>.P<m>` Page
+  source span.
+- Pin promotion to the frozen Page hash, serialize per-Page writes, preserve
+  sibling/annotation records, verify the post-write target and hash, and record
+  an idempotent/recoverable promotion receipt in `runtime.yaml`.
+- Add focused promoter tests covering replacement, insertion, explicit-heading
+  ambiguity, stale Pages, fenced headings, interrupted preparation, and blocked
+  structural input.
+
+## 0.9.0 · 2026-09-08
+
+- Default new writing to one Cn.Pm Paragraph Run, with an embedded-prompt Markdown Ticket and paragraph/trace/runtime Result.
+- Freeze owner style, exemplars, feedback and neighboring context; promote only the addressed paragraph, then check division/Page continuity.
+- Carry an optional frozen Writing DNA packet into the Paragraph Run and trace; style remains subordinate to claim strength, Evidence, and venue rules.
+- Carry an optional Page-owned Narrative Decision into the entry check and
+  Paragraph Run so the approved paragraph organization is frozen before DNA
+  surface realization.
+- Make claim-strength compatibility with the bound Evidence Result an explicit
+  pre-allocation CONTENT gate; mismatches route upstream before a Paragraph Run.
+- Preserve historical division Results; revise through explicit replacement Runs, without new paragraph plugins or QA lanes.
+
 ## 0.8.4 · 2026-09-07
 
 - After Build, return the four-surface user-check packet: evidence to open now,

@@ -79,9 +79,9 @@ Each condition names its field, operator, threshold, and missing-value behavior.
 outline-version: v0.1
 approved: ⬜
 
-| Address | Planned move | Evidence | Supporting Run | Local Run |
-|---|---|---|---|---|
-| C1.P1.B1 | State each executable condition. | E01-VALUE-condition-count | — | Page · Evidence Item · new-run · 1-G1-eligibility/G1-entry-rule |
+| Address | Bullet | Feedback | Evidence | Supporting Run | Local Run |
+|---|---|---|---|---|---|
+| C1.P1.B1 | State each executable condition. | — | E01-VALUE-condition-count | — | Page · Evidence Item · new-run · 1-G1-eligibility/G1-entry-rule |
 ```
 
 The rendered Page generates its Outline from this plan. The Page source does

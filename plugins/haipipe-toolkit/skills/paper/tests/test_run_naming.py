@@ -13,7 +13,7 @@ PAPER_RUN = re.compile(
     r"(?P<target>[ef][0-9]{2}-[a-z0-9]+(?:-[a-z0-9]+)*)-r[0-9]{2}$"
 )
 PAGE_RUN = re.compile(r"^r[0-9]{2}_[a-z0-9-]+_[a-z0-9-]+$")
-DIVISION_WRITING = re.compile(r"^r[0-9]{2}_page-division-writing_c[0-9]{2}$")
+PARAGRAPH_WRITING = re.compile(r"^r[0-9]{2}_page-writing_c[0-9]{2}-p[0-9]{2}$")
 LEGACY_PJ = re.compile(r"^pj[0-9]{2}t[0-9]{2}r[0-9]{2}(?:_.+)?$")
 
 
@@ -30,17 +30,19 @@ class PaperRunNamingTest(unittest.TestCase):
             self.assertIsNotNone(match, run_id)
             self.assertIn(match.group("lane"), {"m", "a", "r"})
 
-    def test_page_and_division_writing_names_remain_distinct(self) -> None:
+    def test_page_and_paragraph_writing_names_remain_distinct(self) -> None:
         self.assertTrue(
-            DIVISION_WRITING.fullmatch("r01_page-division-writing_c01")
+            PARAGRAPH_WRITING.fullmatch("r01_page-writing_c01-p01")
         )
         self.assertTrue(
             PAGE_RUN.fullmatch("r05_page-evidence-item_e03-cite-prior-work")
         )
         self.assertNotEqual(
             "pm-introduction-e01-cite-prescribing-variation-r01",
-            "r01_page-division-writing_c01",
+            "r01_page-writing_c01-p01",
         )
+        self.assertIsNone(PARAGRAPH_WRITING.fullmatch("r01_page-division-writing_c01"))
+        self.assertIsNone(PARAGRAPH_WRITING.fullmatch("r01_page-writing_c01"))
 
     def test_old_pj_form_is_explicitly_read_only(self) -> None:
         self.assertTrue(LEGACY_PJ.fullmatch("pj02t01r01_rx_variation"))

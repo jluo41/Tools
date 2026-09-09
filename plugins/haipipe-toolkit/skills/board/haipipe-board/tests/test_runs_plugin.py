@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from live.folderstat import folder_status
-from live.runs import local_runs, render
+from live.runs import RunsTabMixin, local_runs, render
 
 
 class RunsPluginTest(unittest.TestCase):
@@ -184,6 +184,72 @@ class RunsPluginTest(unittest.TestCase):
         self.assertFalse(rows[0]["run_id"].startswith("P "))
         self.assertEqual(rows[0]["ticket"], ticket)
         self.assertEqual(rows[0]["runtime"], runtime)
+
+    def writing_pair(self, status="planned"):
+        stem = "r02_page-writing_c01-p02"
+        ticket = self.page.parent / "runs" / (stem + ".md")
+        ticket.parent.mkdir(exist_ok=True)
+        ticket.write_text(
+            "---\nrun: " + stem + "\nfamily: page\noperation: paragraph-writing\n"
+            "target: C1.P2\n---\n## Prompt\nExplain the empty field.\n"
+            "<script>alert('unsafe')</script>\n", encoding="utf-8")
+        result = self.page.parent / "results" / stem
+        result.mkdir(parents=True)
+        (result / "runtime.yaml").write_text(
+            "status: " + status + "\noperation: paragraph-writing\n"
+            "target: C1.P2\n", encoding="utf-8")
+        return ticket, result
+
+    def test_markdown_writing_target_and_prompt_are_visible_before_result(self):
+        ticket, result = self.writing_pair()
+        rows = local_runs(self.page)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["status"], "Ready")
+        self.assertEqual(rows[0]["target"], "C1.P2")
+        self.assertEqual(rows[0]["kind"], "Page · Paragraph Writing")
+        body = render(self.page, "", "")
+        self.assertIn("Writing instructions / Prompt", body)
+        self.assertIn("Explain the empty field.", body)
+        self.assertIn("&lt;script&gt;", body)
+        self.assertNotIn("<script>alert", body)
+        self.assertIn("Not available yet.", body)
+        # An orphan remains discoverable, but cannot claim to be ready.
+        (result / "runtime.yaml").unlink()
+        self.assertEqual(local_runs(self.page)[0]["target"], "C1.P2")
+        self.assertEqual(local_runs(self.page)[0]["status"], "Held")
+        self.assertIn("Missing runtime.yaml", render(self.page, "", ""))
+
+    def test_complete_writing_requires_both_outputs_and_previews_the_paragraph(self):
+        _ticket, result = self.writing_pair("complete")
+        self.assertEqual(local_runs(self.page)[0]["status"], "Held")
+        (result / "paragraph.md").write_text("An empty field is not zero.\n", encoding="utf-8")
+        self.assertEqual(local_runs(self.page)[0]["status"], "Held")
+        (result / "trace.md").write_text("C1.P2.B1 → sentence 1; pass.\n", encoding="utf-8")
+        self.assertEqual(local_runs(self.page)[0]["status"], "Done")
+        body = render(self.page, "", "")
+        self.assertIn("An empty field is not zero.", body)
+        self.assertIn("C1.P2.B1", body)
+        self.assertIn("<th>Target</th>", body)
+        self.assertIn('aria-expanded="false"', body)
+        self.assertNotIn("href=", body)
+
+    def test_writing_preview_does_not_follow_external_symlink(self):
+        _ticket, result = self.writing_pair("complete")
+        external = self.page.parent / "private.md"
+        external.write_text("NEVER_PREVIEW_THIS", encoding="utf-8")
+        (result / "paragraph.md").symlink_to(external)
+        (result / "trace.md").write_text("pass", encoding="utf-8")
+        self.assertEqual(local_runs(self.page)[0]["status"], "Held")
+        self.assertNotIn("NEVER_PREVIEW_THIS", render(self.page, "", ""))
+
+    def test_runs_plugin_post_route_escapes_page_parameters(self):
+        class Surface(RunsTabMixin):
+            def target(_self, payload):
+                return self.page, None
+        result, error = Surface().plug_runs({"path": "/a b", "file": "S&Test.md"})
+        self.assertIsNone(error)
+        self.assertIn("path=/a%20b", result["url"])
+        self.assertIn("file=S%26Test.md", result["url"])
 
 
 if __name__ == "__main__":

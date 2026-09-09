@@ -71,35 +71,41 @@ P A · Robustness · E01-VALUE-sensitivity · R01
 P R · RD01-MISQ-feedback-20260825 · E01-CITE-response · R01
 ```
 
-## 4. Page-local and Division Writing grammar
+## 4. Page-local and Paragraph Writing grammar
 
 The shared Page namespace remains available and is not renamed merely because
 the Page lives inside a Paper:
 
 ```text
 PAGE_RUN_ID       := r<NN>_<family>-<operation>_<target>
-DIVISION_WRITING  := r<NN>_page-division-writing_c<NN>
+PARAGRAPH_WRITING  := r<NN>_page-writing_c<NN>-p<NN>
 PAGE_EVIDENCE     := r<NN>_page-evidence-item_e<NN>-<type>-<slug>
 PAGE_DISPLAY      := r<NN>_page-display_c<NN>-f<NN>
 ```
 
-For a Paper Section, `DIVISION_WRITING` is the current Page-local Content
-Run, for example `r01_page-division-writing_c01`. Its Main/Appendix meaning
+For a Paper Section, `PARAGRAPH_WRITING` is the current Page-local Content
+Run, for example `r01_page-writing_c01-p01`. Its Main/Appendix meaning
 comes from the owning semantic Page (`S-MISQ-Main-Introduction` or
 `S-MISQ-Appendix-Robustness`) and must also be recorded in `runtime.yaml`:
 
 ```yaml
-run: r01_page-division-writing_c01
+run: r01_page-writing_c01-p01
 family: page
-operation: division-writing
+operation: paragraph-writing
 page: S-MISQ-Main-Introduction
 paper_lane: main
-target: C01
+target: C1.P1
 ```
 
+The Ticket is `runs/<RUNNAME>.md`, with its prompt inside. Result shape,
+acceptance and promotion are owned by
+`../../../board/page-workflows/haipipe-page-content/ref/paragraph-run.md`.
+Historical `rNN_page-division-writing_cNN` Runs remain readable and unchanged;
+new paragraph work does not split or rename their Results.
+
 Do not make the same attempt both a Paper-local Evidence Run and a Page-local
-Division Writing Run. Evidence prepares a typed Result; Division Writing
-realizes a Content division from the folded Result. They are different targets
+Paragraph Writing Run. Evidence prepares a typed Result; Paragraph Writing
+realizes one Content paragraph from the folded Result. They are different targets
 and may legitimately both have an `r01` in different namespaces.
 
 ## 5. Collision and reference rules
@@ -113,7 +119,7 @@ and may legitimately both have an `r01` in different namespaces.
    Page resolves to `S-<desk>-Main-…`; it never means “the first page”.
 4. `Story`, `Section`, and `Round` are Page identities/owners, not additional
    Run families. The Run family remains `Page · Evidence Item`, `Page ·
-   Display`, or `Page · Division Writing` as defined by `haipipe-run`.
+   Display`, or `Page · Paragraph Writing` as defined by `haipipe-run`.
 5. A SURVEY reservation is a plan and does not count as an allocated Run.
    LAND creates the Ticket, paired Result directory, and runtime receipt.
 

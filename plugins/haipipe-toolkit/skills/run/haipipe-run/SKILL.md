@@ -7,12 +7,12 @@ description: >-
   when designing a workflow's Phase × Run Map or one phase's Run Profile, deciding whether work is a
   Run or an internal worker call, pairing runs/ with results/, resolving
   Folder-local versus Job-backed storage, or routing Execution, Discovery,
-  Page Evidence Item, Page Division Writing, Page Display, and domain-specific Labeling operations. Trigger: Run contract,
+  Page Evidence Item, Page Paragraph Writing, Page Display, and domain-specific Labeling operations. Trigger: Run contract,
   Level 4 Run, run profile, run ticket, run result, runtime receipt, orphaned
   result, calibration run, qualification run, production scan, final audit,
   /haipipe-run.
 metadata:
-  version: "0.8.1"
+  version: "0.9.0"
   last_updated: "2026-09-08"
 ---
 
@@ -131,7 +131,7 @@ Use one family classification for routing and presentation:
 Execution                computation · data · model · tool execution
 Discovery                paper/source search and external-evidence analysis
 Page · Evidence Item     one focal VALUE/CITE/DISPLAY Result ready for EMBED
-Page · Division Writing  one Content division candidate
+Page · Paragraph Writing  one addressed paragraph candidate
 Page · Display           one display unit candidate
 Labeling                 a domain operation declared by subjective-label/ref/ref-run.md
 Insight · Item           one topic-instance item's checked DIKW/RF Result
@@ -145,6 +145,11 @@ when a display unit is commissioned as an independently closable target outside
 an Evidence Item Run; never count both families for one unit.
 
 The base classifies these families but does not define their semantic outputs.
+For Page Paragraph Writing, load
+`../../board/page-workflows/haipipe-page-content/ref/paragraph-run.md` for the
+Markdown Ticket with embedded prompt, one-paragraph Result, and promotion
+boundary. Historical `division-writing` Runs remain readable history; new
+Content commissions use paragraph targets without renaming old artifacts.
 Design's caller-owned YAML Ticket dialect and generate/verify gates are in
 `../../application/haipipe-design-workflow/references/run-profile.md`;
 the worker is `haipipe-design-unit`, not another Folder owner.
@@ -158,7 +163,7 @@ Name new Runs with a monotonic two-digit address and a family-bearing stem:
 r01_execution_fit-model
 r02_discovery_chen2025_trace
 r03_page-evidence-item_e01-value-adjusted-effect
-r04_page-division-writing_c02
+r04_page-writing_c02-p01
 r05_page-display_c02-f01
 r06_labeling-guideline-learn_round-03
 r07_labeling-executor-predict_test-v1-executor-a
@@ -324,13 +329,13 @@ path declared by its Run Profile, conventionally `runtime.yaml` in or beside
 the paired Result projection. New Runs record at least:
 
 ```yaml
-run: r03_page-division-writing_c02
+run: r03_page-writing_c02-p01
 family: page
-operation: division-writing
-target: C02
+operation: paragraph-writing
+target: C2.P1
 status: complete
-ticket: runs/r03_page-division-writing_c02.sh
-result: results/r03_page-division-writing_c02/
+ticket: runs/r03_page-writing_c02-p01.md
+result: results/r03_page-writing_c02-p01/
 inputs:
   - path: outline/example-outline-v3.md
     sha256: <lowercase-hex>
@@ -380,7 +385,7 @@ Promotion  an accepted candidate written into an authority or handoff
 A Result does not become evidence merely because it exists. Execution and
 Discovery Results may support a Page Evidence Item; its one local Page ·
 Evidence Item Result becomes Page evidence only when LAND binds it and EMBED
-interprets it. Division Writing may be promoted into one Content division.
+interprets it. Paragraph Writing may be promoted into one addressed Content paragraph.
 For DISPLAY, the Page-owned display unit may be the renderer's direct output
 destination; the governed Result envelope points to that unit and records its
 hashes instead of first creating and then copying a duplicate payload. In a

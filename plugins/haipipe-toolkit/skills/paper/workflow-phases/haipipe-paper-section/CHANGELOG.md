@@ -1,3 +1,7 @@
+## 0.9.2 · 2026-09-08
+
+- Consume Page Paragraph Writing Runs and retain Section-owned page/paper_lane identity, structure, evidence and venue requirements.
+
 ## 0.9.1 · 2026-09-08
 
 - Add the Paper Section Run profile: semantic `pm-`/`pa-` Evidence/Display

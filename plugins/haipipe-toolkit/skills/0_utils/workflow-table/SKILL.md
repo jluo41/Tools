@@ -10,8 +10,8 @@ description: >-
   tables or a single-run status report.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-05"
+  version: "0.4.2"
+  last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -269,7 +269,7 @@ none
 Execution · fit-model · 0..N
 Discovery · source-analysis · N_subjects
 Page · Evidence Item · exactly 1 per make-item
-Page · Division Writing · one per ready division
+Page · Paragraph Writing · one per commissioned paragraph
 ```
 
 Apply these distinctions:

@@ -54,7 +54,10 @@ Delete every guide comment before the Page is ready.
 <short observable output handed downstream>
 
 ## Content
-<!-- S required; Q optional. Number divisions and paragraphs all the way down. -->
+<!-- S required; Q optional. Number divisions and paragraphs all the way down.
+Each planned Cn.Pm paragraph realizes its own approved Bullets; keep sentence-
+level realizes backlinks. CONTENT commissions paragraph writing, not one
+paragraph per Bullet. The owner still defines sentence-slot requirements. -->
 
 ### 1 · First division
 **Division map:** what the diagram previews.

@@ -221,11 +221,11 @@ def _outline_status_class(status):
 
 
 def _outline_grid(page_src):
-    """Render the Page's compact, read-only plan-and-evidence review table.
+    """Render the Page's compact plan-and-evidence review table.
 
     The Outline plugin still owns its richer plan card and Evidence lens.  This
     projection is intentionally a real table for a Section reader: C/P rows
-    give narrative hierarchy; B rows carry their routed Feedback, a compact
+    give narrative hierarchy; B rows carry their Bullet text, routed Feedback, a compact
     evidence identity, Supporting Runs, and a local Run. Item status remains
     encoded by the Evidence chip colour and its title; a separate Status column
     would repeat that state while stealing width from the plan.  Every chip is
@@ -544,7 +544,7 @@ def _outline_grid(page_src):
     if not rows:
         rows.append('<tr><td colspan="6" class="mut">No C/P/B plan rows yet.</td></tr>')
     return (f'{meta}<div class="outline-grid-wrap"><table class="outline-grid">'
-            '<thead><tr><th>Address</th><th>Planned move</th><th>Feedback</th><th>Evidence</th>'
+            '<thead><tr><th>Address</th><th>Bullet</th><th>Feedback</th><th>Evidence</th>'
             '<th>Supporting Runs</th><th>Local Run</th></tr></thead><tbody>'
             f'{"".join(rows)}</tbody></table></div>')
 

@@ -7,7 +7,7 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.61.3"
+  version: "0.61.6"
   last_updated: "2026-09-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -198,6 +198,40 @@ Page Evidence Item Run; LAND produces one ready local Result; EMBED interprets
 it. The ledger is `outline/<stem>-evidence-items.md`
 (`haipipe-plugin-outline/ref/item-table.md`).
 
+CONTENT commissions one Paragraph Writing Run per selected `C<n>.P<m>`.
+That paragraph realizes its approved Bullets with sentence-level traces;
+several Bullets may belong to one paragraph. Divisions still organize the
+Page and Aims. The exact Ticket, Result and promotion contract belongs to
+`page-workflows/haipipe-page-content`, not a new Page or paragraph plugin.
+
+### 🧬 Writing DNA handoff
+
+The Page has one style authority: the resolved Context and its authored
+requirements. When the external `writing-dna-skill` supplies a profile, the
+Page carries a frozen, style-only packet into CONTENT; it does not copy the
+corpus into the Page, create a second Outline, or treat DNA as Evidence.
+
+```text
+CONTEXT/PREPARE  resolve policy + profile id/status/hash
+OUTLINE/SHAPE    freeze the reader job, Bullet order, claim contract, and any
+                 declared paragraph-level Narrative Decision
+EVIDENCE         land and fold factual Results; DNA has no evidence authority
+CONTENT/WRITE    freeze the Decision + packet in each C<n>.P<m> Paragraph Run
+CHECK            judge the built Page and the Run's recorded style application
+```
+
+If a named style is required but its profile or required exemplars cannot be
+resolved, CONTEXT/HOLD owns the block. If the style is optional, CONTENT may
+write under the Page owner's policy without DNA. A profile can change wording,
+rhythm, and compatible structure only after the content contract is stable;
+claim strength, evidence order, topic, and reader promise remain Page-owned.
+A declared `Narrative Decision` is the approved reason for a paragraph's
+organization; it is consumed by CONTENT, is not an Evidence Item, and is never
+minted or rewritten by Writing DNA. If it conflicts with the approved Outline,
+route back to OUTLINE.
+The HAI-side adapter and three-pass realization rules are
+[`haipipe-writing/ref/writing-dna-adapter.md`](../../writing/haipipe-writing/ref/writing-dna-adapter.md).
+
 Resolve one invocation as: Folder → base Page Face → phase-owned Folder kind
 or declared Page Type → current cycle →
 phase-selected and page-local plugins.
@@ -254,7 +288,7 @@ stated as a `**Covered elsewhere**:` part in its drawer.
 
 `## Outline` is the only on-page projection of the planning process. It opens
 by default immediately after the always-visible Opening. Normally it renders
-the current plan's `▤ Outline table`: `Address · Planned move · Feedback ·
+the current plan's `▤ Outline table`: `Address · Bullet · Feedback ·
 Evidence · Supporting Run · Local Run`; C/P rows are planning group headers and B rows
 are the checkable claim/evidence rows. Evidence chip colour carries the quick
 signal and its deep-linked Evidence Workspace card carries the detail, so no
@@ -270,6 +304,14 @@ Story's research Content divisions. No projection is copied into a Page-authored
 References, and every other optional fold start shut. The `outline/` folder
 remains the authority for every plan, writing rule, evidence, feedback,
 requirement, discussion, file, and log record.
+
+The live Outline/Bullet Workspace makes each paragraph address (`C<n>.P<m>`)
+an expand/collapse control and keeps its Bullets inside that group. Bullet heads
+may be edited and a new Bullet appended through the server-backed Outline
+editor. Markdown remains authoritative: the first write against an approved
+Shape creates the next unapproved working Shape and preserves the approved
+file; subsequent writes reuse that working version. Generated Page HTML is
+never an edit target.
 
 The visible labels are `🚪 Opening` and `🧭 Outline`; they must not reuse one
 icon because they answer different reader questions. Opening is reader prose,

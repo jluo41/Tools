@@ -7,7 +7,7 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "1.0.2"
+  version: "1.0.3"
   last_updated: "2026-09-08"
   summary: "Story absorbs Paper planning; Discovery/Task/Run execute outside the Paper Page graph; Compile remains a verb."
 ---
@@ -147,7 +147,7 @@ Results; the Page cites their `E<NN>-<TYPE>-<slug>` and full Run/Result ids.
 Paper-local Evidence/Display Runs use the semantic lane-aware ids in
 [`ref/run-naming.md`](ref/run-naming.md): `pm-…` for Main, `pa-…` for
 Appendix, and `pr-…` for Round. Page-local Content Runs keep the shared
-`rNN_page-division-writing_cNN` grammar. The former `pjNNtNNrNN` form remains
+`rNN_page-writing_cNN-pNN.md` Ticket grammar from `haipipe-page-content`. The former `pjNNtNNrNN` form remains
 read-only history; Paper work never silently renames it.
 
 One Page may own many DISPLAY items. One local DISPLAY Result may contain

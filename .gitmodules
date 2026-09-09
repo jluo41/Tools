@@ -145,3 +145,30 @@
 [submodule "references/stop-that-shit"]
 	path = references/stop-that-shit
 	url = https://github.com/lennney/stop-that-shit.git
+[submodule "references/no-ai-slop"]
+	path = references/no-ai-slop
+	url = https://github.com/petergyang/no-ai-slop
+[submodule "references/humanizer-blader"]
+	path = references/humanizer-blader
+	url = https://github.com/blader/humanizer
+[submodule "references/cursor-plugins"]
+	path = references/cursor-plugins
+	url = https://github.com/cursor/plugins
+[submodule "references/slopkit"]
+	path = references/slopkit
+	url = https://github.com/ehmo/slopkit
+[submodule "references/humanizer-adam"]
+	path = references/humanizer-adam
+	url = https://github.com/Aboudjem/humanizer-skill
+[submodule "references/stephenturner-skills"]
+	path = references/stephenturner-skills
+	url = https://github.com/stephenturner/skills
+[submodule "references/elithrar-dotfiles"]
+	path = references/elithrar-dotfiles
+	url = https://github.com/elithrar/dotfiles
+[submodule "references/soundshuman"]
+	path = references/soundshuman
+	url = https://github.com/aashaexo/soundshuman
+[submodule "references/anti-ai-slop-writing"]
+	path = references/anti-ai-slop-writing
+	url = https://github.com/jalaalrd/anti-ai-slop-writing

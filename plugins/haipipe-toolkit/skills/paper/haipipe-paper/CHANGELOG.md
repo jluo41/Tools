@@ -1,3 +1,7 @@
+## 1.0.3 · 2026-09-08
+
+- Follow Page's paragraph-writing Ticket interface for Content; Paper Evidence/Display pm/pa/pr naming is unchanged.
+
 # CHANGELOG · haipipe-paper
 
 ## 1.0.2 · 2026-09-08
