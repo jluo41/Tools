@@ -172,3 +172,6 @@
 [submodule "references/anti-ai-slop-writing"]
 	path = references/anti-ai-slop-writing
 	url = https://github.com/jalaalrd/anti-ai-slop-writing
+[submodule "references/writing-dna-skill"]
+	path = references/writing-dna-skill
+	url = https://github.com/larashero3-dotcom/writing-dna-skill.git
