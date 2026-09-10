@@ -287,7 +287,7 @@ The reply shape
 ---------------
 
 The five phases are the WORK. This is how the work comes back in chat. Follows
-`/claude-response-format`: the answer on line 1, then sections of bullets, and a
+`/response-format`: the answer on line 1, then sections of bullets, and a
 fenced block only where one is earned.
 
 **Line 1** is the verdict in one sentence: the KIND, the step it died at, and

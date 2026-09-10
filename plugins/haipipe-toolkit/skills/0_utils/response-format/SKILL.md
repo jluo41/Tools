@@ -1,5 +1,5 @@
 ---
-name: claude-response-format
+name: response-format
 description: >-
   Canonical spec for the assistant's chat reply format in this workspace: the
   answer on line 1, then everything else as a nested OUTLINE of bullets under
@@ -11,15 +11,15 @@ description: >-
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-08-29"
+  version: "0.3.0"
+  last_updated: "2026-09-09"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-Skill: claude-response-format (0_utils)
-=======================================
+Skill: response-format (0_utils)
+================================
 
-Canonical format for conversational replies in this workspace. `~/.claude/CLAUDE.md`
+Canonical format for conversational replies in this workspace. The repo `CLAUDE.md`
 points here; this file is the detailed spec. The CLAUDE.md line is what makes it
 always-on, this skill is the reference it cites.
 

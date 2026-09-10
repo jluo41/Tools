@@ -1,5 +1,22 @@
-claude-response-format — Changelog
-==================================
+response-format — Changelog
+===========================
+
+
+## [0.3.0] - 2026-09-09
+
+RENAMED `claude-response-format` -> `response-format`, reversing the 1.0.1 rename
+of 2026-06-02. JL: "update this Tools/plugins/haipipe-toolkit/skills/0_utils/
+claude-response-format to be response-format." The `claude-` prefix said nothing
+the folder did not already say: every skill here is a Claude skill, and the
+prefix only made the invocation longer. It now sits with the other unprefixed
+methods in `0_utils` (`diagram-ascii`, `field-test`, `notebook-cell-python`,
+`remote-error`), which carry no vendor prefix either.
+
+- `name:` in SKILL.md frontmatter and the `Skill:` header line follow the folder.
+- Repo `CLAUDE.md` Rule 5 now cites `.../0_utils/response-format/`.
+- The live cross-reference in `remote-error/SKILL.md` points at `/response-format`.
+- Body text corrected: the pointer lives in the repo `CLAUDE.md`, not
+  `~/.claude/CLAUDE.md`. The spec itself is unchanged, this is a rename only.
 
 
 ## [0.2.0] - 2026-08-29
