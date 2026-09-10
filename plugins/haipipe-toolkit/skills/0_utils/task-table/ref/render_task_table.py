@@ -74,6 +74,12 @@ from pathlib import Path
 IDX = re.compile(r"^([bjtr])(\d\d)_(.+)$")
 NOT_A_TASK = {"src", "sbatch", "results", "notebooks", "workflow",
               "outline", "diagram", "__pycache__", "_tools", "dist", "chat"}
+# A Block's own surfaces are not Jobs (JL 260909): `diagram/` is the Block
+# narrative that task-structure.md admits beside board.md, and `board/` is the
+# site haipipe-board's build.py generates inside the Block. Read as Jobs they
+# each minted a phantom `bNNj??` table whose "tasks" were the generated
+# per-group folders, and eight N1/S5 findings with them.
+NOT_A_JOB = NOT_A_TASK | {"board"}
 TICKET_EXT = {".sh", ".ps1"}
 CODE_EXT = {".py", ".do", ".R", ".sh", ".ipynb"}
 GEN_LINE = re.compile(r"^(<!-- generated .*-->|generated: .*)$")
@@ -193,7 +199,20 @@ def headline(script: Path):
     line = HEAD_PREFIX.sub("", line, count=1).strip()
     m = re.match(r"^(.{20,}?[.!?])(?=\s+[A-Z(\[]|\s*$)", line)   # first full sentence; "M.D./D.O. worklist" is not one
     line = m.group(1) if m else line
-    return line if len(line) <= 140 else line[:137].rstrip() + "…"
+    return line if len(line) <= 140 else cut(line, 137)
+
+
+def cut(value, keep):
+    """Truncate on a word boundary, never mid-token.
+
+    Cutting `t01_explore_engagement` at column 80 left `t01_ex` in the table,
+    and haipipe-task S8 reads that as a doc naming a Task that does not exist
+    (JL 260909). Backing up to the last space keeps the ellipsis honest.
+    """
+    head = value[:keep].rstrip()
+    if len(value) > keep and not value[keep].isspace():
+        head = head[:head.rfind(" ")].rstrip() if " " in head else head
+    return head + "…"
 
 
 def prefix(name, level):
@@ -219,6 +238,8 @@ def scan(root: Path):
             findings.append(f)
         jobs = []
         for j in subdirs(b):
+            if j.name in NOT_A_JOB:
+                continue
             jaddr, f = prefix(j.name, "j")
             if f:
                 findings.append(f)
@@ -461,7 +482,7 @@ TASK_HDR = ["Addr", "Task", "Develops", "Input", "Output", "Configs", "Code", "R
 
 def compact(value, limit=80):
     value = " ".join(str(value).split())
-    return value if len(value) <= limit else value[:limit - 1].rstrip() + "…"
+    return value if len(value) <= limit else cut(value, limit - 1)
 
 
 def config_summary(configs):
