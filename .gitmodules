@@ -25,6 +25,7 @@
 [submodule "references/auto-research-skills"]
 	path = references/auto-research-skills
 	url = https://github.com/brycewang-stanford/Auto-Research-Skills
+	ignore = dirty
 [submodule "references/tools/statsmodels"]
 	path = references/tools/statsmodels
 	url = https://github.com/statsmodels/statsmodels
