@@ -139,7 +139,9 @@ def t_empty():
 def t_real_cook():
     import glob
     import pandas as pd
-    paths = sorted(glob.glob("/home/jluo41/WellDoc-SPACE/_WorkSpace/1-SourceStore/Shanghai/@*/Diet.parquet"))
+    _root = next(a for a in pathlib.Path(__file__).resolve().parents
+                 if (a / "pyproject.toml").exists() and (a / "code").is_dir())
+    paths = sorted(glob.glob(str(_root / "_WorkSpace/1-SourceStore/Shanghai/@*/Diet.parquet")))
     if not paths:
         return "SKIPPED (no Shanghai frame)"
     names = pd.read_parquet(paths[-1])["FoodName"].dropna().astype(str).unique().tolist()
@@ -208,9 +210,11 @@ import glob as _glob
 # are a sealed opaque BlenderBottle: nothing edible is visible, so the engine
 # correctly declines to name it, and a test built on them asserts that a
 # stochastic model hallucinates on demand. These two are a plated meal.
-_PAIR = ("/nvme1/group_share/0-RawDataStore/CGMacros/Source/CGMacros-001/photos/"
+_PHOTOS = os.environ.get("CGMACROS_PHOTO_ROOT",
+                         "/nvme1/group_share/0-RawDataStore/CGMacros/Source")
+_PAIR = (_PHOTOS + "/CGMacros-001/photos/"
          "00000007-PHOTO-2020-5-1-20-48-0.jpg",
-         "/nvme1/group_share/0-RawDataStore/CGMacros/Source/CGMacros-001/photos/"
+         _PHOTOS + "/CGMacros-001/photos/"
          "00000008-PHOTO-2020-5-1-20-57-0.jpg")
 _PHOTOS = [p for p in _PAIR if _glob.glob(p)]
 

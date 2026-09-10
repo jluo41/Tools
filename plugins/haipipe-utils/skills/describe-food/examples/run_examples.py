@@ -36,7 +36,8 @@ for _i, _a in enumerate(sys.argv):
         _ARG_OUT = _a.split("=", 1)[1]
 OUT = (pathlib.Path(_ARG_OUT).expanduser().resolve() if _ARG_OUT
        else pathlib.Path(__file__).resolve().parent / "api")
-PHOTOS = pathlib.Path("/nvme1/group_share/0-RawDataStore/CGMacros/Source/CGMacros-001/photos")
+PHOTOS = pathlib.Path(os.environ.get("CGMACROS_PHOTO_ROOT",
+                                   "/nvme1/group_share/0-RawDataStore/CGMacros/Source")) / "CGMacros-001" / "photos"
 
 
 def write(case_dir, curl, request, response, note, frames=()):

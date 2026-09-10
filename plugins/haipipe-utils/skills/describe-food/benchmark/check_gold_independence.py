@@ -68,7 +68,12 @@ HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent))
 
-ROOT = pathlib.Path("/home/jluo41/WellDoc-SPACE")
+# The SPACE root. Tools is shared by every SPACE, so a written-out path is
+# wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
+# the bank never opens, every lookup returns MISS, and the benchmark blames
+# the resolver. Same walk as haipipe-norm/paths.py:space_root().
+ROOT = next(a for a in pathlib.Path(__file__).resolve().parents
+            if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 INFO = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_FoodInfo"
 CORPUS = INFO / "2-corpus"
 OUT = INFO / "6-benchmark"

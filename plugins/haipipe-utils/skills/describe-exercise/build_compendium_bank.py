@@ -35,7 +35,12 @@ import urllib.request
 
 import pandas as pd
 
-ROOT = pathlib.Path("/home/jluo41/WellDoc-SPACE")
+# The SPACE root. Tools is shared by every SPACE, so a written-out path is
+# wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
+# the bank never opens, every lookup returns MISS, and the benchmark blames
+# the resolver. Same walk as haipipe-norm/paths.py:space_root().
+ROOT = next(a for a in pathlib.Path(__file__).resolve().parents
+            if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 OUT = ROOT / "_WorkSpace/ExternalStore/pa_compendium"
 MIRROR = OUT / "compendium_2024.csv"
 FETCHED = OUT / "compendium_2024_publisher.csv"

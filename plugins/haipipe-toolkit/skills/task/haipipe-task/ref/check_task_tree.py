@@ -273,8 +273,13 @@ def check(root):
                         bad("N9", f"{t.name}/runs/{k.name}", "ticket not rNN_<stem>")
                     elif k.stem[4:].startswith("run_"):
                         bad("N9", f"{t.name}/runs/{k.name}", "stem repeats run_ after the rNN_ prefix")
-                    body = k.read_text(errors="replace")
-                    if re.search(r'\bbash\s+"?[^"\n]*runs/', body):
+                    # S11 catches a ticket that INVOKES another ticket. \s+ used to
+                    # cross a newline, so `#!/bin/bash` followed by a header comment
+                    # naming the ticket's own runs/ path fired on every well-formed
+                    # ticket. Horizontal space only, and comment lines are not calls.
+                    body = "\n".join(l for l in k.read_text(errors="replace").splitlines()
+                                     if not l.lstrip().startswith("#"))
+                    if re.search(r'\bbash[^\S\n]+"?[^"\n]*runs/', body):
                         bad("S11", f"{t.name}/runs/{k.name}", "calls other tickets: a batcher belongs in sbatch/")
                 # R01 every <task>/results/<run>/ carries a receipt; a stray file at results/ root is not a Run
                 if (t/"results").is_dir():

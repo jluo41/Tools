@@ -21,13 +21,19 @@ Usage:
 """
 import argparse
 import sys
+import os
 from pathlib import Path
 
 import pandas as pd
 
 from foodnorm import enrich_food_to_nutrition, TRUSTED
 
-LEXICON = Path("/home/jluo41/WellDoc-SPACE/_WorkSpace/ExternalStore/@v1215/foodnorm/food_lexicon.parquet")
+LEXICON = (Path(os.environ.get("LOCAL_EXTERNAL_STORE")
+                if os.environ.get("LOCAL_EXTERNAL_STORE", "").startswith("/") else
+                next(a for a in Path(__file__).resolve().parents
+                     if (a / "pyproject.toml").exists() and (a / "code").is_dir())
+                / os.environ.get("LOCAL_EXTERNAL_STORE", "_WorkSpace/ExternalStore"))
+           / "@v1215/foodnorm/food_lexicon.parquet")
 
 
 def show_lexicon():

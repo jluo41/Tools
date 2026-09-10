@@ -49,7 +49,17 @@ WORKER="$JOB_FOLDER/$WORKER_REL"
 [ -f "$CONFIG" ] || fail_shape "Run config missing: $CONFIG"
 [ -f "$WORKER" ] || fail_shape "Task worker missing: $WORKER"
 
-REPO_ROOT="$(git -C "$JOB_FOLDER" rev-parse --show-toplevel)"
+# The SPACE root, not the innermost git root. A Project may be a git submodule
+# (example-1-data/Proj01-CGM-RawData is one), and the converter, the venv and code/
+# live in the SPACE ABOVE it, so --show-toplevel points at the wrong tree and the
+# notebook conversion fails with a path nobody can read. Walk for the marker.
+REPO_ROOT=""
+_walk="$JOB_FOLDER"
+while [ "$_walk" != "/" ]; do
+  if [ -f "$_walk/pyproject.toml" ] && [ -d "$_walk/code" ]; then REPO_ROOT="$_walk"; break; fi
+  _walk="$(dirname "$_walk")"
+done
+[ -n "$REPO_ROOT" ] || REPO_ROOT="$(git -C "$JOB_FOLDER" rev-parse --show-toplevel)"
 PROJECT_FOLDER="$(cd "$TASKS_DIR/.." && pwd)"
 PROJECT="$(basename "$PROJECT_FOLDER")"
 STARTED="$(date -Iseconds)"
@@ -97,7 +107,9 @@ RESULT_PATH="${RESULTS_DIR#"$OUTPUT_ROOT"/}"
 _yaml_sq() { printf '%s' "$1" | sed "s/'/''/g"; }
 
 RESOLVED_RUN_INPUTS=()
-for input_spec in "${RUN_INPUTS[@]}"; do
+# bash 3.2, which is what macOS ships, treats "${arr[@]}" of an EMPTY array as
+# unbound under `set -u` and aborts. The [@]+ form is empty-safe on 3.2 and on 5.
+for input_spec in "${RUN_INPUTS[@]+"${RUN_INPUTS[@]}"}"; do
   input_path="${input_spec%%|*}"
   if [ "$input_path" = "$input_spec" ]; then input_sha=auto; else input_sha="${input_spec#*|}"; fi
   if [ "$input_sha" = auto ]; then
@@ -111,7 +123,7 @@ done
 emit_inputs_yaml() {
   printf "  - path: '%s'\n" "$(_yaml_sq "$CONFIG_REL")"
   printf "    sha256: '%s'\n" "$CONFIG_SHA256"
-  for input_spec in "${RESOLVED_RUN_INPUTS[@]}"; do
+  for input_spec in "${RESOLVED_RUN_INPUTS[@]+"${RESOLVED_RUN_INPUTS[@]}"}"; do
     input_path="${input_spec%%|*}"
     input_sha="${input_spec#*|}"
     printf "  - path: '%s'\n" "$(_yaml_sq "$input_path")"
@@ -194,14 +206,25 @@ else
 fi
 
 EXIT_CODE=0
-{
-  python "$REPO_ROOT/code/scripts/convert_to_notebooks.py" "$WORKER" -o "$NOTEBOOK_TEMPLATE"
-  papermill "$NOTEBOOK_TEMPLATE" "$NB_TARGET" -p config "$CONFIG"
-} || EXIT_CODE=$?
+export HAIPIPE_CONFIG="$CONFIG"
+if [ "$NOTEBOOK_MODE" = off ]; then
+  # A Task that declared it wants no notebook should not need a notebook stack.
+  # Requiring papermill + a working jupyter kernel to produce a file the Ticket
+  # then deletes makes every such Task fail on any host without one, for nothing.
+  # The worker reads $HAIPIPE_CONFIG, which is the same value papermill injects.
+  python "$WORKER" || EXIT_CODE=$?
+else
+  {
+    # && not ;: a failed conversion leaves no _source.ipynb, and papermill then
+    # reports a missing file instead of the conversion error that actually broke.
+    python "$REPO_ROOT/code/scripts/convert_to_notebooks.py" "$WORKER" -o "$NOTEBOOK_TEMPLATE" \
+      && papermill "$NOTEBOOK_TEMPLATE" "$NB_TARGET" -p config "$CONFIG"
+  } || EXIT_CODE=$?
+fi
 
 case "$NOTEBOOK_MODE" in
   thin) jupyter nbconvert --clear-output --inplace "$NB_TARGET" 2>/dev/null || echo "==> [warn] could not thin notebook" >&2 ;;
-  off) rm -f "$NB_TARGET" ;;
+  off) : ;;   # nothing was written: the off branch above never ran papermill
 esac
 
 ENDED="$(date -Iseconds)"
@@ -217,7 +240,7 @@ if [ "$EXIT_CODE" -ne 0 ]; then
   STATUS=failed
   FAILURE=process-exit-$EXIT_CODE
 else
-  for required in "${REQUIRED_RESULTS[@]}"; do
+  for required in "${REQUIRED_RESULTS[@]+"${REQUIRED_RESULTS[@]}"}"; do
     if [ ! -e "$RESULTS_DIR/$required" ]; then
       STATUS=failed
       FAILURE=missing-required-result

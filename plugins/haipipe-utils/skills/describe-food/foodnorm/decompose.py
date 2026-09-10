@@ -45,7 +45,9 @@ if __name__ == "__main__":
 
     import pandas as pd
 
-    DIET = "/home/jluo41/WellDoc-SPACE/_WorkSpace/1-SourceStore/Shanghai/@ShanghaiV260419/Diet.parquet"
+    DIET = str(next(a for a in pathlib.Path(__file__).resolve().parents
+                    if (a / "pyproject.toml").exists() and (a / "code").is_dir())
+               / "_WorkSpace/1-SourceStore/Shanghai/@ShanghaiV260419/Diet.parquet")
     df = pd.read_parquet(DIET)
     print(f"Total meal-entries: {len(df)}")
     print(f"Unique FoodName strings: {df['FoodName'].nunique()}")

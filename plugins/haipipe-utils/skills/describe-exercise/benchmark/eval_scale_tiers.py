@@ -41,7 +41,12 @@ sys.path.insert(0, str(HERE.parent))
 
 from exnorm import normalize                                   # noqa: E402
 
-ROOT = pathlib.Path("/home/jluo41/WellDoc-SPACE")
+# The SPACE root. Tools is shared by every SPACE, so a written-out path is
+# wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
+# the bank never opens, every lookup returns MISS, and the benchmark blames
+# the resolver. Same walk as haipipe-norm/paths.py:space_root().
+ROOT = next(a for a in pathlib.Path(__file__).resolve().parents
+            if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 CORPUS = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_ExerciseInfo/2-corpus"
 BENCH = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_ExerciseInfo/6-benchmark"
 BANK = ROOT / "_WorkSpace/ExternalStore/exnorm_scale/scale.parquet"

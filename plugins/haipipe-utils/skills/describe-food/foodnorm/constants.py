@@ -35,10 +35,24 @@ import pathlib
 # `code/scripts/haibuilder/0-external/e13_build_external_foodbank.py`.
 import os
 
-_LEGACY_DB = ("/home/jluo41/WellDoc-SPACE/_WorkSpace/ExternalStore/@v1215/"
-              "usda_fdc/usda_nutrition.sqlite")
-_FOODBANK_DB = ("/home/jluo41/WellDoc-SPACE/_WorkSpace/ExternalStore/@v1215/"
-                "foodbank/foodbank.sqlite")
+# Resolution order, stated once in haipipe-norm/paths.py and repeated here only
+# because this module must import with nothing sourced:
+#   1. $FOODNORM_DB          an explicit bank, for an A/B or another host
+#   2. $LOCAL_EXTERNAL_STORE a SPACE declares where its stores are
+#   3. the marker walk       a bare import with no env.sh
+def _external_store():
+    declared = os.environ.get("LOCAL_EXTERNAL_STORE")
+    root = next(a for a in pathlib.Path(__file__).resolve().parents
+                if (a / "pyproject.toml").exists() and (a / "code").is_dir())
+    if declared:
+        d = pathlib.Path(declared)
+        return d if d.is_absolute() else root / d
+    return root / "_WorkSpace" / "ExternalStore"
+
+
+_STORE = _external_store()
+_LEGACY_DB = _STORE / "@v1215" / "usda_fdc" / "usda_nutrition.sqlite"
+_FOODBANK_DB = _STORE / "@v1215" / "foodbank" / "foodbank.sqlite"
 USDA_DB = pathlib.Path(os.environ.get("FOODNORM_DB", _LEGACY_DB))
 
 # App UI labels that occupy the FoodName field but name no food. Sending one of

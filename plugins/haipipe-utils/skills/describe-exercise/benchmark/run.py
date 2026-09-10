@@ -17,7 +17,12 @@ from spec import SPEC
 
 from xbench.grade import cli
 
-ROOT = Path("/home/jluo41/WellDoc-SPACE")
+# The SPACE root. Tools is shared by every SPACE, so a written-out path is
+# wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
+# the bank never opens, every lookup returns MISS, and the benchmark blames
+# the resolver. Same walk as haipipe-norm/paths.py:space_root().
+ROOT = next(a for a in Path(__file__).resolve().parents
+            if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 INFO = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_ExerciseInfo"
 
 if __name__ == "__main__":
