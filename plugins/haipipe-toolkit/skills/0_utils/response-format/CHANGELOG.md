@@ -2,6 +2,50 @@ response-format — Changelog
 ===========================
 
 
+## [0.4.0] - 2026-09-09
+
+SCAN -> EXPLAIN inside each section. JL: "No this is too scatter, what I want is
+`## 🛡️ Two Escapes I Built In` / `- Compact Form xxxxxxxx` /
+`- Inventory Sections Exempt` / `Paragraphs to explain`."
+
+The first draft of this version put the takeaways and the explanation INSIDE
+every bullet, as nested children under a bold title. That is what scattered the
+reply: one point was broken across three indent levels, and the scan layer was
+buried under the detail meant to support it. The revised rule pulls the two
+apart into two layers of the SECTION, not of the bullet:
+
+- Each ordinary section begins with 1 to 6 flat `**Title**: takeaway` bullets.
+- Optional explanation paragraphs follow the complete bullet list, in the same
+  order, and repeat the bold title so each paragraph maps to its bullet.
+- A short point with no needed context stays a single bullet and gets no
+  paragraph. No nested takeaway bullets are needed.
+- 📁 File Changes and 👀 Files To Review remain flat inventory lists, with no
+  explanation layer.
+- The worked example demonstrates the point-first, paragraph-second shape.
+- NUMBERED, not dashed. JL: "mabe change - to be 1. 2. 3? amd make the as short
+  and concise and readable as possible." The scan layer is `1.` `2.` `3.`; a
+  dash list now means an INVENTORY of paths or names, so the two are visually
+  distinct on sight.
+- PLAIN PROSE below the list. JL: "a few bullet points of 1, 2, 3, and then we
+  just have the paragraphas as before for details." Two intermediate drafts tried
+  to key each paragraph to its point, first by repeating the bold title and then
+  by opening `**1.**`. Both put the same words on the page twice and made a
+  section read like a form. Paragraphs are now ordinary paragraphs: no keys and
+  no repeated titles.
+- ONE HARD CAP, on the scan point only: <= 14 words including the title, on one
+  line. JL: "the paragraphs can be detailed." The prose layer is deliberately
+  UNCAPPED, because the point cap is what pushes mechanism, argument and caveat
+  out of the list and into the prose, and a second cap there would only push
+  them back. Titles drop to 1 to 3 words, since the number now does the pointing.
+  The only thing to avoid is padding a section that had nothing more to say.
+- REVERSES the `0 prose paragraphs` rule that 0.2.0 set. Prose is legal again,
+  but in one position only: under a completed scan list, never as the reply
+  itself and never above the bullets. 0.2.0 banned prose because it drifted into
+  unstructured replies; the ban then pushed every explanation into nested
+  bullets, which is the scatter this version removes. The rules block states the
+  new limit as `prose is allowed HERE ONLY`.
+
+
 ## [0.3.0] - 2026-09-09
 
 RENAMED `claude-response-format` -> `response-format`, reversing the 1.0.1 rename
