@@ -68,6 +68,30 @@ def sample_kind(kind, numeric=None, n=2):
     return take
 
 
+def sources(c):
+    """Who wrote the rows. Exercise splits on whether a cohort types or picks."""
+    import re as _re
+    g = c["g"]
+    rows = []
+    for coh, sub in g.groupby("cohort"):
+        w = sub.ExerciseType.dropna().astype(str)
+        n, u = len(sub), max(w.nunique(), 1)
+        num = w.str.fullmatch(r"\d+").mean()
+        rows.append((coh, f"{n:,}", f"{u:,}", f"{n/u:.0f}x",
+                     "picks from a menu" if num > 0.5 else "types words"
+                     + (f" ({1-num:.0%} words)" if 0 < num <= 0.5 else "")))
+    rows.sort(key=lambda r: -int(r[1].replace(",", "")))
+    tot = len(g); totu = g.ExerciseType.nunique()
+    rows.append(("ALL", f"**{tot:,}**", f"**{totu:,}**", f"**{tot/totu:.0f}x**",
+                 "103 of the 135 writings are numbers"))
+    note = ("Exercise is the opposite of food. Four WellDoc cohorts pick from a "
+            "device or app menu, so a whole cohort is covered by a few dozen codes; "
+            "only OhioT1DM and mcphases-v1 contain words a person typed. Ten writings "
+            "cover 87.9% of all rows, so a row-weighted score is effectively a test "
+            "of ten strings.")
+    return rows, note
+
+
 SHAPES = [
     Shape("01-plain-text", "a name a person typed",
           "The contract's default: strings in, records out. Every other shape "
@@ -145,7 +169,7 @@ if __name__ == "__main__":
     out = build("exercise", INFO, SHAPES, call,
                 keep=["ExerciseConf", "METValue", "ActivityCode",
                       "ExerciseSource", "ExerciseBasis", "TypeSource"],
-                corpus={"rows": rows, "g": g}, total=len(g),
+                corpus={"rows": rows, "g": g}, total=len(g), sources=sources,
                 verdict=lambda a: f"`{a.get('ExerciseConf')}`"
                 + (f" MET {a['METValue']}" if a.get("METValue") else ""))
     print(f"wrote {out}")

@@ -52,6 +52,27 @@ def call(req):
     return normalize(req["items"])
 
 
+def sources(c):
+    """Insulin has no table of its own: every source buries it in Medication a
+    different way, so `writings` means something different in each row."""
+    m = c["meps"]
+    rows = [
+        ("MEPS/I1_IDENTITY", f"{int(m.row_weight.sum()):,}", f"{len(m):,}",
+         f"{m.row_weight.sum()/len(m):.0f}x",
+         "plain product names; the ONLY source in the graded corpus"),
+        ("WellDoc Medication", f"{c['welldoc_rows']:,}", "871 ids", "-",
+         "a JSON record carrying only a MedicationID"),
+        ("Shanghai Medication", f"{c['shanghai_rows']:,}", "5 phrases", "-",
+         "a clinician's phrase: `CSII - basal insulin (Novolin R, IU / H)`"),
+        ("OhioT1DM Medication", f"{c['ohio_rows']:,}", "3 names", "-",
+         "a JSON record with `insulin_type` inside, spelled `Novalog`"),
+    ]
+    note = ("Only the first row is in the graded corpus. The other three are 99.97% "
+            "of the real records and none of them has been benchmarked, which is why "
+            "insulin's 12/12 contract pass is a statement about 38 strings.")
+    return rows, note
+
+
 SHAPES = [
     Shape("01-plain-text", "a product name",
           "The shape MEPS is written in, and THE ONLY SHAPE THIS NOUN'S CORPUS "
@@ -177,6 +198,7 @@ if __name__ == "__main__":
                 # samplers read, which are not summable
                 total=(c["meps_units"] + c["ohio_rows"]
                        + c["welldoc_rows"] + c["shanghai_rows"]),
+                sources=sources,
                 verdict=lambda a: f"`{a.get('PKConf') or 'MISS'}`"
                 + (f" {a['InsulinResolved']}" if a.get("InsulinResolved") else "")
                 + (f" {a['DurationMin']}min" if a.get("DurationMin") else ""))

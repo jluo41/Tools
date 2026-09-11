@@ -53,6 +53,25 @@ def sample_shape(*names, n=1):
     return take
 
 
+def sources(g):
+    """Who wrote the rows, and what kind of thing each cohort writes."""
+    rows = []
+    for c, sub in g.groupby("cohort"):
+        w = sub.FoodName.dropna().astype(str)
+        n, u = len(sub), max(w.nunique(), 1)
+        top = sub["shape"].value_counts()
+        rows.append((c, f"{n:,}", f"{u:,}", f"{n/u:.1f}x",
+                     f"mostly `{top.index[0]}` ({top.iloc[0]/n:.0%})"))
+    rows.sort(key=lambda r: -int(r[1].replace(",", "")))
+    tot, totu = len(g), g.FoodName.nunique()
+    rows.append(("ALL", f"**{tot:,}**", f"**{totu:,}**", f"**{tot/totu:.1f}x**",
+                 f"{int((g.FoodName.value_counts() == 1).sum()):,} writings appear once"))
+    note = ("Food is the only one of the four with real language variety: 31,075 of "
+            "its 35,558 writings appear exactly once, and those singletons are 43.4% "
+            "of all rows. No amount of memorising common phrases reaches them.")
+    return rows, note
+
+
 SHAPES = [
     Shape("01-plain-text", "one food, named",
           "The contract's default. Every other shape is a way a logged meal "
@@ -115,7 +134,7 @@ if __name__ == "__main__":
     out = build("food", INFO, SHAPES, call,
                 keep=["NutritionConf", "NutritionSource", "NutritionBasis",
                       "Carbs", "Calories"],
-                corpus=g, total=len(g),
+                corpus=g, total=len(g), sources=sources,
                 verdict=lambda a: f"`{a.get('NutritionConf')}`"
                 + (f" carbs {a['Carbs']:.0f}" if a.get("Carbs") else ""))
     print(f"wrote {out}")

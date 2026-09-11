@@ -66,6 +66,29 @@ def call(req):
     return normalize(req["items"])
 
 
+def sources(c):
+    """These corpora are already deduplicated: one row IS one writing, and the
+    repeats live in row_weight. So `rows` here is the real record count that
+    weight represents, and `writings` is the table length."""
+    rows = []
+    for name, d, what in [
+            ("MEPS/E1_ALL", c["meps"], "survey answers, plain ingredient names"),
+            ("WellDoc/E2_LEXICON", c["wd"], "pharmacy catalogue strings, keyed by an internal id")]:
+        w = int(d.row_weight.sum()); u = len(d)
+        top10 = d.row_weight.nlargest(10).sum() / d.row_weight.sum()
+        rows.append((name, f"{w:,}", f"{u:,}", f"{w/u:.0f}x",
+                     f"{what}; top 10 cover {top10:.0%}"))
+    tw = int(c["meps"].row_weight.sum() + c["wd"].row_weight.sum())
+    tu = len(c["meps"]) + len(c["wd"])
+    rows.append(("ALL", f"**{tw:,}**", f"**{tu:,}**", f"**{tw/tu:.0f}x**",
+                 "no writing appears twice: the corpus is already merged"))
+    note = ("Medication's corpus is stored merged, so the repeat column comes from "
+            "`row_weight` rather than from counting rows. WellDoc is the more skewed "
+            "of the two: ten ids carry three quarters of its records, and all ten are "
+            "insulin pens.")
+    return rows, note
+
+
 SHAPES = [
     Shape("01-plain-text", "an ingredient name",
           "The shape MEPS is written in, and the only one where the string "
@@ -116,7 +139,7 @@ if __name__ == "__main__":
     out = build("medication", INFO, SHAPES, call,
                 keep=["MedConf", "MedSource", "Ingredient", "DrugKey",
                       "DoseValue", "DoseUnit", "DoseBasis", "NDC"],
-                corpus=c, total=len(meps) + len(wd),
+                corpus=c, total=len(meps) + len(wd), sources=sources,
                 verdict=lambda a: f"`{a.get('MedConf')}`"
                 + (f" {a['Ingredient'][:18]}" if a.get("Ingredient") else ""))
     print(f"wrote {out}")
