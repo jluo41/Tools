@@ -2,6 +2,20 @@
 
 *Why I want AI writing tools to remember the decisions behind the draft.*
 
+**The article at a glance**
+
+```mermaid
+flowchart TD
+    A["Shape the argument<br/>1. Discover through drafting · 2. Map the argument"]
+    B["Keep the author in control<br/>3. Preserve feedback · 4. Keep edits within scope"]
+    C["Keep the exchange resumable and fast<br/>5. Steps inside one run · 6. Fast revisions"]
+    D["Check support and learn from decisions<br/>7. Evidence · 8. Writing lessons"]
+    E(["Vibe Writing Everywhere<br/>9. Resume with your context intact"])
+    A --> B --> C --> D --> E
+```
+
+*The numbers follow the section order. This is a reading map; the writing process itself loops.*
+
 *English reading edition. JL's blockquotes have been translated from Chinese where needed and lightly edited for spelling, grammar, and repeated spoken fillers. They are not verbatim English quotations. The meaning, emphasis, and order are preserved; the surrounding prose and section headings are unchanged. The example exchanges in the surrounding prose remain illustrative, not transcripts. Read the [original-quotation edition](page-writing-philosophy.md) for JL's exact words.*
 
 Consider a familiar exchange. We have been working on two paragraphs of a paper's introduction. The opening finally starts with the right subject. A distracting explanation has moved out of the way. The second paragraph now follows naturally from the first. There is one sentence left that feels heavy, so I highlight it and ask the AI to make it easier to read.
@@ -82,24 +96,6 @@ A step should be small enough to understand. I should be able to open it and see
 
 Waiting for me to read is part of the process. The model does not need to stay running while I am away. When I return, perhaps in a different session, the saved work should tell us which paragraphs are accepted, which comments remain open, and where to continue.
 
-## Vibe writing, wherever I happen to be
-
-I want to be able to return wherever I happen to be. Writing should not require me to sit down in an office, or find a table at a coffee shop, before I can begin. Sometimes I have ten minutes between meetings. Sometimes I am waiting for an appointment and suddenly understand what the second paragraph should say. I want to open that paragraph and work on it while the thought is still clear.
-
-> We should not have to sit down at a desk in an office, or settle in at Starbucks and order a coffee, before we start writing. I want to be able to say, anytime and anywhere, "I want to write this paragraph" or "I want to write this section," and pick it up from where we left off. You know what I mean? I can pick it up again.
-
-Those ten minutes can disappear before I write a word. I open a Word document and find the text we saved. But if we saved only the manuscript, I must remember the discussion around it. Why did we remove that example? Was this sentence agreed, or was it still a suggestion? What was bothering me about the transition? The words are there. Recovering the reasons can take the whole break.
-
-> If I simply open a Word document, I have only the text; the context from our earlier work is gone. What we are doing now is saving that context too, so we can move smoothly to the next step.
-
-This is what I mean by vibe writing, alongside vibe coding. I want to describe what I have in mind, read what the AI proposes, and shape the paragraph or section through our exchange. I should be able to select a sentence on my phone, dictate a rough objection, read a revision, and leave. Later, on another device or in another conversation, we should continue from that exchange. I should not have to explain the section again.
-
-> Vibe writing and vibe coding. That is what I said.
-
-The context we save must help with that return. Beside the current passage, I want a short account of where we stopped: the opening is agreed; the next paragraph still introduces measurement too early; one citation is being checked. My original comment should remain available if the summary leaves something out. The paragraph map can remind me where this passage leads. I can then spend the few minutes I have making the next decision.
-
-Saving every message is useful, but making me reread the entire conversation would defeat the purpose. The tool should recover the relevant working state before it proposes another change. It needs to distinguish a settled choice from an open question, and an abandoned suggestion from the current plan. That knowledge should live with the work, so continuing does not depend on keeping one particular chat alive.
-
 ## Return the revision while the thought is fresh
 
 Speed matters here too. If I comment on one sentence, I want the revised passage back while I still remember what I was trying to fix. A full PDF build or a wider evidence search can happen separately when needed. The comment and the new wording still need to be saved promptly. Otherwise, the next interruption could lose the very exchange that would have helped us resume.
@@ -133,6 +129,24 @@ Over time, these records could also teach us how I prefer to write. Some prefere
 > Across many runs or rounds, we can keep these records to summarize and reflect on later, and turn those reflections into writing rules for future work.
 
 Keeping the context makes that distinction possible. A useful writing rule can point back to examples of where it helped. We can examine the original comment and its effect before deciding to apply it more widely.
+
+## Vibe Writing Everywhere
+
+I want to be able to return wherever I happen to be. Writing should not require me to sit down in an office, or find a table at a coffee shop, before I can begin. Sometimes I have ten minutes between meetings. Sometimes I am waiting for an appointment and suddenly understand what the second paragraph should say. I want to open that paragraph and work on it while the thought is still clear.
+
+> We should not have to sit down at a desk in an office, or settle in at Starbucks and order a coffee, before we start writing. I want to be able to say, anytime and anywhere, "I want to write this paragraph" or "I want to write this section," and pick it up from where we left off. You know what I mean? I can pick it up again.
+
+Those ten minutes can disappear before I write a word. I open a Word document and find the text we saved. But if we saved only the manuscript, I must remember the discussion around it. Why did we remove that example? Was this sentence agreed, or was it still a suggestion? What was bothering me about the transition? The words are there. Recovering the reasons can take the whole break.
+
+> If I simply open a Word document, I have only the text; the context from our earlier work is gone. What we are doing now is saving that context too, so we can move smoothly to the next step.
+
+This is what I mean by vibe writing, alongside vibe coding. I want to describe what I have in mind, read what the AI proposes, and shape the paragraph or section through our exchange. I should be able to select a sentence on my phone, dictate a rough objection, read a revision, and leave. Later, on another device or in another conversation, we should continue from that exchange. I should not have to explain the section again.
+
+> Vibe writing and vibe coding. That is what I said.
+
+The context we save must help with that return. Beside the current passage, I want a short account of where we stopped: the opening is agreed; the next paragraph still introduces measurement too early; one citation is being checked. My original comment should remain available if the summary leaves something out. The paragraph map can remind me where this passage leads. I can then spend the few minutes I have making the next decision.
+
+Saving every message is useful, but making me reread the entire conversation would defeat the purpose. The tool should recover the relevant working state before it proposes another change. It needs to distinguish a settled choice from an open question, and an abandoned suggestion from the current plan. That knowledge should live with the work, so continuing does not depend on keeping one particular chat alive.
 
 I do not want maintaining this history to become another job for the author. My part should remain familiar: read, select, comment, discuss, accept, continue. The system should preserve the exchange as it happens. The reading surface can stay quiet, with the paragraphs in front of me and direct links to their bullets and evidence.
 
