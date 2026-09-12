@@ -164,3 +164,5 @@ That is the experience I want to return to the next morning. I open the work, fi
 Edition note: Blockquotes are translations or light edits of JL's words, not verbatim English quotations. See the [original-quotation edition](page-writing-philosophy.md) for the exact words. The example exchanges are illustrative.
 
 Design note: This essay describes the intended Page writing experience discussed on September 11, 2026, not a claim that every capability is implemented.
+
+Illustrations: [Detailed edition](page-writing-philosophy-detailed.md) · [Cartoon edition](page-writing-philosophy-cartoon.md) · [Compare both series](page-writing-philosophy-illustrations.md)

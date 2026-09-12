@@ -1,0 +1,225 @@
+{
+  "version": "v1",
+  "created_at": "2026-09-12T04:33:03.886Z",
+  "generation_mode": "built-in image_gen",
+  "purpose": "Two AI-generated conceptual illustration series, one asset per section per style.",
+  "source_article": "../../../page-writing-philosophy-english.md",
+  "source_commit": "8c6442ed0de6b9b7badc2312c2b93e1fa1b1997c",
+  "status": "ready-for-user-review",
+  "checks": {
+    "distinct_images": 20,
+    "images_per_series": 10,
+    "dimensions": "1536x1024",
+    "prose_and_original_quotations_preserved": true,
+    "local_browser_preview": {
+      "desktop_width": 1100,
+      "mobile_width": 390,
+      "all_image_loads_pass": true,
+      "horizontal_overflow": false,
+      "mermaid_not_retested": "unchanged from the previously validated article"
+    },
+    "visual_review": "Each generated image was inspected for section meaning and series distinction. Illustration approval remains with the user."
+  },
+  "assets": [
+    {
+      "id": "01-small-edit",
+      "style": "detailed",
+      "file": "detailed/01-small-edit.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2385522,
+      "sha256": "8f35038b57343e24999833a29df5be2710cb88f8301ad0299fc55523ee1c2bca",
+      "visual_review": "The intended small change is contrasted with unrelated lost decisions."
+    },
+    {
+      "id": "01-small-edit",
+      "style": "cartoon",
+      "file": "cartoon/01-small-edit.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1291167,
+      "sha256": "571f1e2302b347a2300b69151286121d7c4efd777cf737e38d2a43bb4211d03f",
+      "visual_review": "The intended small change is contrasted with unrelated lost decisions."
+    },
+    {
+      "id": "02-discover-through-drafting",
+      "style": "detailed",
+      "file": "detailed/02-discover-through-drafting.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2360075,
+      "sha256": "9fb3120ff38c23e692415742257e1e391f79a2c9289d7519824222cf70c8e27c",
+      "visual_review": "The draft, human selection, and refined intention form a return loop."
+    },
+    {
+      "id": "02-discover-through-drafting",
+      "style": "cartoon",
+      "file": "cartoon/02-discover-through-drafting.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1457180,
+      "sha256": "a3fd80e754cf652451a4053db6b08343ff85eac6ea6164c65ad847b80e6ee9c8",
+      "visual_review": "The draft, human selection, and refined intention form a return loop."
+    },
+    {
+      "id": "03-see-the-argument",
+      "style": "detailed",
+      "file": "detailed/03-see-the-argument.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2509343,
+      "sha256": "fe3a754585d37172daa672ffe56dc98bcd1c4276690f2e4f3e57fc704f4ce498",
+      "visual_review": "Paragraph direction and one point-to-one sentence correspondence are visible."
+    },
+    {
+      "id": "03-see-the-argument",
+      "style": "cartoon",
+      "file": "cartoon/03-see-the-argument.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1619758,
+      "sha256": "cc176e9c15df3e04941407ac0f2d9aa96bcfd40cb809df4d5efc17345de42250",
+      "visual_review": "Paragraph direction and one point-to-one sentence correspondence are visible."
+    },
+    {
+      "id": "04-keep-feedback",
+      "style": "detailed",
+      "file": "detailed/04-keep-feedback.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2189456,
+      "sha256": "1ed9ac7d96404d25f41c85b3b2ffe29c61659d08967f0597b6ccebe519ba420a",
+      "visual_review": "Three separate comments remain attached to their own highlighted spans."
+    },
+    {
+      "id": "04-keep-feedback",
+      "style": "cartoon",
+      "file": "cartoon/04-keep-feedback.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1455696,
+      "sha256": "2da154f5def1e7ee8b15f74a5348b50ab4ba631c16df47058f18fd828c357447",
+      "visual_review": "Three separate comments remain attached to their own highlighted spans."
+    },
+    {
+      "id": "05-edit-within-scope",
+      "style": "detailed",
+      "file": "detailed/05-edit-within-scope.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2463758,
+      "sha256": "9f55f1eb67a3773e33ee597fab07ae4243112ea1482985c1361738a33ffbe258",
+      "visual_review": "Only the selected span is worked on; surrounding text stays protected."
+    },
+    {
+      "id": "05-edit-within-scope",
+      "style": "cartoon",
+      "file": "cartoon/05-edit-within-scope.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1563260,
+      "sha256": "6faa1f0157a64ea6882a2b30993a02842d24fd0ef4663b7fdb885ad5d739bf90",
+      "visual_review": "Only the selected span is worked on; surrounding text stays protected."
+    },
+    {
+      "id": "06-run-and-steps",
+      "style": "detailed",
+      "file": "detailed/06-run-and-steps.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2863041,
+      "sha256": "16d425c642b0a4c7121c1a11c5418c12d9a5db76e171da1d9c5d2fcec1d876fe",
+      "visual_review": "A single Run contains three Step packets; the resume point is marked."
+    },
+    {
+      "id": "06-run-and-steps",
+      "style": "cartoon",
+      "file": "cartoon/06-run-and-steps.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1266361,
+      "sha256": "e9b9dff75271c75c75932bf8f84f0665ec9e641735428e4528c2bdaa3aed2434",
+      "visual_review": "A single Run contains three Step packets; the resume point is marked."
+    },
+    {
+      "id": "07-fast-revisions",
+      "style": "detailed",
+      "file": "detailed/07-fast-revisions.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2364076,
+      "sha256": "0e0d5bfc7217ffe4d4cb3f2e97633e19cf3641e85351b6596950c6ef85f6ae99",
+      "visual_review": "The returned passage is foregrounded while longer work remains separate."
+    },
+    {
+      "id": "07-fast-revisions",
+      "style": "cartoon",
+      "file": "cartoon/07-fast-revisions.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1266687,
+      "sha256": "bc8b6f3dadd4291142d52c85768e9deef97b6d471d13dc6e71a4cfcff2ddf34f",
+      "visual_review": "The returned passage is foregrounded while longer work remains separate."
+    },
+    {
+      "id": "08-evidence-and-claims",
+      "style": "detailed",
+      "file": "detailed/08-evidence-and-claims.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2507178,
+      "sha256": "99161dd9f3546920fb08c3605fa26dfbcb2e590fb252d7fd75636113b9a578e1",
+      "visual_review": "Supporting and conflicting evidence do not receive the same treatment."
+    },
+    {
+      "id": "08-evidence-and-claims",
+      "style": "cartoon",
+      "file": "cartoon/08-evidence-and-claims.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1272238,
+      "sha256": "7dd4819743d890787769704a0559cec2f9b4ec19be43595a011163c55ec60918",
+      "visual_review": "Supporting and conflicting evidence do not receive the same treatment."
+    },
+    {
+      "id": "09-learn-from-feedback",
+      "style": "detailed",
+      "file": "detailed/09-learn-from-feedback.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2229160,
+      "sha256": "f97b0a82aa62d3709d87dd7efc8528cf4dc523e3be6f59ec521d1154d0f26dd5",
+      "visual_review": "Repeated examples inform preferences; a local exception stays local."
+    },
+    {
+      "id": "09-learn-from-feedback",
+      "style": "cartoon",
+      "file": "cartoon/09-learn-from-feedback.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1436208,
+      "sha256": "f7cc42be3a1b15293364626374aa7a6d25e3a605e76d4315c436402123bb5483",
+      "visual_review": "Repeated examples inform preferences; a local exception stays local."
+    },
+    {
+      "id": "10-writing-everywhere",
+      "style": "detailed",
+      "file": "detailed/10-writing-everywhere.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2495907,
+      "sha256": "3ec145361088c441b1b809d135ffb2d723a89c3db322fd7e6be6115cc32b4df5",
+      "visual_review": "The text travels with comments, decisions, and the resume marker."
+    },
+    {
+      "id": "10-writing-everywhere",
+      "style": "cartoon",
+      "file": "cartoon/10-writing-everywhere.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1336196,
+      "sha256": "fa79baa3d8c4068aed822f7ffa6aa72342418a6ac692c612762f70a0a21d3444",
+      "visual_review": "The text travels with comments, decisions, and the resume marker."
+    }
+  ]
+}
