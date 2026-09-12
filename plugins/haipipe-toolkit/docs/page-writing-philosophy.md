@@ -20,17 +20,27 @@ The draft has helped me articulate a requirement I could not have stated as clea
 
 This is why I distinguish a Task run from a Page run. When I delegate a task, I usually want to specify the work and its checks, then let the agent organize the execution. It might locate a source, run an analysis, or turn an accepted manuscript into a PDF. Those tasks still require judgment and verification. I simply do not need to participate in every intermediate operation.
 
+> Task run：我说我想要什么，之后就丢给它不管了，中间怎么设计、step 1、step 2、step 3 具体怎么走，我们并不 care。
+
 A Page run gives me a different role. I participate in deciding what the work should become. The agent proposes language; I read it and make choices. Those choices change what the agent should do next. A useful writing tool must make room for that exchange throughout the work.
+
+> 写作：没有一个最终结果去直接验证写得好不好，还是需要写的人进去把每个 paragraph 的角角落落都捋直，整个走向也要自己确定
 
 I would begin a section with a small map. Each paragraph has a purpose, and the arrows explain why one paragraph follows another. If I cannot explain an arrow, I may not yet understand the transition. Seeing the whole section helps me notice that a result arrives before the reader knows the question, or that three paragraphs are all trying to establish the same motivation.
 
+> 然后在这个 session 的时候呢，我们把这个 mermaid，M-E-R-M-A-D，画出来。然后呢，你再去改整个 paragraph。
+
 Then we put one or two paragraphs in front of us. Sometimes three. Enough to read a connected passage and judge its direction, without having to review the whole paper after every change.
+
+> 就比如说每一次一个 turn，可能是我同时 show 两三个 paragraph。然后呢，我就是说，然后我就可以去选中，然后标注，然后给 feedback。然后你就基于我的 feedback 去改，这样子。
 
 Beside the prose, I want the planned points and the evidence they need. The left side says what a sentence is trying to do. The right side shows the sentence itself. Looking between them, I can ask whether the prose actually says what the plan promised.
 
 > 我觉得在 shape 的时候，其实既要 shape bullet points，其实也要看一看这个 paragraph 这个 content 长什么样子
 
 The outline will change during this process. A bullet may look precise until we try to express it. If it needs two sentences to make two separate points, we should revisit the bullet. If a sentence quietly introduces a new claim, we should decide whether that claim belongs and what would support it. We can start from either column and work toward agreement between them.
+
+> 因为我们想说一句话表达一个点嘛，一句话表达一个点，然后那这样的话就是，那一个点就是一个 bullet points。所以就是我们还是要 map bullet points 和 sentence。
 
 Much of my feedback will be untidy. I may select a phrase and write, “This makes the method sound like the main contribution.” I may dictate a half-finished thought. I may point to the end of a paragraph and say, “We have already said this. What does the reader learn here?”
 
@@ -40,11 +50,19 @@ I want those words preserved. A later summary such as “improved clarity and fl
 
 Each feedback item should remain attached to the text I was looking at. The record should show how the agent interpreted it and what changed. If I gave four comments, I should be able to find all four responses. A comment that could not be applied should still be there, with an explanation.
 
+> 这个 feedback 是 item-based 的，比如选出 3 到 4 块内容，每块分别对应我的 feedback。
+
 The revised passage must then come back as complete paragraphs. A list of changed sentences makes me reconstruct the reading experience in my head. I want to read the actual result, including the sentences that stayed. The version in the response should match the version saved in the workspace, so the sentence I highlight has an unambiguous home.
 
 The scope of a revision matters just as much as its quality. If I ask for a shorter sentence, I expect a shorter sentence. If I ask to change the emphasis, the agent should examine what the sentence makes prominent. If I say the paragraph's logic is wrong, then we can reconsider its structure and revise the bullets with it.
 
+> 1. 局部修改：比如改一些词、句子或从句。主谓等写作方式变一变，意思不变，但把强调的主体变一变、逻辑改通顺，比如不要被一个新东西喧宾夺主之类的。
+>
+> 2. 段落重写：整个 paragraph 都不行、逻辑都乱了，那就可能需要重写。
+
 Once I say a paragraph is right, that decision should survive the next turn. We may need to reopen it later, but we should know that we are doing so and why. Otherwise, every small request becomes an invitation to reconsider everything, and the author must keep guarding sentences that were already settled.
+
+> 比如我们把某一个 paragraph 写完，在 outline 和 draft 阶段把 bullet 确定好之后，对应的 paragraph 就先敲定死不再改了。
 
 The run gives this work a durable identity. It might cover an entire introduction, or only two paragraphs that need attention. A run contains steps. Each step records one meaningful input and the response it produced: the starting brief and first draft, then the comments and revised draft, and eventually the decision to accept the result. A version marks a revision episode in that history. It does not add another execution level between a run and its steps.
 
@@ -80,11 +98,21 @@ When I accept a version, we keep it. If I come back a week later with a new idea
 
 Evidence work fits alongside this exchange. We can agree on a paragraph's organization while a citation or numerical result is still being checked. Any missing support stays explicit in the working materials. An agent can carry out the search or calculation and return the result.
 
+> 比如找 evidence 的部分：去 discovery 找 citation，或者跑 regression、跑 code 这些来补充 evidence，往敲定好的 draft 里面插。
+
 Sometimes the result fits the claim, and we fill the agreed place. Sometimes it contradicts what we had hoped to say. Then we bring that finding back to the affected paragraph. Human agreement about wording cannot make unsupported evidence true, and an evidence worker should not quietly rewrite the argument to conceal a mismatch.
 
 Once the wording and evidence are settled, producing the formal page and its exports should carry that work forward faithfully. A PDF build should not become another unrequested prose revision. I want to recognize the paragraph we agreed on when I open the finished document.
 
+> 我只会 check 这些：
+>
+> 1. Outline table
+> 2. Display 的 PDF 或者是其他 evidence 的 PDF
+> 3. 最终page的 PDF
+
 Over time, these records could also teach us how I prefer to write. Some preferences may recur: concrete subjects, a clear purpose for each sentence, explanations that arrive when the reader needs them. Others belong to a particular passage. “Do not discuss measurement here” may be exactly right for an opening paragraph and exactly wrong for the next section.
+
+> 在很多个 run/round 里面，我们以后可以留下来做总结和思考，把这些总结思考沉淀、提升到我们之后的 writing rules 里面。
 
 Keeping the context makes that distinction possible. A useful writing rule can point back to examples of where it helped. We can examine the original comment and its effect before deciding to apply it more widely.
 
