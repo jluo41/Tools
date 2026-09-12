@@ -1,22 +1,29 @@
 # The Paragraph We Finally Agreed On
 
-*Why I want AI writing tools to remember the decisions behind the draft.*
-
-**The article at a glance**
-
 ```mermaid
-flowchart TD
-    A["Shape the argument<br/>1. Discover through drafting · 2. Map the argument"]
-    B["Keep the author in control<br/>3. Preserve feedback · 4. Keep edits within scope"]
-    C["Keep the exchange resumable and fast<br/>5. Steps inside one run · 6. Fast revisions"]
-    D["Check support and learn from decisions<br/>7. Evidence · 8. Writing lessons"]
-    E(["Vibe Writing Everywhere<br/>9. Resume with your context intact"])
-    A --> B --> C --> D --> E
+%%{init: {"theme": "neutral", "flowchart": {"nodeSpacing": 16, "rankSpacing": 44, "padding": 8}}}%%
+flowchart TB
+    A["Author-led writing<br/>Meaning · direction<br/>Every final word"]
+    subgraph W["Writing loop"]
+        direction TB
+        B["Shape ↔ draft<br/>Bullets · map · prose"]
+        C["Human feedback<br/>Scoped, fast revisions"]
+        B <--> C
+    end
+    subgraph R["Run: saved context"]
+        direction TB
+        D["Steps<br/>Request · feedback<br/>Revision · decision"]
+        E["What we learn<br/>Evidence · preferences"]
+        D --- E
+    end
+    A --> W
+    A --> R
+    F(["Vibe Writing Everywhere<br/>Resume with context intact"])
+    C --> F
+    E --> F
 ```
 
-*The numbers follow the section order. This is a reading map; the writing process itself loops.*
-
-*The blockquotes are verbatim excerpts from JL's messages, kept in their original language without polishing. The surrounding English prose explains the design; its example exchanges are illustrative, not transcripts.*
+## When a small edit undoes earlier decisions
 
 Consider a familiar exchange. We have been working on two paragraphs of a paper's introduction. The opening finally starts with the right subject. A distracting explanation has moved out of the way. The second paragraph now follows naturally from the first. There is one sentence left that feels heavy, so I highlight it and ask the AI to make it easier to read.
 
@@ -154,4 +161,6 @@ That is the experience I want to return to the next morning. I open the work, fi
 
 ---
 
-*Design note: This essay expresses the Page writing philosophy discussed on September 11, 2026. It describes the intended experience, not a claim that every interface, synchronization, or background capability has been implemented.*
+Edition note: Blockquotes preserve JL's exact words in their original language. The example exchanges are illustrative.
+
+Design note: This essay describes the intended Page writing experience discussed on September 11, 2026, not a claim that every capability is implemented.
