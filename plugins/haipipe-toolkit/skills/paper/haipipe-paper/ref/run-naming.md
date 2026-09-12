@@ -99,7 +99,7 @@ target: C1.P1
 
 The Ticket is `runs/<RUNNAME>.md`, with its prompt inside. Result shape,
 acceptance and promotion are owned by
-`../../../board/page-workflows/haipipe-page-content/ref/paragraph-run.md`.
+`../../../page/page-workflows/haipipe-page-content/ref/paragraph-run.md`.
 Historical `rNN_page-division-writing_cNN` Runs remain readable and unchanged;
 new paragraph work does not split or rename their Results.
 

@@ -2,7 +2,7 @@
 
 THE DIVISION OF LABOUR between a writer and a door:
 
-  the writers (skills/board/page-plugins/_shared-export/)     HOW an export is made
+  the writers (skills/page/page-plugins/_shared-export/)     HOW an export is made
   this file                                                   WHERE it lands, and the door
 
 `md2tex.py` and `md2docx.py` are shared Page-plugin writers and are called by

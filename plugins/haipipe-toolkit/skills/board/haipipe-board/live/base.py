@@ -29,7 +29,7 @@ from http.server import SimpleHTTPRequestHandler
 HERE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
 from src.common import (QNAME, group_stem, page_files, q_files,  # noqa: E402
-                        vet_pagepath, vet_qpath)
+                        registered_page_source, vet_pagepath, vet_qpath)
 
 
 # 正在跑的对话：文件路径 -> 一个「请停下」的旗子。
@@ -100,53 +100,82 @@ class BaseMixin:
         self.wfile.write(raw)
 
     def target(self, payload):
-        """browser pathname + file name -> a vetted Path, or (None, reason)"""
-        page = unquote(payload.get("path") or "")
-        name = vet_pagepath(payload.get("file"))
-        # 整板会话（QD5）：file 恰好是 "board.md" 时，目标就是这块板本身。
-        # 只认这一个写法 —— 不认路径、不认别名，防走样。
-        if not name and (payload.get("file") or "").strip() == "board.md":
-            name = "board.md"
-        if not name:
-            return None, f"文件名不像一个 Q/S page：{payload.get('file')!r}"
-        board = (self.root / page.lstrip("/")).resolve().parent
-        try:
-            board.relative_to(self.root.resolve())
-        except ValueError:
-            return None, "越出了 --root"
-        # QC9's split site puts a page at board/<GROUP>/<page>.html, so the
-        # URL's own directory is no longer the board folder. Walk UP until
-        # board.md appears, bounded by --root; the one-file board still matches
-        # on the first try. Without this every write from a split page was
-        # refused with "no board.md here" (JL 260731).
+        """Return (source, Board folder or standalone source rebuild target)."""
+        raw_path, raw_name = payload.get("path"), payload.get("file")
+        if not isinstance(raw_path, str) or not isinstance(raw_name, str):
+            return None, "path and file must be strings"
+        page = unquote(raw_path.split("?", 1)[0].split("#", 1)[0])
+        name = raw_name.strip().replace("\\", "/")
+        parts = name.split("/")
+        if (not name or any(part in {"", ".", ".."} for part in parts)
+                or ":" in name or "\x00" in name or not name.endswith(".md")):
+            return None, f"unsafe Page source: {raw_name!r}"
         root = self.root.resolve()
-        probe = board
-        while not (probe / "board.md").exists():
-            if probe == root or root not in probe.parents:
+        try:
+            location = (root / page.lstrip("/")).resolve()
+            location.relative_to(root)
+        except (ValueError, OSError, RuntimeError):
+            return None, "越出了 --root"
+        folder = location if location.is_dir() else location.parent
+        ancestors = []
+        while folder == root or root in folder.parents:
+            ancestors.append(folder)
+            if folder == root:
                 break
-            probe = probe.parent
-        if (probe / "board.md").exists():
-            board = probe
-        if not (board / "board.md").exists():
-            return None, f"{board} 里没有 board.md，不像一块板"
-        f = board / name
-        if not f.exists():
-            return None, f"找不到 {name}"
-        return f, board
+            folder = folder.parent
+
+        def safe_file(candidate, boundary):
+            try:
+                candidate.resolve().relative_to(boundary)
+                return candidate.is_file()
+            except (ValueError, OSError, RuntimeError):
+                return False
+
+        board = next((p for p in ancestors if safe_file(p / "board.md", root)), None)
+        if board is not None:
+            source = board / name
+            if not safe_file(source, board):
+                return None, f"找不到安全的 Page source: {name}"
+            if (name == "board.md" or vet_pagepath(name)
+                    or registered_page_source(source.parent) == source):
+                return source, board
+            return None, f"Page source is not registered: {name}"
+
+        for folder in ancestors:
+            source = folder / name
+            if not safe_file(source, root):
+                continue
+            manifest = source.parent / "page.toml"
+            if manifest.exists() or manifest.is_symlink():
+                allowed = registered_page_source(source.parent) == source
+            else:
+                allowed = source.name == f"{source.parent.name}.md" and source.name != "board.md"
+                if allowed:
+                    try:
+                        allowed = bool(re.search(r"^## (?:🚪 )?Opening\s*$",
+                                                 source.read_text(encoding="utf-8"), re.M))
+                    except (OSError, UnicodeError):
+                        allowed = False
+            if allowed:
+                return source, source
+        return None, f"not a registered or same-stem standalone Page Face: {name}"
 
     def rebuild(self, board):
-        # A Board-folder build always updates the canonical board/ tree.
-        # `cli/`, NOT the engine dir. The 0.99.0 move took build.py into cli/
-        # and this line kept pointing at a path that no longer exists, so EVERY
-        # write through the server — comment, sentence edit, resolve, chat, the
-        # terminal — updated the Markdown and then silently failed to rebuild
-        # the html. The board simply stopped changing, with a 200 on the wire
-        # and the error text handed back inside `build` where nothing read it
-        # (found 260802 by checks/splitgaps.py G4, which is the first check to
-        # write through the server and then look at the page).
-        cmd = [sys.executable, str(HERE / "cli" / "build.py"), str(board)]
-        r = subprocess.run(cmd, capture_output=True, text=True)
-        return (r.stdout or r.stderr).strip()
+        """Build a Board container or one Page, surfacing subprocess failure."""
+        target = Path(board).resolve()
+        if target.name == "board.md" and target.is_file():
+            target = target.parent
+        if target.is_dir() and (target / "board.md").is_file():
+            cmd = [sys.executable, str(HERE / "cli" / "build.py"), str(target)]
+        else:
+            page_cli = HERE.parents[1] / "page" / "haipipe-page" / "cli" / "page.py"
+            cmd = [sys.executable, str(page_cli), "build", str(target)]
+        r = subprocess.run(cmd, capture_output=True, text=True,
+                           cwd=str(target if target.is_dir() else target.parent))
+        output = "\n".join(part.strip() for part in (r.stdout, r.stderr) if part and part.strip())
+        if r.returncode:
+            raise RuntimeError(f"build failed (exit {r.returncode}): {output}")
+        return output
 
     # ── the wire (QD5 C2 P5, 260802) ─────────────────────────────────────
     # A board page is 163 KB and 67% of it is the sidebar repeated on every page;

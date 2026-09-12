@@ -77,7 +77,7 @@ A BOARD PAGE's unit lands at
 the unit `Display<n>-<slug>`, its own id `S-<desk>-Main-<N>-<Title>` carrying the index,
 JL 260908; `S-Display-*` and `Sec<N>-Display<n>-*` are retired), and the page-side rules
 (address, citation chips, the human `accepted:` tick) belong to
-`board/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md`, not to this door.
+`page/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md`, not to this door.
 
 ## 📂 Files
 

@@ -15,7 +15,7 @@ Skill: haipipe-application-evidence — the EVIDENCE-phase worker for an applica
 Called by application stage skills (seed, descriptions, themes, claims, venue, pitch, narrative, display, section-edit) after DRAFT.
 DRAFT raised the Q-consumer questions in the stage doc and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-workflows/haipipe-page-evidence/SKILL.md`, then `../../../../probe/haipipe-probe/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../page/page-workflows/haipipe-page-evidence/SKILL.md`, then `../../../../probe/haipipe-probe/SKILL.md`.
 The persisted QX file is the application's Probe file.
 Older code may call the record an entry, but that label is not another Page Type or phase.
 

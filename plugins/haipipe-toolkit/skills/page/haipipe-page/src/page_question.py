@@ -1,0 +1,1429 @@
+"""One question -> one <section class="slide q"> card (QB5: the card chunk of
+the old render(), moved verbatim). page_stage.py owns embedded source content;
+this file owns the page-template anatomy on stage."""
+import pathlib
+import re
+from urllib.parse import quote
+
+from . import body as _bd
+from .body import (body, flat_rows, inline, note_body, render_apparatus,
+                   render_thread, sort_log)
+from .common import aim_progress, aim_summary, esc, evidence_lane_dir, sec, stinfo
+from .feedback import routed_pairs
+from .item_table import (action_label, compact_global_run, compact_paper_run,
+                         readable_global_run, readable_paper_route, repo_root,
+                         readable_task, run_registry, wall_label)
+from .plan_shape import iter_plan_bullets
+
+STAGE_LABELS = {
+    "seed": "SEED PAGE",
+    "story": "STORY PAGE",
+    "work": "WORK PAGE",
+    "venue": "VENUE PAGE",
+    "display": "DISPLAY PAGE",
+    "main": "MAIN SECTION",
+    "appendix": "APPENDIX",
+    "submission": "SUBMISSION PAGE",
+}
+
+
+# ── 📚 the References block, from the page's own bib (QPf8, JL 260815) ───────
+# The INLINE half of a cite is body.py's: its chip + card own how `\citep{key}`
+# reads in a sentence. This owns the other half the reader expects of a page
+# that cites: a References block above the folds, one numbered entry per cited
+# key, resolved from the page's OWN `bibex/<stem>.bib` and never invented.
+# Keys are scanned from the SOURCE with fences and backticks stripped — the
+# same illustration rule the bibex workbench applies — and a key the bib lacks
+# is simply absent here (the workbench's red card already reports it).
+# The two small parsers mirror live/export.py's (the server side of the same
+# plugin).
+
+_CITE_RE = re.compile(r"\\cite(p|t)?\*?(?:\[[^\]]*\])*\{([^}]+)\}")
+
+
+def _opening_sub(opening_text, name):
+    """-> the body of `### <name>` inside `## Opening`, or "".
+
+    The Opening's first blank line splits what a reader sees from the
+    `More details` drawer (haipipe-page §THE FIRST BLANK LINE). A `###` under
+    it is a NAMED row of that drawer, which is what Writing Style became on
+    260819: it is guidance for whoever writes the page next, not substance a
+    reader of the page needs.
+    """
+    if not opening_text:
+        return ""
+    m = re.search(r"(?ms)^###\s+%s\s*$(.*?)(?=^###\s|\Z)" % re.escape(name),
+                  opening_text)
+    return m.group(1).strip() if m else ""
+
+
+def _bib_entries(raw):
+    out = {}
+    for m in re.finditer(r"@\w+\s*\{\s*([^,\s]+)\s*,", raw):
+        key, depth = m.group(1), 0
+        j = raw.index("{", m.start())
+        for j in range(j, len(raw)):
+            if raw[j] == "{":
+                depth += 1
+            elif raw[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+        out[key] = raw[m.start():j + 1]
+    return out
+
+
+def _bib_field(entry, name):
+    m = re.search(r"\b%s\s*=\s*" % re.escape(name), entry, re.I)
+    if not m:
+        return ""
+    i = m.end()
+    if i < len(entry) and entry[i] == '"':
+        j = entry.find('"', i + 1)
+        return entry[i + 1:j] if j > 0 else ""
+    if i < len(entry) and entry[i] == "{":
+        depth = 0
+        for j in range(i, len(entry)):
+            if entry[j] == "{":
+                depth += 1
+            elif entry[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    return entry[i + 1:j]
+        return ""
+    j = entry.find(",", i)
+    return entry[i:j].strip() if j > 0 else entry[i:].strip()
+
+
+def _bib_clean(s):
+    return re.sub(r"[{}\\]", "", s or "").strip()
+
+
+def _cite_label(entry):
+    """(authors-part, year): 'Luo et al.', '2026' — mechanical, from fields."""
+    authors = [a.strip() for a in
+               _bib_clean(_bib_field(entry, "author")).split(" and ") if a.strip()]
+    def surname(a):
+        return a.split(",")[0].strip() if "," in a else (a.split() or ["?"])[-1]
+    year = re.sub(r"\D", "", _bib_field(entry, "year"))[:4] or "n.d."
+    if not authors:
+        return "?", year
+    if len(authors) == 1:
+        return surname(authors[0]), year
+    if len(authors) == 2:
+        return "%s and %s" % (surname(authors[0]), surname(authors[1])), year
+    return "%s et al." % surname(authors[0]), year
+
+
+def references_block(q):
+    """-> the References block html, or '' when the page cites nothing its
+    bib can resolve."""
+    stem = pathlib.Path(q.get("file") or "").stem
+    if not (_bd.PAGE_DIR and stem):
+        return ""
+    # Canonical `outline/evidence/bibex/` first; a flat `bibex/` is only a
+    # pre-migration alias (haipipe-page folder v3).
+    bib = evidence_lane_dir(_bd.PAGE_DIR, "bibex") / (stem + ".bib")
+    src = _bd.PAGE_DIR / (stem + ".md")
+    if not (bib.is_file() and src.is_file()):
+        return ""
+    entries = _bib_entries(bib.read_text(encoding="utf-8"))
+    text = src.read_text(encoding="utf-8")
+    text = re.sub(r"```.*?```", "", text, flags=re.S)
+    text = re.sub(r"`[^`\n]*`", "", text)
+    used = []
+    for m in _CITE_RE.finditer(text):
+        for k in m.group(2).split(","):
+            k = k.strip()
+            if k and k in entries and k not in used:
+                used.append(k)
+    if not used:
+        return ""
+
+    items = []
+    for k in used:
+        e = entries[k]
+        who, year = _cite_label(e)
+        title = _bib_clean(_bib_field(e, "title"))
+        venue = _bib_clean(_bib_field(e, "journal")
+                           or _bib_field(e, "booktitle")
+                           or _bib_field(e, "publisher"))
+        doi = _bib_clean(_bib_field(e, "doi"))
+        url = _bib_clean(_bib_field(e, "url"))
+        links = []
+        if doi:
+            links.append('<a href="https://doi.org/%s" target="_blank" '
+                         'rel="noopener">doi</a>' % esc(doi))
+        if url:
+            links.append('<a href="%s" target="_blank" rel="noopener">link</a>'
+                         % esc(url))
+        items.append(
+            '<li id="%s-ref-%s"><span class="ra">%s (%s).</span> %s.%s%s</li>'
+            % (q.get("id", "q"), esc(k), esc(_bib_clean(_bib_field(e, "author"))
+                                             or who), year, esc(title),
+               (" <i>%s</i>." % esc(venue)) if venue else "",
+               (" · " + " · ".join(links)) if links else ""))
+    return ('<div class="refs"><div class="rh">📚 References</div><ol>%s</ol>'
+            '</div>' % "".join(items))
+
+
+def det(label, inner, open_=False):
+    if not inner:
+        return ""
+    o = " open" if open_ else ""
+    return (f'<details class="fold"{o}><summary>{esc(label)}</summary>'
+            f'<div class="fb">{inner}</div></details>')
+
+
+def chead(label, inner, tag="div"):
+    """一个节标题：左边标签、底下一条线（CSS 画）、右边一个「expand all」。
+    只有这一节真有可折叠的 item（body 里出现 class="it"）才挂那个按钮 ——
+    没东西可开合就不放。纯增强：脚本剥掉后每个 item 仍能单独点开。
+    tag="summary" 时它就是所在 <details> 的开合把手（见 sect()）。"""
+    tog = ('<button class="secall" type="button" title="expand / collapse all">'
+           '<span class="lbl">expand all</span></button>'
+           if '<details class="it' in inner else '')
+    return f'<{tag} class="ch"><span class="chl">{label}</span>{tog}</{tag}>'
+
+
+def sect(label, inner, cls="", open_=False):
+    """A whole page section that folds from its own heading (JL 260725), by the
+    same native-details mechanism Outline already uses. Shut, the section keeps
+    its text in the DOM, so the zero-script invariant, Ctrl-F, and the section
+    ⧉ copy button all keep working.
+
+    Every section now starts SHUT (JL 260801). The 260725 default was open,
+    for a reason that has since expired: back then the page had no sidebar, so
+    a reader who never clicked had to be able to read straight down. QB2a's
+    sidebar now carries the map, and a page like QB4 has grown past 6000 words of
+    Content, where "open by default" means the reader meets a wall instead of a
+    page. Shut, the page opens as what it actually is: a title, the paragraph
+    on stage, and seven section names you can take in at a glance."""
+    if not inner:
+        return ""
+    o = " open" if open_ else ""
+    return (f'<details class="sect {cls}"{o}>'
+            f'{chead(label, inner, tag="summary")}{inner}</details>')
+
+
+# ── 🧭 Outline = current plan table ─────────────────────────────────────────
+# The versioned plan in outline/ is the one reader-facing narrative structure.
+# A Page never carries a second hand-authored map or an inline canvas.
+
+
+def _outline_status_class(status):
+    return "ok" if status in {"ready", "folded", "accepted"} else (
+        # Specified and planned describe normal pre-LAND work, not a warning.
+        # Treating every unpaid item as yellow made an early outline read as
+        # an error dashboard rather than a readable plan.
+        "mut" if status in {"deferred", "dropped", "specified", "planned"}
+        else "warn"
+    )
+
+
+def _outline_grid(page_src):
+    """Render the Page's compact plan-and-evidence review table.
+
+    The Outline plugin still owns its richer plan card and Evidence lens.  This
+    projection is intentionally a real table for a Section reader: C/P rows
+    give narrative hierarchy; B rows carry their Bullet text, routed Feedback, a compact
+    evidence identity, Supporting Runs, and a local Run. Item status remains
+    encoded by the Evidence chip colour and its title; a separate Status column
+    would repeat that state while stealing width from the plan.  Every chip is
+    a deep link into the Outline plugin: Feedback lands on its Context record,
+    an Evidence chip lands on its Evidence Workspace item card, and a Run lands
+    on its Runs-lens card.  The compact table never opens a popover of its own.
+    """
+    from live.outline import _latest_plan, _typed_item_review
+
+    plan, version = _latest_plan(page_src)
+    if plan is None:
+        return ""
+    text = plan.read_text(encoding="utf-8", errors="replace")
+    approved = bool(re.search(r"^approved:\s*✅", text, re.M))
+    typed = _typed_item_review(page_src, plan, text, approved)
+
+    gate = "approved" if approved else "approved: ⬜"
+
+    # The Page shows only the four reader-facing cycles.  Evidence-item states
+    # remain available in the Outline plugin, not beside the plan table.
+    cycle_order = ("SHAPE", "SURVEY", "LAND", "EMBED")
+    current_cycle = typed["cycle"].upper()
+    current_index = (cycle_order.index(current_cycle)
+                     if current_cycle in cycle_order else len(cycle_order))
+    cycle_chips = []
+    for index, name in enumerate(cycle_order, start=1):
+        if current_index > index - 1:
+            cls = "done"
+        elif current_cycle == name:
+            cls = "current"
+        else:
+            cls = "next"
+        cycle_chips.append(
+            '<span class="outline-cycle %s">%d %s</span>' %
+            (cls, index, name)
+        )
+    meta = (f'<div class="outline-grid-meta"><b>{"🔒" if approved else "✍️"} '
+            f'plan {esc(version)}</b><span class="{_outline_status_class("accepted" if approved else "specified")}">'
+            f'{esc(gate)}</span></div>'
+            '<div class="outline-cycle-meta">%s</div>' %
+            "".join(cycle_chips))
+
+    registry = run_registry(str(repo_root(pathlib.Path(_bd.BASE or "."))))
+    board_root = pathlib.Path(_bd.BASE or page_src.parent).resolve()
+    workspace_root = repo_root(board_root)
+    try:
+        board_source = "/" + (board_root / "board.md").relative_to(
+            workspace_root
+        ).as_posix()
+    except ValueError:
+        board_source = "/board.md"
+    try:
+        page_file = page_src.resolve().relative_to(board_root).as_posix()
+    except ValueError:
+        page_file = page_src.name
+    outline_url = "/_board/outline?path=%s&amp;file=%s" % (
+        quote(board_source, safe="/"), quote(page_file, safe="/"),
+    )
+
+    def readable_route(address):
+        """Render a Run or its pre-registration parent without inventing ``rNN``."""
+        return (readable_global_run(address) or readable_task(address)
+                or (address or "").strip())
+
+    def run_badge(address, action, family="", *, item_id="", layer=""):
+        """Render one route as ``D|X global-address`` or ``P local-address``.
+
+        Keep SURVEY's next action separate from path-derived availability.
+        The compact chip shows ``plan | run | rerun | reuse`` and its hover
+        names both facts; the Evidence Workspace holds the full Run detail.
+        """
+        is_paper = (family or "").strip().lower().startswith("page")
+        compact = ((compact_paper_run(address) or compact_global_run(address))
+                   if is_paper else compact_global_run(address))
+        readable = readable_route(address)
+        label = action_label(action)
+        if not label:
+            return ""
+        visible_action = (
+            "plan" if action.startswith("new-") else
+            "run" if action == "registered" else
+            "reuse" if action == "reuse" else
+            "rerun" if action == "rerun" else label
+        )
+        record = None if is_paper else registry.get(compact)
+        if record and record.get("result"):
+            availability = "Run + Result"
+        elif record:
+            availability = "Run exists · Result missing"
+        elif action.startswith("new-"):
+            availability = "Planned"
+        else:
+            availability = "Paths unresolved"
+        next_action = (
+            "Allocate and run" if action.startswith("new-") else
+            "Run" if action == "registered" else
+            "Reuse Result" if action == "reuse" else
+            "Rerun" if action == "rerun" else label
+        )
+        css = re.sub(r"[^a-z]+", "-", action.lower()).strip("-")
+        family_key = (family or "").strip().lower()
+        family_mark = ("D" if family_key.startswith("discovery") else
+                       "X" if family_key.startswith("execution") else
+                       "P" if family_key.startswith("page") else "")
+        scope = "Paper Board" if family_mark == "P" else (family or "Run")
+        run_path = str(record.get("ticket", "")) if record else ""
+        result_path = str(record.get("result", "")) if record else ""
+        runtime_path = str(record.get("runtime", "")) if record else ""
+        missing_run = "not allocated" if action.startswith("new-") else "unresolved"
+        run_file = pathlib.PurePosixPath(run_path).name if run_path else missing_run
+        title_lines = [
+            scope,
+            "Run file: %s" % run_file,
+            "Run path: %s" % (run_path or missing_run),
+            "Result path: %s" % (result_path or "not available"),
+        ]
+        if runtime_path:
+            title_lines.append("Runtime path: %s" % runtime_path)
+        title_lines.extend([
+            "Status: %s" % availability,
+            "Next action: %s" % next_action,
+            "Click for full Run details",
+        ])
+        title = "\n".join(title_lines)
+        if family_mark == "P":
+            # The Paper Board is the local block: do not repeat an inherited
+            # global bNN prefix in a Paper-local route.
+            readable = readable_paper_route(address) or readable
+
+        def outline_link(text, class_name):
+            """Deep-link this route to its Run detail inside the Evidence Item."""
+            if not item_id:
+                return '<span class="%s" title="%s">%s</span>' % (
+                    esc(class_name), esc(title), esc(text)
+                )
+            focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item_id)
+            return (
+                '<a class="%s" href="%s&amp;lens=workspace&amp;seg=runs&amp;focus=%s&amp;run=%s" '
+                'data-outline-lens="workspace" data-outline-seg="runs" '
+                'data-outline-focus="%s" data-outline-run="%s" title="%s">%s</a>' %
+                (esc(class_name), outline_url, esc(focus), esc(readable),
+                 esc(focus), esc(readable), esc(title), esc(text))
+            )
+
+        if not readable and action.startswith("new-"):
+            return outline_link(label, "outline-run-action %s" % css)
+        if compact:
+            run = outline_link(readable, "outline-run-link")
+        elif action.startswith("new-"):
+            run = outline_link(readable or label, "outline-run-link")
+        else:
+            run = ('<span class="outline-run-pending" title="%s">%s</span>' %
+                   (esc(title), esc(readable or label)))
+        marker_class = "paper" if family_mark == "P" else family_key.split(" ", 1)[0]
+        marker_title = "Paper Board" if family_mark == "P" else (family or "Run")
+        marker = ('<span class="outline-run-family %s" title="%s">%s</span>' %
+                  (esc(marker_class), esc(marker_title), family_mark)) if family_mark else ""
+        return ('<span class="outline-run-set">%s%s'
+                '<span class="outline-run-action %s">%s</span></span>' %
+                (marker, run, esc(css), esc(visible_action)))
+
+    def supporting_cell(item):
+        """Show audited supporting Runs; full plans stay in the card."""
+        value = item["supporting_runs"]
+        if not value or value == "[]":
+            return '<span class="outline-run-empty">—</span>'
+        if value.startswith("—"):
+            return '<span class="outline-run-pending">%s</span>' % esc(value[1:].strip())
+        entries = [entry.strip() for entry in value.split(";") if entry.strip()]
+        links = []
+        for entry in entries:
+            parts = [part.strip() for part in entry.split("·")]
+            if len(parts) < 3:
+                continue
+            link = run_badge(parts[2], parts[1], parts[0], item_id=item.get("id", ""),
+                             layer="supporting")
+            if link:
+                links.append(link)
+        if links:
+            return " ".join(links)
+        return '<span class="outline-run-empty">—</span>'
+
+    def local_cell(item):
+        """Show the one allocated local Run, never a Page evidence reference."""
+        value = item["local_run"]
+        if not value:
+            return '<span class="outline-run-empty">—</span>'
+        if value.startswith("—"):
+            link = run_badge("", item.get("action", ""),
+                             "Page · Evidence Item", item_id=item.get("id", ""),
+                             layer="local")
+            return link or '<span class="outline-run-pending">%s</span>' % esc(value[1:].strip())
+        link = run_badge(item.get("address", ""), item.get("action", ""),
+                         "Page · Evidence Item", item_id=item.get("id", ""), layer="local")
+        if link:
+            return link
+        return '<span class="outline-run-empty">—</span>'
+
+    def evidence_cell(address):
+        items = typed["by_target"].get(address, [])
+        if not items:
+            reason = typed.get("none_by_target", {}).get(address, "")
+            if reason:
+                empty = ('<span class="mut outline-evidence-none" title="%s">none</span>'
+                         % esc(reason))
+            else:
+                empty = ('<span class="warn outline-evidence-missing" '
+                         'title="No per-Bullet Evidence decision">missing</span>')
+            return empty, empty, empty
+        evidence_parts = []
+        for item in items:
+            visible_label = wall_label(
+                item["id"], item["type"], item["name"], item.get("label", "")
+            )
+            # The chip is a route, not a card.  Its full contract (id, name,
+            # type, sources, acceptance, routes, Result) lives once, on the
+            # Evidence Workspace item card; the compact Page only names and
+            # colours it, then hands the reader to that exact card.
+            focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item["id"])
+            evidence_parts.append(
+                '<a class="outline-evidence %s" '
+                'href="%s&amp;lens=workspace&amp;seg=items&amp;focus=%s" '
+                'data-outline-lens="workspace" data-outline-seg="items" '
+                'data-outline-focus="%s" aria-label="%s · %s · %s" '
+                'title="%s · %s · %s"><b>%s</b></a>' %
+                (_outline_status_class(item["status"]), outline_url, esc(focus),
+                 esc(focus), esc(item["id"]), esc(item["type"]), esc(item["name"]),
+                 esc(item["id"]), esc(item["type"]), esc(item["status"]),
+                 esc(visible_label))
+            )
+        evidence = "".join(evidence_parts)
+        supporting = "".join(supporting_cell(item) for item in items)
+        local = "".join(local_cell(item) for item in items)
+        return evidence, supporting, local
+
+    # ``Routed:`` is the plan's authoritative feedback-to-Bullet binding.  The
+    # main Outline table shows only its compact row id; the Feedback panel keeps
+    # the reviewer's complete words and provenance.
+    blocks = iter_plan_bullets(text)
+    feedback_by_target = {}
+    for block in blocks:
+        for continuation in block["continuation"]:
+            routed = re.match(r"^Routed:\s*(.+?)\s*$", continuation)
+            if routed:
+                feedback_by_target.setdefault(block["address"], []).append(routed.group(1))
+
+    def feedback_cell(address):
+        routes = feedback_by_target.get(address, [])
+        if not routes:
+            return '<span class="outline-feedback-empty">—</span>'
+        chips = []
+        for route in routes:
+            # `RD01 S1-PP5; RD01 S1-PP7` is two rows.  Each chip's focus id
+            # must equal a register record's id, or the Feedback lens opens
+            # on nothing (src/feedback.py routed_pairs owns the grammar).
+            pairs = routed_pairs(route)
+            for round_id, label in pairs:
+                focus = "feedback-" + re.sub(r"[^A-Za-z0-9_-]", "-", label)
+                title = "%s %s" % (round_id, label) if round_id else label
+                chips.append(
+                    '<a class="outline-feedback" '
+                    'href="%s&amp;lens=fb&amp;focus=%s" data-outline-lens="fb" '
+                    'data-outline-focus="%s" title="%s">%s</a>' %
+                    (outline_url, esc(focus), esc(focus), esc(title), esc(label))
+                )
+            if not pairs:
+                chips.append('<span class="outline-feedback" title="%s">%s</span>' %
+                             (esc(route), esc(route)))
+        return "".join(chips)
+
+    def point_cell(block):
+        """Render the Bullet column as a compact Point + dash annotations."""
+        point = block["point"]
+        label = "[%s · %s]" % (point["number"], point["role"])
+        statement = point["statement"] or "(statement not specified)"
+        notes = "".join("<li>%s</li>" % esc(value)
+                        for value in point["annotations"])
+        note_html = '<ul class="outline-point-notes">%s</ul>' % notes if notes else ""
+        transition = (
+            '<div class="outline-point-transition">→ [%s]</div>'
+            % esc(point["transition"])
+            if point["transition"] else ""
+        )
+        return ('<div class="outline-point">'
+                '<div><span class="outline-point-label">%s</span> '
+                '<span class="outline-point-statement">%s</span></div>%s%s</div>'
+                % (esc(label), esc(statement), note_html, transition))
+
+    rows, seen_div, seen_p = [], set(), set()
+    for block in blocks:
+        current_c, current_p = block["division"], block["paragraph"]
+        if current_c not in seen_div:
+            seen_div.add(current_c)
+            rows.append('<tr class="outline-grid-division"><th colspan="6">'
+                        '<code>%s</code> %s</th></tr>' %
+                        (esc(current_c), esc(block["division_title"])))
+        if current_p not in seen_p:
+            seen_p.add(current_p)
+            rows.append('<tr class="outline-grid-paragraph"><th scope="row"><code>%s</code></th>'
+                        '<td colspan="5">%s</td></tr>' %
+                        (esc(current_p), esc(block["paragraph_title"])))
+        address = block["address"]
+        feedback = feedback_cell(address)
+        evidence, supporting, local = evidence_cell(address)
+        rows.append('<tr class="outline-grid-bullet"><th scope="row"><code>%s</code></th>'
+                    '<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
+                    (esc(address), point_cell(block), feedback, evidence, supporting, local))
+
+    if not rows:
+        rows.append('<tr><td colspan="6" class="mut">No C/P/B plan rows yet.</td></tr>')
+    return (f'{meta}<div class="outline-grid-wrap"><table class="outline-grid">'
+            '<thead><tr><th>Address</th><th>Bullet</th><th>Feedback</th><th>Evidence</th>'
+            '<th>Supporting Runs</th><th>Local Run</th></tr></thead><tbody>'
+            f'{"".join(rows)}</tbody></table></div>')
+
+
+def _narrative_section_control(page_src):
+    """Project a Narrative's detailed Section rows into its executive table.
+
+    The detailed rows under Content remain the authority.  Narrative used to
+    copy this table by hand into a legacy ``## Diagram`` block, which let the
+    executive view disagree with the handoff packets below it.  This projection
+    keeps the at-a-glance table while removing that second source of truth.
+    """
+    if page_src is None or not page_src.is_file():
+        return ""
+    text = page_src.read_text(encoding="utf-8", errors="replace")
+    content = re.search(r"(?ms)^## Content\s*$\n(.*?)(?=^##\s|\Z)", text)
+    if not content:
+        return ""
+
+    section_text = content.group(1)
+    heads = list(re.finditer(r"(?m)^####\s+(\d+(?:\.\d+)?)\s*·\s*(.+?)\s*$",
+                             section_text))
+    rows = []
+    required = ("QUESTION", "MOVES", "ESTABLISH", "REFUSE", "GATE", "EXIT")
+    for index, head in enumerate(heads):
+        start = head.end()
+        end = heads[index + 1].start() if index + 1 < len(heads) else len(section_text)
+        block = section_text[start:end]
+        fence = re.search(r"(?ms)^```text\s*$\n(.*?)^```\s*$", block)
+        if not fence:
+            continue
+        fields = {}
+        for line in fence.group(1).splitlines():
+            field = re.match(r"^([A-Z][A-Z0-9_-]*)\s{2,}(.+?)\s*$", line)
+            if field:
+                fields[field.group(1)] = field.group(2)
+        if any(not fields.get(name) for name in required):
+            continue
+        label = re.sub(r"\s*·\s*Story\S+\s*$", "", head.group(2)).strip()
+        values = (
+            label,
+            fields["QUESTION"],
+            fields["MOVES"],
+            fields["ESTABLISH"],
+            fields["REFUSE"],
+            fields["GATE"],
+            fields["EXIT"],
+        )
+        rows.append("<tr>" + "".join(
+            (f'<th scope="row"><code>{esc(value)}</code></th>' if cell == 0 else
+             f"<td>{esc(value)}</td>")
+            for cell, value in enumerate(values)
+        ) + "</tr>")
+
+    if not rows:
+        return ""
+    return (
+        '<div class="narrative-control-note"><b>Runs boundary</b> '
+        'Show claim disposition and only the direction or scale needed to judge the story. '
+        'Exact estimates, intervals, samples, and model labels stay in accepted evidence/value records '
+        'and the Results Section.</div>'
+        '<div class="outline-grid-wrap narrative-control-wrap">'
+        '<table class="outline-grid narrative-control"><thead><tr>'
+        '<th>Section</th><th>Reader job</th><th>Outline shape</th>'
+        '<th>Must establish</th><th>Must refuse</th><th>Evidence gate / cut</th>'
+        '<th>Reader exit</th></tr></thead><tbody>'
+        f'{"".join(rows)}</tbody></table></div>'
+    )
+
+
+def render_outline(page_src=None, page_type=""):
+    """Render the open Page-level Outline and its authoritative projections."""
+    table = _outline_grid(page_src) if page_src is not None and page_src.is_file() else ""
+    narrative = (_narrative_section_control(page_src)
+                 if (page_type or "").strip() == "narrative" else "")
+    from .insight_instances import render_items
+    insight = render_items(page_src) if (page_type or "").strip() == "insight" else ""
+    if not table and not narrative and not insight:
+        return ""
+    if narrative or insight:
+        label = "Insight item table" if insight else "Narrative section table"
+        primary = (f'<div class="outline-table"><div class="fh">▤ {label}</div>'
+                   f'{insight or narrative}</div>')
+        plan = (f'<details class="outline-plan-secondary"><summary>▤ Plan and evidence</summary>'
+                f'<div class="outline-plan-body">{table}</div></details>' if table else "")
+        table_html = primary + plan
+    else:
+        table_html = (f'<div class="outline-table"><div class="fh">▤ Outline table</div>'
+                      f'{table}</div>')
+    return ('<details class="outline-section" open>'
+            '<summary class="ch"><span class="chl">🧭 Outline</span></summary>'
+            f'<div class="outline-body">{table_html}</div>'
+            '</details>')
+
+
+def has_outline_plan(page_src):
+    """Whether this Page has a current-plan candidate for its Outline table.
+
+    This deliberately follows the same location and filename contract as
+    ``live.outline.plan_card``.  The sidebar and Board matrix use it so a Page
+    whose source has no Outline block still exposes its rendered plan table.
+    """
+    if page_src is None:
+        return False
+    page_src = pathlib.Path(page_src)
+    return (page_src.is_file()
+            and ((page_src.parent / "workflow/insight.yaml").is_file()
+                 or any((page_src.parent / "outline").glob(
+                     f"{page_src.stem}-outline-v*.md"))))
+
+
+def split_stage_record(kind, content_sections):
+    """-> (legacy_record_markdown, remaining_sections).
+
+    A stage declares its obligations under ONE name, `## Stage Contract`
+    (JL 260801: "stage contract, no stage protocol"). Old stage pages still
+    carry a hand-written `### Stage Record` under Content; it is pulled out
+    here, because Content holds the stage's product and nothing else, and it
+    is then printed as the contract's opening lines so no wording is lost.
+
+    Both the page render and the sidebar outline call this, or they disagree:
+    the outline counts Content's divisions and addresses them BY ORDER
+    (`data-div`), so a section the page dropped and the sidebar kept shifted
+    every division link on that page by one."""
+    if kind != "stage":
+        return "", content_sections
+    for i, (heading, md) in enumerate(content_sections):
+        if re.sub(r"\s+", " ", heading).strip().casefold() == "stage record":
+            return md, content_sections[:i] + content_sections[i + 1:]
+    return "", content_sections
+
+
+def structure_rows(d, content_sections, has_outline_table=False, page_type=""):
+    """The DATA half of the page's Structure map: (key, label, value, subs)
+    per section that exists, where key is the stable machine name the sidebar
+    outline's JS resolves to a DOM selector, and subs is Content's division
+    titles. Shared by the Opening drawer and the sidebar outline (QB2a,
+    JL 260731), so the two views can never disagree."""
+    opening_value = ("one reader paragraph"
+                     if (page_type or "").strip() == "section"
+                     else "the lead, and this drawer")
+    rows = [("opening", "🚪 Opening", opening_value, [])]
+    if has_outline_table:
+        outline_label = ("section table · plan folded"
+                         if (page_type or "").strip() == "narrative"
+                         else "plan table")
+        rows.append(("outline", "🧭 Outline", outline_label, []))
+    divs = [(h, h) for h, _ in content_sections if h]
+    if divs or sec(d, "Content").strip():
+        v = (f"{len(divs)} division{'s' if len(divs) != 1 else ''}" if divs
+             else "one flat body")
+        rows.append(("content", "📚 Content", v, divs))
+    aims = sec(d, "Done when")
+    state = sec(d, "Now").strip()
+    progress = aim_progress(aims, state)
+    if aims.strip():
+        isubs = []
+        for h, b in parse_content_sections(aims):
+            if not h:
+                continue
+            group = aim_progress(b, state)
+            label = (f'{h} · {group["closed"]}/{group["total"]}'
+                     if group["total"] else h)
+            isubs.append((label, h))
+        rows.append(("items", "🎯 Aims", aim_summary(aims, state), isubs))
+    w = state
+    if w:
+        dated = len(re.findall(r"(?m)^- ?\d{6}", w))
+        # Its ### subsections are jump targets too (JL 260731: "unfold the
+        # Decision Now in the sidebar"); a Decision Now row carries how many
+        # ticks it still owes.
+        wsubs = []
+        for h, b in parse_content_sections(w):
+            if not h:
+                continue
+            owed = len(re.findall(r"(?m)^\s*[-*] \[ \]", b))
+            wsubs.append((f"{h} · {owed} to tick" if owed else h, h))
+        rows.append(("now", "📍 States",
+                     f"{dated} dated entr{'ies' if dated != 1 else 'y'}"
+                     if dated else "the present state", wsubs))
+    ftxt = sec(d, "Files")
+    nfiles = len(re.findall(r"(?m)^- ", ftxt))
+    if nfiles:
+        fsubs = [(h, h) for h, _ in parse_content_sections(ftxt) if h]
+        rows.append(("files", "📎 Files",
+                     f"{nfiles} file{'s' if nfiles != 1 else ''}", fsubs))
+    return rows
+
+
+AIM_ROW = re.compile(r"(?m)^(\s*[-*]\s*)((?:A\d+\.\d+|P\d+)\s*·)")
+
+
+def stamp_aim_states(aims, state):
+    """Put each Aim's CURRENT status emoji on its own row (JL 260802).
+
+    An Aim row carried no marker at all, because status is States' job and an
+    Aim must not claim progress. That rule is about the SOURCE: the markdown
+    stays free of checkboxes, so there is still exactly one place a status is
+    written. The render is free to show what States already says, the way the
+    section count has always been derived rather than stored, and without it a
+    reader had to hold two lists side by side to learn whether A1.1 was done.
+    """
+    if not state or re.search(r"(?m)^\s*[-*]\s*\[[ xX]\]", aims or ""):
+        return aims                      # legacy checklists keep their boxes
+    from .common import AIM_STATE_RE, AIM_STATUS_ALIAS
+    seen = {}
+    for emoji, aim_id in AIM_STATE_RE.findall(state):
+        e = emoji.replace("\ufe0f", "")
+        seen[aim_id] = AIM_STATUS_ALIAS.get(e, e)
+
+    def mark(m):
+        aim_id = m.group(2).split("·")[0].strip()
+        return "%s%s %s" % (m.group(1), seen.get(aim_id, "⬜"), m.group(2))
+    return AIM_ROW.sub(mark, aims or "")
+
+
+def render_aims(aims, state=""):
+    """Aims with optional Content-linked groups and progress derived from States.
+
+    Canonical Aims are durable target records whose current emoji lives in
+    States. Legacy checklists retain their checkbox count through aim_progress.
+    """
+    parts = []
+    for title, b in parse_content_sections(aims):
+        if not title:
+            if b.strip():
+                parts.append(body(b))
+            continue
+        if not b.strip():
+            continue
+        group = aim_progress(b, state)
+        cnt = (f'<span class="shc">{group["closed"]}/{group["total"]}</span>'
+               if group["total"] else "")
+        # A group FOLDS, exactly like a Content division (JL 260802: "I want the
+        # division in the Aims to be collapsed as what we have in the Content,
+        # and of the same format"). It was a flat `.sh` row, which made Aims the
+        # one section a reader could not collapse down to its group names, and
+        # since 260801 every other section on the page starts shut.
+        # The item opens with its group (JL 260802: "you can show the hidden
+        # text out"). `Done when` IS the Aim's substance: an Aim you cannot
+        # check is not one, so hiding the check behind a second click made the
+        # row a title with nothing under it. The GROUP is still shut, so the
+        # page still collapses to its group names.
+        # An evidence page's `### E<n> ·` division renders in register mode:
+        # its backticked binding tokens (bib keys, bank paths) become evidence
+        # chips (JL 260806). The heading was split off above, so body() cannot
+        # detect it on its own; the flag is how the division's identity travels.
+        parts.append(f'<details class="csec"><summary>{inline(title)} {cnt}'
+                     f'</summary><div class="cbody aims-open">'
+                     f'{body(stamp_aim_states(b, state), register=bool(_bd.EVIDENCE and _bd.EDIV_TITLE.match(title)))}'
+                     f'</div></details>')
+    return "".join(parts)
+
+
+# Internal compatibility for extensions that imported the old helper name.
+render_items = render_aims
+
+
+def render_structure(d, content_sections):
+    """The generated `Structure` row that OPENS the drawer (JL 260729: "the
+    Structure subsection just above Boundary"): what this page is built of.
+    Computed from the parsed page rather than authored, so the map can never
+    go stale — the same bargain as the derived Outline table: the source gains
+    nothing.
+    Only sections that exist get a row."""
+    def row(label, value):
+        return (f'<div class="pmr"><span class="pml">{label}</span>'
+                f'<span class="pmv">{value}</span></div>')
+    rows = []
+    for _, label, value, subs in structure_rows(d, content_sections):
+        rows.append(row(label, value))
+        shown = subs[:7]
+        for disp, _t in shown:
+            rows.append(f'<div class="pmd">{inline(disp)}</div>')
+        if len(subs) > len(shown):
+            rows.append(f'<div class="pmd">… +{len(subs) - len(shown)} more</div>')
+    return ('<div class="fh">Structure</div>'
+            f'<div class="pmap">{"".join(rows)}</div>')
+
+
+def parse_content_sections(txt):
+    """Split direct ### headings without treating headings inside fences as sections."""
+    sections = []
+    title, buf, fence = "", [], False
+    for ln in txt.split("\n"):
+        if ln.lstrip().startswith("```"):
+            fence = not fence
+        if ln.startswith("### ") and not fence:
+            if title or any(x.strip() for x in buf):
+                sections.append((title, "\n".join(buf).strip()))
+            title, buf = ln[4:].strip(), []
+        else:
+            buf.append(ln)
+    if title or any(x.strip() for x in buf):
+        sections.append((title, "\n".join(buf).strip()))
+    return sections
+
+
+def merge_prose_lines(md):
+    """Join consecutive prose lines into one paragraph. Opening only (JL 260801).
+
+    The board writes one sentence per source line so a single sentence can be
+    quoted, commented on, and diffed on its own. Rendered literally that gives a
+    column of one-sentence paragraphs, and JL read Opening's drawer as a list of
+    fragments rather than as prose, and asked for those lines to be merged
+    into one paragraph.
+    So inside the Opening drawer the lines are rejoined and a BLANK LINE still
+    starts a new paragraph, which is ordinary markdown behaviour. The source is
+    untouched, so the sentence remains the unit a comment anchors to (QB5).
+    Everywhere else the one-line-per-sentence render is unchanged, which is why
+    this runs in the flat branch alone.
+    """
+    out, buf = [], []
+    fence = False
+
+    def flush():
+        if buf:
+            out.append(" ".join(buf))
+            buf.clear()
+
+    for ln in md.splitlines():
+        s = ln.strip()
+        if s.startswith("```"):
+            flush()
+            fence = not fence
+            out.append(ln)
+        elif fence:
+            out.append(ln)
+        elif not s:
+            flush()
+            out.append("")
+        elif re.match(r"(#{1,6}\s|[-*+]\s|\d+[.)]\s|>|\||<!--)", s):
+            # a heading, list item, apparatus lane, table row or marker is its
+            # own line by construction; merging one into a paragraph would
+            # destroy the very thing that makes it that kind of line.
+            flush()
+            out.append(ln)
+        else:
+            buf.append(s)
+    flush()
+    return "\n".join(out)
+
+
+def render_subsections(sections, open_first=False, flat=False):
+    """Render named markdown chunks as native disclosure rows.
+
+    open_first was True until JL 260801 ("I always find the first subsection of
+    the Content is opened, I don't like it"). One open division among nine shut
+    ones reads as a state someone left behind rather than as a deliberate entry
+    point, and it makes the first division look privileged when the numbering
+    already says it is simply first.
+
+    flat=True drops the disclosure entirely and emits a plain `.fh` heading plus
+    its body. Opening uses it (JL 260725: "I don't want to have >"): behind the
+    lead question everything is simply shown, the way Boundary already was, so no
+    second layer of ▸ rows hides the stage style, venue section, or writing style.
+    It also merges one-sentence source lines back into paragraphs (JL 260801),
+    since flat is the Opening-only branch."""
+    out = []
+    for i, (heading, md) in enumerate(sections):
+        # #### 不再压成 **…**（那会套上组标题的 🔹）；body() 现在自己渲染段落标题。
+        # An E division carries its binding chips wherever it lives: the
+        # evidence pages keep their `### E<n> ·` divisions in Content.
+        rendered = body(merge_prose_lines(md) if flat else md,
+                        register=bool(heading and _bd.EVIDENCE
+                                      and _bd.EDIV_TITLE.match(heading)))
+        if heading and flat:
+            out.append(f'<div class="fh">{inline(heading)}</div>'
+                       f'<div class="cbody flat">{rendered}</div>')
+        elif heading:
+            out.append(
+                f'<details class="csec"{" open" if (open_first and i == 0) else ""}>'
+                f'<summary>{inline(heading)}</summary><div class="cbody">{rendered}</div>'
+                '</details>')
+        elif rendered:
+            out.append(f'<div class="cbody prelude">{rendered}</div>')
+    return "".join(out)
+
+
+def face_name(q):
+    """"S Main 7 · Results" -> "Main 7 Results": the page's own name, for labels."""
+    return re.sub(r"\s+", " ", re.sub(r"^[QS]\s+", "", q.get("title", ""))
+                  .replace("·", " ")).strip()
+
+
+def render_content(sections, q=None, leading=""):
+    """Render a page's remaining named Content subsections.
+
+    On S pages the heading NAMES the stage ("Content · Main 7 Results") instead of
+    counting subsections (JL 260725): an S page's Content is the stage's own
+    substance, so the label should say which substance, not how many boxes.
+
+    A Q page's heading is just "📚 Content" (JL 260801: "we will not add this,
+    just call it Content should be ok"). The "· 9 sections" suffix it used to
+    carry was a scanning aid, but the divisions are listed right underneath and
+    the sidebar already counts them, so it only made the heading longer."""
+    if not sections and not leading:
+        return ""
+    inner = leading + render_subsections(sections)
+    name = face_name(q) if q else ""
+    lab = f"📚 Content · {esc(name)}" if name else "📚 Content"
+    return sect(lab, inner, cls="content")
+
+
+def _display_live_artifact(unit):
+    """Show the exact object that the current float references.
+
+    preview.pdf is the reader's manuscript-level inspection surface.  This
+    second row makes legacy or blocked units honest by showing the actual PDF,
+    image, or table body behind that wrapper rather than describing it only.
+    """
+    path = unit.float_target
+    if path is None:
+        return ('<details class="csec display-artifact missing" open>'
+                '<summary>📄 Live display artifact</summary><div class="cbody">'
+                '<p><code>float.tex</code> has no resolvable asset target yet.</p>'
+                '</div></details>')
+    href = _bd._rel(path)
+    if not href:
+        return ""
+    try:
+        name = path.relative_to(unit.path).as_posix()
+    except ValueError:
+        name = path.name
+    lower = path.name.lower()
+    if lower.endswith(".pdf"):
+        visual = (f'<object class="figpdf" data="{esc(href)}" type="application/pdf">'
+                  f'<a class="fp" href="{esc(href)}">open {esc(name)}</a></object>')
+        label = "📄 Live display PDF"
+    elif lower.endswith((".png", ".jpg", ".jpeg", ".svg", ".webp", ".gif")):
+        visual = f'<img class="fig" src="{esc(href)}" alt="{esc(name)}" loading="lazy">'
+        label = "🖼 Live display asset"
+    else:
+        visual = (f'<p>The Current Float above is assembled from '
+                  f'<a class="fp" href="{esc(href)}"><code>{esc(name)}</code></a>.'
+                  f'</p>')
+        label = "📋 Live display artifact"
+    return (f'<details class="csec display-artifact" open><summary>{label}</summary>'
+            f'<div class="cbody">{visual}</div></details>')
+
+
+def _display_versions(unit):
+    """List the current artifact and every stored alternative without promoting one.
+
+    ``float.tex`` is the one authority for *current*.  Files in ``versions/``,
+    ``candidates/``, and a non-current ``assets/`` are useful to inspect, but
+    their directory alone does not establish chronology, approval, or
+    reproducibility.  This is especially important for legacy units whose
+    history predates a version manifest.
+    """
+    def rel(path):
+        try:
+            return path.relative_to(unit.path).as_posix()
+        except ValueError:
+            return path.name
+
+    def link(path):
+        href = _bd._rel(path)
+        name = rel(path)
+        return (f'<a class="fp" href="{esc(href)}"><code>{esc(name)}</code></a>'
+                if href else f'<code>{esc(name)}</code>')
+
+    target = unit.float_target
+    sections = []
+    if target is None:
+        sections.append('<p><b>Current printed artifact:</b> '
+                        '<code>float.tex</code> has no resolvable target.</p>')
+    else:
+        sections.append(f'<p><b>Current printed artifact:</b> {link(target)} '
+                        '(<code>float.tex</code> target).</p>')
+
+    groups = (
+        ("Saved versions", unit.path / "versions",
+         "stored history; not necessarily approved or chronological"),
+        ("Candidates", unit.path / "candidates",
+         "not printed or promoted"),
+        ("Other assets", unit.path / "assets",
+         "not the artifact currently targeted by the float"),
+    )
+    listed = False
+    for label, folder, note in groups:
+        paths = [p for p in sorted(folder.iterdir())
+                 if p.is_file() and p.name != ".gitkeep"] if folder.is_dir() else []
+        if target is not None:
+            paths = [p for p in paths if p.resolve() != target.resolve()]
+        if not paths:
+            continue
+        listed = True
+        items = "".join(f'<li>{link(path)}</li>' for path in paths)
+        sections.append(f'<p><b>{esc(label)}:</b> {esc(note)}.</p>'
+                        f'<ul class="display-version-list">{items}</ul>')
+    if not listed:
+        sections.append('<p>No saved alternatives or unpromoted candidates are present.</p>')
+    sections.append('<p class="display-version-posture">Only the current row is selected by '
+                    '<code>float.tex</code>. The remaining rows are an on-disk inventory; '
+                    'their status and provenance require an explicit manifest or stage record.</p>')
+    return ('<details class="csec display-versions" open><summary>🗂 Display Versions</summary>'
+            f'<div class="cbody">{"".join(sections)}</div></details>')
+
+
+def _display_folder(unit):
+    """Render the actual unit layout, including its migration posture."""
+    icon = {"intake": "📥", "recipe": "🧰", "assets": "🖼", "candidates": "🧪",
+            "versions": "🗂", "source": "🕰"}
+    note = {"intake": "approved snapshot", "recipe": "rebuild source", "assets": "promoted asset",
+            "candidates": "unpromoted renders", "versions": "history", "source": "legacy mixed source"}
+    target = "(none yet)"
+    if unit.float_target is not None:
+        try:
+            target = unit.float_target.relative_to(unit.path).as_posix()
+        except ValueError:
+            target = unit.float_target.name
+    lines = [f"📁 {unit.id}/", "├── 📄 README.md", f"├── 📄 float.tex  ──► {target}",
+             "├── 🖼 preview.pdf  ← Current Float"]
+    present = [name for name in ("intake", "recipe", "assets", "candidates", "versions", "source")
+               if (unit.path / name).is_dir()]
+    for i, name in enumerate(present):
+        branch = "└──" if i == len(present) - 1 else "├──"
+        files = [p.name for p in sorted((unit.path / name).iterdir())
+                 if p.is_file() and p.name != ".gitkeep"]
+        shown = ", ".join(files[:3]) or "(empty)"
+        if len(files) > 3:
+            shown += f", +{len(files) - 3} more"
+        lines.append(f"{branch} {icon[name]} {name}/  ← {note[name]}: {shown}")
+    legacy = (unit.path / "source").is_dir() and not (unit.path / "recipe").is_dir()
+    posture = ("Legacy layout: do not rename or promote files until the unit has a deliberate "
+               "provenance-safe migration into intake/ and recipe/." if legacy else
+               "Target layout present. Verify the live asset, intake, and recipe before closing the gate.")
+    tree = "\n".join(lines)
+    tree_html = body("```text\n" + tree + "\n```", fold_code=False)
+    return ('<details class="csec display-folder" open><summary>📁 Current display folder</summary>'
+            f'<div class="cbody">{tree_html}'
+            f'<p class="display-folder-posture">{esc(posture)}</p></div></details>')
+
+
+def render_display_preview(q):
+    """Render standard reader-facing Display content before authored explanation.
+
+    Every resolved asset page begins with the printable Current Float, then the
+    live artifact, an inventory of versions, and the actual folder tree.
+    Authored Content follows with the display explanation.  This keeps the
+    review surface uniform without pretending that a legacy folder has already
+    reached the target layout or that a saved file has been promoted.
+    """
+    paper = _bd.PAPER
+    if q.get("family") != "display" or paper is None:
+        return ""
+    unit = paper.unit_for_sdisplay(sec(q["sec"], "Content"))
+    if unit is None:
+        # S-Display-0 is a set-level design page, not an asset page. It has no
+        # unit and therefore no single preview subsection.
+        return ""
+
+    path = unit.preview
+    label = "CURRENT FLOAT · preview.pdf"
+    stale = bool(unit.preview_stale)
+    kind = "pdf"
+    if path is None:
+        pdfs = [name for name in unit.assets if name.lower().endswith(".pdf")]
+        images = [name for name in unit.assets
+                  if name.lower().endswith((".png", ".jpg", ".jpeg", ".svg", ".webp", ".gif"))]
+        if pdfs:
+            path = unit.path / "assets" / pdfs[0]
+            label = f"LIVE ASSET · {pdfs[0]} · wrapper preview missing"
+        elif images:
+            path = unit.path / "assets" / images[0]
+            label = f"LIVE ASSET · {images[0]} · wrapper preview missing"
+            kind = "img"
+
+    if path is None:
+        preview = (
+            '<details class="csec display-preview missing" open>'
+            '<summary>🖼 Current Float</summary><div class="cbody">'
+            '<p>No printable preview exists yet. Build the unit\'s '
+            '<code>preview.pdf</code> before treating the surrounding page text '
+            'as a display review.</p></div></details>'
+        )
+        return (preview + _display_live_artifact(unit) + _display_versions(unit)
+                + _display_folder(unit))
+
+    href = _bd._rel(path)
+    if not href:
+        return ""
+    warning = ' <span class="display-preview-stale">⚠️ older than the asset</span>' if stale else ""
+    source_links = []
+    for role, pptx in unit.pptx:
+        pptx_href = _bd._rel(pptx)
+        if pptx_href:
+            source_links.append(
+                f'<a class="fp" href="{esc(pptx_href)}" '
+                f'title="{esc(pptx.name)}">PPTX {esc(role)}</a>')
+    head = (f'<div class="display-preview-head"><a class="fp" href="{esc(href)}">open PDF</a>'
+            + "".join(source_links) + warning + '</div>')
+    if kind == "img":
+        visual = (f'<img src="{esc(href)}" alt="{esc(label)}" loading="lazy">')
+    else:
+        visual = (f'<object data="{esc(href)}" type="application/pdf">'
+                  f'<a class="fp" href="{esc(href)}">open {esc(label)}</a>'
+                  '</object>')
+    preview = (f'<details class="csec display-preview" open>'
+               f'<summary>🖼 {esc(label)}</summary><div class="cbody">{head}{visual}</div>'
+               '</details>')
+    return (preview + _display_live_artifact(unit) + _display_versions(unit)
+            + _display_folder(unit))
+
+
+def render_contract(sections, lead=""):
+    """Stage Contract renders INSIDE Opening (JL 260725), never its own section.
+
+    It is shown outright behind the lead question, so Required Inputs, Writing
+    Style and the venue section are read rather than hunted for. Its heading is a
+    plain word like every other heading in that drawer (JL 260725: the drawer had
+    two iconed headings and five bare ones, which is what read as inconsistent).
+
+    `lead` carries a legacy `### Stage Record` block (JL 260801: "只统一叫一个吧,
+    就叫 stage contract"). A stage page declares its obligations ONCE, under one
+    name; the old block's text is kept word for word and simply reads as the
+    contract's opening lines, because deleting someone else's writing on read
+    would be a silent loss."""
+    if not sections and not lead:
+        return ""
+    return ('<div class="fh">Stage Contract</div>'
+            + (body(lead) if lead else "")
+            + render_subsections(sections, flat=True))
+
+
+def render_question(q, prv, nxt):
+    """One page. An evidence page (head `route: outward|inward`, JL 260806)
+    renders its `### E<n> ·` divisions in register mode, so their binding
+    tokens become chips; the flag is page-scoped and restored on exit so a
+    sibling page can never inherit it."""
+    prev_evidence, prev_dir = _bd.EVIDENCE, _bd.PAGE_DIR
+    _bd.EVIDENCE = bool(re.fullmatch(r"(outward|inward)",
+                                     (q.get("route") or "").strip()))
+    # The page's own folder, so `resolve()` can link a companion that sits
+    # beside the page rather than beside board.md. Page-scoped and restored on
+    # exit for the same reason EVIDENCE is: a sibling must not inherit it, or
+    # one page's neighbours start resolving on another page.
+    # AGAINST BASE, not against the cwd. `q["file"]` is board-relative, so a
+    # bare `.resolve()` expands it against wherever the build was launched
+    # from; that produced `<skills>/QBt-page-types`, a folder that does not
+    # exist, so the lookup below never matched once and the whole thing was
+    # inert while looking correct in a trace: PAGE_DIR was SET, its last
+    # component was even right, and only its prefix was wrong.
+    src = q.get("file")
+    _bd.PAGE_DIR = (pathlib.Path(_bd.BASE or ".") / src).parent if src else None
+    try:
+        return _render_question(q, prv, nxt)
+    finally:
+        _bd.EVIDENCE, _bd.PAGE_DIR = prev_evidence, prev_dir
+
+
+def _render_question(q, prv, nxt):
+    nav = ('<div class="nav">'
+           + (f'<a href="#{prv["id"]}">← {prv["id"]}</a>' if prv else '<span></span>')
+           + f'<a class="all" href="#top">☰ Index</a>'
+           + (f'<a href="#{nxt["id"]}">{nxt["id"]} →</a>' if nxt else '<span></span>')
+           + '</div>')
+    if q.get("standalone"):
+        nav = ""
+    tok, cls, lab = stinfo(q["state"])
+    who = "🧠 JL decides" if q["owner"] == "JL" else ("🔧 " + q["owner"] if q["owner"] else "")
+    # Intent first, then the factual present (JL 260801): Aims are durable
+    # target states; States owns progress, decisions, and verification.
+    now, goal = sec(q["sec"], "Now"), sec(q["sec"], "Done when")
+    progress = aim_progress(goal, now)
+    cnt = (f'<span class="cnt">{progress["closed"]}/{progress["total"]}</span>'
+           if progress["total"] else "")
+    fs = ""
+    if now or goal:
+        nb, gb = render_aims(now), render_aims(goal, now)
+        fs += ('<div class="cmp">'
+               + sect(f"🎯 Aims{cnt}", gb, cls="col goal")
+               + sect("📍 States", nb, cls="col now")
+               + '</div>')
+    # 「Why here」不再单独占台面：它该讲的（为什么难 / 不定会怎样）并进 ## Question
+    # 的要点里，光读第一节就 orient。老板子里还写着这段的，收进底部折叠区，内容不丢。
+    why = sec(q["sec"], "Why here")
+    disc = sec(q["sec"], "Discussion").strip()
+    # ## Question 是「一段话 + 几个要点」（JL 260723 改版）：走 body() 才吃得下要点。
+    # 第一段是大字领句（CSS 挑 p:first-of-type），要点跟在下面 —— 光这一节就该让
+    # 零背景的人明白：在问什么、为什么难、不定会怎样（原 Why here 的活并进来了）。
+    # ## Question（JL 260724）：领句本身可点，点这一整行才铺开隐藏块。
+    # 隐藏块带 Boundary 和 Why this matters（JL 260729：Q/S 一致，解释段跟着领句走；
+    # 之前 Q 的解释段落在 Content 首节）。页面仍按 Opening -> Content -> Items -> Where 阅读。
+    # 问句里的 **粗体** 要正常内联流动 —— 所以文字包进一个 .qt span，别让 flex 拆散它。
+    # Boundary 收进【同一个】折叠块，不再单占一节；里头用扁平行，不套第二层折叠。
+    q_md = sec(q["sec"], "Opening").strip()
+    _parts = re.split(r"\n\s*\n", q_md, maxsplit=1)
+    # A `<!-- haipipe:… -->` marker is addressed to a script, never to a reader.
+    # body() already drops them at render, but the LEAD is composed here and
+    # skipped that filter, so a generated page whose Opening opens with a
+    # managed span printed the marker as its own lead sentence (found on the
+    # first Meeting page, QC10).
+    lead_lines = [x for x in _parts[0].splitlines()
+                  if not (x.lstrip().startswith("<!--") and "haipipe:" in x)]
+    qlead = inline(" ".join(x.strip() for x in lead_lines if not x.lstrip().startswith(">")))
+    lead_app, lead_heads, lead_kind = render_apparatus(
+        [x for x in lead_lines if x.lstrip().startswith(">")]
+    )
+    qrest = _parts[1].strip() if len(_parts) > 1 else ""
+    # A `###` inside Opening is a NAMED drawer row (Writing Style since
+    # 260819), so it must LEAVE the More-details remainder when it is
+    # extracted below. Skipping this printed the same Writing Style block
+    # twice, once inside More details and once as its own row (JL 260819:
+    # "I have two writing styles here").
+    qrest = re.sub(r"(?ms)^###\s+Writing Style\s*$.*?(?=^###\s|\Z)",
+                   "", qrest).strip()
+    content_sections = parse_content_sections(sec(q["sec"], "Content"))
+    contract_md = re.sub(r"<!--.*?-->", "", sec(q["sec"], "Stage Contract"), flags=re.S)
+    contract_sections = parse_content_sections(contract_md)
+    is_stage = q.get("kind") == "stage"
+    is_manuscript_section = (q.get("page_type") or "").strip() == "section"
+    legacy_record, content_sections = split_stage_record(
+        q.get("kind"), content_sections)
+    opening_sections = []
+    # Why this matters lives in Opening for BOTH kinds (JL 260729: it explains
+    # the lead, so it belongs behind the lead). Until then Q carried it as
+    # Content's first subsection; Content now holds only what the author wrote.
+    # The row is labelled "More details" (JL 260801). "Why this matters" named the
+    # rhetorical job the paragraph was supposed to do, and that framing is what
+    # produced the mad-lib openings the 260801 rewrite banned; the drawer now just
+    # says what it is, which is the rest of the Opening.
+    if qrest and not is_manuscript_section:
+        opening_sections.append(("More details", qrest))
+    # Boundary 排在 Why this matters 之后（JL 260801）。这翻掉了 260729 的顺序，
+    # 当时 Why this matters 被放在 Boundary「just below」。理由是读者的顺序：
+    # pitch 给出承诺 → Why this matters 说明为什么值得在意 → 这时才轮到「哪些不归这页」。
+    # 「不管什么」是个限定语，限定语要落在被限定的东西已经站住之后才有意义。
+    btxt = sec(q["sec"], "Boundary").strip()
+    if btxt and not is_manuscript_section:
+        opening_sections.append(("Boundary", btxt))
+    # Writing Style 是「页」的元素，不是 S 的（JL 260801：「here is not about S, or
+    # Q ... it is just about the Page」）。它原来长在 S 的 Stage Contract 里，跟
+    # Required Inputs、Venue 并列；但「这一页该怎么写」每一页都得有 —— 没有它，
+    # 下一个人就没法照着改。所以它跟 Why this matters 一样收在领句后面：解释这一页
+    # 该怎么被对待，而不是这一页的实质内容。
+    # SOURCE SHAPE CHANGED 260819 (JL: "I don't want to have the Writing style
+    # to be in the main page, please put it under the subsection in the
+    # Openning"). It renders in the Opening drawer either way; what moved is
+    # where it is WRITTEN. `### Writing Style` under `## Opening` is the shape
+    # now; the top-level `## Writing Style` still parses, because 123 pages
+    # carry it and deleting someone else's text on read is a silent loss.
+    wstyle = _opening_sub(sec(q["sec"], "Opening"), "Writing Style")
+    if not wstyle:
+        wstyle = sec(q["sec"], "Writing Style").strip()
+    if wstyle and not is_manuscript_section:
+        opening_sections.append(("Writing Style", wstyle))
+    # Stage Contract joins Opening's collapsed rows (JL 260725: "within the
+    # Opening, not a separate section"), after Why this matters / Writing Style.
+    # Boundary was retired on JL's ruling (260731, said twice): a page's scope is
+    # the Opening's job. Old boards that still carry the section keep rendering
+    # it, because deleting someone else's text on read would be a silent loss.
+    # Structure 从抽屉里撤掉（JL 260801：「WE ALREADY HAVE THE LEFT PANEL INDEX.
+    # SO WE CAN DROP THE STRUCTURE」）。它 260729 进来时是「这一页自己的地图」，
+    # 那会儿还没有左侧栏；侧栏一上线，这一行就是同一张地图的第二份。
+    # render_structure() 留着不删：它是纯函数，没有调用者时不产出任何东西，
+    # 万一要回退，接回来就是这一行。
+    inner = (f'<div class="sapp">{lead_app}</div>' if lead_app else "")
+    # 抽屉里全是平的：Boundary 一直就是这样，Why this matters / Writing Style /
+    # Stage Contract 现在跟它一致（JL 260725：「I don't want to have >」，以及
+    # 「why other information are gone」—— 它们没丢，是被第二层 ▸ 关起来了）。
+    inner += render_subsections(opening_sections, flat=True)
+    if is_stage and not is_manuscript_section:
+        inner += render_contract(contract_sections, lead=legacy_record)
+    # Opening 本身不折（JL 260725：「no > in the Opening, it will always be there」）：
+    # 🚪 Opening 这一行和领句永远在台面上。可点的是【领句】—— 点开它，Boundary、
+    # Why this matters、Writing Style、Stage Contract 全在这一个抽屉里，用来解释这句问句。
+    # 中间那版把折叠挂在 🚪 Opening 上，于是节名本身成了一个只写着「Opening」的 ▸ 行，
+    # 读者看不出里头有 Boundary —— 正是 260724 那条 Law 要防的（fold 生效且不可见）。
+    # 领句的排版跟原版一模一样：<summary> 里仍然是那个 <p class="qlead">，
+    # 所以 `.q p` 的 serif 和 `.ask>p:first-of-type` 的字号都照旧命中（JL 260725：
+    # 「I want the original font size and font type」—— 把 class 挪到 summary 上就丢了这两条）。
+    lead_p = (f'<p class="qlead"><span class="qt">{qlead}</span>'
+              + (f'<span class="sbadge">{lead_kind} {lead_heads}</span>' if lead_heads else "")
+              + '<span class="cv"></span></p>')
+    opening_head = '<div class="ch opening-head"><span class="chl">🚪 Opening</span></div>'
+    qblock = (
+        # The Opening drawer stays shut even when the lead carries a comment
+        # (JL 260801: everything collapsed). The ⚑/💬 badge on the lead says it
+        # is there, which is the same contract every other sentence now keeps.
+        f'<details class="it row qd"><summary>{lead_p}</summary>'
+        f'<div class="bd qbd">{inner}</div></details>'
+        if inner else
+        f'<p class="qlead"><span class="qt">{qlead}</span></p>'
+    )
+    ask = f'<div class="ask">{opening_head}{qblock}</div>'
+    bnd = ""   # Boundary 现在收在 ask 的折叠块里，不再单独上台面
+    # 📁 Files（JL 260723 新增，选填）：这题牵动哪些文件。读懂之后知道去哪儿动手；
+    # 反过来改了哪个文件，也知道该回写哪一题。路径写反引号里，board.md 的
+    # ## Links 声明过的会自动变成可点链接。
+    # Files groups FOLD, like Content parts and the Aims/States groups
+    # (JL 260802). Files was the last section rendering its `###` groups as
+    # flat rows, so a long action map could not be collapsed to its group
+    # names while every other section on the page could.
+    page_src = pathlib.Path(_bd.BASE or ".") / q["file"] if q.get("file") else None
+    # A folded Page keeps process records in its outline/ folder.  The main
+    # Page therefore renders only the product and compact Outline projection;
+    # Files, Discussion, and Log belong to the Outline plugin workspaces.
+    has_outline_folder = bool(
+        page_src and (page_src.parent / "outline").is_dir()
+    )
+    flb = render_subsections(parse_content_sections(sec(q["sec"], "Files")))
+    fls = "" if has_outline_folder else sect("📁 Files", flb, cls="fls")
+    dia = render_outline(page_src, q.get("page_type", ""))
+    display_preview = render_display_preview(q)
+    if q.get("source_content"):
+        from .source_content import render_source_content
+        display_preview += render_source_content(q)
+    content = render_content(content_sections, q if is_stage else None,
+                             leading=display_preview)
+
+    ndisc = len(re.findall(r"^>+\s*[A-Z]{1,4}\d{0,4}\s*[「\"：:]", disc, re.M))
+    # 讨论里加个「整段写想法」的框（要 serve.py 跑着）：写完 → 追加进 ## Discussion。
+    # 不钉在某句话上，就是自由讨论；serve.py 没跑时按钮会提示改走手写（JL 260723）。
+    dadd = (f'<div class="dadd" data-file="{esc(q.get("file",""))}">'
+            f'<textarea placeholder="Write a thought into the discussion…"></textarea>'
+            f'<div class="row"><select></select>'
+            f'<button class="dsave" type="button">➕ Add to discussion</button></div></div>')
+    # The form comes FIRST, above the thread (JL 260802): it is the one thing
+    # in this fold a reader can act on, and the newest exchange is right under
+    # it, so writing a reply never means scrolling past the whole history.
+    folds = "" if has_outline_folder else det(
+        f"💬 Discussion ({ndisc})",
+        dadd +
+        (render_thread(disc) if disc else
+         f'<p class="mut">No discussion yet — add a line under '
+         f'<code>## Discussion</code> in {q["file"]}: '
+         f'<code>&gt; Comment JL …</code></p>'))
+    # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
+    folds += det("💡 Why here", body(why, apparatus=False))
+    # Every fold says how much is inside, the way Discussion and Log already
+    # did (JL 260802). A shut row with no count makes a reader open it to find
+    # out whether it is worth opening, which is the job the count removes.
+    def _n(name):
+        return len(re.findall(r"(?m)^\s*[-*]\s+\S", sec(q["sec"], name)))
+    for icon, name in (("⚖️", "Law"), ("🧠", "Lesson"), ("📖", "Glossary")):
+        n = _n(name)
+        folds += det(f"{icon} {name}" + (f" ({n})" if n else ""),
+                     body(sec(q["sec"], name), apparatus=False, show_lead=True))
+    log = sort_log(sec(q["sec"], "Log").strip())
+    nlog = len(re.findall(r"^(?:[-*]\s+)?\d{6}(?:\s+\d{3,4})?\s*[·|]", log, re.M))
+    if not has_outline_folder:
+        folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))
+    html = (
+        f'<section class="slide q {cls}" id="{q["id"]}"'
+        f' data-title="{esc(q["title"])}" data-file="{esc(q.get("file",""))}"'
+        f' data-session="{esc(q.get("session",""))}"'
+        # A plugin surface gates on the page's declared type (JL 260807), so the type
+        # has to survive into the DOM; before this it lived only in the source head.
+        f' data-page-type="{esc(q.get("page_type",""))}"'
+        f' data-folder-kind="{esc(q.get("folder_kind",""))}">'
+        # No id on the status row: the h2's `.hid` right below and the
+        # breadcrumb already carry it (JL 260831). The `·` before method only
+        # exists when there is a method to separate.
+        f'<div class="qh">'
+        f'<span class="pill {cls}">{tok} {esc(lab)}</span>'
+        f'<span class="mut">{esc(who)}</span>'
+        + (f'<span class="mut">· {inline(q["method"])}</span>' if q["method"] else "")
+        + (
+            f'<span class="kind">'
+            f'{esc(STAGE_LABELS.get(q.get("family"), "STAGE"))}</span>'
+            if q.get("kind") == "stage" else
+            # the skill kind wears its own badge (JL 260731): a skill page is a
+            # synced mirror, and the head should say so before the prose does
+            ('<span class="kind">SKILL</span>' if q.get("kind") == "skill" else
+             ('<span class="kind">AGENT</span>' if q.get("kind") == "agent" else
+              ('<span class="kind">TASK</span>' if q.get("kind") == "task" else
+               ('<span class="kind">DISCOVERY</span>'
+                if q.get("kind") == "discovery" else ""))))
+        )
+        # 文件名做成链接：点它直接看这一题的原始 markdown（serve.py 把它当纯文本发）
+        + f'<a class="src" href="{esc(q.get("file",""))}" target="_blank"'
+        f' title="Open this question\'s raw markdown">📄 {esc(q.get("file",""))}</a>'
+        f'<a class="top" href="#top">↑ {"Top" if q.get("standalone") else "Index"}</a></div>'
+        # id 后面那个空格是真字符（不是 CSS margin）——复制这行标题时
+        # 才不会粘成 QA4Single…，而是 QA4 Single…（JL 260723）
+        f'<h2 class="h2"><span class="hid">{q["id"]} </span>{inline(q["title"])}</h2>'
+        + f'<div class="opening">{ask}{bnd}</div>' + dia + content
+        + f'{fs}{fls}<div class="folds">{folds}</div>{nav}</section>')
+    # 📚 References land above durable folds, but only Opening and Outline
+    # start open. The bibliography stays accessible without becoming another
+    # default reading destination.
+    refs = references_block(q)
+    if refs:
+        html = html.replace('<div class="folds">',
+                            det("📚 References", refs) + '<div class="folds">', 1)
+    return html

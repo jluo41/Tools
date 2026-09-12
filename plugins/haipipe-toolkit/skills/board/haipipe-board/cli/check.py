@@ -49,7 +49,7 @@ HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives
 sys.path.insert(0, str(HERE))
 from src.common import (ALIAS, NUMBERED_GROUP, STN, AIM_STATE_RE,  # noqa: E402
                         aim_ids, aim_progress, board_kind, group_stem,
-                        page_files)
+                        page_files, registered_page_source)
 from src.dialect_task_block import page_info as task_page_info  # noqa: E402
 from src.page_context import audit_related_rows  # noqa: E402
 from src.outline_version import latest_outline  # noqa: E402
@@ -375,7 +375,8 @@ def check_board(d, rep):
                         "dead entry makes every citation under it unverifiable")
 
     pages = {
-        (p.relative_to(d).as_posix() if block_board and task_page_info(d, p)
+        (p.relative_to(d).as_posix() if (block_board and task_page_info(d, p))
+         or registered_page_source(p.parent) == p
          else p.name): p
         for p in page_files(d)
     }
@@ -390,6 +391,21 @@ def check_board(d, rep):
             text,
             re.M | re.I,
         )
+    # Registered Pages use the same Board-relative source as parse_dir. Retain
+    # its unique-basename compatibility, without guessing ambiguous filenames.
+    for _, line in strip_fences(section_text(text, "Pages")):
+        row = line.strip().lstrip("-*· ").strip()
+        if re.fullmatch(r"[^\s]+\.md", row) and row not in listed:
+            listed.append(row)
+    for i, name in enumerate(listed):
+        relative = next((key for key, path in pages.items()
+                         if path.relative_to(d).as_posix() == name), None)
+        if name not in pages and relative is not None:
+            listed[i] = relative
+            continue
+        matches = [key for key in pages if Path(key).name == name]
+        if name not in pages and len(matches) == 1:
+            listed[i] = matches[0]
     for name in listed:
         if name not in pages:
             rep.add(ERROR, "pages-ghost", f"board.md -> {name}",
@@ -451,6 +467,14 @@ def check_board(d, rep):
 
 def check_face(path, name, rep, links, page_ids, decision_only=False):
     text = path.read_text(encoding="utf-8")
+    imported_content = None
+    # Only an explicitly registered base file import gets technical validation.
+    # Authored Pages and declared scholarly/Task variants retain all old rules.
+    if (registered_page_source(path.parent) == path
+            and not re.search(r"(?m)^(?:folder-kind|page-type):\s*\S", text)):
+        import tomllib  # registration already requires Python 3.11+; legacy does not
+        imported_content = tomllib.loads((path.parent / "page.toml").read_text(
+            encoding="utf-8")).get("content")
 
     title_match = re.search(r"^#\s+(\S.*?)\s*$", text, re.M)
     if not title_match:
@@ -465,7 +489,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
         # Visible words are semantic tokens, not punctuation-only separators.
         # A hyphenated compound, slash-joined identifier, or acronym is one word.
         words = re.findall(r"[A-Za-z0-9]+(?:[-/][A-Za-z0-9]+)*", title)
-        if len(words) > MAX_PAGE_TITLE_WORDS:
+        if imported_content is None and len(words) > MAX_PAGE_TITLE_WORDS:
             line = text[:title_match.start()].count("\n") + 1
             rep.add(WARN, "title-too-long", f"{name}:{line}",
                     f"title has {len(words)} visible words; target 3-5 and keep the whole "
@@ -508,6 +532,24 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
 
     if not re.search(r"^owner:\s*\S", text, re.M):
         rep.add(ERROR, "no-owner", name, "no `owner:` line, so nobody is named as responsible")
+
+    if imported_content is not None:
+        source = re.search(r"(?m)^source-content:[ \t]*(\S.*?)[ \t]*$", text)
+        if not source or source.group(1) != imported_content:
+            rep.add(ERROR, "source-content-mismatch", name,
+                    "source-content must equal the registered page.toml content path")
+        if not has_section(text, "Content"):
+            rep.add(ERROR, "missing-section", name, "no `## Content` section")
+        if not section_text(text, "Opening").strip():
+            rep.add(ERROR, "opening-empty", name, "the technical wrapper needs an Opening")
+        if not aim_progress(page_aims_text(text, path)[0], "")["total"]:
+            rep.add(WARN, "no-aims", name, "no Aims at all, so nothing defines done")
+        check_group_names(text, name, rep)
+        check_file_paths(text, name, rep, path.parent, path=path)
+        check_duplicate_sections(text, name, rep)
+        check_retired_sections(text, name, rep)
+        check_fence_balance(text, name, rep)
+        return
 
     # A page id in backticks should resolve, either to a declared Link or to a
     # file on this board. Historical mentions of a retired id look identical to

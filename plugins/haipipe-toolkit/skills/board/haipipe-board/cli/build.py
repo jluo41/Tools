@@ -36,12 +36,14 @@ QB5: this file is a thin entry; the code lives in src/ by topic
 """
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src import body as boardbody              # noqa: E402
 from src.parse import parse_dir, parse_file    # noqa: E402
-from src.page_board import render, render_tree, scrub_cjk_comments, to_json  # noqa: E402
+from src.common import registered_page_source  # noqa: E402
+from src.page_board import render, render_tree, scrub_cjk_comments, to_json, tree_page_name  # noqa: E402
 
 # Marker SYNTAX a dialect would resolve. Used only to warn when a board writes
 # markers and declares no dialect; matching this is not knowing what a paper is.
@@ -58,6 +60,51 @@ _INLINE = re.compile(r"`[^`\n]*`")
 def _meant_markers(text):
     """Markers written as PROSE, with quoted syntax removed."""
     return len(MARKERISH.findall(_INLINE.sub("", _FENCE.sub("", text))))
+
+
+def check_registered_html(text, source):
+    """A registered Page may be tiny, but must ship its source-bound static face."""
+    class Face(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.opened, self.closed, self.words = set(), set(), []
+            self.depth = self.hidden = 0
+            self.faces = self.complete = 0
+
+        def handle_starttag(self, tag, attrs):
+            self.opened.add(tag)
+            attrs = dict(attrs)
+            if tag in {"script", "style"}:
+                self.hidden += 1
+            if tag == "section":
+                if self.depth:
+                    self.depth += 1
+                elif ({"slide", "q"} <= set(attrs.get("class", "").split())
+                      and attrs.get("data-file") == source):
+                    self.depth = 1
+                    self.faces += 1
+
+        def handle_endtag(self, tag):
+            self.closed.add(tag)
+            if tag in {"script", "style"}:
+                self.hidden = max(0, self.hidden - 1)
+            if tag == "section" and self.depth:
+                self.depth -= 1
+                if not self.depth:
+                    self.complete += 1
+
+        def handle_data(self, data):
+            if self.depth and not self.hidden:
+                self.words.append(data)
+
+    face = Face()
+    face.feed(text)
+    face.close()
+    assert ({"html", "head", "body"} <= face.opened & face.closed
+            and face.faces == face.complete == 1 and not face.depth
+            and "".join(face.words).strip()), (
+        f"{source}: generated HTML lacks a complete, nonempty static Page Face")
+
 
 if __name__ == "__main__":
     only = None
@@ -154,6 +201,19 @@ if __name__ == "__main__":
         # that is what ships. Sample the largest page: if JS-stripped content
         # survives there, the shared template is sound.
         pages = sorted((target / "board").glob("*/*.html"), key=lambda p: p.stat().st_size)
+        registered = set()
+        for q in qs:
+            source = target / q.get("file", "")
+            if registered_page_source(source.parent) != source:
+                continue
+            group = boardbody.group_token(q.get("group") or "") or "_ungrouped"
+            page = target / "board" / group / tree_page_name(q)
+            registered.add(page)
+            if not only or page in files:
+                check_registered_html(page.read_text(encoding="utf-8"), q["file"])
+        # Keep the legacy scholarly sample gate; a long imported Page must not
+        # hide a failing legacy sample. Registered Pages use structural sanity.
+        pages = [page for page in pages if page not in registered]
         if pages:
             txt = pages[-1].read_text(encoding="utf-8")
             bare = re.sub(r"<script.*?</script>", "", txt, flags=re.S)
@@ -162,6 +222,8 @@ if __name__ == "__main__":
             assert len(plain) > 1200, (
                 f"{pages[-1].name}: only {len(plain)} chars of body left after stripping JS")
             print(f"✅ {len(qs)} pages · largest keeps {len(plain)} chars with JS stripped")
+        if registered:
+            print(f"✅ {len(registered)} registered Pages · static HTML structure checked")
     else:
         out.write_text(scrub_cjk_comments(render(meta, qs)), encoding="utf-8")
         txt = out.read_text(encoding="utf-8")

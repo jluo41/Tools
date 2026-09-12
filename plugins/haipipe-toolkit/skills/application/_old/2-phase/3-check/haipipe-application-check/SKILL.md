@@ -15,7 +15,7 @@ Skill: haipipe-application-check (CHECK phase worker)
 
 CHECK phase worker -- the 🧑 phase. Reviews the artifacts produced during one lifecycle stage's DRAFT-PROBE-REVISE and proposes the next move:
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-workflows/haipipe-page-check/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../page/page-workflows/haipipe-page-check/SKILL.md`.
 The generic contract owns judgment and phase routing.
 This file adds the application's deterministic checks, comment surface, and Gate Ledger.
 

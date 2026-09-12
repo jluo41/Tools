@@ -38,7 +38,8 @@ SKILLS = HERE.parent.parent                             # skills/
 sys.path.insert(0, str(HERE))
 
 from src import item_table                              # noqa: E402
-from src.folder_contract import resolve as resolve_folder_contract  # noqa: E402
+from src.folder_contract import (current_folder_kind,
+                                 resolve as resolve_folder_contract)  # noqa: E402
 from src.outline_version import latest_outline, version_tag  # noqa: E402
 
 
@@ -140,17 +141,27 @@ def build(page_md: Path, board: Path) -> str:
     # ── CTX1 identity ────────────────────────────────────────────────────
     phase_yaml = page_md.parent / "workflow" / "phase.yaml"
     if phase_yaml.is_file():
-        kind = fm(phase_yaml.read_text(encoding="utf-8", errors="replace"), "folder-kind")
         kind_src = src(root, phase_yaml)
+        try:
+            kind = current_folder_kind(page_md.parent)
+        except ValueError as error:
+            kind = ""
+            kind_src += f" · invalid current identity: {error}"
     else:
         kind = fm(text, "folder-kind") or fm(text, "page-type")
         kind_src = f"`{page_md.name}` frontmatter `page-type:`"
     folder_owner, face_owner = owners(kind)
+    base_page = not kind and not phase_yaml.is_file()
+    if base_page:
+        # The base Page contract deliberately permits no specialized kind.
+        # Do not invent a Page Type to get a standalone Page into PREPARE.
+        folder_owner = face_owner = "haipipe-page"
+        kind_src = "haipipe-page base contract (no specialized kind declared)"
     if folder_owner == "unresolved":
         missing.append("CTX1")
-    ctx1 = row("CTX1 · Page identity and ownership", "resolved" if kind else "missing", [
+    ctx1 = row("CTX1 · Page identity and ownership", "resolved" if folder_owner != "unresolved" else "missing", [
         ("Page", f"`{page_md.relative_to(board).as_posix()}`"),
-        ("Folder kind", f"{kind or 'unresolved'} · source {kind_src}"),
+        ("Folder kind", f"{kind or ('base Page' if base_page else 'unresolved')} · source {kind_src}"),
         ("Folder owner", folder_owner),
         ("Page Face owner", face_owner),
         ("Current authority", "CONTEXT"),
@@ -162,7 +173,8 @@ def build(page_md: Path, board: Path) -> str:
         missing.append("CTX2")
     ctx2 = row("CTX2 · Purpose and scope", "resolved" if question else "missing", [
         ("Question", question or "no Opening question on the Page"),
-        ("Audience", fm(text, "venue") and f"{fm(text, 'venue')} desk reader" or "board reader"),
+        ("Audience", fm(text, "venue") and f"{fm(text, 'venue')} desk reader"
+         or ("Page reader" if (page_md.parent / "page.toml").is_file() else "board reader")),
         ("Covered here", fm(text, "provides") or fm(text, "method") or "see the Page Opening"),
         ("Covered elsewhere", elsewhere or NONE),
     ], [src(root, page_md)])
@@ -173,7 +185,13 @@ def build(page_md: Path, board: Path) -> str:
     structure = fm(text, "structure-source")
     division = fm(text, "structure-division")
     style = fm(text, "style-from")
-    ctx3_sources = [f"`{SKILLS.name}/board/page-workflows/haipipe-page-outline/SKILL.md`"]
+    ctx3_sources = [src(root, SKILLS / "page/page-workflows/haipipe-page-outline/SKILL.md")]
+    if base_page:
+        ctx3_sources.extend(src(root, p) for p in (
+            SKILLS / "page/haipipe-page/SKILL.md",
+            SKILLS / "page/haipipe-page/ref/page-template.md",
+            HERE / "ref/writing-rules.md",
+        ))
     if req.is_file():
         ctx3_sources.append(src(root, req))
     if structure:
@@ -185,7 +203,8 @@ def build(page_md: Path, board: Path) -> str:
                     f"`{structure}`" + (f" · {division}" if division else "") if structure
                     else f"{face_owner} contract"),
                    ("Narrative/style policy",
-                    f"{style} · Story §8 Section Narrative (haipipe-paper-story)" if style else NONE),
+                    f"{style} · Story §8 Section Narrative (haipipe-paper-story)" if style
+                    else "haipipe-page + haipipe-board/ref/writing-rules.md" if base_page else NONE),
                    ("Requirements",
                     f"`outline/{req.name}` · {len(v_ids)} V · {len(w_ids)} W"
                     if req.is_file() else "none generated"),
@@ -233,7 +252,7 @@ def build(page_md: Path, board: Path) -> str:
         if (board / "_runs" / "page" / stem).is_dir() else []
     nxt = "OUTLINE" if not missing else "CONTEXT"
     ctx6 = row("CTX6 · Planning and evidence readiness",
-               "resolved" if plan else "missing", [
+               "resolved" if plan else "not-applicable", [
                    ("Plan", f"`outline/{plan.name}` · v{ver} · approved: {approved or '⬜'}"
                     if plan else "no plan on disk"),
                    ("Evidence Items", tally),
@@ -241,8 +260,7 @@ def build(page_md: Path, board: Path) -> str:
                     if receipts else NONE),
                    ("Next authority", nxt),
                ], [src(root, plan)] if plan else [])
-    if not plan:
-        missing.append("CTX6")
+    # PREPARE precedes initial SHAPE. No plan yet is not a missing authority.
 
     now = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat()
     head = [f"# {stem} · context", f"page: {stem}",

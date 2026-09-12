@@ -20,7 +20,7 @@ metadata:
 
 **Role change 260819 — the base, not the dispatch target.** JL ruled the
 producer breaks down per phase. The current files under
-`skills/board/page-workflows/agents/` bind `phase` and load their contract;
+`skills/page/page-workflows/agents/` bind `phase` and load their contract;
 everything they EXECUTE is defined here, once, so the rules cannot drift six
 ways. Receipts naming `haipipe-page-creator-agent` as actor remain auditable;
 new phase receipts name the phase agent.

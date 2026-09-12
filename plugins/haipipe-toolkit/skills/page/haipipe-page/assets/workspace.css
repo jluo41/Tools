@@ -1,0 +1,28 @@
+/* Scoped to the standalone source editor; shared Page typography stays intact. */
+#source-file, #save-source, #source-text { box-sizing: border-box; }
+#source-file, #save-source {
+  font: inherit; color: inherit; background: var(--card, #f7f8fa);
+  border: 1px solid var(--line, #c8cdd4); border-radius: .4rem;
+  padding: .45rem .7rem; margin: .4rem .4rem .4rem 0;
+}
+#source-file { max-width: 100%; }
+#source-text {
+  display: block; width: 100%; min-height: 24rem; resize: vertical;
+  padding: 1rem; border: 1px solid var(--line, #c8cdd4); border-radius: .45rem;
+  background: var(--bg, #fff); color: var(--fg, #202632);
+  font: 14px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  tab-size: 2; white-space: pre; overflow-wrap: normal; overflow-x: auto;
+}
+#source-text:focus-visible, #source-file:focus-visible, #save-source:focus-visible {
+  outline: 2px solid #3878cf; outline-offset: 2px;
+}
+#save-source:not(:disabled) { cursor: pointer; }
+#save-source:disabled, #source-file:disabled { opacity: .55; cursor: not-allowed; }
+#editor-status { display: inline-block; font-size: .9rem; margin: .4rem 0; }
+#editor-status[data-error="true"] { color: #bc3030; }
+@media (prefers-color-scheme: dark) {
+  #source-file, #save-source { background: var(--card, #252a32); border-color: var(--line, #505864); }
+  #source-text { background: var(--bg, #191d23); color: var(--fg, #e2e7ef); border-color: var(--line, #505864); }
+  #editor-status[data-error="true"] { color: #ff9999; }
+}
+@media (max-width: 600px) { #source-text { min-height: 18rem; font-size: 13px; } }

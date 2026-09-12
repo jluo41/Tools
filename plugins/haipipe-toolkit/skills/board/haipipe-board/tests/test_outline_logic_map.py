@@ -66,23 +66,34 @@ class OutlineLogicMapTest(unittest.TestCase):
         self.assertLess(body.index("Section logic"), body.index("plan v1.2"))
         self.assertIn("S-test-logic.mmd", body)
         self.assertIn("flowchart TD", body)
+        self.assertIn('aria-label="Diagram zoom controls"', body)
+        self.assertIn('data-logic-zoom="-0.25"', body)
+        self.assertIn('data-logic-zoom="0.25"', body)
+        self.assertIn('data-logic-fit', body)
+        self.assertIn('class="logic-canvas"', body)
+        self.assertIn("function setupLogicZoom", body)
 
     def test_no_file_means_no_extra_workspace_panel(self):
         self.assertEqual(_logic_map(self.page), "")
         body = render("S-test", parse_outline(PAGE), self.page)
         self.assertNotIn("Section logic", body)
 
-    def test_matching_png_is_preferred_and_downloadable(self):
+    def test_matching_png_does_not_replace_rendered_mermaid(self):
         self.logic.write_text(MAP, encoding="utf-8")
         self.logic.with_suffix(".png").write_bytes(b"\x89PNG\r\nfixture")
 
         body = _logic_map(self.page)
 
-        self.assertIn('class="logic-png"', body)
-        self.assertIn("data:image/png;base64,", body)
-        self.assertIn('download="S-test-logic.png"', body)
-        self.assertIn("Download PNG", body)
-        self.assertNotIn('class="logic-svg"', body)
+        self.assertIn('class="logic-viewport"', body)
+        self.assertIn('class="logic-svg"', body)
+        self.assertNotIn('class="logic-png"', body)
+        self.assertNotIn("Download PNG", body)
+
+    def test_svg_is_inside_bounded_viewport(self):
+        self.logic.write_text(MAP, encoding="utf-8")
+        body = _logic_map(self.page)
+        self.assertIn('class="logic-viewport"', body)
+        self.assertIn('<div class="logic-canvas"><svg class="logic-svg"', body)
 
     def test_malformed_mermaid_falls_back_to_escaped_source(self):
         self.logic.write_text("flowchart TD\nP1 --> P2\n", encoding="utf-8")

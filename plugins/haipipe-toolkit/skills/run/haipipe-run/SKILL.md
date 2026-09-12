@@ -149,7 +149,7 @@ an Evidence Item Run; never count both families for one unit.
 
 The base classifies these families but does not define their semantic outputs.
 For Page Paragraph Writing, load
-`../../board/page-workflows/haipipe-page-content/ref/paragraph-run.md` for the
+`../../page/page-workflows/haipipe-page-content/ref/paragraph-run.md` for the
 Markdown Ticket with embedded prompt, one-paragraph Result, and promotion
 boundary. Historical `division-writing` Runs remain readable history; new
 Content commissions use paragraph targets without renaming old artifacts.
@@ -216,7 +216,7 @@ Run and set `supersedes: bNNjNNtNNrNN` in its receipt.
 ### Interactive Page writing dialect
 
 Canonical profile:
-`../../board/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
+`../../page/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
 Load it before executing human-feedback Page writing.
 
 ```text
@@ -480,5 +480,5 @@ Existing specializations remain authoritative for their dialect details:
 
 - `../../discovery/haipipe-discovery/ref/paper-run-contract.md`
 - `../../task/haipipe-task/ref/hierarchy.md`
-- `../../board/page-plugins/haipipe-plugin-runs/SKILL.md`
+- `../../page/page-plugins/haipipe-plugin-runs/SKILL.md`
 - `../../../../subjective-label/ref/ref-run.md`

@@ -981,6 +981,15 @@ def tree_reroot(html, up, src_dir=None, board_root=None):
             authored = sourced_url(url, bare)
             if authored is not None:
                 return f'{m.group("attr")}="{authored}"'
+            # Attached Page sources are already Board-root-relative (unlike
+            # ordinary Markdown links above). Only an existing file inside
+            # this Page Folder is evidence of that origin; generated Board
+            # navigation must keep its already-sited .html URL unchanged.
+            if source_root is not None and source_dir is not None:
+                candidate = (source_root / unquote(bare)).resolve()
+                if (candidate.is_file() and candidate.is_relative_to(source_root)
+                        and candidate.is_relative_to(source_dir)):
+                    return f'{m.group("attr")}="{up}{url}"'
             return m.group(0)
         if "_assets/" in bare:          # TREE_TPL owns shared asset paths
             return m.group(0)

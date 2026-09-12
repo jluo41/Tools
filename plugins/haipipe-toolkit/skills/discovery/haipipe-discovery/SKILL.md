@@ -45,9 +45,9 @@ ref/source-format.md           human source presentation
 ref/external-skill-map.md      ARIS pin, promoted adapters, and boundaries
 ref/external-capability-registry.md
                                 normalized external packets and family routing
-../../board/page-plugins/haipipe-plugin-outline/ref/item-table.md
+../../page/page-plugins/haipipe-plugin-outline/ref/item-table.md
                                 typed Evidence Item and Run-lineage grammar
-../../board/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md
+../../page/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md
                                 CITE authority and derived Bib aggregation
 ~~~
 

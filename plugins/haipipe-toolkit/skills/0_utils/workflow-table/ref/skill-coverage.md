@@ -28,7 +28,7 @@ fill metrics and verdicts from the actual inspection rather than copying them.
 
 | Skill | Path | Role | Used by Phase/Cycle | Status | Version | `SKILL.md` lines | Quality / completeness | Field-test | Gap / next action |
 |---|---|---|---|---|---|---:|---|---|---|
-| `haipipe-page` | `../../../board/haipipe-page/SKILL.md` | contract | `content.write`, `page.check` | `? unknown` | `?` | `?` | `?` | `?` | `inspect current Page contract` |
+| `haipipe-page` | `../../../page/haipipe-page/SKILL.md` | contract | `content.write`, `page.check` | `? unknown` | `?` | `?` | `?` | `?` | `inspect current Page contract` |
 | `haipipe-run` | `../../../run/haipipe-run/SKILL.md` | contract | `evidence.land`, `content.write` | `? unknown` | `?` | `?` | `?` | `?` | `inspect current Run contract` |
 
 The table is compact enough to show alongside the Workflow Table. If a review

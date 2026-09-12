@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>haipipe-page · 从一个文件，到可持续修改的页面</title>
+<style>
+:root{--paper:#f7f5ef;--ink:#183c35;--muted:#586d65;--line:#d9dfd5;--green:#176c55;--light:#e7efe5;--amber:#87541e}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}a{color:var(--green)}button,a{ -webkit-tap-highlight-color:transparent}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #d18036;outline-offset:4px}.wrap{max-width:1100px;margin:auto;padding:0 32px}.top{border-bottom:1px solid var(--line);background:#f7f5eff5;position:sticky;top:0;z-index:5}.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:18px;min-height:70px}.brand{font-weight:750;letter-spacing:.02em}.brand span{font-weight:400;color:var(--muted)}nav{display:flex;flex-wrap:wrap;gap:20px}nav a{text-decoration:none;font-size:14px}.hero{padding:64px 0 52px}.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--green);font-weight:750}.hero h1{font-size:clamp(32px,4.5vw,54px);line-height:1.3;letter-spacing:-.035em;font-weight:700;max-width:780px;margin:18px 0 24px}.lede{max-width:760px;color:var(--muted);font-size:19px}.pill{display:inline-block;border:1px solid var(--line);border-radius:30px;padding:4px 12px;font-size:12px;margin:0 6px 8px 0}.jump{display:inline-block;margin-top:20px;background:var(--green);color:white;text-decoration:none;padding:11px 20px;border-radius:8px}.section{border-top:1px solid var(--line);padding:46px 0}.section h2{font-size:29px;line-height:1.4;margin:10px 0 15px;letter-spacing:-.025em}.intro{max-width:790px;color:var(--muted);margin:0 0 24px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{padding:24px;border:1px solid var(--line);border-radius:12px;background:#fffdf8}.card h3{font-size:19px;margin:0 0 8px}.card p{margin:5px 0;color:var(--muted)}.tag{display:block;font-size:12px;color:var(--green);font-weight:650;letter-spacing:.07em;margin-bottom:12px}.dark{background:var(--ink);color:white;border-color:var(--ink)}.dark p{color:#d1ded6}.dark .tag{color:#b5d9c4}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.88em;overflow-wrap:anywhere}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eaf0e7;padding:22px;border-radius:10px;font:14px/1.9 ui-monospace,SFMono-Regular,Consolas,monospace;margin:12px 0 0}.steps{counter-reset:flow;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.step{background:#fffdf8;border:1px solid var(--line);border-radius:10px;padding:22px}.step:before{counter-increment:flow;content:"0" counter(flow);display:block;color:var(--green);font:600 24px/1.4 ui-monospace,monospace;margin-bottom:16px}.step h3{font-size:18px;margin:0 0 8px}.step p{font-size:15px;color:var(--muted);margin:0}.note{border-left:3px solid var(--green);padding:12px 18px;background:var(--light);margin:22px 0}.note.amber{border-color:#b17a35;background:#f4ead8;color:var(--amber)}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;background:#fffdf8;font-size:14px}th,td{text-align:left;padding:15px 18px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#e9eee4;font-size:13px}tr:last-child td{border-bottom:0}.demo{display:grid;grid-template-columns:250px 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fffdf8}.choices{padding:16px;background:#e9eee4;display:flex;flex-direction:column;gap:8px}.choices button{cursor:pointer;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;padding:13px;font:inherit;font-size:14px;color:var(--ink)}.choices button[aria-pressed="true"]{background:var(--ink);color:#fff}.choices small{display:block;opacity:.72}.result{padding:28px;min-width:0}.result h3{margin:0 0 12px;font-size:21px}.label{font-size:12px;font-weight:700;color:var(--green);margin:18px 0 7px}.result blockquote{margin:0;padding:16px;background:#eff3eb;border-radius:7px}.result p{margin:8px 0;color:var(--muted)}.status{font-size:12px;display:inline-block;border-radius:20px;padding:3px 10px;background:#f4ead8;color:var(--amber)}details{border-bottom:1px solid var(--line);padding:15px 0}summary{cursor:pointer;font-weight:600}details p{color:var(--muted);max-width:800px}.footer{padding:30px 0 45px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}.small{font-size:13px;color:var(--muted)}@media(max-width:720px){.wrap{padding:0 20px}.top .wrap{align-items:flex-start;flex-direction:column;gap:4px;padding-top:12px;padding-bottom:12px}nav{gap:15px}.hero{padding:38px 0}.lede{font-size:17px}.grid,.steps,.demo{grid-template-columns:1fr}.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:10px}.choices button{font-size:12px;padding:10px}.result{padding:20px}.section{padding:34px 0}.section h2{font-size:25px}.card{padding:20px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="brand">haipipe / page <span>· 使用指南</span></div><nav aria-label="指南导航"><a href="#anatomy">Page 是什么</a><a href="#start">怎么开始</a><a href="#board">与 Board</a><a href="#run">Page-run</a></nav></div></header>
+<main class="wrap">
+<section class="hero" id="opening">
+<div class="eyebrow">A page you can keep working on</div>
+<h1>从一个文件，<br>到可以持续修改的页面。</h1>
+<p class="lede">把 HTML、Markdown 或一份说明交给 <strong>haipipe-page</strong>，让它拥有自己的文件夹、可编辑的源文件和可阅读的网站。需要组织更多页面时，再把同一份 Page 接入 Board。</p>
+<span class="pill">Page 自己拥有内容</span><span class="pill">Board 按需接入</span><span class="pill">当前是只读指南</span><br>
+<a class="jump" href="#run">看 page-run 怎样一步步修改 ↓</a>
+</section>
+<section class="section" id="anatomy"><div class="eyebrow">01 / The page</div><h2>Page 是作品，文件夹是它的工作空间。</h2><p class="intro">你看到的网页是展示结果。真正可继续修改的内容和资源，保存在 Page Folder 中。页面的四个部分各回答一个问题。</p>
+<div class="grid">
+<article class="card"><span class="tag">OPENING · 定位</span><h3>这是什么，为什么值得看？</h3><p>用一段话说清主题、用途和范围。比如这份指南帮助你理解 Page 的使用方式，不承担 API 文档的全部细节。</p></article>
+<article class="card"><span class="tag">OUTLINE · 规划</span><h3>准备怎样讲清楚？</h3><p>把需要表达的要点和支持材料组织起来。正式 Outline 从规划记录生成，不另手写一份重复目录；简单文件导入可以先没有规划。</p></article>
+<article class="card"><span class="tag">CONTENT · 内容</span><h3>实际交付了什么？</h3><p>真正的解释、例子、图表或导入文件都在这里。你现在读到的这份中文指南，就是此 Page 绑定的 HTML 内容。</p></article>
+<article class="card"><span class="tag">AIMS · 验收</span><h3>怎样才算完成？</h3><p>每个目标都有完成标准和当前事实。“页面已生成”不等于“读者已经理解”，更不等于“用户已经确认”。</p></article>
+</div>
+</section>
+<section class="section" id="start"><div class="eyebrow">02 / From file to page</div><h2>给一个文件，然后在它自己的空间里继续做。</h2><p class="intro">例如你说：“把这份 HTML 做成一个 Page，后面我还要继续改它。”</p>
+<div class="steps"><article class="step"><h3>创建 Page Folder</h3><p>导入文件副本和支持的本地资源，保留原始输入。Opening 和 Aims 提供页面外层说明。</p></article><article class="step"><h3>编辑并预览</h3><p>改内容就改对应源文件，改样式就改 HTML/CSS。工作站点可提供 Source 编辑器；静态网站只供阅读。</p></article><article class="step"><h3>选择交付方式</h3><p>生成静态网站，或启动可持续工作的 Page 服务。只有实际可访问的服务，才叫已经托管。</p></article></div>
+<div class="grid" style="margin-top:20px"><article><h3>一个可带走的文件夹</h3><pre>my-page/
+├── page.toml          入口与内容绑定
+├── my-page.md         Opening / Aims
+├── outline/
+│   └── evidence/materials/
+│       ├── input.html 可编辑内容
+│       └── assets/    所需资源
+└── delivery/web/      生成的网站</pre></article><article class="card dark"><span class="tag">ONE EDITABLE SOURCE</span><h3>改源文件，不改导出副本。</h3><p>静态网站可以重新生成。若直接修改导出目录，下次构建可能覆盖修改。</p><p>网络字体、动态请求、数据库和后端不会因为导入一个 HTML 就自动打包。独立 Page 不代表任何应用都能离线运行。</p></article></div>
+</section>
+<section class="section" id="board"><div class="eyebrow">03 / Together, without duplication</div><h2>Page 管内容，Board 管组织。</h2><p class="intro">两者能一起工作，是因为 Board 引用同一份 Page，而不是再复制一个可编辑版本。</p>
+<div class="grid"><article class="card"><span class="tag">PAGE</span><h3>我这一页说什么</h3><p>自己的源文件、资源、Opening、规划、Content 和 Aims。没有 Board，也可以构建并阅读。</p></article><article class="card"><span class="tag">BOARD</span><h3>这些页面怎样放在一起</h3><p>分组、排序、导航和组说明。挂载 Page 后提供统一入口；移除成员关系不应删除 Page 内容。</p></article></div>
+<div class="note">当前接入限制：Board 发现范围仍在自己的源目录下。任意外部或相邻文件夹的挂载，并不是已经实现的能力。</div>
+</section>
+<section class="section" id="run"><div class="eyebrow">04 / Working together</div><h2>Page-run：把“再改一下”变成可接续的过程。</h2><p class="intro">一次 Run 围绕一个明确目标。你的一次反馈形成一个 Step；已关闭的一轮讨论重新开启，才进入下一个 Version。换聊天窗口，不应该丢掉已确认的内容。</p>
+<div class="note amber"><strong>下面是可点击的教学示例，不是真实运行记录。</strong>选择步骤只切换说明，不调用 agent、不修改源文件，也不记录你的确认。自动 Run 记录与确认界面仍待实现。</div>
+<div class="demo"><div class="choices" aria-label="示例步骤"><button type="button" data-step="0" aria-pressed="true">Step 1 · 起草<small>先把 Opening 写出来</small></button><button type="button" data-step="1" aria-pressed="false">Step 2 · 局部修改<small>保留反馈，缩小修改范围</small></button><button type="button" data-step="2" aria-pressed="false">Step 3 · 明确确认<small>保护已经定下来的文字</small></button><button type="button" data-step="3" aria-pressed="false">Step 4 · 接着做<small>恢复进度，再改下一部分</small></button></div><div class="result" aria-live="polite"><span class="status" id="run-status">示例 · 等待反馈</span><h3 id="run-title">目标：让新读者理解这个 skill</h3><div class="label">你的原始输入 · 示例</div><blockquote id="run-input">“先写 Opening，让别人知道这个东西可以拿来做什么。”</blockquote><div class="label">系统应当怎样处理</div><p id="run-action">保存原始要求和修改范围，写出候选 Opening，再把实际保存的文字展示给你。不能只说“已修改”。</p><div class="label">本步应留下什么</div><p id="run-record">原始输入、完整候选文字、源文件身份、检查结果，以及下一步等待什么反馈。</p></div></div>
+<div class="grid" style="margin-top:20px"><article class="card"><h3>三个词，三种尺度</h3><p><strong>Run：</strong>把 skill 介绍写清楚这一件事。</p><p><strong>Version：</strong>围绕这个目标的一轮讨论与确认。</p><p><strong>Step：</strong>某次反馈，以及它带来的结果。</p></article><article class="card"><h3>每一步都有修改边界</h3><p>你说“改 Opening”，不等于允许重写整个 Page。你说“Opening 定了”，也不等于整页验收通过。出现外部编辑时，应核对当前源文件，不能覆盖新修改。</p></article></div>
+<h3>以这份指南为例，下一步怎样推进？</h3><div class="table-wrap"><table><thead><tr><th>你可以这样提要求</th><th>修改对象</th><th>完成标准</th></tr></thead><tbody><tr><td>“Opening 再短一点。”</td><td>页首介绍</td><td>返回完整改后文字，其他部分保持不变。</td></tr><tr><td>“把 Board 的关系画得更清楚。”</td><td>第 03 部分</td><td>说明同一份内容、两个入口，不暗示复制同步。</td></tr><tr><td>“先把真实的 page-run 接上。”</td><td>Run 功能实现</td><td>真正保存输入和结果，支持跨会话恢复；需要实现与测试，不能靠示例按钮代替。</td></tr></tbody></table></div>
+</section>
+<section class="section" id="status"><div class="eyebrow">05 / What works today</div><h2>哪些能用，哪些还在下一步。</h2><div class="table-wrap"><table><thead><tr><th>能力</th><th>当前情况</th><th>这份页面是否提供</th></tr></thead><tbody><tr><td>独立 Page 创建与静态构建</td><td>已有 Page CLI</td><td>是。本指南由 Page runtime 构建。</td></tr><tr><td>Page 工作服务与源码编辑</td><td>已有独立服务能力</td><td>本链接只提供阅读，不开放在线写入。</td></tr><tr><td>Board 组织同一份 Page</td><td>已有源目录范围内接入</td><td>未登记 Board 分组；由独立 Page 只读服务托管，不依赖 Board 运行。</td></tr><tr><td>Run / Version / Step 记录协议</td><td>已有 agent 执行规范</td><td>指南解释协议，不宣称已开启真实 Run。</td></tr><tr><td>自动记录、差异浏览、确认控件</td><td>待实现</td><td>没有。上方仅为教学示例。</td></tr></tbody></table></div>
+<details><summary>“结束这一轮”为什么不等于“整个 Page 完成”？</summary><p>本轮可能只确认 Opening。Content、证据、其他 Aims 或交付检查仍可能没有完成。每次关闭都需要说清范围，不把局部同意升级成整页通过。</p></details>
+<details><summary>真正的 page-run 至少要保存什么？</summary><p>目标与范围、你的原始反馈、修改前后完整内容、每条反馈的处理结果、已确认文字、当前步骤和下一步。历史记录追加保存；当前进度由这些记录恢复。</p></details>
+<details><summary>我现在应该怎么继续改这页？</summary><p>直接在这次对话里指出位置和要求，例如“把第 04 部分的 Step 2 改得更具体”。本页面没有自动收集评论；只有你实际发来的反馈才会进入后续工作。</p></details>
+</section>
+</main>
+<footer class="footer"><div class="wrap">haipipe-page · 中文使用指南 · 2026-09-12<br>说明依据：Page v0.66.0 与 Interactive Writing Run 规范。此页面不包含个人数据，不加载外部资源。<br><a href="guide.html" download="haipipe-page-guide.html">下载这份指南的 HTML 源码</a> · <a href="#opening">返回顶部 ↑</a></div></footer>
+<script>
+const examples=[
+{status:'示例 · 等待反馈',title:'目标：让新读者理解这个 skill',input:'“先写 Opening，让别人知道这个东西可以拿来做什么。”',action:'保存原始要求和修改范围，写出候选 Opening，再把实际保存的文字展示给你。不能只说“已修改”。',record:'原始输入、完整候选文字、源文件身份、检查结果，以及下一步等待什么反馈。'},
+{status:'示例 · 仍未确认',title:'只改你指出的那一部分',input:'“太技术化了，少讲内部结构，多讲我能拿它做什么。”',action:'保留这条原始反馈，单独记录理解；只修改 Opening。展示完整新文字和修改理由，不顺手重写 Content。',record:'反馈原文、前后文字、处理结果；没有变化的其他段落也应通过范围检查。'},
+{status:'示例 · 仅 Opening 已确认',title:'确认是有范围的',input:'“Opening 就用这一版，下面看看 Outline。”',action:'记录谁确认了哪一步的哪段文字，保持这一段不变，再转向规划。不能把这句话解释成整页已通过。',record:'确认原话、目标段落、对应版本与内容身份；待讨论项转到 Outline。'},
+{status:'示例 · 同一 Run 继续',title:'下一次，不需要从头解释',input:'“继续昨天那页，给 Content 加一个 HTML 的例子。”',action:'重新读取 Run 记录和当前源文件，恢复已确认的 Opening，并定位新增例子的范围。外部文件变化需要先核对。',record:'新 Step 的输入和结果、保留的有效决定、当前工作位置；不能捏造未读取的聊天记录。'}
+];document.querySelectorAll('[data-step]').forEach(button=>button.addEventListener('click',()=>{const item=examples[Number(button.dataset.step)];document.querySelectorAll('[data-step]').forEach(other=>other.setAttribute('aria-pressed',String(other===button)));for(const key of ['status','title','input','action','record'])document.getElementById('run-'+key).textContent=item[key];}));
+</script>
+</body>
+</html>

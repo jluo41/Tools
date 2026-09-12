@@ -169,9 +169,9 @@ limits. A consumer never treats a legacy source index as a Result receipt.
 - `../../haipipe-discovery/ref/page-types.md` — type-specific payload promises.
 - `../../haipipe-discovery/ref/paper-run-contract.md` — Level-4 artifacts.
 - `../../haipipe-discovery/scripts/paper_runs.py` — deterministic gate.
-- `../../../board/page-workflows/haipipe-page-workflow/SKILL.md` — the only
+- `../../../page/page-workflows/haipipe-page-workflow/SKILL.md` — the only
   Page lifecycle and phase router.
-- `../../../board/page-plugins/haipipe-plugin-outline/SKILL.md` — Outline and
+- `../../../page/page-plugins/haipipe-plugin-outline/SKILL.md` — Outline and
   Evidence Workspace owner.
-- `../../../board/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md`
+- `../../../page/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md`
   — CITE verification and derived Bib authority.

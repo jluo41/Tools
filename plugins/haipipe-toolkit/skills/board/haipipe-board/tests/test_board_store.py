@@ -82,7 +82,7 @@ class BoardStoreContractTest(unittest.TestCase):
     def test_land_cycle_states_the_result_store(self):
         # the probe router retired 260901; the result-store resolution law
         # lives with the LAND cycle, which writes the row's result pointer
-        text = (self.SKILLS / "board/page-workflows/haipipe-page-evidence/SKILL.md").read_text(encoding="utf-8")
+        text = (self.SKILLS / "page/page-workflows/haipipe-page-evidence/SKILL.md").read_text(encoding="utf-8")
         self.assertIn("result_store:", text)
         self.assertIn("RESULT_STORE", text)
 

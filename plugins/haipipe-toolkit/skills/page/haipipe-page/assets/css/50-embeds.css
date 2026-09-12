@@ -1,0 +1,35 @@
+/* ── QF1 · embeds: another file's content shown by reference (live) ────── */
+.embed{border:1px solid var(--line);border-radius:var(--radius-control);margin:10px 0;background:var(--card);overflow:hidden}
+.embed .emh{display:flex;gap:10px;align-items:center;padding:5px 11px;font-size:12.5px;
+  border-bottom:1px solid var(--line);background:var(--pre)}
+.embed .emh .es{color:var(--mut)}
+.embed .elive{margin-left:auto;color:var(--mut);font-size:11px;letter-spacing:.4px;text-transform:uppercase}
+.embed .emb{padding:9px 13px;font-size:14px;max-height:34em;overflow:auto}
+.embed .emb p{margin:5px 0;line-height:1.5}
+.embed .emb ul{margin:5px 0 5px 4px;padding-left:16px}
+.embed .emb li{margin:2px 0;line-height:1.45}
+.embed .emb pre{margin:7px 0;padding:9px 11px;background:var(--pre);border-radius:var(--radius-control);
+  overflow-x:auto;font-size:12.5px;line-height:1.5}
+.embed .eh{font-weight:700;margin:11px 0 4px}
+.embed .eh1{font-size:16px;border-bottom:1px solid var(--line);padding-bottom:3px}
+.embed .eh2{font-size:15px;border-bottom:1px solid var(--line);padding-bottom:2px}
+.embed .eh3,.embed .eh4,.embed .eh5,.embed .eh6{font-size:14px;color:var(--fg)}
+.embed .eq{border-left:3px solid var(--line);padding:2px 0 2px 9px;margin:4px 0;color:var(--mut)}
+.embed .er{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+  white-space:pre;overflow-x:auto;line-height:1.6}
+.embed.miss{border-color:var(--todo);color:var(--todo);padding:7px 11px;font-size:13.5px}
+/* `|source`: the same file, shown as its own bytes. Flat against the frame so
+   it reads as a listing rather than as a second rendered block. */
+/* A `|source` embed IS the page's content, not a quotation inside it (JL
+   260726: "we cannot see the content of SKILL.md"). The 34em clamp turned a
+   517-line skill file into a peephole with its own scrollbar, competing with
+   the section fold the reader already controls. One control, not two. */
+.embed.src .emb{padding:0;max-height:none}
+.embed.src .emb pre{margin:0;border-radius:0;background:transparent;
+  font-size:12.5px;line-height:1.62}
+
+/* ── QF2 · doc slides: source files rendered directly, no Q wrapper ───── */
+.slide.doc .embed.doc .emb{max-height:none}
+.pill.docp{border:1px solid var(--line);color:var(--mut);background:var(--pre)}
+.ir.doc .s{filter:none}
+.ir.doc .t{color:var(--mut)}

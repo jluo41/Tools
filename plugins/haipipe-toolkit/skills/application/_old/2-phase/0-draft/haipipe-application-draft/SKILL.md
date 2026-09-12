@@ -15,7 +15,7 @@ Skill: haipipe-application-draft (internal phase worker)
 
 DRAFT phase worker. A stage calls it whenever the Page router enters DRAFT. The calling stage passes its artifact spec (files, content structure, done-criteria); this worker turns intent into a settled stage doc.
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-workflows/haipipe-page-draft/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../page/page-workflows/haipipe-page-draft/SKILL.md`.
 Those contracts own the Stage Page shape and DRAFT authority.
 This file adds only application artifact knowledge.
 

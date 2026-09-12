@@ -57,6 +57,13 @@ item, execution version, RF, Result path and hash; they never mean “latest”.
 The Page workflow
 =================
 
+The Page family is canonical under `skills/page/`, separate from
+`skills/board/`: `haipipe-page`, `haipipe-sentence`, `haipipe-plugin`,
+`page-workflows/` and `page-plugins/`. The Page runtime owns file intake,
+individual rendering and standalone editing/hosting. Board owns membership,
+Groups, navigation and aggregate builds, and calls the same Page code.
+Old Board paths are compatibility links, not a second implementation.
+
 The Page Face is a small, numbered workflow. The numbers are records, not
 extra folder levels:
 
@@ -162,7 +169,7 @@ Where to read next
 
 * `README.md` — user-facing doors and the Run/Result overview.
 * `skills/run/haipipe-run/SKILL.md` — the neutral Level-4 contract.
-* `skills/board/page-workflows/haipipe-page-workflow/SKILL.md` — the Page loop.
-* `skills/board/page-plugins/haipipe-plugin-outline/` — Bullet/Evidence
+* `skills/page/page-workflows/haipipe-page-workflow/SKILL.md` — the Page loop.
+* `skills/page/page-plugins/haipipe-plugin-outline/` — Bullet/Evidence
   Workspaces and the evidence-item table.
-* `skills/board/page-plugins/haipipe-plugin-runs/` — the read-only Runs view.
+* `skills/page/page-plugins/haipipe-plugin-runs/` — the read-only Runs view.

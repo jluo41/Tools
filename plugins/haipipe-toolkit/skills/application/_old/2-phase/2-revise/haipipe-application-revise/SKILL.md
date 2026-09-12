@@ -15,7 +15,7 @@ Skill: haipipe-application-revise (internal phase worker)
 
 REVISE phase worker. Runs whenever the Page router selects REVISE. Agent-only: change the text directly and leave a short why-comment in `_LOG`; never switch to comment-first mode.
 
-**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../board/page-workflows/haipipe-page-revise/SKILL.md`.
+**LOAD THE PAGE LAYERS FIRST:** `../../../../board/page-types/haipipe-page-for-stage/SKILL.md`, then `../../../../page/page-workflows/haipipe-page-revise/SKILL.md`.
 This file adds application quality rules to that fixed-promise authority.
 
 ## What REVISE means

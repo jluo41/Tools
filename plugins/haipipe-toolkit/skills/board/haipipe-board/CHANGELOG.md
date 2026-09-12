@@ -3821,3 +3821,12 @@ Known gaps (tracked on the board at `0_utils/diagram/BoardSkillBoard-260722/`): 
 
 - Align the Board form/example and plan-shape documentation with
   `v<G>.<S>[.<E>]`; preserve integer-only forms only as legacy input.
+## 0.183.0 · 2026-09-12
+
+- Consume the shared Page runtime from `skills/page/haipipe-page` while retaining
+  old module-path compatibility.
+- Discover and register standalone `page.toml` Page Folders without duplicating
+  their Page Face or imported content.
+- Resolve independent Page editing targets and rebuild the owning Page when
+  no Board exists; preserve Board-wide hosting and navigation for members.
+- Validate short registered imports structurally rather than by prose length.

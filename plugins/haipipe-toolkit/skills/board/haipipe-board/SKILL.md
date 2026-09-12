@@ -7,8 +7,8 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.182.0"
-  last_updated: "2026-09-11"
+  version: "0.183.0"
+  last_updated: "2026-09-12"
   # version history: ./CHANGELOG.md
 ---
 
@@ -24,15 +24,24 @@ how child work objects become Groups and Pages. Markdown is authoritative;
 |---|---|---|
 | Folder | `haipipe-folder` | Page Face + Task Face base contract |
 | Board | `haipipe-board` | container, Groups, Page roster, build, serve, aggregate close |
-| Page | `haipipe-page` | readable frame, Folder-kind resolution, Page lifecycle entry |
+| Page | `haipipe-page` | self-contained Folder, file intake, renderer, source editor, standalone hosting, lifecycle entry |
 | Page lifecycle | `haipipe-page-workflow` | `RUN`, phase routing, packet, receipt, stop conditions |
 | Sentence | `haipipe-sentence` | comment, edit, card |
 | Page lane | the matching plugin | Outline, Studio, Runs, Delivery, Folder, or domain lane |
 
 One-Page work always routes through `haipipe-page`, even when invoked from the
 Board. `haipipe-page` exposes the `RUN` verb; `haipipe-page-workflow` owns its
-grammar. This skill supplies the renderer, checker, server, and deterministic
-lifecycle machinery, but owns no Page phase.
+grammar. This skill supplies Board chrome, aggregate checking, Board hosting
+and deterministic lifecycle adapters, but owns no Page phase. The shared Page
+parser, renderer and live Outline/Evidence presenters are owned by
+`skills/page/haipipe-page`; old Board module paths are compatibility links.
+Standalone Page creation/build/serve uses that skill's `cli/page.py` without
+`board.md`. Board registration is optional and points at the same source.
+
+A Page Folder with `page.toml` may use an ordinary source filename. Register
+its Board-relative Page Face path in the desired `## Pages` group, then build
+the Board; do not re-import or duplicate its content. Group descriptions belong
+to Board metadata, not to the independent Page's base contract.
 
 ## 🗂 Choose the Board kind
 

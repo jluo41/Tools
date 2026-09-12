@@ -74,5 +74,5 @@ unrouted:  [<items needing an owner decision>]
 ## 📂 Related contracts
 
 - `../haipipe-project/SKILL.md` · project/SPACE container ownership
-- `../../board/page-workflows/haipipe-page-outline/SKILL.md` · discussion and plan routing
-- `../../board/page-workflows/haipipe-page-content/SKILL.md` · content routing
+- `../../page/page-workflows/haipipe-page-outline/SKILL.md` · discussion and plan routing
+- `../../page/page-workflows/haipipe-page-content/SKILL.md` · content routing

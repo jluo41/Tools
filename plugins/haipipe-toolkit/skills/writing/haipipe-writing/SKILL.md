@@ -59,7 +59,7 @@ cumulative author work, not raw material for regeneration.
 ## 🤝 Interactive Page writing
 
 When the host is a collaborative Page Writing Run, load
-`../../board/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
+`../../page/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
 The host saves original feedback and the Step result; this worker owns the
 requested prose patch, not Run allocation, human acceptance or publication.
 

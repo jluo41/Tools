@@ -1,0 +1,27 @@
+/* Standalone host chrome only. Shared Page typography/layout live in css/. */
+.page-toolbar{position:sticky;top:0;z-index:40;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding:12px 26px;border-bottom:1px solid var(--line);background:var(--card);font-size:13px}
+.page-toolbar strong{font-weight:650}.page-toolbar nav{display:flex;gap:18px;flex-wrap:wrap}
+.page-toolbar a{color:var(--accent);text-decoration:none}.page-toolbar a:hover{text-decoration:underline}
+.page-toolbar nav{position:relative;align-items:center}.page-toolbar button{font:inherit}
+#page-plugin-button{border:1px solid var(--line);border-radius:var(--radius-pill);padding:5px 11px;background:var(--accent);color:#fff;cursor:pointer;font-weight:650}
+#page-plugin-button[aria-pressed="true"]{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.page-plugin-menu{position:absolute;right:0;top:calc(100% + 9px);z-index:70;width:min(310px,calc(100vw - 32px));padding:5px;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.2)}
+.page-plugin-menu[hidden]{display:none}.page-plugin-menu-row{display:block;width:100%;padding:9px 10px;border:0;border-radius:7px;background:transparent;color:var(--fg);cursor:pointer;text-align:left}
+.page-plugin-menu-row:hover,.page-plugin-menu-row:focus-visible{background:var(--pre);outline:none}.page-plugin-menu-row b,.page-plugin-menu-row span{display:block}.page-plugin-menu-row b{font-size:14px}.page-plugin-menu-row span{margin-top:2px;color:var(--mut);font-size:12px}
+.page-stage{min-width:0}.page-primary{min-width:0}.page-plugin-pane{min-width:0;height:calc(100vh - 53px);position:sticky;top:53px;display:flex;flex-direction:column;border-left:1px solid var(--line);background:var(--bg)}
+.page-plugin-pane[hidden]{display:none}body.plugin-open .page-stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,48vw)}
+.page-plugin-tabs{flex:0 0 auto;display:flex;gap:2px;overflow-x:auto;padding:5px 6px 0;border-bottom:1px solid var(--line);background:var(--card)}
+.page-plugin-tab-wrap{position:relative;display:flex;flex:0 0 auto}.page-plugin-tab{min-height:36px;padding:5px 11px;border:1px solid var(--line);border-bottom:0;border-radius:7px 7px 0 0;background:transparent;color:var(--mut);cursor:pointer;font:600 12px/1 ui-monospace,Menlo,monospace}
+.page-plugin-tab[aria-selected="true"]{margin-bottom:-1px;padding:5px 42px 6px 11px;background:var(--bg);color:var(--fg)}.page-plugin-close{display:none;position:absolute;right:0;top:0;bottom:0;width:36px;border:0;background:transparent;color:var(--mut);cursor:pointer;font-size:17px}.page-plugin-tab[aria-selected="true"]+.page-plugin-close{display:block}.page-plugin-close:hover{color:#c94a4a}
+.page-plugin-frames{flex:1;min-height:0;position:relative}.page-plugin-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--bg)}.page-plugin-frame[hidden]{display:none}
+#source-editor{max-width:1000px;margin:0 auto;padding:20px 26px 40px;border-top:1px solid var(--line)}
+#source-editor h2{font-size:20px}#source-editor p{color:var(--mut);font-size:14px}
+.page-footer{max-width:1000px;margin:auto;padding:16px 26px;font-size:12px;color:var(--mut)}
+.source-html{display:block;width:100%;min-height:650px;border:1px solid var(--line);border-radius:var(--radius-control)}
+.attached-source{margin:1.5rem 0}.source-code{max-height:60vh;overflow:auto}.source-caption{font-size:13px;color:var(--mut)}.source-error{color:var(--todo)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+body[data-live="false"] .live-only{display:none}
+body.standalone .q .nav,body.standalone .dadd{display:none}
+body[data-read-only="true"] #save-source{display:none}
+@media(max-width:800px){body.plugin-open .page-stage{display:block}.page-plugin-pane{position:fixed;inset:53px 0 0;z-index:35;height:auto;border-left:0;border-top:1px solid var(--line)}}
+@media(max-width:640px){.page-toolbar{padding:12px 16px}.page-toolbar nav{gap:12px}#source-editor{padding:16px}.source-html{min-height:450px}}
