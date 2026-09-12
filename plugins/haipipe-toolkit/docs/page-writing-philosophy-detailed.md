@@ -55,7 +55,7 @@ A Page run gives me a different role. I participate in deciding what the work sh
 
 ## See the argument before polishing the sentences
 
-![See paragraph logic, then compare each planned point with its sentence.](assets/page-writing-illustrations/v1/detailed/03-see-the-argument.png)
+![An example argument connects difficulty, cause, and response, then expands P2 into two bullet-sentence pairs with support.](assets/page-writing-illustrations/v2/detailed/03-see-the-argument.png)
 
 I would begin a section with a small map. Each paragraph has a purpose, and the arrows explain why one paragraph follows another. If I cannot explain an arrow, I may not yet understand the transition. Seeing the whole section helps me notice that a result arrives before the reader knows the question, or that three paragraphs are all trying to establish the same motivation.
 
@@ -187,4 +187,4 @@ Design note: This essay describes the intended Page writing experience discussed
 
 Illustrations: [Detailed edition](page-writing-philosophy-detailed.md) · [Cartoon edition](page-writing-philosophy-cartoon.md) · [Compare both series](page-writing-philosophy-illustrations.md)
 
-AI-generated detailed explanatory illustrations. Prose is unchanged from the [English reading edition](page-writing-philosophy-english.md). [Generation prompts](assets/page-writing-illustrations/v1/prompts.json).
+AI-generated detailed explanatory illustrations. Prose is unchanged from the [English reading edition](page-writing-philosophy-english.md). [Generation prompts](assets/page-writing-illustrations/v1/prompts.json) · [Revised argument image and prompt](assets/page-writing-illustrations/v2/revision.json).

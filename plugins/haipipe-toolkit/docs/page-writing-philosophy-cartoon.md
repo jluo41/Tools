@@ -105,7 +105,7 @@ Once I say a paragraph is right, that decision should survive the next turn. We 
 
 ## One run, with steps we can return to
 
-![A Run contains Steps that preserve the exchange and let us resume.](assets/page-writing-illustrations/v1/cartoon/06-run-and-steps.png)
+![One Run revises P1 and P2 across Steps: draft both, revise P1 from feedback while keeping P2, then revise P2 while carrying P1 forward. Each Step preserves the exchange and both paragraphs.](assets/page-writing-illustrations/v2/cartoon/06-run-and-steps.png)
 
 The run gives this work a durable identity. It might cover an entire introduction, or only two paragraphs that need attention. A run contains steps. Each step records one meaningful input and the response it produced: the starting brief and first draft, then the comments and revised draft, and eventually the decision to accept the result. A version marks a revision episode in that history. It does not add another execution level between a run and its steps.
 
@@ -187,4 +187,4 @@ Design note: This essay describes the intended Page writing experience discussed
 
 Illustrations: [Detailed edition](page-writing-philosophy-detailed.md) · [Cartoon edition](page-writing-philosophy-cartoon.md) · [Compare both series](page-writing-philosophy-illustrations.md)
 
-AI-generated cartoon illustrations. Prose is unchanged from the [English reading edition](page-writing-philosophy-english.md). [Generation prompts](assets/page-writing-illustrations/v1/prompts.json).
+AI-generated cartoon illustrations. Prose is unchanged from the [English reading edition](page-writing-philosophy-english.md). [Generation prompts](assets/page-writing-illustrations/v1/prompts.json) · [Revised Run/Steps image and prompt](assets/page-writing-illustrations/v2/run-steps-revision.json).

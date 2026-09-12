@@ -26,7 +26,7 @@ See paragraph logic, then compare each planned point with its sentence.
 
 | Detailed explanation | Cartoon illustration |
 | --- | --- |
-| [![See paragraph logic, then compare each planned point with its sentence.](assets/page-writing-illustrations/v1/detailed/03-see-the-argument.png)](assets/page-writing-illustrations/v1/detailed/03-see-the-argument.png) | [![See paragraph logic, then compare each planned point with its sentence.](assets/page-writing-illustrations/v1/cartoon/03-see-the-argument.png)](assets/page-writing-illustrations/v1/cartoon/03-see-the-argument.png) |
+| [![An example argument connects difficulty, cause, and response, then expands P2 into two bullet-sentence pairs with support.](assets/page-writing-illustrations/v2/detailed/03-see-the-argument.png)](assets/page-writing-illustrations/v2/detailed/03-see-the-argument.png) | [![See paragraph logic, then compare each planned point with its sentence.](assets/page-writing-illustrations/v1/cartoon/03-see-the-argument.png)](assets/page-writing-illustrations/v1/cartoon/03-see-the-argument.png) |
 
 ## Keep the feedback with the words it refers to
 
@@ -50,7 +50,7 @@ A Run contains Steps that preserve the exchange and let us resume.
 
 | Detailed explanation | Cartoon illustration |
 | --- | --- |
-| [![A Run contains Steps that preserve the exchange and let us resume.](assets/page-writing-illustrations/v1/detailed/06-run-and-steps.png)](assets/page-writing-illustrations/v1/detailed/06-run-and-steps.png) | [![A Run contains Steps that preserve the exchange and let us resume.](assets/page-writing-illustrations/v1/cartoon/06-run-and-steps.png)](assets/page-writing-illustrations/v1/cartoon/06-run-and-steps.png) |
+| [![A Run contains Steps that preserve the exchange and let us resume.](assets/page-writing-illustrations/v1/detailed/06-run-and-steps.png)](assets/page-writing-illustrations/v1/detailed/06-run-and-steps.png) | [![One Run revises P1 and P2 across Steps: draft both, revise P1 from feedback while keeping P2, then revise P2 while carrying P1 forward. Each Step preserves the exchange and both paragraphs.](assets/page-writing-illustrations/v2/cartoon/06-run-and-steps.png)](assets/page-writing-illustrations/v2/cartoon/06-run-and-steps.png) |
 
 ## Return the revision while the thought is fresh
 
@@ -86,4 +86,4 @@ Resume on another device with the paragraph and its decisions intact.
 
 ---
 
-These are conceptual illustrations, not screenshots of implemented software or research evidence. Generated with the built-in image generation tool. [Prompts](assets/page-writing-illustrations/v1/prompts.json) · [Original quotations](page-writing-philosophy.md) · [English reading edition](page-writing-philosophy-english.md).
+These are conceptual illustrations, not screenshots of implemented software or research evidence. Generated with the built-in image generation tool. [Prompts](assets/page-writing-illustrations/v1/prompts.json) · [Revised argument image and prompt](assets/page-writing-illustrations/v2/revision.json) · [Revised Run/Steps image and prompt](assets/page-writing-illustrations/v2/run-steps-revision.json) · [Original quotations](page-writing-philosophy.md) · [English reading edition](page-writing-philosophy-english.md).

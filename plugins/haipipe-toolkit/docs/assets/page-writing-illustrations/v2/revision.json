@@ -2,7 +2,7 @@
   "id": "03-see-the-argument",
   "style": "detailed",
   "revision": "v2",
-  "status": "generation-pending",
+  "status": "visual-review-complete-awaiting-user-preference",
   "mode": "built-in image_gen",
   "feedback": "I feel the idea here is not well conveyed, the image here is not that good",
   "source_asset": "../v1/detailed/03-see-the-argument.png",
@@ -14,5 +14,21 @@
     "Show two functional bullets paired one-to-one with actual candidate sentences.",
     "Attach the author's feedback as support to a specific point.",
     "Remove decorative desk objects; preserve the other 19 illustrations and all article prose."
-  ]
+  ],
+  "asset": {
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2091123,
+    "sha256": "0e386354173581d785b7b86f92d5eb3499da133749cfd86e3ea589ceb31b26e2"
+  },
+  "completed_at": "2026-09-12T05:29:06.958Z",
+  "visual_review": {
+    "paragraph_roles_and_edge_reasons_visible": true,
+    "p2_zoom_connected": true,
+    "functional_bullets_paired_to_exactly_two_sentences": true,
+    "feedback_support_attached_to_one_point": true,
+    "supplied_wording_checked": true,
+    "decorative_desk_objects_removed": true,
+    "previous_asset_preserved": true
+  }
 }

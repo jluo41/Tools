@@ -1,0 +1,38 @@
+{
+  "id": "06-run-and-steps",
+  "style": "cartoon",
+  "revision": "v2",
+  "status": "visual-review-complete-awaiting-user-preference",
+  "tool": "built-in image_gen",
+  "request": "I love the cartoon verison. For this one, could you show how the run's step is connected with the paragraph writing?",
+  "source_asset": "../v1/cartoon/06-run-and-steps.png",
+  "output_asset": "cartoon/06-run-and-steps.png",
+  "meaning": "One Run contains Steps that save human feedback and successive snapshots of the same scoped paragraphs. A Step is an exchange, not a paragraph.",
+  "prompt": "Use case: precise-object-edit.\nAsset type: a cartoon editorial illustration for the blog section \"One run, with steps we can return to\".\nInput image 1: edit target and style reference. Keep its warm amber folder, thick slightly hand-drawn dark outlines, warm white background, simple teal/amber/coral palette, restrained shading, paper packets and bookmark. Redesign the papers so the relation between a Run, its Steps, and paragraph revision is visible without explanation.\n\nPrimary idea: ONE Run revises the SAME TWO paragraphs over several human-feedback Steps. A Step is one input-and-response exchange, NOT a different paragraph. The example shows three steps, not a mandatory three-step workflow.\n\nComposition: landscape 3:2. One big open amber folder, seen almost front-on, containing three large well-spaced paper packets. Lower the front pocket so all packet contents remain readable. Folder tab says \"Run · Revise P1 + P2\". Each packet is a saved step. Small arrows connect packet 1 to 2 and 2 to 3, showing the paragraph state carrying forward. Leave generous whitespace; stay a charming simple cartoon, not a dense technical diagram.\n\nPacket 1:\nHeading \"Step 1\" and small subtitle \"Draft\".\nA small attached request speech bubble reading \"Draft P1 + P2\".\nBelow are TWO separated paragraph blocks, \"P1\" above \"P2\", each depicted with three dark horizontal text strokes. P1 has a teal marker; P2 has a coral marker. Both blocks must be fully visible.\n\nPacket 2:\nHeading \"Step 2\" and subtitle \"Revise P1\".\nA small attached human-feedback speech bubble reading \"Make P1 clearer\", its tail pointing to the P1 block.\nAgain show BOTH P1 and P2. Modify and teal-highlight one short stroke only in P1, with the small label \"revised\". P2 retains the identical three strokes from Step 1 with the label \"unchanged\".\n\nPacket 3:\nHeading \"Step 3\" and subtitle \"Revise P2\".\nA small attached human-feedback speech bubble reading \"Explain P2\", its tail pointing to the P2 block.\nAgain show BOTH P1 and P2. P1 carries forward the identical revised strokes and teal highlight from Step 2, label \"kept\". Modify and coral-highlight one short stroke in P2, label \"revised\".\nKeep the coral bookmark on this latest packet to indicate where to resume, not approval.\n\nOn the front of the folder, one simple readable sentence: \"Each Step saves feedback + the revised paragraphs.\"\nAll English labels exactly as quoted. Friendly clear hand-lettered sans typography. Paragraph content is schematic strokes, not invented prose.\nConstraints: older steps stay visible. NO implication Step 1 = paragraph 1 or Step 2 = paragraph 2. Both P1 and P2 visible in ALL THREE steps. No extra version layer, no acceptance checkmarks, no code, no tables, no busy office props, no decorative robots, no long explanatory text, no watermark. Keep the appealing simplicity of the supplied cartoon while making the editing sequence concrete.",
+  "prose_changed": false,
+  "artifact": {
+    "width": 1536,
+    "height": 1024,
+    "bytes": 1556033,
+    "sha256": "345c353d55bb9493db2826bbba825ab09e872734f854538263a0b62e7fca6fcd"
+  },
+  "document_checks": {
+    "prose_matches_english_reading_edition": true,
+    "original_quotations_unchanged": true,
+    "all_relative_links_resolve": true,
+    "preview_viewports": [1100, 390],
+    "all_images_load_without_page_overflow": true,
+    "scope": "Rendered Markdown image-loading preview of both editions and the comparison gallery; no change to the existing Mermaid source."
+  },
+  "visual_review": {
+    "run_contains_steps": true,
+    "both_paragraphs_visible_in_every_step": true,
+    "feedback_points_to_revised_paragraph": true,
+    "unchanged_paragraph_explicitly_carried_forward": true,
+    "earlier_steps_remain_visible": true,
+    "bookmark_means_resume_not_acceptance": true,
+    "english_labels_checked": true,
+    "cartoon_style_preserved": true,
+    "note": "Paragraph strokes are schematic, not actual prose or a pixel-exact diff. Three Steps illustrate one sequence, not a required Run length."
+  }
+}
