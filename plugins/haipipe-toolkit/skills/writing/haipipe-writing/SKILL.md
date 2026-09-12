@@ -1,7 +1,8 @@
 ---
 name: haipipe-writing
 description: >-
-  The WRITING verb: turn an approved outline and evidence packet into readable
+  The WRITING verb: co-draft scoped Page candidates with human feedback, turn
+  an approved outline and evidence packet into readable
   prose, or revise prose someone already wrote for a weak-English reader,
   recording every edit as a word-level change under the sentence it changed.
   The core operations are `score`, `audit`, `rewrite`, and `check`; plan-aware
@@ -9,8 +10,8 @@ description: >-
   write from an outline, draft from evidence, rewrite this, make this readable,
   too long, sounds like AI, plain English, ✎, /haipipe-writing.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-09-08"
+  version: "0.12.0"
+  last_updated: "2026-09-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -28,6 +29,77 @@ and recording each edit next to the sentence it changed.
 The plan and evidence remain owned by the host workflow. This skill owns prose
 realization, readability, and its `✎` trail; it does not create a competing
 outline, evidence ledger, or claim authority.
+
+## 🚨 Highest-priority rule · surgical revision
+
+When prose already exists, **preservation is the default**. Treat the person's
+request as an edit boundary, not as permission to regenerate the passage. A
+request to revise a word, clause, sentence, transition, Bullet, or named
+paragraph authorizes only that target and the smallest seam needed to keep it
+grammatical. It never authorizes a fresh draft of the surrounding text.
+
+Before editing, name the boundary from the person's words, then:
+
+- freeze every untouched claim, logical relation, order, example, citation,
+  hedge, term, voice choice, and paragraph function;
+- make the smallest viable patch inside the named boundary;
+- change an adjacent transition only when the target cannot work without that
+  seam, and disclose that extra change;
+- report broader problems as suggestions without fixing them unless the person
+  explicitly expands the scope.
+
+Never turn a local wording request into paragraph reorganization, argument
+replacement, example substitution, claim expansion or contraction, or a
+general style pass. Rewrite or restructure a paragraph or section only when
+the person explicitly requests that scope. When scope is ambiguous, choose the
+smaller edit. Afterward, compare before and after and confirm that everything
+outside the declared boundary stayed unchanged. The existing draft is
+cumulative author work, not raw material for regeneration.
+
+## 🤝 Interactive Page writing
+
+When the host is a collaborative Page Writing Run, load
+`../../board/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
+The host saves original feedback and the Step result; this worker owns the
+requested prose patch, not Run allocation, human acceptance or publication.
+
+SHAPE's candidate preview may be written before approval/evidence completion.
+State every unsupported slot explicitly; never treat a placeholder as evidence.
+Work from either the sentence or its Bullet, returning dependent plan changes
+to SHAPE. A Section uses one functional Bullet per sentence. Give each feedback
+item a disposition and concrete reason; preserve its original text separately
+from interpretation. Do not turn `applied` into `accepted`.
+
+Use the existing effective policy/exemplar packet for a local turn; do not
+re-read the whole corpus, rescore the whole Page or run broad humanization
+after every comment. Whole-passage review happens when requested or at a
+checkpoint. Record genuine wording changes with the existing `wdiff.py`
+adapter where its host format supports it; the Step's before/after text and
+reasons are always required. Never inject diff apparatus into a preview
+sentence field that permits prose only.
+
+On a Page handoff, the host's
+`haipipe-page/ref/user-check-packet.md` controls the full-paragraph return and
+two final Workspace links. No chat-only polishing, implicit acceptance, or
+silent rewrite of accepted/out-of-scope paragraphs.
+
+## ✍️ Default Page writing style
+
+For Page paragraph realization, use a concrete-before-polished register unless
+the resolved Page Face owner, venue, or frozen Context supplies a narrower
+policy. Start with the real subject and a reader-relevant verb; keep one main
+reader move per sentence; use specific nouns and verbs; vary rhythm without a
+formula; and preserve the exact claim strength, uncertainty, numbers, and
+citation boundary. Keep process instructions in the Ticket or Outline, never
+in the manuscript. In particular, do not write “this paragraph discusses,”
+“the following section,” “it is important to note,” or planner commands such as
+“explain,” “show,” and “introduce” as visible prose.
+
+When someone says “too AI,” report the concrete span and failure (generic
+setup, inflated importance, repeated syntax, empty transition, unsupported
+framing, or restatement). Repair that span in context; do not use a word
+blacklist, invent an author's voice, or promise undetectability. A missing
+required style policy or approved exemplar routes to CONTEXT/HOLD.
 
 ## 🧭 1 · What it does, in one picture
 
@@ -60,7 +132,9 @@ and audits the result.
 
 ## 🧩 Outline/evidence-aware realization
 
-Use this path when the host has an approved plan, outline, narrative row, or
+This section is the approved/publication realization path; interactive SHAPE
+rehearsal uses the bounded candidate path above. Use this path when the host
+has an approved plan, outline, narrative row, or
 division writing ticket and the evidence it names is ready. Read
 [`ref/realize-from-plan.md`](ref/realize-from-plan.md) before writing. It turns
 the host's existing plan/evidence fields into a temporary writing packet; the
@@ -85,6 +159,12 @@ The realization worker:
 6. Audits coverage, claim/evidence fit, protected numbers and citations, holes,
    and introduced AI tells. If the problem is the plan, evidence, or promise,
    route back to the owning phase instead of repairing it in prose.
+
+For a Page-changing host response, return the direct Bullet Workspace
+(`&lens=div`) and Evidence Workspace (`&lens=workspace&seg=items`) links from
+the same verified public Board URL using the host's user-check packet. A
+compact Page link or embedded Evidence iframe is secondary and never a
+substitute for those direct workspace views.
 
 For a first draft, the writing run/host receipt is the trace of realization. For
 a revision of existing prose, `wdiff.py` is the only writer of the word-level

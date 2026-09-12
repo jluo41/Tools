@@ -760,11 +760,20 @@ def display_register(main, appx, extra_findings=()):
         if not page.startswith("S-"): continue
         dec, _t = page_heading({"dir": page_dir, "id": page})
         idx = page_index(page)
-        if idx and dec and idx != dec:
+        abstract_page = is_abstract({"dir": page_dir, "id": page})
+        if idx == "0" and abstract_page:
+            # 0.7.10 (JL 260909): the Abstract may carry index 0 so it sorts and reads
+            # like its siblings (S-MISQ-Main-0-Abstract), while the printed document
+            # still gives it no section number, so its H1 carries no §. Legal only for
+            # an abstract: 0 on any other page is a real mismatch.
+            pass
+        elif idx == "0":
+            findings.append(f"{page}: index 0 is reserved for the Abstract")
+        elif idx and dec and idx != dec:
             findings.append(f"{page}: folder index {idx} but its H1 says {'Appendix ' + dec if dec.isalpha() else '§' + dec}")
         elif idx and not dec:
             findings.append(f"{page}: folder index {idx} but its H1 declares no § or Appendix letter")
-        elif dec and not idx and not is_abstract({"dir": page_dir, "id": page}):
+        elif dec and not idx and not abstract_page:
             findings.append(f"{page}: H1 says {'Appendix ' + dec if dec.isalpha() else '§' + dec} but the page id carries no index (want S-<desk>-{'Appendix' if dec.isalpha() else 'Main'}-{dec}-<Title>)")
         disp = page_dir / "outline" / "evidence" / "display"
         for unit_dir in sorted(u for u in disp.glob("*/") if u.is_dir()) if disp.exists() else []:

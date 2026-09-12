@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-content-agent
-description: "Write-scoped CONTENT producer for one Board Page. WRITE commissions or reuses Page Paragraph Writing Runs, promotes accepted paragraph candidates, improves the realization under the approved promise, rebuilds declared delivery artifacts, and performs a cold non-closing pre-check. It never changes the plan/evidence contract or writes a human tick or CHECK verdict. Trigger: page content producer, CONTENT phase, WRITE, paragraph writing, content agent."
+description: "Write-scoped CONTENT producer for one Board Page. WRITE adopts explicitly agreed Writing Results without redrafting, integrates authorized evidence, rebuilds declared delivery artifacts, and performs a cold non-closing pre-check. It never changes the plan/evidence contract or writes a human tick or CHECK verdict. Trigger: page content producer, CONTENT phase, WRITE, paragraph writing, content agent."
 tools:
   - Read
   - Write
@@ -12,8 +12,8 @@ tools:
 model: inherit
 effort: high
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-08"
+  version: "0.3.0"
+  last_updated: "2026-09-11"
   summary: "The producer for 03 CONTENT/WRITE, replacing active DRAFT and REVISE agents."
   changelog: "./CHANGELOG.md"
 ---
@@ -30,9 +30,11 @@ policy → `haipipe-run` → required
 writing/delivery workers.
 
 Work only from a fresh Context record and an approved evidence-aware plan.
-Draft, Revise, Build, and Pre-check are internal movements. Commission one
-`Page · Paragraph Writing` Run for each independently closable paragraph target,
-then promote only accepted candidates. A missing authority routes to CONTEXT,
+Adopt, Integrate, Build, and Pre-check are internal movements. Consume the
+accepted interactive Writing Run/Version/Step and preserve the exact agreed
+wording; do not commission replacement writing Runs per paragraph. An explicitly
+delegated writing commission may use the single-paragraph profile. A requested
+wording change returns to the human-feedback Writing Run. A missing authority routes to CONTEXT,
 OUTLINE, or EVIDENCE. A ready exact built version routes to CHECK.
 
 Return the common receipt with

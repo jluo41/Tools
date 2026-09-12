@@ -1,3 +1,20 @@
+## 0.12.0 · 2026-09-11
+
+- Make agreed-text adoption the default CONTENT handoff. No automatic redraft/humanizer or replacement Run per paragraph. Retain explicit delegated single-paragraph promotion and formal delivery gates.
+
+## 0.11.0 · 2026-09-10
+
+- Consume reviewed SHAPE preview slices as prior candidate prose in Paragraph Runs, revalidate evidence and style, then use normal promotion.
+
+## 0.10.0 · 2026-09-09
+
+- Add a concrete-before-polished default writing style for paragraph Runs:
+  subject-first sentences, one primary reader move, specific language, and no
+  process/AI-shaped scaffolding; owner and venue policies still take priority.
+- Require Page-changing CONTENT responses to return direct Bullet Workspace
+  (`lens=div`) and Evidence Workspace (`lens=workspace&seg=items`) links from
+  the same verified public Board route.
+
 ## 0.9.2 · 2026-09-08
 
 - Connect the optional HAI anti-slop adapter to Paragraph Writing Runs as a

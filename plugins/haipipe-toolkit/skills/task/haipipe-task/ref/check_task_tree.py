@@ -242,7 +242,7 @@ def check(root):
     # ── dialect-neutral rows of ref/task-tree-checklist.md (JL 260904) ──────────
     # Every one of these is a thing the 260904 PhyReview restructure shipped
     # broken and no code above caught: no runs/ in 19 tasks, tickets off the
-    # rNN_ grammar, batchers in runs/, Results inside Tasks, config outside
+    # rNN_ grammar, batchers in runs/, Results at the Job level, config outside
     # scripts/, parents[N] root walks, and a store folder named after a Ticket.
     TICKET = re.compile(r'^r\d\d_')
     for block in rows(root):
@@ -254,14 +254,9 @@ def check(root):
             # results/ is generated and is never pre-created)
             if not (job/"src").is_dir():
                 bad("S17", job.name, "no src/; add src/.gitkeep naming the job's shared-code slot")
-            # R01 / R05 results at the job level pair with a task and carry a receipt
+            # S12 a job-level results/ is the pre-260909 shape; Results live inside the Task that owns the Run (JL 260909)
             if (job/"results").is_dir():
-                for d in sorted(p for p in (job/"results").iterdir() if p.is_dir()):
-                    if d.name not in names:
-                        bad("R05", f"{job.name}/results/{d.name}", "no such task in this job"); continue
-                    for run in sorted(p for p in d.iterdir() if p.is_dir()):
-                        if not (run/"runtime.yaml").is_file():
-                            bad("R01", f"{job.name}/results/{d.name}/{run.name}", "results folder without runtime.yaml")
+                bad("S12", f"{job.name}/results", "results/ at the job level; the law is <job>/<task>/results/<run>/")
             for t in tasks:
                 runs = t/"runs"
                 # .cmd is a first-class ticket dialect (JL 260908). On a locked-down
@@ -269,7 +264,8 @@ def check(root):
                 # Language Mode and there is no bash, so .cmd is the ONLY thing a
                 # person can type; a task whose only ticket was a .cmd was reported
                 # as owing a ticket, and its configs as orphans.
-                tickets = sorted(p for p in runs.glob("*") if p.is_file() and p.suffix in (".sh", ".ps1", ".cmd")) if runs.is_dir() else []
+                # runs/<group>/rNN_* is accepted one level down: the Stata reg jobs file tickets by trait (JL 260909)
+                tickets = sorted(p for p in list(runs.glob("*")) + list(runs.glob("*/*")) if p.is_file() and p.suffix in (".sh", ".ps1", ".cmd")) if runs.is_dir() else []
                 if not any(TICKET.match(p.stem) for p in tickets):
                     bad("R02", t.name, "no runs/ ticket in rNN_ grammar: every task owes at least one")
                 for k in tickets:
@@ -280,8 +276,11 @@ def check(root):
                     body = k.read_text(errors="replace")
                     if re.search(r'\bbash\s+"?[^"\n]*runs/', body):
                         bad("S11", f"{t.name}/runs/{k.name}", "calls other tickets: a batcher belongs in sbatch/")
+                # R01 every <task>/results/<run>/ carries a receipt; a stray file at results/ root is not a Run
                 if (t/"results").is_dir():
-                    bad("S12", t.name, "results/ inside the task; the law is <job>/results/<task>/<run>/")
+                    for run in sorted(p for p in (t/"results").iterdir() if p.is_dir()):
+                        if not (run/"runtime.yaml").is_file():
+                            bad("R01", f"{t.name}/results/{run.name}", "results folder without runtime.yaml")
                 if (t/"configs").is_dir():
                     bad("S14", t.name, "plural config lane at Task root; config lives in scripts/config/")
                 # N7 for yaml dialects: rNN_ configs <-> rNN_ tickets
@@ -307,8 +306,8 @@ def check(root):
                         if l.lstrip().startswith("#"): continue
                         if re.search(r'^\s*(WS_ROOT|WS|REPO_ROOT|ROOT|STORE|ENTRY)\s*=.*\.parents\[\d+\]', l):
                             bad("S13", f"{t.name}/scripts/{py.name}:{i}", "root by parents[N]; use the marker walk (pyproject.toml + code/)")
-                        if re.search(r'(TASK_DIR|TASK|HERE\.parent|HERE\.parents\[1\])\s*/\s*"results"', l):
-                            bad("S12", f"{t.name}/scripts/{py.name}:{i}", "writes results inside the task")
+                        if re.search(r'(JOB_DIR|JOB|HERE\.parents\[2\])\s*/\s*"results"', l):
+                            bad("S12", f"{t.name}/scripts/{py.name}:{i}", "writes results at the job level; the law is <task>/results/<run>/")
                         if '"configs"' in l:
                             bad("S14", f"{t.name}/scripts/{py.name}:{i}", 'reads "configs"; config lives in scripts/config/')
                         if re.search(r'(run_name|RUN_NAME)', l) and re.search(r'cfg\["output"\]|"@review"|"@platforms"', l) and "chunk_dir" not in l:
@@ -327,7 +326,7 @@ def check(root):
             if l.lstrip().startswith("#") or "tasks.old/" in l: continue
             for m in TP.finditer(l):
                 rel = m.group(1).rstrip("/.,;:)\"'`")
-                if "<" in rel or "*" in rel or "$" in rel or "{" in rel or "/results/" in rel or rel.endswith("/results"): continue   # generated paths: R01/R05 own them
+                if "<" in rel or "*" in rel or "$" in rel or "{" in rel or "/results/" in rel or rel.endswith("/results"): continue   # generated paths: R01/S12 own them
                 if not (proj / "tasks" / rel).exists():
                     bad("S16", f"{f.relative_to(root)}:{i}", f"names tasks/{rel}, which does not exist")
 

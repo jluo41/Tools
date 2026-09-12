@@ -19,8 +19,8 @@ For each Task Folder:
 ```text
 CONFIGS   stems of scripts/config/rNN_*.{yaml,yml,do}
 TICKETS   stems of runs/rNN_*.{sh,ps1}
-RESULTS   directory names in $OUTPUT_ROOT/results/<task>/
-NOTEBOOKS stems in $OUTPUT_ROOT/notebooks/<task>/*.ipynb, excluding _source
+RESULTS   directory names in $OUTPUT_ROOT/<task>/results/
+NOTEBOOKS stems in $OUTPUT_ROOT/<task>/notebooks/*.ipynb, excluding _source
 ALL_RUNS  union of the four sets
 ```
 
@@ -35,8 +35,8 @@ For every Run:
 ```text
 <task>/scripts/config/<run>.<engine-config>
 <task>/runs/<run>.<ticket-extension>
-$OUTPUT_ROOT/results/<task>/<run>/runtime.yaml
-$OUTPUT_ROOT/notebooks/<task>/<run>.ipynb   when notebook policy is not off
+$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml
+$OUTPUT_ROOT/<task>/notebooks/<run>.ipynb   when notebook policy is not off
 ```
 
 Check exact stem equality, `rNN_` grammar, receipt fields, config hash, Ticket

@@ -13,8 +13,8 @@ description: >-
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.32.3"
-  last_updated: "2026-09-08"
+  version: "0.37.0"
+  last_updated: "2026-09-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -81,11 +81,67 @@ OUTLINE part
 
 ## 🧱 Bullet · the Outline's primary unit
 
+**Highest-priority revision boundary.** Any edit to existing Bullet Workspace
+text must load `haipipe-writing` and obey its surgical-revision rule. The object
+the person names sets the boundary: a sentence request edits only that Content
+preview sentence; a Bullet request edits only that Bullet; neither authorizes
+changes to neighboring Bullets, sentences, paragraph logic, transitions, or
+Evidence bindings. Edit both sides only when the person requests both, or when
+one cannot remain valid without the other; disclose the latter before treating
+it as part of the patch. A paragraph-wide or structural rewrite requires
+explicit approval. When scope is ambiguous, make the smaller edit and leave
+any broader proposal in Discussion rather than applying it.
+
+SHAPE now shapes both the plan and its candidate prose. In the Bullet Workspace,
+read the left-column Bullet/Evidence beside the right-column Content preview,
+then read the assembled paragraph. Draft and revise those candidate sentences
+during the human discussion, even at v0 or before all Evidence is ready. Mark
+missing factual material explicitly. The source and write protocol are
+`haipipe-plugin-outline/ref/content-preview.md`; load it for this work.
+This preview stays in `outline/<stem>-preview.md`. Collaborative writing uses
+`../haipipe-page-workflow/ref/interactive-writing-run.md`: the current Writing
+Run saves each human exchange as a Step, without another Run per edit or
+paragraph. CONTENT later adopts explicitly agreed wording without redrafting.
+
+**Paragraph-focused handoff.** Follow the routine writing packet in
+`../../haipipe-page/ref/user-check-packet.md`; that shared contract controls
+review-window size, final link placement and low-latency completion.
+
+ When the person and AI are revising one
+paragraph, every response after an applied revision must return the live
+**Bullet Workspace** link and the complete assembled Content preview paragraph
+as it reads after that save, in Bullet order and including unchanged sentences.
+Render the chat copy through the same reader-facing projection as the live
+`Read paragraph`: preserve ordinary manuscript citations, but replace every
+raw pending placeholder such as `[E05-VALUE-headline-association pending]`
+with its compact parenthetical wall label such as `(E05V.Headline)`. Never put
+the full technical Evidence id, pending-status prose, chip, or card inside the
+paragraph handed to the person; those details belong in Evidence Workspace.
+Changed sentences, a diff, or a summary may accompany the paragraph but may
+not replace it. Reproduce the saved preview rather than silently polishing a
+second copy in chat, and show the declared review window (normally one to three complete
+paragraphs), never unrelated Section text. Continue to return the **Evidence Workspace** link where
+the live-Board handoff below requires it. Keep this routine handoff compact:
+the complete saved passage, brief feedback dispositions and reasons, then both
+the Bullet Workspace and Evidence Workspace links at the very end. Do not append the Outline table,
+PDF, or section-wide material unless the person requests a formal review or
+those artifacts were themselves changed.
+
 A **Bullet** is one planned reader move with a stable `C<n>.P<m>.B<k>` address.
 It is smaller than a paragraph and more durable than a sentence: a Section Page
-normally realizes one Bullet as one sentence, while another Page type may use
-one or more sentences. Its head names the job the prose must do, not the final
-prose itself.
+realizes exactly one Bullet as exactly one sentence, while another Page type may use
+one or more sentences. Its source head may use the legacy imperative job form,
+or the clearer Point form `[Role]` followed by one concise substantive planning
+statement. Neither form is final manuscript prose.
+
+In Section rehearsal, revise Bullet and candidate sentence together, starting
+from either side. Give each revised Bullet an honest functional `[Role]` when
+requested, visible beside its substantive statement. Split independent points,
+merge redundant ones, and review evidence bindings rather than hiding several
+sentences in one row. Keep edits in the same unapproved working Shape after
+the first protected fork; ordinary saves do not create versions or approvals.
+The precise reader/save boundary is `ref/content-preview.md` under the Outline
+plugin. Published Page Content and PDF remain unchanged until CONTENT promotion.
 
 ```text
 Bullet
@@ -95,6 +151,35 @@ Bullet
 ├── Evidence      one explicit decision: typed Item(s), or none with reason
 └── Realization   CONTENT-written Page sentence(s), linked with realizes:
 ```
+
+The reader-facing Point form is presentation-only and remains Markdown
+authoritative:
+
+```markdown
+- B1 · [Phenomenon] Physician behavior varies within clinical settings.
+  Note: Clinical settings = clinical decision contexts
+  Note: Focus: differences among physicians facing comparable situations
+  Transition: illustration: general pattern → specific example
+```
+
+The Outline renderer shows `[1 · Phenomenon]` before the statement, turns the
+short Note/Annotation/indented-dash lines into dash annotations, and places one
+`→ [relation]` between adjacent Points for `Transition:`. It does not print
+`Core statement:` or `Note:` labels, invent a role for a legacy head, or turn a
+transition into an extra Bullet/Sentence. The 4–11-word check excludes the
+`S<n> ·` slot and `[Role]` metadata and applies to the concise statement.
+
+For new or edited Bullets, the statement must be plain subject–verb planning
+language, not a command to the future writer. Use an explicit role only when
+it helps the reader (`[Phenomenon]`, `[Example]`, `[Gap]`, `[Mechanism]`, or
+another honest role); otherwise omit the tag and state the substantive point
+directly. Do not start
+the visible head with planner imperatives such as `Open with`, `Explain`,
+`Introduce`, `Name`, `Connect`, `Ask`, `Keep`, `Return`, `Hand`, or `State`.
+Keep rationale and scope as short dash annotations; use `Transition:` for the
+single relation arrow between adjacent Points. Existing imperative heads are
+compatibility input only and are not silently rewritten; migrating them
+requires a new unapproved Shape and human review.
 
 The Bullet is the shared unit across Bullet Workspace and Evidence Workspace.
 SHAPE revises its intended move; SURVEY maps what supports it without changing
@@ -121,14 +206,14 @@ READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
 WRITES   outline/<stem>-outline-v<G>.<S>[.<E>].md · outline/<stem>-evidence-items.md ·
          outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
          record) · outline/evidence/supporting-runs/<stem>-run-bindings.md
-         (generated pointers) · never the page
+         (generated pointers) · outline/<stem>-preview.md · never the page
 CHECKS   ⓪ ARC ① COVERAGE ② ADDRESS ③ VALUE ④ SHAPE, all pass before the
          person is asked (SHAPE); every make-item has an audited Supporting/Local
          Run map, one explicit Local Input, and one decision (SURVEY)
 ENDS     SHAPE: the person's approved: tick releases G>=1 Content; copilot or
          auto may continue checked v0 evidence work while that review is owed · SURVEY: every row
          has an explicit durable make/defer/drop decision
-WALLS    writes no prose · raises no card · executes nothing and lands no Result ·
+WALLS    writes candidate prose only in the preview record; never promotes Page Content · executes nothing and lands no Result ·
          mints no Aim · names no division the type refuses · ticks nothing ·
          keeps v0 planning out of Content · separates Shape and evidence counters · never writes a Status word
 ROUTES   SHAPE → SURVEY (checked v0 or approved G>=1) · SHAPE → CONTENT
@@ -171,7 +256,7 @@ BOTH sides do; it ends when the shape is agreed, never earlier.
             phase policy + venue; the log is history, never a Shape authority;
             every owed thing is a named typed Evidence Item with Label + Expected + Accept
 3 REACT     the person reads the rendered plan on the 🧭 tab: ticks, comments, redirects
-4 REVISE    the AI folds each material human-facing revision into v0.2, v0.3, …
+4 REVISE    update the same unapproved working Shape; save the human exchange as a Writing Step
 loop 3 ⇄ 4 until the person ticks approved:
 ```
 
@@ -181,25 +266,33 @@ a checked `v0.*` Shape; neither may write Content. The first channel approval
 promotes the selected Shape-and-evidence state to `v1.0` only after every
 machine-finishable Evidence Item has been taken as far as it can go. Any
 remaining secure-server or person gate is named on the `approved:` line. From
-generation one onward, a bounded Shape change increments `S`
-and resets `E`; it is reviewed and approved at that same version before
-Content follows it. Evidence-only folds increment `E`, declare
+generation one onward, the first edit of an approved Shape increments `S`
+and resets `E`, creating an unapproved protected fork. Continue ordinary edits
+in that same working file; do not increment the Shape for every feedback Step.
+Review and approve that exact state before Content follows it. Evidence-only folds increment `E`, declare
 `shape-base: v<G>.<S>`, inherit that Shape approval, and do not request a
 duplicate Shape review. When a substantial review or feedback round calls for
 a large structural reconsideration, open the next generation's unapproved
 baseline; approve that exact version only after reviewing the redesign.
 
 Steps 2 and 4 are the chat's verbs (`propose`, `revise`); step 3 is the person
-on the 🧭 tab. "Draft" and "Brief" are not cycle names: Draft is an internal
-movement of the later CONTENT/WRITE phase, while Brief is SHAPE input.
+on the 🧭 tab. "Draft" and "Brief" are not cycle names: candidate drafting may occur alongside
+SHAPE inside the interactive Writing Run; Brief supplies its input. Published
+Content remains a later adoption authority.
 
 The live Bullet Workspace also provides a bounded SHAPE hand-edit path: a
-person may revise one Bullet or append one to a paragraph. The first write
+person may revise one Bullet; additions are made through Markdown or chat,
+not a `+ Bullet` UI control. The first write
 against an approved plan creates the next unapproved Shape version and leaves
 the approved file untouched; later writes stay on that working version. This
 editor changes no Page prose, Evidence Result, or generated Board HTML.
 
-### ① Prepare · one command runs the mechanical half
+### ① Prepare · formal checkpoint, not every wording turn
+
+For a local interactive Step, perform narrow source/mapping checks and inspect
+the live Markdown-backed Workspace. Do not invoke this full pass twice or
+block on a complete Board/PDF build. At initial planning, structural review,
+explicit approval, or formal handoff, use the complete checks below.
 
 ```bash
 python3 <haipipe-board>/cli/outline-pass.py <page>.md
@@ -349,8 +442,8 @@ measured authority is `not specified`, never recalled from memory.
             a one-paragraph division beside five-paragraph peers is flagged for review
 ② ADDRESS   every card and Evidence Item Target names a bullet this plan has
 ③ VALUE     every 🧮 number recomputes (checks/values.py)
-④ SHAPE     divisions match the type's mode · heads 4 to 11 words · Notes
-            ≤ 30 words · no Note quotes the page · nothing V3 refuses ·
+④ SHAPE     divisions match the type's mode · legacy heads or Point statements
+            4 to 11 words · Notes/annotations ≤ 30 words · no Note quotes the page · nothing V3 refuses ·
             every defensive boundary explains a mechanism/interpretation or moves
             to Limitations · no two displays have the same reader purpose
 ```
@@ -407,12 +500,19 @@ the records already on disk, not a second plan and not a prose draft:
    blocks approval, and which choice belongs to the human.  An `approved:` or
    `Decide:` tick is never inferred from a vague positive reaction.
 
-Use clickable local-file links in the response when the host supports them.
+Use clickable links in the response when the host supports them. For a live
+Board route, always return both direct plugin views: **Bullet Workspace**
+(`&lens=div`) and **Evidence Workspace** (`&lens=workspace&seg=items`). The
+compact Outline table and embedded `/_board/evidence?...&embed=1` route are
+useful projections, but neither replaces those two direct workspace links.
+For paragraph-focused revision, the same response also reproduces the complete
+assembled paragraph from the saved Content preview; a list of changed Bullets
+or isolated sentences is not the paragraph handoff.
 If the packet would be long, preserve all four parts but collapse routine
 items into counts and show only material evidence/feedback rows; offer the
-full linked records rather than omitting the provenance.  The same packet is
-required when revising an already-reviewed outline, with a short “changed
-since v<G>.<S>[.<E>]” line under Current Shape.
+full linked records rather than omitting the provenance.  For an explicit full-outline review, use the same packet with a short “changed
+since v<G>.<S>[.<E>]” line. Routine sentence/paragraph feedback instead uses the
+shared compact writing packet; it is not a full-outline approval request.
 
 ### 🧑 The tick governs the fork; mode governs whether work waits
 

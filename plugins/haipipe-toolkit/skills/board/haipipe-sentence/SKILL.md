@@ -8,8 +8,8 @@ description: >-
   edit this sentence, card on these words, sentence address,
   /haipipe-sentence.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-08-10"
+  version: "0.5.0"
+  last_updated: "2026-09-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -31,7 +31,7 @@ the record lifecycle             the details panel's controls
 ```
 
 This skill NEVER renders or serves.
-The grammar's authority is `haipipe-board/ref/board-form.md` §5; this contract cites it and must never fork it.
+The grammar's authority is `haipipe-board/ref/board-form.md` → Body grammar; this contract cites it and must never fork it.
 
 ## ✍️ The unit and its address
 
@@ -76,6 +76,15 @@ Say any of these and this skill runs it. You never call the engine yourself.
 Hover the sentence and click the `＋` in its rail, or select text inside it and click 💬 Comment, then Save. The live layer writes `> Comment WHO … · YYMMDD HHMM` directly beneath that sentence and rebuilds.
 
 There is no comment box at the bottom of the page and never will be: a queue down there makes the reader rebuild the context the writer already had. `## Discussion` is a different grammar and holds only discussion pinned to no sentence.
+
+For candidate sentences in the Outline Bullet Workspace, use the paragraph's
+bottom Comments disclosure instead of the published sentence rail. Select the
+saved `C.P.B` sentence; the comment stores its exact wording in the same preview
+Markdown. `haipipe-plugin-outline/ref/content-preview.md` owns this rehearsal
+extension and its agent-response format. Read its open comments before a
+requested revision, preserve their quotes, and append responses after changes.
+This paragraph-scoped composer is not a page-bottom queue and does not create
+published Content lanes, new Shape versions, or an automatic agent run.
 
 ### ✎ edit · replace one line, leave one record
 
@@ -196,5 +205,5 @@ haipipe-sentence/
 └── CHANGELOG.md        version history
 ```
 
-Reads `haipipe-board/ref/board-form.md` §5 as the authority; owns no scripts.
+Reads `haipipe-board/ref/board-form.md` → Body grammar as the authority; owns no scripts.
 The named next step (QC1b §1): the drawer's lane instructions in `live/chat.py` become this contract's consumer instead of a second prose copy.

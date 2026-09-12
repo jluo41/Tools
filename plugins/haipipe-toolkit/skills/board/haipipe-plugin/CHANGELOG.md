@@ -1,3 +1,7 @@
+## 1.1.0 · 2026-09-11
+
+- Protect interactive Writing Results as irreplaceable human-feedback history, not a regenerable cache.
+
 ## 0.8.0 · 2026-09-03
 
 - Make Skills an explicit Outline-owned storage lane at `outline/skill/`.

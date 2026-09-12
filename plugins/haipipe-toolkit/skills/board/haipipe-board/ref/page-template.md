@@ -56,8 +56,9 @@ Delete every guide comment before the Page is ready.
 ## Content
 <!-- S required; Q optional. Number divisions and paragraphs all the way down.
 Each planned Cn.Pm paragraph realizes its own approved Bullets; keep sentence-
-level realizes backlinks. CONTENT commissions paragraph writing, not one
-paragraph per Bullet. The owner still defines sentence-slot requirements. -->
+level realizes backlinks. Interactive writing co-develops Bullets and candidate
+prose; CONTENT adopts explicitly accepted paragraphs without another drafting
+Run. The owner still defines sentence-slot requirements. -->
 
 ### 1 · First division
 **Division map:** what the diagram previews.

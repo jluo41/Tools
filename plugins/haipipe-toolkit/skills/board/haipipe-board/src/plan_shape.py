@@ -275,11 +275,13 @@ _ADDR = re.compile(r"C(\d+)\.P(\d+)\.B(\d+)")
 
 
 def plan_addresses(plan_text: str) -> set:
-    """-> every C<n>.P<n>.B<n> a plan actually HAS, counted by position.
+    """-> every C<n>.P<n>.B<n> a plan actually HAS.
 
     The same walk `live/outline.py` does, so the two cannot disagree about what
     an address is: `## C<n>` opens a division, any other `## ` ends the plan's
-    divisions, `### ` opens a paragraph, `- B` is a bullet."""
+    divisions, `### ` opens a paragraph, and the explicit ``B<n>`` token is
+    the Bullet identity.  Unnumbered ``-`` rows are not addressable and are
+    intentionally omitted from the returned set."""
     out, cn, pn, sn = set(), 0, 0, 0
     for line in plan_text.splitlines():
         if line.startswith("## ") and not re.match(r"^## C\d+\b", line):
@@ -288,9 +290,10 @@ def plan_addresses(plan_text: str) -> set:
             cn += 1; pn = 0; continue
         if line.startswith("### "):
             pn += 1; sn = 0; continue
-        if line.startswith("- B"):
+        bullet = re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)(\d+)\s*·", line)
+        if bullet:
             sn += 1
-            out.add("C%d.P%d.B%d" % (cn, max(pn, 1), sn))
+            out.add("C%d.P%d.B%d" % (cn, max(pn, 1), int(bullet.group(1))))
     return out
 
 
@@ -330,8 +333,9 @@ def check_bullet_grammar(plan_text: str):
     """-> [finding] · `bullet-missing-note`: a bullet with no folded detail line.
 
     The bullet grammar is `haipipe-plugin-outline` §✂️ (260819): a terse HEAD,
-    then a `Note:`/`Answered:`/`Drawn:` continuation the surface folds, the
-    mark last — every bullet carries one of the three. EVERY plan, approved or
+    then a `Note:`/`Annotation:`/`Transition:`/`Answered:`/`Drawn:`
+    continuation the surface folds, the mark last — every bullet carries one
+    of the three. EVERY plan, approved or
     not (JL 260819: "remove all the legacy-grammar, I don't want to maintain
     the old things"): an old-grammar plan is rewritten on its next OUTLINE
     pass, as the next ``v<G>.<S>[.<E>]`` revision when a tick or evidence
@@ -347,16 +351,25 @@ def check_bullet_grammar(plan_text: str):
             cn += 1; pn = 0; continue
         if line.startswith("### "):
             pn += 1; sn = 0; continue
-        if not line.startswith("- B"):
+        m = re.match(r"^- B(\d+)\s*·\s*(.*)$", line)
+        if not m:
             continue
-        sn += 1
+        sn = int(m.group(1))
         j, folded = i + 1, False
-        while (j < len(lines) and lines[j].startswith("  ")
-               and not lines[j].lstrip().startswith("- ")):
-            if re.match(r"^\s+(Note|Evidence|Accept|More|Answered|Drawn|Routed):", lines[j]):
+        while j < len(lines) and lines[j].startswith("  "):
+            if re.match(r"^\s+(Note|Annotation|Role|Transition|Evidence|Accept|More|Answered|Drawn|Routed):", lines[j]) \
+                    or lines[j].lstrip().startswith("- "):
                 folded = True
                 break
             j += 1
+        point = presentation_point(
+            m.group(2),
+            [x.strip() for x in lines[i + 1:j]],
+            sn,
+        )
+        if point["number_explicit"] and point["number"] != sn:
+            out.append("C%d.P%d.B%d point number %s does not match Bullet number" %
+                       (cn, max(pn, 1), sn, point["number"]))
         if not folded:
             out.append("C%d.P%d.B%d has no Note:/Evidence:/Answered:/Drawn: line"
                        % (cn, max(pn, 1), sn))
@@ -577,16 +590,239 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
     return out
 
 
-# ── the head and Note law (haipipe-plugin-outline ref/plan-grammar.md §3, §4) ──
+# ── the head, Point and annotation law (haipipe-plugin-outline ref/plan-grammar.md §3, §4) ──
 _MARK_EMOJI = "🎯📚📮🧮🔢🖼"
 NOTE_MAX = 30          # the specimen's longest Note is 27 words
-_LABEL_RE = re.compile(r"^\s+(Note|Evidence|Accept|More|Answered|Drawn|Routed):")
+_LABEL_RE = re.compile(
+    r"^\s+(Note|Annotation|More|Role|Transition|Evidence|Accept|Answered|Drawn|Routed):"
+)
+
+
+_POINT_ROLE_RE = re.compile(r"^\s*\[([^\]]+)\]\s*(.*)$")
+_POINT_PREFIX_RE = re.compile(r"^(?:S\d+\s*·\s*)")
+_POINT_INLINE_LABEL_RE = re.compile(
+    r"\s+(?=(?:Note|Annotation|More|Role|Transition|Evidence|Accept|"
+    r"Answered|Drawn|Routed):)"
+)
+# ``live/outline.py`` keeps an indented phrase-only annotation visible while
+# it joins wrapped Markdown lines for the legacy evidence scan.  This private
+# separator prevents a lowercase dash from being mistaken for prose; it is
+# consumed here before the reader-facing Point is rendered.
+_DASH_SENTINEL = "\u241e"
+
+
+def presentation_point(head: str, continuation_lines=(), number=None) -> dict:
+    """Normalize one plan Bullet for reader-facing Point presentation.
+
+    Markdown remains the authority: this helper only separates the compact
+    optional ``[Role]`` presentation prefix, the substantive statement, short
+    annotations, and an optional adjacent-point ``Transition:``.  Existing
+    imperative ``S<n> · ...`` heads remain valid and fall back to the neutral
+    ``Point`` role; no claim, Evidence Item, or stable address is inferred.
+
+    The accepted presentation records are deliberately small::
+
+        - B1 · [Phenomenon] Physician behavior varies within settings.
+          Note: clinical settings = clinical decision contexts
+          Transition: illustration → specific example
+
+    ``Role:`` is accepted as a continuation for authors who prefer not to put
+    the role in the head.  ``Note:``, ``Annotation:``, ``More:`` and indented
+    ``-`` lines become dash annotations; Evidence/Accept/Answered/Drawn/Routed
+    stay process metadata and are not duplicated in the readable Point.
+    """
+    raw = (head or "").strip()
+    # Callers may pass either the text after ``B<n> ·`` or a complete head.
+    raw = re.sub(r"^(?:B|S)\d+\s*·\s*", "", raw)
+    raw = _POINT_PREFIX_RE.sub("", raw).strip()
+    role = ""
+    explicit_number = None
+    match = _POINT_ROLE_RE.match(raw)
+    if match:
+        role_text, raw = match.group(1).strip(), match.group(2).strip()
+        if "·" in role_text:
+            maybe_number, maybe_role = [x.strip() for x in role_text.split("·", 1)]
+            if maybe_number.isdigit():
+                explicit_number = int(maybe_number)
+                role_text = maybe_role
+        role = role_text.strip()
+
+    annotations = []
+    transition = ""
+
+    def add_annotation(value):
+        value = re.sub(r"\s+", " ", value or "").strip()
+        if value and value not in annotations:
+            annotations.append(value)
+
+    # The live renderer joins source lines before it calls this helper.  Keep
+    # phrase-only annotations as their own dash items even when they begin
+    # with a lowercase word (the human-facing grammar does not require an
+    # initial capital).  The sentinel is deliberately not valid author text.
+    if _DASH_SENTINEL in raw:
+        head_raw, *dash_parts = raw.split(_DASH_SENTINEL)
+        raw = head_raw.rstrip()
+        for value in dash_parts:
+            value = value.strip()
+            # A later continuation can follow the phrase-only dash after the
+            # live compatibility join (``␞ phrase Evidence: ...``).  Split
+            # those labels before adding the phrase, otherwise process
+            # metadata would be displayed as if it were reader-facing prose.
+            boundary = re.search(
+                r"\s+(?=(?:Note|Annotation|More|Role|Transition|Evidence|Accept|"
+                r"Answered|Drawn|Routed):)", value
+            )
+            if boundary:
+                add_annotation(value[:boundary.start()].lstrip("- "))
+                metadata_tail = value[boundary.start():].strip()
+                metadata_parts = re.split(
+                    r"\s+(?=(?:Note|Annotation|More|Role|Transition|Evidence|Accept|"
+                    r"Answered|Drawn|Routed):)", metadata_tail
+                )
+            elif re.match(
+                r"^(?:Note|Annotation|More|Role|Transition|Evidence|Accept|"
+                r"Answered|Drawn|Routed):", value
+            ):
+                metadata_parts = [value]
+            else:
+                add_annotation(value.lstrip("- "))
+                metadata_parts = []
+            for part in metadata_parts:
+                label, sep, metadata_value = part.partition(":")
+                if not sep:
+                    continue
+                if label == "Role":
+                    role = metadata_value.strip() or role
+                elif label == "Transition":
+                    transition = metadata_value.strip() or transition
+                elif label in {"Note", "Annotation", "More"}:
+                    add_annotation(metadata_value)
+
+    # ``iter_plan_bullets`` preserves indented ``-`` lines, while the legacy
+    # live parser may flatten them into the same string.  A spaced dash is the
+    # presentation annotation marker; hyphenated words in a statement are
+    # left alone.
+    dash = re.search(r"\s+-\s+(?=[A-Z\"'])", raw)
+    if dash:
+        for value in re.split(r"\s+-\s+(?=[A-Z\"'])", raw[dash.start():]):
+            add_annotation(value.lstrip("- "))
+        raw = raw[:dash.start()].rstrip()
+
+    # A legacy fold may have placed metadata on the same physical line as the
+    # head.  Keep its statement readable while still showing its short Note as
+    # an annotation; evidence metadata is deliberately omitted here.
+    inline = _POINT_INLINE_LABEL_RE.search(raw)
+    if inline:
+        inline_tail, raw = raw[inline.start():], raw[:inline.start()].rstrip()
+        for part in re.split(r"\s+(?=(?:Note|Annotation|More|Role|Transition|Evidence|"
+                              r"Accept|Answered|Drawn|Routed):)", inline_tail):
+            label, sep, value = part.partition(":")
+            if not sep:
+                continue
+            if label == "Role":
+                role = value.strip() or role
+            elif label == "Transition":
+                transition = value.strip() or transition
+            elif label in {"Note", "Annotation", "More"}:
+                add_annotation(value)
+
+    for continuation in continuation_lines or ():
+        line = str(continuation).strip()
+        if not line:
+            continue
+        if line.startswith("Role:"):
+            role = line[len("Role:"):].strip() or role
+        elif line.startswith("Transition:"):
+            transition = line[len("Transition:"):].strip() or transition
+        elif line.startswith(("Note:", "Annotation:", "More:")):
+            add_annotation(line.split(":", 1)[1])
+        elif line.startswith("- "):
+            add_annotation(line[2:])
+
+    # A role is optional metadata, not a second claim.  Neutral fallback keeps
+    # old plans readable without pretending the renderer knows their argument.
+    role = re.sub(r"\s+", " ", role).strip() or "Point"
+    statement = re.sub(r"\s+", " ", raw).strip()
+    return {
+        "number": explicit_number if explicit_number is not None else number,
+        "number_explicit": explicit_number is not None,
+        "role": role,
+        "statement": statement,
+        "annotations": annotations,
+        "transition": re.sub(r"\s+", " ", transition).strip(),
+    }
+
+
+def iter_plan_bullets(plan_text: str):
+    """Yield stable, presentation-ready Bullet blocks in plan order.
+
+    The same block walk is shared by the live Outline and the generated Page
+    table.  It stops at the plan's first non-``C`` level-two heading, preserves
+    explicit ``B<n>`` identities, and treats indented ``-`` lines as
+    annotations rather than new Bullets.
+    """
+    lines = (plan_text or "").splitlines()
+    blocks, cn, pn, sn = [], 0, 0, 0
+    division_title = paragraph_title = ""
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.startswith("## ") and not re.match(r"^## C\d+\b", line):
+            break
+        division = re.match(r"^## (C\d+)\s*·\s*(.*)$", line)
+        if division:
+            cn, pn, sn = int(division.group(1)[1:]), 0, 0
+            division_title = division.group(2).strip()
+            paragraph_title = ""
+            i += 1
+            continue
+        paragraph = re.match(r"^### (C\d+\.P(\d+))\s*·\s*(.*)$", line)
+        if paragraph:
+            pn, sn = int(paragraph.group(2)), 0
+            paragraph_title = paragraph.group(3).strip()
+            i += 1
+            continue
+        if not line.startswith("- "):
+            i += 1
+            continue
+        bullet = re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)(\d+)\s*·\s*(.*)$", line)
+        if not bullet:
+            i += 1
+            continue
+        explicit_no, head = int(bullet.group(1)), bullet.group(2).strip()
+        sn += 1
+        j, continuation = i + 1, []
+        while (j < len(lines) and lines[j].startswith("  ")
+               and not re.match(r"^- ", lines[j])):
+            continuation.append(lines[j].strip())
+            j += 1
+        bullet_no = explicit_no or sn
+        address = "C%d.P%d.B%d" % (cn, max(pn, 1), bullet_no)
+        blocks.append({
+            "address": address,
+            "division": "C%d" % cn,
+            "division_title": division_title,
+            "paragraph": "C%d.P%d" % (cn, max(pn, 1)),
+            "paragraph_title": paragraph_title,
+            "bullet": "B%d" % bullet_no,
+            "head": head,
+            "continuation": continuation,
+            "body": " ".join([head] + [x for x in continuation if x]),
+            "point": presentation_point(head, continuation, bullet_no),
+        })
+        i = j
+    return blocks
 
 
 def _head_words(head: str) -> list:
-    """The words of a bullet head: the `S<n> ·` slot tag, a `Cut:`/`C<n>:` tag,
-    the marks and their ids are not counted; a head is judged on what it SAYS."""
+    """Return substantive words from either legacy or Point-form heads.
+
+    ``S<n> ·`` and an optional ``[Role]`` are presentation metadata, not the
+    statement being checked.  The same 4–11 word signal therefore remains
+    useful for both imperative legacy heads and concise declarative Points.
+    """
     h = re.sub(r"^(?:S\d+\s*·\s*)", "", head.strip())
+    h = re.sub(r"^\[[^\]]+\]\s*", "", h)
     h = re.sub(r"^(?:Cut:|C\d+:)\s*", "", h)
     h = re.split(r"[%s]" % _MARK_EMOJI, h)[0]
     h = h.replace("·", " ")
@@ -616,10 +852,19 @@ def _bullets_with_notes(plan_text: str):
         sn = int(m.group(1))
         head = m.group(2)
         notes, extra, j, in_note = [], [], i + 1, False
-        while j < len(lines) and lines[j].startswith("  ") and not lines[j].lstrip().startswith("- "):
+        while j < len(lines) and lines[j].startswith("  "):
             if _LABEL_RE.match(lines[j]):
-                in_note = lines[j].lstrip().startswith("Note:")
-                notes.append(lines[j].strip())
+                labelled = lines[j].strip()
+                label = labelled.split(":", 1)[0]
+                in_note = label == "Note"
+                if label in {"Note", "Annotation", "More"}:
+                    notes.append(labelled)
+            elif lines[j].lstrip().startswith("- "):
+                # Point-form phrase annotations are intentionally short and
+                # render as dashes; include them in the same length audit as
+                # Note/More text, without treating them as a new Bullet.
+                in_note = True
+                notes.append(lines[j].lstrip())
             elif in_note and lines[j].strip():
                 extra.append(lines[j].strip())
             j += 1
@@ -644,7 +889,10 @@ def check_head_style(plan_text: str):
             fails.append("%s head-too-long: %d words (max 11): %r" % (addr, n, head[:60]))
         elif 0 < n < 4:
             gaps.append("%s head-too-short: %d word(s), a code-word head: %r" % (addr, n, head[:60]))
-        note = " ".join([x[5:] for x in notes if x.startswith("Note:")] + extra)
+        note = " ".join(
+            [re.sub(r"^(?:Note|Annotation|More):\s*", "", x) for x in notes]
+            + extra
+        )
         note = re.split(r"[%s]" % _MARK_EMOJI, note)[0]
         nw = len([w for w in re.split(r"\s+", note.strip()) if w])
         if nw > NOTE_MAX:
@@ -673,8 +921,9 @@ def check_note_quotes_page(page_src: pathlib.Path, plan_text: str, window: int =
         return []
     out = []
     for addr, head, notes, _extra in _bullets_with_notes(plan_text):
-        texts = [head] + [re.sub(r"^(Note|More):\s*", "", n) for n in notes
-                          if n.startswith(("Note:", "More:"))]
+        texts = [head] + [re.sub(r"^(?:Note|Annotation|More):\s*", "", n).lstrip("- ")
+                          for n in notes
+                          if n.startswith(("Note:", "Annotation:", "More:", "- "))]
         for t in texts:
             t = re.split(r"[%s]" % _MARK_EMOJI, t)[0]
             words = [w for w in re.split(r"\s+", re.sub(r"\s+", " ", t).lower().strip()) if w]

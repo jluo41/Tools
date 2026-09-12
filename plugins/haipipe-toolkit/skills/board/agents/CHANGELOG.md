@@ -1,3 +1,7 @@
+## haipipe-page-creator-agent 0.12.0 · 2026-09-11
+
+- Adopt accepted interactive Writing Results without redrafting or allocating a replacement Run per paragraph; preserve formal phase/independent CHECK boundaries.
+
 ## 0.16.0 — 2026-09-04
 
 - Align Page packet keeper, producer fallback, and reviewer with the current

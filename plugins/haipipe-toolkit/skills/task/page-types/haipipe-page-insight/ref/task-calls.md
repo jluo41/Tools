@@ -66,7 +66,7 @@ The existing Task `RESULT_STORE`/`OUTPUT_ROOT` resolver can select an
 instance-owned store. Use the adapter's declared resolver. A common mirror:
 
 ```text
-<instance-store>/<block>/<job>/results/<task>/<local-run>/<version>/
+<instance-store>/<block>/<job>/<task>/results/<local-run>/<version>/
 ```
 
 The version level belongs to the new Insight instance dialect, not all legacy

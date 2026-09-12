@@ -34,7 +34,7 @@ READS    a frozen consumer-neutral input batch (expected payload + acceptance,
          with Page claims removed) · upstream task folders' report.yaml ·
          results/ · workflow/report.yaml
 WRITES   its own job only: plan.yaml · scripts/<collector>.py ·
-         scripts/config/rNN · $OUTPUT_ROOT/results/<task>/<run>/values.yaml · runtime/report receipts ·
+         scripts/config/rNN · $OUTPUT_ROOT/<task>/results/<run>/values.yaml · runtime/report receipts ·
          workflow/proposals.md
 NEVER    a consumer/ file or any stake · the page or its outline/ · a sibling
          job's folder · a value it computed nowhere (GATE-3: a name that does

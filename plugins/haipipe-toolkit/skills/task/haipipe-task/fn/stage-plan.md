@@ -142,7 +142,7 @@ phases:
         prompt: "<what this step computes>"
         files_in:
           - _WorkSpace/...               # or [] if reads only in-memory
-        files_out: []                    # or [$OUTPUT_ROOT/results/<task>/<run>/<file>]
+        files_out: []                    # or [$OUTPUT_ROOT/<task>/results/<run>/<file>]
 
       - label: "<phase>:<step-name>"
         type: agent
@@ -150,7 +150,7 @@ phases:
         prompt: "<what this step computes>"
         files_in: []
         files_out:
-          - $OUTPUT_ROOT/results/<task>/<run>/<file>
+          - $OUTPUT_ROOT/<task>/results/<run>/<file>
 
   - title: <Next phase>
     detail: "..."
@@ -164,8 +164,8 @@ output:
     status: ok
     # task-specific return fields
   files_out:
-    - $OUTPUT_ROOT/results/<task>/<run>/<file1>
-    - $OUTPUT_ROOT/results/<task>/<run>/<file2>
+    - $OUTPUT_ROOT/<task>/results/<run>/<file1>
+    - $OUTPUT_ROOT/<task>/results/<run>/<file2>
 ```
 
 Write one `workflow/plan-script-<name>.yaml` per script.
@@ -214,9 +214,9 @@ phases:
           - scripts/config/<run_name>.yaml
           - _WorkSpace/...
         files_out:
-          - $OUTPUT_ROOT/results/<task>/<run>/<file1>
-          - $OUTPUT_ROOT/results/<task>/<run>/<file2>
-          - $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
+          - $OUTPUT_ROOT/<task>/results/<run>/<file1>
+          - $OUTPUT_ROOT/<task>/results/<run>/<file2>
+          - $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 
   - title: Gate1
     detail: "pre-run code quality review"
@@ -248,7 +248,7 @@ phases:
         agentType: haipipe-task-reviewer-agent
         prompt: "gate 2: audit results of <run_name>"
         files_in:
-          - $OUTPUT_ROOT/results/<task>/<run>/*
+          - $OUTPUT_ROOT/<task>/results/<run>/*
           - workflow/plan-script-<name>.yaml
         files_out:
           - RUN_AUDIT.md
@@ -268,9 +268,9 @@ output:
     gate2_verdict: <pass | warn | fail>
     headline: "<one-line result summary>"
   files_out:
-    - $OUTPUT_ROOT/results/<task>/<run>/<file1>
-    - $OUTPUT_ROOT/results/<task>/<run>/<file2>
-    - $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
+    - $OUTPUT_ROOT/<task>/results/<run>/<file1>
+    - $OUTPUT_ROOT/<task>/results/<run>/<file2>
+    - $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
     - CODE_REVIEW.md
     - RUN_AUDIT.md
 ```

@@ -1,3 +1,7 @@
+## haipipe-page-content-agent 0.3.0 · 2026-09-11
+
+- Adopt accepted interactive Writing Results without redrafting or allocating a replacement Run per paragraph; preserve formal phase/independent CHECK boundaries.
+
 ## haipipe-page-content-agent 0.2.0 · 2026-09-08
 
 - Dispatch paragraph-scoped writing Runs through the CONTENT profile; retain phase and independent CHECK boundaries.

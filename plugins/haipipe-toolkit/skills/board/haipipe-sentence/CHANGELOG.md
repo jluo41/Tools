@@ -1,3 +1,8 @@
+## 0.5.0 · 2026-09-11
+
+- Route comments on Outline candidate sentences to the paragraph-scoped
+  composer and preview Markdown; preserve the published sentence-lane contract.
+
 haipipe-sentence · Changelog
 ============================
 

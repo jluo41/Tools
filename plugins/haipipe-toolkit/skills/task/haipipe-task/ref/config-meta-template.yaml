@@ -4,7 +4,7 @@
 # Every run MUST start from this template. Fill in `_meta:` before scheduling.
 # Actual config params for your training/eval script go BELOW the `_meta:` block.
 # After execution, runtime info lives in
-# $OUTPUT_ROOT/results/<task>/<run>/runtime.yaml — NOT here.
+# $OUTPUT_ROOT/<task>/results/<run>/runtime.yaml — NOT here.
 # This file is FROZEN once the run starts: never edit it post-execution.
 # =============================================================================
 

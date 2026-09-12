@@ -23,7 +23,7 @@ const runReport = stages.includes('report')
 const shapeRule =
   `\n\nTASK FOLDER SHAPE: input must be tNN_<task>/ with same-stem Page, ` +
   `scripts/config/<run>.yaml, and runs/<run>.sh. Generated Results resolve at the parent Job's ` +
-  `results/<task>/<run>/ and notebooks/<task>/<run>.ipynb. Reject any input that does not ` +
+  `<task>/results/<run>/ and <task>/notebooks/<run>.ipynb. Reject any input that does not ` +
   `match the bNN/jNN/tNN hierarchy. See haipipe-task/ref/hierarchy.md.`
 log(`task-lifecycle: ${taskFolder}, type=${hintType || 'auto'}, stages=[${stages}], autoExecute=${autoExecute}, maxRetries=${maxRetries}`)
 

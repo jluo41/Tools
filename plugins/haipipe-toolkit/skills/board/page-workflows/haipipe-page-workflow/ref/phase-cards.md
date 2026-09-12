@@ -12,6 +12,10 @@ operating view every phase skill and workflow surface may quote.
 🔀 ROUTES   the legal next authorities
 ```
 
+For human-feedback writing, use `interactive-writing-run.md`: the same Run
+can use SHAPE and Writing across Steps before CONTENT adopts agreed prose.
+These cards describe phase authority, not one Run or one human Step per card.
+
 ## 🔁 The Page loop
 
 ```text
@@ -129,14 +133,14 @@ Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
             evidence-aware plan supports?
 📥 READS    fresh Context · approved folded plan · ready Evidence Results ·
             Page Face owner and narrative/style policy · current Page
-📤 WRITES   Page Content and authorized Opening/Aims · Paragraph Writing
-            Tickets/Results and promotion trace · current delivery artifacts · Log
+📤 WRITES   Page Content and authorized Opening/Aims · accepted Writing Result
+            adoption trace · current delivery artifacts · Log
 🚪 EXITS    commissioned paragraphs accepted/promoted; artifacts current; a
             fresh pre-check says ready
-✋ TICK     none
+✋ TICK     no new approval; consumes explicit scoped writing acceptance
 🔀 ROUTES   CHECK · CONTENT · CONTEXT · OUTLINE · EVIDENCE · HOLD
-⚙ RUNS     normally one Page Paragraph Writing Run per commissioned paragraph;
-            Draft/Revise/Build/Pre-check are internal movements
+⚙ RUNS     consumes agreed interactive Writing Results; optional delegated
+            attempts, never a mandatory new Run per adopted paragraph
 ```
 
 ## 04 · CHECK / CHECK · `haipipe-page-check`

@@ -1,5 +1,11 @@
 # Page RUN contract
 
+This is the **automated phase controller** contract. Interactive writing uses
+`interactive-writing-run.md`; its Run/Version/Step history is separate. A
+controller `HOLD` ends this invocation, not the persistent writing goal. Its
+step limits do not limit human feedback turns, and its `CLOSE` means whole-Page
+closure, not the user's acceptance of a writing Version.
+
 `RUN` is the bounded router for one persistent Page. It does not mean
 `ADVANCE`: Page work is non-linear, so the next authority may repeat, branch,
 return to CONTEXT, OUTLINE, EVIDENCE, or CONTENT, close, or hold.
@@ -334,16 +340,16 @@ line is unaffected either way.
 
 ## CONTENT · the WRITE cycle
 
-CONTENT is one lifecycle phase. Its internal movements are Draft, Revise,
-Build, and Pre-check. Those movements are not independent lifecycle phases and
-do not create extra L4 Run identities. A normal commission creates one
-`Page · Paragraph Writing` Run per paragraph and promotes its accepted Result
-into Page Content before CHECK judges the whole built Page.
+CONTENT is one lifecycle phase. Its default movements are Adopt, Integrate,
+Build, and Pre-check. It consumes accepted interactive Writing Results without
+redrafting or allocating a new Run per paragraph. An explicitly delegated
+single-paragraph commission retains its own Draft/Revise/promotion profile.
+Neither path creates an extra L4 Run for each internal movement.
 
 ```text
 L3 phase receipt       one CONTENT receipt per lifecycle pass
-L4 writing work        one indexed Run per commissioned paragraph
-internal movements     Draft → Revise → Build → Pre-check
+L4 writing work        consume existing accepted Writing Run/Version/Step
+internal movements     Adopt → Integrate → Build → Pre-check
 backward routes        CONTEXT for stale policy; OUTLINE for wrong plan;
                        EVIDENCE for missing/invalid Result
 forward route          CHECK only after all commissioned Results are promoted

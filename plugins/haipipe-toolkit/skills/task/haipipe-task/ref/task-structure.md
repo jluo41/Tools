@@ -26,7 +26,7 @@ tasks/
         │   │       └── rNN_<run>.yaml
         │   ├── runs/rNN_<run>.sh
         │   └── sbatch/
-        ├── results/tNN_<task>/rNN_<run>/
+        ├── tNN_<task>/results/rNN_<run>/
         │   ├── runtime.yaml
         │   └── metrics.json
         └── notebooks/tNN_<task>/rNN_<run>.ipynb
@@ -52,8 +52,8 @@ tasks/
 - `src/` holds only code/defaults shared by multiple Tasks.
 - `src/config-defaults.yaml` may declare a Job-level `store:`.
 - Job `sbatch/` coordinates at least two Tasks.
-- Generated output uses `results/<task>/<run>/` and
-  `notebooks/<task>/<run>.ipynb` under resolved `$OUTPUT_ROOT`.
+- Generated output uses `<task>/results/<run>/` and
+  `<task>/notebooks/<run>.ipynb` under resolved `$OUTPUT_ROOT`.
 - Must not contain Task-owned `scripts/` or root worker programs.
 
 ## Task Folder rules
@@ -75,8 +75,8 @@ For each Run stem, these projections pair exactly:
 ```text
 tNN_<task>/scripts/config/rNN_<run>.yaml
 tNN_<task>/runs/rNN_<run>.sh
-$OUTPUT_ROOT/results/tNN_<task>/rNN_<run>/runtime.yaml
-$OUTPUT_ROOT/notebooks/tNN_<task>/rNN_<run>.ipynb
+$OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/runtime.yaml
+$OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
 Shared files under `scripts/config/` omit the `rNN_` prefix and do not require
@@ -95,8 +95,8 @@ Task-local output path. The Ticket creates and updates `runtime.yaml`
 atomically and marks the Run complete only after the declared Result gate.
 
 Python Tasks use a diff-friendly `.py` source with `# %%` cells. The Ticket
-generates `$OUTPUT_ROOT/notebooks/<task>/_source.ipynb` and executes it with
-papermill into `$OUTPUT_ROOT/notebooks/<task>/<run>.ipynb`. Notebook retention
+generates `$OUTPUT_ROOT/<task>/notebooks/_source.ipynb` and executes it with
+papermill into `$OUTPUT_ROOT/<task>/notebooks/<run>.ipynb`. Notebook retention
 is selected by `_meta.notebook: full | thin | off` in the Run config.
 
 ## Batch rules

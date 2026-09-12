@@ -4,7 +4,7 @@
 #
 # Typical display-input phases: Load → Summarize → Validate → Export
 # All outputs are small, display-safe inputs under
-# $OUTPUT_ROOT/results/<task>/<run>/{source_data.csv, provenance.json}.
+# $OUTPUT_ROOT/<task>/results/<run>/{source_data.csv, provenance.json}.
 
 # ─── Header ──────────────────────────────────────────────────────
 name: display-input-<NAME>

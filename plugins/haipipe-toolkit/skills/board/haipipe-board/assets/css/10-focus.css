@@ -129,6 +129,14 @@ body.split .q .qbd .cbody.flat p{font-size:15px;line-height:1.75}
 .outline-grid-bullet td:nth-child(4),
 .outline-grid-bullet td:nth-child(5),
 .outline-grid-bullet td:nth-child(6){min-width:0}
+.outline-point{min-width:0}
+.outline-point-label{font:650 10.5px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+ color:var(--accent);white-space:nowrap}
+.outline-point-statement{color:var(--fg)}
+.outline-point-notes{margin:3px 0 0 1.1em;padding-left:1em;color:var(--mut);
+ font-size:11px;line-height:1.4}
+.outline-point-notes li{padding-left:1px}
+.outline-point-transition{margin:4px 0 0 1.1em;color:var(--accent);font-size:11px;line-height:1.35}
 .outline-feedback{display:inline-block;max-width:100%;margin:0 4px 2px 0;padding:0 4px;
  border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:4px;
  color:var(--accent);font:650 10px ui-monospace,Menlo,monospace;overflow-wrap:anywhere;

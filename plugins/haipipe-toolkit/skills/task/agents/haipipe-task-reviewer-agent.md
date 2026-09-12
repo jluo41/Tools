@@ -46,7 +46,7 @@ exact paths. I never mutate the Task, Run, or Result.
 ## Run/Result gate
 
 ```text
-[ ] runs/<RUNNAME>.sh ↔ results/<task>/<RUNNAME>/ is exact and same-stem
+[ ] runs/<RUNNAME>.sh ↔ <task>/results/<RUNNAME>/ is exact and same-stem
 [ ] runtime.yaml has valid status and full readable + compact BJTR address
 [ ] family/operation, inputs, config, script, timestamps, and exit status agree
 [ ] every declared artifact exists and is readable

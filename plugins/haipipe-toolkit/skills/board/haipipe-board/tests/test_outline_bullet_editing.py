@@ -8,6 +8,7 @@ ENGINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ENGINE))
 
 from live.outline import _edit_plan_bullet, parse_outline, plan_card, render
+from src.plan_shape import iter_plan_bullets, plan_addresses, presentation_point
 
 
 PAGE = """# S-page
@@ -54,13 +55,15 @@ class OutlineBulletEditingTest(unittest.TestCase):
                 file_q="S-page/S-page.md",
             )
             start = card.index('data-paragraph="C1.P1"')
-            end = card.index("</details>", card.index('data-bullet-add="add-bullet-C1-P1"', start))
+            end = card.index("</details>", card.index('data-paragraph-reading', start))
             inside = card[start:end]
             self.assertIn("C1.P1.B1", inside)
             self.assertIn('data-bullet-edit="edit-bullet-C1-P1-B1"', inside)
             self.assertIn("Save Bullet", inside)
-            self.assertIn("+ Bullet", inside)
-            self.assertIn('data-bullet-add="add-bullet-C1-P1"', inside)
+            self.assertIn("Read paragraph", inside)
+            self.assertNotIn("+ Bullet", card)
+            self.assertNotIn('data-bullet-add=', card)
+            self.assertNotIn('value="append-bullet"', card)
             self.assertNotIn("Planned move", card)
 
     def test_first_write_copies_approved_shape_then_reuses_working_version(self):
@@ -119,6 +122,105 @@ class OutlineBulletEditingTest(unittest.TestCase):
             self.assertIn("✍️ plan v1.2", rendered)
             self.assertIn("approved: ⬜", rendered)
             self.assertIn("Another point", rendered)
+
+    def test_logic_map_renders_at_top_of_bullet_workspace(self):
+        logic = """%% Derived from S-page-outline-v1.1.md.
+flowchart TD
+    P1[\"P1 · First move<br/>Clinical problem\"]
+    P2[\"P2 · Second move<br/>Study question\"]
+    P1 -->|\"What follows?\"| P2
+    classDef default fill:transparent,stroke-width:0px;
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            page = self._page(directory)
+            (page.parent / "outline" / "S-page-logic.mmd").write_text(
+                logic, encoding="utf-8"
+            )
+            plan = page.parent / "outline" / "S-page-outline-v1.1.md"
+            rendered = render(
+                "S-page", parse_outline(plan.read_text(encoding="utf-8")), page,
+                root=directory, path_q="/Board/board.md", file_q="S-page/S-page.md",
+            )
+
+        self.assertEqual(rendered.count('class="card logic-card"'), 1)
+        self.assertLess(rendered.index('class="card logic-card"'),
+                        rendered.index('class="card plan-card"'))
+        self.assertIn('class="logic-svg"', rendered)
+        self.assertIn("Clinical problem", rendered)
+        self.assertIn("What follows?", rendered)
+        self.assertIn("Mermaid source", rendered)
+        self.assertIn("flowchart TD", rendered)
+
+    def test_point_form_renders_role_statement_annotations_and_transition(self):
+        point_plan = PLAN.replace(
+            "- B1 · S1 · State the point\n  Note: keep the rationale with the Bullet.",
+            "- B1 · [Phenomenon] Physician behavior varies within settings.\n"
+            "  Note: settings = clinical decision contexts\n"
+            "  Note: focus = comparable situations\n"
+            "  Transition: illustration: general pattern → specific example",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            page = self._page(directory)
+            (page.parent / "outline" / "S-page-outline-v1.1.md").write_text(
+                point_plan, encoding="utf-8"
+            )
+            card = plan_card(page, root=directory, path_q="/Board/board.md",
+                             file_q="S-page/S-page.md")
+        self.assertIn("[1 · Phenomenon]", card)
+        self.assertIn("Physician behavior varies within settings.", card)
+        self.assertIn("<li>settings = clinical decision contexts</li>", card)
+        self.assertIn("<li>focus = comparable situations</li>", card)
+        self.assertIn("→ <span>[illustration: general pattern → specific example]</span>", card)
+        self.assertNotIn("Core statement:", card)
+        self.assertNotIn("Note:", card)
+
+    def test_point_parser_keeps_transition_out_of_annotation_list(self):
+        point = presentation_point(
+            "[1 · Example] For example, prescribing choices differ.",
+            ["- transition opening: For example", "Transition: contrast: general → specific"],
+            1,
+        )
+        self.assertEqual(point["role"], "Example")
+        self.assertEqual(point["number"], 1)
+        self.assertEqual(point["annotations"], ["transition opening: For example"])
+        self.assertEqual(point["transition"], "contrast: general → specific")
+
+    def test_live_point_form_keeps_lowercase_dash_annotation_separate(self):
+        # The live compatibility join uses a private sentinel for indented
+        # phrase-only annotations.  Exercise the whole card path so a lower-
+        # case dash cannot silently merge into the Point statement again.
+        point_plan = PLAN.replace(
+            "- B1 · S1 · State the point\n  Note: keep the rationale with the Bullet.",
+            "- B1 · [Phenomenon] Physician behavior varies within settings.\n"
+            "  Annotation: compare physicians facing comparable situations\n"
+            "  - use comparable clinical cases\n",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            page = self._page(directory)
+            (page.parent / "outline" / "S-page-outline-v1.1.md").write_text(
+                point_plan, encoding="utf-8"
+            )
+            card = plan_card(page, root=directory, path_q="/Board/board.md",
+                             file_q="S-page/S-page.md")
+        self.assertIn("<li>compare physicians facing comparable situations</li>", card)
+        self.assertIn("<li>use comparable clinical cases</li>", card)
+        self.assertNotIn("<li>use comparable clinical cases Evidence:", card)
+        self.assertNotIn("situations - use comparable", card)
+
+    def test_plan_bullet_iterator_preserves_explicit_identity_with_indented_dash(self):
+        blocks = iter_plan_bullets(
+            "## C1 · Intro\n"
+            "### C1.P1 · Move\n"
+            "- B4 · [Example] For example, choices differ.\n"
+            "  - comparable cases only\n"
+            "  Evidence: none · rhetorical point\n"
+        )
+        self.assertEqual(blocks[0]["address"], "C1.P1.B4")
+        self.assertEqual(blocks[0]["point"]["annotations"], ["comparable cases only"])
+        self.assertEqual(plan_addresses(
+            "## C1 · Intro\n### C1.P1 · Move\n"
+            "- B4 · [Example] For example, choices differ.\n"
+        ), {"C1.P1.B4"})
 
 
 if __name__ == "__main__":
@@ -210,13 +312,14 @@ class OutlineBulletEditorEdgesTest(unittest.TestCase):
                              file_q="S-page/S-page.md")
             for wanted in ('data-bullet-edit="edit-bullet-C1-P1-B1"',
                            'data-bullet-edit="edit-bullet-C1-P1-B3"',
-                           'data-bullet-edit="edit-bullet-C1-P2-B1"',
-                           'data-bullet-add="add-bullet-C1-P2"'):
+                           'data-bullet-edit="edit-bullet-C1-P2-B1"'):
                 self.assertIn(wanted, card)
             self.assertEqual(card.count('<details class="paragraph-group" open'), 2)
             # the hidden fields carry the route the server resolves
             self.assertIn('<input type="hidden" name="path" value="/Board/board.md">', card)
-            self.assertIn('<input type="hidden" name="action" value="append-bullet">', card)
+            self.assertIn('<input type="hidden" name="action" value="edit-bullet">', card)
+            self.assertEqual(card.count('<summary>Read paragraph</summary>'), 2)
+            self.assertNotIn('value="append-bullet"', card)
 
     def test_live_tab_carries_the_editor_script_and_the_post_route(self):
         with tempfile.TemporaryDirectory() as directory:

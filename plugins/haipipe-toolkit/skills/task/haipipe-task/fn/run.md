@@ -22,9 +22,9 @@ mode.
 ```text
 config    <task>/scripts/config/<run>.yaml
 Ticket    <task>/runs/<run>.sh
-Result    $OUTPUT_ROOT/results/<task>/<run>/
-notebook  $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
-receipt   $OUTPUT_ROOT/results/<task>/<run>/runtime.yaml
+Result    $OUTPUT_ROOT/<task>/results/<run>/
+notebook  $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
+receipt   $OUTPUT_ROOT/<task>/results/<run>/runtime.yaml
 ```
 
 `RESULT_STORE` wins output-root resolution. Next read `store:` from

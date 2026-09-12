@@ -13,6 +13,7 @@ from .feedback import routed_pairs
 from .item_table import (action_label, compact_global_run, compact_paper_run,
                          readable_global_run, readable_paper_route, repo_root,
                          readable_task, run_registry, wall_label)
+from .plan_shape import iter_plan_bullets
 
 STAGE_LABELS = {
     "seed": "SEED PAGE",
@@ -464,27 +465,13 @@ def _outline_grid(page_src):
     # ``Routed:`` is the plan's authoritative feedback-to-Bullet binding.  The
     # main Outline table shows only its compact row id; the Feedback panel keeps
     # the reviewer's complete words and provenance.
+    blocks = iter_plan_bullets(text)
     feedback_by_target = {}
-    scan_c, scan_p, scan_address = "", "", ""
-    for raw in text.splitlines():
-        if raw.startswith("## ") and not re.match(r"^## C\d+\b", raw):
-            break
-        c = re.match(r"^## (C\d+)\s*·", raw)
-        if c:
-            scan_c, scan_p, scan_address = c.group(1), "", ""
-            continue
-        p = re.match(r"^### (C\d+\.P\d+)\s*·", raw)
-        if p:
-            scan_p, scan_address = p.group(1), ""
-            continue
-        bullet = re.match(r"^- (?:[BS](\d+)\s*·\s*)?(.*)$", raw)
-        if bullet and scan_c and scan_p:
-            bullet_no = bullet.group(1) or ""
-            scan_address = f"{scan_p}.B{bullet_no}" if bullet_no else ""
-            continue
-        routed = re.match(r"^\s+Routed:\s*(.+?)\s*$", raw)
-        if routed and scan_address:
-            feedback_by_target.setdefault(scan_address, []).append(routed.group(1))
+    for block in blocks:
+        for continuation in block["continuation"]:
+            routed = re.match(r"^Routed:\s*(.+?)\s*$", continuation)
+            if routed:
+                feedback_by_target.setdefault(block["address"], []).append(routed.group(1))
 
     def feedback_cell(address):
         routes = feedback_by_target.get(address, [])
@@ -510,36 +497,43 @@ def _outline_grid(page_src):
                              (esc(route), esc(route)))
         return "".join(chips)
 
-    rows, current_c, current_p = [], "", ""
-    for raw in text.splitlines():
-        if raw.startswith("## ") and not re.match(r"^## C\d+\b", raw):
-            break
-        c = re.match(r"^## (C\d+)\s*·\s*(.+)$", raw)
-        if c:
-            current_c, current_p = c.group(1), ""
+    def point_cell(block):
+        """Render the Bullet column as a compact Point + dash annotations."""
+        point = block["point"]
+        label = "[%s · %s]" % (point["number"], point["role"])
+        statement = point["statement"] or "(statement not specified)"
+        notes = "".join("<li>%s</li>" % esc(value)
+                        for value in point["annotations"])
+        note_html = '<ul class="outline-point-notes">%s</ul>' % notes if notes else ""
+        transition = (
+            '<div class="outline-point-transition">→ [%s]</div>'
+            % esc(point["transition"])
+            if point["transition"] else ""
+        )
+        return ('<div class="outline-point">'
+                '<div><span class="outline-point-label">%s</span> '
+                '<span class="outline-point-statement">%s</span></div>%s%s</div>'
+                % (esc(label), esc(statement), note_html, transition))
+
+    rows, seen_div, seen_p = [], set(), set()
+    for block in blocks:
+        current_c, current_p = block["division"], block["paragraph"]
+        if current_c not in seen_div:
+            seen_div.add(current_c)
             rows.append('<tr class="outline-grid-division"><th colspan="6">'
                         '<code>%s</code> %s</th></tr>' %
-                        (esc(current_c), esc(c.group(2).strip())))
-            continue
-        p = re.match(r"^### (C\d+\.P\d+)\s*·\s*(.+)$", raw)
-        if p:
-            current_p = p.group(1)
+                        (esc(current_c), esc(block["division_title"])))
+        if current_p not in seen_p:
+            seen_p.add(current_p)
             rows.append('<tr class="outline-grid-paragraph"><th scope="row"><code>%s</code></th>'
                         '<td colspan="5">%s</td></tr>' %
-                        (esc(current_p), esc(p.group(2).strip())))
-            continue
-        bullet = re.match(r"^- (?:[BS](\d+)\s*·\s*)?(.*)$", raw)
-        if not bullet or not current_c or not current_p:
-            continue
-        bullet_no = (bullet.group(1) or
-                     str(sum(1 for row in rows if "outline-grid-bullet" in row) + 1))
-        address = f"{current_p}.B{bullet_no}"
-        headline = bullet.group(2).strip()
+                        (esc(current_p), esc(block["paragraph_title"])))
+        address = block["address"]
         feedback = feedback_cell(address)
         evidence, supporting, local = evidence_cell(address)
         rows.append('<tr class="outline-grid-bullet"><th scope="row"><code>%s</code></th>'
                     '<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
-                    (esc(address), esc(headline), feedback, evidence, supporting, local))
+                    (esc(address), point_cell(block), feedback, evidence, supporting, local))
 
     if not rows:
         rows.append('<tr><td colspan="6" class="mut">No C/P/B plan rows yet.</td></tr>')

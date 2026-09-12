@@ -8,8 +8,8 @@ agent. Engine-specific details remain in the owning specialist.
 ```text
 <task>/scripts/config/<run>.yaml        frozen authored input
 <task>/runs/<run>.sh                    authored Ticket
-$OUTPUT_ROOT/results/<task>/<run>/      generated Result and receipt
-$OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
+$OUTPUT_ROOT/<task>/results/<run>/      generated Result and receipt
+$OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 ```
 
 The stem is always `rNN_<noun>_<qualifier>` and matches across all four
@@ -92,7 +92,7 @@ Result to an expectation, invariant, or independently computed reference.
 
 ## Artifact placement
 
-`results/<task>/<run>/` contains light evidence: runtime and metrics files,
+`<task>/results/<run>/` contains light evidence: runtime and metrics files,
 small tables, figures, logs, and pointers. Checkpoints, large arrays, raw
 tables, and other heavy data live in `_WorkSpace/`.
 

@@ -124,10 +124,17 @@ caveats, and interpretation in Opening or Content, where their scope can be
 stated. A heading is a lookup key: it states the rule or purpose, contains no
 date, and does not refer to “this document.”
 
-## Finish on the rendered Page
+## Finish formal delivery on the rendered Page
 
-A source edit is incomplete until the Board is rebuilt and the render has been
-read. Check both structure and prose:
+This gate is for formal Page delivery, not every interactive Writing Step or
+an explicitly requested adoption-only operation. Routine writing saves and
+reads back the live Markdown preview with narrow scope/evidence checks.
+Adoption-only saves/checks accepted Content and labels delivery not refreshed.
+Neither claims a rebuilt Page, PDF, or whole-Page completion. Follow
+`haipipe-page/ref/user-check-packet.md` for the correct return mode.
+
+For formal delivery, rebuild the Board and inspect the render. Check both
+structure and prose:
 
 ```bash
 python3 <skill>/cli/build.py <board-folder>

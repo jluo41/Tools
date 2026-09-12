@@ -69,12 +69,82 @@ is `C1` with `P1` to `P<n>`.
                                           citation, value, figure, or table
 ```
 
+### Reader-facing Point form
+
+The canonical source may optionally make a Bullet's presentation role and
+statement explicit without changing its stable `C<n>.P<m>.B<k>` identity:
+
+```markdown
+- B1 · [Phenomenon] Physician behavior varies within clinical settings.
+  Note: Clinical settings = clinical decision contexts
+  Note: Focus: differences among physicians facing comparable situations
+  Transition: illustration: general pattern → specific example
+```
+
+The live Outline and the compact Page table render that block as:
+
+```text
+[1 · Phenomenon] Physician behavior varies within clinical settings.
+- Clinical settings = clinical decision contexts
+- Focus: differences among physicians facing comparable situations
+→ [illustration: general pattern → specific example]
+```
+
+`[Role]` is optional presentation metadata; `[1 · Role]` is also accepted and
+the number is checked against the Bullet number when present. `Role:` is an
+equivalent continuation. The statement is a concise planning statement, not
+drafted Content, and may be declarative (the old imperative job head remains a
+valid backward-compatible form). `Note:`, `Annotation:`, `More:`, and indented
+`-` lines become short dash annotations; `Transition:` becomes one arrow
+between adjacent Point groups. `Evidence:`, `Accept:`, `Answered:`, `Drawn:`,
+and `Routed:` remain process metadata and are not duplicated in the reader
+view. The existing 4–11 word head check counts only the statement, not the
+`S<n> ·` slot or `[Role]` metadata. No renderer invents a role for an old plan:
+legacy Bullets use the neutral `Point` label until an author supplies one.
+
 The address is `C<n>.P<m>.B<k>`. `C` prints once on the division heading;
 the rows carry `B<k>`. A continuation line starts with one of `Note`,
-`Evidence`, `Accept`, `More`, `Answered`, `Drawn`, or `Routed`; every bullet carries at least one
+`Annotation`, `Role`, `Transition`, `Evidence`, `Accept`, `More`, `Answered`,
+`Drawn`, or `Routed`; an indented `-` is a short Point annotation. Every bullet carries at least one
 (`bullet-missing-note`). A division name is the subject's real name
 (`Shared lookup rules for BatchReader and OnlineReader`), never a count or a
 role word (`One contract, two readers`).
+
+### Point writing style · required for new or edited Bullets
+
+The visible Point is a planning sentence, not an instruction to the future
+writer. New or edited Bullets therefore use an explicit role only when it helps
+the reader distinguish the Point's function. Otherwise omit the tag and use a
+plain declarative statement with an actor or subject and a verb:
+
+```markdown
+- B1 · [Phenomenon] Physician behavior varies within clinical settings.
+  - Clinical settings = clinical decision contexts
+  - Focus: differences among physicians facing comparable situations
+
+- B2 · [Example] For example, physicians differ in their opioid prescribing.
+  - Transition opening: “For example”
+  - Focus: opioid prescribing variation
+```
+
+The same plan without role tags is equally canonical:
+
+```markdown
+- B1 · Physician behavior varies within clinical settings.
+  - Clinical settings = clinical decision contexts
+- B2 · Physicians differ in their opioid prescribing.
+  - Transition opening: “For example”
+```
+
+Do not begin a new Point with planner imperatives such as `Open with`,
+`Explain`, `Introduce`, `Name`, `Connect`, `Ask`, `Keep`, `Return`, `Hand`, or
+`State`. Put the rationale, scope, or constraint in short dash annotations and
+express the relation to the next Point with `Transition:`; neither becomes a
+second manuscript sentence. The reader view never prints `Core statement:` or
+`Note:` labels. Existing imperative heads remain readable as compatibility
+input, but an approved plan is migrated to this style only through an
+unapproved working Shape and human review; the renderer must not silently
+rewrite it.
 
 Every Bullet has exactly one evidence decision: one or more typed
 `Evidence:`/`Accept:` pairs, or one `Evidence: none · <reason>` line. Omission
@@ -90,8 +160,8 @@ two bullets); one source may legitimately serve both.
 ```text
 page-type: section     one bullet = one SENTENCE SLOT
                        head `S<n> · <what the sentence does>`
-                       two bullets may share one S<n> when one sentence carries
-                         two jobs (a count and a method; a finding and its context)
+                       one Bullet maps to exactly one sentence; no shared slots
+                       merge redundant points or split independent points
                        a finding's head carries its claim id and a word
                          (`C1: +9.34 MME per visit, comparison owed`), never
                          the claim's sentence
@@ -113,6 +183,10 @@ technical term survives as a thing's real name (`iv-overid`), defined at
 first use; a metaphor (`rung`) is rewritten to the plain thing (`step`).
 
 ## 4 · What a bullet never carries
+
+SHAPE may rehearse actual sentences in the separate `<stem>-preview.md`
+record shown beside these Bullets. See `content-preview.md`. The restrictions
+below apply to Bullet heads and Notes, not to the right-column candidate prose.
 
 - the drafted sentence: the sentence lives on the page; a Note that quotes
   prose is CONTENT leaking upward, and the plan is too long by construction
@@ -161,6 +235,12 @@ Accept: <observable checks>                one line directly after each item
 
 ## 6 · Versions
 
+Daily Bullet/preview revision stays in one mutable unapproved working Shape.
+Fork the approved version once before its first Bullet change and preserve it;
+later conversational saves reuse the working file, not a new version for every
+edit. Freeze or approve at an explicit human review checkpoint. Preview prose
+is still a planning candidate and does not update published Content or PDF.
+
 ```text
 v<G>.<S>[.<E>] = generation · shape · evidence
 
@@ -187,7 +267,9 @@ machine-finishable Evidence Item has been completed as far as possible. Any
 remaining secure-server or person gate is named in the `approved:` line;
 those items may continue through SURVEY/LAND/EMBED under `v1.0`.
 
-For `G>=1`, every version change refreshes CONTENT. A bounded Shape change
+For `G>=1`, a released version requires CONTENT reconciliation through its
+normal gates; an unapproved working version does not refresh published Content
+or PDFs. A bounded Shape change
 increments `S`, resets `E` to zero, and receives its own human review before
 Content follows it. An evidence-only change increments `E`, preserves every
 division, paragraph, Bullet head/order, Evidence contract, and acceptance

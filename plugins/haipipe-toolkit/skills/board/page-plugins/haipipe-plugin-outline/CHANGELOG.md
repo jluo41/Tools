@@ -1,3 +1,72 @@
+## 0.59.0 · 2026-09-11
+
+- Align preview/Content handoff with exact adoption of accepted Writing Steps. Preserve source comments, distinguish history snapshots from current editable prose, and qualify full rebuilds as formal checkpoints.
+
+## 0.58.0 · 2026-09-11
+
+- Own paragraph-bottom preview comments and the read-comments → revise → reply
+  loop without auto-launch, Content promotion, or per-comment Shape versions.
+
+## 0.57.0 · 2026-09-11
+
+- Simplify pending-Evidence references in draft prose from styled status chips
+  to ordinary parenthetical labels such as `(E33C.SystemStakes)`; retain the
+  full placeholder in the source/editor and status/link details in the Bullet
+  column.
+
+## 0.56.0 · 2026-09-11
+
+- Keep full pending-Evidence placeholders in authored preview Markdown and its
+  editor while rendering only compact status-bearing labels in resting prose
+  and paragraph read-throughs.
+
+## 0.55.0 · 2026-09-11
+
+- Make the derived Section logic card collapsible by default and support
+  branched argument maps without changing the plan or preview authority.
+
+## 0.54.0 · 2026-09-11
+
+- Render an authored optional `<stem>-logic.mmd` as a read-only Mermaid
+  argument map at the top of the live Bullet Workspace's `By part` lens,
+  while keeping its source folded and separate from the plan/table authority.
+
+## 0.53.0 · 2026-09-10
+
+- Remove the visible add-Bullet control without removing Read paragraph or editors.
+- Document direct working-Shape/preview Markdown editing and the optional,
+  derived paragraph-level Mermaid argument map, separate from the reading table.
+
+## 0.52.0 · 2026-09-10
+
+- Require Section Bullet/sentence pairs, explicit function tags when authored,
+  and joint revision within one unapproved working Shape rather than per-edit versions.
+- Preserve ambiguous old Content without using it as a completed one-row candidate.
+
+## 0.51.0 · 2026-09-10
+
+- Require reading-first side-by-side Bullet/prose presentation even on phones;
+  show editors only on demand, with safe Save/Cancel and folded metadata.
+
+## 0.50.0 · 2026-09-10
+
+- Own the authored preview record and edit-preview action; show actual candidate sentences beside Bullet/Evidence with paragraph read-through.
+
+## 0.49.0 · 2026-09-09
+
+- Make declarative Point writing the required style for new or edited Bullets;
+  planner-imperative heads are compatibility-only legacy input.
+- Require direct Bullet Workspace and Evidence Workspace links in
+  Page-changing responses; embedded evidence iframes are secondary details.
+
+## 0.48.0 · 2026-09-09
+
+- Render the Bullet column as readable Point groups: `[n · Role]` plus a
+  substantive statement, optional dash annotations, and a single transition
+  arrow between adjacent points.
+- Accept the Point form without changing legacy Bullet identities or the
+  Markdown/evidence/approval boundary.
+
 ## 0.47.0 · 2026-09-08
 
 - Make each `C<n>.P<m>` heading a native Bullet group that expands/collapses

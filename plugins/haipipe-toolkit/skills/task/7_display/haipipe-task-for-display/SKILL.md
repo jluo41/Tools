@@ -29,8 +29,8 @@ aggregate directly, becomes the Supporting Run edge.
 Every successful Run writes:
 
 ```text
-$OUTPUT_ROOT/results/<task>/<run>/source_data.csv   small display-safe aggregate
-$OUTPUT_ROOT/results/<task>/<run>/provenance.json   Task, Run, sources, selection, and SHA-256
+$OUTPUT_ROOT/<task>/results/<run>/source_data.csv   small display-safe aggregate
+$OUTPUT_ROOT/<task>/results/<run>/provenance.json   Task, Run, sources, selection, and SHA-256
 ```
 
 `provenance.json` follows `ref/provenance-template.json`.

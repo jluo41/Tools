@@ -8,8 +8,8 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-09-04"
+  version: "1.1.0"
+  last_updated: "2026-09-11"
 ---
 
 # /haipipe-plugin · a page's material, as one contract
@@ -119,7 +119,10 @@ address and receipt contract. `scripts/`
 (any language, with optional `config/` inside) is supporting material only when
 reusable local code exists; many Runs call a skill, CLI, API, or worker with no
 scripts lane. The ticket is the ONE execution door under the simple-code law.
-Results are regenerable, never evidence merely by existing, and become Page
+Computational projections may be regenerated under their owner's Run rules.
+Interactive writing Results also contain irreplaceable human feedback and
+accepted wording: never treat them as a disposable cache or regenerate their
+completed Steps/Versions. Results are never evidence merely by existing, and become Page
 evidence only when an evidence lane binds or aggregates them. Rows and physical
 dialects: `ref/roster.md` and `haipipe-plugin-runs`.
 

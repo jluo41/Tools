@@ -1,4 +1,29 @@
+## 0.12.0 · 2026-09-11
+
+- Support scoped interactive candidates before publication gates; retain original feedback, item dispositions and accepted text. Use current policy on local edits and the shared final Workspace link packet.
+
 # haipipe-writing
+## 0.11.0 · 2026-09-11
+
+**Make surgical revision the highest-priority writing rule.**
+
+Existing prose is now preservation-first: a local request authorizes only the
+named span and the smallest necessary seam. Untouched claims, logic, order,
+examples, citations, hedges, terms, voice, and paragraph function stay frozen;
+paragraph-wide or structural rewriting requires explicit scope from the
+person. Ambiguity resolves toward the smaller edit, and broader concerns are
+reported rather than silently repaired.
+
+## 0.10.0 · 2026-09-09
+
+**Make the default Page prose style concrete and expose the two reader workspaces.**
+
+Paragraph realization now defaults to subject-first, specific, one-move
+sentences with natural rhythm and no process-shaped or AI-shaped scaffolding;
+owner/venue policies remain authoritative. Page-changing hosts must return
+direct Bullet Workspace and Evidence Workspace links from the verified Board
+route, with compact or embedded views only as secondary projections.
+
 ## 0.9.0 — 2026-09-08
 
 **Add an optional anti-slop audit adapter without bypassing HAI write paths.**

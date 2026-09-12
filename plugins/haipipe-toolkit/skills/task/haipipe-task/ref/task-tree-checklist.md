@@ -17,7 +17,7 @@ T=Tools/plugins/haipipe-toolkit/skills/0_utils/task-table/ref/render_task_table.
 cp -R <one block> <scratch>/mut && rm -rf <scratch>/mut/<a task>/runs && mkdir <scratch>/mut/<a task>/results
 python3 $C <scratch>/mut --expect-fail        # 1 GATE-1: plant breaks in a COPY; R02 and S12 must fire
 python3 $C <tasks-dir>                        # 2 on the tree you built: 0 findings
-bash <one ticket per task TYPE> <its own dry flag>   # 3 a receipt lands at <job>/results/<task>/<run>/runtime.yaml
+bash <one ticket per task TYPE> <its own dry flag>   # 3 a receipt lands at <job>/<task>/results/<run>/runtime.yaml
                                               #   (scrapers take --dry_run, builders --dry-run, checks --check; read the script)
 python3 $T <tasks-dir> --check <tasks-dir>/TASK-TABLE.md   # 4 the table on disk is CURRENT (a new receipt makes it stale)
 python3 $T <tasks-dir> --out auto             # 5 re-render after 4 fails; every task a row, every ticket a Run, Findings empty
@@ -52,7 +52,7 @@ WIRING · the ticket, the config, the script
 
 RESULTS · generated output lands where the law says
 - [ ] S12 no `results/` inside a task, and no task script writes `TASK_DIR / "results"`
-- [ ] R01 every `results/<task>/<run>/` carries `runtime.yaml`; R05 no `results/<x>/` for a task that does not exist
+- [ ] R01 every `<task>/results/<run>/` carries `runtime.yaml`; S12 no `results/` at the Job level: Results live inside the Task that owns the Run (JL 260909)
 - [ ] —   a script that writes its own output folder names it after `RUN_NAME`, so output sits beside its receipt
 
 ROOT · the 260811 hazard

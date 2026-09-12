@@ -53,8 +53,8 @@ One Run's paths:
 ```text
 <task>/scripts/config/<run>.yaml
 <task>/runs/<run>.sh
-$OUTPUT_ROOT/results/<task>/<run>/runtime.yaml
-$OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
+$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml
+$OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 ```
 
 Every receipt stores both address spellings. Renaming descriptive words does

@@ -43,8 +43,8 @@ Project
             │   ├── runs/rNN_<run>.sh      authored Ticket
             │   └── sbatch/                optional, serves only this Task
             ├── sbatch/                    optional, spans two or more Tasks
-            ├── results/<task>/<run>/      generated Result + runtime.yaml
-            └── notebooks/<task>/<run>.ipynb
+            ├── <task>/results/<run>/      generated Result + runtime.yaml
+            └── <task>/notebooks/<run>.ipynb
 ```
 
 Every directory level uses `<level><NN>_<noun>_<qualifier>` with level letters
@@ -105,8 +105,8 @@ All lifecycle work targets one exact `tNN_<task>/` Task Folder.
 Plan     workflow/plan.yaml + workflow/plan-script-<worker>.yaml
 Build    scripts/<worker>.py + scripts/config/<run>.yaml
          + runs/<run>.sh + CODE_REVIEW.md
-Execute  $OUTPUT_ROOT/results/<task>/<run>/{runtime.yaml, metrics.json, ...}
-         + $OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
+Execute  $OUTPUT_ROOT/<task>/results/<run>/{runtime.yaml, metrics.json, ...}
+         + $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 Report   workflow/report.yaml + workflow/report-script-<worker>.yaml
          + RUN_AUDIT.md
 ```
@@ -144,7 +144,7 @@ Tickets remain in the Task Folder. `CODE_REVIEW.md` stays with the Task code.
 
 The one Page-authority exception is a PHI-safe DISPLAY unit admitted by LAND
 under `outline/evidence/display/<unit>/`. Its Result envelope and receipt still
-live under `$OUTPUT_ROOT/results/<task>/<run>/` and record the projection hash.
+live under `$OUTPUT_ROOT/<task>/results/<run>/` and record the projection hash.
 
 ## Question and Insight routing
 

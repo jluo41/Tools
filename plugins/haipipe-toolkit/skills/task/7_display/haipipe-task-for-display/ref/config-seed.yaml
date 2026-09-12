@@ -10,7 +10,7 @@ _meta:
   input: |
     <e.g., Eval results from tasks B01/01..05 (one per model size)>
   output: |
-    $OUTPUT_ROOT/results/<task>/<run>/{source_data.csv, provenance.json}
+    $OUTPUT_ROOT/<task>/results/<run>/{source_data.csv, provenance.json}
   provenance: |
     provenance.json records task holder, run, upstream artifacts, selection logic, output hash,
     and `approved_for_display_intake: true` only when this CSV is safe to snapshot into a paper.

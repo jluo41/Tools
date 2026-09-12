@@ -5,7 +5,21 @@ Use this packet only when a person asks to **review**, **check**, **read**, or
 decision-ready conversation; it neither rewrites the plan nor grants a human
 approval on the person's behalf.
 
+Before the four review parts, return the two direct live workspace links when
+the Board is available: **Bullet Workspace** (`<Board URL>&lens=div`) and
+**Evidence Workspace** (`<Board URL>&lens=workspace&seg=items`). Use the same
+verified configured public origin as the Outline table. The embedded
+`/_board/evidence?...&embed=1` URL is an iframe implementation detail, not the
+primary Evidence link.
+
 ## 1 · Current Shape
+
+- Review the two-column Bullet Workspace: Bullet/Evidence beside actual
+  candidate prose, then `Read paragraph` for continuity and voice. Name the
+  paragraph where the intended point and the written sentence diverge. The
+  candidate in `<stem>-preview.md` may be revised during SHAPE before approval;
+  see `content-preview.md`. Label missing-evidence placeholders and stale
+  Bullet bindings. Preview review does not approve or promote Page Content.
 
 - Link the latest `outline/<stem>-outline-v<G>.<S>[.<E>].md` and state its version and
   `approved:` value.
@@ -69,8 +83,12 @@ approval on the person's behalf.
 ## Response shape
 
 ```text
+## 🔗 Workspaces
+Bullet Workspace    <Board URL>&lens=div
+Evidence Workspace  <Board URL>&lens=workspace&seg=items
+
 ## 🧭 Current Shape
-<link · approval state · arc · C/P map · Section form audit when applicable>
+<link · approval state · arc · C/P map · candidate paragraph findings · Section form audit when applicable>
 
 ## 🧾 Evidence owed
 <link · typed/status count · distinct citation units · material item table>

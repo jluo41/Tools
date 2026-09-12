@@ -50,10 +50,10 @@ their Tickets or submits their notebook artifacts; it never hosts worker code.
 ## Generated artifacts
 
 ```text
-$OUTPUT_ROOT/results/<task>/<run>/runtime.yaml
-$OUTPUT_ROOT/results/<task>/<run>/<light-results>
-$OUTPUT_ROOT/notebooks/<task>/_source.ipynb
-$OUTPUT_ROOT/notebooks/<task>/<run>.ipynb
+$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml
+$OUTPUT_ROOT/<task>/results/<run>/<light-results>
+$OUTPUT_ROOT/<task>/notebooks/_source.ipynb
+$OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 ```
 
 For cluster execution, `runtime.yaml` records the Databricks Run id, workspace

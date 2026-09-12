@@ -223,7 +223,8 @@ def prefix(name, level):
 
 
 def subdirs(p):
-    return sorted(d for d in p.iterdir() if d.is_dir() and not d.name.startswith((".", "_")))
+    # `board/` is the rendered Board site haipipe-board writes beside board.md, never a Job or Task (260909)
+    return sorted(d for d in p.iterdir() if d.is_dir() and not d.name.startswith((".", "_")) and d.name != "board")
 
 
 # ── scan ─────────────────────────────────────────────────────────────────────
@@ -400,8 +401,8 @@ def scan_task(t, j, job_addr, findings):
     for res_root, dialect in ((j / "results" / t.name, "job"), (t / "results", "task-local")):
         if not res_root.is_dir():
             continue
-        if dialect == "task-local":
-            findings.append(f"S-results {addr} {t.name}: results/ inside the task; the law is <job>/results/<task>/")
+        if dialect == "job":   # JL 260909: Results live inside the Task that owns the Run (haipipe-task S12 flipped the same day)
+            findings.append(f"S-results {addr} {t.name}: results/ at the job level; the law is <task>/results/<run>/")
         for run_dir in subdirs(res_root):
             r = run_dir / "runtime.yaml"
             if r.is_file():

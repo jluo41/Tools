@@ -61,8 +61,8 @@ jNN_<job>/
 ├── tNN_<task>/
 ├── tNN_<task>/
 ├── sbatch/                      optional; spans at least two Tasks
-├── results/<task>/<run>/        generated in self-serving mode
-├── notebooks/<task>/<run>.ipynb
+├── tNN_<task>/results/<run>/    generated in self-serving mode, inside the Task Folder that owns the Run
+├── <task>/notebooks/<run>.ipynb
 └── diagram/                     optional operational narrative
 ```
 
@@ -111,12 +111,12 @@ One Run has four paired projections with the same `rNN_<run>` stem:
 ```text
 tNN_<task>/scripts/config/rNN_<run>.yaml       frozen authored inputs
 tNN_<task>/runs/rNN_<run>.sh                   authored Ticket
-$OUTPUT_ROOT/results/tNN_<task>/rNN_<run>/     generated Result and receipt
-$OUTPUT_ROOT/notebooks/tNN_<task>/rNN_<run>.ipynb
+$OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/     generated Result and receipt
+$OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
 The generated notebook template is
-`$OUTPUT_ROOT/notebooks/tNN_<task>/_source.ipynb`. Both notebooks are generated;
+`$OUTPUT_ROOT/tNN_<task>/notebooks/_source.ipynb`. Both notebooks are generated;
 edit the `.py` source, never an `.ipynb` projection.
 
 A Ticket names exactly one config and executes one Task. It may select an
@@ -180,7 +180,7 @@ siblings after deletion.
 - A Ticket writes `runtime.yaml` atomically at `planned`, `running`, and a
   truthful terminal state.
 - `complete` requires process success plus the declared Result gate.
-- Light Result artifacts live below `results/<task>/<run>/`.
+- Light Result artifacts live below `<task>/results/<run>/`, beside the Task's `runs/` and `scripts/` (JL ruling 260909; before it they sat at the Job level under `<task>/results/<run>/`).
 - Model weights, large arrays, raw tables, and other heavy artifacts live in
   `_WorkSpace/`; the Result stores pointers and checksums.
 
@@ -229,7 +229,7 @@ deliberately broken scratch copy before trusting a zero-finding run.
 - A Job contains at least one Task Folder and a Task Folder contains at least
   one `rNN_` Ticket.
 - Block/Job/Task/Run names must pass the grammar and stranger test.
-- Generated Results never live in the Task Folder.
+- Generated Results live in the Task Folder's `results/`, never at the Job level and never under `scripts/`.
 - A Task never contains `src/`; a Job never contains `scripts/`.
 - The documentation surface is `board.md`, the Task Page, and `diagram/`, not a
   root README.

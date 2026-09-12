@@ -1,3 +1,56 @@
+## 0.182.0 · 2026-09-11
+
+- Qualify full-render completion as formal Board/Page delivery; routine Writing Steps and explicit Content-only adoption use the scoped save/check contract. Update template wording to agreed-text adoption without a replacement drafting Run.
+
+## 0.181.0 · 2026-09-11
+
+- Add a compact sentence-targeted Comments composer below each Outline
+  paragraph, with quoted wording, signed Markdown lanes, and retained replies.
+- Keep review outside candidate prose; preserve it across preview saves and
+  reject stale targets. Serialize writes and deduplicate lost-response retries.
+
+## 0.180.0 · 2026-09-11
+
+- Render an optional Section `<stem>-logic.mmd` as the first Bullet Workspace
+  card through a safe, script-free SVG projection with escaped-source fallback.
+- Keep Pages without a matching map unchanged.
+
+## 0.179.0 · 2026-09-10
+
+- Remove only the per-paragraph `+ Bullet` button and append form; retain
+  paragraph read-through, folding, editors, and the compatible append API.
+- Cover the reading controls and absence of append UI in regression tests.
+
+## 0.178.0 · 2026-09-10
+
+- Section preview saves require one sentence per Bullet; ambiguous legacy
+  multi-sentence/shared Content no longer auto-fills a candidate cell.
+- Keep authored function tags visible beside Bullets in the reading-first table.
+
+## 0.177.0 · 2026-09-10
+
+- Make Outline reading-first: a persistent 40/60 Bullet/prose table on phones,
+  tap-to-edit draft cells with Cancel, and folded notes and process diagnostics.
+- Preserve Markdown/version authority; this change does not rewrite paper prose.
+
+## 0.176.0 · 2026-09-10
+
+- Add a two-column Bullet/Evidence and Content preview workbench, Markdown draft saves with stale-edit protection, and paragraph read-through.
+
+## 0.175.0 · 2026-09-09
+
+- Require Page-changing reader responses to return direct Bullet Workspace
+  (`lens=div`) and Evidence Workspace (`lens=workspace&seg=items`) links from
+  the verified public Board route; embedded evidence iframes remain secondary.
+
+## 0.174.0 · 2026-09-09
+
+- Share the plan's Point parser between the live Outline and generated Page
+  table. Render optional `[Role]` statements, dash annotations, and one
+  transition arrow without mutating Markdown or generated page content.
+- Preserve explicit `C.P.B` identities when plans contain non-sequential Bullet
+  numbers; keep legacy imperative heads readable with a neutral Point label.
+
 ## 0.173.0 · 2026-09-08
 
 - Outline plugin, Bullet Workspace: every `C<n>.P<m>` paragraph is a native

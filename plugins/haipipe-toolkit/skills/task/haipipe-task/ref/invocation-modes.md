@@ -61,7 +61,7 @@ status:       ok | blocked | failed
 job:          <absolute path to the parent jNN_<job>>      (on ok)
 task_folder:  <absolute path to tNN_<task>>                (on ok; same as Page Folder)
 run_name:     <rNN_run>
-files:        [scripts/config/<run>.yaml, runs/<run>.sh, $OUTPUT_ROOT/results/<task>/<run>/]
+files:        [scripts/config/<run>.yaml, runs/<run>.sh, $OUTPUT_ROOT/<task>/results/<run>/]
 missing:      [<field>, ...]                                (on blocked)
 note:         <one line>
 ```

@@ -1,3 +1,7 @@
+## 0.11.0 · 2026-09-11
+
+- Document one-row interactive Run history and truthful waiting semantics. Explicitly distinguish the new skill protocol from the existing renderer, which has no Version/Step browser yet.
+
 ## 0.10.0 · 2026-09-08
 
 - Present Paragraph Writing targets and inline, escaped Markdown instructions, paragraph and trace beneath the compact Run row.

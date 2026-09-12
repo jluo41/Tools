@@ -51,12 +51,12 @@ For each `plan-script-<name>.yaml`, gather evidence:
 
 | Source | What it gives |
 |--------|--------------|
-| `$OUTPUT_ROOT/results/<task>/<run>/manifest.json` | finished timestamp, paths |
-| `$OUTPUT_ROOT/results/<task>/<run>/log/*.txt` | step-level stdout, errors |
-| `$OUTPUT_ROOT/notebooks/<task>/<run>.ipynb` | cell outputs (row counts, print statements) |
-| `$OUTPUT_ROOT/results/<task>/<run>/*.csv` | actual file sizes, row counts |
-| `$OUTPUT_ROOT/results/<task>/<run>/figures/*.png` | figure file sizes |
-| `$OUTPUT_ROOT/results/<task>/<run>/config_snapshot.yaml` | config used |
+| `$OUTPUT_ROOT/<task>/results/<run>/manifest.json` | finished timestamp, paths |
+| `$OUTPUT_ROOT/<task>/results/<run>/log/*.txt` | step-level stdout, errors |
+| `$OUTPUT_ROOT/<task>/notebooks/<run>.ipynb` | cell outputs (row counts, print statements) |
+| `$OUTPUT_ROOT/<task>/results/<run>/*.csv` | actual file sizes, row counts |
+| `$OUTPUT_ROOT/<task>/results/<run>/figures/*.png` | figure file sizes |
+| `$OUTPUT_ROOT/<task>/results/<run>/config_snapshot.yaml` | config used |
 
 ### Step 3 — Generate per-script reports
 
@@ -104,7 +104,7 @@ phases:
         status: done
         files_in: []
         files_out:
-          - $OUTPUT_ROOT/results/<task>/<run>/<file>
+          - $OUTPUT_ROOT/<task>/results/<run>/<file>
         output: { key: value }
 
       - label: "<phase>:<step-name>"
@@ -126,8 +126,8 @@ summary:
   steps_skipped: Y
   steps_failed: 0
   files_created:
-    - $OUTPUT_ROOT/results/<task>/<run>/<file1>
-    - $OUTPUT_ROOT/results/<task>/<run>/<file2>
+    - $OUTPUT_ROOT/<task>/results/<run>/<file1>
+    - $OUTPUT_ROOT/<task>/results/<run>/<file2>
   verdict: <pass | warn | fail | inconclusive>
   issues: []
 ```
@@ -156,8 +156,8 @@ phases:
           - scripts/config/<run_name>.yaml
           - _WorkSpace/...
         files_out:
-          - $OUTPUT_ROOT/results/<task>/<run>/<file1>
-          - $OUTPUT_ROOT/results/<task>/<run>/<file2>
+          - $OUTPUT_ROOT/<task>/results/<run>/<file1>
+          - $OUTPUT_ROOT/<task>/results/<run>/<file2>
         note: "238s, N test rows"
 
   - title: Gate1
@@ -177,7 +177,7 @@ phases:
       - label: "gate2:result-audit"
         status: done
         files_in:
-          - $OUTPUT_ROOT/results/<task>/<run>/*
+          - $OUTPUT_ROOT/<task>/results/<run>/*
           - workflow/plan-script-<name>.yaml
         files_out:
           - RUN_AUDIT.md
@@ -191,7 +191,7 @@ summary:
   steps_skipped: Y
   steps_failed: 0
   files_created:
-    - $OUTPUT_ROOT/results/<task>/<run>/<file1>
+    - $OUTPUT_ROOT/<task>/results/<run>/<file1>
     - CODE_REVIEW.md
     - RUN_AUDIT.md
   verdict: <pass | warn | fail>

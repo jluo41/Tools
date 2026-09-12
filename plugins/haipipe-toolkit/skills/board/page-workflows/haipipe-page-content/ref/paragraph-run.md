@@ -1,4 +1,10 @@
-# Paragraph Writing Run
+# Paragraph Writing Run · explicitly delegated / existing Results
+
+For interactive human-feedback writing, use
+`../../haipipe-page-workflow/ref/interactive-writing-run.md` instead. That
+profile supports several paragraphs, Versions and feedback Steps under one
+Run. This file remains the contract consumed by `promote_paragraph.py`; it
+must not force a new Run per paragraph during adoption of agreed text.
 
 CONTENT/WRITE commissions one paragraph, addressed `C<n>.P<m>`. The Page
 Folder owns its Ticket; the Folder dialect resolves its Result. A paragraph
@@ -47,6 +53,8 @@ worker: haipipe-writing
 - Plan: <approved version/hash; C1.P2 job and B1..Bn>
 - Evidence: <each Bullet's folded Item → full Local Run → Result path/hash>
 - Current prose: <Page version/hash and this paragraph's prior text, if any>
+- SHAPE preview: <outline/<stem>-preview.md addressed slice and frozen text/hash,
+  or absent; candidate prose, not accepted Content>
 - Continuity: <whole argument reference, previous accepted paragraph/version,
   next paragraph's approved job; use an explicit boundary for first/last>
 - Narrative Decision: <Page Outline decision id/scope/summary/source for this
@@ -82,7 +90,10 @@ Write only C1.P2 using the inputs above in three passes:
    or the approved claim is stronger than its Evidence Result—report the
    specific gap and owning phase instead of drafting around it or silently
    weakening the claim.
-2. Draft a neutral, evidence-bound paragraph in the approved order. Cover the
+2. Revise the supplied SHAPE candidate when present, or draft a neutral,
+   evidence-bound paragraph in the approved order. Preserve useful reviewed
+   wording and resolve candidate placeholders against the ready Evidence.
+   Cover the
    assigned point, bound evidence, interpretation or consequence, and handoff;
    preserve numbers, citations, qualifiers, and claim strength. This pass must
    remain correct if all style inputs are removed.

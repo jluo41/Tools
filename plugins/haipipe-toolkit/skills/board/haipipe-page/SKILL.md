@@ -7,8 +7,8 @@ description: >-
   create a page, update page, run page lifecycle, Page Face, Folder kind,
   legacy Page Type, Page Phase, /haipipe-page.
 metadata:
-  version: "0.61.6"
-  last_updated: "2026-09-08"
+  version: "0.64.0"
+  last_updated: "2026-09-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -34,10 +34,15 @@ them. The authoritative template stays `haipipe-board/ref/page-template.md`;
 this contract cites it and never forks it.
 
 The reader-facing completion packet is defined in
-`ref/user-check-packet.md`. Every Page-changing reply uses that contract so a
-person can inspect the Outline table, the evidence that can be opened now
-(Display PDFs, citations, value cards), the Content state after Revise, and the
-compiled Page-level PDF without searching through process output.
+`ref/user-check-packet.md`. The Bullet Workspace includes editable Content
+preview beside each Bullet and its Evidence during SHAPE. These candidate
+sentences live in `outline/<stem>-preview.md`, may exist before Shape approval,
+and become exact adoption input for CONTENT when explicitly accepted. See
+`haipipe-plugin-outline/ref/content-preview.md` for the write boundary.
+
+Use `ref/user-check-packet.md` for the two response modes: a routine Writing
+Step returns complete selected paragraphs and the two final Workspace links;
+a formal delivery also returns the evidence/PDF surfaces that are current.
 
 ## 📁 What a page is on disk
 
@@ -198,11 +203,14 @@ Page Evidence Item Run; LAND produces one ready local Result; EMBED interprets
 it. The ledger is `outline/<stem>-evidence-items.md`
 (`haipipe-plugin-outline/ref/item-table.md`).
 
-CONTENT commissions one Paragraph Writing Run per selected `C<n>.P<m>`.
-That paragraph realizes its approved Bullets with sentence-level traces;
-several Bullets may belong to one paragraph. Divisions still organize the
-Page and Aims. The exact Ticket, Result and promotion contract belongs to
-`page-workflows/haipipe-page-content`, not a new Page or paragraph plugin.
+Collaborative writing uses one persistent Run for a bounded goal, possibly
+several paragraphs, under
+`../page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
+SHAPE and `haipipe-writing` co-develop Bullets and candidate prose. Human
+feedback advances Steps; explicit closure seals a Version. CONTENT adopts
+agreed wording and delivery without commissioning another Run per paragraph.
+The historical/explicitly delegated single-paragraph profile remains in
+`haipipe-page-content/ref/paragraph-run.md`. Neither path adds a plugin.
 
 ### 🧬 Writing DNA handoff
 
@@ -216,7 +224,8 @@ CONTEXT/PREPARE  resolve policy + profile id/status/hash
 OUTLINE/SHAPE    freeze the reader job, Bullet order, claim contract, and any
                  declared paragraph-level Narrative Decision
 EVIDENCE         land and fold factual Results; DNA has no evidence authority
-CONTENT/WRITE    freeze the Decision + packet in each C<n>.P<m> Paragraph Run
+WRITING RUN      freeze applicable Decision + style packet; reload only on drift
+CONTENT/WRITE    adopt agreed wording; preserve its recorded style decisions
 CHECK            judge the built Page and the Run's recorded style application
 ```
 
@@ -412,11 +421,16 @@ source-file path, `localhost`, `127.0.0.1`, or `file://`.
 
 After any Page, plan, Page-local evidence, DISPLAY, Content, or derived
 projection change, return the compact packet in
-`ref/user-check-packet.md`, in this order:
+`ref/user-check-packet.md`. For a routine interactive turn, return the full
+selected paragraphs and concise feedback dispositions, followed by direct
+Bullet Workspace and Evidence Workspace links at the very end. Do not build
+or append a PDF on every wording edit. The following surfaces are the formal
+delivery packet, not mandatory work for each feedback Step:
 
-1. the verified Board Page URL, labelled **Outline table** (this is the Page
-   link);
-2. **Evidence you can open now**: one Evidence Workspace link plus, per ready
+1. the verified Board route in two direct views: **Bullet Workspace**
+   (`lens=div`) and **Outline table** (the compact Page projection);
+2. **Evidence you can open now**: the direct Evidence Workspace link
+   (`lens=workspace&seg=items`) plus, per ready
    typed Evidence Item, the DISPLAY unit's `preview.pdf`, the Page's citation
    register, or the VALUE item card deep link;
 3. **Content state**: the Page version and whether Revise ran (owner-selected workers and
@@ -443,7 +457,12 @@ their `Now:` lines · `outline/<stem>-files.md` with any Related Board Page row
 the current phase needs · register in `board.md` · build, check, read the
 RENDER, report the finding count.
 
-**Work on**: ONE page is the deliverable. Read the whole file and its
+**Interactive work on**: a sentence/paragraph feedback request selects the
+persistent Writing Run path above. Resume current decisions and affected
+sources; make the narrow patch, save feedback and result, and return the saved
+passage. Do not use the broad repair/build loop below for that request.
+
+**General Page work on**: ONE page is the deliverable. Read the whole file and its
 `outline/` first; if the files record declares Related Board Pages, load the
 one-hop packet from `cli/pagecontext.py <page> --phase <PHASE>` · run the
 checker and fix the mechanical findings in bulk · then read for what no
@@ -454,7 +473,8 @@ render, report before and after counts · a write outside the target page only
 when the page cannot be made correct without it, named file by file · never
 rewrite a sibling page's content.
 
-**Run**: the bounded loop lives with `page-workflows/haipipe-page-workflow`.
+**Run**: human-feedback writing uses the persistent profile above. For automated
+phase work, the bounded loop lives with `page-workflows/haipipe-page-workflow`.
 The dispatch stays in the session you typed it in: a subagent is not handed
 the `Workflow` tool. A new page is CREATEd and registered first and RUN starts
 at CONTEXT; an existing page with no known next authority starts at CHECK.
@@ -476,14 +496,16 @@ save; a `.py`, `.css` or `.js` change needs one build run.
 Load this skill and `haipipe-board/ref/writing-rules.md` directly before
 writing; a copied checklist in a prompt is a second authority and drifts.
 
-- **A change is finished when it is on the RENDERED page**, and nobody is
-  asked for permission on the way: write the source, propagate a new rule to
-  `ref/page-template.md` and this file, run `check.py`, then confirm the render
-  rather than the markdown.
-- **An accepted process ruling lands in its owning skill first**, then in every
-  affected Page during the same pass. The Page receipt names the exact skill
-  version used. Do not leave the ruling only in chat or apply it to Pages under
-  an older contract.
+- **Formal delivery finishes on the rendered Page.** Build/check and inspect
+  the required projection before calling it current. A routine Writing Step
+  instead saves/reads the live preview; an explicitly requested adoption-only
+  operation saves/checks Content and reports delivery as not refreshed. Neither
+  is whole-Page completion. Human approval and write scope remain binding.
+- **An accepted process ruling lands in its owning skill when a skill update
+  is requested.** Apply it only to Pages within the authorized scope; a skill
+  update does not regenerate every Paper. Local writing preferences stay in
+  the Writing history until promotion to a wider rule is explicitly approved.
+  The Page receipt names the exact skill version used.
 - **The write anchor rule**: a machine write lands at a section boundary,
   never at a byte offset; appending under a named `##` heading is safe.
 - **The human-decision rule**: a machine updates an Aim's tick only from
@@ -515,7 +537,7 @@ writing; a copied checklist in a prompt is a second authority and drifts.
 - **Before writing back, self-check**: no promise the page does not support,
   no sentence that only fills a category, one sentence per source line,
   English only, no em-dash. This improves the draft and approves nothing; a
-  fresh reviewer judges the page after the writer's context is gone.
+  fresh reviewer judges formal Page completion, not each local feedback Step.
 
 ## 🔍 How a page is judged
 

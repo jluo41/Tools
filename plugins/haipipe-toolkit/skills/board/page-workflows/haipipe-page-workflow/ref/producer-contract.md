@@ -14,6 +14,16 @@ is executed by a general-purpose stand-in whose FIRST action is reading the
 phase agent's file as its identity, then this contract. The receipt's `actor:`
 names the ROLE (the phase agent), and the stand-in signs nothing else.
 
+## Interactive-turn exception
+
+A direct human-feedback writing turn follows `interactive-writing-run.md`,
+not a fresh full producer dispatch. Load applicable skills once; on subsequent
+turns reuse still-current authority and read the affected source slice plus
+neighbors. Refresh stale policy/plan inputs. Save raw feedback and exact prose
+before replying. Broad generation, Build, and cold review below apply to
+formal phase completion, not every local wording edit. An explicitly delegated
+phase worker still follows this packet.
+
 ## The assignment packet
 
 The caller supplies this. If a required field is missing, return `blocked`
@@ -115,7 +125,9 @@ being guessed.
    source work and required build paths so that separate builder can regenerate,
    check, and snapshot the version before the next phase. In a direct session,
    complete those same build and rendered-inspection steps before claiming
-   completion. Record who built and what was actually inspected. CONTENT's
+   formal delivery. An explicitly requested adoption-only operation may save
+   and verify Content without building, but must report delivery unrefreshed
+   and may not route to CHECK as a completed built version. Record who built and what was actually inspected. CONTENT's
    Build movement remains mandatory; a producer never impersonates the
    independent CHECK judge or declares an unseen Board updated.
 

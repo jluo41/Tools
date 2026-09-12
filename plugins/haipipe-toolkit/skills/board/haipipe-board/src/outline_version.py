@@ -2,8 +2,9 @@
 
 Plans use ``v<generation>.<shape>[.<evidence>]``. The omitted evidence
 component is zero, so ``v1.2`` and ``v1.2.0`` have the same meaning. Generation
-zero is outline-only. From generation one onward, a shape or evidence change
-must refresh Content. Integer-only ``v5`` files remain readable legacy input;
+zero is outline-only. From generation one onward, a released shape or evidence
+change requires Content reconciliation through its gates; unapproved working
+edits do not publish Content. Integer-only ``v5`` files remain readable legacy input;
 no new current plan may use that form.
 """
 import re

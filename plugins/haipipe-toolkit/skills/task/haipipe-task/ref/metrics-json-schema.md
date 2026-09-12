@@ -1,7 +1,7 @@
 metrics.json — Schema
 ======================
 
-Location: `$OUTPUT_ROOT/results/<task>/<run>/metrics.json`.
+Location: `$OUTPUT_ROOT/<task>/results/<run>/metrics.json`.
 Owner:    Written by the task's `*.py` / `*.do` at finalize. May be edited by
           re-running the task; never hand-edited.
 Status:   Source-of-truth for the measured NUMBERS of ONE run. `runtime.yaml`

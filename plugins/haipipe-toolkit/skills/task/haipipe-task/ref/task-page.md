@@ -133,7 +133,7 @@ these exact owner-native forms:
 SURVEY, no Ticket   Local Run: Page · Evidence Item · new-run · bNNjNNtNN
 LAND, allocated     Local Run: Page · Evidence Item · registered · bNNjNNtNNrNN
 LAND, ready         Local Run: Page · Evidence Item · reuse · bNNjNNtNNrNN
-                              → $OUTPUT_ROOT/results/<task>/<RUNNAME>/
+                              → $OUTPUT_ROOT/<task>/results/<RUNNAME>/
 later same contract Local Run: Page · Evidence Item · rerun · bNNjNNtNNrNN
 ```
 

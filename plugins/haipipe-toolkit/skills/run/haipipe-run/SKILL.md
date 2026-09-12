@@ -12,8 +12,8 @@ description: >-
   result, calibration run, qualification run, production scan, final audit,
   /haipipe-run.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-09-08"
+  version: "0.10.0"
+  last_updated: "2026-09-11"
 ---
 
 # /haipipe-run · one attempt, two projections, one receipt
@@ -63,7 +63,10 @@ Mint a Run only when all four are true:
 4. success or truthful non-success can be tested from disk.
 
 Keep planning in `outline/`. A proposed section, unresolved item row, or human
-decision is not yet a Run. A Paper workflow may reserve a proposed P/J/T/R
+decision alone is not a Run. A bounded human-feedback writing commission may
+satisfy all four tests through saved feedback, candidate text and explicit
+human acceptance; it follows the interactive Page dialect below. For evidence
+work, a Paper workflow may reserve a proposed P/J/T/R
 address during SURVEY so the future Run is indexable; the `new` action records
 that no Ticket exists. Open and count the Run only when LAND commissions the
 attempt and creates its authored Ticket.
@@ -172,6 +175,8 @@ r07_labeling-executor-predict_test-v1-executor-a
 Use lowercase ASCII, digits, underscores, and hyphens. Never renumber. When
 intent, target, frozen inputs, or acceptance semantics change materially,
 allocate a new Run and record `supersedes:` rather than overwriting history.
+The declared interactive Page dialect is the scoped exception: evolving
+feedback is part of its contract and advances Steps/Versions, not Run ids.
 
 For Insight instance work, a new execution version is a new full Run id;
 the stable local ticket may be reused. `supersedes` relates replacement
@@ -207,6 +212,35 @@ only when the owning Page's path is carried with it.
 `rerun` adds an attempt under the same Run identity because target, frozen
 inputs, and acceptance are unchanged. If any changes materially, mint a new
 Run and set `supersedes: bNNjNNtNNrNN` in its receipt.
+
+### Interactive Page writing dialect
+
+Canonical profile:
+`../../board/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
+Load it before executing human-feedback Page writing.
+
+```text
+family / operation   page / interactive-writing
+interaction          human-feedback
+Run target           one bounded writing goal; may include several paragraphs/map
+authored Run         runs/<owner-native-run>.md
+paired Result        results/<run>/working.md + runtime.yaml + vNNN/
+human Step           vNNN/sNNN-input.md + sNNN-result.md
+accepted episode     vNNN/close.md with explicit human decision and sealed hashes
+```
+
+The Folder's dialect may place that Result elsewhere; record the resolved path.
+A Version and Step are inner history, not extra L4 Runs or hierarchy levels.
+Waiting for feedback is ordinary `waiting-for-feedback`, not a failed worker.
+A human-accepted writing Version is not Page CHECK closure or evidence readiness.
+The invariant tested on disk is scoped human agreement plus preserved history,
+not a machine score that declares prose good.
+
+Feedback evolves the input on purpose. Each Step freezes its reviewed source;
+ordinary edits add a Step, reopening a closed episode adds a Version, and a
+new session resumes the same Run. New independent goals still require new Runs.
+Closed records are immutable. Changes to accepted targets require explicit
+scoped reopening. Never apply this exception to Execution/Discovery retries.
 
 ### Insight instance dialect
 
@@ -291,7 +325,7 @@ WORKER       skill, agent, CLI, API, or script allowed to execute
 RESULT       required generated files and safe external pointers
 ACCEPT       kind-specific test for status=complete
 PROMOTION    how an accepted Result binds to evidence, Page, or handoff
-REOPEN       which changed input invalidates the binding and requires a new Run
+REOPEN       which change requires a new Run, or a declared dialect's new Version
 ```
 
 Select `haipipe-plugin-runs` when the Folder exposes these Runs. The plugin is a
@@ -299,7 +333,10 @@ surface, never a substitute for this phase-owned profile.
 
 ## Lifecycle
 
-Work one Run in this order:
+The delegated baseline is below. Interactive Page writing uses its declared
+feedback wait/Step/Version loop instead of treating every turn as a new attempt.
+
+Work one delegated Run in this order:
 
 ```text
 PLAN          outline declares the owed target; Paper may reserve P/J/T/R; no Ticket or Run yet
@@ -320,7 +357,8 @@ receipts.
 
 Retry the same Run only when target, intent, frozen inputs, and acceptance
 contract are unchanged. Append the attempt and failure trail; never silently
-replace it. Any material change mints a new RUNNAME.
+replace it. Any material change mints a new RUNNAME in this delegated baseline;
+the interactive Page dialect explicitly permits feedback-driven Steps/Versions.
 
 ## Runtime receipt
 
@@ -385,7 +423,10 @@ Promotion  an accepted candidate written into an authority or handoff
 A Result does not become evidence merely because it exists. Execution and
 Discovery Results may support a Page Evidence Item; its one local Page ·
 Evidence Item Result becomes Page evidence only when LAND binds it and EMBED
-interprets it. Paragraph Writing may be promoted into one addressed Content paragraph.
+interprets it. Interactive writing may be adopted into its explicitly accepted
+paragraph targets; the delegated Paragraph Writing profile promotes one
+addressed Content paragraph. Feedback and accepted writing history are not
+regenerable caches, even though their Result directory also contains projections.
 For DISPLAY, the Page-owned display unit may be the renderer's direct output
 destination; the governed Result envelope points to that unit and records its
 hashes instead of first creating and then copying a duplicate payload. In a

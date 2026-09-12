@@ -2,15 +2,16 @@
 name: haipipe-page-workflow
 description: >-
   The Page workflow router: 00 CONTEXT/PREPARE, 01 OUTLINE/SHAPE+SURVEY,
-  02 EVIDENCE/LAND+EMBED, 03 CONTENT/WRITE, and 04 CHECK. It selects the
+  02 EVIDENCE/LAND+EMBED, 03 CONTENT/WRITE, and 04 CHECK. Owns persistent
+  human-feedback Writing Runs across planning and prose iteration. It selects the
   exact phase skill, Page Face owner, policy, Outline workspace, Level-4 Run graph,
   legal backward route, and auditable receipt for one persistent Page. Use to
   design, run, resume, or audit the complete Page lifecycle. Trigger: Page
   workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.30.0"
-  last_updated: "2026-09-08"
+  version: "0.31.0"
+  last_updated: "2026-09-11"
   # version history: ./CHANGELOG.md
 ---
 
@@ -47,6 +48,21 @@ The full canonical table is `ref/workflow-table.md`; the compact phase cards
 are `ref/phase-cards.md`; the executable packet/receipt law is
 `ref/page-run-contract.md`.
 
+## 🤝 Interactive writing first
+
+For collaborative drafting or feedback-led revision, load
+`ref/interactive-writing-run.md` and its `ref/writing-step-template.md` before
+editing. One Run owns a bounded writing goal, possibly several paragraphs;
+human feedback advances Steps inside a Version. A new chat session or a new
+review window does not create another Run. Ordinary waiting for feedback is
+not a failure, and local edits do not invoke the complete phase controller.
+
+SHAPE and SURVEY remain planning capabilities, not one Run each. They can be
+used inside this independently closable interactive Run. `haipipe-writing`
+owns prose revision; `haipipe-page-content` adopts agreed wording and builds
+delivery. Do not redraft accepted paragraphs at that handoff. This protocol
+uses agent-authored Markdown records; it adds no runtime service or UI controls.
+
 ## ⚡ The result
 
 One Page has five numbered phases. The three middle phases make the Page; the
@@ -56,19 +72,19 @@ front phase prepares their context and the last phase judges their result:
 00 CONTEXT     haipipe-page-context     PREPARE · Collect, Resolve, Freeze
 01 OUTLINE     haipipe-page-outline     SHAPE · SURVEY
 02 EVIDENCE    haipipe-page-evidence    LAND · EMBED
-03 CONTENT     haipipe-page-content     WRITE · Draft, Revise, Build, Pre-check
+03 CONTENT     haipipe-page-content     WRITE · Adopt, Integrate, Build, Pre-check
 04 CHECK       haipipe-page-check       CHECK · whole-Page close gate
 ```
 
 `Outline` and `Content` align with the Page's two substantive structures:
-Outline plans what the Page will say; Content is what it says. Draft and
-Revise are no longer Page phases. They are movements inside CONTENT/WRITE.
+Outline holds the plan and the frequently revised candidate prose; Content is
+the adopted Page text. Draft and Revise are writing movements, not separate
+phases. An interactive Writing Run can use SHAPE and Writing before adoption.
 
 Every user-facing completion after a Page-changing action follows
-`../../haipipe-page/ref/user-check-packet.md`: verified Board URL for the
-Outline table, the evidence that can be opened now (Display PDFs, the citation
-register, VALUE item cards), the Content state after Revise, and the current
-Page-level PDF. Only the new `outline/evidence/display/`,
+`../../haipipe-page/ref/user-check-packet.md`. Routine writing returns the
+saved selected paragraphs, feedback dispositions and two final Workspace links.
+Formal delivery also provides current evidence surfaces and the Page-level PDF. Only the new `outline/evidence/display/`,
 `outline/evidence/bibex/` and `delivery/latex/` lanes are eligible. The workflow receipt remains the audit record; it is not the primary
 user-facing answer.
 
@@ -122,7 +138,7 @@ any earlier owning phase.
 | `01B` | OUTLINE / SURVEY | `haipipe-page-outline` | Supporting routes + Local Input + indexed Local Run plan | none | complete decided Run graph |
 | `02A` | EVIDENCE / LAND | `haipipe-page-evidence` | Tickets, Results, frozen input, bindings | `0..N` Supporting + `1` local per make-item | ready typed local Results |
 | `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | next working plan bindings | none | ready Results folded; G=0 → SHAPE; approved G>=1 → CONTENT |
-| `03` | CONTENT / WRITE | `haipipe-page-content` | Page Content + delivery + promotion trace | normally `1` Paragraph Writing Run per commissioned paragraph | fresh pre-check says ready |
+| `03` | CONTENT / WRITE | `haipipe-page-content` | agreed prose → Page Content + delivery + adoption trace | consumes interactive Writing Result; delegated work only when independently commissioned | fresh pre-check says ready |
 | `04` | CHECK / CHECK | `haipipe-page-check` | check receipt/findings only | none | CLOSE or a named backward route |
 
 Do not use this compact table for design decisions. Use
@@ -140,9 +156,13 @@ SHAPE        no Run; it defines Bullet and Evidence Item contracts
 SURVEY       no Run; it inventories/references/reserves the graph
 LAND         Runs exist: Supporting Execution/Discovery/Insight, then local Evidence Item
 EMBED        no Run; it interprets ready Results into the plan
-CONTENT      Paragraph Writing Runs target one C<n>.P<m> each
+CONTENT      adopts agreed Writing Results; delegates bounded builds when needed
 CHECK        no Run; it is a version gate
 ```
+
+For interactive writing, the overarching Run records the human exchange across
+these capabilities; planning alone still does not allocate a Run. A writing
+Version's human closure is not the whole-Page CHECK/CLOSE verdict.
 
 The two evidence layers are mandatory and named separately:
 
@@ -179,8 +199,9 @@ SURVEY names the real owner/parent for every new local route. A full address
 may be reserved only when the Folder owner's current Run contract permits it;
 the route remains `new-run` with no Ticket. Read that owner's naming contract
 instead of defining a family namespace in Page skills. LAND allocates the owner-native
-Run id and creates the Evidence Item Ticket. CONTENT creates a Paragraph Writing
-Ticket only when the work independently satisfies the `haipipe-run` tests.
+Run id and creates the Evidence Item Ticket. The interactive workflow creates
+one Writing Run for the agreed goal; CONTENT consumes its accepted output.
+The single-paragraph delegated profile remains available when explicitly selected.
 
 ## 🧠 Exact skill routing
 
@@ -224,7 +245,8 @@ and prose requirements; this companion adds no execution or closure authority.
 | Page/Folder identity, policy, requirements, related context, or context freshness | CONTEXT |
 | argument, division shape, Bullet contract, item expectation, or Aim promise | OUTLINE |
 | Supporting/local evidence graph, input, Result, acceptance, or fold freshness | EVIDENCE |
-| prose realization, citations in prose, caption, build, or paragraph promotion | CONTENT |
+| candidate prose/feedback in interactive mode | current Writing Step; SHAPE for dependent plan changes |
+| adopted prose, citations in prose, caption, build, or paragraph promotion | CONTENT |
 | exact built version needs independent judgment | CHECK |
 | all closing rules and human gates pass | CLOSE, from CHECK only |
 | required authority/input cannot safely resolve | HOLD |
@@ -284,7 +306,12 @@ is unsigned; a prior explicit durable decision/default policy may be consumed,
 never invented. `page_ruling: none | domain-gate | local` comes from the
 Folder-owning workflow. Do not invent a duplicate Page gate.
 
-## 🔁 Run one Page lifecycle
+## 🔁 Run one automated Page lifecycle
+
+This bounded controller is for phase dispatch and formal completion, not the
+human-feedback journal. Its `step`, limits, `HOLD` and `CLOSE` do not count or
+terminate interactive writing Steps/Versions. Finish a chat turn while waiting;
+resume from the Writing Run files when new feedback arrives.
 
 The packet minimally names:
 
@@ -342,6 +369,8 @@ haipipe-page-workflow/
 ├── SKILL.md
 ├── CHANGELOG.md
 └── ref/
+    ├── interactive-writing-run.md  persistent human-feedback Run protocol
+    ├── writing-step-template.md    original input, full output, scoped decisions
     ├── workflow-table.md       canonical design/adoption table
     ├── phase-cards.md          compact six-field operating cards
     ├── page-run-contract.md    packet, receipts, legal routes, compatibility

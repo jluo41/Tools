@@ -295,6 +295,31 @@ def _abstract_page(m, prose, title=None):
     return d
 
 
+def test_abstract_may_carry_index_zero_but_no_other_page_may(paper):
+    """JL 260909 renamed S-MISQ-Main-Abstract to S-MISQ-Main-0-Abstract so it sorts
+    with its siblings. The printed document still gives it no section number, so its
+    H1 has no §; that pairing is legal ONLY for an abstract."""
+    m = paper
+    _ready_page(m, "S-T-Main-2-Methods", 2, "Methods", "\\section{Methods}\nText.\n")
+    d = _abstract_page(m, "One two three four five six seven eight nine ten.")
+    d.rename(d.with_name("S-T-Main-0-Abstract"))
+    for f in (d.with_name("S-T-Main-0-Abstract")).rglob("S-T-Main-Abstract*"):
+        f.rename(f.with_name(f.name.replace("S-T-Main-Abstract", "S-T-Main-0-Abstract")))
+    nd = d.with_name("S-T-Main-0-Abstract")
+    (nd / "S-T-Main-0-Abstract.md").write_text("# S-T-Main-0-Abstract \u00b7 Abstract\n\n## Content\n")
+    _order(m, ["S-T-Main-0-Abstract", "S-T-Main-1-Intro", "S-T-Main-2-Methods"])
+    reg, _ = _assemble(m)
+    assert not [f for f in reg["findings"] if "S-T-Main-0-Abstract" in f], reg["findings"]
+    # expect-fail half: index 0 on a page that is NOT an abstract is still a finding.
+    # is_abstract() keys on the id ending in -Abstract, so the probe has to be a page
+    # with a different stem, not the same folder wearing a different H1.
+    _ready_page(m, "S-T-Main-0-Prelude", 0, "Prelude", "\\section{Prelude}\nText.\n")
+    _order(m, ["S-T-Main-0-Abstract", "S-T-Main-0-Prelude", "S-T-Main-1-Intro", "S-T-Main-2-Methods"])
+    reg2, _ = _assemble(m)
+    assert any("index 0 is reserved for the Abstract" in f for f in reg2["findings"]), reg2["findings"]
+    assert not [f for f in reg2["findings"] if "S-T-Main-0-Abstract" in f], reg2["findings"]
+
+
 def test_abstract_page_title_wins_over_the_config(paper):
     """expect-fail proof for 0.7.8: paper-build.toml and the Abstract page both carry a
     title and they drifted. The PAGE is printed, and the drift is a finding."""

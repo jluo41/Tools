@@ -521,7 +521,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/outline":     # 🧭 the same live twin (QPf12)
             res, err = self.plug_outline(p)
-            if not err and (res or {}).get("version"):
+            if not err and (res or {}).get("version") and p.get("action") != "edit-preview":
                 # A Bullet write changed the Markdown Shape: rebuild so the
                 # Page's compact Outline table shows the working version too.
                 res["build"] = self.rebuild(board)

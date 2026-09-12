@@ -93,8 +93,8 @@ Before reporting success, require:
 
 ```text
 runs/<RUNNAME>.sh                         executable ticket
-results/<task>/<RUNNAME>/runtime.yaml     valid status + full BJTR address
-results/<task>/<RUNNAME>/                  declared artifacts present
+<task>/results/<RUNNAME>/runtime.yaml     valid status + full BJTR address
+<task>/results/<RUNNAME>/                  declared artifacts present
 workflow/report.yaml                       present for Report completion
 ```
 

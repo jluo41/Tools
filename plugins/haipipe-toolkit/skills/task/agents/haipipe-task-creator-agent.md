@@ -31,7 +31,7 @@ the Task's declared files and the paired Run/Result receipt.
 ```text
 Plan     workflow/plan*.yaml
 Build    scripts or code, configs, runs/<RUNNAME>.sh, CODE_REVIEW.md input
-Execute  the ticket's paired results/<task>/<RUNNAME>/ artifacts
+Execute  the ticket's paired <task>/results/<RUNNAME>/ artifacts
 Report   workflow/report*.yaml and RUN_AUDIT.md
 ```
 

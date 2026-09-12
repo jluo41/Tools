@@ -10,8 +10,8 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.11.0"
-  last_updated: "2026-09-04"
+  version: "0.12.0"
+  last_updated: "2026-09-11"
   summary: "Base only since 260819: keeps create-page and revise-opening, defines what the phase agents execute, and stands in when a phase agent is missing."
   changelog: "./CHANGELOG.md"
 ---
@@ -113,8 +113,10 @@ Own when `operation: context | outline | evidence | content`:
 - OUTLINE: SHAPE/SURVEY the Bullet and Evidence Item plan; create no Run.
 - EVIDENCE: LAND Supporting/local Results and EMBED them into the plan; never
   author target prose.
-- CONTENT: realize the approved folded plan through Draft, Revise, Build, and
-  Pre-check; those are internal movements, not separate lifecycle phases.
+- CONTENT: adopt agreed Writing Results, integrate authorized evidence, Build,
+  and Pre-check; no automatic redrafting or new Run per adopted paragraph.
+  Interactive feedback is handled by the Page workflow's Writing Run profile,
+  not a full producer dispatch per chat turn.
 - Returning one receipt with actor, phase, route, reason, artifacts, evidence,
   open findings, and whether the promise reopened.
 

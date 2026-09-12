@@ -20,6 +20,21 @@ fallback. A session opened
 from a sentence's rail (💬 in the hover controls) carries that sentence's
 address; one opened from the Studio surface is page-level.
 
+## Interactive writing route
+
+For collaborative drafting/feedback, load
+`../../../page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
+The chat session is the interaction surface, not the Run identity. Its agent
+saves original feedback and full outputs in the paired Run/Version/Step records,
+then updates the current Markdown preview. A kept Studio transcript is optional
+context, never a substitute for the durable Step history.
+
+Routine writing returns the selected full paragraphs, reasons and two final
+Workspace links under `haipipe-page/ref/user-check-packet.md`. It does not
+require full builds/checks, a fresh phase agent, or prose regeneration. Accepted
+text is protected; reopening it requires explicit scope. Existing GUI save/
+keep controls do not automatically implement this protocol.
+
 ## 🔒 Access · read everything, write anywhere, one record per write
 
 The session's working directory is the repo root (the SPACE): it may read any
@@ -28,10 +43,10 @@ chat honest is the same three things that keep a phase honest:
 
 - **The rule**: a write lands in the file that owns that kind of thing (§🗺),
   and nowhere else. A generated file (`*-feedback.md`, `*-requirement.md`,
-  `*-evidence.md`) is regenerated with its generator, never hand-edited; a run
-  folder (`_runs/`, `runs/`) and a mutable question/answer file in
-  `state: working` are never written, because a job may be running there;
-  record work as a Run with an immutable Result.
+  `*-evidence.md`) is regenerated with its generator, never hand-edited; a running worker's files are never overwritten. The owning interactive
+  workflow may create its authored Run and append its own Step records, using
+  source identity checks; it never rewrites completed history or another job's
+  output.
 - **The tooth**: the `*-hand-edited` and `*-stale` checks, `content-attribution`,
   `discussion-settled-thread`, `sentence-without-realizes`,
   `number-without-lane`; the chat runs `check.py` scoped to the page after a
@@ -109,8 +124,8 @@ you type                 phase     the chat loads                       ends whe
 "survey"                 SURVEY    haipipe-page-outline                 every item has support + input + local Run  outline/<stem>-evidence-items.md · log · receipt
 "land" · "make the runs" LAND      haipipe-page-evidence                every ☑ make item has a ready local Result  Runs · item → Result · receipt
 "embed" · "fold"         EMBED     haipipe-page-evidence                every ready item is in next evidence revision  outline/<stem>-outline-v<G>.<S>.<E+1>.md · receipt
-"draft it"               WRITE     haipipe-page-content                 commissioned divisions pass trace/style   Page Content · Division Results · receipt
-"revise" · "trim"        WRITE     haipipe-page-content                 revised divisions pass trace/style        Page Content · Division Results · receipt
+"draft it"               SHAPE     haipipe-page-outline + haipipe-writing  saved candidate for human feedback       preview + Writing Step input/result
+"revise" · "trim"        writing   haipipe-writing in current Writing Run  scoped patch saved, awaiting feedback     preview + Writing Step input/result
 "build" · "compile"      WRITE     haipipe-page-content                 delivery projections match Page source    delivery/ · build receipt
 "check it"               CHECK     haipipe-page-check (read-only here)  a fresh judge routes CLOSE or back            a receipt from haipipe-page-check-agent
 "where are we"           none      the strip                            one line: ⏱️ 🧩 OUTLINE · 🧭✅ 🧩⏳ 🃏⏳ ✏️⬜ 🔍⬜ · ✋2
@@ -132,8 +147,8 @@ you type                 phase     the chat loads                       ends whe
   context and the chat relays its route.
 - **The order is authority-driven**: PREPARE freezes context; SHAPE ⇄ SURVEY ⇄
   LAND ⇄ EMBED continues until the plan and its evidence agree and the
-  required approval is durable; CONTENT/WRITE then performs Draft, Revise,
-  Build, and Pre-check as internal movements; CHECK judges and may send the
+  required approval is durable; CONTENT/WRITE then adopts agreed prose,
+  integrates evidence, builds and pre-checks; CHECK judges and may send the
   Page back to any named phase. The chat says which cycle is next and why, and
   never skips SURVEY when a new Supporting or Local Run route is needed.
 

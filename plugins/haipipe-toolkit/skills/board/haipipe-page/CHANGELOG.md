@@ -1,3 +1,25 @@
+## 0.64.0 · 2026-09-11
+
+- Route collaborative writing to persistent Run/Version/Step history; separate routine full-paragraph handoff and final Workspace links from formal delivery.
+
+## 0.63.0 · 2026-09-10
+
+- Expose SHAPE candidate prose beside Bullets and carry the preview state in the reader check packet; Page Content remains owned by CONTENT.
+
+## 0.62.0 · 2026-09-09
+
+- Require Page-changing replies to expose direct Bullet Workspace and Evidence
+  Workspace links alongside the compact Outline table.
+- Clarify that new or edited Point heads use declarative subject–verb planning
+  language; imperative heads remain compatibility-only until migrated through a
+  working Shape.
+
+## 0.61.7 · 2026-09-09
+
+- Align the Page's compact Outline projection with the readable Point form:
+  optional roles, concise statements, dash annotations, and explicit
+  transition arrows remain a presentation layer over the Markdown plan.
+
 ## 0.61.6 · 2026-09-08
 
 - Align the compact Page Outline table with the shared `Bullet` label.

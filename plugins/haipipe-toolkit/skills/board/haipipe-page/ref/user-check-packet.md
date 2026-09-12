@@ -11,18 +11,59 @@ Page-local evidence or display units, Page Content, or a derived Page
 projection. A read-only audit returns the same packet with current statuses but
 does not rebuild anything unless the person asked for a rebuild.
 
-The main response contains only these four user-check surfaces. Detailed
+Select the routine writing packet below for a feedback Step. The four-surface
+packet is for formal review/delivery. For that formal packet, the main response
+contains these four user-check surfaces. Detailed
 source paths, logs, manifests, hashes, and phase receipts stay in the durable
 records and may be mentioned only when they explain a missing or stale surface.
+
+## Routine interactive writing · return what the person can review
+
+After a saved writing Step:
+
+1. Show the full selected one-to-three paragraphs in reader order, including
+   unchanged sentences. Use exactly the saved Workspace's reader projection,
+   not a newly polished chat version. Keep evidence placeholders honest in the
+   source; use the same compact labels as the Workspace in the chat passage.
+2. Give brief item-based changes and reasons. Distinguish agent-applied from
+   human-accepted. Name an unresolved item instead of hiding it in a summary.
+3. At the start, show the Section Mermaid. Refresh it only if the argument or
+   paragraph relationships changed; a wording edit needs no repeated diagram.
+4. Put **both direct clickable links at the very end**:
+   `[Bullet Workspace](<verified …&lens=div>) ·
+   [Evidence Workspace](<verified …&lens=workspace&seg=items>)`.
+   Nothing, including source paths or a work summary, follows those links.
+
+The current candidate is `planning draft`, not automatically published Content.
+Do not append the full audit packet, PDF or whole Section to each local turn.
+Provide them when explicitly requested or when this turn actually changed those
+artifacts. A stale PDF is labelled stale and never delays a prose-only turn.
+
+Save raw feedback before editing, and save/re-read the updated Markdown and Step
+result before saying it is available. The live Outline reads Markdown: a local
+preview save does not require a full Board/PDF build. Perform narrow mapping,
+evidence-boundary and unchanged-scope checks. Only refresh affected generated
+surfaces needed for this response; remaining work is named, not falsely
+reported as complete. Verify both exact Workspace routes against the configured
+public origin. If unavailable, end with a concise unavailable status, never a
+made-up live link or a localhost/raw-HTML substitute.
 
 ## The four surfaces (JL 260907: "在写 page 的时候，response 里要强调")
 
 ```text
-1. Outline table
-   the verified reader-facing Board Page URL; this is where the current
-   generated `▤ Outline table` is read. This IS the Page link.
+1. Outline and Bullet workspaces
+   return both direct links from the same verified Board route:
+     🧭 Bullet Workspace  `<Board URL…&lens=div>` · Bullet/Evidence + editable Content preview
+     ▤ Outline table    `<Board URL…>` · the compact Page projection
+   The `lens=div` link is the direct Bullet Workspace route; do not make the
+   reader open the default Page and hunt for the tab.
+   `<Board URL>` means the verified page-specific `/_board/outline?path=…&file=…`
+   route; preserve its query and append these parameters (use `?` only when a
+   base route has no query string).
 
 2. Evidence you can open now
+   return the direct Evidence Workspace route even when no item is ready:
+     `<Board URL…&lens=workspace&seg=items>`
    one line per typed Evidence Item whose Result is ready, grouped by type:
      🖼 DISPLAY  the unit's standalone `preview.pdf` (figure or table);
                 an unaccepted but freshly rendered preview is still a current draft
@@ -31,10 +72,14 @@ records and may be mentioned only when they explain a missing or stale surface.
      🧮 VALUE    the item's card in the Evidence Workspace (one-URL route
                 `lens=workspace&seg=items&focus=run-<item>`), which names the value,
                 its Run and its Result
-   plus ONE link to the Evidence Workspace → Evidences of this Page.
+   plus the direct Evidence Workspace → Evidences link above.  Do not use the
+   embedded `/_board/evidence?...&embed=1` iframe URL as the primary response
+   link; it is an implementation detail of the Outline plugin.
    An item that is not ready is listed as `not current · <blocking step>`.
 
 3. Content state
+   during SHAPE: label the right column `planning draft`; state that Page
+   Content and PDF were not refreshed by preview edits.
    after CONTENT/WRITE: the Page version and whether Revise ran
    (`revised · owner policy checked · style verdict ✓`) or not (`first draft · not yet
    revised`). When Writing DNA is used, the Content state may also name its
@@ -48,13 +93,15 @@ records and may be mentioned only when they explain a missing or stale surface.
    configuration file, not a display preview, and not the paper-level master.
 ```
 
-Use this exact compact shape in the user-facing reply:
+For formal review/delivery, use this compact shape. Put the clickable links
+in the final user-check block, after prose/status commentary:
 
 ```markdown
 ## 👀 User check
 
-1. Outline table: [Open the Board Page](<verified configured Board URL>)
-2. Evidence you can open now: [Evidence Workspace](<Board URL…&lens=workspace&seg=items>)
+1. Bullet Workspace: [Open Bullet Workspace](<verified configured Board URL…&lens=div>)
+   Outline table: [Open Outline table](<verified configured Board URL>)
+2. Evidence Workspace: [Open Evidence Workspace](<verified configured Board URL…&lens=workspace&seg=items>)
    🖼 [<Display id>](<unit>/preview.pdf) · 📚 [citations](<page>/outline/evidence/bibex/<stem>-bib.html) · 🧮 [<Value id>](<…&seg=items&focus=run-<item>>)
 3. Content: v<G>.<S> · revised · owner policy checked · style verdict ✓   (or: first draft · not yet revised)
 4. Latest Page-level PDF: [Open the Page PDF](<page>/delivery/latex/<stem>.pdf)
@@ -105,12 +152,14 @@ new lane required` and do not fall back.
 
 Before returning the packet:
 
-1. rebuild the Board when the Page or its plan changed;
+1. for formal delivery, rebuild the Board when its generated Page projection
+   changed; for a routine writing Step, use the live-source checks above;
 2. rebuild each affected DISPLAY unit's `preview.pdf` when its intake, recipe,
    asset, or wrapper changed, and the citation register when the `.bib` changed;
-3. run Revise (owner-selected revision workers, then the fresh-context style verdict) before calling
-   Content revised; then rebuild the Page-level PDF after Page prose or an
-   embedded display changed;
+3. before calling a formal version revised, use its actual scoped writing/review
+   record; do not rerun a prose-changing worker over human-accepted text.
+   Rebuild the requested Page-level PDF after adopted Page prose or an embedded
+   display changed. Routine preview changes do not refresh published Content;
 4. verify that every linked file exists and is newer than the source it
    projects, or report it as stale;
 5. verify the exact configured `JJLUO_PUBLIC_URL` Board route with a

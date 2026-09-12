@@ -1,3 +1,7 @@
+## 0.31.0 · 2026-09-11
+
+- Add the skill-driven interactive Writing Run contract and Markdown Step templates, scoped acceptance/reopen/resume, protected history, and fast foreground rules. Align workflow tables, phase controller documentation and producer contract. No new runtime service, UI version browser or Paper regeneration.
+
 ## 0.30.0 · 2026-09-08
 
 - Align CONTENT maps, phase cards and producer dispatch with paragraph writing, P commissioned paragraph Runs, and an internal whole-Page continuity pass.

@@ -13,8 +13,8 @@ description: >-
   Execute and closure. Trigger: Runs plugin, Runs tab, run overview, run status,
   run results, show the runs, /haipipe-plugin-runs.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-09-08"
+  version: "0.11.0"
+  last_updated: "2026-09-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -121,6 +121,26 @@ route to this local Runs overview merely because its text resembles a Run id.
 call a skill, CLI, API, or declared worker. Scripts are freestyle supporting
 files: they need no manifest, internal grammar, or one-to-one Run binding. The
 ticket's actual command is the authority for which files a Run invokes.
+
+## Interactive writing history · contract boundary
+
+The Page workflow's `interactive-writing` profile keeps one local Run row for
+the entire goal, not rows for each Version, Step or review window. Its authored
+Run points to paired `working.md`, root `runtime.yaml` and `vNNN/` records.
+The workflow, not this presenter, owns the human acceptance and close state.
+
+If this dialect is exposed by a presenter, show the current Version, scope and
+`waiting for feedback` explicitly (not an error); details link/read the selected
+Step's original feedback, full paragraph outputs and change reasons. Never
+infer acceptance from file presence or a successful model call. History is
+read-only and must not become another editable prose authority.
+
+**Runtime support boundary:** the existing `live/runs.py` has a dedicated
+single-paragraph adapter, not a Version/Step browser. This skill update does
+not implement that new browser or add UI controls. Until an adapter is tested,
+inspect the named Markdown records through the source/file surface and keep
+reader review on the live Bullet/Evidence Workspaces. Do not claim version
+navigation or waiting-state rendering has shipped.
 
 ## 🖥 Surface · overview first, detail on demand
 

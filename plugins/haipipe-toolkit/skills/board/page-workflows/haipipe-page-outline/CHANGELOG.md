@@ -1,3 +1,51 @@
+## 0.37.0 · 2026-09-11
+
+- Record joint Bullet/prose rehearsal in the current Writing Step; reuse the unapproved Shape, preserve original feedback, and replace mandatory full-pass work on local edits with scoped checks.
+
+## 0.36.2 · 2026-09-11
+
+- Make paragraph-focused chat handoffs use the same reader-facing projection
+  as `Read paragraph`: full authored Evidence placeholders stay on disk, while
+  the returned paragraph uses only compact parenthetical wall labels and never
+  exposes technical ids, status prose, chips, or cards inside manuscript text.
+
+## 0.36.1 · 2026-09-11
+
+- Require every paragraph-focused post-revision handoff to return the live
+  Bullet Workspace link and the complete saved preview paragraph, including
+  unchanged sentences; isolated edits or diffs cannot substitute for the
+  paragraph. Preserve the existing Evidence Workspace link requirement and
+  omit unrelated Outline-table, PDF, or section-wide material in routine
+  paragraph iteration.
+
+## 0.36.0 · 2026-09-11
+
+- Make surgical revision the highest-priority Bullet Workspace rule: the
+  person-named sentence or Bullet is the edit boundary, neighboring text and
+  evidence stay frozen, and paragraph-wide or structural rewriting requires
+  explicit approval.
+
+## 0.34.0 · 2026-09-10
+
+- Permit SHAPE to rehearse and revise actual prose before approval and evidence completion; candidates stay in the Outline preview record for human discussion.
+
+## 0.33.0 · 2026-09-09
+
+- Require new or edited Bullet Points to use declarative subject–verb planning
+  statements with honest roles and short annotations instead of planner
+  imperatives.
+- Add direct Bullet Workspace and Evidence Workspace links to the outline
+  response packet.
+
+## 0.32.4 · 2026-09-09
+
+- Add a backward-compatible Point presentation for the Outline: optional
+  `[Role]` plus one concise substantive planning statement, short dash
+  annotations, and one explicit transition arrow between adjacent Points.
+- Keep the Markdown plan, stable `C.P.B` addresses, Evidence ownership, and
+  approval gates unchanged; legacy imperative heads remain readable with a
+  neutral fallback role.
+
 ## 0.32.3 · 2026-09-08
 
 - Define the live Bullet Workspace editor as a bounded SHAPE write: paragraph
@@ -517,3 +565,7 @@ to 'should there be an outline phase before DRAFT' is no."*
 into the page's own `## Content`, where it went stale immediately
 (`QC1-visitlbp`, CMSRegBoard, 260817). Changing a section list before the prose
 costs one line; after the prose it costs the prose.
+## 0.35.0 · 2026-09-10
+
+- Make Section rehearsal bidirectional: one substantive Bullet, one sentence,
+  an honest functional tag, and one mutable working Shape between review checkpoints.

@@ -2,15 +2,15 @@
 name: haipipe-plugin-outline
 description: >-
   The outline/ plugin of a Board page: the page's single planning authority,
-  its nine process-record kinds, nested Skill record, three workspaces, and the 🧭
+  its process records, candidate prose preview, nested Skill record, three workspaces, and the 🧭
   tab that reads Shape, evidence, and feedback together; first and default on
   every page. The main Page keeps only the compact Outline Table.
   Read/write surface shared by CONTEXT, OUTLINE, and EVIDENCE. Trigger: outline
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.47.0"
-  last_updated: "2026-09-08"
+  version: "0.59.0"
+  last_updated: "2026-09-11"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,7 +23,7 @@ write only their declared records here; the plugin presents them as one
 coherent process space.
 
 ```text
-  this file      the FOLDER (nine records + Skill + evidence) and ONE TAB
+  this file      the FOLDER (nine process records + preview + Skill + evidence) and ONE TAB
   ref/           plan-grammar.md · item-table.md · record-shape.md ·
                  skill-record.md · specimen-section-plan.md ·
                  evidence-bundle.md: the exact
@@ -37,7 +37,7 @@ coherent process space.
 PROCESS: how it came to assert it. Since 260831 the folder is legal on any
 UNIT, task folders included (the unit symmetry, `haipipe-page` §📁): same
 kinds, same grammar; a task folder simply never owes the venue-only
-requirement file. Nine kinds, one flat file each with the
+requirement file. Nine process kinds plus the candidate preview, one flat file each with the
 stem; only the plan is many-per-page, by version.
 
 ```text
@@ -45,6 +45,8 @@ stem; only the plan is many-per-page, by version.
 ├── <stem>-outline-v<G>.<S>[.<E>].md
 │                              generation · Shape · optional evidence revision · authored · versioned
 ├── <stem>-context.md         what phases MAY USE generated · CONTEXT/PREPARE
+├── <stem>-preview.md         actual candidate prose by C.P.B · authored during SHAPE
+├── <stem>-logic.mmd          optional derived Section argument map · not a plan
 ├── <stem>-requirement.md     what we MUST obey   V<n> generated venue · W<n> authored writing
 │                             cli/requirement.py refreshes V and preserves W
 ├── <stem>-discussion.md      what is still ASKED authored · open D<nn> threads · never versioned
@@ -137,7 +139,13 @@ use Supporting Run Results; Related Page links appear in Context Workspace.
   name, full type, governed input sources, acceptance contract, routes, and
   Result are shown once. The compact Page opens no Evidence popover and
   renders no card of those fields. There is no separate Page-authored
-  narrative map. Content, Aims, and every other fold start shut. This folder
+  narrative map. An optional derived `<stem>-logic.mmd` for a Section is a
+  read-only orientation aid: when present, the live Bullet Workspace renders
+  its Mermaid argument map at the top of the `By part` lens, above the plan
+  and reading table, collapsed by default, with the source available in a
+  folded block. The map may show branched argument moves and need not have
+  the same count as the final manuscript paragraphs. Content,
+  Aims, and every other fold start shut. This folder
   remains the only authority for all nine records. A manuscript Section keeps
   no `### Writing Style` block in its product source; its page-owned writing
   rules are `W<n>` records inside `outline/<stem>-requirement.md`.
@@ -163,8 +171,11 @@ The full grammar is `ref/plan-grammar.md`; the approved example is
 ```text
 ## C<n> · <name>                     division · ≤ 8 words · names its subject
 ### C<n>.P<m> · <move> · S<a> to S<b> paragraph · a Section page names the sentence span
-- B<k> · <head>                      4 to 11 plain words: what the point DOES
-  Note: <≤ 30 words> [🎯 Aim]        the constraint or definition
+- B<k> · <head>                      legacy 4 to 11-word job head, or
+                                     `[Role]` + concise substantive statement
+  Note: <≤ 30 words> [🎯 Aim]        a short definition, scope, or constraint
+  Annotation: <phrase>               optional reader-facing dash annotation
+  Transition: <relation>             optional arrow to the next Point
   Evidence: E<NN>-<TYPE>-<slug> · …  named expectation, written at SHAPE
   Accept: …                           observable ready-evidence contract
   Evidence: none · …                  explicit source-free realization contract
@@ -174,8 +185,21 @@ The full grammar is `ref/plan-grammar.md`; the approved example is
 - **The grain is the Page Type's**: on a Section page one bullet is one
   sentence slot (`S<n> · …`); on every other page one bullet is one point that
   CONTENT turns into one or more sentences.
-- **The plan never quotes the sentence it plans.** The sentence lives on the
-  page; the plan says what the sentence must do and what constrains it. A Note
+- **Point presentation is source-compatible**: a head may begin `[Role]` (or
+  `[n · Role]`) followed by a concise declarative planning statement. The live
+  Outline and compact Page table print `[n · Role] statement`, strip source
+  labels such as `Note:`, and render short `Note:`/`Annotation:`/indented `-`
+  lines as dash annotations. `Transition:` is one arrow between adjacent
+  Points, not an extra Bullet or manuscript sentence. New or edited Points
+  must use plain subject–verb language; a role tag is optional and should not
+  be added merely to make a line look structured; planner imperatives (`Open with`,
+  `Explain`, `Introduce`, `Name`, `Connect`, `Ask`, `Keep`, `Return`, `Hand`,
+  `State`) are compatibility-only legacy input. Legacy heads remain readable
+  with the neutral `Point` role until an author migrates them through a new
+  unapproved Shape.
+- **The Bullet head stays concise.** Actual candidate sentences may be written
+  during SHAPE in `<stem>-preview.md`, beside the plan. Promoted sentences live
+  on the Page. A Note
   is at most 30 words (a wrapped source line is still one Note); a Note that
   carries prose is CONTENT leaking upward.
 - **Every Bullet declares its evidence boundary.** Use one or more typed
@@ -207,8 +231,10 @@ v2.0        unapproved major redesign opened when substantial review calls for i
 
 The version is `v<G>.<S>[.<E>]`; omitting `E` means zero. `G=0` never touches
 Content. A bounded Shape change increments `S` and resets `E`; an evidence or
-Run fold increments `E` without changing Shape. From `G>=1`, every version
-change refreshes Content. A pure evidence revision declares its `shape-base`
+Run fold increments `E` without changing Shape. From `G>=1`, a released version
+requires Content reconciliation through the CONTENT gates; creating or editing
+an unapproved working Shape only updates the rehearsal and does not refresh
+published Content or PDFs. A pure evidence revision declares its `shape-base`
 and inherits that Shape's approval. Increment `G` only for a large change to
 the central argument, hypotheses, major divisions, or overall narrative after
 a substantial review round. Mechanical repairs stay within the current
@@ -219,6 +245,23 @@ act; a machine may only transcribe a direct approval or an existing Shape
 approval inherited by an evidence fold.
 
 ## 🎛 The tab · Context + Bullet + Evidence, one Outline plugin
+
+The Bullet Workspace uses two columns per paragraph: **Bullet & Evidence**
+on the left and **Content preview** on the right, rendered as prose until tapped
+to edit. Keep the two columns side by side on phones; fold notes and process
+metadata instead of stacking editor cards. `Read paragraph`
+joins the right-column sentences in order. SHAPE may write this preview before
+approval or evidence completion. Read `ref/content-preview.md` when authoring,
+editing, or consuming it; that reference owns storage and the CONTENT handoff.
+Each paragraph ends with a compact Comments disclosure: select a saved
+sentence, quote its wording, and append a signed comment to its preview record.
+Before a requested revision pass, read these comments and respond beneath the
+ones addressed; never treat saving a comment as an agent launch or approval.
+Resting prose renders a full pending Evidence placeholder as a plain
+parenthetical short label, like a normal citation. It carries no chip, box,
+colour, or card styling. The editor and authored preview retain the full
+placeholder, while the adjacent Bullet column retains its status and direct
+Evidence link.
 
 🧭 Outline is the FIRST and DEFAULT tab on a page (`live/shell.py` asks the
 plugin registry's default and ranks it first; on a group page, which has no
@@ -299,7 +342,6 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   local Page · Evidence Item Run, ready Result, and fold. Header counts `specified · planned
   · ready · folded · accepted` are computed
   separately and never collapsed.
-- **Both failure modes render as a named row, never a blank**: 🕳 owed and
 - **One Evidence identity has one HTML target.** If a stale snapshot repeats
   an item id, show one focusable card with an explicit duplicate-identity
   warning and the conflicting source records. Never mark that contract ready
@@ -309,8 +351,8 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   nothing there (a bullet cites `Display2` and no unit folder exists) · 🎈
   there and uncited (a card no bullet names).
 - **The tab calls no model.** It reads the plan, the page, the record files and
-  the sibling lanes on every open, so it cannot be stale. Its only writes are
-  the bounded Bullet edits above; all other records remain read-only here.
+  the sibling lanes on every open. Its writes are bounded Bullet edits and
+  preview saves to the authored rehearsal record.
   The Aims are read from the page first; a plan row fills only an id the page
   lacks.
 - **The answer comes first**: the page's own question, then one line of counts
@@ -334,11 +376,13 @@ exposes its reason on hover. An omitted evidence decision renders `missing` as
 
 The Bullet Workspace makes each `C<n>.P<m>` paragraph heading a native
 expand/collapse control. Its Bullets remain grouped inside that paragraph, and
-each Bullet exposes a small editor plus an append control. The controls submit
+each Bullet retains its small editor. Do not render a `+ Bullet` control or
+append form; additions come through Markdown or a chat request. Keep paragraph
+read-through, collapse controls, and existing editors unchanged. The editors submit
 JSON to the server that owns the Markdown; they never edit generated Board HTML
 or a browser-local copy. Editing changes the Bullet head and preserves its
-indented Note/Evidence/Answered/Routed records. Appending allocates the next
-`B<n>`/`S<n>` position in that paragraph.
+indented Note/Evidence/Answered/Routed records. The bounded append API remains
+available for compatibility, but is not a reader-facing control.
 
 An approved Shape is immutable. The first successful Bullet write copies the
 selected approved plan to the next bounded Shape version (for example `v1.1`
@@ -347,6 +391,13 @@ the approved file byte-for-byte unchanged. Later writes reuse that unapproved
 working file. The server returns the working version and rebuilds the Board;
 the live tab re-reads it on reload. This is a narrow SHAPE edit surface, not a
 CONTENT writer and not a replacement for human approval.
+
+When returning a Page-changing response, provide direct reader links to both
+views of this plugin: the Bullet Workspace route (`<Board URL>&lens=div`) and
+the Evidence Workspace route (`<Board URL>&lens=workspace&seg=items`). The
+compact Page URL and the embedded `/_board/evidence?...&embed=1` iframe are not
+substitutes for these direct workspace links; the latter is an implementation
+detail and should not be presented as the primary Evidence link.
 
 ### 🤝 Human review packet · the chat counterpart of the tab
 
@@ -360,14 +411,15 @@ OUTLINE phase reads these existing records as one compact, linked packet:
 ④ Human decision   AI verdict + reason · exact approval/Decide choice · blockers · no inferred tick
 ```
 
-The response links the current plan and every record it names.  A feedback row
+The response links the direct Bullet Workspace and Evidence Workspace routes,
+then links the current plan and every record it names.  A feedback row
 is shown with the bullet it shapes (`Routed:` address), not merely as a count;
 an Evidence Item is shown with its expected payload, acceptance, and surveyed
 path, not merely its identifier.  Routine rows may collapse into counts, but
 the response never hides a material open row behind a count.  This packet is
 read-only and belongs to the human-chat contract in
 `page-workflows/haipipe-page-outline`; the tab remains the authoritative live
-surface and writes nothing.
+surface; the review packet itself performs no write.
 
 For a Section, the form audit reports paragraph jobs/transitions, word and
 sentence-slot budgets, implied sentence length, venue citation-density
@@ -440,12 +492,22 @@ skills          scan seed + person's rank/add/remove gestures  /_board/skill (em
 ```
 
 `POST /_board/outline` keeps the shell's `tab: {url, write}` contract and also
-accepts the bounded `edit-bullet` and `append-bullet` actions described above.
+accepts the bounded `edit-bullet`, `append-bullet`, `edit-preview`, and
+`comment-preview` actions. Preview comments preserve the Shape and published Page.
 
-After SHAPE, SURVEY, or EMBED changes a plan or Evidence Item record, run the
-Outline generators, rebuild the Board, open the 🧭 tab, and confirm the updated
-projection before replying. Regeneration, build, and rendered-tab inspection
-are one completion step; a source-only edit is unfinished.
+At a formal SHAPE/SURVEY/EMBED checkpoint, run affected Outline generators,
+rebuild the Board and inspect the required projection. For a routine interactive
+Writing Step, save and inspect the live Markdown-backed target instead of
+rebuilding the whole Board. The shared `haipipe-page/ref/user-check-packet.md`
+owns the exact fast-path return; never claim a deferred generated surface is
+current.
+
+Interactive Run history lives in the paired `results/<run>/vNNN/` records,
+not a second editable Outline. The current preview remains the working source;
+a historical Step is a snapshot. Preserve sentence comments verbatim when
+updating preview prose, and cite their reviewed Version/Step in the Writing
+Run. The generated Paper Round Feedback record is not a chat-feedback inbox.
+Human acceptance of a paragraph does not tick the whole Shape or Page.
 
 ## 📂 Files
 

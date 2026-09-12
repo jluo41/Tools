@@ -42,7 +42,7 @@ phases:
           - scripts/config/<RUN>.yaml
           # - _WorkSpace/...             # upstream dependencies
         files_out:
-          - $OUTPUT_ROOT/results/<task>/<RUN>/<OUTPUT>
+          - $OUTPUT_ROOT/<task>/results/<RUN>/<OUTPUT>
           - $OUTPUT_ROOT/notebooks/<task>/<RUN>.ipynb
 
   - title: Gate1
@@ -75,7 +75,7 @@ phases:
         agentType: haipipe-task-reviewer-agent
         prompt: "gate 2: audit results of <RUN>"
         files_in:
-          - $OUTPUT_ROOT/results/<task>/<RUN>/*
+          - $OUTPUT_ROOT/<task>/results/<RUN>/*
           - workflow/plan-script-<SCRIPT_NAME>.yaml
         files_out:
           - RUN_AUDIT.md
@@ -96,7 +96,7 @@ output:
     headline: "<one-line result summary>"
   files_out:
     # Union of all step files_out:
-    - $OUTPUT_ROOT/results/<task>/<RUN>/<OUTPUT>
+    - $OUTPUT_ROOT/<task>/results/<RUN>/<OUTPUT>
     - $OUTPUT_ROOT/notebooks/<task>/<RUN>.ipynb
     - CODE_REVIEW.md
     - RUN_AUDIT.md

@@ -7,8 +7,8 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.173.0"
-  last_updated: "2026-09-08"
+  version: "0.182.0"
+  last_updated: "2026-09-11"
   # version history: ./CHANGELOG.md
 ---
 
@@ -123,8 +123,8 @@ command recipe for an ordinary Board discussion.
 
 ## 🔁 Keep source and projection together
 
-Every substantive change belongs to one Page or to `board.md`. In the same
-round:
+For Board edits and formal Page delivery, every substantive change belongs
+to one Page or to `board.md`. In the same round:
 
 1. update the owning source;
 2. update the owning Page's Aims and current `Now:` facts when their truth
@@ -132,6 +132,11 @@ round:
 3. write the dated process record under `outline/<stem>-log.md`;
 4. rebuild the Board;
 5. run the checker and inspect the rendered result.
+
+Routine interactive writing follows the Page workflow's scoped save/check path,
+not a full Board rebuild per Step. An explicitly requested adoption-only pass
+may leave delivery unrefreshed and must say so; it is not formal Page closure.
+Do not call a generated view current until it is actually refreshed/inspected.
 
 Do not write `## States`, `## Files`, `## Discussion`, or `## Log` on a new
 Page. Current process records live under `outline/`; the Page surface remains
@@ -205,6 +210,20 @@ never writes a Board roster into Project or SPACE metadata.
 
 ## 🚫 Preserve these invariants
 
+The live Bullet Workspace joins Bullet/Evidence with editable Content preview
+in two columns, grouped by paragraph. `live/outline_preview.py` saves the
+authored `outline/<stem>-preview.md` record with stale-edit protection;
+`live/outline_preview.js` updates the paragraph read-through without reload.
+Do not render a `+ Bullet` button or append form; retain Read paragraph and
+existing editors. A reader may request additions in chat or edit the Markdown.
+`live/outline_comments.py` and `.js` provide sentence-targeted comments below
+each paragraph. They append signed review lanes to the preview Markdown,
+preserve quoted wording through edits, and never launch an agent or publish Content.
+See `haipipe-plugin-outline/ref/content-preview.md` for the SHAPE/CONTENT boundary.
+For a Section with an authored matching `<stem>-logic.mmd`, render its safe
+derived argument map before the plan and paragraph groups; omit the card when
+the source is absent and keep the Mermaid file authoritative.
+
 - Markdown is the only source; never hand-edit generated `board/` files.
 - A build must remain readable after every `<script>` is removed.
 - A compact Page Run link must land on the exact card in `Outline → Evidence
@@ -225,6 +244,12 @@ never writes a Board roster into Project or SPACE metadata.
   place; it opens no popover either. A `Routed:` value may name several
   rows separated by spaces, commas, or semicolons, and every Feedback
   chip's focus id must equal a register record id.
+- A Page-changing reader response must return the two direct Outline-plugin
+  workspace links derived from the same verified public Board URL:
+  `&lens=div` for **Bullet Workspace** and `&lens=workspace&seg=items` for
+  **Evidence Workspace**. The compact Page URL and an embedded
+  `/_board/evidence?...&embed=1` iframe URL may be included as secondary
+  projections, but never replace these direct links.
 - Archive moves source under `_archive/`; it never deletes the record.
 - One Board has one `board.md`; do not create a second roster or `STATUS.md`.
 - Page-local folders are plugins; a new folder name needs a real plugin owner.

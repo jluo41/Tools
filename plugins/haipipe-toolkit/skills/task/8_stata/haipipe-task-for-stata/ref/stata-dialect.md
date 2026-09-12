@@ -117,7 +117,7 @@ jNN_{L}_{kind}_{subject}/           NESTED (current production, 260831)
 │   │                               plus any SHARED cohort .do no ticket names
 │   ├── runs/rNN_*.ps1              thin tickets, one per run identity
 │   └── tNN_*.md                    the page a reader opens
-├── results/<task>/<run>/           log/*.txt · report artifacts · config_snapshot.do
+│   └── results/<run>/              log/*.txt · report artifacts · config_snapshot.do (inside the Task, JL 260909)
 └── workflow/ · diagram/ · ISSUES.md
 
 TWO WORDS ON PURPOSE (JL 260831): `src/` is the JOB's shared code, `scripts/` is
