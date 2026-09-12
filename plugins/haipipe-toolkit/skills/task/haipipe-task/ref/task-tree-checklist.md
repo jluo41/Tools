@@ -40,6 +40,7 @@ SHAPE · one grammar at every level
 - [ ] S10 a task's own code is `scripts/`; a job's shared code is `src/`; never the other way
 - [ ] S14 config sits inside `scripts/config/`; no config lane exists at the Task root
 - [ ] S11 a `.sh` that calls other tickets is a batcher: it lives in `sbatch/`, never in `runs/`
+- [ ] S4  a kept chat session carries BOTH `digest.md` and `transcript.md`; `studio/` holds only `chat/` and `draw/`
 - [ ] R02 every task has `runs/` with at least one `rNN_` ticket, config-less scripts included
 - [ ] S17 every job has `src/`, kept visible by a `.gitkeep` that names the slot; `results/` is never pre-created
 

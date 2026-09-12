@@ -25,14 +25,23 @@ tasks/
         │   │       ├── prompts/
         │   │       └── rNN_<run>.yaml
         │   ├── runs/rNN_<run>.sh
-        │   └── sbatch/
+        │   ├── sbatch/
+        │   └── studio/                   kept chat and draw, if any
+        │       └── chat/<YYMMDD-HHMM>/
+        │           ├── digest.md
+        │           └── transcript.md
         ├── tNN_<task>/results/rNN_<run>/
         │   ├── runtime.yaml
         │   └── metrics.json
-        └── notebooks/tNN_<task>/rNN_<run>.ipynb
+        └── tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
 `Task Folder = Page Folder`. Do not create a second Page container for it.
+
+Because a Task Folder is a Board Page, it may hold the Page-owned `studio/`
+lane, whose storage and writer belong to `haipipe-plugin-studio`. A Task never
+invents its own chat or diagram home, and `studio/` holds no executable
+material: no worker, ticket, config or Result lives there.
 
 ## Block rules
 
@@ -54,6 +63,9 @@ tasks/
 - Job `sbatch/` coordinates at least two Tasks.
 - Generated output uses `<task>/results/<run>/` and
   `<task>/notebooks/<run>.ipynb` under resolved `$OUTPUT_ROOT`.
+- A kept chat session is Page material, not generated output: it stays in the
+  Task Folder at `<task>/studio/chat/<YYMMDD-HHMM>/` and never follows
+  `$OUTPUT_ROOT` to a redirected store.
 - Must not contain Task-owned `scripts/` or root worker programs.
 
 ## Task Folder rules
@@ -103,6 +115,11 @@ is selected by `_meta.notebook: full | thin | off` in the Run config.
 
 - Job batcher: `<job>/sbatch/run_*.sh`; references at least two `tNN_*` paths.
 - Task batcher: `<task>/sbatch/run_*.sh`; references Tickets from that Task.
+- Kept session: `<task>/studio/chat/<YYMMDD-HHMM>/` carries BOTH `digest.md`
+  and `transcript.md` (S4). A session kept from outside the board server is
+  hand-authored rather than projected from the live transcript, and says so in
+  its own first lines, because a reader otherwise trusts the transcript more
+  than it has earned.
 - Batchers call Tickets, not worker programs.
 - Batchers declare mode, capacity, collision keys, and reason.
 - Alternative entry points are descriptively named, not sequence-numbered.

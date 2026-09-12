@@ -90,7 +90,11 @@ tNN_<task>/
 ├── runs/
 │   ├── r01_<run>.sh             one Ticket for the matching config
 │   └── r02_<run>.sh
-└── sbatch/                      optional; serves only this Task
+├── sbatch/                      optional; serves only this Task
+└── studio/                      optional; the Page's kept chat and draw
+    └── chat/<YYMMDD-HHMM>/      one kept session (haipipe-plugin-studio)
+        ├── digest.md            what it decided · the reading path
+        └── transcript.md        the raw exchange · reference only
 ```
 
 A Task is one function: one computation, one output contract, one code path.

@@ -4,7 +4,7 @@
     python3 _tools/check_task_tree.py <block-or-tasks-dir> [--expect-fail]
 
 Every rule is one this repo actually broke. Codes N* are naming, S* structural,
-R* results/runs. The dialect-neutral rows (N9 R02 S11-S15 R01 R05, JL 260904)
+R* results/runs. The dialect-neutral rows (N9 R02 S11-S15 R01 R05 S4, JL 260904)
 are listed in ref/task-tree-checklist.md; the Stata rows (N2 N8 S1-S3 S7 S9)
 fire only where .do/.ps1 files exist.
 `--expect-fail` inverts the exit code: use it to prove the checker can fail
@@ -281,6 +281,26 @@ def check(root):
                     for run in sorted(p for p in (t/"results").iterdir() if p.is_dir()):
                         if not (run/"runtime.yaml").is_file():
                             bad("R01", f"{t.name}/results/{run.name}", "results folder without runtime.yaml")
+                # S4 a Task Folder IS a Board Page, so it may hold the Page-owned
+                # studio/ lane. A kept session is two projections of one exchange:
+                # digest.md is what it decided, transcript.md is the raw material
+                # behind that. Half a keep reads as a whole one, so a reader trusts
+                # a decision list with no exchange under it, or scrolls an exchange
+                # nobody ever drew a conclusion from. Storage law and writer belong
+                # to haipipe-plugin-studio; this row only refuses the half-write.
+                chat_lane = t/"studio"/"chat"
+                if chat_lane.is_dir():
+                    for kept in sorted(k for k in chat_lane.iterdir() if k.is_dir()):
+                        for owed in ("digest.md", "transcript.md"):
+                            if not (kept/owed).is_file():
+                                bad("S4", f"{t.name}/studio/chat/{kept.name}",
+                                    f"kept session has no {owed}: a keep is both projections or neither")
+                if (t/"studio").is_dir():
+                    for stray in sorted(p for p in (t/"studio").iterdir()
+                                        if p.name not in ("chat", "draw")):
+                        bad("S4", f"{t.name}/studio/{stray.name}",
+                            "studio/ holds only chat/ and draw/ (haipipe-plugin-studio)")
+
                 if (t/"configs").is_dir():
                     bad("S14", t.name, "plural config lane at Task root; config lives in scripts/config/")
                 # N7 for yaml dialects: rNN_ configs <-> rNN_ tickets

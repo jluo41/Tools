@@ -41,7 +41,8 @@ Project
             │   │   ├── <worker>.py
             │   │   └── config/rNN_<run>.yaml
             │   ├── runs/rNN_<run>.sh      authored Ticket
-            │   └── sbatch/                optional, serves only this Task
+            │   ├── sbatch/                optional, serves only this Task
+            │   └── studio/                optional, the Page's kept chat and draw
             ├── sbatch/                    optional, spans two or more Tasks
             ├── <task>/results/<run>/      generated Result + runtime.yaml
             └── <task>/notebooks/<run>.ipynb
