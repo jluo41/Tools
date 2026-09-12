@@ -12,6 +12,8 @@ Now I have to read both paragraphs again. I have to explain again why the openin
 
 This experience is the starting point for how I want to design our Page workflow. I want each round of writing to carry forward what we have already learned about the piece.
 
+## A draft helps me discover what I mean
+
 An AI can give me a draft before I have fully decided what I want to say. That can be useful. Reading an actual paragraph exposes questions that an empty page does not. I may discover that I have introduced a method too early, that two apparently different points are the same point, or that the sentence I thought was essential distracts from the argument.
 
 My initial instruction might be, “Start with variation in physician behavior.” After reading the draft, I become more specific: “Keep the physician as the subject. The measurement method belongs later. I want the reader to understand the behavior before we explain how we observe it.”
@@ -25,6 +27,8 @@ This is why I distinguish a Task run from a Page run. When I delegate a task, I 
 A Page run gives me a different role. I participate in deciding what the work should become. The agent proposes language; I read it and make choices. Those choices change what the agent should do next. A useful writing tool must make room for that exchange throughout the work.
 
 > 写作：没有一个最终结果去直接验证写得好不好，还是需要写的人进去把每个 paragraph 的角角落落都捋直，整个走向也要自己确定
+
+## See the argument before polishing the sentences
 
 I would begin a section with a small map. Each paragraph has a purpose, and the arrows explain why one paragraph follows another. If I cannot explain an arrow, I may not yet understand the transition. Seeing the whole section helps me notice that a result arrives before the reader knows the question, or that three paragraphs are all trying to establish the same motivation.
 
@@ -42,6 +46,8 @@ The outline will change during this process. A bullet may look precise until we 
 
 > 因为我们想说一句话表达一个点嘛，一句话表达一个点，然后那这样的话就是，那一个点就是一个 bullet points。所以就是我们还是要 map bullet points 和 sentence。
 
+## Keep the feedback with the words it refers to
+
 Much of my feedback will be untidy. I may select a phrase and write, “This makes the method sound like the main contribution.” I may dictate a half-finished thought. I may point to the end of a paragraph and say, “We have already said this. What does the reader learn here?”
 
 I want those words preserved. A later summary such as “improved clarity and flow” loses the useful part: what bothered me, what I wanted instead, and why.
@@ -54,6 +60,8 @@ Each feedback item should remain attached to the text I was looking at. The reco
 
 The revised passage must then come back as complete paragraphs. A list of changed sentences makes me reconstruct the reading experience in my head. I want to read the actual result, including the sentences that stayed. The version in the response should match the version saved in the workspace, so the sentence I highlight has an unambiguous home.
 
+## A sentence edit should stay a sentence edit
+
 The scope of a revision matters just as much as its quality. If I ask for a shorter sentence, I expect a shorter sentence. If I ask to change the emphasis, the agent should examine what the sentence makes prominent. If I say the paragraph's logic is wrong, then we can reconsider its structure and revise the bullets with it.
 
 > 1. 局部修改：比如改一些词、句子或从句。主谓等写作方式变一变，意思不变，但把强调的主体变一变、逻辑改通顺，比如不要被一个新东西喧宾夺主之类的。
@@ -64,6 +72,8 @@ Once I say a paragraph is right, that decision should survive the next turn. We 
 
 > 比如我们把某一个 paragraph 写完，在 outline 和 draft 阶段把 bullet 确定好之后，对应的 paragraph 就先敲定死不再改了。
 
+## One run, with steps we can return to
+
 The run gives this work a durable identity. It might cover an entire introduction, or only two paragraphs that need attention. A run contains steps. Each step records one meaningful input and the response it produced: the starting brief and first draft, then the comments and revised draft, and eventually the decision to accept the result. A version marks a revision episode in that history. It does not add another execution level between a run and its steps.
 
 > Step is under the run. Do you get it?
@@ -71,6 +81,8 @@ The run gives this work a durable identity. It might cover an entire introductio
 A step should be small enough to understand. I should be able to open it and see the old wording, my feedback, the change, and the resulting passage. The current workspace shows what we are writing now. The history lets us recover what we wrote before and the decisions that brought us here.
 
 Waiting for me to read is part of the process. The model does not need to stay running while I am away. When I return, perhaps in a different session, the saved work should tell us which paragraphs are accepted, which comments remain open, and where to continue.
+
+## Vibe writing, wherever I happen to be
 
 I want to be able to return wherever I happen to be. Writing should not require me to sit down in an office, or find a table at a coffee shop, before I can begin. Sometimes I have ten minutes between meetings. Sometimes I am waiting for an appointment and suddenly understand what the second paragraph should say. I want to open that paragraph and work on it while the thought is still clear.
 
@@ -88,6 +100,8 @@ The context we save must help with that return. Beside the current passage, I wa
 
 Saving every message is useful, but making me reread the entire conversation would defeat the purpose. The tool should recover the relevant working state before it proposes another change. It needs to distinguish a settled choice from an open question, and an abandoned suggestion from the current plan. That knowledge should live with the work, so continuing does not depend on keeping one particular chat alive.
 
+## Return the revision while the thought is fresh
+
 Speed matters here too. If I comment on one sentence, I want the revised passage back while I still remember what I was trying to fix. A full PDF build or a wider evidence search can happen separately when needed. The comment and the new wording still need to be saved promptly. Otherwise, the next interruption could lose the very exchange that would have helped us resume.
 
 > 就是说有些东西可以是 background 去 run，对吧？然后但是我们在调的时候使用的时候就是不要有太高的延迟。
@@ -95,6 +109,8 @@ Speed matters here too. If I comment on one sentence, I want the revised passage
 There will still be days when I need an uninterrupted hour to rethink a section. I want the smaller moments to count as well. A five-minute exchange might settle a transition, preserve a new idea, or explain why a sentence feels wrong. When I sit down for longer, those decisions should already be there. I want to resume the thought as readily as I reopen the document.
 
 When I accept a version, we keep it. If I come back a week later with a new idea, we begin another version from that accepted text. I can change my mind without erasing the earlier decision. If an older sentence turns out to be better, we can bring it forward and record the choice.
+
+## Evidence can change what we are able to say
 
 Evidence work fits alongside this exchange. We can agree on a paragraph's organization while a citation or numerical result is still being checked. Any missing support stays explicit in the working materials. An agent can carry out the search or calculation and return the result.
 
@@ -109,6 +125,8 @@ Once the wording and evidence are settled, producing the formal page and its exp
 > 1. Outline table
 > 2. Display 的 PDF 或者是其他 evidence 的 PDF
 > 3. 最终page的 PDF
+
+## Let repeated feedback teach us how to write
 
 Over time, these records could also teach us how I prefer to write. Some preferences may recur: concrete subjects, a clear purpose for each sentence, explanations that arrive when the reader needs them. Others belong to a particular passage. “Do not discuss measurement here” may be exactly right for an opening paragraph and exactly wrong for the next section.
 
