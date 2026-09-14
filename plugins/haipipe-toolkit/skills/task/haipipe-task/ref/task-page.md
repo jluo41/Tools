@@ -28,6 +28,48 @@ writing, reviewing, or delivering this Page. It adds the visual evidence
 contract: a numeric Task Page is not prose-only and must plan substantive
 tables, figures, and method/provenance diagrams.
 
+## Two entry doors and one handshake
+
+Task and Page are peer doors, not nested copies of one another. Route by the
+primary durable product:
+
+| Request centers on | Enter through | Owner-native product |
+|---|---|---|
+| executable, independently testable work | `haipipe-task` | `rNN` Ticket → Result + receipt |
+| human shaping, interpretation, or acceptance | `haipipe-page` | `rpNN` interaction → accepted Page state |
+
+Crossing the boundary uses one explicit handshake:
+
+```text
+Page SHAPE/SURVEY
+  proposes required Task work; no rNN exists yet
+          ↓
+Task PLAN/ALLOCATE/BUILD/EXECUTE/REPORT
+  allocates the next native rNN and returns a validated Result
+          ↓
+Page LAND/EMBED
+  binds full Run id + Result path + fingerprint into Evidence and reading
+          ↓
+Page CONTENT/CHECK
+  adopts accepted text and releases the checked Page once all gates pass
+```
+
+The Page cannot turn a candidate into a Task Run, rename a native Run, or copy
+its Result into a parallel answer store. The Task cannot accept paragraph
+wording, close an `rpNN`, or release the Page. A request that needs both doors
+may start at either one, but every handoff keeps these owner-native identities.
+
+The shared `runs/` and `results/` lanes carry disjoint namespaces:
+
+```text
+runs/rNN_<run>.sh|.ps1|.cmd       Task Ticket
+runs/rp00_mermaid-structure.md    Page structure interaction
+runs/rpNN_pNN[-pNN].md            Page paragraph interaction
+results/<same-run>/runtime.yaml   receipt for the corresponding namespace
+```
+
+`rNN` and `rpNN` counters never reserve, renumber, or consume one another.
+
 Add the exact `task-type:` when a specialist owns the executable dialect.
 Only `folder-kind: task` and `task: .` identify a Task Page. Task Folder = Page
 Folder = `tNN_<task>/`; Job means only its `jNN_<job>/` parent.
@@ -193,6 +235,23 @@ and Page version become stale; the Task identity does not change. Route the
 Page back to EVIDENCE or CONTENT as appropriate, then CHECK the exact rebuilt
 version. The Folder is closed only when P-B-E-R and this Page reading are both
 current.
+
+Use this closure equation rather than treating either face as sufficient:
+
+```text
+task_ready   = terminal P-B-E-R + every required Task Result current
+page_ready   = every planned Page Run closed
+               + every required Task Result bound by id/path/fingerprint
+               + accepted Content adopted and released
+               + CHECK receipt and READING rows current
+folder_closed = task_ready AND page_ready
+```
+
+A new, rerun, replaced, or invalidated Task Result makes every dependent Page
+binding, reading, CHECK receipt, and release stale. New human feedback reopens
+the affected Page Run and Page release without invalidating unrelated Task
+Results. Propagate only the dependency edge that changed; do not reset the
+whole Folder when the unaffected face remains current.
 
 The Page's top-level `state:` is therefore a cross-face Folder state, not a
 claim that one script or one Run succeeded. It may become `closed` only when

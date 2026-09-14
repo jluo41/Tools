@@ -2,28 +2,39 @@
 name: haipipe-plugin-outline
 description: >-
   The outline/ plugin of a Board page: the page's single planning authority,
-  its process records, candidate prose preview, nested Skill record, three workspaces, and the 🧭
-  tab that reads Shape, evidence, and feedback together; first and default on
-  every page. The main Page keeps only the compact Outline Table.
-  Read/write surface shared by CONTEXT, OUTLINE, and EVIDENCE. Trigger: outline
+  its process records, and one minimal 🧭 tab with Draft, Evidence, and
+  Run workspaces; Draft keeps compact Evidence routes in its Bullet column;
+  first and default on every page. Evidence is Result-first,
+  Run is split into RP, RE, RD, and Supporting Runs, and Context records stay
+  off-stage in the Folder. Trigger: outline
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.59.0"
-  last_updated: "2026-09-11"
+  version: "0.71.1"
+  last_updated: "2026-09-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-plugin-outline · the page's process folder, and the tab that reads it
+# /haipipe-plugin-outline · three minimal workspaces
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface,
 writer, boundary. This file owns outline's delta: what the folder holds, what
-the tab shows, and who writes each file. CONTEXT, OUTLINE, and EVIDENCE each
-write only their declared records here; the plugin presents them as one
-coherent process space.
+the tab shows, and who writes each file. The visible surface has exactly three
+workspaces:
 
 ```text
-  this file      the FOLDER (nine process records + preview + Skill + evidence) and ONE TAB
+Draft Space          Mermaid Structure + paragraph/Bullet table + compact Evidence routes
+Evidence Space       one Result-first Evidence table
+Run Space            RP + RE + RD + Supporting Runs
+```
+
+Context, requirement, discussion, feedback, files, log, and Skill records
+remain durable Markdown process records. They are not visible workspaces;
+inspect them through 📂 Folder when needed. This is a presentation removal, not
+a destructive data migration.
+
+```text
+  this file      the process records and ONE three-workspace tab
   ref/           plan-grammar.md · item-table.md · record-shape.md ·
                  skill-record.md · specimen-section-plan.md ·
                  evidence-bundle.md: the exact
@@ -37,8 +48,11 @@ coherent process space.
 PROCESS: how it came to assert it. Since 260831 the folder is legal on any
 UNIT, task folders included (the unit symmetry, `haipipe-page` §📁): same
 kinds, same grammar; a task folder simply never owes the venue-only
-requirement file. Nine process kinds plus the candidate preview, one flat file each with the
-stem; only the plan is many-per-page, by version.
+requirement file. Process records remain one flat file each with the stem; only
+the plan is many-per-page, by version. New Evidence does not create an
+Outline-owned artifact lane: its commission lives in `runs/` and its truth
+lives in the bound Page-local `results/<re-run>/result.yaml` or the
+Folder-owner's resolved canonical Result path, plus payload files.
 
 ```text
 <page>/outline/
@@ -46,36 +60,39 @@ stem; only the plan is many-per-page, by version.
 │                              generation · Shape · optional evidence revision · authored · versioned
 ├── <stem>-context.md         what phases MAY USE generated · CONTEXT/PREPARE
 ├── <stem>-preview.md         actual candidate prose by C.P.B · authored during SHAPE
-├── <stem>-logic.mmd          optional derived Section argument map · not a plan
+├── <stem>-logic.mmd          derived Page Mermaid Structure · rp00 review projection · not a plan
 ├── <stem>-requirement.md     what we MUST obey   V<n> generated venue · W<n> authored writing
 │                             cli/requirement.py refreshes V and preserves W
 ├── <stem>-discussion.md      what is still ASKED authored · open D<nn> threads · never versioned
 ├── <stem>-feedback.md        what OTHERS said    generated · cli/feedback.py collect · page writes Landed
-├── <stem>-evidence-items.md  what each item MUST BECOME
-│                             authored · SHAPE specifies; SURVEY classifies Supporting routes + one Local Input plan + one Local Run declaration
-│                             LAND validates sources and binds the ready Result (ref/item-table.md)
-├── <stem>-evidence.md        what has LANDED     generated · cli/evidence-status.py · the table joined to the disk
+├── <stem>-evidence-items.md  legacy compatibility index · read-only migration input
+├── <stem>-evidence.md        legacy generated status · read-only fallback
 ├── <stem>-files.md           what it READS/WRITES authored · F<n> records · Path + Role
 ├── <stem>-log.md             what CHANGED        authored · dated records · append-only · newest first
 ├── skill/                    ranked Page Skills; one primary store + derived editor
 │   ├── <stem>.md             PRIMARY · one name per row · order is the person's rank
 │   └── <stem>-skill.html     DERIVED · embedded editor
-└── evidence/                 what the plan MAY USE; never a second plan
+└── evidence/                 legacy compatibility material; no new writes
     ├── bibex/                citation authority and derived workbench
     ├── display/              display evidence units
     ├── supporting-runs/      generated Evidence Item lineage; pointers only
     └── materials/            immutable captured source material
 ```
 
-This is exhaustive for Page evidence storage. Never create a root
-`<page>/evidence/`, an `outline/evidence/value/` copy lane, or an
-`outline/evidence/probe/` lane. VALUE is an Evidence Item type, not a storage
-folder: its contract and binding stay in the Outline records, while an actual
-page-local VALUE payload stays at the Result address selected by the Folder
-owner's Run dialect; an external VALUE stays at its Supporting Run's real
-Result path. Probe is retired compatibility material and has no active Page surface.
-`outline/evidence/pagex/` is also legacy migration input: new evidence graphs
-use Supporting Run Results; Related Page links appear in Context Workspace.
+Do not create new files under `outline/evidence/` or `<page>/evidence/`.
+VALUE, DISPLAY (including table/figure), and CITE are Result payload types, not
+  storage lanes. DISPLAY includes tables, figures, diagrams, illustrations,
+  and algorithm blocks; `TABLE` is a legacy compatibility alias for DISPLAY.
+A Page-owned Evidence attempt is an `RE`; its Result is canonical under
+`results/<re-run>/`. One Evidence Item maps to one current RE lineage and one
+current Result/Card projection. That Result may expose many stable inline
+Evidence Labels (`$V_xxx$`, `\figure{D_xxx}`, `\table{D_xxx}`,
+`\algorithm{D_xxx}`, or `\cite{C_xxx}`), whose hidden binding retains the Item,
+RE, Result path, and
+provenance. External evidence remains at the Supporting Run's real Result path
+and is referenced from the RE Result manifest, never copied.
+Old `*-evidence-items.md`, `*-evidence.md`, and `outline/evidence/*` remain
+readable migration input so old Pages continue to render.
 
 - **One question per file, and the questions do not overlap.** A fact that
   answers another file's question is misplaced: a settled thread is a log
@@ -93,8 +110,8 @@ use Supporting Run Results; Related Page links appear in Context Workspace.
   `Address · Bullet · Feedback · Evidence · Supporting
   Runs · Local Run`: C/P headers keep the plan's reader order and B rows join
   routed Feedback, typed Evidence Items, their surveyed Supporting Runs, and
-  local route in separate columns. A Feedback token opens the exact record in
-  Context Workspace's Feedback lens; it is never inert summary text. A real
+  local route in separate columns. A Feedback token opens the exact durable
+  record through Folder inspection; it is never inert summary text. A real
   Run is a short, linked readable address such as
   `b01.j02.t03.r04` plus a compact next-action label (`run`, `rerun`, or
   `reuse`). A never-attempted real Ticket is `registered`; a failed,
@@ -106,14 +123,14 @@ use Supporting Run Results; Related Page links appear in Context Workspace.
   hovering it shows the Run filename, repository-relative Run path, available
   Result/Runtime paths, availability status, and next action; an unallocated
   route says so explicitly rather than inventing a path. On click, it opens
-  the Outline plugin's `Evidence Workspace → Runs` lens at the exact real Run
-  card, where its Purpose/Plan, Availability, Next action, and exact Run/Result
+  the Outline plugin's Run Space at the exact real Run row, where its
+  Purpose/Plan, Availability, Next action, and exact Run/Result
   paths are shown as selectable text. Raw Run, Result, and Runtime paths are
   never direct browser anchors:
   script and receipt responses may otherwise download instead of opening.
-  The Page-to-Outline hand-off is one URL carrying `lens=workspace`, the
-  workspace segment `seg` (`runs` for a Run token, `items` for an Evidence
-  chip), the owning Evidence Item `focus`, and, for a Run, the exact `run`; do
+  The Page-to-Outline hand-off is one URL carrying `lens=run` for a Run token
+  or `lens=evidence` for an Evidence item, the owning Evidence Item `focus`,
+  and, for a Run, the exact `run`; do
   not split this state across one-shot browser storage keys. That explicit
   route remains authoritative while the Page frame finishes loading: no pending
   default refresh may replace it. Normal Run navigation does not open a
@@ -130,21 +147,26 @@ use Supporting Run Results; Related Page links appear in Context Workspace.
   Availability says `Planned`, `Run exists · Result missing`, `Run + Result`,
   or `Paths unresolved`; next action says `Allocate and run`, `Run`, `Rerun`,
   `Reuse Result`, or `Resolve path`. The compact Evidence label is
-  `E<n><V/C/D>.<Label>`, where the authored `Label` is 1–12 ASCII
+  `E<n><V/T/C/D>.<Label>`, where the authored `Label` is 1–12 ASCII
   alphanumeric characters; its accessible label carries `id · type · readable
   name` and its title carries `id · type · status`. Clicking it takes the same precise
-  route a Run token takes: it opens the Outline plugin's `Evidence Workspace →
-  Evidences` lens at the exact item card (`seg=items`, `focus=run-<id>`),
-  scrolled into view and highlighted, where the immutable id, full readable
-  name, full type, governed input sources, acceptance contract, routes, and
-  Result are shown once. The compact Page opens no Evidence popover and
+  route an Evidence token takes: it opens the Outline plugin's Evidence
+  Workspace at the exact Result row (`lens=evidence`, `focus=run-<id>`),
+  scrolled into view and highlighted, where the immutable id, readable name,
+  type, Bullet address, status, and Result path are shown once. The compact
+  Page opens no Evidence popover and
   renders no card of those fields. There is no separate Page-authored
-  narrative map. An optional derived `<stem>-logic.mmd` for a Section is a
-  read-only orientation aid: when present, the live Bullet Workspace renders
-  its Mermaid argument map at the top of the `By part` lens, above the plan
-  and reading table, collapsed by default, with the source available in a
-  folded block. The map may show branched argument moves and need not have
-  the same count as the final manuscript paragraphs. Content,
+  narrative map. A derived `<stem>-logic.mmd` is the Page's read-only Mermaid
+  Structure projection. The live Draft Space renders it at the top of
+  the `By part` lens, above the plan and reading table, with its source path
+  available under a collapsed `Sources` disclosure. Raw Mermaid source stays in Markdown and is not copied into
+  the reader surface. While `rp00_mermaid-structure` has an active
+  `ready`, `running`, `waiting-for-feedback`, or `blocked` status, the card
+  must contain every Page-global `P01..PN` paragraph node; if the file is
+  missing, the same location shows a named blocker instead of disappearing.
+  The map may show branched argument moves; outside the
+  mandatory `rp00` lifecycle, legacy Section maps may retain their own
+  orientation-only grain. Content,
   Aims, and every other fold start shut. This folder
   remains the only authority for all nine records. A manuscript Section keeps
   no `### Writing Style` block in its product source; its page-owned writing
@@ -244,24 +266,25 @@ person gates are named in the approval line. `approved:` remains a person's
 act; a machine may only transcribe a direct approval or an existing Shape
 approval inherited by an evidence fold.
 
-## 🎛 The tab · Context + Bullet + Evidence, one Outline plugin
+## 🎛 The tab · Draft + Evidence + Run, one Outline plugin
 
-The Bullet Workspace uses two columns per paragraph: **Bullet & Evidence**
-on the left and **Content preview** on the right, rendered as prose until tapped
-to edit. Keep the two columns side by side on phones; fold notes and process
-metadata instead of stacking editor cards. `Read paragraph`
-joins the right-column sentences in order. SHAPE may write this preview before
-approval or evidence completion. Read `ref/content-preview.md` when authoring,
-editing, or consuming it; that reference owns storage and the CONTENT handoff.
-Each paragraph ends with a compact Comments disclosure: select a saved
-sentence, quote its wording, and append a signed comment to its preview record.
-Before a requested revision pass, read these comments and respond beneath the
-ones addressed; never treat saving a comment as an agent launch or approval.
-Resting prose renders a full pending Evidence placeholder as a plain
-parenthetical short label, like a normal citation. It carries no chip, box,
-colour, or card styling. The editor and authored preview retain the full
-placeholder, while the adjacent Bullet column retains its status and direct
-Evidence link.
+The Draft Space uses two columns per paragraph: **Bullet** on the left and
+**Draft** on the right. It is a static, read-only projection: no tap-to-edit,
+editor, add button, form, comment composer, or browser write-back script is
+rendered. The plan and candidate wording remain Markdown authorities under
+`outline/`: the UI keeps the plan filename and
+`outline/<stem>-preview.md` under a collapsed `Sources` disclosure, while the Mermaid card identifies
+`outline/<stem>-logic.mmd`. Keep the two columns side by side on phones; omit
+process metadata and controls that do not help reading. The left column shows
+the authored role beside each statement, with neutral `[Point]` only as a
+compatibility fallback. When a Bullet has typed or legacy evidence, the same
+left column shows a compact, read-only Evidence route/card tag; the full item
+card remains in Evidence Space. New candidate-sentence feedback belongs to the active
+Page Run in chat, where wording, rationale, and acceptance share one Step
+history. Historical signed preview lanes remain preserved in Markdown but are
+not rendered. The Draft Space has no separate Comments disclosure or comment
+composer. Read `ref/content-preview.md` when a workflow writes or consumes
+candidate prose; it owns storage and the CONTENT handoff.
 
 🧭 Outline is the FIRST and DEFAULT tab on a page (`live/shell.py` asks the
 plugin registry's default and ranks it first; on a group page, which has no
@@ -269,20 +292,16 @@ live page, 💬 Chat is the fallback). Every other tab shows one material; only
 🧭 shows the plan and, against each part of it, what that part still owes.
 
 ```text
-🧭 Bullet Workspace       default · By part | What is left
-   Evidence Workspace     Evidences + Runs + typed source material
-   Context Workspace      Overview · Policy & Requirements · Related Information ·
-                          Feedback & Decisions · Records
+🧭 Draft Space            default · Mermaid + paragraph/Bullet table
+   Evidence Space         one Result-first Evidence table
+   Run Space              RP + RE + RD + Supporting Runs
 ```
 
-The three workspaces are peer views of one process authority. Context explains
-why the Page may take its current shape; Bullet shows the planned reader path;
-Evidence shows what each Bullet needs and the Runs that make it ready. Context
-Workspace merges the former Plan Context and Page Records UI groups only:
-Requirement, Discussion, Feedback, Files, Log, and Skills remain separate
-source files. Its Overview is the generated `<stem>-context.md`. Skills reads
-the nested primary store `outline/skill/<stem>.md` and embeds its editor in
-place.
+These are the only visible workspaces. Durable Context, Requirement,
+Discussion, Feedback, Files, Log, and Skill records remain in Markdown and are
+available through Folder inspection; they do not reappear as cards, lenses, or
+summary panes. The visible surface is deliberately smaller than the process
+authority on disk.
 
 The plan card mirrors the Page's numbered four-step workflow strip exactly:
 `1 SHAPE  2 SURVEY  3 LAND  4 EMBED`; completed steps, the current step, and
@@ -296,42 +315,29 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
 - **Two Bullet lenses over one parse**: By part is one card per Content division
   with its Aims, ticks and `Now:` facts; 🚦 What is left is the same rows with
   ⬜ before ✅, because opening it is asking what the page still owes.
-- **Evidence Workspace is an internal lens, not another plugin.** Its compact
-  navigation is `Evidences · n | Runs · n | Citations · n | Values · n | Displays · n`,
-  where Evidences/Values/Displays count typed Evidence Items, Runs reports both
-  mappings and unique Run identities, and Citations counts verified source
-  entries rather than CITE Items. A CITE Item is a claim-support contract; one
-  may contain several sources, and one source may serve several items. It joins
-  each Evidence Item to Supporting Runs, its optional local Run/Result,
-  citation, value, display, and governed source provenance. Cross-Folder
-  evidence appears through its Supporting Run Result; related Page links stay
-  in Context Workspace. `Evidences` explains each Evidence contract—what
-  it is about, what it must contain, and what will make it ready. `Runs` is
-  grouped by Evidence and renders one card per mapped Supporting or Page-local
-  Run; a shared Run may therefore appear under each Evidence that uses it.
-  Its header reports both mapping and unique-Run counts. This is the complete
-  evidence-source inventory, not the top-level `⚙️ Runs` inventory of only
-  physically allocated page-local Runs. The standalone Evidence tab is retired; the
-  compatibility `/_board/evidence` renderer may be embedded here only.
+- **Evidence Space is one table, not another plugin or lens collection.**
+  Its only columns are `Evidence · Bullet · Result`. Each unique Evidence id
+  appears once. VALUE, DISPLAY, and CITE are compact type labels on the same
+  table, not sub-tabs. `DISPLAY` (including the legacy `TABLE` alias) is
+  shown as one type, not a fourth lane;
+  the standalone Evidence tab is retired;
+  `/_board/evidence` exists only as the embedded compatibility renderer for
+  this Workspace.
 - **Each Run chip opens the exact Runs-lens card, not a file download or the
   owning Evidence card.** The detail begins
   with a readable Purpose derived from an allocated Run's Ticket name and the
   owning Evidence Item. Before allocation it shows a Plan derived from that
   item's Expected/Acceptance contract and SURVEY's Local Input note. It then
-  separates Availability from Next action and prints Run, Result, and Runtime
-  paths as selectable text. The plan remains authored in
-  `outline/<stem>-evidence-items.md`; allocation creates the real Run and its
-  generated Result at the addresses selected by the Folder owner's Run dialect.
+  separates Availability from Next action and prints Run and Result paths as
+  selectable text. New commission data belongs to the RE ticket and its
+  generated `results/<re-run>/result.yaml`; the old
+  `outline/<stem>-evidence-items.md` is compatibility input only.
 - **Probe is not a lens or lane.** Do not create or restore a Probe tab or
   `outline/evidence/probe/`; legacy Probe artifacts may be read only for
   migration and must be routed into typed Evidence Items.
-- **One subordinate chip per process record file that exists**, with its record
-  count, grouped inside Context Workspace; the bounded Skills
-  exception reads `outline/skill/<stem>.md` and embeds its editor without
-  duplication. A legacy sibling `skill/` is read-only until migrated. A record
-  that does not exist draws no chip.
-  Every lens draws records the same way: id
-  badge, headline, label grid, status pill, detail behind "more".
+- **Process records remain off-stage.** Context, Requirement, Discussion,
+  Feedback, Files, Log, and Skills are inspected through Folder when needed;
+  Outline must not recreate them as chips, cards, or hidden workspace lenses.
 - **Feedback is a review queue, not a source-file dump.** Show one compact
   `open · landed · rounds` tally, then the Round's main Ask. Keep its Order,
   Gate, and source collapsed. Each feedback row exposes only its headline,
@@ -351,8 +357,8 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   nothing there (a bullet cites `Display2` and no unit folder exists) · 🎈
   there and uncited (a card no bullet names).
 - **The tab calls no model.** It reads the plan, the page, the record files and
-  the sibling lanes on every open. Its writes are bounded Bullet edits and
-  preview saves to the authored rehearsal record.
+  the sibling lanes on every open. It performs no writes. Page/Run workflows
+  write the authored rehearsal records, and the next GET re-reads them.
   The Aims are read from the page first; a plan row fills only an id the page
   lacks.
 - **The answer comes first**: the page's own question, then one line of counts
@@ -372,17 +378,22 @@ In that compact Evidence column, a valid source-free Bullet renders `none` and
 exposes its reason on hover. An omitted evidence decision renders `missing` as
   a defect; it is never visually conflated with an intentional source-free move.
 
-### ✍️ Bullet editing boundary
+### 🔒 Read-only boundary
 
-The Bullet Workspace makes each `C<n>.P<m>` paragraph heading a native
-expand/collapse control. Its Bullets remain grouped inside that paragraph, and
-each Bullet retains its small editor. Do not render a `+ Bullet` control or
-append form; additions come through Markdown or a chat request. Keep paragraph
-read-through, collapse controls, and existing editors unchanged. The editors submit
-JSON to the server that owns the Markdown; they never edit generated Board HTML
-or a browser-local copy. Editing changes the Bullet head and preserves its
-indented Note/Evidence/Answered/Routed records. The bounded append API remains
-available for compatibility, but is not a reader-facing control.
+The Draft Space is a reader-only projection of the current plan and candidate
+wording. It renders the Mermaid map as a collapsed, native open/close
+disclosure and the Bullet/Draft table, plus navigation
+and an on-demand `Sources` disclosure for the source paths. It emits no Bullet editor, append control, preview
+form, comment composer, or write-back script. The outer Outline POST remains a
+shell-registration compatibility route; `edit-preview`, `edit-bullet`, and
+`append-bullet` are rejected server-side as read-only requests.
+
+The owning Page/Run workflow writes the Markdown sources—usually the selected
+`outline/<stem>-outline-v*.md` plan or `outline/<stem>-preview.md` candidate—then
+the next GET refreshes the projection. Generated HTML is never an edit target,
+and a stale browser form cannot bypass this boundary. The underlying Markdown
+writer contracts and approved-Shape immutability still apply outside the
+reader-facing Space.
 
 An approved Shape is immutable. The first successful Bullet write copies the
 selected approved plan to the next bounded Shape version (for example `v1.1`
@@ -393,8 +404,8 @@ the live tab re-reads it on reload. This is a narrow SHAPE edit surface, not a
 CONTENT writer and not a replacement for human approval.
 
 When returning a Page-changing response, provide direct reader links to both
-views of this plugin: the Bullet Workspace route (`<Board URL>&lens=div`) and
-the Evidence Workspace route (`<Board URL>&lens=workspace&seg=items`). The
+views of this plugin: the Draft Space route (`<Board URL>&lens=div`) and
+the Evidence Space route (`<Board URL>&lens=evidence`). The
 compact Page URL and the embedded `/_board/evidence?...&embed=1` iframe are not
 substitutes for these direct workspace links; the latter is an implementation
 detail and should not be presented as the primary Evidence link.
@@ -411,7 +422,7 @@ OUTLINE phase reads these existing records as one compact, linked packet:
 ④ Human decision   AI verdict + reason · exact approval/Decide choice · blockers · no inferred tick
 ```
 
-The response links the direct Bullet Workspace and Evidence Workspace routes,
+The response links the direct Draft Space and Evidence Space routes,
 then links the current plan and every record it names.  A feedback row
 is shown with the bullet it shapes (`Routed:` address), not merely as a count;
 an Evidence Item is shown with its expected payload, acceptance, and surveyed
@@ -427,10 +438,10 @@ expectation when available, and any paragraph whose sole job is defensive
 meta-commentary. Citation reporting never substitutes CITE Item count for
 source entries, realized placements, key mentions, or cited-sentence density.
 
-### Chips stay inside the sentence
+### Evidence stays with the Bullet
 
 ```text
-① INLINE, never a column   a chip lives in the row's own span; a sibling column steals the text's width
+① COMPACT, never a second workspace   the Bullet keeps a small Evidence route; full detail lives in Evidence Space
 ② a TAG, not a pill        10.5px monospace · nowrap · 4px radius · 0 4px padding
 ③ the note is a WORD       `in bibex/` → nothing (the colour says it) · `no unit declared yet` → `owed`
 ④ never say it twice       a chip is `E<n><V/C/D>.<Label>` (Label ≤ 12 chars); the ↩ tag is suppressed for a card the row already names
@@ -438,8 +449,8 @@ source entries, realized placements, key mentions, or cited-sentence density.
 
 No emoji inside a tag; colour is only a quick signal. A Run chip's small word
 is its next action (`plan`, `run`, `rerun`, or `reuse`), never a combined
-status. On the compact Page, and on the Bullet Workspace plan card inside
-the live tab, an Evidence chip is a route to its Evidence Workspace item
+status. On the compact Page, and on the Draft Space plan card inside
+the live tab, an Evidence chip is a route to its Evidence Space item
 card, never a popover; inside the live tab the THING itself
 (the reference as printed, the card's own question, the unit's own claim) is
 shown on that card, and a 📚 panel prints `Author et al.`, never the author list.
@@ -448,52 +459,77 @@ show several compact `E<n>C.<Label>` chips beside its VALUE and DISPLAY items.
 A Results bullet may legitimately show no CITE chip when it reports only this
 study's analysis and points to its own displays.
 
-## 🔗 The evidence workspace · nested material, one derived join
+## 🧷 Evidence Item → RE → Result → Card → Labels
 
-The tab shows, per bullet, the join of the frozen address to everything
-that names it: the sentence scaffold (`realizes:`), Evidence citation keys,
-display units and their `accepted:` tick.
-The joined view is a projection. Material authority lives below
-`outline/evidence/`, and a human
-choice such as `selected: Display2` lives on the owning unit. Each typed item's
-state comes only from the ladder in `ref/item-table.md`. The broader point-level
-projection is described in `ref/evidence-bundle.md`; it has no competing status
-vocabulary and is not `<stem>-evidence.md`. That generated file is specifically
-the authored Evidence Item table joined to Supporting/Local Run receipts and
-ready local Results.
+The Outline vocabulary has five distinct layers:
 
-A DISPLAY unit is the bounded Page-facing projection named by its governed
-local Result. LAND supplies the Page-owned unit directory directly to the
-renderer; the Result envelope records the source Run id, resolved Result path,
-unit pointer, and hashes without a duplicate-and-copy step. LAND may make the
-Result ready under the item's authored `Acceptance` checks.
-CHECK later administers the unit's separate lowercase human `accepted:` gate.
-VALUE and CITE Results receive no analogous copied payload lane.
+```text
+Evidence Item   authored obligation: what this Bullet needs
+      ↓
+RE              Page-local execution lineage: how this item is made ready
+      ↓
+Result          canonical fact/payload: what the RE produced
+      ↓
+Evidence Card   read-only UI projection of the current Result
+      ↓
+Evidence Labels zero-to-many inline anchors into that Result
+```
+
+The Card is not a second item or a second Result store. The Label is not a
+new item merely because it is used more than once. A label that needs its own
+acceptance, provenance, or execution lineage must be promoted to another
+Evidence Item and another RE. The authoritative syntax and binding contract
+is `haipipe-page/ref/page-run-families.md`.
+
+## 🔗 The Evidence Space · one Result-first table
+
+The table projects each Evidence id to its Bullet address and canonical Result.
+New authority lives in `runs/` and `results/<re-run>/result.yaml`; payload files
+remain beside that Result. An external source stays at the Supporting Run's
+real Result path and is referenced from the RE manifest without copying.
+Legacy `outline/*-evidence*.md` and `outline/evidence/*` may fill missing labels
+or not-yet-run rows during migration, but the renderer must prefer Result data
+and must not write back into those legacy locations.
 
 ## ✍️ Who writes what
 
 ```text
 file            written by                                    regenerate with
 ────────────────────────────────────────────────────────────────────────────────────────────────
-plan            SHAPE (in session or haipipe-page-outline-agent); the Bullet editor may create/revise an unapproved working Shape; EMBED's fold appends   never
+plan            SHAPE (in session or haipipe-page-outline-agent); Page/Run workflow writes or revises an unapproved working Shape; EMBED's fold appends   never
 context         CONTEXT/PREPARE; generated source-bound projection         haipipe-page-context
 requirement V   the generator; V1 always, V2–V4 only when     cli/requirement.py <page>.md
                 the bound venue source supplies their material
 requirement W   the page author; generator preserves verbatim never (authored)
 discussion      any phase or the page chat, as D<nn> records  never (authored)
 feedback        the generator; the page writes Landed only   cli/feedback.py collect <page>.md
-evidence-items  SHAPE: Target · Label · Need · Expected · Acceptance + CITE Verified ⬜; SURVEY: classified existing/planned Runs +  never
-                one Local Input plan + one Local Run declaration; person: Decide;
-                LAND executes/validates sources, binds input + Result, and presents CITE Verified
-evidence        the generator                                 cli/evidence-status.py <page>.md
+evidence-items  legacy compatibility index                    no new writes
+evidence        legacy generated status fallback              no new writes
 files           any phase or the page chat                    never (authored)
 log             every phase and the page chat, append only    never (authored)
 skills          scan seed + person's rank/add/remove gestures  /_board/skill (embedded sibling store)
 ```
 
-`POST /_board/outline` keeps the shell's `tab: {url, write}` contract and also
-accepts the bounded `edit-bullet`, `append-bullet`, `edit-preview`, and
-`comment-preview` actions. Preview comments preserve the Shape and published Page.
+`POST /_board/outline` keeps the shell's `tab: {url, write}` registration
+contract but performs no Draft write. Legacy `edit-bullet`, `append-bullet`,
+and `edit-preview` actions are rejected explicitly. Candidate feedback is
+recorded through the active Page Run, not a second POST queue.
+
+### Bullet permalink
+
+Every rendered Bullet owns one stable direct route:
+
+```text
+/_board/outline?path=<board-or-page-root>&file=<page.md>&lens=div&focus=C<n>.P<m>.B<k>
+```
+
+`lens=div` selects Draft Space and the human-readable `focus` address
+opens its containing paragraph, scrolls the exact Bullet into view, and marks
+that row as focused. The DOM may use a prefixed safe id such as
+`bullet-C1-P1-B1`; the URL keeps the authored `C.P.B` identity. The compact
+Page table and the Draft Space address both expose this same route.
+Board and standalone Page shells consume the route; neither owns a second
+Bullet renderer or rewrites the Page's source.
 
 At a formal SHAPE/SURVEY/EMBED checkpoint, run affected Outline generators,
 rebuild the Board and inspect the required projection. For a routine interactive
@@ -502,10 +538,10 @@ rebuilding the whole Board. The shared `haipipe-page/ref/user-check-packet.md`
 owns the exact fast-path return; never claim a deferred generated surface is
 current.
 
-Interactive Run history lives in the paired `results/<run>/vNNN/` records,
+Interactive Run history lives in the paired `results/<run>/vNNN.md` journals,
 not a second editable Outline. The current preview remains the working source;
-a historical Step is a snapshot. Preserve sentence comments verbatim when
-updating preview prose, and cite their reviewed Version/Step in the Writing
+a historical Step is a snapshot. Preserve any historical signed preview lanes
+verbatim when updating preview prose, but record new feedback in the Writing
 Run. The generated Paper Round Feedback record is not a chat-feedback inbox.
 Human acceptance of a paragraph does not tick the whole Shape or Page.
 
@@ -516,10 +552,12 @@ Human acceptance of a paragraph does not tick the whole Shape or Page.
 - `ref/record-shape.md` · the nine record kinds: ids, labels, writers, per-kind rules
 - `ref/specimen-section-plan.md` · the approved Section plan, frozen (MISQ Abstract v3)
 - `ref/evidence-bundle.md` · the broader derived per-bullet join; item states come from the item ladder
+- `../../haipipe-page/ref/page-run-families.md` · RP/RE/RD plus Item/Result/Card/Label bindings
 - `ref/evidence/citations.md` · CITE authority and verification
 - `ref/evidence/values.md` · VALUE provenance
 - `ref/evidence/displays.md` · DISPLAY unit and acceptance
 - `ref/evidence/pagex.md` · legacy PageX migration note; no active binding field
+- `ref/space-mapping.md` · UI Space → renderer → Markdown/Result mapping
 - `../../../board/haipipe-board/live/outline.py` · the parse, the lenses, `plan_card`, `_records`, the chips
 - `../../../board/haipipe-board/live/shell.py` · the tab strip; 🧭 ranked first and opened by default
 - `../../../board/haipipe-board/src/page_question.py` · the compact six-column Page Outline projection
@@ -527,5 +565,5 @@ Human acceptance of a paragraph does not tick the whole Shape or Page.
 - `../../../board/haipipe-board/src/plan_shape.py` · `plan-shape-off-type`, `bullet-missing-note`, the head and Note teeth
 - `../../../board/haipipe-board/cli/requirement.py` · `cli/feedback.py` · `cli/evidence-status.py` · the three generators
 - `../../page-workflows/haipipe-page-outline/SKILL.md` · the phase whose deliverable this folder is
-- `ref/skill-record.md` · the nested ranked store embedded as Context Workspace → Records → Skills
+- `ref/skill-record.md` · the nested ranked store inspected through Folder
 - `../../../diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf12-outline/QPf12-outline.md` · the design page and its rulings

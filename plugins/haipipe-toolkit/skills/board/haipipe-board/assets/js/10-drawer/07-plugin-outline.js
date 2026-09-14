@@ -6,8 +6,8 @@
  * one card per Content division, everything belonging to it inside, plus a
  * 🚦 lens that buckets every aim into ⬜ open and ✅ done.
  *
- * FIRST by explicit Plugin order. Outline owns the Page's process folder and
- * reads Bullet + Evidence together; 📂 Folder is the raw inventory twin.
+ * FIRST by explicit Plugin order. Outline presents three minimal workspaces:
+ * Bullet, Evidence, and Run; 📂 Folder remains the raw inventory twin.
  *
  * RULE-BASED, never authored (QPf12): the mapping is read from the material
  * (the `### A<n>` group grammar, then the `§N` anchor), so the URL is a LIVE
@@ -45,9 +45,8 @@
   }
 
   /* A compact Outline token belongs to a precise element inside the detailed
-     Outline workspace. Run tokens land on the actual Runs element; Evidence
-     chips land on their Evidence Workspace item card; Feedback tokens land on
-     their Context Workspace record. Keep the complete route in one URL so an
+     Outline space. Run tokens land in Run Space and Evidence chips
+     land in Evidence Space. Keep the complete route in one URL so an
      already-open Outline frame cannot consume partial state. */
   document.addEventListener('click', function (event) {
     var link = event.target.closest && event.target.closest('a[data-outline-focus]');
@@ -58,8 +57,8 @@
             || (window.boardPlugins && window.boardPlugins.livePage());
     var focus = link.getAttribute('data-outline-focus') || '';
     var run = link.getAttribute('data-outline-run') || '';
-    var lens = link.getAttribute('data-outline-lens') || (run ? 'workspace' : 'div');
-    /* The Evidence Workspace segment is part of the destination, not a guess
+    var lens = link.getAttribute('data-outline-lens') || (run ? 'run' : 'evidence');
+    /* The Evidence Space route is part of the destination, not a guess
        made later from whether a Run was named: items for an Evidence chip,
        runs for a Run token. */
     var seg = link.getAttribute('data-outline-seg') || '';
@@ -75,7 +74,7 @@
     /* Carry the whole request in ONE value.  The old localStorage hand-off
        could be consumed by the already-open Outline frame just before the
        shell rebuilt that frame; the replacement then opened at its default
-       Bullet Workspace with no Run left to focus. */
+       Draft Space with no Run left to focus. */
     var direct = url + '&lens=' + encodeURIComponent(lens);
     if (seg) direct += '&seg=' + encodeURIComponent(seg);
     if (focus) direct += '&focus=' + encodeURIComponent(focus);
@@ -93,7 +92,7 @@
     window.boardPlugins.register({
       id: 'outline',
       label: '🧭 Outline',
-      hint: 'each Content division with its own aims, ticks, and states',
+      hint: 'Draft, Evidence, and Run spaces',
       menu: 'plugin',
       order: 10,
       /* Every page has prose, so unlike 📂 this applies flat or folded. */

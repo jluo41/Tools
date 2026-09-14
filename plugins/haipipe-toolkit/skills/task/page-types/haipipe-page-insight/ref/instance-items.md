@@ -6,9 +6,10 @@
 I01-<topic-instance>/
 ├── I01-<topic-instance>.md       topic Page and item findings
 ├── outline/                     existing plan and Evidence Workspace
-├── workflow/insight.yaml        instance, dataset versions, item intent
-├── runs/r01_description.sh      local item ticket, reused across its versions
-└── results/r01_description/
+├── workflow/insight.yaml        instance, dataset versions, RI intent
+├── runs/r01_description.sh      normal reusable R ticket; never rewritten by RI
+├── runs/ri01_description.yaml   RI ticket: points to R + freezes new dataset
+└── results/ri01_description/
     ├── v001/
     │   ├── input.yaml          frozen execution envelope
     │   ├── runtime.yaml        status, checkpoints, hashes
@@ -30,28 +31,31 @@ planned/blocked runtime receipt, even before inputs are available.
 ## Identity
 
 `instance` is a stable, project-qualified research-instance id without direct
-patient identifiers. `run` is the local item/ticket stem. `version` is a
-monotonic `vNNN` execution version. The full execution id is:
+patient identifiers. `run` is the local `riNN` Insight Run stem. `base_run`
+names the normal R ticket/recipe being reused. `version` is a monotonic `vNNN`
+publication/execution version beneath the immutable RI binding. The full
+execution id is:
 
 ```text
-<instance>#<run>@<version>
-sms/patient-a-study#r01_description@v001
+<instance>#<ri>@<version>
+sms/patient-a-study#ri01_description@v001
 ```
 
-Full id, Result path, and Result hash travel together across Folders. The same
-local item name on patient B is legal because its full id differs. A material
-change to inputs, question, recipe/code version, parameters, or acceptance
-allocates a new version and therefore a new execution id. A retry of the same
-frozen contract appends an attempt under the same execution, preserving failed
-attempts. `supersedes` may relate versions of the same item/context; patient B
-does not supersede patient A. Published Results are immutable.
+Full id, Result path, Result hash, and base-R pointer travel together across
+Folders. A new dataset binding allocates a new RI even when it points to the
+same R. Changing the base R, question, target, or acceptance also allocates a
+new RI. A retry of the same frozen contract appends an attempt under the same
+execution. A corrected or newly reviewed publication over the unchanged RI
+binding may allocate its next version. `supersedes` never relates independent
+datasets. Published Results and existing R tickets are immutable. Historical
+`#rNN@vNNN` item addresses remain readable as the items-v1 dialect.
 
 ## Instance manifest
 
 `workflow/insight.yaml` is intent, not a second result/status database:
 
 ```yaml
-schema: haipipe.insight-instance/v1
+schema: haipipe.insight-instance/v2
 instance: sms/patient-a-study
 topic: Message response in one longitudinal dataset
 datasets:
@@ -60,7 +64,11 @@ datasets:
     manifest: outline/evidence/materials/dataset-manifest.yaml
     sha256: <manifest-sha256>
 items:
-  - run: r01_description
+  - run: ri01_description
+    base_run:
+      id: r01_description
+      ticket: runs/r01_description.sh
+      sha256: <base-ticket-sha256>
     question: What patterns and limits does the observed response funnel show?
     target: wisdom
     datasets: [patient-a@snapshot-01]
@@ -81,13 +89,17 @@ several datasets. Shared Task code needs no central patient roster.
 
 ## Frozen execution input
 
-Before interpretation starts write `results/<run>/<version>/input.yaml`:
+Before interpretation starts write `results/<ri>/<version>/input.yaml`:
 
 ```yaml
-schema: haipipe.insight-input/v1
+schema: haipipe.insight-input/v2
 instance: sms/patient-a-study
-run: r01_description
+run: ri01_description
 version: v001
+base_run:
+  id: r01_description
+  ticket: runs/r01_description.sh
+  sha256: <base-ticket-sha256>
 question: What patterns and limits does the observed response funnel show?
 target: wisdom
 acceptance: Every pattern is supported; rival explanations remain visible
@@ -116,7 +128,7 @@ no external numerical computation is owed.
 
 ```yaml
 schema: haipipe.insight-runtime/v1
-execution: sms/patient-a-study#r01_description@v001
+execution: sms/patient-a-study#ri01_description@v001
 family: insight
 operation: item
 status: complete
@@ -192,7 +204,12 @@ is an accepted finding; insufficient evidence is a different outcome.
 
 ```yaml
 instance: sms/patient-a-study
-item: r01_description
+item: ri01_description
+insight_run: ri01_description
+base_run:
+  id: r01_description
+  ticket: runs/r01_description.sh
+  sha256: <base-ticket-sha256>
 version: v001
 finding: RF1
 result: <consumer-resolved-result.yaml>
@@ -223,7 +240,11 @@ service is supplied by this read-only checker; the owner performs that review.
 
 ## Inspection
 
-`scripts/insight_items.py check <folder>` validates the materialized contract.
+`scripts/insight_items.py bind ...` is the deterministic allocation door: it
+chooses the next `riNN`, writes the RI YAML Ticket, freezes `v001/input.yaml`,
+creates a planned runtime receipt, and upgrades the manifest to v2. It never
+executes or edits the base R. `scripts/insight_items.py check <folder>`
+validates the materialized contract.
 `table` projects item, question, target, input versions, current execution,
 checkpoint, outcome, and last accepted findings. A proposed item does not
 become a completed Run without a ticket and receipt. A higher incomplete

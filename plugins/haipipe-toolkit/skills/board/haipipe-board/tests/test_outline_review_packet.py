@@ -114,7 +114,6 @@ class OutlineReviewPacketTest(unittest.TestCase):
             for wanted in (
                 "✍️ plan v1", "approved: ⬜", "1 evidence item · Decisions 0/1",
                 "1</b> SHAPE", "2</b> SURVEY", "3</b> LAND", "4</b> EMBED",
-                "E01-VALUE-review-cohort-counts",
             ):
                 self.assertIn(wanted, body)
             self.assertNotIn("PageX Bindings", body)
@@ -122,22 +121,19 @@ class OutlineReviewPacketTest(unittest.TestCase):
                             "Shape/content mismatch", "waiting on a person",
                             "routed record", "① <b>Shape</b>"):
                 self.assertNotIn(retired, body)
+            self.assertIn("Bullet", body)
+            self.assertIn("Draft", body)
+            # Draft keeps a compact, read-only route/card in the Bullet
+            # column; the complete Evidence item still belongs to Evidence
+            # Space.
+            self.assertIn("E01-VALUE-review-cohort-counts", body)
             self.assertIn("E1V.ReviewCohort", body)
-            self.assertNotIn("📝 E1", body)
-            # The typed chip is a route to its Evidence Workspace item card,
-            # the same law the compact Page table follows: it opens no popover
-            # and duplicates none of the card's fields on the plan card.
-            self.assertIn(
-                '<a class="evchip warn typed-ev" '
-                'href="#run-E01-VALUE-review-cohort-counts" '
-                'data-outline-lens="workspace" data-outline-seg="items" '
-                'data-outline-focus="run-E01-VALUE-review-cohort-counts" '
-                'title="E01-VALUE-review-cohort-counts · VALUE · specified">'
-                'E1V.ReviewCohort</a>',
-                body,
-            )
-            self.assertNotIn('popovertarget="typed-ev', body)
-            self.assertNotIn('id="typed-ev1" popover', body)
+            self.assertIn('class=point-evidence', body)
+            self.assertIn('class="evchip warn typed-ev"', body)
+            self.assertIn('data-outline-lens="evidence"', body)
+            self.assertIn('<span class=point-label>[Point]</span>', body)
+            self.assertNotIn('<b>Target</b>', body)
+            self.assertNotIn('<b>Supporting Runs</b>', body)
             for field in ("Target", "Expected", "Acceptance", "Supporting Runs",
                           "Local Input", "Local Run", "Result", "Decide"):
                 self.assertNotIn("<b>%s</b>" % field, body)
@@ -150,62 +146,47 @@ class OutlineReviewPacketTest(unittest.TestCase):
                 root=directory,
                 path_q="/Board/board.md", file_q="MAIN/SM00-abstract/SM00-abstract.md",
             )
-            self.assertIn("Bullet Workspace", rendered)
-            self.assertIn("Evidence Workspace", rendered)
-            self.assertIn("Context Workspace", rendered)
+            self.assertIn("Draft Space", rendered)
+            self.assertIn("Evidence Space", rendered)
+            self.assertIn("Run Space", rendered)
+            self.assertNotIn("Context Workspace", rendered)
             self.assertNotIn("Plan Context", rendered)
             self.assertNotIn("Page Records", rendered)
-            self.assertIn("🛠 Skills · 1", rendered)
-            self.assertIn("data-lens=skills", rendered)
-            self.assertIn("/SM00-abstract/outline/skill/SM00-abstract-skill.html?embed=1", rendered)
             self.assertIn("/_board/evidence?path=/Board/board.md&amp;file=MAIN/SM00-abstract/SM00-abstract.md&amp;embed=1", rendered)
+            self.assertIn("/_board/runs?path=/Board/board.md&amp;file=MAIN/SM00-abstract/SM00-abstract.md&amp;embed=1", rendered)
             self.assertIn("requestedFocus=params.get('focus')||''", rendered)
             self.assertIn("requestedRun=params.get('run')||''", rendered)
             self.assertIn("requestedSeg=params.get('seg')||''", rendered)
-            self.assertIn("function workspaceSource(frame)", rendered)
-            # With the Board route known, the Bullet Workspace's typed chip
-            # carries the complete one-URL destination, and the document's
-            # click delegate switches lens in place and keeps that route in
-            # its own URL; no typed popover remains.
-            self.assertIn(
-                'href="/_board/outline?path=/Board/board.md&amp;file=MAIN/SM00-abstract/'
-                'SM00-abstract.md&amp;lens=workspace&amp;seg=items&amp;'
-                'focus=run-E01-VALUE-review-cohort-counts" '
-                'data-outline-lens="workspace" data-outline-seg="items" '
-                'data-outline-focus="run-E01-VALUE-review-cohort-counts"',
-                rendered,
-            )
-            self.assertNotIn('popovertarget="typed-ev', rendered)
+            self.assertIn("function workspaceSource(frame,name)", rendered)
+            # Draft exposes only the compact Evidence route; the dedicated
+            # Evidence Space owns the full item readout.
+            self.assertIn("E01-VALUE-review-cohort-counts", rendered)
+            self.assertIn('class=point-evidence', rendered)
+            self.assertIn('class="evchip warn typed-ev"', rendered)
+            self.assertIn('<span class=point-label>[Point]</span>', rendered)
+            self.assertNotIn('<b>Target</b>', rendered)
             self.assertIn("ev.target.closest('a[data-outline-focus]')", rendered)
             self.assertIn("function focusRecord(id)", rendered)
-            self.assertIn("history.replaceState(null,'',u.href);", rendered)
-            self.assertIn("if(requested==='workspace'&&!requestedSeg)"
-                          "requestedSeg=requestedRun?'runs':'items';", rendered)
-            # The Page names the Evidence Workspace segment; an older link
-            # without one still derives it from whether a Run was named.
+            self.assertIn("/^C\\d+\\.P\\d+\\.B\\d+$/.test(id)", rendered)
+            self.assertIn('id="bullet-C1-P1-B1" class=point-group data-point="C1.P1.B1"', rendered)
             self.assertIn(
-                "if(!requestedSeg&&(requestedFocus||requestedRun))"
-                "requestedSeg=requestedRun?'runs':'items';", rendered)
-            self.assertIn("if(requestedSeg)src+=(src.indexOf('?')<0?'?':'&')+'seg='", rendered)
-            self.assertIn("+encodeURIComponent(requestedSeg);", rendered)
+                'href="/_board/outline?path=/Board/board.md&amp;file=MAIN/SM00-abstract/'
+                'SM00-abstract.md&amp;lens=div&amp;focus=C1.P1.B1" '
+                'data-outline-lens="div" data-outline-focus="C1.P1.B1"',
+                rendered,
+            )
+            self.assertIn("history.replaceState(null,'',u.href);", rendered)
+            self.assertIn(
+                "if(requested==='workspace')requested=(requestedSeg==='runs'||requestedRun)?'run':'evidence';",
+                rendered)
             self.assertIn("if(requestedFocus)src+=(src.indexOf('?')<0?'?':'&')+'focus='", rendered)
             self.assertNotIn("(requestedRun?'runs':'items')+'&focus='", rendered)
             self.assertNotIn("board-outline-evidence-focus", rendered)
             self.assertNotIn("board-outline-evidence-run", rendered)
             self.assertNotIn("Evidence / Survey", rendered)
-            self.assertIn("🗣 Feedback", rendered)
-            self.assertIn("📏 Requirement", rendered)
-            self.assertIn("Keep estimates and intervals together", rendered)
-            self.assertIn("<b>1</b> open", rendered)
-            self.assertIn("Main ask", rendered)
-            self.assertIn("Order, gate &amp; source", rendered)
-            self.assertIn("Begin with the physician decision problem", rendered)
-            self.assertIn('id="feedback-S0-PP1"', rendered)
-            self.assertIn('data-record-id="S0-PP1"', rendered)
-            self.assertIn("target.classList.add('record-focus')", rendered)
-            self.assertIn("<b>Next</b>Rewrite the opening sentence", rendered)
-            self.assertIn("Source &amp; routing", rendered)
-            self.assertNotIn("The Round's own words", rendered)
+            for offstage in ("🛠 Skills", "🗣 Feedback", "📏 Requirement",
+                             "Main ask", "Order, gate &amp; source"):
+                self.assertNotIn(offstage, rendered)
 
     def test_skills_record_uses_newest_outline_log_date(self):
         with tempfile.TemporaryDirectory() as directory:

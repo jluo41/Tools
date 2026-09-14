@@ -28,17 +28,25 @@ A question spans four pages on the InsightBoard. This verb opens the next level,
    An incomplete, stale, below-Wisdom, or untraceable item Result cannot use the
    bridge. It may be cited as input to the normal local climb, but it cannot
    close a rung by itself.
-3. Read the question's Queue row on its register to see how far the chain has climbed, then open only the NEXT level. On a rung-major board:
+3. Read the question's Queue row and select one derived Question Group
+   `QG-<partition>-<target>`; the CELL remains the atomic frontier. Then open
+   only the NEXT level for that cell. On a rung-major board:
    - no D yet → `1-D-data/D<NN>-<slug>/` with `folder-kind: data`
    - D settled, no I → `2-I-information/I<NN>-<slug>/` with `folder-kind: information`
    - I settled, no K → `3-K-knowledge/K<NN>-<slug>/` with `folder-kind: knowledge`
    - K settled, no W → `4-W-wisdom/W<NN>-<slug>/` with `folder-kind: wisdom`
    On a partition-major board (`ref/partition.md`) the rungs live inside partition groups: resolve the owning group from the question's Queue CELL (its column names the partition; a dot cell routes to the X group), then open `<group>/<L><rung letter><NN>-<slug>/` with the partition letter prefixed to the page id. The phase-owned Folder contracts are the same four.
 4. Load `haipipe-folder`, `haipipe-page`, `haipipe-insight-workflow`, then the matching phase contract. For missing or reused evidence load `haipipe-page-outline`, `haipipe-page-evidence`, and `haipipe-plugin-outline/ref/item-table.md`; external evidence enters through Supporting Run Results, while Related Page links remain Context.
-5. Cite the parent page and the parent ROWS by id. Never restate a parent's content: a D page's counts are cited, not copied.
+5. Cite parent rows through the exact `PARENTS` grammar in
+   `haipipe-insight/ref/page-v2-adapter.md`: Page path, Page version, content
+   hash, and row ids. This semantic lineage never substitutes for actual
+   Supporting/local evidence. Never restate a parent's content.
 6. Update the question's Queue row on its register with the new page id and state.
-7. Run the Page workflow until CHECK settles or holds the page.
+7. Run one Page workflow pass until CHECK emits CLOSE or names HOLD. Advance
+   the Queue cell only after the matching GI assertion also passes. Closing an
+   interactive `rpNN` Page Run advances neither condition.
 
 A chain may legitimately stop. A question that reaches K and no further is answered as far as the evidence allows; its register's Queue row shows that, and a DesignBoard simply cannot bind it, because only a W page carries a Design Handoff.
 
-Return the page path, its level, the parent rows it cites, the register Queue row, and whether the chain can climb further.
+Return the Question Group, cell, Page path, its level, exact parent rows, Page
+CHECK/CLOSE outcome, GI outcome, Queue row, and whether the chain can climb.

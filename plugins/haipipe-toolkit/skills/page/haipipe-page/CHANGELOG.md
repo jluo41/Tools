@@ -1,3 +1,269 @@
+## 0.99.1 · 2026-09-14
+
+- Clarify that DISPLAY covers tables, figures, diagrams, illustrations, and
+  algorithm blocks; TABLE is only a compatibility alias.
+
+## 0.99.0 · 2026-09-13
+
+- Define the Page-special `RP`, `RE`, and `RD` Run families and distinguish
+  Evidence Items, Results, Evidence Cards, and inline Evidence Labels.
+
+## 0.98.0 · 2026-09-13
+
+- Restore compact, read-only Evidence routes beside Draft Space Bullets while
+  keeping the full item card in Evidence Space.
+- Preserve the visible bracketed Point role label in the minimal projection.
+
+## 0.97.0 · 2026-09-13
+
+- Make the three Outline child Spaces reader-only projections: Draft exposes only Mermaid plus the Bullet/Draft table and source paths; Evidence exposes only the Result-first table; Run exposes only Run P, Run E, Supporting Runs, and source paths.
+- Keep Page/Run workflow writers and Markdown/Result authority outside the rendered UI.
+- Render Mermaid as a collapsed, native open/close disclosure above the Draft table.
+
+## 0.96.0 · 2026-09-13
+
+- Make Plugin Outline the single home for Bullet, Evidence, and Run workspaces.
+- Present Evidence from `results/*/result.yaml` first, while retaining old
+  Outline evidence files as read-only compatibility input.
+- Split Run Workspace into Run P, Run E, and inspectable Supporting Runs, and
+  remove Runs from the top-level Plugin registry.
+
+## 0.95.1 · 2026-09-13
+
+- Keep accepted read-only paragraph prose intact when the client has no draft
+  editors to aggregate.
+- Remove the separate Comments composer from the Bullet Workspace; new
+  feedback stays in the active Page Run while historical signed lanes remain
+  preserved in Markdown.
+- Preserve authored LaTeX citation commands during client-side read-through
+  refreshes as well as initial server rendering.
+
+## 0.95.0 · 2026-09-13
+
+- Show authored LaTeX citation commands in the Bullet Workspace prose column,
+  while keeping the adjacent Evidence Card as the source and readiness record.
+
+## 0.94.0 · 2026-09-13
+
+- Require Paragraph Run packets to show each paragraph's frozen Mermaid
+  Structure description beside its Page address.
+- Require explicit approval before heavy work is dispatched between interactive
+  Steps or Runs.
+
+## 0.93.0 · 2026-09-13
+
+- Require each review paragraph to appear in its own labelled block with a
+  separate blockquote, so adjacent paragraphs cannot look like one passage.
+
+## 0.92.0 · 2026-09-13
+
+- Recognize native `riNN` Insight Runs in the existing Task Runs lane and in
+  full instance execution references; no third Page lane is introduced.
+
+## 0.91.0 · 2026-09-13
+
+- Add a mandatory pre-Step review packet for entering or resuming an open Run:
+  complete selected paragraphs, sentence labels, scope, and direct workspace
+  links must appear before new feedback is collected.
+
+## 0.90.0 · 2026-09-13
+
+- Establish Page and Task as peer top-level doors over one physical Task Folder.
+- Route output-producing work to Task and human-shaped meaning to Page while
+  preserving each door's native Run and closure authority.
+- Point Task Pages to the canonical cross-face handshake and joint Folder
+  closure contract.
+
+## 0.89.0 · 2026-09-13
+
+- Mount the separately owned subjective-label presenter when a standalone Page
+  has a direct `labeling/` lane.
+- Keep that lane out of Source editing and static downloads, while projecting
+  its `rlNN` envelopes through the existing Task Runs lane.
+
+## 0.88.0 · 2026-09-12
+
+- Keep Track Changes only for material wording edits; status, navigation,
+  acceptance-only, and presenter-only Steps use the ordinary Changes record.
+- Carry classification in the change-card heading instead of a duplicate table,
+  and keep older Steps collapsed behind the current Step.
+
+## 0.87.0 · 2026-09-12
+
+- Make the Current Run review projection show sentence-internal Track Changes
+  from clean Before/After text, with red deletion, green insertion, and plain
+  unchanged context.
+- Record each material feedback item's evolving classification, reason,
+  inferred preference, and provisional scope without promoting one example to
+  shared policy.
+
+## 0.86.0 · 2026-09-12
+
+- Remove Page Run naming compatibility: only `rp00_mermaid-structure` and
+  paragraph identities `rpNN_pNN[-pNN]` from `rp01` are valid.
+- Reject every other interactive-writing identity as Held; it cannot replace
+  the structure prerequisite or open the Mermaid review state.
+
+## 0.85.0 · 2026-09-12
+
+- Render every routine Step sentence inside the review blockquote with stable
+  `S1`, `S2`, ... chat-only labels, without writing those labels into Page prose.
+
+## 0.84.0 · 2026-09-12
+
+- Fix the routine Page Step return order as identity heading, complete saved
+  paragraph, and one concise change explanation rather than a fixed status list.
+- End every routine Step with Bullet Workspace, Evidence Workspace, and a
+  Current Run deep link; omit empty Evidence commentary.
+
+## 0.83.0 · 2026-09-12
+
+- Reserve `rp00_mermaid-structure` for the whole-Page Mermaid argument map.
+- Start paragraph Page Run allocation at `rp01`, so structure and paragraph
+  numbering have distinct meanings.
+- Keep the former `rp01_mermaid-structure` readable as legacy input while new
+  Pages and current examples use the reserved slot.
+
+## 0.82.0 · 2026-09-12
+
+- Make a Writing Step a fast Bullet-Workspace update: preserve feedback,
+  candidate prose, dependent Bullets, and narrow checks without rebuilding
+  Content or delivery.
+- Make Page Run closure settle its numbered text, Bullets, and complete Evidence
+  contract while leaving the Page source and exports unchanged.
+- Add one Page-release barrier: only after all Page Runs and required evidence
+  Task Results complete may CONTENT adopt the Page and generate web, LaTeX, and
+  Word once.
+
+## 0.81.0 · 2026-09-12
+
+- Make `rpNN` the only current Page Run namespace; `rp` means Run of Page and
+  no longer competes with Pull Request shorthand.
+- Generate and mechanically check one Page-global paragraph sequence across
+  divisions, while retaining full `C<n>.P<global>.B<n>` Bullet addresses.
+- Add `page.py migrate-addresses` to preserve prose and working records while
+  migrating an existing Page to the global sequence.
+- Preserve complete setup reader moves instead of clipping source clauses at an
+  arbitrary word limit; detect prefix clipping mechanically and leave strict
+  4–11-word compression to the semantic OUTLINE phase.
+- Classify modal language from the main clause rather than treating `can` inside
+  any complement as a Possibility; recognize prevention as a Mechanism signal.
+- Make the live Bullet Workspace render the explicit Page-global paragraph
+  identity authored in Shape instead of rebuilding a local P counter per C.
+
+## 0.80.0 · 2026-09-12
+
+- Make `outline/<stem>-logic.mmd` the visible review artifact of the mandatory
+  `pr01_mermaid-structure` Page Run.
+- Keep Mermaid Structure expanded above Bullet Workspace while `pr01` awaits
+  feedback, and surface a missing map as a blocker instead of hiding it.
+
+## 0.79.0 · 2026-09-12
+
+- Keep standalone and Board-hosted Bullet Workspaces visually honest: render a
+  neutral `[Point]` when a plan omits an explicit role and show an inline
+  `evidence: none` decision instead of hiding it behind Bullet details.
+
+## 0.78.0 · 2026-09-12
+
+- Make Markdown setup plan reader moves instead of creating one Bullet per
+  sentence; one non-Section Bullet may carry several source sentences.
+- Require the invoking agent to read Bullet heads without candidate prose and
+  verify that they reconstruct the argument in reader order.
+- Add a blocking Bullet-head readability check for 4–11 word, unclipped,
+  non-imperative planning statements while keeping argument coherence an honest
+  semantic review gate.
+- Preserve setup-recorded sentence provenance during resume instead of
+  re-tokenizing display-normalized Content Draft prose.
+
+## 0.77.0 · 2026-09-12
+
+- Name new Page Runs with the `prNN` sequence; keep historical `rpNN` records
+  readable as migration input.
+- Reserve `pr01_mermaid-structure` as the mandatory first Page Run and keep the
+  Page workflow's separate Outline term out of that Run's name.
+- Continue numbered paragraph Runs as `pr02_p01`, `pr03_p02-p03`, and so on.
+
+## 0.76.0 · 2026-09-12
+
+- Make `setup` run a deterministic Page checklist and write both machine-readable
+  `checks.json` and the same evidence table in its Result report.
+- Fingerprint every checked Face, Content, Shape, Draft, and static-delivery
+  artifact; require another Folder setup after role or Draft correction.
+- Fail the setup Task Run and CLI when configuration, source preservation on intake,
+  Opening, Shape/Draft coverage, semantic-role syntax, Content, Aim structure,
+  static delivery, or copied assets fail their mechanical gates.
+- Keep semantic judgment, Aim achievement, human Shape/Content acceptance, and
+  unrequested hosting explicitly untested, deferred, or not applicable.
+- Generate one structurally aligned Aim group per imported Content division,
+  plus one Page-level continuity Aim.
+
+## 0.75.0 · 2026-09-12
+
+- Make `rp01_outline` the mandatory first Page Run for every Page; iterate on
+  the whole Outline, Mermaid map, and paragraph index until explicit closure.
+- Block paragraph Page Runs until that Outline Run closes and freezes the
+  Page-global `P01..PN` reading order.
+- Use concise paragraph identities such as `rp02_p01` and `rp03_p02-p03`, with
+  the exact paragraph number or contiguous range always visible.
+
+## 0.74.0 · 2026-09-12
+
+- Define one Page as many sibling human-interaction Page Runs instead of one
+  whole-Page writing Run.
+- Start with a Plan + Mermaid bootstrap when Shape is not agreed, then
+  partition `N` planned paragraphs into `K` independently reviewable groups,
+  where `1 <= K <= N`.
+- Give every paragraph group its own Versions, Steps, and closure; group
+  adjacent paragraphs only when the human judges one shared decision.
+
+## 0.73.0 · 2026-09-12
+
+- Add the Page-owned `fn/Runs` proposal function for bounded work whose durable
+  result is human interaction, feedback history, and agreed Page text/plan.
+- Keep proposals read-only and unallocated until human selection; resume a
+  matching open Page Run and mint `rpNN` only when independent work starts.
+- Route code, search, Discovery, data, rendering, build, and other
+  output-producing work to normal owner-native Task Runs, even when humans
+  later review their Results.
+
+## 0.72.0 · 2026-09-12
+
+- Add one-step semantic Markdown setup: specific Opening/Aims, unapproved
+  section/paragraph/sentence Shape, matched Content Draft, Context/Files, and a
+  durable setup Task Run Result.
+- Make content-ready Markdown creation use `setup`, reserving `init` for visibly
+  incomplete technical intake; require inspection of generated role labels.
+- Render imported Markdown as Page Content divisions and suppress its duplicate
+  H1 while keeping Board and standalone on the same Page-owned renderer.
+- Make setup itself own the static build and stop after verification; hosting
+  remains a separately requested, background-managed delivery capability.
+
+## 0.70.0 · 2026-09-12
+
+- Allocate interactive human-feedback Page Runs from a Page-local `rpNN`
+  sequence (`rp` = Run of Page), independent from Task Run numbering.
+- Keep delegated paragraph writing, Discovery, and other output-only work as
+  Task Runs under their owner-native identities; `rp01` and `r01` may coexist.
+- Preserve historical interactive `rNN_page-writing_*` records as readable
+  migration input while requiring `rpNN` for new Page Runs.
+
+## 0.69.0 · 2026-09-12
+
+- Keep plan-only `Note:` annotations out of the compact reader Outline table;
+  they remain available through the owning `outline/` records and plugin.
+- Remove the now-unused note-list styling from the shared Page renderer so
+  standalone and Board-hosted Pages keep the same reading boundary.
+
+## 0.68.0 · 2026-09-12
+
+- Define the Page-facing Runs surface as two lanes: Page Runs preserve
+  interactive human-feedback Version/Step history; Task Runs include Discovery
+  and expose only delegated Results across the ownership boundary.
+- Keep all Steps of one writing Version in the same append-only `vNNN.md`.
+- Reserve “Page workflow pass” for automated phase-controller invocations so
+  their receipts cannot be confused with interactive Page Run history.
+
 ## 0.67.0 · 2026-09-12
 
 - Give standalone Pages the category-plugin picker and persistent right pane

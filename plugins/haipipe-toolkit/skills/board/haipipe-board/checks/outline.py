@@ -38,6 +38,7 @@ from src.plan_shape import check as plan_shape_check                  # noqa: E4
 from src.plan_shape import check_serves, check_coverage              # noqa: E402
 from src.plan_shape import check_bullet_grammar                      # noqa: E402
 from src.plan_shape import check_head_style, check_note_quotes_page  # noqa: E402
+from src.plan_shape import paragraph_order_findings                  # noqa: E402
 
 # (line, leading anchors, trailing anchors) · every row is a real shape seen on
 # a real page, or the exact shape the contract promises to read.
@@ -305,6 +306,8 @@ def main():
                     # legacy-grammar").
                     for msg in check_bullet_grammar(plan_txt):
                         fails.append(f"{p.name} bullet-missing-note: {msg}")
+                    for msg in paragraph_order_findings(plan_txt):
+                        gaps.append(f"{p.name} paragraph-order: {msg}")
                     # the head and Note law (haipipe-plugin-outline
                     # ref/plan-grammar.md §3-§4): a head over 11 words, a Note
                     # on two source lines, or a Note that quotes the page's own

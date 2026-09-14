@@ -34,14 +34,15 @@ person may write them.
 
 ## 2. One envelope, domain artifacts stay authoritative
 
-Use one job-wide, monotonic address. Never renumber or infer it from a domain
-ordinal such as `round_03`:
+Use one job-wide, monotonic `rlNN` address (`rl` = Run of Labeling). Never
+renumber or infer it from a domain ordinal such as `round_03`. The prefix is
+the native family identity, so the stem does not repeat `labeling-`:
 
 ```text
-r01_labeling-corpus-contract_job-v1
-r02_labeling-discovery-search_trait-definition
-r03_labeling-embedding-build_corpus-v1
-r04_labeling-round-prepare_round-01
+rl01_corpus-contract_job-v1
+rl02_discovery-search_trait-definition
+rl03_embedding-build_corpus-v1
+rl04_round-prepare_round-01
 ```
 
 Every allocated Run has one control envelope:
@@ -61,7 +62,7 @@ credentials, and model secrets never enter the envelope.
 Use these required Ticket fields:
 
 ```yaml
-run: r14_labeling-executor-predict_test-v1-executor-a
+run: rl14_executor-predict_test-v1-executor-a
 family: labeling
 domain: subjective-label
 operation: executor-predict
@@ -76,6 +77,8 @@ supersedes: null
 
 Create the runtime receipt with `status: planned` before work starts. A Result
 envelope with missing canonical outputs is truthful non-success, never `Done`.
+Existing `rNN_labeling-*` envelopes remain readable migration history. Never
+rename or alias them; every newly allocated Labeling Run uses `rlNN`.
 
 ## 3. The 25 Labeling operation kinds
 

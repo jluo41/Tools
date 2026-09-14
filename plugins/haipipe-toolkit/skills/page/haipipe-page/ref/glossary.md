@@ -47,26 +47,50 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   its resolver is `haipipe-board/live/home.py`.
 - **plan**, also **the outline file** — the SHAPE of a page, co-developed with
   candidate prose; human approval licenses later published Content. `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`
+- **Draft Space** — the reader-facing, read-only projection of the plan: Mermaid
+  Structure plus the paragraph/Bullet/Draft table. It reads the Markdown plan
+  and preview under `outline/`; Page/Run workflow writers update those files.
+  It is not a separate folder and never edits through the browser.
 - **bullet** — one POINT in the plan: a short capitalized HEAD, then one folded
   line (`Note:` authored, `Answered:`/`Drawn:` appended when evidence lands),
   then its mark. Addressed by POSITION, never by a name.
-- **address** — `C3.P1.B2` = section 3, paragraph 1, bullet 2. It is the
+- **address** — `C3.P7.B2` = division 3, seventh paragraph in Page reading
+  order, Bullet 2. `P` never resets when `C` changes. It is the
   bullet's only id, so moving a bullet renames it, on purpose.
 - **Evidence Item** — one named, typed thing an outline bullet expects:
-  `E<NN>-VALUE|CITE|DISPLAY-<slug>`. SHAPE writes its expected ready payload and
-  acceptance; SURVEY plans Supporting Runs and exactly one local Run in
-  `outline/<stem>-evidence-items.md`. Status is derived (`specified → planned →
-  ready → folded → accepted`).
-- **Supporting Run** — an Execution or Discovery Run whose detailed Result is
-  frozen into an Evidence Item's one local input envelope. Zero or more per item.
+  `E<NN>-VALUE|CITE|DISPLAY-<slug>`. `TABLE` remains a legacy compatibility
+  alias/subtype of `DISPLAY`, not a separate Page Run family. SHAPE writes its expected ready payload
+  and acceptance; the Evidence workflow assigns one current `RE` lineage and
+  produces the Result. The old
+  `outline/<stem>-evidence-items.md` remains a compatibility index. Status is
+  derived (`specified → planned → ready → folded → accepted`).
+- **Evidence Run (`RE`)** — the Page-owned execution lineage for one Evidence
+  Item. It freezes Local Input, binds Supporting Results, and emits the current
+  typed Page Evidence Result. It is item-scoped; there is no umbrella Page-wide
+  Evidence Run. `haipipe-page/ref/page-run-families.md`
+- **Evidence Card** — a read-only UI projection of one current Evidence Result,
+  showing its Evidence Item, RE, status, Result path, and provenance. It is not
+  another authored item, Run, or storage authority.
+- **Evidence Label** — a stable inline token bound to a Result payload or
+  citation/display claim. Examples are `$V_xxx$`, `\figure{D_xxx}`,
+  `\table{D_xxx}`, and `\cite{C_xxx}`. One Result/Card may expose many
+  labels; the hidden binding preserves the Item, RE, Result, and provenance.
+- **Supporting Run** — an external or upstream Run referenced by this Page's
+  Evidence Result. The Page may inspect its identity and Result pointer, but
+  does not copy or symlink the external Run or protected payload.
 - **Local Input** — one immutable envelope containing the Evidence Item
   contract, exact Supporting Result paths and hashes, and any governed
   page-local static sources allowed by SURVEY. It is frozen by LAND.
-- **local Evidence Item Run** — the one Page · Evidence Item Run that converts
-  the frozen input into a focal ready VALUE/CITE/DISPLAY Result for EMBED.
+- **local Evidence Item Run** — the current Page `RE` that converts the
+  Page-owned input into a focal ready VALUE/CITE/DISPLAY Result. DISPLAY is
+  the umbrella for a table, figure, diagram, illustration, or algorithm block;
+  a retry
+  is an attempt in the same RE lineage unless the evidence contract is
+  materially replaced.
 - **Result** — the output artifact of one allocated Run. A Supporting Result
-  remains detailed reusable upstream output; an accepted local Evidence Item
-  Result is the focal VALUE, CITE, or DISPLAY payload that EMBED may interpret.
+  remains detailed reusable upstream output; a Page-owned Evidence Result is the
+  focal VALUE, CITE, or DISPLAY payload shown by Evidence Space. DISPLAY may
+  be a table, figure, diagram, illustration, or algorithm block.
 - **Run item** — one reader-facing presentation of a mapped Supporting or local
   Run. It displays the global Run identity and its purpose, availability, next
   action, Run path, and Result path; it does not create another Ticket.
@@ -86,18 +110,19 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   phase, which round, where it routed. `<board>/_runs/page/<page>/<stamp>.json`
 - **the bank** — Task and Discovery folders whose immutable Run/Result receipts
   are reused by later Pages. New Page work records a full Supporting Run id and,
-  when needed, one Page-local Evidence Item Run instead.
+  when needed, one Page-local `RE` lineage instead.
 
 ## 🗂 Evidence and Run presentation
 
-- **Evidence Workspace** — the Outline plugin's joined view of Evidence Item
-  contracts, mapped Runs, citation material, values, displays, and their
-  provenance. Its authority remains the records under `<page>/outline/`.
-- **Evidences lens** — the contract-first view: what each Evidence Item is for,
-  what ready payload it expects, and how acceptance will be checked.
-- **Runs lens** — the execution-first view: every mapped Supporting or local
-  Run is one Run item, grouped beneath each Evidence Item it supports. A shared
-  Run may appear in several groups while retaining one global identity.
+- **Evidence Space** — one minimal `Evidence · Bullet · Result` table. It reads
+  `results/**/result.yaml` first and uses old `outline/*-evidence*.md` only to
+  fill migration labels or not-yet-run requirements. It is read-only.
+- **Run Space** — the read-only Outline projection with four logical groups:
+  **RP** for human/Page interaction, **RE** for Page-owned Evidence production,
+  **RD** for Page delivery targets, and **Supporting Runs** for external/upstream
+  references. RP/RE/RD counters are independent of native Run counters.
+- **Supporting Run reference** — an inspectable identity/result pointer in Run
+  Space; it is not a locally duplicated Run item or payload.
 - **Run & Result paths** — the collapsed detail that exposes the exact Ticket
   and Result locations. `Run` and `Result` are the reader-facing labels.
 - **legacy Probe or PageX material** — read-only migration input. Existing
@@ -140,12 +165,28 @@ as pointers, because that section is the authority.
   SURVEY (OUTLINE) · LAND and EMBED (EVIDENCE) · WRITE
   (Adopt · Integrate · Build · Pre-check inside CONTENT) · CHECK. Never a letter
   code, never a circled number.
-- **Writing Run** — one bounded human-feedback writing goal, potentially
-  several paragraphs; `runs/<run>.md` and paired `results/<run>/`.
+- **RP / Page Writing Run** — one bounded interactive human-feedback writing
+  goal, potentially several paragraphs; uses the Page-local `rpNN` identity
+  and stores `runs/<rpNN-run>.md` beside paired results. It settles candidate
+  wording, not final Content or delivery.
+- **RD / Page Delivery Run** — one Page-local delivery target/version such as
+  web, LaTeX, Word, slides, or render. It records the artifact and build
+  receipt; Page CHECK still owns whole-Page close.
+- **Page Run family** — the special Page prefixes `RP`, `RE`, and `RD`. They
+  identify Page-local lineage and never rename a Supporting Run or a workflow
+  phase receipt. `haipipe-page/ref/page-run-families.md`
+- **Page Run proposal** — one read-only candidate from `haipipe-page/fn/runs.md`
+  for a bounded interaction goal. It has no `rpNN`, Ticket, Result, receipt, or
+  live Runs row until the person selects or directly commissions it.
+- **Task Run** — one delegated output contract shown at the Page boundary,
+  including paragraph writing and Discovery. It retains its owner-native
+  `rNN` or global identity; the Page consumes its Result rather than its
+  execution internals.
 - **Writing Version** — a review episode sealed on explicit human closure;
-  `results/<run>/vNNN/`. This is not a Shape version or whole-Page CLOSE.
-- **Writing Step** — one human input and agent response, preserved as
-  `vNNN/sNNN-input.md` and `sNNN-result.md`.
+  one append-only `results/<run>/vNNN.md`. This is not a Shape version or
+  whole-Page CLOSE.
+- **Writing Step** — one human input and agent response, preserved together as
+  a `## Step sNNN` section inside that Version Markdown.
 - **controller step** — a numbered phase dispatch, not a Writing Step.
 - **round** — which PROMISE era; repeats when a page is reopened.
 - **RUN, not ADVANCE** — a page may repeat a phase, branch, HOLD, or go back;

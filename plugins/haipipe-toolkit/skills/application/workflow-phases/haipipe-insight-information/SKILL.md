@@ -6,8 +6,8 @@ description: >-
   named Data rows, without making a claim. Trigger: insight information,
   derive pattern, I3, folder-kind information, /haipipe-insight-information.
 metadata:
-  version: "1.0.2"
-  last_updated: "2026-09-01"
+  version: "1.1.0"
+  last_updated: "2026-09-13"
   workflow: haipipe-insight-workflow
   phase: I3
   folder_kind: information
@@ -24,6 +24,8 @@ metadata:
 # /haipipe-insight-information · derive the pattern
 
 Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and the workflow.
+Read `../../haipipe-insight/ref/page-v2-adapter.md` for evidence versus
+semantic parent-row lineage.
 
 ## Position
 
@@ -39,14 +41,17 @@ does not belong here. Covariates are cuts on Information, not partition groups.
 
 ## Input
 
-One registered QI ask; named D rows (or mirrored I rows for an X contrast);
-unit/window; derivation formula; and relevant null/contradictory observations.
+One registered QI ask; exact version/hash-pinned D rows (or mirrored I rows for
+an X contrast); unit/window; derivation formula; and relevant
+null/contradictory observations. Actual values underneath those rows remain
+bound through their Page evidence graphs.
 
 ## Page Face
 
 Use `Question → Data Cited → Derivation → Patterns → Null and Contradiction`.
-Every `I<n>` row names its parent rows and reproducible derivation. Division 5
-is never silently empty.
+Every `I<n>` row carries the `PARENTS` record defined by the Page v2 adapter and
+names its reproducible derivation. The lineage records interpretation; it does
+not replace the evidence graph. Division 5 is never silently empty.
 
 ## Task Face
 
@@ -57,16 +62,18 @@ Result before stating the pattern; execution alone does not close the Page Face.
 
 ## Plugins
 
-- `pagex` required for D/I parent rows;
-- `outline` required;
-- `probe` optional for missing source facts;
+- `outline` required, including exact semantic parent-row lineage;
+- Supporting/local Evidence Results required for any new value, citation, or
+  display; no active PageX or Probe lane;
 - `runs` optional for reproducible computation, with `runs/` as the only
   door and `scripts/` optional.
 
 ## Gate and Closure
 
-GI3 passes when every I row has named parents and repeatable derivation, nulls
-are visible, and no strength, cause, or recommendation is asserted.
+GI3 passes only after Page CHECK/CLOSE, when every I row has exact
+path/version/hash-pinned parents and repeatable derivation, the parents'
+evidence remains current, nulls are visible, and no strength, cause, or
+recommendation is asserted.
 
 ## Handoff
 
@@ -76,4 +83,5 @@ contradictions. Never turn arithmetic into a claim in the handoff.
 ## Files
 
 - Page: `<InformationFolder>/<InformationFolder>.md`
+- Parent lineage: phase-owned `PARENTS` rows on the Page; no PageX path
 - Optional Runs: tickets, paired Results, and optional `scripts/config/`

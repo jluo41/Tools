@@ -6,8 +6,8 @@ description: >-
   derived from named Information rows and never advising. Trigger: insight
   knowledge, claim, rivals, I4, folder-kind knowledge, /haipipe-insight-knowledge.
 metadata:
-  version: "1.0.2"
-  last_updated: "2026-09-01"
+  version: "1.1.0"
+  last_updated: "2026-09-13"
   workflow: haipipe-insight-workflow
   phase: I4
   folder_kind: knowledge
@@ -24,6 +24,8 @@ metadata:
 # /haipipe-insight-knowledge · make the bounded claim
 
 Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and the workflow.
+Read `../../haipipe-insight/ref/page-v2-adapter.md` for Page closure and exact
+semantic parent-row lineage.
 
 ## Position
 
@@ -39,15 +41,16 @@ context has crossed into Wisdom.
 
 ## Input
 
-One registered QK ask; named I-row parents; candidate proposition; strength
+One registered QK ask; exact path/version/hash-pinned I-row parents; candidate proposition; strength
 reason; rival explanations and their disposition; population/window/unit
 boundary.
 
 ## Page Face
 
 Use `Claim → Information Cited → Strength → Rivals → Boundary`. One proposition
-per `K<n>`. Strength is `STRONG | MODERATE | WEAK` plus a reason. Rivals and
-boundary are required; weak claims remain legal when honestly typed.
+per `K<n>`, with the Page v2 adapter's `PARENTS` record beside it. Strength is
+`STRONG | MODERATE | WEAK` plus a reason. Rivals and boundary are required;
+weak claims remain legal when honestly typed.
 
 ## Task Face
 
@@ -58,16 +61,17 @@ design or local experimentation.
 
 ## Plugins
 
-- `pagex` required for I/K parents;
-- `outline` required;
-- `probe` optional for a named rival test;
+- `outline` required, including exact semantic parent-row lineage;
+- any new rival test enters through a decided Supporting Run and local Evidence
+  Result; no active PageX or Probe lane;
 - `runs` optional only for a declared robustness Run; scripts remain
   optional.
 
 ## Gate and Closure
 
-GI4 passes when every K row names its parents, strength/reason, unresolved
-rivals, and boundary, and contains no recommendation. A pooling verdict also
+GI4 passes only after Page CHECK/CLOSE, when every K row names exact
+path/version/hash-pinned parents, strength/reason, unresolved rivals, and
+boundary, and contains no recommendation. A pooling verdict also
 states exactly `POOL` or `SPLIT` as an exchangeability claim.
 
 ## Handoff
@@ -78,4 +82,4 @@ source versions, and any pooling condition.
 ## Files
 
 - Page: `<KnowledgeFolder>/<KnowledgeFolder>.md`
-- Parent bindings: `evidence/pagex/`
+- Parent lineage: phase-owned `PARENTS` rows on the Page; no PageX path

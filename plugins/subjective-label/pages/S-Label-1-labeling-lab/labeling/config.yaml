@@ -1,0 +1,50 @@
+job_id: job-mini-empathy
+description: One human-grounded subjective-label project (fixture)
+target: empathy
+semantic_authority: JL
+schema:
+  labels:
+  - high
+  - low
+  - none
+  regions:
+  - H
+  - L
+  - N
+  - HL
+  - LN
+  - HN
+  - HLN
+  uncertainty_separate: true
+  unresolved_is_not_none: true
+stopping:
+  quality_floor: 0.8
+  consecutive_rounds_k: 2
+  risk_max: 0.1
+executors:
+- id: weak-a
+  engine: claude_sdk
+  model: haiku
+- id: weak-b
+  engine: codex
+  model: gpt-5.5
+schema_version: subjective-label/v2
+simulation_only: false
+project:
+  id: labeling-lab-authority-appeal
+  board_page: S-Label-1-labeling-lab
+  page_file: ../S-Label-1-labeling-lab.md
+construct:
+  name: authority_appeal
+authority:
+  human_id: JL
+  mode: single_human_semantic_authority
+  creates_human_gold: true
+  meaning_confirmed: false
+  meaning_receipt: null
+contract_import:
+  source_job: job-mini
+  source_config_checksum: fad0540606f850a76928ef4a4cb4a45dd7e6a0c95a6611f95c35d3b263c6c296
+  source_corpus_manifest_checksum: 6c6993e193114e84203fc42b3d45a8e07650dcf080a48b3ad1faedec4791914f
+  source_sealed_status_checksum: d6dbd87288d1680ed3e70f73605d9cf5547aa35b87babfa32c5c33691adcfcbf
+  created_at: '2026-09-13'

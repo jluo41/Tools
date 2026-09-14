@@ -1,3 +1,10 @@
+## 0.9.3 · 2026-09-13
+
+- Point Page-owned interaction at `rp00_mermaid-structure` and `rpNN_pNN[-pNN]`;
+  delegated paragraph writing remains an owner-native Task Run.
+- Load the Paper–Page integration contract when a Section Page Run or release
+  is planned.
+
 ## 0.9.2 · 2026-09-08
 
 - Consume Page Paragraph Writing Runs and retain Section-owned page/paper_lane identity, structure, evidence and venue requirements.

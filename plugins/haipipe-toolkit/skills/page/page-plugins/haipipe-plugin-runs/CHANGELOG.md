@@ -1,3 +1,124 @@
+## 0.26.0 · 2026-09-13
+
+- Move the presenter from a top-level Runs plugin into Outline's Run Workspace.
+- Replace Page Runs / Task Runs with Run P / Run E / Supporting Runs and keep
+  external Results inspectable by reference without copying them.
+
+## 0.25.0 · 2026-09-13
+
+- Separate the Labeling native family from physical origin: a page-local
+  `rlNN` row shows its operation as Kind and `Local` as Where.
+
+## 0.24.0 · 2026-09-13
+
+- Present direct `labeling/runs/` + `labeling/results/` envelopes as ordinary
+  Task Runs with their native `rlNN` identity and Labeling origin.
+
+## 0.23.0 · 2026-09-12
+
+- Suppress Track Changes cards whose Before/After is missing or unchanged.
+- Use the card heading as the one classification record and keep non-wording
+  Steps in Changes; only the current Step is expanded by default.
+
+## 0.22.0 · 2026-09-12
+
+- Render saved Before/After text as granular inline Track Changes with red
+  deletion, green insertion, and plain surviving context.
+- Show feedback classification, rationale, inferred preference, and its
+  provisional status in the read-only Page Run detail.
+
+## 0.21.0 · 2026-09-12
+
+- Delete the legacy Page Run label and resolver fallback.
+- Show noncanonical interactive-writing identities as Held contract errors and
+  never let them unlock paragraph Runs.
+
+## 0.20.0 · 2026-09-12
+
+- Add `run=<exact-run-id>` deep links that render the requested Page or Task
+  Run expanded at load while preserving the reader-first history view.
+
+## 0.19.0 · 2026-09-12
+
+- Present the reserved structure Run as `rp00 · Mermaid Structure` and begin
+  paragraph Run labels at `rp01`.
+- Read the former `rp01_mermaid-structure` identity as legacy input without
+  allocating it on new Pages.
+
+## 0.18.0 · 2026-09-12
+
+- Keep all normal `rNN` work in the Task Run lane and label its physical origin
+  as Local, Task Job, or Linked instead of inventing a third lane.
+- Preserve the exact `rNN` identity for standalone Page-local Runs rather than
+  applying the Paper-only `P` prefix.
+- Put a truthful “What happened” digest in the overview, preferring a declared
+  outcome and otherwise deriving the bounded Page setup report or current
+  state plus target.
+- Translate a setup receipt's mode into an action so create and resume runs do
+  not collapse into identical-looking coverage rows.
+- Omit empty Evidence boilerplate from ordinary Task Run detail.
+- Put a nonempty Task lane before an empty Page lane so standalone setup work is
+  visible without scrolling past an empty state.
+
+## 0.17.0 · 2026-09-12
+
+- Replace raw Page Run ticket, working-state, and Version-journal dumps with a
+  reader-first Goal/Scope/Status summary plus rendered latest feedback, saved
+  result, and Next action.
+- Keep earlier Steps and repository paths available in collapsed History and
+  Technical details regions instead of occupying the default reading path.
+- Stack the five-column Runs overview into readable cards on narrow screens;
+  remove zero-count status noise and replace the long preface with one action
+  hint.
+- Reuse the shared deterministic Mermaid renderer in `rp01` detail, and scope
+  mobile overview selectors so nested saved-result tables retain their headers.
+- Project the same Mermaid source as a large-text relationship sequence on
+  phones, add a visible row expander, remove the repeated mobile detail title,
+  and translate the structure Run's Scope into reader-facing language.
+- Wrap code blocks and long content inside collapsed historical Steps so opening
+  old feedback cannot widen or clip the phone viewport.
+
+## 0.16.0 · 2026-09-12
+
+- Present only the current `rpNN` Run-of-Page namespace and remove the old
+  interactive-name compatibility branch from the live classifier.
+- Keep Page and Task counters independent and require a closed
+  `rp01_mermaid-structure` before paragraph Runs.
+
+## 0.15.0 · 2026-09-12
+
+- Present the mandatory first Page Run as `pr01 · Mermaid Structure`.
+- Present numbered paragraph Runs as `pr02 · P01`, `pr03 · P02-P03`, and so on.
+- Treat numbered `prNN` Runs before a closed `pr01_mermaid-structure` as Held;
+  retain old `rpNN` records as readable history.
+
+## 0.14.0 · 2026-09-12
+
+- Present the mandatory first Page Run as `rp01 · Outline`.
+- Present paragraph Page Runs with concise labels such as `rp02 · P01` and
+  `rp03 · P02-P03`, while retaining the full canonical identity in detail.
+- Treat paragraph Runs before a closed `rp01_outline` as Held.
+
+## 0.13.0 · 2026-09-12
+
+- Present new interactive Page Runs with a separate Page-local `rpNN` identity
+  sequence while preserving owner-native `rNN` and global identities for Task
+  Runs, including Discovery.
+- Move delegated, output-only Paragraph Writing to the Task Run lane; reserve
+  Page Run for interactive writing with human-feedback Versions and Steps.
+- Keep historical interactive `rNN_page-writing_*` records readable without
+  minting new Page Runs in the old namespace.
+
+## 0.12.0 · 2026-09-12
+
+- Split the Page-facing projection into Page Runs for interactive writing and
+  output-only Task Runs for delegated work, including Discovery.
+- Read each writing Version from one `vNNN.md` journal and project `Waiting`
+  only when its current Step contains both Human feedback and Saved result.
+- Keep allocated but unresolved Task identities visible as `Held`.
+- Hold stale complete Task records whose Result is absent, and surface orphan
+  Results, duplicate identities, and Page Run receipt mismatches as audit findings.
+
 ## 0.11.0 · 2026-09-11
 
 - Document one-row interactive Run history and truthful waiting semantics. Explicitly distinguish the new skill protocol from the existing renderer, which has no Version/Step browser yet.
@@ -125,3 +246,14 @@
 ## 0.1.0 — 2026-08-31
 - Born contract-only as the presenter owed to scripts/ · runs/ · results/;
   segments fixed as Runs, Results, and Scripts.
+## 0.12.0 — 2026-09-12
+
+- Replace the peer family overview with two Page-facing lanes: Page Runs for
+  interactive writing feedback history, and Task Runs for delegated Results,
+  including Discovery while preserving each native family underneath.
+- Implement read-only Version/Step history and the normal Waiting state for
+  Page Runs. Hide Task Ticket, command, log, actor, and runtime internals at the
+  Page boundary; show only target, Result/output, status, and Evidence use.
+- Surface broken current-Step pointers and unresolved allocated Task identities
+  as Held findings, sort newer same-status Runs first, and expose Page-owned
+  supporting code only in a collapsed read-only Scripts inventory.

@@ -6,8 +6,8 @@ description: >-
   is the only evidence a DesignBoard may bind. Trigger: insight wisdom,
   counsel, design handoff, I5, folder-kind wisdom, /haipipe-insight-wisdom.
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-09-07"
+  version: "1.2.0"
+  last_updated: "2026-09-13"
   workflow: haipipe-insight-workflow
   phase: I5
   folder_kind: wisdom
@@ -24,6 +24,8 @@ metadata:
 # /haipipe-insight-wisdom · counsel, then hand off
 
 Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and the workflow.
+Read `../../haipipe-insight/ref/page-v2-adapter.md` before authoring counsel or
+exporting the handoff.
 
 ## Position
 
@@ -48,7 +50,8 @@ external-parent assertion. The second form is evidence input, not a handoff.
 ## Page Face
 
 Use `Context → Knowledge Cited → Counsel → Forbidden Overreach → Design
-Handoff`. Every `W<n>` cites a K parent. For a bridge Folder, `Knowledge Cited`
+Handoff`. Every `W<n>` carries an exact Page v2 `PARENTS` record for its K
+parent. For a bridge Folder, `Knowledge Cited`
 names exact external K/W/RF row ids and the item execution through a Supporting
 Result and its local Evidence Run; it does
 not copy them or pretend the RF is local K. The handoff carries finding,
@@ -68,14 +71,16 @@ handoff.
 
 ## Plugins
 
-- `outline` required, including the Supporting/local Result evidence graph
-  for local K parents or the exact Task item RF parent;
-- `probe` optional for an applicability gap;
+- `outline` required, including semantic parent-row lineage and the
+  Supporting/local Result evidence graph for an exact Task item RF parent;
+- an applicability gap commissions a decided Supporting Run when computation
+  is required; no active PageX or Probe lane;
 - `code` forbidden: this phase contextualizes accepted claims.
 
 ## Gate and Closure
 
-GI5 passes only when counsel stays inside its K parents, forbidden overreach is
+GI5 passes only after the W Page reaches CHECK/CLOSE, when counsel stays inside
+its exact current K parents, forbidden overreach is
 visible, the handoff reads standalone, and `signed: ✅ <initials> <YYMMDD>`
 records a person's decision. `signed: ⬜` is a clean stop, not permission to
 infer approval. A bridge also requires the external-parent assertion to remain
@@ -84,8 +89,10 @@ this Folder does not perform or rename it.
 
 ## Handoff
 
-Export only the signed Design Handoff. A DesignBoard binds its exact version
-and never re-derives from D/I/K Folders. A deferring W Folder exports only a
+Export only the signed Design Handoff. A DesignBoard freezes its exact
+path/Page-version/content-hash, signature, and GI6 settlement receipt as input
+and never re-derives from D/I/K Folders. It creates no PageX lane or synthetic
+Run. A deferring W Folder exports only a
 pointer to the template handoff. A Task RF never crosses this boundary directly:
 the local signed W is the only Design authority.
 

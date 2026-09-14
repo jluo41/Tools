@@ -1,3 +1,8 @@
+## 0.7.1 · 2026-09-13
+
+- Clarify that the Round's Outline is a generated Page projection and must not
+  be authored as a second `## Outline` section.
+
 ## 0.7.0 · 2026-09-08
 
 - Round is explicitly a Page-level feedback control surface, not a Run or an

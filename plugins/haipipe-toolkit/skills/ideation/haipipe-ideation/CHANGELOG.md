@@ -1,3 +1,23 @@
+## 0.4.0 · 2026-09-13
+
+- Promoted the Paper P0 sync adapter to schema v2 with independent working,
+  release, and delivery surfaces, source hashes, Page-owned receipts, and
+  explicit state/revision invariants.
+- Reused the standard Page phase receipt with a `paper_projection` extension
+  instead of introducing a parallel projection receipt type or Page lifecycle.
+- Added projection change classes and stable `idea_id` routing so portfolio
+  refreshes do not allocate Page Runs or silently renumber Page paragraphs.
+- Kept schema v1 readable and extended the checker/tests to reject projection,
+  release, delivery, and selection-authority drift.
+
+## 0.3.2 · 2026-09-13
+
+- Aligned the Paper P0 sync contract with `haipipe-page`'s three update
+  boundaries: semantic source, working projection, and released Page Content /
+  delivery.
+- Clarified that sync does not mint a Page Run or imply publication; the Page
+  release barrier remains the only route to adopted Content and delivery.
+
 # haipipe-ideation — Changelog
 
 Skill-scoped changelog (read on demand; not loaded at invocation).

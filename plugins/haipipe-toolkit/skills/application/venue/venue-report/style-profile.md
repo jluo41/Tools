@@ -37,7 +37,7 @@ reported during the pilot period.
    - Executive: bottom line → evidence → ask
    - Partner: context → joint findings → next steps
 
-2. Every factual statement maps through the released card grant.
+2. Every factual statement maps through released Commission inputs.
    - Regulator: footnote (¹ Source 1: ...)
    - Executive: endnote
    - Partner: inline parenthetical
@@ -65,7 +65,7 @@ audience=partner     → professional, collaborative tone
 
 ```
 [ ] Structure matches audience template
-[ ] Every factual claim maps through the card grant (format per audience)
+[ ] Every factual claim maps through Commission inputs (format per audience)
 [ ] No stale or superseded handoff/source is presented as settled evidence
 [ ] Length within budget for audience
 [ ] Limitations section present (regulator)

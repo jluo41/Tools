@@ -60,9 +60,12 @@ type or the Topic is invalid.
 
 ## Page Face contract
 
-The Page keeps the shared `haipipe-page` frame: Opening, optional Diagram,
+The Page keeps the shared `haipipe-page` frame: Opening, generated Outline,
 Content, and Aims. Its Content makes four promises, with headings chosen for the
-subject rather than copied mechanically:
+subject rather than copied mechanically. Each Discovery Content division may
+carry its own captioned face diagram; a whole-Page diagram is not a fifth
+on-stage section. Do not author `## Outline`, `## Diagram`, or `## Writing Style`;
+the plan, Mermaid structure, and writing requirements live in `outline/`.
 
 The root Page writes `folder-kind: discovery`. It does not write
 `page-type: task`: Discovery owns both Folder faces, while the empirical
@@ -81,6 +84,14 @@ The Page synthesizes Results many-to-many. It may quote or compress them, but
 must not become a pasted `notes.md` ledger or imply one paper per paragraph.
 `Aims` judge whether the article keeps its reader promise; Paper Run status is
 derived separately from runtime receipts.
+
+When human Page interaction is needed, the shared Page workflow starts with
+`rp00_mermaid-structure`, which closes the Mermaid argument map and the global
+`P01..PN` order. Selected paragraph-group Page Runs then use
+`rp01_p01` or `rp02_p02-p03`. These Page Runs own feedback and accepted prose;
+they are distinct from the native Discovery `rNN` Runs that analyze sources.
+The Page release barrier requires the selected Page Runs and required Task
+Results to be ready before CONTENT adopts the Page and builds delivery.
 
 ## Type changes
 

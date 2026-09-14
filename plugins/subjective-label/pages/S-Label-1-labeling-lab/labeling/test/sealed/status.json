@@ -1,0 +1,24 @@
+{
+  "access_policy": [
+    "no development read, embed, index, or prelabel"
+  ],
+  "custodian": "JL",
+  "frame": {
+    "rule": "fixture split reserved before development work"
+  },
+  "imported_from_status_checksum": "d6dbd87288d1680ed3e70f73605d9cf5547aa35b87babfa32c5c33691adcfcbf",
+  "invalidation_state": "valid",
+  "n": 6,
+  "protected_manifest_checksum": "e027e83e1917578ca6ad6e7131782eb1433d8cd881bec9fd7144d037da393fd0",
+  "reserved_at": "2026-08-30",
+  "simulation_only": false,
+  "source_fence_attestation": {
+    "source_access_policy_checksum": "86a22beeafc42eaf9de1667f580272009cc81f715c53c809333421d02427936e",
+    "source_custodian": "test-custodian (not yet implemented; reservation recorded at Contract)",
+    "source_frame_checksum": "154f483fff9b5ad4dd604561068e2f31059add1d06a29dadf5e9a59b1a8358d8",
+    "source_invalidation_state": "valid",
+    "source_status": "reserved-and-unexposed",
+    "validated": true
+  },
+  "status": "reserved-and-unexposed"
+}

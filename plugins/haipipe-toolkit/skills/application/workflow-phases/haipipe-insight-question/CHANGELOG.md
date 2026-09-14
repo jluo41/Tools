@@ -1,5 +1,14 @@
 # haipipe-insight-question · version history
 
+## 1.2.0 — 2026-09-13
+
+- Define each Question Group as the derived intersection of one MT00 partition
+  scope and this register's DIKW target, for example `QG-B-I` or `QG-F-W`.
+- Keep one stable question row and CELL-level authority; no group Folder,
+  duplicated question, or independently written group state is introduced.
+- Align register closure with Page CHECK/CLOSE plus the matching GI receipt and
+  retire active PageX/Probe plugin selection.
+
 ## 1.1.0 — 2026-09-08
 
 - Register an exact instance/item/version/RF Result path and hash. Unrelated open items do not block a ready external parent.

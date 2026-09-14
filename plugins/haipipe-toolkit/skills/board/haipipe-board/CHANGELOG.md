@@ -1,3 +1,54 @@
+## 1.0.6 · 2026-09-13
+
+- Keep candidate-sentence feedback in the active Page Run and stop mounting a
+  separate Comments composer in the shared Bullet Workspace.
+
+## 1.0.5 · 2026-09-12
+
+- Consume the Page-owned Run namespace with reserved Mermaid Structure
+  `rp00` and paragraph Page Runs beginning at `rp01`.
+
+## 1.0.4 · 2026-09-12
+
+- Consume Page-owned `rpNN` records without keeping a second Board-side Page
+  Run namespace.
+- Report non-global paragraph identities in Board-hosted Outline checks while
+  leaving Page as the parser and address authority.
+
+## 1.0.3 · 2026-09-12
+
+- Restore `rpNN` as the current Page Run namespace to avoid collision with
+  Pull Request shorthand: start at `rp01_mermaid-structure`, continue with
+  `rpNN_pNN[-pNN]`, and treat `prNN_*` only as readable migration input.
+
+## 1.0.2 · 2026-09-12
+
+- Align Board-hosted Bullet Workspace with the Page-owned first Run: present
+  the whole-Page Mermaid Structure expanded while `pr01_mermaid-structure` is
+  active, name a missing source as a blocker, and collapse an existing map
+  only after that Run completes.
+
+## 1.0.1 · 2026-09-12
+
+- Align Board's hosted Page Run vocabulary with the Page-owned contract: new
+  records start at `pr01_mermaid-structure`, then use numbered
+  `prNN_pNN[-pNN]` identities; historical `rpNN_*` records remain readable.
+
+## 1.0.0 · 2026-09-12
+
+- Declare the public Board door stable after the Page-family split: Board owns
+  the container, Groups, roster, aggregate build/serve/check, and close; Page
+  owns the Page Folder, renderer, lifecycle, and standalone operation.
+- Adopt Page v2 run vocabulary without changing stored identities: Page Runs
+  are `rpNN_*` human-feedback histories, Task Runs retain native execution
+  ids, and a phase-controller invocation is a Page workflow pass.
+- Align Board routing, Folder links, agent references, family layout docs, and
+  owner-scoped Folder-contract validation; add a standing V1 boundary test.
+- Make the generic source template executable as written: Group `QA` owns Page
+  `QA1`; retire the stale `G1` example that disagreed with the Q-group checker.
+- Make the template gate classify tagged text/ascii fences as visible diagrams,
+  not folded code; only a non-diagram language tag now exercises code folding.
+
 ## 0.182.0 · 2026-09-11
 
 - Qualify full-render completion as formal Board/Page delivery; routine Writing Steps and explicit Content-only adoption use the scoped save/check contract. Update template wording to agreed-text adoption without a replacement drafting Run.

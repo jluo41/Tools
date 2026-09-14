@@ -16,7 +16,7 @@ Panel 1: Summary KPIs (top row, 3 cards)
 │ target: 80%  │ │ threshold: 5 │ │              │
 └──────────────┘ └──────────────┘ └──────────────┘
   grant: H1        grant: H2        grant: H3
-  source: PageX    source: PageX    source: PageX
+  source: W/input  source: W/input  source: W/input
 ```
 
 

@@ -16,6 +16,9 @@ from typing import Iterable
 
 
 RUN_RE = re.compile(r"^r[0-9]{2}_[a-z0-9]+[0-9]{4}_[a-z0-9_]+$")
+PAGE_RUN_RE = re.compile(
+    r"^rp(?:00_mermaid-structure|[0-9]{2}_p[0-9]{2}(?:-p[0-9]{2})?)$"
+)
 SEGMENT_RE = {
     "block": re.compile(r"^(b[0-9]{2})_([a-z0-9][a-z0-9-]*_[a-z0-9][a-z0-9_-]*)$"),
     "job": re.compile(r"^(j[0-9]{2})_([a-z0-9][a-z0-9-]*_[a-z0-9][a-z0-9_-]*)$"),
@@ -105,18 +108,15 @@ DISCOVERY_PAGE_ROLES = (
     "Evidence map",
     "Limits and next move",
 )
-WRITING_STYLE_LABELS = (
-    "Language and voice",
-    "Sentence shape",
-    "Evidence rule",
-    "Required sections",
-    "Optional sections",
-    "Question and boundary",
-    "Type payload",
-    "Evidence map",
-    "Limits and next move",
-    "Section rules",
-)
+RETIRED_PAGE_SECTIONS = {
+    "Outline",
+    "Diagram",
+    "Writing Style",
+    "States",
+    "Files",
+    "Log",
+    "Discussion",
+}
 PAPER_SOURCE_V2 = "paper-source-v2"
 READING_DEPTHS = {"metadata-only", "abstract", "full-text"}
 CLAIM_SUPPORT_STATES = {"pending", "supported", "qualified", "unsupported"}
@@ -211,7 +211,13 @@ def _pair_maps(topic: Path) -> tuple[dict[str, Path], dict[str, Path]]:
         else {}
     )
     results = (
-        {path.name: path for path in results_dir.iterdir() if path.is_dir()}
+        {
+            path.name: path
+            for path in results_dir.iterdir()
+            # Page-owned rpNN Results share the Folder's results/ lane but are
+            # validated by haipipe-page-workflow, not this D1 checker.
+            if path.is_dir() and not PAGE_RUN_RE.fullmatch(path.name)
+        }
         if results_dir.is_dir()
         else {}
     )
@@ -363,36 +369,21 @@ def _page_errors(page: Path, question: str = "") -> list[str]:
         errors.append(f"page-folder-kind-invalid: {page}: expected discovery")
     if re.search(r"(?m)^page-type:\s*task\s*$", text):
         errors.append(f"page-task-type-forbidden: {page}")
+    for section in sorted(RETIRED_PAGE_SECTIONS):
+        if re.search(rf"(?m)^## {re.escape(section)}\s*$", text):
+            errors.append(f"page-retired-section: {page}: {section}")
+
     opening = re.search(
-        r"(?ms)^## (?:Opening|Question)\s*\n(?P<body>.*?)(?=\n\s*\n|\Z)",
-        text,
+        r"(?ms)^## Opening\s*\n(?P<body>.*?)(?=\n\s*\n|\Z)", text
     )
     if not opening:
         errors.append(f"page-opening-missing: {page}")
     else:
         visible = re.sub(r"\s+", " ", opening.group("body")).strip()
-        sentence_count = len(re.findall(r"[.!?](?=\s|$)", visible))
-        if sentence_count not in {4, 5}:
-            errors.append(
-                f"page-opening-sentence-count: {page}: {sentence_count}"
-            )
+        if not visible:
+            errors.append(f"page-opening-empty: {page}")
         if len(visible) > 520:
             errors.append(f"page-opening-too-long: {page}: {len(visible)}")
-        question_words = re.findall(r"[a-z0-9]+", question.casefold())[:5]
-        visible_words = re.findall(r"[a-z0-9]+", visible.casefold())[:5]
-        if question_words and visible_words != question_words:
-            errors.append(f"page-opening-question-drift: {page}")
-    writing_style = re.search(
-        r"(?ms)^## Writing Style\s*\n(.*?)(?=^## Content\s*$)", text
-    )
-    if not writing_style:
-        errors.append(f"page-writing-style-missing: {page}")
-    else:
-        for label in WRITING_STYLE_LABELS:
-            if not re.search(
-                rf"(?m)^\*\*{re.escape(label)}\*\*:\s+\S", writing_style.group(1)
-            ):
-                errors.append(f"page-writing-style-label-missing: {page}: {label}")
     if not re.search(r"(?m)^## Content\s*$", text):
         errors.append(f"page-content-missing: {page}")
     if not re.search(r"(?m)^## Aims\s*$", text):

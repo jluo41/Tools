@@ -1,244 +1,191 @@
 ---
 name: haipipe-application-workflow
 description: >-
-  The crossing orchestrator for an Application's InsightBoard and DesignBoard.
-  It does not invent P0-P4 phases: Insight and native Run-backed Design remain
-  owned by their sibling workflows. This skill resolves two frontiers, validates
-  need and signed-handoff crossings, delegates one runnable unit, records the
-  cross-board receipt, and stops at the owning workflow's gate. Use for whole
-  Application status, next-board routing, or cross-board trace repair.
-  Trigger: application workflow, run application, cross boards, next board,
-  application frontier, signed handoff crossing, /haipipe-application-workflow.
+  Crossing orchestrator for an Application's InsightBoard and DesignBoard.
+  Preserves the Insight workflow, native Design workflow, and Design Folder's
+  Page workflow as separate authorities; validates X0-X3 crossings and delegates
+  one runnable unit. Use for whole-Application status or cross-board routing.
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-09-07"
+  version: "3.0.0"
+  last_updated: "2026-09-13"
 ---
 
-# /haipipe-application-workflow · cross two workflows without renaming them
+# /haipipe-application-workflow · cross without flattening
 
-Load `haipipe-application` and `haipipe-folder` first. Then load
-`haipipe-insight-workflow` and `haipipe-design-workflow`. Those workflows own
-all interior phases, gates, dispatch, and receipts. This skill owns only the
-crossings between them.
+Load `haipipe-application`, `haipipe-folder`, `haipipe-insight-workflow`, and
+`haipipe-design-workflow`. Load `haipipe-page-workflow` only for a Page-facing
+action. Sibling workflows retain their own phases, gates, identities, and
+receipts.
 
-## Ownership
+## Ownership graph
 
 ```text
-haipipe-insight-workflow   I0–I5 · one register cell at a time
-haipipe-design-workflow    Plan/Generate/Verify/Adopt · one commissioned target
+haipipe-insight-workflow    I0–I5 · one derived Question Group + one register cell
+haipipe-design-workflow     Commission/Generate/Verify/Adopt · one design target
+haipipe-page-workflow       rp00/rpNN/release/CHECK · one readable Page
 haipipe-application-workflow
-                           crossing state · delegation · cross-board receipts
-haipipe-page-workflow      OUTLINE…CHECK inside one Folder's Page Face
+                            X0–X3 crossing assertions + delegation only
 ```
 
-There is no Application P0–P4 vocabulary. A status that compresses I/D phases
-into a third phase machine loses the exact phase skill that owns each Folder.
+There is no Application P0–P4 and no combined Design/Page phase scalar.
 
-## The crossing graph
+## Crossing graph
 
 ```text
 Design Brief need
-        │  X0 need-out
+        │ X0
         ▼
-Insight I1 Question → I2 Data → I3 Information → I4 Knowledge → I5 Wisdom
-        │  X1 signed-handoff
+I1 Question → I2 Data → I3 Information → I4 Knowledge → I5 Wisdom
+        │ X1 · settled + signed handoff
         ▼
-Design Plan → Generate → Verify → Adopt → accepted candidate
-        │  X2 leaves Application to task/fielding
-        ▼
-measured effect → X3 read-back → new/reopened Insight I2 Data Folder
+Commission → Generate → Verify → preview → Adopt
+                                      │ same domain ruling
+                                      ▼
+                 Design Page release → fresh CHECK
+                                      │ X2
+                                      ▼
+                     downstream Task implementation/fielding
+                                      │ measured Result · X3
+                                      ▼
+                            new/reopened I2 Folder
 ```
 
-X0 and X1 are inside the Application. X2 and X3 describe the outer handoff
-boundary; implementation, allocation, execution, and measurement remain task
-work.
+X0 and X1 are inside the Application. X2 and X3 are outer boundaries; this
+workflow never builds, sends, allocates, executes, or measures.
 
-## Crossing assertions
-
-### Native Design adapter (v2)
-
-New Design work uses the stable `haipipe-design` Folder owner and its
-Run-backed workflow. D0–D5/GD references below describe legacy records.
-For a native commission, the consuming Evidence Workspace and frozen Ticket
-pin the same authorized handoff versions; a historical signed W file has no
-invented Run identity. Preserve X1's signing, settlement and applicability.
-
-Native X2 requires the person's version-bound adoption, passing independent
-verification and exact DU/member/render/handoff hashes, plus the closed native
-round receipt. An entire DS Folder is not itself a Supporting Run; name its
-actual generating Run(s) and their Result manifests.
-
-The v1 outbound packet below is the legacy adapter. Do not counterfeit its
-old D5 receipt or assume that a Task consumer understands native DU manifests.
-Before a native outward write, resolve an explicitly supported downstream
-packet schema that carries those exact Results and decisions. If no such
-adapter is declared, report X2 HOLD. Design may still finish generation,
-verification and adoption; it does not silently build or dispatch downstream.
-
-### X0 · Brief need to Insight question
+## X0 · Brief need to Insight question
 
 - BR00 owns one neutral need id and target rung.
-- Exactly one Insight register owns the corresponding QD/QI/QK/QW id.
-- Both rows point to each other; neither contains a preferred answer.
+- Exactly one Insight register owns the reciprocal QD/QI/QK/QW id.
+- The scheduling/status coordinate is derived as
+  `QG-<partition>-<target-rung>`; it is never stored as a Folder or authority.
+- Neither side contains a preferred answer.
 - The need stays open until that register reaches a legal terminal.
 
-### X1 · Wisdom handoff to Design
+## X1 · signed W handoff to Design Commission
 
-- The W Folder is closed under I5 and its `signed:` token records a person.
-- When I5 used a Task item RF parent, the I1 QW row and W Evidence graph pin
-  the exact instance/item/execution-version/RF and Result path/hash. The
-  selected item is accepted; unrelated open items need not close. The RF
-  itself is not a crossing artifact: X1 still
-  starts from the local, contextual, signed Application W Folder.
-- The owning I1 register cell is terminal under GI6 and its settlement receipt
-  cites this exact signed W Folder; GI5 alone is not crossing-ready.
-- The consuming Folder's Evidence Workspace binds the exact W handoff
-  path/version; no D/I/K prose crosses.
-- The DesignBoard's `reads:` authorizes the source.
-- The consuming Brief/Card/Division names why the handoff applies.
+- I5 reached Page `CHECK/CLOSE`; the W handoff is contextual, signed by a
+  person, and its I1 cell is settled at GI6 under the Insight workflow.
+- If W used a Task RF parent, W's Evidence graph pins that exact native
+  instance/item/version/Result. The RF itself does not cross directly.
+- The DesignBoard `reads:` authorizes the W source.
+- The Commission and v2 Ticket pin the exact frozen W handoff
+  path/Page-version/content-hash, signature, and GI6 receipt with role
+  `handoff`, and name why it applies to this audience/job/venue.
+- A static W handoff has no invented Supporting Run id. No D/I/K prose, Page
+  `rpNN`, or raw Task output becomes Design authority.
 
-### X2 · legacy accepted-candidate adapter
+This crossing is Design-domain authority, not a Page Evidence shortcut. Any
+factual claim on the DS Page separately uses a typed item under
+`outline/evidence/` and the current Page evidence contract.
 
-- The D4 division is accepted against current handoff and render versions.
-- D5 sealed the round.
-- The caller or Brief roster names one target executable Task Folder, its
-  `task_type`, and one `requested_action`; this crossing never guesses or
-  scaffolds the downstream owner.
-- The target is an addressable Task Folder with `<task-stem>.md`,
-  `workflow/`, and an Evidence Workspace that records Supporting Run ids.
-- The crossing writer stores
-  `<target-task-folder>/workflow/inbox/application/<DS-id>-<division-id>-v<N>.yaml`
-  and binds the exact candidate as a versioned input for the target's Local
-  Run. Only an actual producer Run may supply a Supporting Run identity;
-  the legacy DS Folder/version does not become one.
-- The DS Folder's `outline/<DS-stem>-log.md` records the same packet path and
-  target Folder. This skill does not accept the packet on the Task owner's
-  behalf and does not build, ship, allocate, execute, or measure it.
+## X2 · adopted candidate to downstream Task
 
-`N` is the immutable candidate-packet revision for one
-`(DS-id, division-id, target Task Folder)` tuple: start at `1`, increment for
-each later emission, and never overwrite an earlier packet. It is independent
-of design and render versions; those stay pinned inside `source`. Thus an
-accepted render v3 normally crosses as packet v1 when it is the tuple's first
-candidate.
+Native X2 requires all of the following:
 
-The packet grammar is fixed:
+- exact generation Result/member hashes;
+- complete passing independent verification for the selected members;
+- recipient-view render manifest/version;
+- signed handoff versions and immutable human adoption receipt;
+- released Design Page projection and fresh terminal CHECK bound to the same
+  adoption as its `domain-gate`;
+- one explicitly named downstream Task Folder, task type, and requested action.
+
+Write a new immutable packet; never overwrite a previous revision:
 
 ```yaml
-schema: haipipe.application-candidate/v1
-packet_id: <DS-id>-<division-id>-v<N>
+schema: haipipe.application-candidate/v2
+packet_id: <DS-id>-<candidate-slug>-v<N>
 packet_version: <N>
 state: proposed
 source:
   application: <application-root>
   design_board: <board-path>
   folder: <DS-folder-path>
-  division: <division-id>
-  design_version: <hash-or-version>
-  handoffs: [<exact W path@version>]
-  warrants: [<exact promoted-P path@version>]
-  render: <delivery/render/file@version>
-  acceptance:
-    log: <DS-folder>/outline/<DS-stem>-log.md
-    record: "### <YYMMDD HHMM> · <division-id> accepted at <render-version>"
-  pagedown: <D5 receipt path@version>
+  generation_results: [<result.yaml path@sha256>]
+  selected_members: [<artifact path@sha256>]
+  verification_results: [<result.yaml path@sha256>]
+  handoffs: [<W handoff path@sha256>]
+  render: <manifest path@sha256>
+  adoption: <decision receipt path@sha256>
+  page:
+    source: <DS page path@sha256>
+    release: <Page release receipt path@sha256>
+    check: <terminal CHECK receipt path@sha256>
 target:
   folder: <target-task-folder>
   task_type: <target contract key>
   requested_action: <build | field | deploy | measure>
 ```
 
-Missing target, requested action, Supporting Run binding, packet/source version stamp,
-acceptance, or PageDown receipt is `X2 HOLD`; no abbreviated packet is a
-crossing.
+The target Task decides how to bind these inputs and allocate its own Runs.
+The DS Folder and Page are not fabricated as Supporting Runs. Missing any
+required target/source/version/authority row is `X2 HOLD`.
 
-### X3 · measured effect back to Insight
+## X3 · measured effect back to Insight
 
-- The Task Run/Result/report path and run identity resolve.
-- I2 records the effect as run-bound Data, not as an updated Design claim.
-- Every downstream I/K/W row and Design division citing the old version reopens.
+- Resolve the real downstream Task Run/Result/report identity.
+- I2 records it as run-bound Data, not as an edited Design claim.
+- Reopen only dependent I/K/W and current Design/Page bindings. Preserve the
+  old adopted candidate and its historical decision.
 
-## Frontier
+## Frontier and dispatch
 
-Report the Application as a product of two native frontiers and one crossing,
-never one scalar:
-
-```text
-insight: <board> · <cell> · I0..I5 · gate GI<n> · next
-design:  <board> · <target/Run> · native phase · gate/verdict/adoption · next
-crossing: none | X0 need-out | X1 handoff-ready | X2 outbound | X3 read-back
-```
-
-If several units are runnable, preserve each owning workflow's order. Do not
-advance one chain past a missing parent or one design thread past a human gate
-to make the whole Application appear further along.
-
-## Dispatch
-
-1. Resolve the Application root and paired/readable boards.
-2. Ask each sibling workflow for its frontier from disk.
-3. Validate any pending crossing assertion before dispatch.
-4. If the user named a board/thread/cell, delegate exactly that unit.
-5. Otherwise finish a ready crossing first; then delegate the earliest runnable
-   native frontier without crossing a human gate.
-6. Re-read both frontiers and write one cross-board receipt.
-7. Stop on any sibling workflow stop.
-
-Delegation is literal:
+Report four coordinates:
 
 ```text
-Insight unit → /haipipe-insight-workflow
-Design unit  → /haipipe-design-workflow
-Page Face    → /haipipe-page-workflow, only when the phase asks
+insight:     <board> · <QG-partition-rung> · <cell> · I0..I5 · gate · next
+design:      <board> · <commission/Run/result> · verify/adoption · next
+design-page: <rp00/rpNN/release/CHECK> · projection freshness · next
+crossing:    none | X0 | X1 | X2 | X3 · assertion/hold
 ```
 
-## Receipts
+Dispatch:
 
-No central Application ledger is authoritative. Put the receipt on the two
-surfaces that own the crossing:
+1. Resolve Application root and exact Boards/Folders.
+2. Read all three native frontiers from disk.
+3. Validate a pending crossing before delegation.
+4. Honor a user-named board/Run/Page interaction exactly.
+5. Otherwise finish a ready crossing, then delegate the earliest runnable unit
+   without crossing a human gate.
+6. Re-read frontiers and write receipts only on owning surfaces.
+7. Stop at the first owner gate or named hold.
 
 ```text
-X0  BR00/outline/<BR00-stem>-log.md
-    + Question/outline/<Question-stem>-log.md
-X1  W/outline/<W-stem>-log.md
-    + consuming BR00-or-DS/outline/<stem>-log.md
-X2  accepted DS/outline/<DS-stem>-log.md
-    + target workflow/inbox packet + reciprocal Supporting Run binding
-X3  Task Run/Result/report + I2/outline/<I2-stem>-log.md
+Insight unit     → /haipipe-insight-workflow
+Design unit      → /haipipe-design-workflow
+Design Page unit → /haipipe-page-workflow
 ```
 
-Each outline receipt is one `### YYMMDD HHMM · <headline>` record and names
-source path/version, target path/version, assertion results, and the person when
-a human decision was involved.
-
-## Human gates
-
-This crossing layer adds no human gate. It preserves the four gates owned by
-the two native workflows:
+## Receipts and human gates
 
 ```text
-Insight  release a new Probe card · sign a W handoff
-Design   release/kill a Card       · accept a Division
+X0  BR00 log + Question log
+X1  W log + consuming Commission/DS decision index
+X2  DS adoption/crossing index + downstream workflow inbox packet
+X3  Task Result/report + I2 log
 ```
 
-A recorded blanket remains a person's act over named existing artifacts.
-Nothing here infers or schedules one.
-
-## Stop rules
-
-- Stop at any unresolved X0/X1/X2/X3 assertion and report both paths.
-- Stop at a sibling human gate; never poll or auto-advance it.
-- Stop when two phase skills claim the same Folder.
-- Stop at accepted/sealed Design: fielding is outside the Application.
-- Never create a compatibility Page-Type skill to repair a crossing.
-
-## Return
+This crossing layer adds no human gate. It preserves:
 
 ```text
-status: ok | blocked | failed
-insight: <native frontier>
-design: <native frontier>
-crossing: <X state and assertion>
-receipt: <paths written, or none>
-next: <one delegated unit or one named gate>
+Insight  ✋ Page SURVEY Decide for a new Supporting Run · ✋ sign W handoff
+Design   ✋ release exact Design Commission · ✋ adopt exact candidate
+Page     adoption is reused as domain-gate; CHECK never repeats selection
 ```
+
+These are cross-phase authority gates. Shape approval, evidence verification,
+and acceptance remain nested Page-Face controls. A Page Run `rpNN` closing is
+neither Page `CLOSE` nor a GI/X transition.
+
+## Stop and clean break
+
+Stop at an unresolved assertion, sibling human gate, conflicting owner, or
+accepted/current X2 boundary. Never poll or infer consent.
+
+This workflow does not read or adapt PageX, D0–D5/GD0–GD6,
+Division/PageDown receipts, or v1 candidate packets. Current crossings use v2;
+non-current inputs stop as unsupported.
+
+Return status, the four frontiers, receipts written (or none), and one next
+bounded action.

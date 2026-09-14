@@ -24,21 +24,94 @@ contains these four user-check surfaces. Detailed
 source paths, logs, manifests, hashes, and phase receipts stay in the durable
 records and may be mentioned only when they explain a missing or stale surface.
 
+When a person says enter, continue, resume, or review an open Page Run before
+giving new feedback, use the pre-Step review packet below. It shows the latest
+saved candidate, the frozen Mermaid Structure description for every selected
+paragraph, and the next proposed Step number, but does not append a new Step or
+claim a new durable record. Never return only a status summary or links when the
+person has asked to enter a Step: return the full selected paragraphs, Mermaid
+descriptions, sentence labels, review scope, and all three links.
+
 ## Routine interactive writing · return what the person can review
+
+### Entering or resuming an open Step · pre-Step review packet
+
+Use this packet before new feedback arrives:
+
+```markdown
+## ✍️ <rpNN_pNN[-pNN]> · next Step <vNNN/sNNN>
+
+### P01 · <C.P> · <Mermaid Structure description>
+
+> **S1** <latest complete saved sentence>
+>
+> **S2** <latest complete saved sentence>
+
+### P02 · <C.P> · <Mermaid Structure description>
+
+> **S3** <latest complete saved sentence>
+>
+> **S4** <latest complete saved sentence>
+
+Review scope: <the numbered paragraphs and plan addresses in this Run>
+Reply with sentence-numbered feedback, acceptance, or an explicit close.
+
+[Draft Space](<verified direct URL>) · [Evidence Space](<verified direct URL>) · [Current Run](<verified Runs URL with &run=<exact-run-id>>)
+```
+
+The `next Step` label is a proposed input location, not a saved Step. Do not
+write `sNNN` to the Version journal until the person supplies feedback,
+acceptance, or an explicit close. Resolve each description from the closed
+`rp00_mermaid-structure` index or its authored `outline/<stem>-logic.mmd`; if
+the description is missing or ambiguous, show a named blocker rather than
+inventing one.
 
 After a saved writing Step:
 
-1. Show the full selected one-to-three paragraphs in reader order, including
-   unchanged sentences. Use exactly the saved Workspace's reader projection,
-   not a newly polished chat version. Keep evidence placeholders honest in the
-   source; use the same compact labels as the Workspace in the chat passage.
-2. Give brief item-based changes and reasons. Distinguish agent-applied from
-   human-accepted. Name an unresolved item instead of hiding it in a summary.
-3. At the start, show the Section Mermaid. Refresh it only if the argument or
+1. Start with the exact durable identity as the heading:
+   `## <rpNN_pNN[-pNN]> · <vNNN/sNNN>`. For example,
+   `## rp01_p01 · v001/s003`. The Run id states which interaction is open;
+   the paragraph suffix states its frozen Page-global scope.
+2. Immediately show the full selected one-to-three paragraphs in reader order,
+   including unchanged sentences. Put each paragraph under its own visible
+   `### PNN · Cn.Pm · <Mermaid Structure description>` label and its own Markdown blockquote. Leave a blank line
+   between paragraph blocks; never place different paragraphs in one continuous
+   quote. Prefix every sentence with a stable bold review label: `**S1**`,
+   `**S2**`, and so on. These labels are chat review coordinates only: do not
+   write them into the Workspace candidate or final Page Content. Use exactly
+   the saved Workspace's reader projection, not a newly polished chat version.
+   Keep evidence placeholders honest in the source; use the same compact labels
+   as the Workspace in the chat passage.
+3. Then briefly explain what changed and why. Default to one concise paragraph,
+   not a fixed three-bullet status block. Use itemized dispositions only when
+   several feedback items genuinely need separate treatment. Distinguish
+   agent-applied from human-accepted, and name an unresolved item instead of
+   hiding it in a summary. Do not append a routine Content-state line unless
+   that state itself changed.
+   Do not add an empty Bullets/Evidence recap. Add evidence commentary only
+   when this Step changed or left unresolved a citation, value, or figure need.
+   The durable Current Run record also keeps one Track Changes card per material
+   wording change: clean Before and After text, a local change type, and the
+   reason. The presenter
+   computes red strikethrough deletion and green underlined insertion at the
+   smallest practical word/punctuation span; unchanged context stays plain.
+   Use a whole-sentence deletion/insertion only when the whole sentence changed.
+   Keep source prose free of diff markup. Interactive Page Steps defer
+   preference inference to post-run analysis; a non-record-first host may ask
+   explicitly for a provisional Page-local inference.
+   Put the classification in the card heading rather than a duplicate table.
+   Acceptance, status, navigation, and presenter-only Steps create no Track
+   Changes card. Current Run expands only the latest Step; earlier Steps remain
+   collapsed until the reader opens them.
+4. Show the Section Mermaid before the paragraph only when the argument or
    paragraph relationships changed; a wording edit needs no repeated diagram.
-4. Put **both direct clickable links at the very end**:
-   `[Bullet Workspace](<verified …&lens=div>) ·
-   [Evidence Workspace](<verified …&lens=workspace&seg=items>)`.
+5. Put **all three direct clickable links at the very end**:
+   `[Draft Space](<verified …&lens=div>) ·
+   [Evidence Space](<verified …&lens=evidence>) ·
+   [Current Run](<verified …/_board/runs?path=…&file=…&run=<exact-run-id>>)`. The
+   Current Run route opens the readable Run projection and expands its current
+   Step plus prior history; it is not a raw Markdown, result-directory, or
+   Python implementation link.
    Nothing, including source paths or a work summary, follows those links.
 
 The current candidate is `planning draft`, not automatically published Content.
@@ -46,12 +119,17 @@ Do not append the full audit packet, PDF or whole Section to each local turn.
 Provide them when explicitly requested or when this turn actually changed those
 artifacts. A stale PDF is labelled stale and never delays a prose-only turn.
 
+Between Steps or Runs, follow
+`../../page-workflows/haipipe-page-workflow/ref/interactive-execution-policy.md`.
+If a heavy action is useful, return its scoped approval request first; do not
+start it silently while preparing the next paragraph packet.
+
 Save raw feedback before editing, and save/re-read the updated Markdown and Step
 result before saying it is available. The live Outline reads Markdown: a local
 preview save does not require a full Board/PDF build. Perform narrow mapping,
 evidence-boundary and unchanged-scope checks. Only refresh affected generated
 surfaces needed for this response; remaining work is named, not falsely
-reported as complete. Verify both exact Workspace routes against the configured
+reported as complete. Verify all three exact routes against the configured
 public origin. If unavailable, end with a concise unavailable status, never a
 made-up live link or a localhost/raw-HTML substitute.
 
@@ -60,26 +138,26 @@ made-up live link or a localhost/raw-HTML substitute.
 ```text
 1. Outline and Bullet workspaces
    return both direct links from the same verified Board route:
-     🧭 Bullet Workspace  `<Board URL…&lens=div>` · Bullet/Evidence + editable Content preview
+     🧭 Draft Space  `<Board URL…&lens=div>` · Mermaid + read-only paragraph/Bullet/Draft table
      ▤ Outline table    `<Board URL…>` · the compact Page projection
-   The `lens=div` link is the direct Bullet Workspace route; do not make the
+   The `lens=div` link is the direct Draft Space route; do not make the
    reader open the default Page and hunt for the tab.
    `<Board URL>` means the verified page-specific `/_board/outline?path=…&file=…`
    route; preserve its query and append these parameters (use `?` only when a
    base route has no query string).
 
 2. Evidence you can open now
-   return the direct Evidence Workspace route even when no item is ready:
-     `<Board URL…&lens=workspace&seg=items>`
+   return the direct Evidence Space route even when no item is ready:
+     `<Board URL…&lens=evidence>`
    one line per typed Evidence Item whose Result is ready, grouped by type:
      🖼 DISPLAY  the unit's standalone `preview.pdf` (figure or table);
                 an unaccepted but freshly rendered preview is still a current draft
      📚 CITE     the Page's citation register `outline/evidence/bibex/<stem>-bib.html`,
-                or the Evidence Workspace 📚 Citations segment when no register is built
-     🧮 VALUE    the item's card in the Evidence Workspace (one-URL route
-                `lens=workspace&seg=items&focus=run-<item>`), which names the value,
+                or the Evidence Space 📚 Citations segment when no register is built
+     🧮 VALUE    the item's row in the Evidence Space (one-URL route
+                `lens=evidence&focus=run-<item>`), which names the value,
                 its Run and its Result
-   plus the direct Evidence Workspace → Evidences link above.  Do not use the
+   plus the direct Evidence Space → Evidence table link above.  Do not use the
    embedded `/_board/evidence?...&embed=1` iframe URL as the primary response
    link; it is an implementation detail of the Outline plugin.
    An item that is not ready is listed as `not current · <blocking step>`.
@@ -106,9 +184,9 @@ in the final user-check block, after prose/status commentary:
 ```markdown
 ## 👀 User check
 
-1. Bullet Workspace: [Open Bullet Workspace](<verified configured Board URL…&lens=div>)
+1. Draft Space: [Open Draft Space](<verified configured Board URL…&lens=div>)
    Outline table: [Open Outline table](<verified configured Board URL>)
-2. Evidence Workspace: [Open Evidence Workspace](<verified configured Board URL…&lens=workspace&seg=items>)
+2. Evidence Space: [Open Evidence Space](<verified configured Board URL…&lens=evidence>)
    🖼 [<Display id>](<unit>/preview.pdf) · 📚 [citations](<page>/outline/evidence/bibex/<stem>-bib.html) · 🧮 [<Value id>](<…&seg=items&focus=run-<item>>)
 3. Content: v<G>.<S> · revised · owner policy checked · style verdict ✓   (or: first draft · not yet revised)
 4. Latest Page-level PDF: [Open the Page PDF](<page>/delivery/latex/<stem>.pdf)
@@ -135,7 +213,7 @@ The citation surface is the Page's own register
 `outline/evidence/bibex/<stem>-bib.html` (built by the bibex door from
 `outline/evidence/bibex/<stem>.bib`). The value surface is the Evidence
 Workspace item card reached by the one-URL route the compact Outline table
-already uses (`lens=workspace&seg=items&focus=run-<item>`); do not paste raw
+already uses (`lens=evidence&focus=run-<item>`); do not paste raw
 numbers into the packet, the card is the reader's source.
 
 The only eligible Page-level artifact is

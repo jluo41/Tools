@@ -20,7 +20,7 @@ design_profile:
   narrative: none
   display: none
   section_edit: none
-  terminal: accepted
+  terminal: adopted
 ```
 
 
@@ -30,11 +30,11 @@ design_profile:
 template:
   - slot: prompt
     job: name the action to take
-    claim_source: GD0-closed Brief + signed Wisdom handoff
+    claim_source: released Brief + signed Wisdom handoff
     chars: ~100
   - slot: motivation
     job: brief reason why (varies per instance)
-    claim_source: released card grant
+    claim_source: released Commission
     chars: ~80
   - slot: encouragement
     job: positive reinforcement
@@ -45,13 +45,13 @@ template:
 
 ## Phase use
 
-### D1/D2 · bet and realize
+### Commission and Generate
 
 Use one narrow grant for the prompt and motivation. The motivation slot cycles
 through variants of the same released wager; a different thesis needs a new
-card.
+Commission.
 
-### D3/D4 · judge and decide
+### Verify and adopt
 Draft a set of 3-5 reminder variants that rotate. Each follows
 the template but varies the motivation slot. Judge each variant, render the
-set to `delivery/render/`, then accept or emit.
+set to `delivery/render/`, then adopt or decline.

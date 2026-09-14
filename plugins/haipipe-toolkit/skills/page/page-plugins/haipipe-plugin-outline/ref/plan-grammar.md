@@ -40,6 +40,11 @@ rewrite that head to `story-row:` before a new Story-controlled Section pass.
 One `## C<n>` per Content division of the page: a flat Section (one `### §1`)
 is `C1` with `P1` to `P<n>`.
 
+`P` is one Page-global reading-order counter. It never resets when `C` changes:
+if C1 ends at `C1.P3`, the first paragraph in C2 is `C2.P4`. `B` resets inside
+each paragraph. The full Bullet identity is therefore
+`C<n>.P<page-global>.B<paragraph-local>`.
+
 ```text
 ## C<n> · <name>                          ≤ 8 words · ≤ 56 chars · names the subject
                                           Section page: a budget clause may follow a
@@ -102,7 +107,7 @@ view. The existing 4–11 word head check counts only the statement, not the
 `S<n> ·` slot or `[Role]` metadata. No renderer invents a role for an old plan:
 legacy Bullets use the neutral `Point` label until an author supplies one.
 
-The address is `C<n>.P<m>.B<k>`. `C` prints once on the division heading;
+The address is `C<n>.P<m>.B<k>`, where `m` is Page-global. `C` prints once on the division heading;
 the rows carry `B<k>`. A continuation line starts with one of `Note`,
 `Annotation`, `Role`, `Transition`, `Evidence`, `Accept`, `More`, `Answered`,
 `Drawn`, or `Routed`; an indented `-` is a short Point annotation. Every bullet carries at least one

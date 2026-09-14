@@ -19,8 +19,9 @@ D1 SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
   workflow during SYNTHESIZE.
 - `ENRICH` enters D1 ACQUIRE, then D1 SYNTHESIZE; it is not a separate
   allocation path.
-- Page `00–04` owns Page mutations. The D1 root skips Page EVIDENCE and Page
-  CONTENT creates no local writing Runs.
+- Page `00–04` owns Page mutations. The D1 root skips typed local Page EVIDENCE;
+  Page CONTENT creates no local Discovery writing Runs, while any Page-owned
+  `rpNN` interaction remains governed by the shared Page workflow.
 
 ## Authority review
 

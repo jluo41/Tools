@@ -1,3 +1,8 @@
+## 0.5.1 · 2026-09-13
+
+- Retire the Outline candidate Comments composer in favor of active Page Run
+  feedback, while preserving the published-Content sentence comment rail.
+
 ## 0.5.0 · 2026-09-11
 
 - Route comments on Outline candidate sentences to the paragraph-scoped

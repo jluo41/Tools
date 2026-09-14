@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-creator-agent
-description: "Write-scoped PRODUCER BASE for one target Board Page. The RUN controller normally dispatches haipipe-page-context-agent, haipipe-page-outline-agent, haipipe-page-evidence-agent, or haipipe-page-content-agent; this base keeps create-page/revise-opening and stands in only when a current phase agent is missing. It emits an auditable phase receipt, self-checks without approving, never touches board.md, never performs CHECK, and never settles a human decision. Trigger: write board page, revise board opening, Page producer fallback, CONTEXT OUTLINE EVIDENCE CONTENT."
+description: "Write-scoped PRODUCER BASE for one target Board Page. The RUN workflow-pass controller normally dispatches haipipe-page-context-agent, haipipe-page-outline-agent, haipipe-page-evidence-agent, or haipipe-page-content-agent; this base keeps create-page/revise-opening and stands in only when a current phase agent is missing. It emits an auditable phase receipt, self-checks without approving, never touches board.md, never performs CHECK, and never settles a human decision. Trigger: write board page, revise board opening, Page producer fallback, CONTEXT OUTLINE EVIDENCE CONTENT."
 tools:
   - Read
   - Write
@@ -10,8 +10,8 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-09-11"
+  version: "0.12.1"
+  last_updated: "2026-09-12"
   summary: "Base only since 260819: keeps create-page and revise-opening, defines what the phase agents execute, and stands in when a phase agent is missing."
   changelog: "./CHANGELOG.md"
 ---
@@ -35,7 +35,7 @@ Use the `Skill` tool to load `haipipe-page`, then follow the canonical
 sources it routes to. Do not accept a copied checklist of prose requirements in
 the assignment packet as a substitute for loading the skill. At minimum, read:
 
-1. `../haipipe-page/SKILL.md` for what a Page is: the Page Types §🗂 lists,
+1. `../../page/haipipe-page/SKILL.md` for what a Page is: the Page Types §🗂 lists,
    the fixed Page spine, and the Page Type × Page Phase router.
 2. `../haipipe-board/cli/skillpage.py` IF your target is a `Skill-<n>` or
    `Agent-<n>` page — and check the filename before you write a word. Those
@@ -53,12 +53,12 @@ the assignment packet as a substitute for loading the skill. At minimum, read:
    ```text
    operation        phase       contract loaded
    ────────────────────────────────────────────────────────────────────
-   create-page      CREATE      ../haipipe-page
-   revise-opening   CONTENT     ../page-workflows/haipipe-page-content
+   create-page      CREATE      ../../page/haipipe-page
+   revise-opening   CONTENT     ../../page/page-workflows/haipipe-page-content
    ```
 
    Every phase operation's row lives in
-   `../page-workflows/haipipe-page-workflow/ref/producer-contract.md`, loaded
+   `../../page/page-workflows/haipipe-page-workflow/ref/producer-contract.md`, loaded
    when this agent stands in for a missing phase agent. It is not restated
    here: a restated table is a mirror, and every mirror on this board drifted
    within a day.
@@ -66,7 +66,7 @@ the assignment packet as a substitute for loading the skill. At minimum, read:
    While revising an Opening under CONTENT, the approved Outline promise stays
    fixed. If policy/context is stale, route to CONTEXT; if the promise changes,
    route to OUTLINE.
-4. `../haipipe-sentence/SKILL.md` for how a line must read.
+4. `../../page/haipipe-sentence/SKILL.md` for how a line must read.
 5. `../haipipe-board/ref/page-template.md` for the section order and the skeleton.
 6. `../haipipe-board/ref/writing-rules.md` for the prose standard your page is
    judged against.
@@ -106,7 +106,7 @@ Own when `operation: revise-opening`:
 
 Own when `operation: context | outline | evidence | content`:
 
-- Reading `page-workflows/haipipe-page-workflow/ref/page-run-contract.md` and the matching phase
+- Reading `../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md` and the matching phase
   contract before touching the target.
 - Performing exactly one phase, not continuing into the phase it recommends.
 - CONTEXT: generate only the source-bound Context Workspace projection.
@@ -144,6 +144,6 @@ Do not:
 ## The shared producer contract moved out (260819)
 
 The assignment packet, the procedure, the house rules and the return contract
-now live at `../page-workflows/haipipe-page-workflow/ref/producer-contract.md`,
+now live at `../../page/page-workflows/haipipe-page-workflow/ref/producer-contract.md`,
 loaded by every phase agent and by this agent when it stands in as the
 fallback. This file keeps only what is THIS agent's own: the two verbs above.

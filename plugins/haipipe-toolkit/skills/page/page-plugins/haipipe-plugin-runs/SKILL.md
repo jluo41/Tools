@@ -1,30 +1,32 @@
 ---
 name: haipipe-plugin-runs
 description: >-
-  The Runs presenter of a Folder: one ⚙️ surface over authored Run
-  tickets and their paired generated Results. Its neutral overview schema groups
-  Runs as Execution, Discovery, Page, or Labeling when the owning Folder surface
-  exposes those families; Page divides into Evidence
-  Item, Paragraph Writing, and Display, while Labeling groups its independently
-  closable operations by P0-P5 episode. A second, collapsible Scripts region shows freestyle
-  implementation files when present. Use for Discovery Paper Runs, Task Page
+  The internal Run Space presenter of Plugin Outline: Run P for human/Page
+  interaction, Run E for Page-owned Evidence production, and Supporting Runs
+  for inspectable external or upstream references that are never copied.
+  Use for Discovery Paper Runs, Task Page
   runs, Labeling Runs, model/data jobs, run status tables, result details, or any Folder that
   exposes addressable Runs. Presentation only; the owning workflow controls
   Execute and closure. Trigger: Runs plugin, Runs tab, run overview, run status,
   run results, show the runs, /haipipe-plugin-runs.
 metadata:
-  version: "0.11.0"
-  last_updated: "2026-09-11"
+  version: "0.26.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-plugin-runs · one surface for addressable Runs
+# /haipipe-plugin-runs · Outline's internal Run Space
 
-**LOAD `haipipe-plugin` and `haipipe-run` FIRST.** This is a PRESENTER plugin
-(`haipipe-plugin` §🔌): it owns no folder and has no roster row. It presents
-the Run projections already owned by the Folder or its containing Task Job.
-It is an optional presenter beneath a Folder's Task Face, never a replacement
-for that Face or its workflow authority.
+**LOAD `haipipe-plugin`, `haipipe-plugin-outline`, and `haipipe-run` FIRST.**
+This presenter owns no folder and has no top-level Plugin registration. It is
+mounted inside `🧭 Outline` as Run Space. `/_board/runs` remains a
+compatibility/internal route, not a separate Page tab.
+
+```text
+Run P             human ↔ Page interaction; `rpNN`
+Run E             Page-owned Evidence attempt; VALUE/TABLE/DISPLAY/CITE Result
+Supporting Runs   external/upstream Runs named by a Result; inspect, never copy
+```
 
 ## 🏷 Runs, not Execution
 
@@ -36,11 +38,12 @@ identity with an authored ticket and a generated Result:
 Run address  = ticket identity = Result identity
 ```
 
-The Folder kind and workflow decide whether and when to Execute. Runs only
-presents what was launched and what came back. A non-Board integration may
+The Folder kind and workflow decide whether and when to Execute. Runs presents
+either the Page-owned feedback history or the delegated Result that came back.
+A non-Board integration may
 omit the category entirely, and a Runs plugin may exist without reusable local
-code. On a source-backed Board Page, however, the Runs tab stays visible and
-may truthfully report that no local Run is allocated.
+code. On a source-backed Page, however, Run Space stays available inside
+Outline and reports all three empty lanes truthfully when nothing is allocated.
 
 ## 📍 Resolve the physical dialect
 
@@ -52,7 +55,7 @@ FOLDER-LOCAL · Discovery and standalone Folder
   <folder>/runs/<run>.sh
   <folder>/results/<run>/
 
-PAGE PARAGRAPH WRITING · same Folder, Markdown commission
+DELEGATED PARAGRAPH WRITING TASK · same Folder, Markdown commission
   <folder>/runs/rNN_page-writing_cNN-pNN.md     includes input references + prompt
   <resolved-result>/paragraph.md + trace.md + runtime.yaml
 
@@ -73,7 +76,7 @@ These are storage dialects of the same Run contract. Never copy or
 symlink job-owned Results into the Task Page merely to make the first shape.
 Never treat a Result folder as a fifth hierarchy level.
 
-### Board Page separation
+### Board and standalone Page separation
 
 For a paper/Board Page, keep the two questions visibly separate:
 
@@ -85,102 +88,144 @@ runs/             actual page-local Runs only
 results/          paired generated page-local Results only
 ```
 
-The `🧭 Outline → Evidence Workspace` explains why an Evidence exists and
-groups its related Run cards by Evidence. Its internal `Runs` lens includes
-every mapped Supporting and Page-local route, including planned routes, and
-reports mappings separately from unique Run identities. The top-level `⚙️ Runs`
-plugin lists only a
-physical Run found in the page's own
-`runs/` tree and its paired local Result. A `new-*` route, a parent `bN.jN.tN`
-without an `rN`, an external Supporting Run, or a result copied for display is
-not a local Runs row. Do not create empty `runs/` or `results/` merely to make
-planned work look allocated.
+The `🧭 Outline → Evidence Space` explains what Evidence has landed.
+The sibling Run Space separates ownership rather than native family:
+**Run P** comes from interactive-writing records; **Run E** comes from
+Page-owned Evidence tickets/results; **Supporting Runs** resolve allocated
+external/upstream identities from Result manifests or the compatibility index. A
+`new-*` route or a parent `bN.jN.tN` without an `rN` is not a Run row. The
+Page Run lane uses its own `rpNN` sequence; the Task Run lane retains every
+owner-native identity, including ordinary `rNN` and Labeling `rlNN`. Do not
+copy an external Ticket or Result into the Page, and do not create empty
+`runs/` or `results/` merely to make planned work look allocated.
 
-An empty local inventory is still a valid presenter state: render one compact
-“No local Run allocated” message. Do not hide the tab and do not infer that an
-external Supporting Run is local.
+An empty inventory is valid: render separate `No Run P`, `No Run E`, and
+`No Supporting Run` states. Do not mint placeholders.
 
-An Outline Run token opens `Outline → Evidence Workspace → Runs` at the
-exact mapped Run card, including when that Run is external or still planned.
-Its single URL carries `lens=workspace&seg=runs`, the owning Evidence Item
-`focus=run-<item-id>`, and the exact `run` address. An Evidence chip instead
-uses `seg=items` to focus its item card; a Feedback chip uses `lens=fb` and
-`focus=feedback-<record-id>` to open the exact Context record.
-Allocated Run,
-Result, and Runtime paths are displayed as selectable repository-relative text;
-they are not raw browser links because scripts and receipts may download rather
-than open. That evidence-side detail separates Purpose/Plan, Availability, and
+Any Run token opens its exact Run Space row. Its single URL carries
+`lens=run`, the owning Evidence Item `focus=run-<item-id>`, and the exact `run`
+address. An Evidence chip uses `lens=evidence` to focus its Result row. Old
+`lens=workspace&seg=items|runs` URLs are compatibility aliases.
+Page Run records and Results are displayed as selectable repository-relative
+text. For Task Runs, only the Result path crosses into the Page surface;
+Ticket, command, log, actor, and Runtime paths remain with the native owner.
+They are not raw browser links because artifacts may download rather than open.
+That evidence-side detail separates Purpose/Plan, Availability, and
 Next action; it does not misuse `new`, `rerun`, `run only`, and `ready` as one
 lifecycle status. Normal chip navigation opens no popover. If an unresolved
 address has no matching Runs card, any fallback inspector must explicitly
 report that fact and remain closable within the mobile viewport.
-Do not send an unallocated or external
-route to this local Runs overview merely because its text resembles a Run id.
+Do not send an unallocated route to Runs merely because its text resembles a
+Run id.
 
-`scripts/`, config, and notebooks are optional projections. A Run may instead
+`scripts/`, config, and notebooks remain available through Folder/detail
+inspection; they are not a fourth visible Run Space lane. A Run may instead
 call a skill, CLI, API, or declared worker. Scripts are freestyle supporting
 files: they need no manifest, internal grammar, or one-to-one Run binding. The
 ticket's actual command is the authority for which files a Run invokes.
 
-## Interactive writing history · contract boundary
+## Page Run · interactive writing history
 
 The Page workflow's `interactive-writing` profile keeps one local Run row for
 the entire goal, not rows for each Version, Step or review window. Its authored
-Run points to paired `working.md`, root `runtime.yaml` and `vNNN/` records.
+Run points to paired `working.md`, root `runtime.yaml` and one append-only
+`vNNN.md` journal per Version. Every Step in that Version is a section in the
+same Markdown file.
 The workflow, not this presenter, owns the human acceptance and close state.
 
-If this dialect is exposed by a presenter, show the current Version, scope and
-`waiting for feedback` explicitly (not an error); details link/read the selected
-Step's original feedback, full paragraph outputs and change reasons. Never
-infer acceptance from file presence or a successful model call. History is
-read-only and must not become another editable prose authority.
+Current Page Runs begin with the reserved `rp00_mermaid-structure`; paragraph
+Runs start at `rp01` and use concise `rpNN_pNN[-pNN]` identities such as
+`rp01_p01` and `rp02_p02-p03`. The exact
+paragraph serial or range is always visible, while descriptive wording stays
+in Goal. `rp` means Run of Page. This Page-local sequence is independent from
+Task `rNN`, so both `rp01` and `r01` may exist in one Folder. The presenter
+never assigns `rp` to delegated paragraph-writing, Discovery, or another Task Run.
+There is no compatibility label or resolver fallback: any other
+`interactive-writing` identity is shown as Held with an invalid-identity
+finding, and it never substitutes for the required `rp00` structure Run.
 
-**Runtime support boundary:** the existing `live/runs.py` has a dedicated
-single-paragraph adapter, not a Version/Step browser. This skill update does
-not implement that new browser or add UI controls. Until an adapter is tested,
-inspect the named Markdown records through the source/file surface and keep
-reader review on the live Bullet/Evidence Workspaces. Do not claim version
-navigation or waiting-state rendering has shipped.
+If this dialect is exposed by a presenter, show the current Version, scope and
+`waiting for feedback` explicitly (not an error). Opening a Page Run is a
+reader-first projection, not a raw-record viewer: lead with Goal, Scope, Status,
+Version/Step, the current Step's original request, its substantive saved result,
+and the declared Next action. Render that Markdown as readable blocks. Keep
+earlier Steps collapsed as semantic history, and keep repository paths and
+record internals in a separate collapsed Technical details region. Do not put
+frontmatter, hashes, or complete journal dumps in the default reading path.
+Historical prose and code blocks must wrap without widening the phone viewport.
+For `rp00_mermaid-structure`, reuse the Page's deterministic Mermaid renderer
+so the saved result includes the actual labelled argument flow as well as its
+paragraph index. On a phone, project the same Mermaid source as a larger
+node-and-relationship reading sequence; do not shrink connector labels until
+they are technically present but practically unreadable.
+Never infer acceptance from file presence or a successful model call. History
+is read-only and must not become another editable prose authority.
+
+The read-only presenter shows the current Version/Step, treats
+`waiting-for-feedback` as an ordinary waiting state, and safely previews the
+owned Version journal. It may show `Waiting` only when the current Step section
+contains both Human feedback and Saved result; unresolved records show `Held`.
+It does not edit, approve, close, or
+automatically capture feedback; the workflow remains the sole writer.
+
+When a saved Step contains `#### Track changes`, render one card per feedback
+item from its clean `Before` and `After` fields. Compute the smallest practical
+word/punctuation-level spans: deletion is red and struck through, insertion is
+green and underlined, and surviving context stays plain. Use whole-sentence
+red/green only when the whole sentence was removed/added. Show the item's
+classification, Why, and any available Inferred preference, Analysis status, or
+Preference status; a missing preference is normal for a record-first Step.
+Escape all stored text and never write visual markup back into the Version or
+Page source.
+Render a card only when both fields exist and differ. Equal/missing fields and
+status, navigation, acceptance-only, or presenter-only feedback produce no
+visual diff. The card heading is the classification source; do not require a
+second classification table. Show only the current Step by default and keep
+all earlier Steps collapsed.
 
 ## 🖥 Surface · overview first, detail on demand
 
 ```text
-⚙️ Runs
-├── RUN OVERVIEW
-│   ├── Execution                 computation · data · models
-│   ├── Discovery                 search · papers · external evidence
-│   ├── Page
-│       ├── Evidence Item          one focal ready VALUE/CITE/DISPLAY Result
-│       ├── Paragraph Writing
-│       └── Display
-│   └── Labeling
-│       ├── P0 Contract operations
-│       ├── P1 Round operations grouped by round_<t>
-│       ├── P2 Handoff operation
-│       ├── P3 Test operations
-│       ├── P4 Scan operations
-│       └── P5 Audit operations
-└── SCRIPTS                          collapsible · freestyle · read-only
+Run Space
+├── Run P              human/Page feedback history
+├── Run E              Page-owned Evidence Result
+└── Supporting Runs    linked external/upstream Results
 ```
 
 ### Run overview
 
-Show one compact table, with `All · Execution · Discovery · Page · Labeling` as
-filters rather than competing ledgers. One row is one logical Run; its
-Result is the returned half of that same row, never a separate Results section.
+Show three compact tables rather than competing family ledgers. One row is one
+logical Run; its Result is the returned half of that same row, never a separate
+Results section. Native families appear only as origin/type metadata inside
+Run E or Supporting Runs, never as additional lanes.
 
 ```text
-Run   Kind                       Target       Status       Result
-r01   Execution                  Model fit    ✅ Done      4 files
-r02   Discovery                  Smith 2025   🔄 Running   —
-r03   Page · Evidence Item        E01-VALUE…   ✅ Done      ready value
-r04   Page · Paragraph Writing     C2.P1        ⏸ Held      paragraph
-r05   Page · Display              C02.F01      ✅ Done      preview
-r06   Labeling · Human Calibration round_03    ⏸ Held      human gate
-r07   Labeling · Scan Shard       shard_01     ✅ Done      1 pointer
+Page Run                 Goal                     Version/Step  Status       Result
+rp00 · Mermaid Structure Agree plan and map       v001/s003     ⏳ Waiting    history
+rp01 · P01                Revise the opening       v001/s003     ⏳ Waiting    history
+
+Task Run          Kind / Where         What happened                 Status       Result
+r01_page-setup    Page setup · Local   10 sections; gate passed     ✅ Done      output
+rl01_corpus-contract corpus-contract · Local  P0 contract landed    ✅ Done      output
+b03.j01.t01.r02   Discovery · Linked    Working on — Smith 2025      🔄 Running   —
+b02.j04.t01.r01   Execution · Task Job  Fitted the requested model   ✅ Done      output
 ```
 
-Keep the overview vocabulary to `Ready · Running · Done · Failed · Held`.
+`Local`, `Task Job`, and `Linked` are physical-origin labels inside the Task
+Run lane, not new Run families or top-level lanes. A standalone Page's local
+`rNN` keeps that exact identity; do not prefix it with Paper's `P` namespace.
+Prefer a receipt-declared safe `outcome`/`summary` for **What happened**. For a
+Folder-local Page setup Result, the presenter may derive a compact digest from
+its bounded `report.md` and prefix the receipt's setup mode as a reader-facing
+action such as `Created semantic records` or `Resumed and rebuilt Page`.
+Otherwise show an honest state plus Target, such as
+`Working on — <target>` or `Needs attention — <target>`; never invent a result.
+Keep the fixed order Run P, Run E, Supporting Runs, including truthful empty
+states; do not reorder or add lanes based on what happens to be nonempty.
+
+Keep Task status vocabulary to `Ready · Running · Done · Failed · Held`.
+Page Runs additionally use `Waiting` for `waiting-for-feedback`; it is not a
+failure.
 Derive it from the ticket and the owning Run contract's receipt/Result; do not
 mint another hand-maintained status file. Put active or recovery-needed rows
 first, then newer rows. Large and raw outputs remain counts or safe labels.
@@ -190,13 +235,27 @@ fields may still be named ticket/receipt internally, but the presenter must not
 surface those words as alternative object names. Show literal repository-
 relative Run and Result paths and allow them to wrap on narrow screens.
 
-Clicking a row opens that Run's detail: summary, authored Run, paired Result,
-log or error, and selectable text for any script/config/notebook paths the Run
-actually uses. Do not link directly to raw Run or Result files; the Runs
-surface must not trigger downloads. Do not put commands, logs, actor metadata, or full output trees
-in the overview.
+Clicking a Page Run opens its goal, scope, current state, latest original
+feedback, substantive saved output, and next action. Earlier Steps remain
+available behind one collapsed history control; paths and integrity metadata
+remain behind collapsed Technical details. On narrow screens the overview
+becomes stacked cards instead of compressing five table columns, and each row
+keeps a visible expand indicator. Clicking a Task Run opens its Kind/origin,
+purpose, concise outcome or current state, Result/output pointer, and consuming
+Evidence Items when bindings exist. Do not print an empty Evidence field for
+ordinary local work. Do not project Task
+commands, logs, actors, Ticket paths, Runtime paths, or output trees into the
+Page surface. Do not link directly to raw files; the Runs surface must not
+trigger downloads.
 
-For Paragraph Writing, show `C<n>.P<m>` as Target. Expanding the row reads the
+The query `run=<exact-run-id>` is the stable reader-facing deep link for one
+row. The server renders that row expanded so the current Step and collapsed
+earlier history are immediately visible, and row interaction keeps the query in
+sync. A Page Step response links this projection as **Current Run**; it never
+links the presenter Python file, raw Version Markdown, or Result directory.
+
+Delegated Paragraph Writing is a Task Run. Show `C<n>.P<m>` as Target;
+expanding the row reads the
 Markdown Run's instructions/prompt, `paragraph.md`, and `trace.md` inside the
 Runs surface, without a raw-file link, download or popover. Render the text
 safely and wrap it on mobile. A writing Ticket missing its runtime receipt
@@ -204,40 +263,37 @@ displays Held with a missing-receipt finding. A complete receipt missing either 
 trace displays Held; file presence does not itself establish semantic quality
 or promotion into Content. Writing Results are prose, not Evidence Items.
 
-For Page · Evidence Item rows, the overview shows the actual local Run,
-paired Result, status, and any explicitly bound Evidence Item ids. The
-detail shows the safe target and exact local paths. Supporting Run ids, frozen
-input envelopes and unallocated plans remain in Evidence Items. Historical
-PageX rows are migration input, never extra Runs or Results. Never
-expand Supporting Runs into extra local rows or present the Result as a
-separate Run.
+Page Evidence Item work and allocated Supporting Runs appear as Task Runs. The
+overview preserves native kind; detail shows the safe target, Result/output,
+and explicitly bound Evidence Item ids. Frozen input envelopes and unallocated
+plans remain in Evidence Items. Historical PageX rows are migration input,
+never extra Runs or Results. Never present a Result as a separate Run.
 
 For Labeling rows, show safe identities, checksums, gate summaries, and counts
 only. Never render sealed ids, protected text, raw judgments, or a second
 approve/freeze/reveal/final/run control. A row may deep-link to the same Run in
 the Labeling workbench; only the subjective-label workflow may operate it.
 Use the operation name as the row Kind and the P0-P5 episode only as a grouping
-label. Never add a second row for the Round, Test, Scan, or Audit episode.
+label. Use `Local` as Where when the Labeling job is physically nested in this
+Page Folder; `Labeling` is the native family, not a physical-origin value.
+Never add a second row for the Round, Test, Scan, or Audit episode.
 
 Surface an orphan or logical address mismatch as an error. A missing Result is
 normal for `Ready` or `Running`; it is a finding only when the Run claims
 `Done`. A generated Result is not Page evidence merely because it exists; an
 evidence lane must bind or aggregate it.
 
-### Scripts region
+### Scripts stay off-stage
 
-Show `Scripts ▸ <N> files` below the overview and keep it collapsed by default.
-When opened, present the files as a read-only tree. Do not classify them by Run,
-require a manifest, or mark an unreferenced file as an error. A Run detail may
-link the exact paths its ticket calls; the Scripts region itself interprets
-nothing.
+Do not render a Scripts tree in Run Space. Scripts, config, notebooks,
+commands, and logs remain available through Folder or the owning workflow.
+Their existence must not add a fourth lane or extra summary block.
 
 ## 🧩 The four plugin things
 
 ```text
 STORAGE   none of its own; resolve authored/generated Run projections
-SURFACE   ⚙️ Runs: one family-filtered overview table plus a collapsible
-          freestyle Scripts tree; click one Run for its Run + Result detail
+SURFACE   Outline → Run Space: Run P + Run E + Supporting Runs
 WRITER    person/chat authors tickets; the ticket writes its paired Result
 BOUNDARY  read-only presenter; no lifecycle, evidence, or closure authority
 ```
@@ -250,14 +306,15 @@ BOUNDARY  read-only presenter; no lifecycle, evidence, or closure authority
   through receipts or safe summaries.
 - **No lifecycle authority.** The owning workflow controls Execute, retry,
   terminal state, and Folder closure.
-- **No scripts requirement.** Only a Run ticket may invoke scripts when they
-  exist; their absence does not invalidate a Run, and unused supporting files
-  do not invalidate Scripts.
+- **No scripts surface or requirement.** Only a Run ticket may invoke scripts
+  when they exist; their absence does not invalidate a Run.
 
-## 🗺 Status · 🟢 live 260904
+## 🗺 Status · 🟢 live 260912
 
-`live/runs.py` and `85-plugin-runs.js` serve the read-only Board Page view.
-The surface resolves both Folder-local and canonical Job-backed Task pairs;
+Page-owned `live/runs.py` serves the read-only standalone and Board-hosted view.
+The surface resolves Page writing history plus Folder-local, Supporting
+Discovery, and canonical Job-backed Task Results, labels their origin, and
+shows a concise outcome/state directly in the overview;
 Discovery and Labeling workflow owners remain responsible for their own custom
 allocation surfaces. The 📂 Folder tab remains the raw filesystem inventory.
 

@@ -1,14 +1,22 @@
-# Page RUN contract
+# Page workflow-pass contract
 
-This is the **automated phase controller** contract. Interactive writing uses
-`interactive-writing-run.md`; its Run/Version/Step history is separate. A
-controller `HOLD` ends this invocation, not the persistent writing goal. Its
+This compatibility filename specifies the **automated phase controller**. Its
+durable object is a Page workflow pass, not a Page Run. Interactive writing
+uses `interactive-writing-run.md`; that is the Page Run whose Version/Step
+history the Page owns. A controller `HOLD` ends this invocation, not the persistent writing goal. Its
 step limits do not limit human feedback turns, and its `CLOSE` means whole-Page
 closure, not the user's acceptance of a writing Version.
 
-`RUN` is the bounded router for one persistent Page. It does not mean
+The `run` command verb invokes the bounded router for one persistent Page. It does not mean
 `ADVANCE`: Page work is non-linear, so the next authority may repeat, branch,
 return to CONTEXT, OUTLINE, EVIDENCE, or CONTENT, close, or hold.
+
+The Page-special Run families are defined separately in
+`../../haipipe-page/ref/page-run-families.md`: `RP` is a Writing Run, `RE` is
+an item-scoped Evidence Run, and `RD` is a target-scoped Delivery Run. None is
+the automated workflow pass described here, and none replaces an owner-native
+Supporting Run. The phase receipt records controller activity; RP/RE/RD
+tickets and Results record Page work.
 
 The executable controller lives in
 `../../../../board/haipipe-board/ref/page-lifecycle.workflow.js`. The deterministic auditor
@@ -270,7 +278,7 @@ from CHECK    → CLOSE | CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
 
 **HOLD is terminal in the current controller.** It returns one named unresolved
 gate, missing input, tool failure, concurrency mismatch, or exhausted limit;
-continuation starts a new Page RUN at the receipt's named phase/cycle. The
+continuation starts a new Page workflow pass at the receipt's named phase/cycle. The
 auditor retains one narrow compatibility exception for pre-current receipts:
 a pending CONTEXT/OUTLINE/EVIDENCE HOLD that has neither `cycle` nor
 `next_cycle` may be followed by another historical receipt. The executable

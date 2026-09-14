@@ -3,6 +3,12 @@ discovery agents — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match the skill frontmatter `version:`. Newest first.
 
+## 2026-09-13 · Page-native synthesis
+
+- Orchestrator 2.8.0 and creator 1.18.0 distinguish Page-owned `rp00`/`rpNN`
+  interaction from D1's native `rNN` inventory and require the Page release
+  barrier before CONTENT adoption.
+
 ## 2026-09-07 · Search/Review/Synthesize split
 
 - Creator 1.17.0, reviewer 1.10.0, and orchestrator 2.7.0 now dispatch

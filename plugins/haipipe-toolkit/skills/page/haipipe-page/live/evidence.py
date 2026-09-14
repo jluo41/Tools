@@ -1,25 +1,9 @@
-"""Outline's internal Evidence Workspace (JL 260903).
+"""Outline's minimal, Result-first Evidence Space.
 
-"We still have the subfolder for bibex, etc, but we just need one evidence
-plugin, to present bibex, display, etc." So this mixin owns PRESENTATION
-ONLY: a live GET composing five segments — Evidence Items (the generated
-outline/<stem>-evidence.md snapshot joined to
-outline/evidence/supporting-runs lineage),
-⚙️ Runs (one Run card per mapping, grouped by Evidence, with unique counts),
-📚 Citations (the bibex saved workbench), 🧮 Values (the live /_board/value
-route), and 🖼 Displays (the display saved view), with pens inline; cross-page
-source bindings remain provenance inside their Evidence Item rather than a
-separate PageX lens. Exact-file cards expose Page evidence and
-whole-Folder cards expose Page/Task Face status). Storage, writers,
-walls and the human gates (CITE-item Verified / legacy read: / display
-accepted:) stay with the
-lane contracts (`haipipe-plugin-outline/ref/evidence/citations.md` and its
-sibling evidence references are the current contracts for this file). Like
-the 🧮 tab: no storage, no writer, nothing stored, never stale.
-
-A segment whose saved view does not exist yet is BUILT ON CLICK through the
-lane's own POST route (/_board/bibex or /_board/display), which
-is the same pen the old separate tabs pressed.
+The live surface is one table read primarily from ``results/*/result.yaml``.
+The former generated evidence snapshot remains a read-only compatibility
+index for old Pages and for not-yet-run requirements; it is not the new
+Evidence authority. This module presents only and never executes a Run.
 """
 from __future__ import annotations
 
@@ -41,6 +25,8 @@ body{margin:0;background:var(--bg);color:var(--fg);
  font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 header{padding:12px 16px 7px}
 .embedded header{display:none}.embedded nav{top:0;padding-top:6px;padding-bottom:6px}
+.source-map{margin:8px 16px 6px;color:var(--mut);font:11px/1.45 ui-monospace,Menlo,monospace}
+.source-map code{color:var(--fg);font-size:11px}
 h1{font-size:16px;margin:0}
 .mut{color:var(--mut);font-size:12.5px}.lead{margin:2px 0 0;color:var(--mut);font-size:13px}
 nav{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;border-bottom:1px solid var(--line);
@@ -90,6 +76,21 @@ html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fall
 @media(max-width:560px){#items,#runs{padding:10px 10px 18px}.runmap-head{grid-template-columns:auto minmax(0,1fr) auto}.runmap-addr{display:none}.runmap-line{grid-template-columns:1fr}.runmap-label{padding:0}.lineage-list{gap:4px}.run-detail{grid-template-columns:1fr;gap:1px}.run-path{grid-template-columns:3.2em minmax(0,1fr)}.related-run-head .run-availability{width:100%;margin-left:0}}
 .ghost{color:var(--mut);padding:24px 0;font-size:13.5px}
 #seg{display:none;border:0;width:100%;height:calc(100vh - 92px)}
+.evidence-list{padding:8px 16px 20px}.evidence-table{width:100%;border-collapse:collapse}
+.evidence-table th,.evidence-table td{padding:9px 7px;border-bottom:1px solid var(--line);
+ text-align:left;vertical-align:top}.evidence-table th{color:var(--mut);font-size:10.5px;
+ text-transform:uppercase;letter-spacing:.04em}.evidence-table code{font-size:11.5px}
+.evidence-name{display:block;font-weight:650}.evidence-kind{display:inline-block;margin-left:5px;
+ color:var(--acc);font:650 9.5px -apple-system,sans-serif;text-transform:uppercase}
+.evidence-result{display:block;color:var(--mut);font-size:11.5px;overflow-wrap:anywhere}
+.evidence-status{font-weight:650}.evidence-status.complete,.evidence-status.ready,
+.evidence-status.folded,.evidence-status.accepted{color:var(--ok)}
+.evidence-status.specified,.evidence-status.planned{color:var(--warn)}
+.evidence-row.run-focus{outline:2px solid var(--acc);outline-offset:-2px}
+@media(max-width:620px){.evidence-list{padding:6px 10px 16px}.evidence-table thead{display:none}
+ .evidence-table,.evidence-table tbody,.evidence-table tr,.evidence-table td{display:block}
+ .evidence-table tr{padding:9px 0;border-bottom:1px solid var(--line)}
+ .evidence-table td{border:0;padding:2px 0}.evidence-table td:nth-child(2){color:var(--mut)}}
 """
 
 
@@ -949,7 +950,7 @@ def _related_run_cards(evidence_text: str, run_text: str) -> tuple[str, int]:
     return summary + "".join(groups), mapping_count
 
 
-def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
+def _legacy_render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     stem = page_src.stem
     folded = page_src.parent.name == stem
     folder = page_src.parent if folded else None
@@ -977,9 +978,9 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     ctx = json.dumps({"path": path_q, "file": file_q, "stem": stem,
                       "folded": folded})
     return f"""<!doctype html><meta charset=utf-8>
-<title>🧭 Outline · Evidence Workspace · {html.escape(stem)}</title>
+<title>🧭 Outline · Evidence Space · {html.escape(stem)}</title>
 <style>{_CSS}</style>
-<header><h1>Evidence Workspace · {html.escape(stem)}</h1>
+<header><h1>Evidence Space · {html.escape(stem)}</h1>
 <p class=lead>what each bullet needs, what supports it, and what is ready</p></header>
 <nav>
 <button class=on data-seg=items>🧾 Evidences · {len(evidence_records)}</button>
@@ -1188,6 +1189,128 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
   }}
 }})();
 </script>"""
+
+
+_RESULT_ITEM = re.compile(
+    r"^E\d+-(?:VALUE|TABLE|CITE|DISPLAY)-[a-z0-9]+(?:-[a-z0-9]+)*$", re.I
+)
+
+
+def _top_field(text: str, name: str) -> str:
+    match = re.search(rf"(?mi)^{re.escape(name)}:\s*([^#\n]+)", text)
+    return match.group(1).strip().strip("'\"") if match else ""
+
+
+def _result_records(page_home: pathlib.Path, legacy: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Prefer Run Results as Evidence truth; keep the old snapshot as fallback.
+
+    New Evidence lives in ``results/<run>/result.yaml``.  The generated
+    ``outline/*-evidence.md`` file is accepted only as a compatibility index
+    for Bullet address, title, and not-yet-run requirements.
+    """
+    records: dict[str, dict[str, object]] = {}
+    order: list[str] = []
+    for source in legacy:
+        item_id = str(source.get("id", ""))
+        if not item_id:
+            continue
+        clone = dict(source)
+        clone["fields"] = dict(source.get("fields", {}))
+        records[item_id] = clone
+        order.append(item_id)
+
+    result_root = page_home / "results"
+    if result_root.is_dir() and not result_root.is_symlink():
+        for manifest in sorted(result_root.rglob("result.yaml")):
+            if manifest.is_symlink():
+                continue
+            try:
+                manifest.resolve().relative_to(result_root.resolve())
+                text = manifest.read_text(encoding="utf-8", errors="replace")
+            except (OSError, ValueError):
+                continue
+            item_id = _top_field(text, "item")
+            if not _RESULT_ITEM.fullmatch(item_id):
+                continue
+            kind = _top_field(text, "type") or item_id.split("-", 2)[1].upper()
+            status = _top_field(text, "status") or "ready"
+            run_id = _top_field(text, "run") or manifest.parent.name
+            bullet = _top_field(text, "bullet")
+            title = _top_field(text, "title")
+            supporting = re.findall(r"(?m)^\s*-\s+run:\s*([^#\n]+)", text)
+            record = records.get(item_id)
+            if record is None:
+                slug = item_id.split("-", 2)[-1].replace("-", " ")
+                record = {"id": item_id, "address": bullet, "title": title or slug,
+                          "fields": {}}
+                records[item_id] = record
+                order.append(item_id)
+            elif bullet:
+                # A migrated Result may carry the canonical Draft address;
+                # prefer it over the compatibility snapshot when present.
+                record["address"] = bullet
+            if title:
+                record["title"] = title
+            fields = dict(record.get("fields", {}))
+            fields.update({
+                "type": kind.upper(),
+                "status": status.lower(),
+                "run": run_id,
+                "bullet": bullet,
+                "result": manifest.relative_to(page_home).as_posix(),
+                "supporting runs": "; ".join(value.strip() for value in supporting),
+            })
+            record["fields"] = fields
+
+    return [records[item_id] for item_id in order]
+
+
+def _minimal_table(records: list[dict[str, object]]) -> str:
+    if not records:
+        return '<div class=ghost>No Evidence Result yet.</div>'
+    rows = []
+    for record in records:
+        item_id = str(record.get("id", ""))
+        fields = record.get("fields", {})
+        kind = str(fields.get("type", ""))
+        status = str(fields.get("status", "specified")).lstrip("📝🔗🟢📌✅⚠️⏸✖⛔ ").lower()
+        expected = str(fields.get("expected", ""))
+        result = str(fields.get("result", fields.get("has", "")))
+        title = str(record.get("title", ""))
+        address = str(record.get("address", fields.get("target", "")))
+        focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item_id)
+        rows.append(
+            '<tr class=evidence-row id="%s" data-evidence-id="%s"><td><span class=evidence-name><code>%s</code>'
+            '<span class=evidence-kind>%s</span></span><span class=mut>%s</span></td>'
+            '<td><code>%s</code></td><td><span class="evidence-status %s">%s</span>'
+            '<span class=evidence-result>%s</span><span class=mut>%s</span></td></tr>' % (
+                html.escape(focus, quote=True), html.escape(item_id, quote=True),
+                html.escape(item_id), html.escape(kind),
+                html.escape(title), html.escape(address or "—"), html.escape(status, quote=True),
+                html.escape(status or "specified"), html.escape(result or "not ready"),
+                html.escape(expected),
+            )
+        )
+    return ('<table class=evidence-table><thead><tr><th>Evidence</th><th>Bullet</th>'
+            '<th>Result</th></tr></thead><tbody>%s</tbody></table>' % "".join(rows))
+
+
+def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
+    """Render the v4 Evidence Space as one Result-first table."""
+    page_home = page_src.parent
+    snapshot = page_home / "outline" / f"{page_src.stem}-evidence.md"
+    text = snapshot.read_text(encoding="utf-8", errors="replace") if snapshot.is_file() else ""
+    _plan, legacy = _evidence_snapshot(text)
+    records = _result_records(page_home, legacy)
+    body = _minimal_table(records)
+    return f"""<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>Evidence Space · {html.escape(page_src.stem)}</title><style>{_CSS}</style>
+<body class=embedded><header><h1>Evidence Space</h1></header>
+<div class=source-map>Result <code>results/**/result.yaml</code></div>
+<div class=evidence-list>{body}</div>
+<script>(function(){{var q=new URLSearchParams(location.search),id=q.get('focus');if(!id)return;
+var row=document.getElementById(id);if(row){{row.classList.add('run-focus');row.scrollIntoView({{block:'center'}});}}}})();</script>
+</body>"""
 
 
 class EvidenceTabMixin:

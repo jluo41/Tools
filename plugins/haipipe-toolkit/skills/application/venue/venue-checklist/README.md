@@ -20,7 +20,7 @@ design_profile:
   narrative: optional
   display: none
   section_edit: none
-  terminal: accepted
+  terminal: adopted
 ```
 
 
@@ -30,29 +30,29 @@ design_profile:
 template:
   - slot: title
     job: name the goal
-    claim_source: GD0-closed Brief
+    claim_source: released Brief
   - slot: items
-    job: each item = one action backed by the card grant
-    claim_source: released card grant
+    job: each item = one action backed by Commission inputs
+    claim_source: released Commission
   - slot: completion
     job: what success looks like
-    claim_source: GD0-closed Brief + signed Wisdom handoff
+    claim_source: released Brief + signed Wisdom handoff
 ```
 
 
 ## Phase use
 
-### D1/D2 · bet and realize
+### Commission and Generate
 
-Each checklist item maps through the released card grant. If an item lacks a
-load-bearing premise, preserve the gap for D4 EMIT; do not Probe from Design.
+Each checklist item maps through released Commission inputs. If an item lacks a
+load-bearing premise, return a named gap; do not Probe from Design.
 
-### D2 · optional ordering narrative
+### Generate · optional ordering narrative
 If the checklist has a natural progression (prep → action →
 verify → confirm), writing the narrative makes the order explicit.
 Skip if items are independent / unordered.
 
-### D3/D4 · judge and decide
+### Verify and adopt
 Each item: action verb + specific object + measurable completion.
 "Check blood glucose before breakfast" not "Monitor glucose." Render the
-exact ordered list to `delivery/render/`, then accept or emit.
+exact ordered list to `delivery/render/`, then adopt or decline.

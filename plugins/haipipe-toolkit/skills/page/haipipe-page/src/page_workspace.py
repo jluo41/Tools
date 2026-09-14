@@ -23,7 +23,7 @@ TEXT_EXTENSIONS = {".md", ".markdown", ".txt", ".html", ".htm", ".css", ".js",
                    ".json", ".yaml", ".yml", ".toml", ".py", ".ts", ".tsx",
                    ".jsx", ".svg", ".csv", ".tex", ".bib", ".sql", ".r"}
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
-PRIVATE_LANES = {"studio", "workflow", "runs", "scripts", "src", "tests",
+PRIVATE_LANES = {"studio", "workflow", "runs", "labeling", "scripts", "src", "tests",
                  "results", "__pycache__", "node_modules", "server-state"}
 PRIVATE_FILES = {"env.sh", "server.json", "server.toml", "server.yaml", "server.yml",
                  "credentials.json", "credentials.toml", "secrets.json",
@@ -209,7 +209,7 @@ def source_files(context):
     candidates = [context.source]
     for path in sorted(context.folder.rglob("*")):
         relative = path.relative_to(context.folder)
-        if path == context.source or relative.parts[0] in {"delivery", "workflow", "runs", "results", "studio"}:
+        if path == context.source or relative.parts[0] in {"delivery", "workflow", "runs", "results", "studio", "labeling"}:
             continue
         try:
             render_confined(context.folder, relative)
@@ -297,19 +297,24 @@ def render_page(context):
     selected = context.content or context.source
     options = ''.join(f'<option value="{escape(p.relative_to(context.folder).as_posix())}"{" selected" if p == selected else ""}>{escape(p.relative_to(context.folder).as_posix())}</option>' for p in source_files(context) if p.name != "page.toml")
     query = urlencode({"path": "/", "file": context.source.name})
+    plugins = [
+        {"id": "outline", "label": "🧭 Outline", "hint": "Draft, Evidence, and Run spaces",
+         "order": 10, "url": f"/_board/outline?{query}&lens=div"},
+        {"id": "delivery", "label": "📤 Delivery", "hint": "What leaves this Page",
+         "order": 40, "url": f"/_board/delivery?{query}"},
+        {"id": "folder", "label": "📂 Folder", "hint": "Files, lanes, and freshness",
+         "order": 50, "url": f"/_board/folderstat?{query}"},
+    ]
+    if (context.folder / "labeling").is_dir():
+        plugins.append(
+            {"id": "labeling", "label": "🏷 Labeling",
+             "hint": "Workflow, data, guideline, human, and quality",
+             "order": 60, "url": f"/_board/labeling?{query}"}
+        )
     plugin_config = json.dumps({
         "page": context.source.name,
         "default": "outline",
-        "plugins": [
-            {"id": "outline", "label": "🧭 Outline", "hint": "Context, Bullets, and Evidence",
-             "order": 10, "url": f"/_board/outline?{query}&lens=div"},
-            {"id": "runs", "label": "⚙️ Runs", "hint": "Local Run → Result pairs",
-             "order": 30, "url": f"/_board/runs?{query}"},
-            {"id": "delivery", "label": "📤 Delivery", "hint": "What leaves this Page",
-             "order": 40, "url": f"/_board/delivery?{query}"},
-            {"id": "folder", "label": "📂 Folder", "hint": "Files, lanes, and freshness",
-             "order": 50, "url": f"/_board/folderstat?{query}"},
-        ],
+        "plugins": plugins,
     }, ensure_ascii=False).replace("<", "\\u003c").replace("&", "\\u0026")
     from .page_assets import css as page_css
     css = page_css() + '\n' + (ENGINE / "assets/page.css").read_text(encoding="utf-8")

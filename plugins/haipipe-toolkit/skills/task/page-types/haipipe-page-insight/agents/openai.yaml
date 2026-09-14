@@ -1,4 +1,4 @@
 interface:
   display_name: "Task Insight Page"
-  short_description: "Run insight items within a topic and data instance"
-  default_prompt: "Use $haipipe-page-insight to create or resume a topic instance with item Runs, checkpoints, and version-bound Reusable Findings."
+  short_description: "Bind reusable R runs to new data as riNN insight runs"
+  default_prompt: "Use $haipipe-page-insight to bind a normal R ticket to a new frozen dataset as an riNN Insight Run, then produce version-bound DIKW findings."

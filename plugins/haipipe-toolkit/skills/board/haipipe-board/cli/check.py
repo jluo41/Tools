@@ -60,6 +60,7 @@ from src.page_evidence import check_page_evidence  # noqa: E402
 from src.feedback import SEMANTIC_SECTION_ID  # noqa: E402  · the one section-id grammar
 from src.feedback import (rounds as _rounds, parse_round, register_path,  # noqa: E402
                           register_ids, routed_rows)
+from src.folder_contract import current_folder_kind  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 MAX_PAGE_TITLE_WORDS = 6
@@ -107,7 +108,9 @@ CONSTRUCTS = [
     ("aim count",            "n/m in the heading", r'\d+/\d+',
      r"(?m)^-\s+(?:⬜|🔨|🧠|✅|❄️|🟡|🟠|⏸️)\s+(?:A\d+(?:\.\d+)*|P\d+(?:\.\d+)*)\s+·"),
     ("dated item",           "span.stmp",          r'class="stmp"',               r"^(?:- )?\d{6}(?: \d{4})? "),
-    ("code block",           "details.codef",      r'<details class="it codef"',  r"^```"),
+    ("ASCII diagram",        "pre.asc",            r'<pre class="asc"',           r"^```(?:text|txt|plain|ascii|diagram)\s*$"),
+    ("code block",           "details.codef",      r'<details class="it codef"',
+     r"^```(?!(?:text|txt|plain|ascii|diagram)\s*$)[A-Za-z0-9_+-]+\s*$"),
 ]
 
 
@@ -1876,12 +1879,15 @@ def check_native_design_runs(d, rep):
     """Delegate allocated native Design Runs to their worker-owned gate."""
     import importlib.util
 
-    folders = {p.parent.parent for p in d.rglob("runs/r*_design_*.yaml")}
+    folders = {p.parent.parent for p in d.rglob("runs/rd*_*.yaml")}
+    folders.update(p.parent.parent for p in d.rglob("runs/r*_design_*.yaml"))
+    folders.update(p.parent.parent for p in d.rglob("results/rd*_*")
+                   if p.is_dir())
     folders.update(p.parent.parent for p in d.rglob("results/r*_design_*")
                    if p.is_dir())
     if not folders:
         return
-    checker = (HERE.parents[1] / "application" / "workflow-phases" /
+    checker = (HERE.parents[1] / "application" /
                "haipipe-design-unit" / "scripts" / "check_unit.py")
     try:
         spec = importlib.util.spec_from_file_location("design_unit_gate", checker)
@@ -1913,6 +1919,22 @@ def check_design_family(d, rep):
     references, and the evidence-within-grant chain when a grant exists.
     """
     check_native_design_runs(d, rep)
+    if "DesignBoard" in d.name:
+        retired = set(d.rglob("design/DU*"))
+        retired.update(d.rglob("evidence/pagex"))
+        retired.update(d.rglob("outline/evidence/pagex"))
+        for phase_file in d.rglob("workflow/phase.yaml"):
+            text = phase_file.read_text(encoding="utf-8", errors="replace")
+            if re.search(r"(?m)^\s*phase:\s*D[0-5]\b", text) or re.search(
+                    r"(?m)^\s*folder-kind:\s*design-(?:card|unit|verdict|division|pagedown)\b",
+                    text):
+                retired.add(phase_file)
+        for path in sorted(retired):
+            rep.add(ERROR, "retired-design-shape", str(path.relative_to(d)),
+                    "D0-D5, design/DU*, and PageX are unsupported; create a current "
+                    "Design Folder and rdNN Run instead of adapting this record")
+    return
+
     bmd = d / "board.md"
     if not bmd.is_file():
         return
@@ -2102,6 +2124,35 @@ def check_design_family(d, rep):
                                     "every step and this widens it")
 
 
+INSIGHT_QUESTION_PREFIX = {
+    "data": "QD",
+    "information": "QI",
+    "knowledge": "QK",
+    "wisdom": "QW",
+}
+
+
+def _insight_folder_kind(md, text):
+    """Resolve Page-v2 Folder kind before the legacy Page Type.
+
+    ``workflow/phase.yaml`` is authoritative when present. The general Folder
+    contract checker reports malformed phase state; this family check then
+    stays silent rather than guessing from stale Markdown.
+    """
+    try:
+        current = current_folder_kind(md.parent)
+    except ValueError:
+        return ""
+    if current:
+        return current
+    head = text.split("\n## ", 1)[0]
+    declared = re.search(r"(?m)^folder-kind:\s*([a-z][a-z0-9-]*)\s*$", head)
+    if declared:
+        return declared.group(1)
+    legacy = re.search(r"(?m)^page-type:\s*([a-z][a-z0-9-]*)\s*$", head)
+    return legacy.group(1) if legacy else ""
+
+
 def check_insight_family(d, rep):
     """The insight family's first teeth (JL 260828, fieldtest rounds 1-2).
 
@@ -2121,8 +2172,7 @@ def check_insight_family(d, rep):
             text = md.read_text(encoding="utf-8")
         except OSError:
             continue
-        m = re.search(r"^page-type:\s*(\w+)", text, re.M)
-        ptype = m.group(1) if m else ""
+        ptype = _insight_folder_kind(md, text)
         name = md.name
 
         if ptype == "wisdom":
@@ -2145,6 +2195,28 @@ def check_insight_family(d, rep):
             check_partition_register(text, name, rep)
 
         if ptype == "question":
+            head = text.split("\n## ", 1)[0]
+            current_key = re.search(r"(?m)^folder-kind:\s*question\s*$", head)
+            rung = re.search(
+                r"(?m)^question-rung:\s*(data|information|knowledge|wisdom)\s*$",
+                head,
+            )
+            if current_key and not rung:
+                rep.add(ERROR, "question-rung-missing", name,
+                        "a Page-v2 Question Folder must declare `question-rung:`; "
+                        "the rung and each MT00 partition derive its Question Group")
+            if re.search(r"(?m)^question-group:\s*\S+", head):
+                rep.add(WARN, "question-group-stored", name,
+                        "Question Group is derived as partition × DIKW target from "
+                        "MT00 and the register; do not store a second group state")
+            if rung:
+                expected = INSIGHT_QUESTION_PREFIX[rung.group(1)]
+                for qid in re.findall(r"(?m)^(Q[DIKW]\d+)\b", text):
+                    if not qid.startswith(expected):
+                        rep.add(ERROR, "question-rung-id-mismatch", name,
+                                f"`question-rung: {rung.group(1)}` admits {expected}<n> "
+                                f"rows, but this register contains `{qid}`; the "
+                                "partition × DIKW Question Group would be ambiguous")
             for bad in re.findall(r"🚫\s?F\s?only\b|🚫F-only", text):
                 rep.add(WARN, "refusal-token-legacy", name,
                         f"`{bad}` is not the token: a mark's spelling includes its "

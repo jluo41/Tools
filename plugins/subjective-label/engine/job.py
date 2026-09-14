@@ -17,7 +17,7 @@ import copy
 import hashlib
 import json
 import os
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -173,6 +173,14 @@ def semantic_bindings(config: dict, policy_manifest: Path) -> dict:
         },
         "policy_manifest_checksum": sha256_file(policy_manifest),
     }
+
+
+def runtime_timestamp(value: str) -> str:
+    """Normalize a date or datetime to an offset-bearing runtime timestamp."""
+    parsed = datetime.fromisoformat(value)
+    if parsed.tzinfo is None:
+        parsed = parsed.astimezone()
+    return parsed.isoformat(timespec="seconds")
 
 
 def _meaning_receipt_valid(config: dict, job_root: Path) -> bool:
@@ -386,6 +394,66 @@ def create_contract(
         else None,
         "next_action": "identified human confirms target meaning and schema",
     }
+    run_name = "rl01_corpus-contract_job-v1"
+    run_ticket = {
+        "run": run_name,
+        "family": "labeling",
+        "domain": "subjective-label",
+        "phase": "P0",
+        "operation": "corpus-contract",
+        "episode": "contract",
+        "target": "job-v1",
+        "commission": {
+            "path": "gates/p0-contract/receipt.json",
+            "sha256": sha256_bytes(json_bytes(receipt)),
+        },
+        "inputs": [
+            {
+                "path": "corpus/items.jsonl",
+                "sha256": items_checksum,
+            }
+        ],
+        "worker": {
+            "kind": "cli",
+            "name": "subjective-label.engine.job:create_contract",
+        },
+        "acceptance": "p0-contract-receipt-valid",
+        "supersedes": None,
+    }
+    run_runtime = {
+        "run": run_name,
+        "family": "labeling",
+        "operation": "corpus-contract",
+        "target": "job-v1",
+        "status": "complete",
+        "ticket": f"runs/{run_name}.yaml",
+        "result": f"results/{run_name}/result.yaml",
+        "inputs": run_ticket["inputs"],
+        "outcome": "P0 contract landed; human meaning confirmation remains open",
+        "worker": run_ticket["worker"],
+        "started_at": runtime_timestamp(created_at),
+        "finished_at": runtime_timestamp(created_at),
+        "supersedes": None,
+        "failure": None,
+    }
+    run_result = {
+        "run": run_name,
+        "family": "labeling",
+        "operation": "corpus-contract",
+        "status": "complete",
+        "outcome": "P0 contract landed; human meaning confirmation remains open",
+        "artifacts": [
+            {
+                "path": "gates/p0-contract/receipt.json",
+                "sha256": sha256_bytes(json_bytes(receipt)),
+            }
+        ],
+        "promotion": {
+            "performed": False,
+            "reason": "P0 human meaning confirmation is a separate gate",
+        },
+        "next_action": "human meaning confirmation",
+    }
 
     report = (
         f"# {job_id} · P0 Contract\n\n"
@@ -398,7 +466,7 @@ def create_contract(
     ).encode("utf-8")
     state = {
         "phase": "P0",
-        "frontier": "P0 human meaning confirmation",
+        "frontier": "G0 · human meaning confirmation",
         "status": "human-meaning-confirmation-pending",
         "meaning_confirmed": False,
     }
@@ -416,6 +484,9 @@ def create_contract(
         job_root / "policy" / "current": b"G_00\n",
         job_root / "policy" / "versions" / "G_00" / "manifest.yaml": policy_manifest_data,
         job_root / "gates" / "p0-contract" / "receipt.json": json_bytes(receipt),
+        job_root / "runs" / f"{run_name}.yaml": yaml_bytes(run_ticket),
+        job_root / "results" / run_name / "runtime.yaml": yaml_bytes(run_runtime),
+        job_root / "results" / run_name / "result.yaml": yaml_bytes(run_result),
         job_root / "REPORT.md": report,
         job_root / ".state.json": json_bytes(state),
     }
@@ -433,7 +504,7 @@ def create_contract(
         "job_root": str(job_root),
         "job_id": job_id,
         "phase": "P0",
-        "first_blocked_frontier": "P0 human meaning confirmation",
+        "first_blocked_frontier": "G0 · human meaning confirmation",
         "created_files": created,
         "created_count": len(created),
         "items": corpus_manifest["n_items"],
@@ -492,7 +563,7 @@ def confirm_meaning(
         raise RuntimeError("P0 contract receipt does not bind the five authority artifacts")
 
     already_semantic = _meaning_receipt_valid(config, job_root)
-    if not already_semantic and not before["g0_integrity"]:
+    if not already_semantic and not before["p0_contract_integrity_valid"]:
         raise RuntimeError("P0 integrity must pass before human meaning confirmation")
 
     if not already_semantic:
@@ -578,6 +649,8 @@ def status(job_root: Path) -> dict:
     integrity_errors: list[str] = []
     exclusion_asserted = False
     g0_receipt_valid = False
+    sealed_status = load_mapping(job_root / "test" / "sealed" / "status.json")
+    source_attestation = sealed_status.get("source_fence_attestation")
     if not missing:
         corpus_manifest = load_mapping(job_root / "corpus" / "manifest.json")
         items_path = job_root / "corpus" / "items.jsonl"
@@ -589,7 +662,6 @@ def status(job_root: Path) -> dict:
         elif sha256_file(items_path) != expected_items:
             integrity_errors.append("corpus items checksum mismatch")
 
-        sealed_status = load_mapping(job_root / "test" / "sealed" / "status.json")
         try:
             protected_manifest = find_protected_manifest(job_root / "test" / "sealed")
         except RuntimeError as error:
@@ -600,7 +672,6 @@ def status(job_root: Path) -> dict:
             ).removeprefix("sha256:")
             if not expected_seal or sha256_file(protected_manifest) != expected_seal:
                 integrity_errors.append("protected manifest checksum mismatch")
-        source_attestation = sealed_status.get("source_fence_attestation")
         exclusion_asserted = bool(
             sealed_status.get("status") == "reserved-and-unexposed"
             and sealed_status.get("custodian")
@@ -670,23 +741,23 @@ def status(job_root: Path) -> dict:
                 if not g0_receipt_valid:
                     integrity_errors.append("G0 receipt is invalid or semantically unbound")
 
-    g0_integrity = not missing and not integrity_errors
+    p0_contract_integrity_valid = not missing and not integrity_errors
     if missing:
         phase = "P0"
         next_action = "supply missing P0 files"
-        first_blocked = "G0 Contract integrity"
-    elif not g0_integrity:
+        first_blocked = "G0 · contract integrity"
+    elif not p0_contract_integrity_valid:
         phase = "P0"
         next_action = "repair P0 integrity before any Round 1 proposal"
-        first_blocked = "G0 Contract integrity"
+        first_blocked = "G0 · contract integrity"
     elif not meaning_is_valid:
         phase = "P0"
         next_action = "human meaning confirmation"
-        first_blocked = "P0 human meaning confirmation"
+        first_blocked = "G0 · human meaning confirmation"
     elif not g0_receipt_valid:
         phase = "P0"
         next_action = "repair the G0 receipt before any Round 1 proposal"
-        first_blocked = "G0 Contract integrity"
+        first_blocked = "G0 · receipt integrity"
     else:
         phase = "P1"
         next_action = "propose round_01 card"
@@ -699,9 +770,15 @@ def status(job_root: Path) -> dict:
         "meaning_confirmed": meaning_confirmed,
         "meaning_receipt_valid": meaning_is_valid,
         "g0_receipt_valid": g0_receipt_valid,
-        "g0_integrity": g0_integrity,
+        "p0_contract_integrity_valid": p0_contract_integrity_valid,
         "integrity_errors": integrity_errors,
         "sealed_development_exclusion_asserted": exclusion_asserted,
+        "sealed_custodian": sealed_status.get("custodian"),
+        "source_custodian_provenance": (
+            source_attestation.get("source_custodian")
+            if isinstance(source_attestation, dict)
+            else None
+        ),
         "phase": phase,
         "first_blocked_frontier": first_blocked,
         "next_action": next_action,
@@ -719,7 +796,9 @@ def main() -> None:
     create.add_argument("--job-id", required=True)
     create.add_argument("--target", required=True)
     create.add_argument("--human-id", required=True)
-    create.add_argument("--created-at", default=date.today().isoformat())
+    create.add_argument(
+        "--created-at", default=datetime.now().astimezone().isoformat(timespec="seconds")
+    )
 
     confirm = sub.add_parser(
         "confirm", help="record the identified human's current-schema confirmation"

@@ -18,8 +18,27 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true", help="exit non-zero on findings")
     parser.add_argument("--skills-root", type=Path, default=SKILLS)
+    parser.add_argument(
+        "--workflow",
+        action="append",
+        default=[],
+        help="validate only this workflow owner; repeat for more than one",
+    )
     args = parser.parse_args()
     contracts, problems = validate_tree(args.skills_root.resolve())
+    if args.workflow:
+        requested = set(args.workflow)
+        present = {item.workflow for item in contracts}
+        contracts = [item for item in contracts if item.workflow in requested]
+        selected_paths = {item.path.as_posix() for item in contracts}
+        problems = [
+            problem for problem in problems
+            if any(path in problem for path in selected_paths)
+        ]
+        missing = sorted(requested - present)
+    else:
+        missing = []
+    problems.extend(f"requested workflow not found: {name}" for name in missing)
     print("phase  workflow                      folder kind          face  ruling       legacy")
     print("─────  ────────────────────────────  ───────────────────  ────  ───────────  ──────")
     for item in sorted(contracts, key=lambda x: (x.workflow, x.phase)):

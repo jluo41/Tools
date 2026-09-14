@@ -4,6 +4,12 @@ haipipe-discovery-synthesize — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions
 match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.3.0 · 2026-09-13
+
+- Align synthesis with the Page-owned interaction lane and release barrier.
+- Keep `rp00`/`rpNN` Page Runs out of the Discovery `rNN` inventory and defer
+  Page CONTENT adoption until the shared Page workflow says it is ready.
+
 ## 0.2.0 · 2026-09-08
 
 - Add external synthesis procedures for thematic organization, citation

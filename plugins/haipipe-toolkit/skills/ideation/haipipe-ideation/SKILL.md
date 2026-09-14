@@ -5,14 +5,16 @@ description: >-
   candidates, 2 Test novelty, feasibility, journal fit, and Nature-level
   editorial shape, then 3 Select idea-and-target pairs through a human gate
   and hand them to Paper P0. Sync the evolving evidence landscape and
-  candidate portfolio to the same evergreen Paper P0 page from Stage 1 onward.
+  candidate portfolio to the same evergreen Paper P0 page from Stage 1 onward,
+  while keeping working projection separate from adopted Page Content and
+  delivery.
   Use for research directions, idea generation, novelty checks, idea pressure
   tests, journal targeting, Nature-paper fit, and idea portfolios; use
   haipipe-discovery for external source execution.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-09-08"
+  version: "0.4.0"
+  last_updated: "2026-09-13"
   folder_owner: canonical
   primary_face: direction
   page_ruling: none
@@ -29,13 +31,13 @@ Task Run/Results ──┐
                    ├─ 1 GENERATE ──▶ Direction + admitted Idea Cards
 Discovery Results ┘                            │
                                                ▼
-                         sync ─────▶ Paper P0 cockpit
+                   sync ─────▶ P0 working cockpit
                                                │
                                                ▼
                                       2 TEST each Idea
                                   novelty · feasibility · journal fit
                                                │
-                         sync ─────▶ same Paper P0 cockpit
+                   sync ─────▶ same P0 working cockpit
                                                │
                                                ▼
                                       3 SELECT portfolio
@@ -104,9 +106,11 @@ Load the relevant owner before acting on that owner's artifact:
    target.
 5. `haipipe-paper-ideation` after Generate or Test when syncing the evolving
    portfolio into the Paper-specific P0 cockpit, and after Select when
-   projecting the final verdict/target/`went to` edges. Load the base Page
-   workflow only when actually updating that Page, not for an Ideation-only
-   audit.
+   projecting the final verdict/target/`went to` edges. That adapter must use
+   the current `haipipe-page` update boundary: a working projection may be
+   refreshed without publishing adopted Page Content or delivery. Load the
+   base Page workflow only when actually updating that Page, not for an
+   Ideation-only audit.
 
 Then load the current numbered capability owner:
 
@@ -194,7 +198,7 @@ complete specimen is more useful than another abstract rule.
 /haipipe-ideation pressure-test <idea>     run falsifiability + feasibility checks
 /haipipe-ideation journal-fit <idea>       broad-screen; deep-fit finalists
 /haipipe-ideation nature-review <idea>     apply the Nature editorial overlay
-/haipipe-ideation sync <unit>              refresh the evergreen Paper P0 projection
+/haipipe-ideation sync <unit>              refresh the P0 working projection
 /haipipe-ideation select <unit>            record the person's idea + target decision
 /haipipe-ideation handoff <unit>           emit the Paper P0 packet
 ```
@@ -224,6 +228,10 @@ changes:
    Refresh `projection/paper-ideation-sync.yaml` and, when a Paper P0 path is
    in scope, ask `haipipe-paper-ideation` to project the Direction, Discovery
    Landscape, Opportunity Map, and candidate set into that same evergreen Page.
+   Treat this as a semantic-source update followed by a Page working-projection
+   update; do not claim that adopted Page Content or delivery is current unless
+   the Page release barrier has opened and `haipipe-page-content` has completed
+   its Page-level pass.
 2. **2 Test:** run every admitted card through claim-level closest-work
    verification, falsifiability and feasibility review, and broad journal
    screening. Deep-fit live finalists against current versioned Venue
@@ -231,7 +239,8 @@ changes:
    candidate. Preserve the adversarial rejection, defense, unresolved gaps,
    and reroute; do not collapse novelty and identification credibility.
    Refresh the sync packet whenever evidence adds, changes, merges, eliminates,
-   or reorders an Idea.
+   or reorders an Idea. Route the changed packet through the same P0 working
+   projection boundary; a changed `sync_revision` alone is not a Page release.
 3. **3 Select:** compare and, when useful, order candidates by explicit novelty delta,
    testability, evidence coverage, cost, and risk. The machine may recommend;
    only a person may select, defer, abandon, choose the intended target and
@@ -264,6 +273,38 @@ Card, the current Test Matrix, and open gaps. `haipipe-paper-ideation` uses it
 to maintain one evergreen `Story00-ideation` reader-facing cockpit. The Page
 may summarize and display those pointers; it does not become a second Idea
 portfolio, evidence store, or selection authority.
+
+### Page projection boundary
+
+`sync_revision` is the current semantic revision of the Ideation unit. It is
+not a promise that the P0 Page's adopted Markdown or delivery has already been
+rewritten. The sync packet also carries a `source_hash` and a
+`projection.change_class`; the hash identifies the exact semantic source and
+the change class selects the narrowest Page route. A P0 update has three
+independently reportable surfaces:
+
+```text
+semantic source       Ideation cards + sync packet                 current revision
+working projection    Page Outline/preview/Bullet Workspace        may be current first
+adopted release       Page Content + declared delivery             waits for Page release
+```
+
+When a Generate, Test, or Select result changes, update the semantic source and
+route the packet to `haipipe-paper-ideation`. `state` changes refresh the
+generated working projection; `portfolio` changes refresh it by stable
+`idea_id` and inspect whether the Page shell is affected; `structure` changes
+stop at the Page OUTLINE/SHAPE workflow until any required human decision is
+made. Ideation does not send prose changes through this adapter. A narrow Page
+update may refresh the working projection and leave adopted Content and
+`delivery/` stale by design. Only after all required Page Runs and evidence
+Results are ready may `haipipe-page-content` perform the Page-level CONTENT pass
+and refresh delivery.
+
+The sync operation itself is not a Page Run, does not mint `rpNN`, and does not
+create a local Ideation Run. Every returned P0 status must report the working,
+release, and delivery surface states separately, including the consumed
+revision and receipt where present. I3 selection remains the sole human
+authority even when the working projection is current.
 
 Stage 3's `workflow/selection.yaml` is the single human authority for selecting
 an Idea, target/category, accepted risks, and Story route. The Paper P0 Page

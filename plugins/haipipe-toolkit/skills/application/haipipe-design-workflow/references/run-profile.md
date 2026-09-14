@@ -1,62 +1,64 @@
-# Design Run Profile
+# Design Run Profile · v4
 
-ALLOWED: family design; operations generate and verify. Evaluate aliases verify,
-compose aliases generate. Revise is generate with a frozen base and feedback.
+ALLOWED: family `design`; operations `generate` and `verify`. `compose`,
+`brainstorm`, `theory-driven`, `challenge`, and
+`revise` are generation modes; revise pins frozen base + feedback.
 
-TARGET: one independently closable unit (single, sequence, or set), or one
-independently closable verification over named DUs. Count N generation + J
-verification Runs; no umbrella Run and no Run for a signature.
+TARGET: one independently closable unit (single, sequence, or candidate set),
+or one independently closable verification over named DUs. Count N generation
++ J verification Runs. Do not count an umbrella, signature, render, Page Run,
+workflow pass, model call, or internal draft.
 
-TICKET: caller-authored `<DS>/runs/<rNN_design_operation_slug>.yaml`, conforming
-to the unit worker's references/unit-contract.md. This is a declared
-Folder-local agent-ticket dialect. Read and dispatch it; do not invoke bash.
-A normal renderer/model invocation is an internal worker call, not a Run.
+TICKET: caller-authored
+`<DS>/runs/<rdNN_generate|verify_slug>.yaml`, conforming to the unit worker's
+`references/unit-contract.md`. `haipipe.design-ticket/v2` is the only accepted
+schema. A YAML Ticket is a declared agent dialect, never a shell script.
 
-INPUTS: the Ticket pins config and exact file references/hashes. Defaults are
-compiled before freeze. Supporting Runs retain their producer's full identity;
-do not copy or renumber them. A static Brief, signed legacy W handoff, template,
-or old DU input is a versioned input, not an invented Supporting Run. Input
-roles never elevate authority. Caller validates release scope and Application
-signed-W/grant constraints; worker validates the bounded packet.
+INPUTS: the Ticket pins config, immutable release receipt, and exact file
+references/hashes. Defaults are compiled before freeze. New v2 configs include
+one `design_intent` bet. A source role does not elevate authority. A static
+Brief, signed W handoff, or template has no invented Supporting Run id.
+A real upstream Run retains its complete native identity. An `rpNN` Page Run is
+never Design evidence or authority; preserved candidate feedback from it may be
+pinned only with role `feedback` to a new revise Run.
 
 WORKER: `haipipe-design-unit`, loaded by path
-`../../workflow-phases/haipipe-design-unit/SKILL.md` from this reference's
+`../../haipipe-design-unit/SKILL.md` from this reference's
 directory. The existing designer agent is a thin dispatcher into that worker.
 
-RESULT: `<DS>/results/<Ticket-stem>/result.yaml` plus checks.yaml and the
-operation's payload. The caller owns runtime.yaml at the same address.
-An allocated Ticket immediately owes a planned runtime; failed/blocked work
-keeps its truthful partial Result and reason. New Result paths must be empty
-apart from the caller's runtime receipt, or an explicitly resumed incomplete
-attempt. Never overwrite existing complete results.
+RESULT: `<DS>/results/<Ticket-stem>/result.yaml`, `checks.yaml`, operation
+payload, and caller-owned `runtime.yaml`. v2 Tickets produce v2 Results.
+An allocated Ticket immediately owes planned runtime. New Result paths are
+otherwise empty unless truthfully resuming one incomplete attempt. Completed
+Results are immutable.
 
-ACCEPT: the unit checker's result gate plus substantive verification of the
-commissioned criteria. Generate requires pass. Verify requires complete
-coverage; pass or fail is an honest finished evaluation, unresolved is not.
-Self-check is never independent verification.
+ACCEPT: Ticket gate + Result integrity + substantive commissioned checks.
+Generate requires pass. Verify requires complete coverage; pass or fail may be
+an honest completed judgment, unresolved is not. Self-check is never
+independent verification.
 
 PROMOTION: the caller records human adoption of exact DU/member hashes,
-independent verification and preview versions. The Page projects that receipt.
-Independent review uses a new context, not just a different actor label.
-Selection, adoption and ordinary projection updates mint no new Design Run.
+independent verification Results, preview manifest, and handoff versions. The
+Design Page's owner gate consumes this same receipt; Page CHECK verifies the
+projection and never duplicates the candidate decision. Selection, adoption,
+Page release, and ordinary rendering mint no Design Run.
 
-REOPEN: materially changed config/source/criteria/content gets a new Run,
-with `supersedes` in the runtime when appropriate; the old result remains
-immutable. Mark only affected adoption/evidence bindings stale. Failure
-retries with unchanged inputs preserve an append-only attempt trail.
+REOPEN: changed config, source, criteria, candidate content, target, or feedback
+gets a new Run and may name `supersedes`. Preserve the old Result and decision.
+An unchanged failed attempt may resume with an append-only attempt trail.
 
 ## Caller runtime receipt
 
 ```yaml
-run: r01_design_generate_sms
+run: rd01_generate_sms
 family: design
 operation: generate
 target: One SMS
 status: complete
-ticket: runs/r01_design_generate_sms.yaml
-result: results/r01_design_generate_sms/
+ticket: runs/rd01_generate_sms.yaml
+result: results/rd01_generate_sms/
 inputs:
-  - {path: scripts/config/r01_design_generate_sms.yaml, sha256: <config-hash>}
+  - {path: scripts/config/rd01_generate_sms.yaml, sha256: <config-hash>}
   - {path: outline/decisions/release-01.yaml, sha256: <release-hash>}
 ticket_sha256: <hash-of-ticket>
 worker: {kind: skill, name: haipipe-design-unit, actor: designer-context-01}
@@ -66,13 +68,18 @@ failure: null
 supersedes: null
 ```
 
-The caller records the Ticket hash and the full input manifest in the runtime
-including config, immutable release record, all input files and target manifests
-(the brief-only example above has no other inputs). Actor/context provenance
-must be honest. A growing decision log is an index, not a hash-pinned input.
-The worker cannot use a runtime write to bypass the caller's completion gate.
+`inputs` covers config, release, all declared inputs, and target manifests.
+Actor/context provenance must be honest. Pin an immutable decision receipt,
+not a growing log. The worker cannot advance runtime or human authority.
 
-Audit a native Folder with the worker's
-`python3 scripts/check_unit.py --folder <DS>`.
-The read-only Runs presenter already recognizes YAML Tickets and runtime.yaml;
-it must display Design-local identity without calling it a Paper Run.
+Audit a native Folder with:
+
+```bash
+python3 <haipipe-design-unit>/scripts/check_unit.py --folder <DS>
+```
+
+The Runs presenter projects Design identities under the Task Run lane. It does
+not rename them Paper Runs or consume the Page's `rpNN` sequence.
+
+The profile rejects v1 Ticket/Result schemas, `rNN_design_*`, D0–D5 folders,
+`design/DU*/`, and PageX. There is no compatibility or migration route.

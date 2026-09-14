@@ -1,3 +1,31 @@
+## 0.42.0 · 2026-09-12
+
+- Name `rp00_mermaid-structure` as the sole Run that writes and reviews the
+  whole-Page Mermaid Structure.
+
+## 0.41.0 · 2026-09-12
+
+- End routine paragraph Step handoffs with Bullet Workspace, Evidence
+  Workspace, and Current Run links.
+
+## 0.40.0 · 2026-09-12
+
+- Assign the derived whole-Page Mermaid review artifact to reserved Page Run
+  `rp00_mermaid-structure`.
+
+## 0.39.0 · 2026-09-12
+
+- Define `P` as a Page-global reading-order identity that never resets at a
+  new `C`, and keep `B` local to its paragraph.
+- Use the `rp01_mermaid-structure` Run-of-Page identity for the first review.
+
+## 0.38.0 · 2026-09-12
+
+- Require an open `pr01_mermaid-structure` SHAPE interaction to write and
+  refresh the complete `P01..PN` Mermaid Structure beside the current plan.
+- Treat a missing or stale Mermaid review projection as a blocker instead of
+  asking the person to review Bullets without the whole-Page map.
+
 ## 0.37.0 · 2026-09-11
 
 - Record joint Bullet/prose rehearsal in the current Writing Step; reuse the unapproved Shape, preserve original feedback, and replace mandatory full-pass work on local edits with scoped checks.

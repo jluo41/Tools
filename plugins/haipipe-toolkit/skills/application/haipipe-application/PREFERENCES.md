@@ -14,31 +14,40 @@ topic -- update, don't duplicate).
 
 - **DEFAULT REPLY MODE = /diagram-ascii (JL 2026-07-09: "please set this as the default mode for the skills").** Every skill reply renders its substance as emoji-rich ASCII diagrams per the diagram-ascii skill conventions: dense emoji (every box/row/status), boxes + arrows, `── [N/TOTAL] Title ──` headers when a reply carries 3+ diagrams, compact status strips. Prose shrinks to one-line asks and connective sentences — if it can be a diagram, it IS one. Applies to plans, options, findings, state reports, release menus, and "my thinking". (also in auto-memory: feedback_diagram_ascii_default_mode)
 
-- **Design never Probes; the phase-owned Insight Folder does.** Brief and
-  Design Folders consume accepted Page evidence through PageX. When a design
+- **Design never commissions upstream evidence; the phase-owned Insight Folder does.** Brief and
+  Design Folders consume exact signed W handoffs as frozen inputs. When a design
   premise is missing, keep the Application stake on the blocked Folder,
   rewrite it as one Insight question, and open or refresh the matching I1-I5
-  Folder on the InsightBoard. Its Task Face may run Probe against
-  Task/Discovery sources under source/run/staleness rules, settle D→I→K, add
+  Folder on the InsightBoard. Its Page Evidence phase may commission a decided
+  Supporting Run against Task/Discovery sources under source/run/staleness
+  rules, settle D→I→K, add
   contextual W, and publish a Design Handoff. An inline scan inside a Design
   Folder is never a substitute. There is no Artifact Page or `1-insights/`
   private ladder.
 
-- **Missing-Insight release is a user-visible routing decision.** Before commissioning new Task/Discovery work, show the question, required DIKW target, existing PageX matches, destination local Insight Page, and which Brief or Design Aim it blocks. The local Insight Page then applies the Task-backed Probe release gate; the blocked Design Page never dispatches Probe cards itself.
+- **Missing-Insight release is a user-visible routing decision.** Before commissioning new Task/Discovery work, show the question, required DIKW target, existing accepted Supporting Result or signed-handoff matches, destination local Insight Page, derived Question Group (`partition × DIKW target`), and which Brief or Design Commission it blocks. The local Insight Page then applies the Page SURVEY `Decide` gate; the blocked Design Folder never dispatches upstream work itself.
 
 - **Share the Page substrate, not the delivery vocabulary.** Paper and
-  Application both consume Folders through PageX and both use the shared Page
+  Application both use the shared Page
   phases on their Page Faces. Paper keeps Opening→Narrative→Section;
-  Application keeps its Insight handoff → Design lifecycle, with projections under
-  `delivery/render/`. A change to PageX, Page phases, or the Insight handoff
+  Application keeps its Insight handoff → Design lifecycle, with candidate
+  previews under `delivery/render/` and Page projections under
+  `delivery/web|latex|word/`. A change to Page evidence, Page phases, or the Insight handoff
   triggers a cross-family review. A change to Paper argument structure does
   not automatically port into Application message structure.
 
-- **Native Design units are Run Results (JL, 2026-09-08).** New Design work
-  uses Plan → Generate → Verify → Adopt in one stable Design Folder, with
-  `haipipe-design-unit` generating or independently verifying one bounded
-  commission. This supersedes the former Design D0-D5 Folder ladder for new
-  work; historical records remain read-only. It does not migrate Insight.
+- **Native Design units are Run Results (JL, 2026-09-08; clean break
+  2026-09-13).** Design uses Commission → Generate → Verify → Adopt in one
+  stable Design Folder, with `haipipe-design-unit` generating or independently
+  verifying one bounded commission. D0-D5, PageX, and Design v1 are unsupported;
+  there is no Design migration/reader path. It does not migrate Insight.
+
+- **One Design Folder has two orthogonal workflows (JL, 2026-09-13).** Page
+  Runs (`rp00`, then paragraph `rpNN`) shape how the Folder explains the work;
+  Design Runs (`rdNN_*`) create or judge candidates. Candidate edits
+  require a new revise Run, while explanatory prose edits stay Page Writing
+  Steps. Human adoption is the Folder's Page `domain-gate`; CHECK verifies the
+  current projection and never asks for duplicate candidate acceptance.
 
 - **No prose without understanding: explain what each sentence DOES before writing it.** The agent must not produce prose (manuscript sentences, story-line drafts, paragraph rewrites) unless it can explain what each sentence does for the reader and why it says THIS and not something else. Production without understanding (知其然不知其所以然) is the root cause of bad writing: the output reshuffles bullet points into plausible-sounding text without grasping the argument. If unable to explain the sentence's job, say so rather than draft. One sentence at a time, grounded in what it DOES, not what it CONTAINS. (JL, 2026-06-26, MISQ-Introduction session: "What is the root cause, in philosophy")
 

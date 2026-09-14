@@ -1,5 +1,27 @@
 # haipipe-design-workflow · version history
 
+0.4.0 current · 260913 · user ruling
+- Keep the current workflow pre-1.0. Later-looking labels below are retracted
+  as release assignments and retained only as development provenance.
+- Any future `1.0.0+` requires explicit user approval.
+
+4.0.1 · 260913
+- Forbid “read-only/readable migration history” language for unsupported
+  Design bytes and stop content inspection after a decisive old-shape marker.
+
+4.0.0 · 260913
+- Adopt independent `rdNN_generate_*` / `rdNN_verify_*` identities.
+- Remove every D0-D5, PageX, v1, old thread, and migration route.
+- Treat non-current Design folders as unsupported instead of read-only input.
+
+3.0.0 · 260913
+- Replace the native D-style round vocabulary with Commission → Generate →
+  Verify → Adopt and make each Commission an explicit frozen bet.
+- Define the independent Page interlock: rp00/paragraph Runs and Page release/
+  CHECK never mint, edit, judge, or renumber Design Results.
+- Reuse human adoption as the Page domain gate; candidate changes route to a
+  revise Design Run and Page-only prose changes remain Writing Steps.
+
 1.0.3 · 260831
 - Canonicalize every GD receipt under the granting Brief/Design Folder's
   `outline/<stem>-log.md`; Cards and Units keep state fields, not private Logs.

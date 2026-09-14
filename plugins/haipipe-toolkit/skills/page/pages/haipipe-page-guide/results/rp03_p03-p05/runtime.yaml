@@ -1,0 +1,20 @@
+run: rp03_p03-p05
+family: page
+operation: interactive-writing
+interaction: human-feedback
+target: C2.P3, C2.P4, C2.P5
+paragraphs: P03-P05
+ticket: runs/rp03_p03-p05.md
+result: results/rp03_p03-p05
+status: complete
+version: v001
+step: s004
+version_file: results/rp03_p03-p05/v001.md
+version_sha256: bb99ad0005c952c04e7c4b3ad1fa9f47cacf816a629b7015f09f25c6e8edce4d
+worker:
+  kind: skill
+  name: haipipe-writing
+started_at: 2026-09-13T04:41:34Z
+finished_at: 2026-09-13T12:29:26Z
+supersedes: null
+failure: null

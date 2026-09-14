@@ -21,29 +21,29 @@ design_profile:
   narrative: required
   display: optional
   section_edit: none
-  terminal: accepted
+  terminal: adopted
 ```
 
 ## Phase use
 
-### D1/D2 · bet and realize
+### Commission and Generate
 
-Each section's core move traces through the released card grant. If a
-load-bearing section lacks support, record the gap for D4 EMIT rather than
+Each section's core move traces through released Commission inputs. If a
+load-bearing section lacks support, return a named hold rather than
 opening a private evidence search.
 
-### D2 · narrative requirement
+### Generate · narrative requirement
 Letter-style arc:
 1. Context — why you're receiving this
 2. Finding — what the evidence shows
 3. Recommendation — what to do
 4. Next steps — what happens next
 
-### D2 · optional display
+### Generate · optional display
 If the email includes data (chart, table, KPI), write a display
 map. Otherwise skip — pure-text emails don't need it.
 
-### D3/D4 · judge and decide
+### Verify and adopt
 Subject line + sections following narrative arc.
-Tone per audience profile. Check every factual move against the grant, render
-to `delivery/render/`, then accept that version or emit the named gap.
+Tone per audience profile. Check every factual move against frozen inputs,
+render to `delivery/render/`, then adopt or decline that exact version.

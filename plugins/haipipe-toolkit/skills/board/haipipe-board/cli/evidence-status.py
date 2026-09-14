@@ -158,13 +158,15 @@ def _allocated_local(item: dict, local_rows: list[dict], root: Path) -> str:
     address = item.get("address", "")
     for row in local_rows:
         global_id = row.get("global_id") or row["run_id"]
+        ticket = row.get("ticket")
         tokens = (
             global_id, row.get("compact_id", ""), row["run_id"],
-            row["ticket"].name, str(row["ticket"]),
+            ticket.name if ticket else "", str(ticket) if ticket else "",
         )
         if any(token and token in declared for token in tokens) or address == str(global_id).replace(".", ""):
-            run_href = _map_href(root, str(row["ticket"].relative_to(root)))
-            page_dir = row["ticket"].parent.parent
+            run_href = (_map_href(root, str(ticket.relative_to(root)))
+                        if ticket else "")
+            page_dir = ticket.parent.parent if ticket else root
             result_href = _map_href(root, str(row.get("result", "")), base=page_dir)
             runtime_href = (_map_href(root, str(row["runtime"].relative_to(root)))
                             if row["runtime"] else "")

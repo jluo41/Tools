@@ -16,23 +16,15 @@ Distinguish DESK RULE, PACK OBSERVATION, PACK PRESCRIPTION, and UNKNOWN inline.
 Every number names its source and access date. Write "the pack refuses X",
 never "do not do X" — a reference, not a rulebook.
 
-## Diagram
-
-**Three figures, in this order** (QBv1 template, JL 260803):
-
-```text
-① desk taste         what counts as the contribution · what is desk-rejected · the test
-② Venue-Structure    which units, in reading order, and the budget each carries ·
-                     the pack's parts SUMMED against the desk's total
-③ Submission-Rules   category and cap · format · references · portal · anonymity ·
-                     disclosures · the desk's own URLs · enforcement moments
-```
-
 ## Content
 
 <The division list is RESOLVED from paper/venue/<pack>/<outlet>/ — one
 style.md per unit, one division, in the desk's own reading order. A desk with
 no pack tree (grant, patent) resolves from the target's own document units.>
+
+**Division map:** desk taste → venue structure → submission rules. Keep the
+three figures in this order inside the Content map or the relevant visual
+Evidence Item; `Diagram` is not a Page section.
 
 ### 1 · What the desk buys, and what it will not
 
@@ -88,28 +80,5 @@ group for page-wide targets that belong to no single unit.>
   **Done when:** a walk of the page finds no bare number and no untyped claim.
   **Now:** <current fact>
 
-## Files
-
-### ⚙️ Engines · what RUNS this page's subject
-
-- `sync-exemplars.py` · regenerates the 📤 Generated blocks, and only those
-
-### 📋 Contracts · what CARRIES a rule to other pages
-
-- `paper/haipipe-paper-venue/SKILL.md` · this page's contract
-
-### 📥 Input files · what this page READS
-
-- `paper/venue/<pack>/<outlet>/` · taste.md · per-unit style.md · exemplars
-
-### 🔗 Authority · what the DESK itself PUBLISHES
-
-- <the desk's own URLs, read directly and never through the pack>
-
-### 📤 Generated · what a tool WRITES into this page, between markers
-
-- <sync-exemplars.py output blocks>
-
-## Log
-
-- <date> · <what changed, why, and which source/version caused it>
+<!-- File inventories belong under outline/<stem>-files.md; change history
+belongs under outline/<stem>-log.md. They are records, not Page sections. -->

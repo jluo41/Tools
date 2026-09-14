@@ -1,0 +1,38 @@
+{
+  "status": "partial",
+  "readiness": "content-adopted",
+  "source": {
+    "path": "haipipe-page-guide.md",
+    "sha256": "1ec52eafcd8f10d28aa4158f0aa8f76f6a1ae07de6b10cec2c4ae1e0efedc16c",
+    "decision": "go ahead to the content and delivery"
+  },
+  "outputs": {
+    "web": {
+      "status": "built",
+      "path": "delivery/web/index.html",
+      "sha256": "52c944a2289f413f0ae4d90add84be56be577566b3d187f78f06a2f4ec11cd5b"
+    },
+    "latex": {
+      "status": "built",
+      "tex": "delivery/latex/haipipe-page-guide.tex",
+      "tex_sha256": "6dffd9f65c7d9605f7c61a80258b01af1765f11e38e1a1fafa2fad891bc69edd",
+      "pdf": "delivery/latex/haipipe-page-guide.pdf",
+      "pdf_sha256": "a52c621c809e3b0332b170c89bdafdfa307622c899e3d5a653f1606676d81d34",
+      "pdf_pages": 2
+    },
+    "word": {
+      "status": "built",
+      "docx": "delivery/word/haipipe-page-guide.docx",
+      "docx_sha256": "ddaa91c344404677748feeab1b2758b6a1c38048aea9fd5f0338f2543da017df",
+      "pdf_twin": {
+        "status": "unavailable",
+        "path": "delivery/word/haipipe-page-guide.pdf",
+        "reason": "The existing headless-browser conversion did not produce the PDF file."
+      }
+    }
+  },
+  "check": {
+    "status": "pending",
+    "next": "independent CHECK"
+  }
+}

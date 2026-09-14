@@ -110,9 +110,11 @@ does not receive its own Run identity.
 │       └── bibex/<task>.bib            DERIVED union of completed Result bibs
 ├── scripts/                           optional reusable instrument
 ├── runs/
-│   └── r01_chen2025_trace.sh          executable ticket
+│   ├── r01_chen2025_trace.sh          executable D1 ticket
+│   └── rp00_mermaid-structure.md      optional Page-owned interaction record
 └── results/
-    └── r01_chen2025_trace/
+    ├── r01_chen2025_trace/            D1 Result
+    └── rp00_mermaid-structure/        optional Page-owned Result
         ├── r01_chen2025_trace.md      Paper/Source Card readout
         ├── r01_chen2025_trace.bib     exactly one authoritative entry
         ├── facts.md                   atomic reusable findings
@@ -335,10 +337,11 @@ Results. A consumer Page may use a Discovery Result as Supporting evidence and
 owns any local Evidence Item Run in the consumer Folder. The standalone
 Evidence and Bibex plugins are compatibility redirects, not authorities.
 
-Discovery's local `runs/` ↔ `results/` pair remains the primary analysis
-receipt. `outline/evidence/` is the shared Page Evidence Workspace: it records
-derived citation material, but it does not replace or duplicate a Paper/Source
-Result. A root `<task>/evidence/`
+Discovery's `rNN` subset of the shared `runs/` ↔ `results/` lanes remains the
+primary analysis receipt. Page-owned `rpNN` records/results are governed by the
+Page workflow and are not part of the Discovery inventory. `outline/evidence/`
+is the shared Page Evidence Workspace: it records derived citation material,
+but it does not replace or duplicate a Paper/Source Result. A root `<task>/evidence/`
 lane is invalid for new or current v6 work.
 
 ## Legacy compatibility

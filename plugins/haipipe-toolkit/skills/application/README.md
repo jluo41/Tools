@@ -1,102 +1,61 @@
 # Application skill family
 
-An Application is a pair of Boards whose Folders are owned by workflow phases:
+An Application joins evidence-led understanding to creative Design without
+letting either side borrow the other's authority:
 
 ```text
 🔎 InsightBoard                                  🎨 DesignBoard
 I0 Meta → I1 Question → I2 D → I3 I → I4 K → I5 W
-                              └── signed W handoff ── PageX ──▶
-                                                  D0 Brief → D1 Card → D2 Unit
-                                                  → D3 Verdict → D4 Division
-                                                  → D5 PageDown → accepted
+                              └── signed W handoff ── X1 ──▶
+                                                  Brief → stable Design Folder
+                                                  Commission → Generate → Verify
+                                                  → preview → Adopt → Page CHECK
 ```
 
-It ends at accepted. Building, fielding, allocation, execution, and measurement
-are Task work outside the Application.
+It ends at an adopted, current candidate/Page projection. Building, fielding,
+allocation, execution, and measurement remain downstream Task work.
 
-## Folder model
+## One Folder, two faces, two workflows
 
-`haipipe-folder` is the shared base. Every Folder has:
+Every Folder has a Page Face and a Task Face. A native Design Folder adds no
+third face and no D0–D5 child spine:
 
-- a **Page Face** for reading, expression, and judgment;
-- a **Task Face** for intent, work, progress, and closure;
-- a phase-selected plugin profile;
-- one gate and one handoff owned by the same phase.
+```text
+📖 Page workflow                    🎨 Design workflow
+rp00 → rp01+ → release → CHECK      Commission/release → generate → verify
+explains the design                 → render preview → human adoption
+```
 
-`primary_face` identifies the normal entry, not the only face. Page Types no
-longer own Application semantics. Existing runtime `page-type:` keys remain
-readable through each phase skill's `legacy_page_type` metadata.
+The counters are independent. Page Runs use `rpNN`; owner-native Design Runs
+use `rdNN_*` and appear under the Page's Task Run lane. Candidate edits
+are new Design revise Runs. Explanatory Page edits are Page Writing Steps.
 
 ## Ownership
 
 | Layer | Owns | Does not own |
 |---|---|---|
-| `haipipe-application` | two-board umbrella, routing verbs, PageX crossing, accepted boundary | interior I/D phases |
-| `haipipe-application-workflow` | cross-board frontier, X0-X3 assertions, delegation and crossing receipts | a third P0-P4 machine |
-| `haipipe-insight` | one-dataset, climb, register, partition, handoff laws | Folder-specific two-face content |
-| `haipipe-insight-workflow` | I0-I5 order, GI0-GI6, cell frontier, dispatch and receipts | Design phases |
-| `haipipe-design` | reads/born-of/grant/stance laws, bets, no-experiment boundary | Folder-specific two-face content |
-| `haipipe-design-workflow` | D0-D5 order, GD0-GD6, thread/round frontier, dispatch and receipts | Insight phases |
-| each phase skill | one Folder kind's Page Face, Task Face, plugins, gate, closure, handoff | family-wide routing |
-| each plugin skill | reusable storage/surface/writer/boundary capability | deciding which phase uses it |
+| `haipipe-application` | two-board umbrella, routes, accepted boundary | interior I/Design/Page phases |
+| `haipipe-application-workflow` | X0–X3 crossing assertions and receipts | a third phase machine |
+| `haipipe-insight[-workflow]` | one-dataset climb, I0–I5, signed W handoff | Design candidates |
+| `haipipe-design` | stable DS Folder, authority, adoption, two-workflow interlock | implementation/experiment |
+| `haipipe-design-workflow` | Commission → Generate → Verify → Adopt | Page Runs/Page release |
+| `haipipe-design-unit` | one frozen Ticket → DU or review Result | Folder/adoption/runtime |
+| `haipipe-page-workflow` | `rp00`, paragraph Runs, Page release and CHECK | generating/judging DUs |
 
-## Phase skill set
-
-```text
-application/workflow-phases/
-├── haipipe-insight-meta/          I0 · meta
-├── haipipe-insight-question/      I1 · question register
-├── haipipe-insight-data/          I2 · run-bound observations
-├── haipipe-insight-information/   I3 · reproducible pattern
-├── haipipe-insight-knowledge/     I4 · bounded claim
-├── haipipe-insight-wisdom/        I5 · counsel + signed handoff
-├── haipipe-design-brief/          D0 · frame
-├── haipipe-design-card/           D1 · bet + release/kill
-├── haipipe-design-unit/           D2 · realization
-├── haipipe-design-verdict/        D3 · independent judgment
-├── haipipe-design-division/       D4 · render + accept/emit
-└── haipipe-design-pagedown/       D5 · prose truth pass + round seal
-```
-
-Each file follows the mechanically checked contract:
+## Active Design skills
 
 ```text
-Position → Folder Kind → Input → Page Face → Task Face → Plugins
-→ Gate and Closure → Handoff → Files
+application/
+├── haipipe-design/                stable DS Folder owner
+├── haipipe-design-workflow/       Commission → Generate → Verify → Adopt
+├── haipipe-design-brief/          canonical Brief Folder owner
+└── haipipe-design-unit/           rdNN worker, not a Folder phase
 ```
 
-Run:
-
-```bash
-python3 ../board/haipipe-board/cli/foldercontracts.py --check
-```
-
-## Principle
-
-Principle is not a Page Type or independent phase. The default warrant stays on
-the D1 Card's `stance:`. D4 may promote one subordinate Principle Folder only
-when a warrant serves two or more Design Pages or when two InsightBoards
-conflict. D5 rereads it for staleness. Its rule is:
-
-```text
-because <signed W handoff>, do <move>, within <rail>
-```
-
-## Plugins
-
-The phase selects plugins. Important boundaries:
-
-- PageX is the one cross-Folder binding surface, across Boards and into Task
-  Folders. A Folder card reads live plan/report and Run/Result status when present.
-- There is no `haipipe-plugin-task` or `task/` lane after migration.
-- Code stays named **Code**. Task Face is universal; execution is behavior;
-  Code is the optional presenter over `scripts/config/`, `runs/`, and
-  `results/`.
-- Principle is not a plugin.
+Insight I0–I5 phase skills remain under `application/workflow-phases/`. Design
+has no D0–D5 phase skills, compatibility readers, or Design thread plugin.
 
 ## Runtime
-
-Runtime paths and human decisions remain stable during this semantic migration:
 
 ```text
 <application-root>/
@@ -110,54 +69,61 @@ Runtime paths and human decisions remain stable during this semantic migration:
 └── <Topic>-DesignBoard/
     ├── board.md
     ├── 0-BR-brief/BR00-brief/
-    ├── 1-P-principle/          optional promoted D4 role
-    ├── workflow/rounds/R<NN>-pagedown/   minimal D5 audit receipt
     └── 2-DS-design/DS<NN>-<audience>-<job>-<venue>/
         ├── <stem>.md
-        ├── design/             one evolving Card → Unit → Verdict thread Folder
-        ├── delivery/render/
-        ├── evidence/pagex/
-        └── outline/
+        ├── outline/
+        │   ├── <stem>-logic.mmd
+        │   ├── decisions/
+        │   └── evidence/               Page CITE/VALUE/DISPLAY only
+        ├── runs/                       rpNN Page + rdNN Design identities
+        ├── results/rdNN_generate|verify_*/
+        ├── scripts/config/
+        ├── workflow/
+        └── delivery/
+            ├── render/                 candidate previews
+            └── web|latex|word/         Page projections
 ```
 
-Insight may also use the partition-major layout defined by
-`haipipe-application/ref/partition.md`. Layout changes paths, not phase
-ownership.
+Folders and optional lanes are created only when used. Page Evidence lives
+under `outline/evidence/`. PageX paths are invalid for Design.
+
+## Authority boundaries
+
+```text
+signed W handoff  ──▶ Design Commission authority (path/hash; no fake Run id)
+Page factual claim ─▶ typed outline/evidence item + real Result/material binding
+human release      ─▶ permission to execute one exact Commission
+human adoption     ─▶ exact DU/member/verify/render/handoff versions
+Page CHECK         ─▶ projection matches adopted versions; no second adoption
+```
+
+Grant is not warrant. Inspiration is not evidence. A forecast is not a measured
+effect. A brainstorm set is not an experiment and contains no arms or
+allocation. Design never launches hidden Insight work; a missing premise
+returns through X0 to its owning Insight question.
 
 ## Cross-board workflow
 
-`haipipe-application-workflow` reports the native frontiers unchanged:
-
 ```text
-insight: <cell> · I<n> · GI<n>
-design:  <thread> · D<n> · GD<n>
-crossing: X0 need-out | X1 signed-handoff | X2 outbound | X3 read-back
+X0  Brief need → registered Insight question
+X1  settled/signed W handoff → released Design Commission input
+X2  adopted + independently verified candidate + current Page → downstream Task
+X3  measured Task Result → new/reopened I2 reading
 ```
 
-It delegates to the owning workflow and adds no human gate. The four human
-gates are Outline release, Wisdom signing, Card release/kill, and Division
-acceptance.
+The crossing workflow reports the Insight frontier, Design-domain frontier,
+Design Page frontier, and crossing separately. The human gates are Insight
+Probe release, W signing, Design Commission release, and candidate adoption.
+Page CHECK consumes the adoption as its `domain-gate`; it does not create a
+fifth candidate-selection gate.
 
-## Compatibility
+## Clean break and validation
 
-- Read legacy `page-type: meta|question|data|information|knowledge|wisdom|
-  brief|design` through phase metadata.
-- Do not create new `haipipe-page-for-*` Application skills.
-- Retired `intervention` and `artifact` are read-and-fold inputs only.
-- Retired `principle` has no live compatibility key because no live page used
-  it; D4 owns any future promoted role.
-- Historical boards and receipts are not bulk-rewritten.
-- Unmigrated families may retain legacy compatibility contracts until their
-  own workflow phases absorb those Page faces.
+PageX, D0–D5/GD0–GD6, `design/DU*/`, old card/thread/plugin records, v1
+Tickets/Results, `rNN_design_*`, and old acceptance rows are unsupported. The
+current family does not read, route, validate, or migrate them. Historical
+project bytes may remain on disk, outside this workflow.
 
-## Validation
-
-The migration is complete only when:
-
-1. Folder-contract validation is clean and proven to fail on a broken fixture.
-2. Page-Face outline resolution works for both `folder-kind:` and legacy
-   `page-type:`.
-3. the Page-Type compatibility inventory has no Application registry drift.
-4. Board checks and Application family tests pass.
-5. a fresh-context agent discovers the phase skill, follows both faces, selects
-   plugins correctly, and stops at the owning gate.
+Validate the family with folder/board tests, the Design Unit checker, Page tests,
+and a fresh-context real Folder run. Structural pass alone does not prove
+semantic quality, independent judgment, or human authority.

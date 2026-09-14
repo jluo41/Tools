@@ -1,3 +1,14 @@
+## 1.1.0 · 2026-09-13
+
+- Add the Paper–Page integration boundary for Page 0.89: Paper owns the
+  journey and composition while the shared Page owns the Page Face, lifecycle,
+  Page Runs, Evidence Workspace, release, and CHECK.
+- Replace the current Page-local writing identity with the Page-owned
+  `rp00_mermaid-structure` / `rpNN_pNN[-pNN]` rule; delegated work remains in
+  the owner-native Task lane and historical identities remain read-only.
+- Add the Page integration reference for Page-global paragraph addresses,
+  Page release, G3/G4 admission, and source/projection boundaries.
+
 ## 1.0.3 · 2026-09-08
 
 - Follow Page's paragraph-writing Ticket interface for Content; Paper Evidence/Display pm/pa/pr naming is unchanged.

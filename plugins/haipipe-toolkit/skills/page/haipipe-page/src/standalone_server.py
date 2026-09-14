@@ -9,6 +9,7 @@ startup_url. Reverse proxies must preserve Host and use the public_url origin.
 from __future__ import annotations
 
 import hmac
+import importlib.util
 import ipaddress
 import json
 import mimetypes
@@ -19,6 +20,7 @@ import socket
 import stat
 import threading
 from dataclasses import replace
+from functools import lru_cache
 from http.cookies import SimpleCookie
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -39,6 +41,27 @@ PUBLIC_SUFFIXES = {
     '.webp', '.ico', '.pdf', '.woff', '.woff2', '.ttf', '.avif', '.mp4', '.mp3',
 }
 PRIVATE_PARTS = page_workspace.PRIVATE_LANES | page_workspace.PRIVATE_FILES
+
+
+@lru_cache(maxsize=1)
+def _labeling_plugin_module():
+    """Load the optional domain presenter without making Page own its code."""
+    here = Path(__file__).resolve()
+    candidate = next(
+        (parent / 'subjective-label' / 'engine' / 'page_plugin.py'
+         for parent in here.parents
+         if (parent / 'subjective-label' / 'engine' / 'page_plugin.py').is_file()),
+        None,
+    )
+    if candidate is None:
+        return None
+    spec = importlib.util.spec_from_file_location(
+        'haipipe_subjective_label_page_plugin', candidate)
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _origin(value):
@@ -336,7 +359,8 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
                      '/_board/value': self.value_view,
                      '/_board/runs': self.runs_view,
                      '/_board/delivery': self.delivery_tab_view,
-                     '/_board/folderstat': self.folderstat_view}
+                     '/_board/folderstat': self.folderstat_view,
+                     '/_board/labeling': self.labeling_view}
             if route in views:
                 return views[route](head_only=self.command == 'HEAD')
             return self._static(parsed.path)
@@ -392,7 +416,8 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
                            '/_board/value': self.plug_value,
                            '/_board/runs': self.plug_runs,
                            '/_board/delivery': self.plug_delivery,
-                           '/_board/folderstat': self.plug_folderstat}
+                           '/_board/folderstat': self.plug_folderstat,
+                           '/_board/labeling': self.plug_labeling}
                 if route not in plugins:
                     return self._error(404, 'Unsupported Page endpoint')
                 result, err = plugins[route](payload)
@@ -403,6 +428,35 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
             self._error(400, str(exc) if isinstance(exc, ValueError) else 'Invalid Page request')
         except Exception:
             self._error(500, 'Unable to process this Page request')
+
+    def labeling_view(self, head_only=False):
+        query = parse_qs(urlsplit(self.path).query)
+        path_q = (query.get('path') or [''])[0]
+        file_q = (query.get('file') or [''])[0]
+        page_src, error = self.target({'path': path_q, 'file': file_q})
+        if page_src is None:
+            return self.reply(400, {'ok': False, 'err': error})
+        module = _labeling_plugin_module()
+        if module is None or not module.applicable(page_src):
+            return self.reply(404, {'ok': False, 'err': 'Page has no available Labeling plugin'})
+        body = module.render(page_src).encode('utf-8')
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/html; charset=utf-8')
+        self.send_header('Content-Length', str(len(body)))
+        self.send_header('Cache-Control', 'no-store')
+        self.end_headers()
+        if not head_only:
+            self.wfile.write(body)
+
+    def plug_labeling(self, payload):
+        page_src, error = self.target(payload)
+        if page_src is None:
+            return None, error
+        module = _labeling_plugin_module()
+        if module is None or not module.applicable(page_src):
+            return None, 'Page has no available Labeling plugin'
+        return {'url': '/_board/labeling?path=%s&file=%s' %
+                (quote(payload.get('path') or ''), quote(payload.get('file') or ''))}, None
 
 
 def create_server(context, host='127.0.0.1', port=0, token=None,

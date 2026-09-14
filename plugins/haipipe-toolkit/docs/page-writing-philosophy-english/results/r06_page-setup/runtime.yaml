@@ -1,0 +1,14 @@
+run: r06_page-setup
+family: page
+operation: page-setup
+interaction: delegated
+mode: create-semantic-records
+target: page-writing-philosophy-english.md
+ticket: runs/r06_page-setup.md
+result: results/r06_page-setup
+status: failed
+started_at: 2026-09-12T23:01:31Z
+finished_at: 2026-09-12T23:01:31Z
+worker:
+  kind: skill
+  name: haipipe-page

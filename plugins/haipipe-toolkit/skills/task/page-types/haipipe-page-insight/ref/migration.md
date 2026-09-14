@@ -5,10 +5,11 @@ Folders keep their own contracts; this concerns task-side research Pages.
 
 1. Read the old Page, sources, and consumers. Preserve topic, data scope,
    evidence, limitations, and result dates.
-2. Keep its Folder/Page address. Add `insight-layout: items-v1` and stable
+2. Keep its Folder/Page address. Add `insight-layout: items-v2` and stable
    `insight-instance:`; declare snapshots in `workflow/insight.yaml`.
-3. Map its old question to `r01_<descriptive-stem>`, inheriting the old
-   `insight-target:`. New questions in that topic become sibling items.
+3. Preserve an existing `rNN_<descriptive-stem>` as readable items-v1 history.
+   For new work, identify the reusable normal R ticket and allocate an
+   `riNN_<descriptive-stem>` binding to it and the intended dataset snapshot.
 4. Do not fabricate execution from prose. When historical receipts establish
    the contract, register an imported Result with original provenance and an
    explicit import/review receipt. Otherwise keep readable legacy material
@@ -19,7 +20,7 @@ Folders keep their own contracts; this concerns task-side research Pages.
    verification. Never match an RF by text or by selecting `latest`.
 7. Update consumer bindings and recheck their context. The I1/I5 bridge and
    its person's signature remain; migration does not mint one.
-8. Run the item checker and Page checks. A Page without `items-v1` remains
+8. Run the item checker and Page checks. A Page without `items-v2` remains
    readable under its recorded old contract; do not claim it is migrated or
    automatically rewrite unrelated live Pages.
 

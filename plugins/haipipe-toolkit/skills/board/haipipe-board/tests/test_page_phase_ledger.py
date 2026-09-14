@@ -94,11 +94,12 @@ class OwedLedgerTest(unittest.TestCase):
         self.assertEqual([r["tick"] for r in owed_ledger(st)], ["ruling"])
         self.assertIn("owner: domain-gate", owed_ledger(st)[0]["note"])
 
-    def test_in_place_phase_file_resolves_a_card_without_frontmatter(self):
+    def test_retired_design_phase_file_is_unsupported(self):
         st = self.state(approved=True, phase_folder_kind="design-card")
         self.assertEqual(st["folder_kind"], "design-card")
         self.assertEqual(st["folder_kind_source"], "workflow/phase.yaml")
-        self.assertEqual(st["owner_ruling"], "domain-gate")
+        self.assertEqual(st["owner_ruling"], "unsupported")
+        self.assertIn("retired Design", st["owner_ruling_error"])
 
     def test_phase_file_and_markdown_kind_mismatch_is_never_guessed(self):
         st = self.state(

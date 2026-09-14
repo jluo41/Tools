@@ -2,6 +2,27 @@
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
+- 0.4.0 current (260913, user ruling): the current clean-break architecture and
+  field-test repair remain pre-1.0. The later-looking labels recorded below
+  were never user-approved releases and are retracted as version assignments;
+  their notes remain only as development provenance. Future `1.0.0+` requires
+  explicit user approval.
+
+- 4.0.1 (260913): field-test repair. Unsupported Design bytes are never called
+  read-only/readable/migration history; stop content inspection at a decisive
+  unsupported marker and distinguish audit non-mutation from compatibility.
+
+- 4.0.0 (260913): clean break. Design Run ids become independent `rdNN_*`
+  identities beside Page `rpNN`; v1, `rNN_design_*`, D0-D5/GD0-GD6,
+  `design/DU*/`, PageX, and old thread/plugin readers are rejected. Brief and
+  Unit move out of `workflow-phases/`; obsolete Design phase skills are removed.
+
+- 3.0.0 (260913): align native Design with Page 0.89 as one Folder with two
+  orthogonal workflows. Page Runs explain; Design Runs generate/verify; human
+  adoption supplies the Page domain gate. Add v2 `design_intent`, current
+  `outline/evidence/`, candidate-vs-Page delivery boundaries, and keep v1/D0-D5
+  read-only.
+
 - 1.0.3 (260831): make the subject-first unprefixed DesignBoard canonical and
   distinguish D4 acceptance from the required D5/GD6 round seal.
 

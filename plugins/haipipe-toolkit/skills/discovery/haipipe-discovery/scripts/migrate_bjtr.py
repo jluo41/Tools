@@ -401,31 +401,6 @@ Next, admit a {subject} source, revise the synthesis, or hold the boundary.
 
 **Migration state**: Existing records remain linked below, while historical Paper Runs are deliberately not inferred from those files.
 
-## Writing Style
-**Audience and purpose**: Write for a reader who needs the answer, its evidence boundary, and the next decision without reading the execution history first.
-
-**Language and voice**: Use plain English, active voice, and domain terms only after defining them in the sentence that first needs them.
-
-**Sentence shape**: Put one claim on each source line; keep labels as short noun phrases and move explanatory clauses into prose.
-
-**Evidence rule**: Separate legacy indexes from new Result-backed claims, and attach every newly admitted factual source to its Run, Result Card, facts, and cite key.
-
-**Required sections**: Keep Opening, Writing Style, all four Content roles, and matching Aims; a migration Page may keep unfinished payload work visibly active.
-
-**Optional sections**: Add a top-level Diagram only when it clarifies the whole inquiry; keep typed records, PDFs, and other supporting files linked rather than copied.
-
-**Question and boundary**: State the exact inquiry, evidence population, and canonical-Subject admission rule.
-
-**Type payload**: Synthesize the selected `{discovery_type}` promise in the root Page rather than leaving the reader at a legacy file link.
-
-**Evidence map**: Bind factual support to Result Cards and cite keys, and keep disagreements and unresolved gaps visible.
-
-**Limits and next move**: Say what the evidence does not establish and choose one lawful route: admit, revise, extend, hold, or close.
-
-**Section rules**: Aims mirror the complete subject-specific division names and report current facts rather than future plans.
-
-**Revision rule**: Keep Content and Aim names aligned, and update synthesis prose only when its evidence route is visible.
-
 ## Content
 ### 1 · {division_names[0]}
 **{subject} inquiry boundary**: how this question becomes a bounded evidence admission rule.

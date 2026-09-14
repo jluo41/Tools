@@ -10,7 +10,8 @@ ordinal such as `j02` is never enough to identify a new Page.
 | Identity | Owner | Physical home | Purpose |
 |---|---|---|---|
 | **Paper-local Run** | a Paper Section or Round Page's Evidence/Display lane | `<page>/runs/<PAPER_RUN_ID>.sh` + `<page>/results/<PAPER_RUN_ID>/` | one typed local Result whose identity carries the Paper lane and semantic Page |
-| **Page-local Run** | any Page owner | `<page>/runs/<RUNNAME>` + `<page>/results/<RUNNAME>/` | a Page-scoped attempt using the shared `rNN_<family>-<operation>_<target>` grammar |
+| **Page-owned interaction Run** | a Page owner | `<page>/runs/<RUNNAME>` + `<page>/results/<RUNNAME>/` | human Page interaction using the current `rp00` / `rpNN` grammar |
+| **Owner-native Task Run** | Task/Discovery/labeling owner | the owner's task Run store | delegated work projected into a Page; it keeps its owner-native `rNN`, `rlNN`, or global identity |
 | **Job-backed Run** | Task/Discovery owner | the owner's `bNNjNNtNNrNN` store | reusable external work that a Paper Page supports, never a Paper-local alias |
 
 The owning folder is part of the identity. A bare `r01` is not a reference.
@@ -71,55 +72,62 @@ P A · Robustness · E01-VALUE-sensitivity · R01
 P R · RD01-MISQ-feedback-20260825 · E01-CITE-response · R01
 ```
 
-## 4. Page-local and Paragraph Writing grammar
+## 4. Page-owned interaction and delegated Task grammar
 
-The shared Page namespace remains available and is not renamed merely because
-the Page lives inside a Paper:
+The current Page-owned human interaction namespace is deliberately separate
+from Paper-local Evidence/Display Runs:
 
 ```text
-PAGE_RUN_ID       := r<NN>_<family>-<operation>_<target>
-PARAGRAPH_WRITING  := r<NN>_page-writing_c<NN>-p<NN>
-PAGE_EVIDENCE     := r<NN>_page-evidence-item_e<NN>-<type>-<slug>
-PAGE_DISPLAY      := r<NN>_page-display_c<NN>-f<NN>
+PAGE_RUN_ID       := rp00_mermaid-structure | rp<NN>_p<NN>[-p<NN>]
+PAGE_PARAGRAPH_P  := P<NN>                         # Page-global address
 ```
 
-For a Paper Section, `PARAGRAPH_WRITING` is the current Page-local Content
-Run, for example `r01_page-writing_c01-p01`. Its Main/Appendix meaning
-comes from the owning semantic Page (`S-MISQ-Main-Introduction` or
-`S-MISQ-Appendix-Robustness`) and must also be recorded in `runtime.yaml`:
+Every Page-owned interaction begins with `rp00_mermaid-structure`, which
+freezes the Mermaid structure and the Page-global `P01…PN` paragraph address
+space. Later interaction Runs use `rpNN_pNN[-pNN]`; `P` does not reset when a
+new content division begins. A Paper Section records its semantic Page id and
+Paper lane beside the Page receipt, but does not reinterpret the Page Run id.
+
+Delegated paragraph drafting is an owner-native Task Run, not a second Page
+Run grammar. It may be `rNN`, `rlNN`, or another current Task identity, with
+the full owner path carried in the Page receipt:
 
 ```yaml
-run: r01_page-writing_c01-p01
-family: page
+run: r01
+family: task
 operation: paragraph-writing
 page: S-MISQ-Main-Introduction
 paper_lane: main
-target: C1.P1
+target: P01
+owner: tasks/<task-block>/runs/r01/
 ```
 
-The Ticket is `runs/<RUNNAME>.md`, with its prompt inside. Result shape,
-acceptance and promotion are owned by
-`../../../page/page-workflows/haipipe-page-content/ref/paragraph-run.md`.
-Historical `rNN_page-division-writing_cNN` Runs remain readable and unchanged;
-new paragraph work does not split or rename their Results.
+`rp00` and `rpNN` are Page-owned interaction Tickets. Task tickets and Results
+remain in their owner-native stores. Historical `rNN_page-writing...`,
+`rNN_page-division-writing...`, `rNN_page-evidence-item...`, and
+`rNN_page-display...` forms remain readable and unchanged; they are not current
+Page Runs and must not be renamed or used to satisfy a new Page Run
+prerequisite.
 
-Do not make the same attempt both a Paper-local Evidence Run and a Page-local
-Paragraph Writing Run. Evidence prepares a typed Result; Paragraph Writing
-realizes one Content paragraph from the folded Result. They are different targets
-and may legitimately both have an `r01` in different namespaces.
+Do not make the same attempt both a Paper-local Evidence Run and a Page-owned
+interaction Run. Evidence prepares a typed Result; Page interaction realizes
+or reviews Page content from the folded Result. They are different targets and
+may legitimately both use an ordinal in different namespaces.
 
 ## 5. Collision and reference rules
 
-1. `pm-`, `pa-`, and `pr-` are reserved for new Paper-local Runs. `rNN_…` is
-   the Page-local namespace; `bNNjNNtNNrNN` remains Job-backed.
+1. `pm-`, `pa-`, and `pr-` are reserved for new Paper-local Runs. `rp00` and
+   `rpNN` are reserved for Page-owned interaction; `rNN`/`rlNN` and global
+   forms remain owner-native Task identities; `bNNjNNtNNrNN` remains the
+   Job-backed identity.
 2. Uniqueness is `(owner Page path, Run id)`, not the numeric suffix alone.
    A cross-Page reference must include the semantic Page id and the full Run
    id; a cross-Folder reference also includes the owner-native path.
 3. The lane token does not replace the Page id. `m` means Main only after the
    Page resolves to `S-<desk>-Main-…`; it never means “the first page”.
 4. `Story`, `Section`, and `Round` are Page identities/owners, not additional
-   Run families. The Run family remains `Page · Evidence Item`, `Page ·
-   Display`, or `Page · Paragraph Writing` as defined by `haipipe-run`.
+   Run families. Paper-local Evidence/Display, Page-owned interaction, and
+   owner-native Task work remain distinct lanes.
 5. A SURVEY reservation is a plan and does not count as an allocated Run.
    LAND creates the Ticket, paired Result directory, and runtime receipt.
 

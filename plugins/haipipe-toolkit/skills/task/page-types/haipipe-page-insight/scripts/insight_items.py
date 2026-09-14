@@ -7,6 +7,7 @@ never infer scientific correctness, execute a recipe, or approve a handoff.
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 import hashlib
 import json
 from pathlib import Path
@@ -15,12 +16,16 @@ import sys
 
 import yaml
 
-RUN = re.compile(r"r\d{2,}_[a-z0-9][a-z0-9_-]*\Z")
+RUN = re.compile(r"(?:ri|r)\d{2,}_[a-z0-9][a-z0-9_-]*\Z")
+INSIGHT_RUN = re.compile(r"ri\d{2,}_[a-z0-9][a-z0-9_-]*\Z")
+BASE_RUN = re.compile(r"(?:r\d{2,}_[a-z0-9][a-z0-9_-]*|b\d+j\d+t\d+r\d+)\Z")
 VERSION = re.compile(r"v\d{3,}\Z")
 INSTANCE = re.compile(r"[a-z0-9][a-z0-9_/-]*\Z")
 TARGETS = {"data": "D", "information": "I", "knowledge": "K", "wisdom": "W"}
 STAGES = ("frozen", "evidence", "reasoned", "published")
 STATUSES = {"planned", "running", "complete", "failed", "blocked"}
+INSTANCE_SCHEMAS = {"haipipe.insight-instance/v1", "haipipe.insight-instance/v2"}
+INPUT_SCHEMAS = {"haipipe.insight-input/v1", "haipipe.insight-input/v2"}
 
 
 def digest(path):
@@ -50,6 +55,50 @@ def resolve(root, value):
 
 def full_id(instance, run, version):
     return f"{instance}#{run}@{version}"
+
+
+def item_ticket(root, item):
+    """Resolve the authored ticket for a legacy item or current RI binding."""
+    run = item.get("run", "")
+    suffix = ".yaml" if INSIGHT_RUN.fullmatch(str(run)) else ".sh"
+    return Path(root) / "runs" / f"{run}{suffix}"
+
+
+def validate_base_run(root, record, errors, label):
+    """Validate the normal R ticket that an RI rebinds to new data."""
+    if not isinstance(record, dict):
+        errors.append(f"{label}: base_run must be a mapping")
+        return
+    required(record, ("id", "ticket", "sha256"), errors, f"{label}/base_run")
+    ident = str(record.get("id", ""))
+    if not BASE_RUN.fullmatch(ident):
+        errors.append(f"{label}: invalid base Run id {ident}")
+    try:
+        ticket = resolve(root, record.get("ticket"))
+        if ident.startswith("r") and ticket.stem != ident:
+            errors.append(f"{label}: local base Run id does not match ticket stem")
+    except (ValueError, TypeError):
+        pass
+    binding(root, record, errors, f"{label}/base_run", "ticket")
+
+
+def validate_insight_ticket(root, item, ticket, errors):
+    """Require RI to be an explicit immutable R + dataset binding."""
+    run = item.get("run", "")
+    if not INSIGHT_RUN.fullmatch(str(run)):
+        return
+    validate_base_run(root, item.get("base_run"), errors, run)
+    try:
+        record = read_yaml(ticket)
+        if record.get("schema") != "haipipe.insight-run/v1":
+            errors.append(f"{run}: invalid Insight Run ticket schema")
+        if record.get("run") != run:
+            errors.append(f"{run}: Insight Run ticket identity mismatch")
+        for key in ("base_run", "datasets", "question", "target", "expected", "acceptance"):
+            if record.get(key) != item.get(key):
+                errors.append(f"{run}: Insight Run ticket differs from manifest field {key}")
+    except (OSError, ValueError, TypeError, yaml.YAMLError) as exc:
+        errors.append(f"{run}: invalid Insight Run ticket: {exc}")
 
 
 def required(record, keys, errors, label):
@@ -162,12 +211,18 @@ def execution(root, manifest, item, directory):
         frozen = {}
         if "frozen" in checkpoints or status == "complete":
             frozen = read_yaml(directory / "input.yaml")
-            if frozen.get("schema") != "haipipe.insight-input/v1":
+            if frozen.get("schema") not in INPUT_SCHEMAS:
                 errors.append(f"{ident}: invalid input schema")
             for key, value in (("instance", manifest["instance"]), ("run", run), ("version", version)):
                 if frozen.get(key) != value:
                     errors.append(f"{ident}: frozen {key} identity mismatch")
             required(frozen, ("question", "target", "acceptance", "datasets"), errors, ident)
+            if INSIGHT_RUN.fullmatch(run):
+                if frozen.get("schema") != "haipipe.insight-input/v2":
+                    errors.append(f"{ident}: RI execution requires input schema v2")
+                if frozen.get("base_run") != item.get("base_run"):
+                    errors.append(f"{ident}: frozen base Run differs from RI binding")
+                validate_base_run(root, frozen.get("base_run"), errors, ident)
             if runtime.get("input_sha256") != digest(directory / "input.yaml"):
                 errors.append(f"{ident}: frozen input hash mismatch")
             known = {f"{d['id']}@{d['version']}": d for d in manifest.get("datasets", [])}
@@ -181,7 +236,7 @@ def execution(root, manifest, item, directory):
                 source_id = str(source.get("run", ""))
                 if not (re.fullmatch(r"b\d+j\d+t\d+r\d+", source_id)
                         or re.fullmatch(r"pj\d+t\d+r\d+", source_id)
-                        or re.fullmatch(r"[a-z0-9][a-z0-9_/-]*#r\d+_[a-z0-9_-]+@v\d{3,}", source_id)):
+                        or re.fullmatch(r"[a-z0-9][a-z0-9_/-]*#(?:ri|r)\d+_[a-z0-9_-]+@v\d{3,}", source_id)):
                     errors.append(f"{ident}: unqualified Supporting Run id")
                 binding(root, source, errors, ident)
                 if "#" in source_id:
@@ -249,7 +304,8 @@ def inspect(root, selected=None, version=None):
     root = Path(root).resolve()
     errors, rows = [], []
     manifest = read_yaml(root / "workflow" / "insight.yaml")
-    if manifest.get("schema") != "haipipe.insight-instance/v1":
+    schema = manifest.get("schema")
+    if schema not in INSTANCE_SCHEMAS:
         errors.append("invalid instance schema")
     required(manifest, ("instance", "topic", "datasets", "items"), errors, "instance")
     instance = str(manifest.get("instance", ""))
@@ -270,6 +326,8 @@ def inspect(root, selected=None, version=None):
         if not RUN.fullmatch(str(run)) or run in seen_runs:
             errors.append(f"invalid or duplicate item id {run}")
             continue
+        if schema == "haipipe.insight-instance/v1" and INSIGHT_RUN.fullmatch(str(run)):
+            errors.append(f"{run}: RI requires instance schema v2")
         seen_runs.add(run)
         if selected and run != selected:
             continue
@@ -280,7 +338,9 @@ def inspect(root, selected=None, version=None):
             errors.append(f"{run}: undeclared dataset version")
         versions = []
         result_root = root / "results" / run
-        ticket = root / "runs" / f"{run}.sh"
+        ticket = item_ticket(root, item)
+        if INSIGHT_RUN.fullmatch(str(run)) and ticket.is_file():
+            validate_insight_ticket(root, item, ticket, errors)
         if result_root.exists():
             for directory in sorted(result_root.iterdir()):
                 if version and directory.name != version:
@@ -318,7 +378,7 @@ def inspect(root, selected=None, version=None):
     return manifest, rows, errors
 
 
-TABLE_HEADERS = ["Item", "Question", "Target", "Datasets", "Current execution", "Checkpoint", "Outcome", "Last accepted / RF"]
+TABLE_HEADERS = ["Insight Run", "Base R", "Question", "Target", "Datasets", "Current execution", "Checkpoint", "Outcome", "Last accepted / RF"]
 
 
 def table_rows(rows):
@@ -333,7 +393,9 @@ def table_rows(rows):
             state += " (input binding stale)"
         if current and not current.get("valid"):
             state = "invalid"
-        values = [item["run"], item.get("question", ""), item.get("target", ""),
+        base = item.get("base_run", {})
+        values = [item["run"], base.get("id", "legacy self-ticket"),
+                  item.get("question", ""), item.get("target", ""),
                   ", ".join(item.get("datasets", [])), current.get("execution", "none"),
                   current.get("checkpoint", "ticket ready" if row["ticket"] else "planned"), state,
                   (last.get("execution", "none") + (" / " + ", ".join(last["findings"]) if last else ""))]
@@ -348,16 +410,121 @@ def table(rows):
     return "\n".join(lines)
 
 
+def _stored_path(root, path):
+    path = Path(path).resolve()
+    try:
+        return str(path.relative_to(Path(root).resolve()))
+    except ValueError:
+        return str(path)
+
+
+def _write_yaml(path, value):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(yaml.safe_dump(value, sort_keys=False, allow_unicode=True), encoding="utf-8")
+
+
+def bind_insight_run(root, *, base_run, base_ticket, datasets, stem, question,
+                     target, expected, acceptance):
+    """Allocate one RI that reuses an R ticket against declared new data."""
+    root = Path(root).resolve()
+    manifest_path = root / "workflow" / "insight.yaml"
+    manifest = read_yaml(manifest_path)
+    if manifest.get("schema") not in INSTANCE_SCHEMAS:
+        raise ValueError("bind requires a valid Insight instance manifest")
+    if not INSTANCE.fullmatch(str(manifest.get("instance", ""))):
+        raise ValueError("bind requires a valid instance id")
+    if not BASE_RUN.fullmatch(str(base_run)):
+        raise ValueError("--base-run must be a normal local/global R identity")
+    ticket_path = resolve(root, base_ticket).resolve()
+    if not ticket_path.is_file():
+        raise ValueError(f"base Run ticket not found: {ticket_path}")
+    if str(base_run).startswith("r") and ticket_path.stem != base_run:
+        raise ValueError("local --base-run must match the base ticket stem")
+    stem = re.sub(r"[^a-z0-9_-]+", "-", stem.lower()).strip("-_")
+    if not stem or not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", stem):
+        raise ValueError("--stem must resolve to lowercase ASCII letters, digits, _ or -")
+    if target not in TARGETS:
+        raise ValueError(f"--target must be one of {', '.join(TARGETS)}")
+    if not datasets:
+        raise ValueError("bind requires at least one --dataset id@version")
+    inventory = {f"{d.get('id')}@{d.get('version')}": d for d in manifest.get("datasets", [])}
+    if any(dataset not in inventory for dataset in datasets):
+        missing = sorted(set(datasets) - set(inventory))
+        raise ValueError(f"undeclared dataset binding: {', '.join(missing)}")
+    for dataset in datasets:
+        faults = []
+        binding(root, inventory[dataset], faults, dataset, "manifest")
+        if faults:
+            raise ValueError(faults[0])
+    numbers = [int(match.group(1)) for item in manifest.get("items", [])
+               if (match := re.match(r"ri(\d+)_", str(item.get("run", ""))))]
+    run = f"ri{max(numbers, default=0) + 1:02d}_{stem}"
+    base = {"id": base_run, "ticket": _stored_path(root, ticket_path),
+            "sha256": digest(ticket_path)}
+    item = {"run": run, "base_run": base, "question": question, "target": target,
+            "datasets": list(datasets), "expected": expected, "acceptance": acceptance}
+    ticket = {"schema": "haipipe.insight-run/v1", **item}
+    version = "v001"
+    frozen = {"schema": "haipipe.insight-input/v2", "instance": manifest["instance"],
+              "run": run, "version": version, "base_run": base,
+              "question": question, "target": target, "expected": expected,
+              "acceptance": acceptance,
+              "datasets": [inventory[key] for key in datasets],
+              "supporting_results": [], "recipe_calls": []}
+    run_ticket = root / "runs" / f"{run}.yaml"
+    directory = root / "results" / run / version
+    if run_ticket.exists() or directory.exists():
+        raise ValueError(f"allocated Insight Run already exists: {run}")
+    manifest["schema"] = "haipipe.insight-instance/v2"
+    manifest.setdefault("items", []).append(item)
+    now = datetime.now().astimezone().isoformat(timespec="seconds")
+    _write_yaml(run_ticket, ticket)
+    _write_yaml(directory / "input.yaml", frozen)
+    runtime = {"schema": "haipipe.insight-runtime/v1",
+               "execution": full_id(manifest["instance"], run, version),
+               "family": "insight", "operation": "item", "status": "planned",
+               "input_sha256": digest(directory / "input.yaml"),
+               "checkpoints": {"frozen": {"at": now, "receipt": "input.yaml"}},
+               "attempts": [{"attempt": 1, "status": "planned"}]}
+    _write_yaml(directory / "runtime.yaml", runtime)
+    _write_yaml(manifest_path, manifest)
+    return {"insight_run": run, "base_run": base_run, "datasets": list(datasets),
+            "execution": runtime["execution"], "ticket": str(run_ticket),
+            "input": str(directory / "input.yaml"), "runtime": str(directory / "runtime.yaml")}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("check", "table", "cite"))
+    parser.add_argument("command", choices=("check", "table", "cite", "bind"))
     parser.add_argument("folder", type=Path)
     parser.add_argument("--item")
     parser.add_argument("--version")
     parser.add_argument("--finding")
     parser.add_argument("--historical", action="store_true", help="Resolve an old pin without approving current applicability")
+    parser.add_argument("--base-run")
+    parser.add_argument("--base-ticket")
+    parser.add_argument("--dataset", action="append", default=[])
+    parser.add_argument("--stem")
+    parser.add_argument("--question")
+    parser.add_argument("--target", choices=tuple(TARGETS))
+    parser.add_argument("--expected")
+    parser.add_argument("--acceptance")
     args = parser.parse_args(argv)
     try:
+        if args.command == "bind":
+            missing = [name for name in ("base_run", "base_ticket", "stem", "question",
+                                          "target", "expected", "acceptance")
+                       if not getattr(args, name)]
+            if missing:
+                raise ValueError("bind requires --" + ", --".join(name.replace("_", "-") for name in missing))
+            packet = bind_insight_run(args.folder, base_run=args.base_run,
+                                      base_ticket=args.base_ticket, datasets=args.dataset,
+                                      stem=args.stem, question=args.question,
+                                      target=args.target, expected=args.expected,
+                                      acceptance=args.acceptance)
+            print(json.dumps(packet, indent=2))
+            return 0
         manifest, rows, errors = inspect(args.folder, args.item if args.command == "cite" else None,
                                          args.version if args.command == "cite" else None)
         if args.command == "table":
@@ -371,7 +538,10 @@ def main(argv=None):
             if candidates[0]["stale"] and not args.historical:
                 raise ValueError("historical Result exists but current input binding needs recheck")
             path = args.folder.resolve() / "results" / args.item / args.version / "result.yaml"
+            selected_item = next(row["item"] for row in rows if row["item"]["run"] == args.item)
             print(json.dumps({"instance": manifest["instance"], "item": args.item,
+                              "insight_run": args.item if INSIGHT_RUN.fullmatch(args.item) else None,
+                              "base_run": selected_item.get("base_run"),
                               "version": args.version, "finding": args.finding,
                               "applicability": "historical-needs-recheck" if args.historical else "current-binding-matches",
                               "result": str(path), "sha256": digest(path)}, indent=2))

@@ -6,15 +6,15 @@ description: >-
   two planning cycles, SHAPE (brief → propose → react → revise; name every typed
   Evidence Item, compact Label, and expected ready payload) and SURVEY (inventory zero-to-many
   Execution/Discovery Supporting Runs, one Local Input, and exactly one local
-  Page Evidence Item Run declaration). Writes the versioned plan,
-  Evidence Item table, open threads and log;
+  Page Evidence Item Run declaration). Writes the versioned plan, the derived
+  Mermaid Structure used by rp00, Evidence Item table, open threads and log;
   records evidence-to-Run lineage but allocates no Ticket and executes no material. Trigger: page outline, OUTLINE
   phase, shape the plan, survey the evidence items, evidence item table, review,
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.37.0"
-  last_updated: "2026-09-11"
+  version: "0.42.0"
+  last_updated: "2026-09-12"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -122,10 +122,10 @@ not replace it. Reproduce the saved preview rather than silently polishing a
 second copy in chat, and show the declared review window (normally one to three complete
 paragraphs), never unrelated Section text. Continue to return the **Evidence Workspace** link where
 the live-Board handoff below requires it. Keep this routine handoff compact:
-the complete saved passage, brief feedback dispositions and reasons, then both
-the Bullet Workspace and Evidence Workspace links at the very end. Do not append the Outline table,
-PDF, or section-wide material unless the person requests a formal review or
-those artifacts were themselves changed.
+the complete saved passage, a brief change explanation, then the
+Bullet Workspace, Evidence Workspace, and Current Run links at the very end.
+Do not append the Outline table, PDF, or section-wide material unless the person
+requests a formal review or those artifacts were themselves changed.
 
 A **Bullet** is one planned reader move with a stable `C<n>.P<m>.B<k>` address.
 It is smaller than a paragraph and more durable than a sentence: a Section Page
@@ -204,6 +204,7 @@ READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
          outline/<stem>-context.md · declared sibling Pages' approved arcs and
          decisions + the Story Section Narrative row through Context · outline/skill/<stem>.md when present
 WRITES   outline/<stem>-outline-v<G>.<S>[.<E>].md · outline/<stem>-evidence-items.md ·
+         outline/<stem>-logic.mmd when shaping the whole-Page Mermaid Structure ·
          outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
          record) · outline/evidence/supporting-runs/<stem>-run-bindings.md
          (generated pointers) · outline/<stem>-preview.md · never the page
@@ -254,11 +255,21 @@ BOTH sides do; it ends when the shape is agreed, never earlier.
 2 PROPOSE   the AI writes plan v0.1 from the brief + routed advisor feedback +
             declared sibling Pages' approved arcs/decisions + Story Section row + owning
             phase policy + venue; the log is history, never a Shape authority;
-            every owed thing is a named typed Evidence Item with Label + Expected + Accept
+            every owed thing is a named typed Evidence Item with Label + Expected + Accept;
+            rp00 also writes the complete `P01..PN` Mermaid Structure derived from this plan
 3 REACT     the person reads the rendered plan on the 🧭 tab: ticks, comments, redirects
-4 REVISE    update the same unapproved working Shape; save the human exchange as a Writing Step
+4 REVISE    update the same unapproved working Shape and Mermaid Structure together;
+            save the human exchange as a Writing Step
 loop 3 ⇄ 4 until the person ticks approved:
 ```
+
+During an open `rp00_mermaid-structure`, the current
+`outline/<stem>-logic.mmd` is a required review projection of the plan, not an
+optional decoration. It carries every Page-global paragraph id and appears
+expanded above Bullet Workspace. A missing or stale map blocks the next human
+review request. The plan remains the planning authority; the Mermaid source is
+regenerated when structural feedback changes the argument flow or paragraph
+index.
 
 Before Content, Shape proposals use `v0.<S>` and evidence-only folds use
 `v0.<S>.<E>`. Both copilot and auto may survey, land, and fold evidence under

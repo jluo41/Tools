@@ -115,5 +115,5 @@ insight    = D → I → K → W → RF, settled once and reused as evidence
 
 📦 the consumers — they bind RF and own every contextual consequence
 paper      = academic expression through Opening → Narrative → Section
-application= I1 registration → signed I5 bridge → Design D0 → D5
+application= I1 registration → signed I5 bridge → Design Commission → Generate → Verify → Adopt
 ```

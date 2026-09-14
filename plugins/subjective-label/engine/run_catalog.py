@@ -135,7 +135,7 @@ def plan_runs(
     width = max(2, len(str(len(rows))))
     return [
         PlannedRun(
-            run=f"r{index:0{width}d}_labeling-{operation}_{_slug(target)}",
+            run=f"rl{index:0{width}d}_{operation}_{_slug(target)}",
             phase=phase,
             operation=operation,
             episode=episode,

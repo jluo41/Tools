@@ -1,3 +1,158 @@
+## 0.54.0 · 2026-09-13
+
+- Add the shared Page Run-family contract: RP writing, RE item-scoped
+  evidence, RD target-scoped delivery, and their owner-native bindings.
+
+## 0.53.0 · 2026-09-13
+
+- Carry the closed Mermaid Structure description into every paragraph review
+  packet and Run record.
+- Add a scoped approval gate for heavy inter-Step and inter-Run work, including
+  post-run analysis Tasks.
+
+## 0.52.0 · 2026-09-13
+
+- Make pre-Step and saved review responses visibly paragraph-separated with
+  `P` headings and one blockquote per paragraph.
+
+## 0.51.0 · 2026-09-13
+
+- Require a pre-Step review packet when an open Page Run is entered or
+  resumed, so the current paragraphs and direct links are visible before new
+  feedback is collected.
+
+## 0.50.0 · 2026-09-13
+
+- Remove preference fields from the current Step template; legacy presenters
+  may still read them, but new record-first Steps expose only local reasons and
+  deferred analysis status.
+
+## 0.49.0 · 2026-09-13
+
+- Mark preference status in the Step template as historical-only so current
+  record-first Steps cannot be mistaken for analysis work.
+
+## 0.48.0 · 2026-09-13
+
+- Make the Version closure explicitly serve as the interactive Page Run close
+  event and seal the Version before post-run analysis starts.
+
+## 0.47.0 · 2026-09-13
+
+- Make ordinary Writing Steps record-first: capture feedback, edit the scoped
+  candidate, and record a local reason without blocking on preference analysis.
+- Add the post-run analysis contract for one output-only background Task after
+  explicit Page Run closure, with immutable Version input and isolated Result.
+
+## 0.46.0 · 2026-09-13
+
+- Add a rapid foreground mode for ordinary follow-up wording feedback:
+  reuse loaded context, read only the target slice, make one bounded patch and
+  one narrow check, and defer whole-Page review, tests, browser work, and
+  delivery until separately required.
+
+## 0.45.0 · 2026-09-12
+
+- Limit Track Changes to material wording edits and keep lifecycle/navigation/
+  presenter-only Steps in the ordinary Changes record.
+- Remove the duplicate feedback-classification table; the card heading owns
+  the evolving change type.
+
+## 0.44.0 · 2026-09-12
+
+- Add a durable per-feedback Track Changes record: clean Before/After, evolving
+  classification, rationale, inferred preference, and provisional scope.
+- Keep inline red-delete/green-add rendering presenter-owned and prevent one
+  local preference from silently becoming global policy.
+
+## 0.43.0 · 2026-09-12
+
+- Put the exact numbered-blockquote response skeleton inside the Run Step
+  execution contract and record template, including the three final links.
+
+## 0.42.0 · 2026-09-12
+
+- Make Page Run identity strict: no aliases, no old-name resolver, and no
+  noncanonical Run may satisfy the Mermaid prerequisite.
+
+## 0.41.0 · 2026-09-12
+
+- Standardize the Page Step handoff around exact Run/Version/Step identity,
+  complete saved prose, concise change reasons, and three final review links.
+
+## 0.40.0 · 2026-09-12
+
+- Reserve `rp00_mermaid-structure` for the mandatory Page-wide map and frozen
+  paragraph order.
+- Begin selected paragraph-group Page Runs at `rp01`.
+
+## 0.39.0 · 2026-09-12
+
+- Separate fast Writing Steps, evidence-complete Page Run closure, and the final
+  Page release into three explicit commit boundaries.
+- Refresh only the live Bullet Workspace during ordinary Steps; defer Content
+  adoption and web/LaTeX/Word generation until all Page Runs and required
+  evidence Task Results are complete.
+- Require a paragraph Page Run to settle both its Shape and Evidence contract
+  before it becomes complete.
+
+## 0.38.0 · 2026-09-12
+
+- Standardize Page-owned interactions on `rpNN` (Run of Page), with
+  `rp01_mermaid-structure` first and `rpNN_pNN[-pNN]` thereafter.
+- Make paragraph targets use the same Page-global P sequence as the Shape.
+
+## 0.37.0 · 2026-09-12
+
+- Rename the Page Run sequence from `rpNN` to `prNN` and preserve the former as
+  read-only migration input.
+- Make `pr01_mermaid-structure` the mandatory first interaction; it closes the
+  Mermaid Structure and `P01..PN` index before numbered paragraph Runs begin.
+
+## 0.36.0 · 2026-09-12
+
+- Reserve `rp01_outline` as the mandatory first Page Run and require explicit
+  closure of the complete Outline, Mermaid map, and `P01..PN` index.
+- Permit paragraph Page Runs only after that closure and use concise identities
+  whose exact paragraph serial or range is visible: `rp02_p01`,
+  `rp03_p02-p03`, and so on.
+
+## 0.35.0 · 2026-09-12
+
+- Define a Page-level sequence of sibling Page Runs: Plan + Mermaid bootstrap,
+  then `K` independently closable paragraph groups from `N` planned paragraphs
+  (`1 <= K <= N`).
+- List all unallocated candidates but allocate only the selected next one;
+  default to sequential work and preserve allocated identities when plans
+  change.
+
+## 0.34.0 · 2026-09-12
+
+- Route new human-interaction candidates through Page-owned `fn/Runs` without
+  allocating an identity until the human selects or directly commissions one.
+- Resume a matching open Page Run and reserve new `rpNN` identities for
+  genuinely independent interaction goals.
+- Keep code and other independently testable outputs as owner-native Task Runs,
+  even when a later human gate reviews the Result.
+
+## 0.33.0 · 2026-09-12
+
+- Give interactive human-feedback Page Runs a separate Page-local `rpNN`
+  identity sequence (`rp` = Run of Page).
+- Keep delegated paragraph writing, Discovery, and every other output-only
+  operation in the Task Run lane with its owner-native `rNN`/global identity.
+- Allow `rp01` and `r01` to coexist without consuming or renumbering each
+  other's sequence; retain old interactive `rNN_page-writing_*` records as
+  read-only migration input.
+
+## 0.32.0 · 2026-09-12
+
+- Reserve Page Run for the interactive human-feedback writing object and call
+  an automated controller invocation a Page workflow pass. Keep `/run` only as
+  a compatibility command verb.
+- Store every Step of one writing Version in the same append-only `vNNN.md`;
+  each Step keeps Human feedback and Saved result together.
+
 ## 0.31.0 · 2026-09-11
 
 - Add the skill-driven interactive Writing Run contract and Markdown Step templates, scoped acceptance/reopen/resume, protected history, and fast foreground rules. Align workflow tables, phase controller documentation and producer contract. No new runtime service, UI version browser or Paper regeneration.

@@ -12,7 +12,7 @@ from live.runs import local_runs, render as render_runs
 
 SCRIPTS = Path(__file__).resolve().parents[3] / "task/page-types/haipipe-page-insight/scripts"
 sys.path.insert(0, str(SCRIPTS))
-from test_insight_items import fixture, write
+from test_insight_items import fixture, ri_fixture, write
 
 
 class InsightIntegrationTest(unittest.TestCase):
@@ -82,6 +82,33 @@ class InsightIntegrationTest(unittest.TestCase):
         html = render_runs(self.page, "", "")
         self.assertIn("@v001", html)
         self.assertIn("@v002", html)
+
+    def test_ri_binding_is_registered_and_shown_in_existing_task_runs_lane(self):
+        folder, _base, packet = ri_fixture(self.root, "patient-c")
+        page = folder / "I01-ri-topic.md"
+        page.write_text("# RI topic\npage-type: insight\ninsight-layout: items-v2\n")
+        it.run_registry.cache_clear()
+        ident = "study/patient-c#ri01_description@v001"
+        registry = it.run_registry(str(self.root))
+        self.assertEqual("ticket", registry[ident]["status"])
+        self.assertEqual(ident, it.compact_global_run(ident))
+        rows = local_runs(page)
+        by_id = {row["global_id"]: row for row in rows}
+        self.assertEqual({"r01_description", ident}, set(by_id))
+        self.assertTrue(str(by_id[ident]["ticket"]).endswith("ri01_description.yaml"))
+        self.assertEqual("Insight · RI · Wisdom", by_id[ident]["kind"])
+        self.assertEqual("r01_description", by_id["r01_description"]["run_id"])
+        self.assertIsNone(by_id[ident]["result_path"])
+        self.assertIn("Planned binding · binds r01_description to patient-c@snapshot-01",
+                      by_id[ident]["outcome"])
+        self.assertEqual("Base Task Run", by_id["r01_description"]["kind"])
+        self.assertIn("Reusable method for study/patient-c#ri01_description@v001",
+                      by_id["r01_description"]["outcome"])
+        body = render_runs(page, "", "")
+        self.assertIn("riNN", body)
+        self.assertIn(packet["execution"], body)
+        self.assertIn("0 Page Runs · 2 Task Runs", body)
+        self.assertIn("not available yet", body)
 
 
 if __name__ == "__main__":

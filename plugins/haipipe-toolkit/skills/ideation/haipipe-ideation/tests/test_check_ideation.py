@@ -199,6 +199,126 @@ class IdeationGateTest(unittest.TestCase):
             },
         )
 
+    def write_sync_v2(self) -> None:
+        self.write(
+            "projection/receipts/working.yaml",
+            {
+                "step": 1,
+                "round": 1,
+                "phase": "OUTLINE",
+                "status": "ok",
+                "paper_projection": {
+                    "source_packet": "projection/paper-ideation-sync.yaml",
+                    "source_revision": 2,
+                    "source_hash": "sha256:sync-v2",
+                    "page_path": "Paper/A1-Story/Story00-ideation/Story00-ideation.md",
+                    "surface": "working",
+                    "output_hash": "sha256:working-v2",
+                    "created_at": "2026-09-13T10:00:00-04:00",
+                },
+            },
+        )
+        self.write(
+            "projection/receipts/release-v1.yaml",
+            {
+                "step": 2,
+                "round": 1,
+                "phase": "CONTENT",
+                "status": "ok",
+                "paper_projection": {
+                    "source_packet": "projection/paper-ideation-sync.yaml",
+                    "source_revision": 1,
+                    "source_hash": "sha256:sync-v1",
+                    "page_path": "Paper/A1-Story/Story00-ideation/Story00-ideation.md",
+                    "surface": "release",
+                    "output_hash": "sha256:release-v1",
+                    "created_at": "2026-09-12T10:00:00-04:00",
+                },
+            },
+        )
+        self.write(
+            "projection/paper-ideation-sync.yaml",
+            {
+                "version": 2,
+                "kind": "paper-ideation-sync",
+                "source": {
+                    "ideation_task": "b01.j01.t01",
+                    "ideation_manifest": "ideation.yaml",
+                    "evidence_bundle": "bundle/evidence-bundle.yaml",
+                    "direction_card": "cards/direction.yaml",
+                    "test_matrix": None,
+                },
+                "stage": "I1",
+                "sync_revision": 2,
+                "source_hash": "sha256:sync-v2",
+                "projection": {
+                    "change_class": "state",
+                    "affected_idea_ids": ["i01"],
+                    "identity_key": "idea_id",
+                },
+                "paper_page": {
+                    "state": "bound",
+                    "path": "Paper/A1-Story/Story00-ideation/Story00-ideation.md",
+                    "working": {
+                        "state": "current",
+                        "revision": 2,
+                        "source_hash": "sha256:sync-v2",
+                        "receipt": "projection/receipts/working.yaml",
+                    },
+                    "release": {
+                        "state": "stale",
+                        "revision": 1,
+                        "source_hash": "sha256:sync-v1",
+                        "receipt": "projection/receipts/release-v1.yaml",
+                    },
+                    "delivery": {
+                        "state": "not-requested",
+                        "revision": None,
+                        "source_hash": None,
+                        "receipt": None,
+                    },
+                },
+                "discovery_landscape": {
+                    "accepted_syntheses": [],
+                    "direct_result_ids": [],
+                    "convergent_signals": [],
+                    "contradictions": [],
+                    "unresolved_territory": ["closest-work search remains open"],
+                },
+                "opportunity_map": [
+                    {
+                        "id": "o01",
+                        "opportunity": "bounded opening",
+                        "evidence": ["context01"],
+                        "interpretation": "hypothesis, not claim support",
+                        "idea_ids": ["i01"],
+                        "status": "open",
+                    }
+                ],
+                "ideas": [
+                    {
+                        "card": "cards/i01_idea.yaml",
+                        "state": "open",
+                        "comparison_order": 1,
+                        "novelty": "unverified",
+                        "identification": "unknown",
+                        "feasibility": "pending",
+                        "journal_fit": "pending",
+                        "next_route": "novelty",
+                    }
+                ],
+                "portfolio_recommendation": {
+                    "status": "not-reviewed",
+                    "summary": "machine comparison only; not a decision",
+                    "ideas": [{"idea_id": "i01", "recommendation": "unresolved", "reason": "open"}],
+                },
+                "selection_authority": {"owner": "haipipe-ideation-select", "status": "none", "receipt": None},
+                "sync_status": "current",
+                "open_gaps": ["novelty"],
+                "updated_at": "2026-09-13T10:00:00-04:00",
+            },
+        )
+
     def tearDown(self) -> None:
         self.temp.cleanup()
 
@@ -394,6 +514,46 @@ class IdeationGateTest(unittest.TestCase):
         result = self.run_gate("sync")
         self.assertEqual(result.returncode, 1)
         self.assertIn("selection-leak", result.stdout)
+
+    def test_sync_v2_separates_working_release_and_delivery(self) -> None:
+        self.write_sync_v2()
+        result = self.run_gate("sync")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_sync_v2_rejects_delivery_without_current_release(self) -> None:
+        self.write_sync_v2()
+        path = self.unit / "projection/paper-ideation-sync.yaml"
+        value = yaml.safe_load(path.read_text(encoding="utf-8"))
+        value["paper_page"]["delivery"] = {
+            "state": "current",
+            "revision": 2,
+            "source_hash": "sha256:sync-v2",
+            "receipt": "projection/receipts/delivery.yaml",
+        }
+        self.write("projection/paper-ideation-sync.yaml", value)
+        result = self.run_gate("sync")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("delivery-ahead", result.stdout)
+
+    def test_sync_v2_rejects_surface_revision_ahead_of_source(self) -> None:
+        self.write_sync_v2()
+        path = self.unit / "projection/paper-ideation-sync.yaml"
+        value = yaml.safe_load(path.read_text(encoding="utf-8"))
+        value["paper_page"]["working"]["revision"] = 3
+        self.write("projection/paper-ideation-sync.yaml", value)
+        result = self.run_gate("sync")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("revision-ahead", result.stdout)
+
+    def test_sync_v2_rejects_receipt_source_drift(self) -> None:
+        self.write_sync_v2()
+        receipt = self.unit / "projection/receipts/working.yaml"
+        value = yaml.safe_load(receipt.read_text(encoding="utf-8"))
+        value["paper_projection"]["source_hash"] = "sha256:other-source"
+        self.write("projection/receipts/working.yaml", value)
+        result = self.run_gate("sync")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("receipt-drift", result.stdout)
 
     def test_test_gate_rejects_unverified_claim(self) -> None:
         self.write(

@@ -1,5 +1,11 @@
 # haipipe-insight-knowledge · version history
 
+## 1.1.0 · 2026-09-13
+
+- Replace PageX parent binding with exact Page-version/hash `PARENTS` lineage;
+  new rival evidence uses decided Supporting/local Results.
+- Require Page CHECK/CLOSE before GI4.
+
 ## 1.0.2 · 2026-09-01
 
 - Rename the optional robustness presenter from Execution to Runs.

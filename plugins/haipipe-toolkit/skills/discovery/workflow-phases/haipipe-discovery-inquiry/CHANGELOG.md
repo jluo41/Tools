@@ -1,3 +1,12 @@
+## 0.6.0 · 2026-09-13
+
+- Align the Discovery Page Face with the current Page frame: generated Outline
+  plus Opening, Content, and Aims, with diagrams inside Content divisions.
+- Make the Page-owned `rp00_mermaid-structure` → `rpNN_pNN[-pNN]` lane explicit
+  and keep it outside the D1 `rNN` inventory.
+- Require the shared Page release barrier before CONTENT adoption while keeping
+  D1 direct Result/cite lineage and one-Subject Discovery Run cardinality.
+
 ## 0.5.1 · 2026-09-07
 
 - Make this phase skill its own registry identity after retiring the separate

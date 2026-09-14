@@ -115,6 +115,25 @@ class TaskFolderVocabularyTest(unittest.TestCase):
                 "#!/bin/bash\n",
                 encoding="utf-8",
             )
+            (task / "runs" / "rp00_mermaid-structure.md").write_text(
+                "---\nfamily: page\noperation: interactive-writing\n---\n",
+                encoding="utf-8",
+            )
+            (task / "runs" / "rp01_p01.md").write_text(
+                "---\nfamily: page\noperation: interactive-writing\n---\n",
+                encoding="utf-8",
+            )
+            for run_name in (
+                "r01_healthgrades_full",
+                "rp00_mermaid-structure",
+                "rp01_p01",
+            ):
+                result = task / "results" / run_name
+                result.mkdir(parents=True)
+                (result / "runtime.yaml").write_text(
+                    f"run: {run_name}\nstatus: succeeded\n",
+                    encoding="utf-8",
+                )
             canonical = subprocess.run(
                 ["python3", str(checker), str(tasks)],
                 capture_output=True,

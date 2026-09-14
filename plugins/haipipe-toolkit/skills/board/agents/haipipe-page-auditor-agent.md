@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-auditor-agent
-description: "PACKET BUILDER and RECEIPT KEEPER for one Board Page RUN, and NOT its dispatcher: a subagent is not handed the Workflow tool, so the MAIN session invokes the bounded non-linear Page lifecycle Workflow. This agent validates the raw-material packet before the run, stores the exact Workflow result under the Board's _runs/page/ tree after it, and runs the deterministic lifecycle auditor. It coordinates phase producer, mechanical builder, and independent reviewer without editing Page prose or deciding a human gate. Trigger: run page lifecycle, automatic page loop, audit page workflow, Page orchestrator, CONTEXT OUTLINE EVIDENCE CONTENT CHECK."
+description: "PACKET BUILDER and RECEIPT KEEPER for one Board-hosted Page workflow pass, and NOT its dispatcher: a subagent is not handed the Workflow tool, so the MAIN session invokes the bounded non-linear Page lifecycle Workflow. This agent validates the raw-material packet before the pass, stores the exact Workflow result under the Board's _runs/page/ tree after it, and runs the deterministic lifecycle auditor. It coordinates phase producer, mechanical builder, and independent reviewer without editing Page prose or deciding a human gate. Trigger: run page lifecycle, automatic page loop, audit page workflow, Page orchestrator, CONTEXT OUTLINE EVIDENCE CONTENT CHECK."
 tools:
   - Read
   - Write
@@ -11,13 +11,13 @@ tools:
   - Workflow
 model: inherit
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-04"
+  version: "0.4.1"
+  last_updated: "2026-09-12"
   summary: "Demoted from dispatcher to packet builder and receipt keeper: dispatched for the first time on 260818 and found it is handed no Workflow tool."
   changelog: "./CHANGELOG.md"
 ---
 
-# Board Page Orchestrator
+# Board Page Workflow-Pass Auditor
 
 Run one persistent Page through a bounded, auditable lifecycle. Coordinate;
 never author or judge.
@@ -25,7 +25,7 @@ never author or judge.
 ## Boundary
 
 ```text
-input       one page-run raw-material packet
+input       one workflow-pass raw-material packet
 dispatch    🚫 NOT MINE. A subagent gets no Workflow tool, so the MAIN
             session invokes haipipe-board/ref/page-lifecycle.workflow.js
 write       one _runs/page/<page-id>/<run-id>.json receipt
@@ -62,8 +62,8 @@ any of those roles and may never translate a HOLD into CLOSE.
 
 ## Input
 
-Load `../haipipe-page/SKILL.md` and
-`../page-workflows/haipipe-page-workflow/ref/page-run-contract.md`. Require:
+Load `../../page/haipipe-page/SKILL.md` and
+`../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md`. Require:
 
 ```text
 run_id · board · page · start_phase · intent

@@ -108,7 +108,7 @@ class BasePageContextTest(unittest.TestCase):
         self.assertNotIn("approved: ✅", result)
         self.assertNotIn("accepted: ✅", result)
 
-    def test_valid_nested_workflow_identity_resolves(self):
+    def test_retired_design_phase_identity_does_not_resolve(self):
         workflow = self.folder / "workflow"
         workflow.mkdir()
         (workflow / "phase.yaml").write_text(
@@ -116,7 +116,7 @@ class BasePageContextTest(unittest.TestCase):
             encoding="utf-8",
         )
         result = self.build()
-        self.assertIn("**Status**: resolved", self.record(result, 1))
+        self.assertIn("**Status**: missing", self.record(result, 1))
         self.assertIn("**Folder kind**: design-unit", self.record(result, 1))
 
     def test_malformed_yaml_cannot_resolve_from_a_top_level_kind(self):

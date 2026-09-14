@@ -4,13 +4,13 @@ description: >-
   One thin door over an Application's InsightBoard and DesignBoard. Their
   Insight phases and canonical Design Folder owner govern both Folder
   faces, plugins, gates, and handoffs. The Application door owns only
-  cross-board routing and ends at accepted Design. Trigger: application,
+  cross-board routing and ends at adopted, current Design. Trigger: application,
   InsightBoard, DesignBoard, Folder phase, data meta, question, DIKW, Brief,
-  design, review, accept, retarget, PageX crossing, /haipipe-application.
+  design, review, accept, retarget, signed Insight crossing, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-09-08"
+  version: "3.0.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,12 +24,12 @@ that phase own the Folder's Page Face, Task Face, plugins, and closure.
 
 ```text
 Task / Discovery Folders
-          │ PageX whole-Folder link · Supporting Run when evidence is missing
+          │ accepted Supporting Run Results
           ▼
 🔎 InsightBoard                            🎨 DesignBoard
-I0 Meta → I1-I5 Folders ── signed input ─▶ Brief → stable DS Folder → ✅ accepted
-        D→I→K→W                                     generation/verification Runs
-        + Design Handoff                            DU Results + delivery/render/
+I0 Meta → I1-I5 Folders ── signed X1 input ─▶ Brief → stable DS Folder → ✅ adopted
+        D→I→K→W                                  Commission + Design Runs + Page Runs
+        + Design Handoff                         DU Results + render + Page CHECK
 ```
 
 Application owns the folders, the design need, the contextual Wisdom, and acceptance. Task rules still own how a chain page crosses Task/Discovery evidence. Folder ownership does not transfer evidence authority.
@@ -43,8 +43,10 @@ One board carrying both halves made one Brief Page do two jobs and gave two diff
 🎨 DesignBoard     reader: whoever approves the send       ends at: accepted version
 ```
 
-Existing PageX records remain readable. New Design work pins signed handoff
-files/versions as inputs; it creates no new PageX lane or fake Supporting Run.
+Insight evidence uses Supporting Run Results plus Local Input/Result. Design
+freezes the exact signed handoff path, Page version, content hash, signature,
+and GI6 receipt as input. PageX is not a readable Design input or Supporting
+Run substitute.
 
 ## Phase-owned Folder kinds
 
@@ -53,16 +55,13 @@ files/versions as inputs; it creates no new PageX lane or fake Supporting Run.
 I0 Meta · I1 Question · I2 Data · I3 Information · I4 Knowledge · I5 Wisdom
 
 🎨 haipipe-design + haipipe-design-workflow
-stable Design Folder · Plan → Generate → Verify → Adopt
+stable Design Folder · Commission → Generate → Verify → Adopt
 ```
 
-Insight and Brief retain their phase-owned contracts. Design is a canonical
-Folder owner; haipipe-design-unit is a worker, not a Folder phase. Legacy
-D1–D5 schemas remain read-only adapters under application/workflow-phases/.
-`page-type: meta|question|data|information|knowledge|wisdom|brief|design`
-remains a runtime compatibility lookup only. Historical Promoted Principle is
-an optional D4 role reviewed at D5, not an independent Page Type or phase.
-Native commissions pin any applicable principle as a versioned reference.
+Insight retains its phase-owned contracts. Brief and Design are canonical
+Folder owners; `haipipe-design-unit` is a Run worker, not a Folder phase.
+Design has no D0–D5 adapter, PageX reader, promoted-principle phase, or
+`page-type: brief|design` fallback.
 `page-type: insight` remains Task-only for the consumer-neutral Task/Insights
 Board.
 
@@ -71,14 +70,14 @@ Board.
 ```text
 enter | status | board         open or scaffold the Application through fn/enter.md
 meta | data | sources          create/resume the one Meta Page through fn/meta.md
-question | ask | queue         register one question on the rung register it faces,
-                               MT01-MT04 · haipipe-insight-question
+question | ask | queue         register one stable question on the rung register it
+                               faces; derive Question Groups as partition × DIKW
+                               target · MT01-MT04 · haipipe-insight-question
 chain | understand | DIKW      open or extend one D→I→K→W chain through fn/chain.md
 brief | opportunity | venue    create/resume the one Brief Page through fn/brief.md
 design | intervention | message
   | arc | components           create/resume one Design Folder through fn/design.md
-render | project              generate a versioned projection through fn/render.md;
-                              `artifact` is a legacy command alias, never a Folder kind
+render | project              generate a versioned projection through fn/render.md
 review | audit | check         CHECK selected Design versions and their trace
 accept                         record version-bound human adoption · the last act
 retarget                       re-pin venue or audience and reopen dependent Design
@@ -93,27 +92,30 @@ one-dataset law, the Climb Law, the three pens, the two ✋ gates on that board.
 The rows above remain as forwards; fn/meta.md and fn/chain.md stay as the
 page-level procedures both doors share.
 
-design-side verbs (brief · design · direction · release · realize · judge ·
-render · accept) are OWNED by the sibling door /haipipe-design since 260824:
-reads:/born-of: authority, Run-backed DU Results, independent verification,
-and the unit worker. Legacy card/thread records remain read-only.
+design-side verbs (brief · design · commission · release · generate · verify ·
+render · adopt) are OWNED by the sibling door /haipipe-design: reads:/born-of:
+authority, `rdNN_*` Run-backed DU Results, independent verification, and the
+unit worker. Old card/thread records are unsupported.
 The rows above remain as forwards; fn/brief.md and fn/design.md stay as the
 page-level procedures both doors share.
 ```
 
 No-argument behavior: inside an Application, run `enter .`; outside one, ask for a path or offer to create the two board folders. Never infer an audience, behavior, or venue when that choice changes the design.
 
-## The Application ends at ACCEPTED
+## The Application ends at ADOPTED + CURRENT
 
 ```text
 🎨 DESIGN BOARD                          │  NOT THE APPLICATION
 ─────────────────────────────────────────┼──────────────────────────────────
 brief    what we are building            │  🔧 implementation · build + ship it
 design   the messages, the rails         │  🧪 experiment     · run the A/B
-accept   "this exact version may go"     │  📊 collection     · gather what came back
+adopt    "this exact candidate may go"   │  📊 collection     · gather what came back
 ```
 
-Deciding a version may ship is a design judgment and stays here. Building it, shipping it, running the experiment, and collecting the result are separate work the task layer already owns through Plan → Build → Execute → Report. The Application has no `deploy/` folder and no round folder.
+Adopting an exact candidate is a Design judgment and stays here. Its receipt is
+also the Page's domain ruling; Page CHECK then verifies the current projection.
+Building, shipping, experimenting, and collecting remain Task work. The
+Application has no `deploy/` folder and no native round folder.
 
 ## Runtime folders
 
@@ -124,7 +126,14 @@ A board's folder name SAYS ITS SUBJECT (JL 260820). `InsightBoard/` and `DesignB
 <DesignTopic>-DesignBoard/      the subject is the TOPIC   YoungMaleRefill-DesignBoard/
 ```
 
-The subject is PascalCase; the suffix is the literal kind, so `ls *InsightBoard*` finds them all. The two subjects are named independently, which is what makes the count free: an Application may hold several InsightBoards when it reads distinct data, several DesignBoards when it designs for distinct topics, and any DesignBoard may PageX-bind any InsightBoard. Two boards is the common case, not the limit. No date suffix: the `<NN>-<topic>-<YYMMDD>` rule governs boards newly opened under `diagram/`, and these are runtime boards.
+The subject is PascalCase; the suffix is the literal kind, so `ls *InsightBoard*`
+finds them all. The two subjects are named independently, which is what makes
+the count free: an Application may hold several InsightBoards when it reads
+distinct data and several DesignBoards when it designs for distinct topics.
+A DesignBoard may consume any authorized signed W handoff as an exact frozen
+input. Two boards is the common case, not the limit. No date suffix: the
+`<NN>-<topic>-<YYMMDD>` rule governs boards newly opened under `diagram/`, and
+these are runtime boards.
 
 A project whose executable Task folders use a stage-letter grammar such as `tasks/D01_*` may prefix its runtime boards the same way, `A<NN>_` for InsightBoards and `B<NN>_` for DesignBoards, so `ls applications/` shows pipeline order: `A01_SMSR2Full-InsightBoard`, `B01_RefillFraming-DesignBoard`. Discovery uses its own explicit `bNN_/jNN_/tNN_/rNN_` address and does not supply a board prefix. The Application prefix is project-local ordering only; the canonical shape stays `<Subject>-<Kind>`, and the letter never appears inside pages.
 
@@ -145,15 +154,15 @@ A project whose executable Task folders use a stage-letter grammar such as `task
 └── <Program>-DesignBoard/                e.g. RefillFraming-DesignBoard
     ├── board.md                          reads: · the evidence whitelist
     ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set
-    ├── 1-P-principle/P<NN>-<slug>/        historical optional principle records
-    └── 2-DS-design/DS<NN>-<audience>-<job>-<venue>/  units as divisions
+    └── 2-DS-design/DS<NN>-<audience>-<job>-<venue>/  one stable Design Folder
         ├── runs/                         caller-authored YAML Run Tickets
         ├── results/                      generation DUs and verification Results
         ├── scripts/config/               frozen per-Run configuration
         ├── delivery/render/              the unit as the recipient sees it
-        ├── workflow/                    dispatch and round receipts
-        ├── evidence/display/            Page-owned displays, when selected
-        └── outline/                     human plan and decision record
+        ├── workflow/                    Design lifecycle + Page receipts
+        ├── outline/evidence/            Page-owned typed evidence
+        ├── outline/decisions/           release/adoption receipts
+        └── delivery/web|latex|word/     released Page projections
 ```
 
 The InsightBoard tree above is the RUNG-MAJOR layout; the next section gives the partition-major alternative, and a page's path depends on which one its board uses.
@@ -203,19 +212,20 @@ Meta
   says what data exists, at what grain, how fresh, with what limits
     ↓
 Question registers (MT01-MT04)
-  hold what is asked of each rung · a Brief need or a board-raised curiosity
+  hold what is asked of each rung · their partition columns derive
+  Question Groups = partition × DIKW target
     ↓
 D→I→K→W chain pages
   settle each question rung by rung and publish a Design Handoff at W
-    ↓ PageX exact file/scope binding, across boards
+    ↓ exact signed W path/Page-version/hash + GI6 receipt, frozen by Design
 Brief
   states the opportunity, audience, outcome, venue scope, and the needs it raises
     ↓
 Design Folder(s)
-  translate handoffs into cards, judged units, optional promoted warrants,
-  R<n> divisions, and rails
+  freeze Commission bets → generate immutable DUs → independently verify
+  → render previews → person adopts exact versions
     ↓
-Review → ✅ accepted · STOP
+Page release → fresh CHECK of the same adoption/projection → ✅ current · STOP
 ```
 
 Brief and Meta are both head pages and may be written in either order. Meta may exist alone with four empty registers, because data can land before anyone knows what it is for; the registers fill as the Brief raises needs or as a reader of the inventory becomes curious, and a source landing in Meta may raise no question at all.
@@ -272,69 +282,76 @@ Application Need → QW → exact Task RF → contextual W → Design Handoff
 The Design Handoff names finding, strength, boundary, source versions, design consequence, forbidden overreach, and the Brief/Design need it serves. It does not write final message copy.
 
 Design Pages pin the exact signed handoff file/scope and hash in their Run
-inputs. Existing PageX is legacy metadata only. Never copy upstream Run
-artifacts, invent an Insight Run identity, or inspect raw Task results from a
-Design Page.
+inputs. PageX is invalid. Never copy upstream Run artifacts, invent an Insight
+Run identity, or inspect raw Task results from a Design Page.
 
-## Review and acceptance gates
+## Review, adoption, and Page gate
 
-A Design division is acceptable only when all are true:
+A Design candidate is adoptable only when all are true:
 
 ```text
 trace         every substantive move reaches a settled Insight Design Handoff
 applicability the borrowed K/W actually covers this audience, context, and outcome
 venue         format, length, timing, interaction, and audience rules pass
 safety        prohibited moves and uncertainty language pass
-version       acceptance names design/handoff and visible render versions
-human         the exact visible version is explicitly accepted
+version       adoption names DU/member/verify/handoff/render versions
+human         the exact visible candidate is explicitly adopted
 ```
 
-Acceptance is written on the division, not the page, so one unit may be accepted while a sibling is mid-revision. A changed Insight handoff, content edit, venue constraint, or re-render clears the affected division's `accepted:` row and only that row.
+Adoption is an immutable Design decision receipt, not a Page prose tick. One
+candidate may be adopted while a sibling remains historical or under revision.
+A changed handoff, candidate, venue constraint, verification, or render stales
+only the affected binding. `page_ruling: domain-gate` makes Page CHECK consume
+the same receipt; it never asks the person to select twice.
 
 ## Iteration is a handoff, not a stage
 
 ```text
-✅ accepted ──▶ 🔧 shipped elsewhere
+✅ adopted + Page-current ──▶ 🔧 shipped elsewhere
                       │
                       ▼
                 🧪 executable Folder · Plan → Build → Execute → Report
                       │
                       ▼
                 🔎 Insight Folder refreshes · handoff v2
-                      │  PageX binding goes stale
+                      │  frozen signed-input pin goes stale
                       ▼
-                🎨 Design division reopens
+                🎨 dependent Design candidate reopens
 ```
 
 The Application may propose the measurement question. Task owns execution; the InsightBoard's chain owns the refreshed DIKW reading and source staleness; the Design Page owns the response. An experiment run is a task folder, its result reading is a task page, and its synthesis is a chain page. Check that the task layer does not already cover a need before proposing a new board family for it.
 
-## Legacy compatibility
+## Legacy non-Design inputs
 
-Existing Applications remain readable. Do not delete or bulk-rewrite their folders without a separate migration request.
+Some pre-Design Application inputs may still be inspected under their own
+contracts. This does not apply to old Design formats.
 
 ```text
 legacy Seed + Venue + Pitch                    → Brief input
 legacy Descriptions + Themes + Claims + Advice → candidate chain pages
-legacy Narrative + Display + Section-edit      → Design Page input
 legacy 1-probes/                               → historical bindings, read-only
 legacy 0-lifecycle/ single-folder Applications → read and fold into the two boards
-page-type: intervention on an existing page    → rename the key to design
-page-type: artifact on an existing page        → fold into its Design Page as a division
-external Task/Insights Board Pages             → valid PageX inputs; do not move them automatically
+external Task/Insights Board Results           → valid Supporting Results when exactly pinned;
+                                                  do not move them automatically
 ```
 
-Compatibility means read-and-fold into the new target, not copy-and-continue the old stage spine.
+Design D0–D5/GD0–GD6, PageX, `design/DU*/`, old card/thread/plugin records,
+v1 Tickets/Results, `rNN_design_*`, `page-type: intervention|artifact|design`,
+and old acceptance rows are rejected. They are never read-and-folded.
 
 ## Status
 
 Derive status from disk, not prose:
 
 ```text
-frontier: meta | insight:<id> | brief | design:<id> | review | accepted
-maturity: scoped | understood | designed | authored | reviewed | accepted
+frontier: meta | insight:<id> | brief | design:<id> | review | adopted | page-current
+maturity: scoped | understood | designed | authored | reviewed | adopted | current
 ```
 
-Also report open questions from the four registers (the wisdom register's rollup is the one-view source), stale Run/PageX bindings, Design Page and division counts, and accepted render versions per division.
+Also report Question Groups in MT00 partition order then D→I→K→W, their open
+member cells from the four registers (the wisdom register's rollup remains the
+one-view source), stale Supporting Run or frozen handoff inputs, the Design Run
+and Page Run frontiers separately, and adopted member/render versions.
 
 ## Internal procedures
 
@@ -343,8 +360,7 @@ fn/enter.md             open an Application, or scaffold both boards from nothin
 fn/meta.md              Meta Page create/resume and the Source Inventory
 fn/chain.md             open or extend one D→I→K→W chain for one question
 fn/brief.md             Brief create/resume and the needs it raises
-fn/principle.md         compatibility verb for an optional subordinate D4 warrant
-fn/design.md            one audience/job/venue Design Folder, units as divisions
+fn/design.md            one audience/job/venue Design Folder, units as Results
 fn/render.md            render a unit through the page's delivery/render/ plugin
 fn/feedback.md          family feedback
 fn/digest.md            session feedback digestion
@@ -353,4 +369,5 @@ ref/partition.md        the partition-major layout grammar · a REFERENCE, not a
                         fn/ holds procedures someone runs; a grammar is consulted
 ```
 
-The old stage specialists under `_old/` are compatibility readers during migration and are not the target architecture.
+The `_old/` directory is documentation history only and is never a runtime
+reader or migration source.

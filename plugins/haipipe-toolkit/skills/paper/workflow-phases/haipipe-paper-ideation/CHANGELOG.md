@@ -1,3 +1,19 @@
+## 1.0.2 · 2026-09-13
+
+- Adopted the v2 P0 projection contract with explicit working, release, and
+  delivery surfaces, standard Page phase receipts with a `paper_projection`
+  extension, change-class routing, and stable Idea identities.
+- Clarified that stale Page publication does not create a second I3 decision or
+  silently block the Paper G0 semantic handoff.
+
+## 1.0.1 · 2026-09-13
+
+- Aligned P0 projection with the current `haipipe-page` update boundaries:
+  working Outline/preview/Bullet Workspace can refresh before adopted Content
+  and delivery, which wait for the Page release barrier.
+- Clarified that Ideation sync is not a Page Run and that the P0 return must
+  report working-projection and released-surface state separately.
+
 ## 1.0.0 · 260908
 
 - Made `haipipe-ideation` the sole semantic owner of Direction/Idea Cards,

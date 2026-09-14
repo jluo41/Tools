@@ -39,25 +39,26 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertTrue(cards[0]["ready"])
             page = render_home(root)
             self.assertIn("A &lt;Board&gt;", page)
-            self.assertIn("Open board", page)
+            self.assertIn('class="t">A &lt;Board&gt;</span>', page)
+            self.assertIn('class="ir home-row"', page)
+            self.assertIn('id="board-list"', page)
+            self.assertIn('placeholder="Search boards"', page)
             self.assertIn('class="board-list"', page)
-            self.assertIn('class="board-row"', page)
-            self.assertIn("grid-template-columns:minmax(0,2.5fr)", page)
-            self.assertNotIn("repeat(2,minmax(0,1fr))", page)
             self.assertIn("/project/diagram/01-topic/board/index.html", page)
-            self.assertIn('<span class="meta-label">Full path</span>', page)
-            self.assertIn(
-                'class="path" href="/project/diagram/01-topic/board/index.html"',
-                page)
-            self.assertIn(">project/diagram/01-topic</a>", page)
-            self.assertIn("white-space:normal;overflow-wrap:anywhere", page)
+            self.assertNotIn("Open board", page)
+            self.assertNotIn('class="summary"', page)
+            self.assertNotIn('class="project-group"', page)
+            self.assertNotIn('class="kind-section"', page)
+            self.assertNotIn('class="row-status"', page)
+            self.assertNotIn('class="row-pages"', page)
+            self.assertNotIn('class="row-path"', page)
             self.assertEqual(cards[0]["kind"], "Task Board")
 
     def test_home_can_be_branded_for_a_space(self):
         with tempfile.TemporaryDirectory() as tmp:
             page = render_home(Path(tmp), "Physician-SPACE", "https://physician.jjluo.com")
-            self.assertIn("JJ-LUO / Physician-SPACE Boards", page)
-            self.assertIn("https://physician.jjluo.com", page)
+            self.assertIn("<h1>Physician-SPACE</h1>", page)
+            self.assertNotIn("https://physician.jjluo.com", page)
 
     def test_groups_task_discovery_paper_design_and_skill_boards_with_skill_precedence(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -66,8 +67,10 @@ class SpaceHomeTest(unittest.TestCase):
             def add_board(relative, title):
                 board = root / relative
                 (board / "QA-group").mkdir(parents=True)
+                (board / "board").mkdir()
                 (board / "board.md").write_text(f"# {title}\nspine: Test type\n")
                 (board / "QA-group" / "QA1-question.md").write_text("# Q\nstate: 🟡 PARTIAL\n")
+                (board / "board" / "index.html").write_text("index")
 
             add_board("project/diagram/01-task", "Task")
             add_board("examples/Project-A/discoveries/b01_evidence", "Discovery")
@@ -82,11 +85,13 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertEqual(cards["Design"]["kind"], "Design Board")
             self.assertEqual(cards["Paper Skill"]["kind"], "Skill Board")
             page = render_home(root)
-            self.assertIn("📋 Task Boards", page)
-            self.assertIn("🔎 Discovery Boards", page)
-            self.assertIn("📄 Paper Boards", page)
-            self.assertIn("🎨 Design Boards", page)
-            self.assertIn("🧩 Skill Boards", page)
+            for title in ("Task", "Discovery", "Paper", "Design", "Paper Skill"):
+                self.assertIn(f'class="t">{title}</span>', page)
+            self.assertNotIn("Task Boards", page)
+            self.assertNotIn("Discovery Boards", page)
+            self.assertNotIn("Paper Boards", page)
+            self.assertNotIn("Design Boards", page)
+            self.assertNotIn("Skill Boards", page)
 
     def test_canonical_designboard_suffix_wins_except_for_skill_boards(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -122,10 +127,12 @@ class SpaceHomeTest(unittest.TestCase):
                     "git_mode: workspace\nstate: active\nmission: test\n")
                 board = owner / relative
                 (board / "QA-group").mkdir(parents=True)
+                (board / "board").mkdir()
                 (board / "board.md").write_text(
                     f"# {title}\nspine: Project-owned board\n")
                 (board / "QA-group" / "QA1-question.md").write_text(
                     "# Q\nstate: 🟡 PARTIAL\n")
+                (board / "board" / "index.html").write_text("index")
 
             add_board("Project-One", "diagram/01-task", "One Task")
             add_board("Project-One", "papers/Paper-A/0-paperboard", "One Paper")
@@ -140,14 +147,29 @@ class SpaceHomeTest(unittest.TestCase):
                              {"Task Board", "Paper Board"})
 
             page = render_home(root)
-            self.assertEqual(page.count("📁 Project-One"), 1)
-            self.assertEqual(page.count("📁 Project-Two"), 1)
-            self.assertLess(page.index("📁 Project-One"),
-                            page.index("📁 Project-Two"))
-            one_section = page[page.index("📁 Project-One"):
-                               page.index("📁 Project-Two")]
-            self.assertIn("📋 Task Boards", one_section)
-            self.assertIn("📄 Paper Boards", one_section)
+            for title in ("One Task", "One Paper", "Two Task"):
+                self.assertIn(f'class="t">{title}</span>', page)
+            self.assertNotIn("<h2>Project-One</h2>", page)
+            self.assertNotIn("<h2>Project-Two</h2>", page)
+            self.assertNotIn("Task Boards", page)
+            self.assertNotIn("Paper Boards", page)
+
+    def test_index_only_lists_boards_that_can_be_opened(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            ready = root / "project" / "diagram" / "01-ready"
+            (ready / "board").mkdir(parents=True)
+            (ready / "board.md").write_text("# Ready Board\nspine: s\n")
+            (ready / "board" / "index.html").write_text("ready")
+
+            pending = root / "project" / "diagram" / "02-pending"
+            pending.mkdir(parents=True)
+            (pending / "board.md").write_text("# Pending Board\nspine: s\n")
+
+            page = render_home(root)
+            self.assertIn('class="t">Ready Board</span>', page)
+            self.assertNotIn("Pending Board", page)
 
     def test_legacy_examples_project_groups_without_a_manifest(self):
         with tempfile.TemporaryDirectory() as tmp:

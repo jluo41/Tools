@@ -19,10 +19,10 @@ Page contract or create a new Page Type.
 ```text
 <owner>/diagram/<NN>-<topic>-<YYMMDD>/
 ├── board.md
-├── 1-G1-<group-slug>/
+├── 1-QA-<group-slug>/
 │   ├── draw/group.excalidraw
-│   └── G1-<slug>/
-│       ├── G1-<slug>.md
+│   └── QA1-<slug>/
+│       ├── QA1-<slug>.md
 │       ├── outline/
 │       ├── workflow/
 │       ├── studio/
@@ -101,9 +101,9 @@ source: <optional source address>
 <optional source-versus-generated explanation>
 
 ## Pages
-### G1 · <group title>
+### QA · <group title>
 <optional one-line introduction>
-G1-<slug>.md
+QA1-<slug>.md
 
 ## Links
 <optional label-to-path declarations>

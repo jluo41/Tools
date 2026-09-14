@@ -14,8 +14,8 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 
 Capture feedback about the Application machinery, not about the substantive
 intervention or artifact it produces. The new architecture has no lifecycle
-stage inboxes: ownership follows the Folder model and the native I0-I5/D0-D5
-workflows.
+stage inboxes: ownership follows the Folder model, native I0-I5 workflow,
+native Design workflow, and the Design Folder's separate Page workflow.
 
 ## Capture
 
@@ -59,15 +59,12 @@ For /haipipe-application feedback "<text>":
     I4 claim/strength/rivals                           haipipe-insight-knowledge
     I5 counsel/signed handoff                          haipipe-insight-wisdom
 
-    Design lane/reads/grants/bets                      haipipe-design
-    Design phase order/thread/round/GD gates           haipipe-design-workflow
-    D0 Brief/roster/need                               haipipe-design-brief
-    D1 Card/release/kill                               haipipe-design-card
-    D2 Unit/realization                                haipipe-design-unit
-    D3 independent verdict/prospect                    haipipe-design-verdict
-    D4 Division/render/accept/emit/Principle role      haipipe-design-division
-    D5 PageDown/round truth pass                       haipipe-design-pagedown
-    design/ thread storage                             haipipe-plugin-design
+    Design lane/reads/grants/bets/two-workflow seam    haipipe-design
+    Commission/Generate/Verify/Adopt order and gates   haipipe-design-workflow
+    Brief/roster/need                                  haipipe-design-brief
+    Design Ticket/DU Result/checker                    haipipe-design-unit
+    rp00/paragraph Runs/Page release/CHECK             haipipe-page-workflow
+    old Design/PageX/v1 records                        unsupported; do not route
     render projection                                  haipipe-plugin-delivery/ref/render.md
     venue/channel-specific rail                        application/venue/venue-<name>
 
@@ -79,8 +76,8 @@ surface. There is no Application haipipe-page-for-* inbox.
 
 When several words match, choose the owner of the behavior complained about,
 not merely the artifact named in the example. For example, "the SMS render
-ignored its character rail" routes to venue-sms; "PageX did not show the SMS
-Folder's report" routes to PageX.
+ignored its character rail" routes to venue-sms; "the frozen signed-W input is
+missing or stale" routes to the consuming Folder's Context/Evidence owner.
 
 ## Inbox resolution
 

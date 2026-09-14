@@ -7,8 +7,8 @@ description: >-
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.9.2"
-  last_updated: "2026-09-08"
+  version: "0.9.3"
+  last_updated: "2026-09-13"
   page_ruling: none
   group-token: "S-<desk>-Main-<N> | S-<desk>-Appendix-<L>"
   outline:
@@ -24,6 +24,8 @@ metadata:
 
 For an actual Section Page RUN, load `haipipe-page`, `haipipe-page-workflow`, the current Page phase, the
 paper-owning workflow, this Page Type, and its phase references in that order.
+When a Page Run or Page release is planned, also load
+`../../haipipe-paper/ref/page-integration.md` as the Paper adapter contract.
 Declare `page-type: section` and `section_kind: <kind>`.
 Reading this contract for a prospective Story handoff does not start that RUN.
 Proposed bindings may remain unresolved until the relevant owner supplies them;
@@ -102,11 +104,13 @@ like `pm-introduction-e01-cite-prescribing-variation-r01` or
 `pa-robustness-e01-value-sensitivity-r01`, with the same stem for its Ticket,
 Result directory, and receipt.
 
-Paragraph Writing is a different, Page-local target and keeps
-`rNN_page-writing_cNN-pNN.md`, governed by `haipipe-page-content`; its receipt records `page:` and
-`paper_lane:`. Never collapse an Evidence Result Run and a Paragraph Writing
-Run merely because both are stored under one Section. Existing
-`pjNNtNNrNN` Paper tickets are historical/read-only and remain valid only when
+Page-owned interaction starts with `rp00_mermaid-structure` and continues as
+`rpNN_pNN[-pNN]`, governed by the current Page contract; its receipt records
+the semantic `page:` and `paper_lane:`. Delegated paragraph writing is an
+owner-native Task Run (`rNN`, `rlNN`, or global), not a Page Run. Never
+collapse an Evidence Result Run, a Page interaction Run, and a Task Run merely
+because they are projected into one Section. Existing `pjNNtNNrNN` Paper
+tickets are historical/read-only and remain valid only when
 their owner path, receipt, and current acceptance contract are verified.
 
 **Where the words live (0.8.4 · JL 260907)**: on this page. The Section Page

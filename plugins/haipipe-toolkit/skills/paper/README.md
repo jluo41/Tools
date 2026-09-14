@@ -41,7 +41,7 @@ Evidence Item graph
 ├── outline/     plan + nested Evidence Workspace (CITE/VALUE/DISPLAY + Run lineage)
 ├── workflow/    machine-readable phase receipts
 ├── scripts/     optional owned implementation
-├── runs/        optional authored Run tickets
+├── runs/        optional Page-owned interaction or Paper-local Run tickets
 ├── results/     Folder-local Results
 ├── delivery/    page-level render outputs (latex/ · word/ · render/)
 └── studio/      human chat and drawing room
@@ -54,8 +54,10 @@ current write target.
 
 Paper-local Evidence/Display Run ids are governed by
 `haipipe-paper/ref/run-naming.md`: `pm-…` (Main), `pa-…` (Appendix), and
-`pr-…` (Round). Page-local Paragraph Writing keeps
-`rNN_page-writing_cNN-pNN.md`; existing `pjNNtNNrNN` files are historical
+`pr-…` (Round). Page-owned interaction starts with
+`rp00_mermaid-structure` and continues as `rpNN_pNN[-pNN]`; delegated
+paragraph writing keeps its owner-native Task identity (`rNN`, `rlNN`, or
+global). Existing `pjNNtNNrNN` and `rNN_page-writing...` files are historical
 and read-only.
 
 There is no View layer and no Paper-level Literature, Value, or Display Page

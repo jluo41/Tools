@@ -7,8 +7,8 @@ description: >-
   and evidence handoff. Use when resolving,
   scaffolding, checking, or closing one BJTR Discovery Task Page Folder.
 metadata:
-  version: "0.5.1"
-  last_updated: "2026-09-07"
+  version: "0.6.0"
+  last_updated: "2026-09-13"
   workflow: haipipe-discovery-inquiry
   phase: D1
   folder_kind: discovery
@@ -35,7 +35,10 @@ skill to load. The Page Face independently advances through
 `haipipe-page-workflow` 00–04. D1 SYNTHESIZE hands Results to that workflow;
 it does not write Page artifacts through a private lifecycle. Each admitted
 canonical paper or source is one Discovery Level-4 Run. The D1 root uses the
-Page CONTENT no-Run route; consumer Pages own any Page-family Runs they need.
+direct Result/cite route for its evidence objects, but it does not bypass the
+Page's human-interaction contract: when Page interaction is selected, the Page
+workflow owns `rp00_mermaid-structure` first and `rpNN_pNN[-pNN]` thereafter.
+Those Page Runs are not D1 Runs and never enter the Discovery inventory.
 
 At the skill-bank level, `1_search`, `2_review`, and `3_synthesize` are the
 live numbered capability families analogous to the numbered groups under
@@ -69,9 +72,10 @@ select the empirical `page-type: task` compatibility grammar.
 ## Page Face
 
 The root same-stem Page writes `folder-kind: discovery` and follows the shared
-Opening → optional Diagram → Content → Aims frame. Content has four ordered
+Opening → generated Outline → Content → Aims frame. Content has four ordered
 roles; the words before the second ` · ` are fixed and the rest is specific to
-the inquiry:
+the inquiry. A face diagram belongs inside each Content division; there is no
+top-level `## Diagram` or authored `## Outline` section:
 
 ```text
 1 · Question and boundary · <the exact inquiry and evidence population>
@@ -85,6 +89,12 @@ same-name division title after their emoji. Migration may leave Type payload
 active and historical evidence mapping explicitly held; it may not claim that
 linked legacy files already satisfy Result-backed synthesis.
 
+The shared Outline plugin owns the plan, candidate preview, requirement records,
+feedback, and nested Evidence Workspace. Discovery does not put writing rules
+in a `## Writing Style` section. `outline/<stem>-logic.mmd` is the derived Page
+structure reviewed by `rp00_mermaid-structure`; paragraph Page Runs begin at
+`rp01` only after that structure and the Page-global `P01..PN` order close.
+
 ## Task Face
 
 `discovery.yaml` owns intent, lifecycle status, and the closing report. SCOPE
@@ -97,9 +107,11 @@ The Page process folder is shared with every Page: `outline/` holds planning
 material and, when the inquiry needs citation material, `outline/evidence/`
 holds the derived Bib. The D1 root Page uses direct Result/Card/cite lineage
 and does not create a local typed Evidence Item for its own Results.
-Discovery's own analysis receipts remain the local `runs/` ↔ `results/` pair;
-do not copy those Results into `outline/evidence/` or create a second local
-Evidence Run merely to repackage a paper.
+Discovery's own analysis receipts remain the local `rNN` subset of the shared
+`runs/` ↔ `results/` lanes. Page-owned `rpNN` records may coexist in those
+folders, but are not Discovery inventory and are validated by the Page
+workflow. Do not copy Discovery Results into `outline/evidence/` or create a
+second local Evidence Run merely to repackage a paper.
 
 ### Run Profile
 
@@ -116,7 +128,8 @@ Evidence Run merely to repackage a paper.
 - **ACCEPT**: identity, pairing, provenance, facts, cite key, and status pass
   `paper_runs.py check`.
 - **PROMOTION**: completed Results may be synthesized many-to-many into the
-  Page and derived Evidence Bib.
+  Page and derived Evidence Bib; Page-owned writing interaction is promoted
+  only through the shared Page release barrier.
 - **REOPEN**: a changed Result, material unresolved Run, or expanded evidence
   population reopens ACQUIRE and the affected Page workflow authority.
 
@@ -135,10 +148,22 @@ Evidence Run merely to repackage a paper.
   lane, empty Runs/Results lanes, or a Task Page compatibility grammar layered
   over the Discovery Page Face.
 
+### Page Run boundary
+
+The `runs/` ↔ `results/` pair in a Discovery Task Folder is reserved for
+`paper-analysis` and `source-analysis` `rNN` Runs. The Page-facing `rpNN` lane
+is owned by `haipipe-page-workflow` and may be shown by the Runs presenter, but
+it is not copied into the Discovery `runs/` inventory and does not change
+`R_discovery = N_admitted`. D1 SYNTHESIZE may request or resume Page-owned
+interaction; it may not mint `division-writing`, a per-division Discovery Run,
+or an umbrella synthesis Run.
+
 ## Gate and Closure
 
 The Page must close through `04 CHECK` before D1 CLOSE may close the Folder's
-Task Face. D1 closure requires `paper_runs.py check` to pass, every material
+Task Face. The Page release barrier must be satisfied before CONTENT adoption:
+`rp00_mermaid-structure`, every selected paragraph Page Run, and every required
+Task Result must be complete and bound. D1 closure requires `paper_runs.py check` to pass, every material
 admitted Run is resolved or explicitly held, the Page answers its question at
 the promised `discovery_type`, and Page state agrees with `discovery.yaml`.
 `report:` supports `reported`; `ok` additionally requires the Result-backed

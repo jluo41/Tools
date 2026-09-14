@@ -2,12 +2,14 @@
 
 ## Three identities
 
-1. Recipe: reusable computation and parameter interface owned by the Task.
+1. Base R: the normal reusable Task Run ticket/recipe and parameter interface.
    Implementation stays in Task `scripts/`; shared Job code stays in `src/`.
-2. Test execution: a frozen sample input used to verify the recipe. Its
+2. RI: the Insight Run Ticket that points to that R ticket and freezes a new
+   dataset, question, DIKW target, and acceptance contract.
+3. Test execution: a frozen sample input used to verify the recipe. Its
    ticket/result/receipt remain evidence about that test.
-3. Instance execution: an Insight call with its own data snapshot, parameters,
-   output scope, receipt, and full execution identity.
+4. RI execution: the independent Insight Result with its own data snapshot,
+   parameters, output scope, receipt, and full `instance#riNN@vNNN` identity.
 
 A Task need not know all patients. It validates the supplied contract per
 call. In this use case each patient has an independent complex dataset;
@@ -31,7 +33,7 @@ parameters:
   output_root: <instance-owned-supporting-result-store>
   options: {}
 parameter_contract: <declared-interface-path-and-version>
-execution: <instance>#<local-supporting-run>@<version>
+execution: <instance>#<riNN>@<version>
 receipt: <exact-upstream-runtime-receipt-path>
 ```
 
@@ -45,8 +47,9 @@ not execution identity.
 
 1. Search for accepted support matching exact input/recipe/parameters; reuse
    it if available.
-2. Otherwise allocate an instance-local supporting ticket/receipt calling the
-   shared recipe. The recipe is a definition, not a second counted execution.
+2. Otherwise allocate RI through `insight_items.py bind`: its YAML Ticket
+   points to the normal R ticket and freezes the selected dataset. The base R
+   is referenced, not copied, renumbered, or counted again.
 3. Pass a frozen manifest and isolated output root. Concurrent A/B calls use
    disjoint output, scratch, and notebook paths. Shared code and the existing
    test execution remain unchanged.
@@ -55,7 +58,10 @@ not execution identity.
    binds numeric output for Page use.
 5. Complete typed local Evidence Runs and freeze their Results into the
    Insight item's interpretation input.
-6. Execute the independent DIKW work, check, and publish the item Result.
+6. Execute the independent DIKW work under the RI, check, and publish its
+   versioned Result. If the rebound R output is independently reusable, keep
+   its producing receipt and bind it as support; RI still owns only the DIKW
+   Result.
 
 Computation and DIKW have distinct targets and Results. A forwarding caller
 does not earn an extra umbrella Run; code alone is not citable evidence.

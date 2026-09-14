@@ -77,7 +77,7 @@ class PreviewCommentsTest(unittest.TestCase):
         self.assertEqual(count, 0)
         self.assertIn('Addressed', listing)
         self.assertIn('Sentence revised since this comment', listing)
-        self.assertIn('0 open · 1 addressed', plan_card(self.page))
+        self.assertNotIn('0 open · 1 addressed', plan_card(self.page))
         self.assertIn('A candidate sentence.', listing)
         self.assertNotIn('Comment', updated['text'])
 
@@ -136,23 +136,25 @@ class PreviewCommentsTest(unittest.TestCase):
             self.assertIsNotNone(error)
         self.assertEqual(preview_path(self.page).read_bytes(), before)
 
-    def test_comments_are_after_reading_and_keep_existing_controls(self):
+    def test_saved_comments_remain_archived_but_are_not_rendered_in_workspace(self):
         save_comment(self.page, self.payload())
         card = plan_card(self.page, path_q='/Board/board.md', file_q='S-test.md')
-        self.assertEqual(card.count('class="paragraph-comments"'), 2)
-        self.assertLess(card.index('Read paragraph'), card.index('class="paragraph-comments"'))
-        self.assertIn('value="C1.P1.B1"', card)
-        self.assertIn('Make the subject clearer.', card)
+        self.assertNotIn('class="paragraph-comments"', card)
+        self.assertNotIn('Save comment', card)
+        self.assertNotIn('Make the subject clearer.', card)
+        self.assertIn('Make the subject clearer.', preview_path(self.page).read_text())
+        self.assertNotIn('Read paragraph', card)
         self.assertNotIn('+ Bullet', card)
-        self.assertIn('Save Bullet', card)
+        self.assertNotIn('Save Bullet', card)
 
-    def test_endpoint_routes_to_preview_not_shape(self):
+    def test_retired_endpoint_does_not_write_preview(self):
         handler = OutlineMixin()
         handler.target = lambda p: (self.page, self.page.parent)
+        before = preview_path(self.page).read_bytes()
         result, error = handler.plug_outline({**self.payload(), 'action': 'comment-preview'})
         self.assertIsNone(error)
-        self.assertIn('comment_id', result)
-        self.assertNotIn('version', result)  # no compact-Shape rebuild required
+        self.assertEqual(result, {'url': '/_board/outline?path=&file='})
+        self.assertEqual(preview_path(self.page).read_bytes(), before)
 
     def test_symlink_preview_refused(self):
         path = preview_path(self.page)

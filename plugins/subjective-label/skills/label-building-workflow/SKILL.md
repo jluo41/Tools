@@ -9,8 +9,8 @@ description: >-
   resuming a calibration round, opening a round card, resuming a Session,
   closing a checkpoint, or /label-building-workflow.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-01"
+  version: "0.8.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -42,16 +42,19 @@ inputs freeze. Work exactly one non-parallel operation per dispatch.
 ## P0 Contract · order
 
 ```text
-1 contract   import the fenced corpus and job identity         → corpus-contract
-2 discover   run each bounded external-evidence query, if any  → discovery-search*
-3 seed       create one inspectable initial policy candidate   → guideline-seed
-4 reserve    Test Custodian freezes a sealed-test frame         → test-reserve
-5 cache      embed one corpus × embedder version                → embedding-build
-6 confirm    identified human confirms current meaning          → G0 human gate, no Run
+1 contract   import fenced corpus, initial policy, reservation  → corpus-contract
+2 optional   bounded external-evidence query, if commissioned   → discovery-search*
+3 optional   revise the inspectable policy independently        → guideline-seed
+4 optional   supersede the sealed frame under custody           → test-reserve
+5 optional   embed one corpus × embedder, if commissioned       → embedding-build
+6 gate       identified human confirms current meaning          → G0 human gate, no Run
 ```
 
 G0 (family workflow) is tested on the five P0 authority files it names;
-discovery and embeddings are provenance, not gate inputs. A changed corpus
+steps 2-5 above are not prerequisites for presenting G0 when `corpus-contract`
+already landed valid initial policy and reservation artifacts. The dispatcher
+skips every uncommissioned optional operation and must not allocate it merely
+to fill the list. Discovery and embeddings are provenance, not gate inputs. A changed corpus
 checksum creates a new job. A materially changed query, seed, reservation
 frame, or embedder creates a superseding Run under the same job only when the
 phase law permits it.
@@ -65,20 +68,21 @@ never parses, prints, or renders it; it never copies a historical round, proxy
 judgment, or model-derived gold. `engine/job.py status` rehashes the corpus,
 opaque reservation, policy components, and P0 receipt without writing. A
 differing existing artifact is a hard refusal, not an overwrite. The next
-frontier after creation is **P0 human meaning confirmation**, not a redefinition
-of family gate G0; mere file presence or a bare boolean does not route to Round
-1. A valid confirmation needs the identified human's receipt in `config.yaml`.
+phase frontier after creation is **P0 Contract**, and its first blocked gate is
+**G0 · human meaning confirmation**; mere file presence or a bare boolean does
+not route to Round 1. A valid confirmation needs the identified human's receipt
+in `config.yaml`.
 
 `create` intentionally leaves `cache/embeddings/` empty. P0 step 5 is an
 explicit non-gating follow-on because choosing or invoking an embedding model
 is a separate execution decision; the scaffold API never makes a network/model
 call implicitly.
 
-`engine/job.py` currently writes the P0 domain scaffold and human confirmation
-receipts, but does not allocate the new Level-4 Ticket/runtime envelopes. Do
-not count historical scaffold files as Runs. Until a phase allocator wraps
-these actions, a request to execute them as Runs returns `HOLD: Run allocator
-missing`; `engine/run_catalog.py plan` remains a truthful planning tool.
+`engine/job.py create` writes the P0 domain scaffold and allocates exactly one
+completed `rlNN_corpus-contract_*` Ticket/runtime/Result envelope. It does not
+speculatively allocate the optional or later operations above. Do not count
+historical scaffold files as Runs; `engine/run_catalog.py plan` remains a
+truthful planning tool for operations that have not been commissioned.
 
 `create` is idempotent only while the P0 scaffold is unchanged. After the
 human-confirmation action legitimately changes `config.yaml`, rerunning
@@ -98,6 +102,13 @@ python3 Tools/plugins/subjective-label/engine/job.py create \
   --page-file <page-home>/<page>.md \
   --job-root <page-home>/labeling \
   --job-id <id> --target <target> --human-id <human>
+```
+
+The read-only status invocation is exact and requires no Page-file argument:
+
+```bash
+python3 Tools/plugins/subjective-label/engine/job.py status \
+  --job-root <page-home>/labeling
 ```
 
 Human confirmation is a separate explicit API action; never infer it from

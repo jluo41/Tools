@@ -1,3 +1,11 @@
+## 1.1.0 — 2026-09-13
+
+- Make `riNN` the first-class Insight Run: each RI points to one immutable
+  normal R ticket and freezes a new dataset binding without overwriting R.
+- Add the v2 instance/input and `haipipe.insight-run/v1` Ticket contracts,
+  deterministic `bind` scaffolding, R→RI hash checks, and Page Runs-surface
+  support while retaining items-v1 `#rNN@vNNN` as readable history.
+
 ## 1.0.0 — 2026-09-07
 
 - Replace single-question Page granularity with a topic/data instance whose

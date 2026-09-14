@@ -1,5 +1,12 @@
 # haipipe-insight-data · version history
 
+## 1.1.0 — 2026-09-13
+
+- Require the Page v2 evidence chain for every D value: accepted Supporting
+  Result, frozen Local Input, local Evidence Run, and typed Result.
+- GI2 now requires Page CHECK/CLOSE; new computation is released through
+  SURVEY Decide rather than an active Probe lane.
+
 ## 1.0.3 — 2026-09-01
 
 - Rename the optional presenter from Execution to Runs; Execute remains with

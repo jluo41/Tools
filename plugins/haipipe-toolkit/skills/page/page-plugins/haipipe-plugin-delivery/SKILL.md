@@ -9,8 +9,8 @@ description: >-
   show the pdf docx deck together,
   /haipipe-plugin-delivery.
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-07"
+  version: "0.5.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -20,6 +20,12 @@ metadata:
 `delivery/` and the four internal lane contracts beneath it (latex · word ·
 slide · render). Each lane keeps its own storage, writer, and gate in `ref/`;
 none is a second callable Plugin skill.
+
+Load `../../haipipe-page/ref/page-run-families.md` for the Page Run identity
+contract. Each concrete delivery target/version is commissioned as an `RD`
+Page Delivery Run (`rdNN_web`, `rdNN_latex`, `rdNN_word`, `rdNN_slide`, or
+`rdNN_render`). This plugin remains one visible tab and four lane contracts;
+the RD identity is the execution lineage behind a lane, not a second tab.
 
 ```text
 this file     the 📤 Delivery tab: a 🏠 stat of what is built, one segment per lane
@@ -55,6 +61,16 @@ the category  <page>/delivery/ (flat names are compatibility reads only)
   own deterministic pens; the deck authors only on the ✨ press; Render shows
   the live lane and may invoke only its explicit Folder-native writer/adapter.
 
+## 🧾 RD ownership and receipt
+
+An RD binds one source Page version to one target lane and records the artifact,
+build diagnostics, and `delivery/<lane>/build-manifest.json`. Rebuilding the
+same target may be another attempt in that RD lineage; a different target or
+materially different source version gets a different RD. The build receipt is
+machine-readable delivery evidence, not a whole-Page acceptance decision.
+Evidence truth remains in the RE Result, Page prose remains in the Page
+source, and `haipipe-page-check` remains the only human whole-Page close gate.
+
 ## 🗺 Status · 🟢 built 260831
 
 `live/delivery.py` serves GET `/_board/delivery` (the segmented surface) and
@@ -73,6 +89,8 @@ Delivery only projects the declared outputs and their build diagnostics.
 - `ref/latex.md` · `ref/word.md` · `ref/slide.md` · `ref/render.md` · the
   four internal lane contracts; load only the one needed for the requested
   projection
+- `../../haipipe-page/ref/page-run-families.md` · RP/RE/RD identity and
+  Result/Card/Label binding contract
 - `../../../board/haipipe-board/live/delivery.py` · the segmented surface and its twin
 - `../../../board/haipipe-board/assets/js/10-drawer/82-plugin-delivery.js` · the one registry row
 - `../_shared-export/` · the builders the lanes' routes call (md2tex, md2docx)

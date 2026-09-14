@@ -100,7 +100,7 @@ report:
             )
             self.assertIn("state: 🟡 REPORTED", page)
             self.assertIn("folder-kind: discovery", page)
-            self.assertIn("## Writing Style", page)
+            self.assertNotIn("## Writing Style", page)
             self.assertIn("### 2 · Type payload", page)
             self.assertIn("### A2 · 📚 Type payload", page)
             self.assertIn("- 🔨 A2.1", page)
@@ -195,7 +195,7 @@ question: What failure modes remain?
             self.assertEqual((1, 1), (found, changed))
             repaired = page.read_text(encoding="utf-8")
             self.assertTrue(repaired.startswith("# Human-edited concise title\n"))
-            self.assertIn("## Writing Style", repaired)
+            self.assertNotIn("## Writing Style", repaired)
             self.assertIn("### 4 · Limits and next move", repaired)
 
     def test_repair_does_not_overwrite_authored_page(self) -> None:

@@ -7,8 +7,8 @@ description: >-
   queue, or audit an Insight question. Trigger: insight question, question
   register, I1, QD QI QK QW, folder-kind question, /haipipe-insight-question.
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-09-07"
+  version: "1.2.0"
+  last_updated: "2026-09-13"
   workflow: haipipe-insight-workflow
   phase: I1
   folder_kind: question
@@ -28,6 +28,10 @@ Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and the workflow.
 Existing registers may retain `page-type: question`; new ones use
 `folder-kind: question` plus `question-rung:`.
 
+For registration, status, or dispatch, read
+`../../haipipe-insight/ref/question-groups.md`. For Page authoring and closure,
+read `../../haipipe-insight/ref/page-v2-adapter.md`.
+
 ## Position
 
 I1 follows GI0 and precedes the first runnable D/I/K/W rung. Four Question
@@ -46,6 +50,12 @@ A Question Folder is a register, never an answer. Each question has one stable
 `QD|QI|QK|QW<n>` id and one owning register. Retargeting moves the record; it
 does not clone it.
 
+The register is one DIKW-axis slice of the board. Its intersection with each
+eligible partition column is a derived Question Group: MT02 column B is
+`QG-B-I`, and MT04 column F is `QG-F-W`. A Question Group is never a fifth
+register or a Folder. One row may contribute cells to several groups while
+retaining one id and one origin.
+
 ## Input
 
 Questions have two legal births: need-first from BR00's `Insight Needs Raised`,
@@ -63,15 +73,17 @@ borrowed RF is evidence for the question, not its Application answer.
 
 Division 1 is the Queue; later divisions are one question each in id order.
 The Queue shows the current Folder ids and canonical marks (`⬜`, `🟡`, `✅`,
-`🚫`) per partition where applicable. It asks and tracks; it never contains a
-D/I/K/W conclusion.
+`🚫`) per partition where applicable. Its partition columns plus this Folder's
+`question-rung:` derive the `QG-<partition>-<rung>` handles; no group state is
+written. It asks and tracks; it never contains a D/I/K/W conclusion.
 
 ## Task Face
 
-Classify the minimum rung that can answer the ask; mint or resume the target
-Folder; update the Queue from phase receipts; preserve partial-final reasons;
-and propagate reopening when a cited parent changes. The register pen writes
-queue state; target Folders write receipts in their own
+Classify the minimum rung that can answer the ask; identify each eligible
+`partition × target-rung` group; mint or resume the target Folder for one
+selected cell; update the Queue from Page CLOSE plus phase receipts; preserve
+partial-final reasons; and propagate reopening when a cited parent changes.
+The register pen writes queue state; target Folders write receipts in their own
 `outline/<stem>-log.md`.
 
 For the pre-climbed external-parent bridge, verify the five assertions owned by
@@ -81,14 +93,17 @@ changes. Never mark the row terminal merely because the Task RF is settled.
 
 ## Plugins
 
-- `outline` required;
-- `pagex` optional for the originating Brief need or lower-rung register;
-- `probe` and `code` forbidden: the register dispatches work but does not do it.
+- `outline` required, including Context links to an originating Brief need;
+- no active PageX or Probe lane: a register records identity and state, not
+  evidence;
+- `runs` and `code` forbidden: the register dispatches work but does not do it.
 
 ## Gate and Closure
 
-GI1 passes for one question when its id, rung, origin, answerability test, and
-initial Queue cell are complete. A bridge QW additionally requires its exact
+GI1 passes for one question when its id prefix agrees with `question-rung:`,
+origin and answerability test are complete, and every eligible partition has
+an explicit Queue cell. Those cells derive their Question Group memberships;
+no separate group acceptance exists. A bridge QW additionally requires its exact
 instance/item/version/RF packet and local W Folder. GI6 closes the registered chain only
 when its target rung is terminal and every partial final has a reason on its
 target Folder; for a bridge, that terminal is the signed local I5 Folder, never
@@ -106,3 +121,5 @@ permission.
 - Runtime: `0-MT-meta/MT01-question-data/` through `MT04-question-wisdom/`
 - Queue grammar is owned here; register receipts live at
   `<register>/outline/<register-stem>-log.md`; no private scripts.
+- Question Groups are derived by
+  `../../haipipe-insight/ref/question-groups.md`; no group path is created.

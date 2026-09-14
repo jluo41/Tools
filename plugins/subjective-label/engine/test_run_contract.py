@@ -66,8 +66,8 @@ def test_happy_path_formula_plans_43_runs_with_expected_phase_counts():
 
     addresses = [run.run for run in runs]
     assert len(addresses) == len(set(addresses))
-    assert addresses[0].startswith("r01_labeling-corpus-contract_")
-    assert addresses[-1].startswith("r43_labeling-dstar-materialize_")
+    assert addresses[0].startswith("rl01_corpus-contract_")
+    assert addresses[-1].startswith("rl43_dstar-materialize_")
 
 
 def test_planner_cli_executes_the_documented_example():
@@ -93,7 +93,16 @@ def test_planner_cli_executes_the_documented_example():
     assert "P0        6" in completed.stdout
     assert "P1       19" in completed.stdout
     assert "TOTAL    43" in completed.stdout
-    assert "r43_labeling-dstar-materialize_d-star-v1" in completed.stdout
+    assert "rl43_dstar-materialize_d-star-v1" in completed.stdout
+
+
+def test_labeling_run_ids_use_the_native_rl_namespace():
+    catalog = _catalog_module()
+    runs = catalog.plan_runs(discovery=0, round_weak=(), executors=1, shards=1)
+
+    assert runs
+    assert all(run.run.startswith("rl") for run in runs)
+    assert all("_labeling-" not in run.run for run in runs)
 
 
 def test_neutral_run_presenter_and_family_workflows_use_granular_dialect():

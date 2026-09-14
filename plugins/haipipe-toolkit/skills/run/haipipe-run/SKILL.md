@@ -12,8 +12,8 @@ description: >-
   result, calibration run, qualification run, production scan, final audit,
   /haipipe-run.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-09-11"
+  version: "0.24.0"
+  last_updated: "2026-09-13"
 ---
 
 # /haipipe-run · one attempt, two projections, one receipt
@@ -25,18 +25,21 @@ Level 4 beneath a Folder/Task, but it is not another folder level:
 Run address = authored Ticket identity = generated Result identity
 ```
 
-The Insight instance dialect qualifies a reusable local ticket with its
-instance and immutable execution version. In that dialect the equation is
-`full Run address = instance + local ticket + execution version`, not the
-unqualified ticket stem. All other dialects retain their existing resolver.
+The Insight instance dialect adds one explicit relation: `riNN` is an Insight
+Run that points to a normal R ticket and freezes a new dataset binding. In that
+dialect the equation is `full RI address = instance + riNN + execution
+version`; the RI Ticket also carries the base R id/hash and dataset snapshot.
+An unqualified R names only the reusable method, never the rebound dataset
+execution. All other dialects retain their existing resolver.
 
 Load the Folder owner first: normally a workflow phase, or a declared canonical
 family skill for a stable base Folder such as Task. Then load the current phase
 that commissions the Run. The Folder owner owns kind, dialect, and cross-face
 closure; the current phase owns why this attempt is needed, which Run kinds it
 permits, and its acceptance/promotion rule. Load the selected worker/dialect
-after this contract. Load `haipipe-plugin-runs` only to
-present the completed structure; the presenter owns no Run semantics.
+after this contract. Load `haipipe-plugin-runs` only to present the completed
+structure inside Plugin Outline's Run Workspace; the presenter owns no Run
+semantics.
 
 ## Ownership
 
@@ -46,7 +49,7 @@ Keep the four authorities separate:
 workflow phase       why to run · allowed kinds · target · acceptance · promotion
 haipipe-run          identity · pairing · receipt · lifecycle · audit invariants
 worker/dialect       how to perform the work · kind-specific Result grammar
-haipipe-plugin-runs  read-only overview and Ticket/Result detail
+haipipe-plugin-runs  read-only Run Workspace inside Plugin Outline
 ```
 
 Do not create a horizontal `run-for-<folder-kind>` owner. Put the Run Profile
@@ -71,6 +74,11 @@ address during SURVEY so the future Run is indexable; the `new` action records
 that no Ticket exists. Open and count the Run only when LAND commissions the
 attempt and creates its authored Ticket.
 
+A Page-owned `fn/Runs` candidate is also planning, not an allocated Run. It has
+no identity, Ticket, Result, runtime receipt, or inventory row until the person
+selects or directly commissions it. Do not mint `rpNN` before selection; resume
+an existing matching open Page Run instead of allocating a duplicate.
+
 Do not confuse a workflow's `RUN` or `Execute` verb with this Level-4 identity.
 A router invocation may plan, dispatch zero or many Runs, or only write a
 workflow receipt. It earns a Level-4 Run address only when the Ticket, Result,
@@ -83,6 +91,61 @@ targets or Results are independently reusable and independently closable.
 
 A workflow episode may group several dependent Runs without becoming another
 Run. Never count both an episode and its independently closable children.
+
+## 📚 Page-facing projection
+
+The neutral registry keeps native Run identities. Plugin Outline presents them
+through three reader-facing lanes without renaming or copying the underlying
+objects:
+
+```text
+Run P      family=page + operation=interactive-writing
+           local identity rp00_mermaid-structure or rpNN_pNN[-pNN]
+           mandatory whole-Page Mermaid Structure, then one numbered paragraph group;
+           Page owns human feedback, Version/Step history, working state,
+           and explicit closure
+Run E      Page-owned Evidence production
+           one VALUE/TABLE/DISPLAY/CITE target; Ticket in runs/, Result in results/
+Supporting Run
+           external/upstream native family, including Discovery
+           keeps its rNN / rlNN / bNNjNNtNNrNN / family-specific identity;
+           the Page stores only a reference and consumes the Result contract
+```
+
+Page Evidence Items appear as Run E. External Execution, Discovery, Insight,
+Design, Labeling, and other independently commissioned work appear as
+Supporting Runs when an Evidence Result references them. Labeling uses `rlNN`;
+ordinary local Task work may use `rNN`. New Run P records use only `rpNN`,
+meaning Run of Page.
+A human review or acceptance gate on code, search, data, build, or another Task
+Result does not reclassify the producing work as a Page Run.
+A Page workflow pass has no Level-4 Run identity merely because its
+compatibility command uses the verb `run`.
+
+One Page may therefore own many sibling Page Runs. The first is always
+`rp00_mermaid-structure`; it must explicitly close the whole-Page Mermaid map
+and `P01..PN` index before any paragraph Page Run exists. The Page then
+partitions `N` numbered paragraphs into `K` independently closable groups,
+where `1 <= K <= N`; ten paragraphs may yield 10, 8, or 6 paragraph Page Runs.
+Every group has its own closure boundary and short `rpNN_pNN[-pNN]` identity.
+
+### Cross-face handoff
+
+For a Task Folder, the Run boundary is a four-step transfer rather than shared
+ownership:
+
+```text
+Page candidate (no Task identity)
+  → Task owner allocates and executes native rNN
+  → Task returns Result + runtime receipt
+  → Page binds full Run id + Result path + fingerprint
+```
+
+The candidate never reserves an `rNN`. A ready Task Result does not close the
+dependent Page Run or release the Page, and a closed Page Run does not prove
+the Task Result current. Use
+`../../task/haipipe-task/ref/task-page.md` for the Task-Folder closure equation
+and staleness rules.
 
 ## Phase × Run design law
 
@@ -133,11 +196,12 @@ Use one family classification for routing and presentation:
 ```text
 Execution                computation · data · model · tool execution
 Discovery                paper/source search and external-evidence analysis
-Page · Evidence Item     one focal VALUE/CITE/DISPLAY Result ready for EMBED
+Page · Evidence Item     one focal VALUE/TABLE/CITE/DISPLAY Result ready for EMBED
 Page · Paragraph Writing  one addressed paragraph candidate
 Page · Display           one display unit candidate
 Labeling                 a domain operation declared by subjective-label/ref/ref-run.md
-Insight · Item           one topic-instance item's checked DIKW/RF Result
+Insight · Item           one `riNN` binding from a normal R to new frozen data,
+                         producing its own checked DIKW/RF Result
 Design                   one generated DU or independently commissioned verification
 ```
 
@@ -160,7 +224,9 @@ The owning phase supplies the target grammar and the worker/dialect supplies the
 kind-specific Result gate. A phase may extend the vocabulary only when the new
 family has an independently testable target and Result contract.
 
-Name new Runs with a monotonic two-digit address and a family-bearing stem:
+Name new Task Runs with the owning family's monotonic address and a
+family-bearing stem. Name interactive Page Runs with the separate `rpNN`
+counter (`rp` means Run of Page):
 
 ```text
 r01_execution_fit-model
@@ -168,26 +234,36 @@ r02_discovery_chen2025_trace
 r03_page-evidence-item_e01-value-adjusted-effect
 r04_page-writing_c02-p01
 r05_page-display_c02-f01
-r06_labeling-guideline-learn_round-03
-r07_labeling-executor-predict_test-v1-executor-a
+rl06_guideline-learn_round-03
+rl07_executor-predict_test-v1-executor-a
+rp00_mermaid-structure
+rp01_p01
+rp02_p02-p03
 ```
 
 Use lowercase ASCII, digits, underscores, and hyphens. Never renumber. When
 intent, target, frozen inputs, or acceptance semantics change materially,
 allocate a new Run and record `supersedes:` rather than overwriting history.
-The declared interactive Page dialect is the scoped exception: evolving
-feedback is part of its contract and advances Steps/Versions, not Run ids.
+The declared interactive Page dialect is the scoped exception: it allocates
+from the Page Folder's own `rpNN` sequence, and evolving feedback advances
+Steps/Versions rather than Run ids. The `rpNN` counter neither consumes nor
+renumbers the Task Run `rNN` counter; `rp01` and `r01` may coexist.
 
-For Insight instance work, a new execution version is a new full Run id;
-the stable local ticket may be reused. `supersedes` relates replacement
-executions of the same work/context, not independent patient datasets.
+For Insight instance work, a new dataset allocates a new `riNN`; it never
+becomes a rerun or later version of the old dataset. The RI points to the
+unchanged normal R Ticket and owns an independent Result history. A retry of
+the exact frozen RI contract appends an attempt; a corrected publication over
+the unchanged binding may allocate the next execution version. A changed base
+R, question, target, or acceptance allocates a new RI. `supersedes` never
+relates independent patient datasets.
 
-Use the local `rNN` stem for files and a full global reference when one Folder
+Use the owner-native stem for files and a full global reference when one Folder
 refers to another Run:
 
 ```text
-local identity   r04_execution_fit-model
-global identity  b01j02t03r04
+Task local identity   r04_execution_fit-model
+Task global identity  b01j02t03r04
+Page local identity   rp00_mermaid-structure or rp01_p01
 ```
 
 A Paper Board has a separate local namespace because the Paper itself is the
@@ -207,8 +283,8 @@ historical Paper dialect; new Paper work must not mint it.
 
 `reuse` and `rerun` references require the full owner-native identity:
 `bNNjNNtNNrNN` for a Job-backed Task or global Supporting Run, a
-`pm-/pa-/pr-` id for a current Paper-local Run, and the local `rNN_…` stem
-only when the owning Page's path is carried with it.
+`pm-/pa-/pr-` id for a current Paper-local Run, and the local `rNN_…` Task stem
+or `rpNN_…` Page stem only when the owning Folder's path is carried with it.
 `rerun` adds an attempt under the same Run identity because target, frozen
 inputs, and acceptance are unchanged. If any changes materially, mint a new
 Run and set `supersedes: bNNjNNtNNrNN` in its receipt.
@@ -222,11 +298,11 @@ Load it before executing human-feedback Page writing.
 ```text
 family / operation   page / interactive-writing
 interaction          human-feedback
-Run target           one bounded writing goal; may include several paragraphs/map
-authored Run         runs/<owner-native-run>.md
-paired Result        results/<run>/working.md + runtime.yaml + vNNN/
-human Step           vNNN/sNNN-input.md + sNNN-result.md
-accepted episode     vNNN/close.md with explicit human decision and sealed hashes
+Run target           whole-Page Mermaid Structure, or one independently reviewable numbered paragraph group
+authored Run         runs/rp00_mermaid-structure.md or runs/rpNN_pNN[-pNN].md
+paired Result        results/<run>/working.md + runtime.yaml + vNNN.md
+human Step           one ## Step sNNN section in vNNN.md, with feedback + result
+accepted episode     ## Version closure in vNNN.md with explicit human decision
 ```
 
 The Folder's dialect may place that Result elsewhere; record the resolved path.
@@ -236,8 +312,18 @@ A human-accepted writing Version is not Page CHECK closure or evidence readiness
 The invariant tested on disk is scoped human agreement plus preserved history,
 not a machine score that declares prose good.
 
-Feedback evolves the input on purpose. Each Step freezes its reviewed source;
-ordinary edits add a Step, reopening a closed episode adds a Version, and a
+Across the Page, `rp00_mermaid-structure` must close before independently closable
+paragraph groups receive sibling Page Run identities. Each identity shows its
+exact serial or range, such as `rp01_p01` or `rp02_p02-p03`; semantic wording
+belongs in Goal. Inside one Page Run, sentences, Steps, Versions, and internal
+agent calls do not receive child Run identities. Adjacent paragraphs share one
+Run only when the human must judge them together under one acceptance decision.
+These two forms are exhaustive. A differently named `interactive-writing` Run
+is invalid, is not aliased, and cannot satisfy the structure prerequisite.
+
+Feedback evolves the input on purpose. One Version is one append-only Markdown
+journal containing every Step in order. Each Step freezes its reviewed source;
+ordinary edits append a Step, reopening a closed episode adds a Version file, and a
 new session resumes the same Run. New independent goals still require new Runs.
 Closed records are immutable. Changes to accepted targets require explicit
 scoped reopening. Never apply this exception to Execution/Discovery retries.
@@ -248,20 +334,24 @@ The task-side Insight contract owns this scoped dialect and its schemas at
 `task/page-types/haipipe-page-insight/ref/instance-items.md`:
 
 ```text
-local item / ticket    r01_description / runs/r01_description.sh
-full execution         sms/patient-a-study#r01_description@v001
-local Result           results/r01_description/v001/result.yaml
-runtime receipt        results/r01_description/v001/runtime.yaml
-frozen input           results/r01_description/v001/input.yaml
+base normal R          r01_description / runs/r01_description.sh
+Insight Run Ticket     ri01_description / runs/ri01_description.yaml
+full execution         sms/patient-a-study#ri01_description@v001
+local Result           results/ri01_description/v001/result.yaml
+runtime receipt        results/ri01_description/v001/runtime.yaml
+frozen input           results/ri01_description/v001/input.yaml
 ```
 
-One authored ticket can commission several versions, each with exactly one
-frozen input envelope, runtime receipt, and Result address. Changing data,
-recipe, intent, or acceptance allocates the next version; retrying unchanged
-inputs appends attempts to that version. Cross-Folder references carry the
-full execution id, Result path, and hash; an `rNN` or BJTR address without
-instance/version cannot distinguish patient A from B. This namespace does not
-reuse Paper's `pj` prefix or renumber existing Task Runs.
+One authored RI Ticket points to exactly one base R Ticket/hash and one frozen
+dataset/question/target/acceptance binding. A different dataset or base R
+allocates a sibling RI. Each RI version has exactly one frozen input envelope,
+runtime receipt, and Result address; retrying unchanged inputs appends attempts
+to that version. Cross-Folder references carry the full RI execution id,
+base-R pointer, Result path, and hash. An `rNN` or BJTR address alone identifies
+the method but cannot identify the rebound dataset. RI has its own monotonic
+counter and does not consume or renumber the R, RP, RL, RD, or Paper counters.
+Historical `instance#rNN@vNNN` Insight items remain readable but new bindings
+use RI.
 
 Instance-local supporting Execution tickets may call a shared Task recipe
 under the same qualified identity scheme. Recipe definitions are not counted
@@ -273,8 +363,10 @@ all existing launchers an unimplemented input override.
 ## Two mandatory projections
 
 Every Run has exactly one authored Ticket and one generated Result address.
-In the Insight dialect this statement is per full execution version: the
-ticket is reusable, while each qualified execution has one Result address.
+In the Insight dialect this statement is per full RI execution version: the RI
+Ticket is reusable only within its immutable R+dataset binding, while each
+qualified execution has one Result address. The referenced base R Ticket is
+not a second projection of RI and is not recounted.
 Resolve their physical locations from the Folder dialect:
 
 ```text
@@ -394,6 +486,12 @@ Result; Page interpretation belongs to EMBED and is not part of this Run.
 Add dialect-specific provenance such as subject identity, git SHA, config hash,
 host, model, calls, or artifact pointers. Never store credentials, private
 tokens, PHI, or raw sensitive rows.
+
+For every newly allocated Run, `started_at` and `finished_at` are RFC 3339
+date-times with an explicit UTC offset. A date-only value is readable legacy
+history but cannot support within-day order or duration and must not be emitted
+by a new writer. An atomic scaffold may use the same full timestamp for both
+fields; monotonic Run identity, not timestamp precision, remains the address.
 
 Use the owning dialect's detailed states on disk and normalize them for the
 Runs surface without minting another state file:

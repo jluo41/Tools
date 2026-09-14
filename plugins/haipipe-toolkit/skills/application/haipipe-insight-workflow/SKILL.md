@@ -3,13 +3,13 @@ name: haipipe-insight-workflow
 description: >-
   The InsightBoard phase machine over six phase-owned Folder kinds: I0 Meta →
   I1 Question → I2 Data → I3 Information → I4 Knowledge → I5 Wisdom. Owns
-  gates GI0-GI6, the question-by-partition CELL frontier, climb order,
-  dispatch, receipts, and stops; each phase skill owns both Folder faces and
+  gates GI0-GI6, derived partition-by-DIKW Question Groups, the CELL frontier,
+  climb order, dispatch, receipts, and stops; each phase skill owns both Folder faces and
   its plugins. Use to run or inspect an InsightBoard. Trigger: insight
   workflow, climb ladder, next rung, frontier cell, /haipipe-insight-workflow.
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-09-07"
+  version: "1.2.1"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -20,6 +20,11 @@ for I0-I5 ordering and GI0-GI6. `haipipe-application-workflow` may delegate
 here and record a crossing, but it owns no alias phases or duplicate gates.
 This workflow never edits a Page Face itself; the selected phase delegates Page
 work to `haipipe-page-workflow`.
+
+Read `../haipipe-insight/ref/question-groups.md` before registration, status,
+or dispatch, and `../haipipe-insight/ref/page-v2-adapter.md` before running or
+checking a rung Page. These references own the two-dimensional group projection
+and the boundary between Page CLOSE and GI advancement.
 
 This is the Application InsightBoard workflow. Task-side topic instances use
 the item/checkpoint workflow table owned by `haipipe-page-insight/ref/`.
@@ -64,9 +69,19 @@ position with no independently owned Folder kind is a gate or Task-Face act.
 
 Each phase performs one EPISTEMIC OPERATION and each gate is an AUTHORITY TRANSFER: passing GI<n> is the moment the rung below becomes citable and nothing else does — the Climb Law read as a process instead of a structure. That is why the aliases are verbs of knowing (scope, ask, observe, derive, claim, hand off), not verbs of doing.
 
-## ✚ The second axis · partitions are columns, and the frontier is a CELL
+## ✚ Question Groups · partition × DIKW target
 
-Phase is read per question AND per partition: the atomic unit is the register cell, so `QI5` may be ✅ on F, 🟡 on B and ⬜ on D at once, and "what phase is this board in" has no one-number answer — the register matrix IS the frontier map.
+The board exposes a derived Question Group for each eligible intersection of a
+partition scope and requested rung: `QG-F-D`, `QG-B-I`, `QG-C-K`, or
+`QG-F-W`. The group is a scheduling/status view only. Its members are Queue
+cells whose question target matches its rung and whose column matches its
+partition. MT00 plus MT01-MT04 remain the record; no group Folder or state file
+exists.
+
+The CELL remains the atomic transition, so `QI5` may be ✅ in `QG-F-I`, 🟡 in
+`QG-B-I`, and ⬜ in `QG-D-I` at once. A group may batch visibility but never
+advance all members together. "What phase is this board in" therefore has no
+one-number answer: report the Question Groups and their member-cell frontiers.
 
 A subgroup passes through three moments, each owned by one phase:
 
@@ -138,7 +153,11 @@ itself, no cut of it       (the variant catalog, the extract's shape, what a nex
                            re-deriving an invariant per partition invites drift
 ```
 
-A question id is partition-free either way (`QI5` spans all columns; there is no `QI5-B`), so "subgroup" is never a kind of question: it is either the COLUMN a question is asked in, or the SUBJECT of an X question about the columns' relationship.
+A question id is partition-free either way (`QI5` spans all columns; there is no
+`QI5-B`). Its B cell belongs to `QG-B-I`; its F cell belongs to `QG-F-I`.
+"Subgroup" is never a kind of question: it is either the partition axis of a
+Question Group or the subject of an X question about several groups. X is a
+derived cross scope, and `QG-X-D` is invalid because X owns no raw rows.
 
 **The instrument shadow.** Both tests above have a mechanical shadow in the task layer, because every ladder topic is backed by ONE task folder and the reuse pattern must agree with the classification:
 
@@ -213,8 +232,8 @@ consumer-neutral chain. A settled Task Insight item Result has already climbed
 that completed chain as an **external parent** for a local I5 Folder:
 
 ```text
-Task instance/item@version/RF    Application InsightBoard          DesignBoard
-D→I→K→W→RF ── Supporting Result ─▶ I1 QW → I5 contextual W ─✋─▶ X1 handoff
+Task instance/riNN@version/RF    Application InsightBoard          DesignBoard
+R + new dataset → RI → D/I/K/W/RF ─▶ I1 QW → I5 contextual W ─✋─▶ X1 handoff
 ```
 
 This is not permission to skip a rung inside an Application chain. It is a
@@ -225,8 +244,9 @@ cross-scope authority bridge with five mechanically readable assertions:
 2. that item Result is independently CHECK-accepted against its exact source
    versions, with current applicability; unrelated open items do not block it;
 3. the borrowed RF traces through named D/I/K/W rows in that exact Result;
-4. the Application I1 QW row records instance, item, execution version, RF id,
-   Result path/hash, and the local I5 W Folder;
+4. the Application I1 QW row records instance, `riNN`, base-R pointer, frozen
+   dataset binding, execution version, RF id, Result path/hash, and the local
+   I5 W Folder; a bare R is not an RI evidence address;
 5. the W Folder's Evidence Item graph binds that exact Supporting Result and
    completes its local Evidence Run. Page navigation alone is not evidence.
 
@@ -247,16 +267,21 @@ and routes through the ordinary local climb.
 Each gate is an assertion over pages that already exist; a gate that cannot be tested by reading named files is misdesigned. Gates are per-CELL except GI0, which is per-board, and GI4's verdict clause, which is per-column-set.
 
 ```text
-GI0  Meta → Question      MT00 is past 🔴 and its source resolves to a run · the four
+GI0  Meta → Question      MT00 has Page CHECK/CLOSE and its sources resolve through
+                          accepted Results or governed frozen local inputs · the four
                           registers exist · on partition-major the partition register
                           and the shared-threshold pointer exist
 GI1  Question → Data      the cell's row carries target, raiser, what-would-answer,
                           and a state cell · its partition group exists on disk
-GI2  Data → Information   the D page is CHECK-closed, every value bound by path to
-                          an accepted source Result backed by a named run
-GI3  Information → Knowledge   the I page is CHECK-closed and derives only from named
-                          D rows (X contrast: mirrored I rows, the one exception)
-GI4  Knowledge → Wisdom   the local K page is CHECK-closed · OR the pre-climbed
+GI2  Data → Information   the D Page reached CHECK/CLOSE; every value is bound by
+                          path to an accepted source Result backed by a named run,
+                          represented as a Supporting Result, frozen Local Input,
+                          and ready typed local Result
+GI3  Information → Knowledge   the I Page reached CHECK/CLOSE and derives only from
+                          exact version/hash-pinned D parent rows (X contrast:
+                          mirrored I rows, the one exception)
+GI4  Knowledge → Wisdom   the local K Page reached CHECK/CLOSE and cites exact
+                          version/hash-pinned I parent rows · OR the pre-climbed
                           external-parent bridge passes all five assertions above ·
                           on partition-major the X group's pooling verdict exists and
                           is current against the partition register — a late
@@ -279,17 +304,20 @@ The DERIVED-HEADER rule (`haipipe-insight-question`) covers every on-register
 restatement of the Queue — headers, Diagrams, Openings, status words, and counts.
 Reconciling one is I1 Task-Face work citing the Queue.
 
-**The two Insight cross-phase authority gates never have an auto mode**: probe
-release sits INSIDE any rung page's RUN at its PROBE phase, per page; handoff
-signing is GI5. Page Workflow may also require local outline, read, or verified
-ticks while authoring that Folder. Those are nested Page-Face controls and may
-pause a copilot run, but they do not create extra Insight transitions or GI
-numbers. Every dispatch pins `mode: copilot`. A blocked gate is a clean stop:
-report the cell, the waiting artifact, and the person's owed decision.
+**The two Insight cross-phase authority gates never have an auto mode**. A new
+Supporting computation is released through the owning Page Evidence Item's
+SURVEY `Decide`; there is no separate active Probe phase or lane. Handoff
+signing is GI5. Page Workflow may also require local Shape approval, CITE
+verification, or Page acceptance while authoring that Folder. Those nested
+Page-Face controls may pause a copilot pass, but they do not create extra Insight
+transitions or GI numbers. Every dispatch pins `mode: copilot`. A blocked gate
+is a clean stop: report the Question Group, cell, waiting artifact, and the
+person's owed decision.
 
 For the shared Page Workflow's owner RULING, I0-I4 declare none beyond their
 mechanical GI closure; I5 reuses the GI5 signature receipt. This never creates
-a duplicate human tick. Probe `read:` remains its own nested plugin control.
+a duplicate human tick. Historical Probe records remain read-only migration
+input.
 
 ## 🗃 Group mapping
 
@@ -303,15 +331,23 @@ I2-I4     rung-major:       1-D-data/ · 2-I-information/ · 3-K-knowledge/
 I5        rung-major 4-W-wisdom/, or each partition group's W page
 ```
 
+These are disk groups, not Question Groups. The derived projection cuts across
+them: an MT02 column exposes `QG-<partition>-I`, while partition group B exposes
+`QG-B-D`, `QG-B-I`, `QG-B-K`, and `QG-B-W`.
+
 ## 🚚 Dispatch: one page at a time
 
 ```text
-select   the frontier cell whose gate is open and whose inputs exist; prefer cells
+select   the earliest RUNNABLE Question Group, then one frontier cell whose gate
+         is open and whose inputs exist; prefer cells
          the register marks `⬜ calc` (computed, unauthored — I1 Question)
          before cells needing new runs, because authoring is cheaper than running
 load     the matching haipipe-insight-<folder-kind> phase skill
-run      haipipe-page-workflow over that ONE page · mode: copilot always
-fold     move the register cell ONLY on CLOSE; every other terminal is a named
+run      one haipipe-page-workflow PASS over that ONE Page · mode: copilot always;
+         allocate no rpNN unless a human selected an interactive Page-writing goal
+fold     move the register cell ONLY after Page CHECK emits CLOSE and the matching
+         GI assertion passes; a Page Run close changes neither condition
+         · every other terminal is a named
          non-settlement and the cell does not move
 repeat   until every cell is settled or a gate blocks
 ```
@@ -332,9 +368,10 @@ A gate test may be run any time; a gate may only be DECLARED passed by the human
 
 ## 🔀 Resolving "what phase are we in"
 
-Per cell: the highest gate whose assertion currently holds. Per board: read the
-register matrix whole. A board-level scalar is a lie this workflow refuses to
-mint; the crossing workflow reports this native frontier unchanged.
+Per cell: the highest gate whose assertion currently holds. Per Question Group:
+derive `EMPTY | RUNNABLE | BLOCKED | SETTLED` from its cells. Per board: read
+the register matrix whole. A board-level scalar is a lie this workflow refuses
+to mint; the crossing workflow reports the group/cell frontier unchanged.
 
 ## 🌐 The machine is content-free
 
@@ -343,7 +380,8 @@ Nothing in this file names SMS, messages, or any domain. Domain content enters a
 ```text
 ① the EXTRACT       MT00: source, unit, grain, window — a CGM stream, a wearable
                     feed, a claims table are all one `source:` line away
-② the QUESTIONS     MT01-MT04: what is asked is the board's, never the machine's
+② the QUESTIONS     MT01-MT04: what is asked is the board's; Question Groups are
+                    their derived partition × target-rung projection
 ③ the VENUE PACKS   the design side's 8 packs (sms · email · dashboard · report ·
                     push · reminder · checklist · ui-card) — the counsel's outlet
 ```
@@ -407,4 +445,7 @@ a mark is not an edit   🧊 and its kin annotate ADJACENT to a sentence; the se
 
 ## ↩ Return
 
-The frontier cells by phase, the pages dispatched this run with their CHECK outcomes, the gate now blocking with the person's owed decision, and the next runnable cell once that gate clears.
+The Question Groups in MT00/rung order, their member cells and derived states,
+the Pages dispatched this pass with their CHECK/CLOSE and GI outcomes, the gate
+now blocking with the person's owed decision, and the next runnable cell once
+that gate clears.

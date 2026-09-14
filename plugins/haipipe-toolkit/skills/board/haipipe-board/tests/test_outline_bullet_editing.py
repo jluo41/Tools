@@ -47,7 +47,7 @@ class OutlineBulletEditingTest(unittest.TestCase):
         (outline / "S-page-log.md").write_text("# log\n", encoding="utf-8")
         return source
 
-    def test_paragraph_summary_contains_only_its_bullets_and_editor(self):
+    def test_paragraph_summary_contains_only_read_only_bullet_and_draft_rows(self):
         with tempfile.TemporaryDirectory() as directory:
             page = self._page(directory)
             card = plan_card(
@@ -55,15 +55,16 @@ class OutlineBulletEditingTest(unittest.TestCase):
                 file_q="S-page/S-page.md",
             )
             start = card.index('data-paragraph="C1.P1"')
-            end = card.index("</details>", card.index('data-paragraph-reading', start))
+            end = card.index("</details>", start)
             inside = card[start:end]
             self.assertIn("C1.P1.B1", inside)
-            self.assertIn('data-bullet-edit="edit-bullet-C1-P1-B1"', inside)
-            self.assertIn("Save Bullet", inside)
-            self.assertIn("Read paragraph", inside)
-            self.assertNotIn("+ Bullet", card)
-            self.assertNotIn('data-bullet-add=', card)
-            self.assertNotIn('value="append-bullet"', card)
+            self.assertIn("<span>Bullet</span><span>Draft</span>", inside)
+            self.assertNotIn("data-bullet-edit", card)
+            self.assertNotIn("data-bullet-write", card)
+            self.assertNotIn("data-preview-write", card)
+            self.assertNotIn("<textarea", card)
+            self.assertNotIn("Save Bullet", card)
+            self.assertNotIn("Read paragraph", card)
             self.assertNotIn("Planned move", card)
 
     def test_first_write_copies_approved_shape_then_reuses_working_version(self):
@@ -119,11 +120,11 @@ class OutlineBulletEditingTest(unittest.TestCase):
             rendered = render("S-page", parse_outline(plan.read_text()), page,
                               root=directory, path_q="/Board/board.md",
                               file_q="S-page/S-page.md")
-            self.assertIn("✍️ plan v1.2", rendered)
-            self.assertIn("approved: ⬜", rendered)
+            self.assertIn('class="card plan-card minimal-plan"', rendered)
             self.assertIn("Another point", rendered)
+            self.assertNotIn("approved: ⬜", rendered)
 
-    def test_logic_map_renders_at_top_of_bullet_workspace(self):
+    def test_logic_map_renders_at_top_of_draft_space(self):
         logic = """%% Derived from S-page-outline-v1.1.md.
 flowchart TD
     P1[\"P1 · First move<br/>Clinical problem\"]
@@ -144,12 +145,64 @@ flowchart TD
 
         self.assertEqual(rendered.count('class="card logic-card"'), 1)
         self.assertLess(rendered.index('class="card logic-card"'),
-                        rendered.index('class="card plan-card"'))
+                        rendered.index('class="card plan-card minimal-plan"'))
         self.assertIn('class="logic-svg"', rendered)
         self.assertIn("Clinical problem", rendered)
         self.assertIn("What follows?", rendered)
-        self.assertIn("Mermaid source", rendered)
-        self.assertIn("flowchart TD", rendered)
+        self.assertIn("Mermaid", rendered)
+        self.assertIn("outline/S-page-logic.mmd", rendered)
+        self.assertNotIn("Mermaid source", rendered)
+        # The raw Mermaid source is intentionally not projected into the
+        # reader-facing Draft Space; only the rendered diagram and its source
+        # path are exposed.
+        self.assertNotIn("flowchart TD", rendered)
+        self.assertIn("outline/S-page-logic.mmd", rendered)
+
+    def test_open_first_page_run_expands_mermaid_structure(self):
+        logic = """%% Candidate for rp00_mermaid-structure.
+flowchart TD
+    P01[\"P01 · First move\"]
+    P02[\"P02 · Second move\"]
+    P01 --> P02
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            page = self._page(directory)
+            (page.parent / "outline" / "S-page-logic.mmd").write_text(
+                logic, encoding="utf-8"
+            )
+            runtime = page.parent / "results" / "rp00_mermaid-structure"
+            runtime.mkdir(parents=True)
+            (runtime / "runtime.yaml").write_text(
+                "run: rp00_mermaid-structure\nstatus: waiting-for-feedback\n",
+                encoding="utf-8",
+            )
+            plan = page.parent / "outline" / "S-page-outline-v1.1.md"
+            rendered = render(
+                "S-page", parse_outline(plan.read_text(encoding="utf-8")), page,
+                root=directory, path_q="/Board/board.md", file_q="S-page/S-page.md",
+            )
+
+        self.assertIn('<details class="card logic-card" aria-label="Mermaid">', rendered)
+        self.assertIn("P01 · First move", rendered)
+
+    def test_open_first_page_run_names_missing_mermaid_structure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = self._page(directory)
+            runtime = page.parent / "results" / "rp00_mermaid-structure"
+            runtime.mkdir(parents=True)
+            (runtime / "runtime.yaml").write_text(
+                "run: rp00_mermaid-structure\nstatus: waiting-for-feedback\n",
+                encoding="utf-8",
+            )
+            plan = page.parent / "outline" / "S-page-outline-v1.1.md"
+            rendered = render(
+                "S-page", parse_outline(plan.read_text(encoding="utf-8")), page,
+                root=directory, path_q="/Board/board.md", file_q="S-page/S-page.md",
+            )
+
+        self.assertIn('<details class="card logic-card" aria-label="Mermaid">', rendered)
+        self.assertIn("open Mermaid Structure Run", rendered)
+        self.assertIn("outline/S-page-logic.mmd", rendered)
 
     def test_point_form_renders_role_statement_annotations_and_transition(self):
         point_plan = PLAN.replace(
@@ -166,11 +219,10 @@ flowchart TD
             )
             card = plan_card(page, root=directory, path_q="/Board/board.md",
                              file_q="S-page/S-page.md")
-        self.assertIn("[1 · Phenomenon]", card)
+        self.assertIn("[Phenomenon]", card)
         self.assertIn("Physician behavior varies within settings.", card)
-        self.assertIn("<li>settings = clinical decision contexts</li>", card)
-        self.assertIn("<li>focus = comparable situations</li>", card)
-        self.assertIn("→ <span>[illustration: general pattern → specific example]</span>", card)
+        self.assertNotIn("<li>", card)
+        self.assertNotIn("illustration: general pattern", card)
         self.assertNotIn("Core statement:", card)
         self.assertNotIn("Note:", card)
 
@@ -202,9 +254,9 @@ flowchart TD
             )
             card = plan_card(page, root=directory, path_q="/Board/board.md",
                              file_q="S-page/S-page.md")
-        self.assertIn("<li>compare physicians facing comparable situations</li>", card)
-        self.assertIn("<li>use comparable clinical cases</li>", card)
-        self.assertNotIn("<li>use comparable clinical cases Evidence:", card)
+        self.assertNotIn("<li>", card)
+        self.assertNotIn("compare physicians facing comparable situations", card)
+        self.assertNotIn("use comparable clinical cases", card)
         self.assertNotIn("situations - use comparable", card)
 
     def test_plan_bullet_iterator_preserves_explicit_identity_with_indented_dash(self):
@@ -310,30 +362,28 @@ class OutlineBulletEditorEdgesTest(unittest.TestCase):
             page = self._page(directory)
             card = plan_card(page, root=directory, path_q="/Board/board.md",
                              file_q="S-page/S-page.md")
-            for wanted in ('data-bullet-edit="edit-bullet-C1-P1-B1"',
-                           'data-bullet-edit="edit-bullet-C1-P1-B3"',
-                           'data-bullet-edit="edit-bullet-C1-P2-B1"'):
-                self.assertIn(wanted, card)
+            self.assertNotIn("data-bullet-edit", card)
+            self.assertNotIn("data-bullet-write", card)
+            self.assertNotIn("data-preview-write", card)
             self.assertEqual(card.count('<details class="paragraph-group" open'), 2)
-            # the hidden fields carry the route the server resolves
-            self.assertIn('<input type="hidden" name="path" value="/Board/board.md">', card)
-            self.assertIn('<input type="hidden" name="action" value="edit-bullet">', card)
-            self.assertEqual(card.count('<summary>Read paragraph</summary>'), 2)
+            self.assertIn("<span>Bullet</span><span>Draft</span>", card)
+            self.assertNotIn("<summary>Read paragraph</summary>", card)
             self.assertNotIn('value="append-bullet"', card)
 
-    def test_live_tab_carries_the_editor_script_and_the_post_route(self):
+    def test_live_tab_has_no_editor_script_or_write_controls(self):
         with tempfile.TemporaryDirectory() as directory:
             page = self._page(directory)
             plan = page.parent / "outline" / "S-page-outline-v0.3.md"
             rendered = render("S-page", parse_outline(plan.read_text()), page,
                               root=directory, path_q="/Board/board.md",
                               file_q="S-page/S-page.md")
-            self.assertIn("form[data-bullet-write]", rendered)
-            self.assertIn("fetch('/_board/outline',{method:'POST'", rendered)
-            self.assertIn("location.reload()", rendered)
+            self.assertNotIn("form[data-bullet-write]", rendered)
+            self.assertNotIn("data-bullet-edit", rendered)
+            self.assertNotIn("fetch('/_board/outline',{method:'POST'", rendered)
+            self.assertNotIn("location.reload()", rendered)
             self.assertIn("details.paragraph-group>summary", rendered)
 
-    def test_post_route_writes_only_for_explicit_bullet_actions(self):
+    def test_post_route_rejects_legacy_bullet_writes(self):
         from live.outline import OutlineMixin
         with tempfile.TemporaryDirectory() as directory:
             page = self._page(directory)
@@ -345,17 +395,56 @@ class OutlineBulletEditorEdgesTest(unittest.TestCase):
             result, err = Surface().plug_outline({"path": "/Board/board.md", "file": "S-page/S-page.md"})
             self.assertIsNone(err)
             self.assertEqual(result, {"url": "/_board/outline?path=/Board/board.md&file=S-page/S-page.md"})
+            before = (page.parent / "outline" / "S-page-outline-v0.3.md").read_bytes()
             result, err = Surface().plug_outline({
                 "path": "/Board/board.md", "file": "S-page/S-page.md",
                 "action": "edit-bullet", "paragraph": "C1.P2", "bullet": "B1",
                 "head": "Open the second move, revised",
             })
-            self.assertIsNone(err)
-            self.assertEqual(result["version"], "v0.3")
-            self.assertIn("- B1 · S4 · Open the second move, revised",
-                          (page.parent / "outline" / "S-page-outline-v0.3.md").read_text(encoding="utf-8"))
+            self.assertIsNone(result)
+            self.assertIn("read-only", err)
+            self.assertEqual(before, (page.parent / "outline" / "S-page-outline-v0.3.md").read_bytes())
 
-    def test_post_route_keeps_structured_append_contract(self):
+    def test_draft_is_read_only_even_when_a_page_run_is_open_or_closed(self):
+        from live.outline import OutlineMixin
+        with tempfile.TemporaryDirectory() as directory:
+            page = self._page(directory)
+            runtime = page.parent / "results" / "rp01_p01"
+            runtime.mkdir(parents=True)
+            (runtime / "runtime.yaml").write_text(
+                "run: rp01_p01\nfamily: page\n"
+                "operation: interactive-writing\ntarget: C1.P1\nstatus: complete\n",
+                encoding="utf-8",
+            )
+            card = plan_card(page, root=directory, path_q="/Board/board.md",
+                             file_q="S-page/S-page.md")
+            p1_start = card.index('data-paragraph="C1.P1"')
+            p2_start = card.index('data-paragraph="C1.P2"')
+            p1 = card[p1_start:p2_start]
+            p2 = card[p2_start:]
+            self.assertNotIn("data-bullet-edit=", p1 + p2)
+            self.assertNotIn("data-preview-write", p1 + p2)
+            self.assertNotIn("Save draft", p1 + p2)
+            self.assertIn("<span>Bullet</span><span>Draft</span>", p1)
+            self.assertIn("<span>Bullet</span><span>Draft</span>", p2)
+
+            class Surface(OutlineMixin):
+                def target(_self, payload):
+                    return page, page.parent.parent
+
+            plan = page.parent / "outline" / "S-page-outline-v0.3.md"
+            before = plan.read_bytes()
+            for payload in (
+                {"action": "edit-bullet", "paragraph": "C1.P1", "bullet": "B1",
+                 "head": "An old form must not write"},
+                {"action": "edit-preview", "address": "C1.P1.B1", "text": "No"},
+            ):
+                result, error = Surface().plug_outline(payload)
+                self.assertIsNone(result)
+                self.assertIn("Draft Space is read-only", error)
+            self.assertEqual(plan.read_bytes(), before)
+
+    def test_post_route_rejects_structured_append(self):
         from live.outline import OutlineMixin
         with tempfile.TemporaryDirectory() as directory:
             page = self._page(directory)
@@ -372,7 +461,7 @@ class OutlineBulletEditorEdgesTest(unittest.TestCase):
                 "structured": "1",
             })
             self.assertIsNone(result)
-            self.assertIn("Note", err)
+            self.assertIn("read-only", err)
             self.assertEqual(plan.read_bytes(), before)
 
             result, err = Surface().plug_outline({
@@ -381,7 +470,6 @@ class OutlineBulletEditorEdgesTest(unittest.TestCase):
                 "note": "A bounded rationale", "evidence": "none · page-owned",
                 "structured": "1",
             })
-            self.assertIsNone(err)
-            self.assertEqual(result["bullet"], "B4")
-            text = plan.read_text(encoding="utf-8")
-            self.assertIn("- B4 · S4 · A routed point\n  Note: A bounded rationale\n  Evidence: none · page-owned", text)
+            self.assertIsNone(result)
+            self.assertIn("read-only", err)
+            self.assertEqual(plan.read_bytes(), before)

@@ -31,7 +31,10 @@ Point C3.P1.B4
   ├─ Evidence Item(s)      Target: C3.P1.B4
   ├─ Supporting Result(s) Execution/Discovery Run authorities
   ├─ Local Input           one frozen envelope assembled from valid supports
-  └─ Local Result(s)       VALUE/CITE/DISPLAY, one per made item
+  ├─ Local RE(s)           one Page Evidence Run lineage per made item
+  ├─ Local Result(s)       VALUE/CITE/DISPLAY, one current Result per item
+  ├─ Evidence Card(s)      read-only projection of those current Results
+  └─ Evidence Label(s)     zero-to-many inline VALUE/DISPLAY/CITE anchors
 ```
 
 ## 🧭 Ownership
@@ -62,7 +65,10 @@ obligations:
 resources:
   items: [E01-VALUE-adjusted-effect]
   supporting_runs: [b01j02t03r04]
+  evidence_runs: [re01_e01-adjusted-effect]
   local_runs: [b03j01t02r01]
+  cards: [evidence-card:E01-VALUE-adjusted-effect]
+  labels: ["$V_adjusted_fx$", "\\cite{C_prior_work}"]
 feedback:
   - E03-CITE-prior-work: Verified ✅ on the authored item row
   - E04-DISPLAY-effect-forest: accepted
@@ -92,8 +98,8 @@ An item's evidence obligation is ready only when it has a ready local Result:
 
 - every declared Supporting Result passes its owning Run gate;
 - one frozen Local Input records those sources and hashes;
-- exactly one local Page Evidence Item Run emits an accepted VALUE, CITE, or
-  DISPLAY Result.
+- exactly one current Page `RE` lineage emits an accepted VALUE, CITE, or
+  DISPLAY Result; its read-only Card and Labels are derived from that Result.
 - a CITE item's authored `Verified` gate is signed before that Result is ready.
 
 Sentence or Display work that remains belongs to CONTENT or CHECK, not to a new

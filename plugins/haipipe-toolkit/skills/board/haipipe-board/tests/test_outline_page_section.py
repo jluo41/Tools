@@ -128,9 +128,15 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertIn("Evidence</th>", html)
         self.assertIn("Supporting Runs</th>", html)
         self.assertIn("Local Run</th>", html)
+        self.assertIn(
+            'class="outline-bullet-link" href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=div&amp;focus=C1.P1.B1"',
+            html,
+        )
+        self.assertIn('data-outline-lens="div" data-outline-focus="C1.P1.B1"', html)
         self.assertNotIn("Route</th>", html)
         self.assertNotIn("Status</th>", html)
         self.assertIn("State the page product", html)
+        self.assertNotIn("The sentence belongs in Content, not the plan.", html)
         self.assertIn(
             'class="outline-feedback" href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=fb&amp;focus=feedback-S1-PP1"',
             html,
@@ -141,14 +147,13 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertIn('aria-label="E01-VALUE-product · VALUE · checked product source"', html)
         self.assertIn("<b>E1V.Product</b>", html)
         # The Evidence chip is the same kind of precise Outline route as a
-        # Feedback id or a Run token: one URL that names the workspace, the
-        # Evidences segment, and the exact item card.  The compact Page owns
-        # no Evidence popover and duplicates none of the card's fields.
+        # Feedback id or a Run token: one URL that names the workspace and the
+        # exact Result row. The compact Page owns no Evidence popover.
         self.assertIn(
             '<a class="outline-evidence mut" '
-            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=workspace'
-            '&amp;seg=items&amp;focus=run-E01-VALUE-product" '
-            'data-outline-lens="workspace" data-outline-seg="items" '
+            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=evidence'
+            '&amp;focus=run-E01-VALUE-product" '
+            'data-outline-lens="evidence" '
             'data-outline-focus="run-E01-VALUE-product" '
             'aria-label="E01-VALUE-product · VALUE · checked product source" '
             'title="E01-VALUE-product · VALUE · specified"><b>E1V.Product</b></a>',
@@ -163,12 +168,11 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertNotIn("PageX Bindings", html)
         self.assertNotIn('href="../runs.html', html)
         self.assertIn(
-            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=workspace&amp;seg=runs&amp;focus=run-E01-VALUE-product&amp;run=b01.j01.t01.r01"',
+            'href="/_board/outline?path=/board.md&amp;file=QA/QA1.md&amp;lens=run&amp;focus=run-E01-VALUE-product&amp;run=b01.j01.t01.r01"',
             html,
         )
         self.assertIn('data-outline-focus="run-E01-VALUE-product"', html)
-        self.assertIn('data-outline-lens="workspace"', html)
-        self.assertIn('data-outline-seg="runs"', html)
+        self.assertIn('data-outline-lens="run"', html)
         self.assertIn('data-outline-run="b01.j01.t01.r01"', html)
         self.assertIn("b01.j01.t01.r01", html)
         self.assertIn("j01.t01.r01", html)
@@ -176,7 +180,7 @@ class OutlinePageSectionTest(unittest.TestCase):
         self.assertIn("specified", html)
         self.assertNotIn("🖼 Diagram", html)
 
-    def test_compact_bullet_column_uses_point_groups_and_dash_annotations(self):
+    def test_compact_bullet_column_hides_plan_notes_but_keeps_transition(self):
         point_plan = PLAN.replace(
             "- B1 · State the page product\n  Note: The sentence belongs in Content, not the plan.",
             "- B1 · [Phenomenon] Physician behavior varies within settings.\n"
@@ -202,7 +206,8 @@ class OutlinePageSectionTest(unittest.TestCase):
                 board_body.BASE = prior_base
         self.assertIn("[1 · Phenomenon]", html)
         self.assertIn("Physician behavior varies within settings.", html)
-        self.assertIn("settings = clinical decision contexts", html)
+        self.assertNotIn("settings = clinical decision contexts", html)
+        self.assertNotIn("focus = comparable situations", html)
         self.assertIn("illustration: general pattern → specific example", html)
         self.assertNotIn("Core statement:", html)
         self.assertNotIn("Note:", html)
@@ -283,7 +288,7 @@ class OutlinePageSectionTest(unittest.TestCase):
 
             self.assertIn(f"<b>{visible}</b>", html)
             self.assertIn(f'data-outline-focus="run-{item_id}"', html)
-            self.assertIn(f"seg=items&amp;focus=run-{item_id}\"", html)
+            self.assertIn(f"lens=evidence&amp;focus=run-{item_id}\"", html)
             self.assertNotIn("popovertarget=", html.split("Supporting Runs</th>")[-1]
                              if "Supporting Runs</th>" in html else html)
 

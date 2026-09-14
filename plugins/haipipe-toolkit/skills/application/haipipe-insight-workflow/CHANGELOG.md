@@ -1,5 +1,19 @@
 # haipipe-insight-workflow · version history
 
+1.2.1 · 260913
+- Require the task-side external-parent bridge to carry the exact `riNN`,
+  base-R pointer, frozen dataset binding, version, Result hash, and RF id.
+
+1.2.0 · 260913
+- Define the derived Question Group frontier as `partition × DIKW target` while
+  preserving the Queue CELL as the atomic transition.
+- Nest every rung dispatch inside one Page v2 workflow pass; only Page
+  CHECK/CLOSE followed by the matching GI assertion advances a cell. Page Run
+  closure does not.
+- Replace active Probe/PageX routing with SURVEY Decide, Supporting Run Results,
+  frozen Local Input, typed local Results, and exact semantic parent-row lineage.
+- Migration: OWE-ON-NEXT-TOUCH; historical PageX and Probe records stay readable.
+
 1.1.0 · 260908
 - Validate the selected Wisdom-targeted item execution and RF packet, not whole research-Page completion. Keep local I1/I5 signature, GI6, and X1 authority.
 

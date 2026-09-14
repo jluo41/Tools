@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 from cli.check import Report, check_design_family
 
-HELPER = (Path(__file__).resolve().parents[3] / "application" / "workflow-phases"
+HELPER = (Path(__file__).resolve().parents[3] / "application"
           / "haipipe-design-unit" / "tests" / "test_unit.py")
 spec = importlib.util.spec_from_file_location("unit_fixtures", HELPER)
 fixtures = importlib.util.module_from_spec(spec)
@@ -34,8 +34,8 @@ class NativeDesignBoardGateTest(unittest.TestCase):
         check_design_family(self.case.owner, report)
         self.assertTrue(any(row[1] == "design-run-contract" for row in report.rows))
 
-    def test_orphan_native_result_is_not_hidden_by_absent_legacy_board(self):
-        orphan = self.case.owner / "results" / "r20_design_generate_orphan"
+    def test_orphan_native_result_is_not_hidden_by_absent_board_page(self):
+        orphan = self.case.owner / "results" / "rd20_generate_orphan"
         orphan.mkdir(parents=True)
         report = Report()
         check_design_family(self.case.owner, report)

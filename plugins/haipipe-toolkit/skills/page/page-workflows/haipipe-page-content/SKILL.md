@@ -1,7 +1,8 @@
 ---
 name: haipipe-page-content
 description: >-
-  The 03 CONTENT phase of a Board Page. WRITE adopts human-agreed prose,
+  The 03 CONTENT phase of a Board Page. After all planned Page Runs and required
+  evidence Task Results complete, WRITE adopts human-agreed prose in one Page-level pass,
   integrates authorized evidence, builds declared delivery projections, and
   pre-checks one exact version before independent CHECK. Interactive drafting
   and feedback belong to haipipe-page-workflow plus haipipe-writing, not a new
@@ -9,8 +10,8 @@ description: >-
   single-paragraph compatibility path. Trigger: page content, adopt agreed text,
   CONTENT phase, WRITE cycle, publish page, build page, /haipipe-page-content.
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-09-11"
+  version: "0.14.0"
+  last_updated: "2026-09-12"
   # version history: ./CHANGELOG.md
 ---
 
@@ -28,7 +29,8 @@ both roles. For `folder-kind: task`, load the reader-facing
 | Request | Owner / action |
 |---|---|
 | Draft, revise, discuss sentences, act on human annotations | `haipipe-page-workflow/ref/interactive-writing-run.md` → SHAPE + `haipipe-writing` |
-| Adopt the agreed passage into Content | This skill; preserve exact accepted wording |
+| Accept or close one paragraph Page Run | Interactive workflow; settle its text, Bullets and Evidence without adopting Content |
+| Adopt all agreed passages into Content | This skill, after the Page release barrier |
 | Fill an agreed evidence slot | This skill after LAND/EMBED; no invented or changed claim |
 | Export the adopted Page | This skill + owner's delivery workers |
 | Explicitly delegate a fresh paragraph without interactive review | Optional `ref/paragraph-run.md` profile |
@@ -38,6 +40,26 @@ A candidate may be drafted while Shape is unapproved or evidence is missing.
 It stays in `outline/<stem>-preview.md`. Those discussions do not have to wait
 for CONTENT's publication gates. Conversely, a saved preview alone is not human
 acceptance or a completed Writing Result.
+
+## Page release barrier
+
+Do not enter CONTENT merely because one paragraph Page Run closes. The release
+barrier requires `rp00_mermaid-structure`, every planned paragraph Page Run,
+and every required evidence Task Result to be complete and bound. Until then,
+the working Shape and candidate prose remain current in the Bullet Workspace;
+`<page>.md` and `delivery/` remain unchanged and are labelled stale by design.
+
+When the barrier opens, perform one Page-level CONTENT pass. Apply all accepted
+candidates through scoped, source-checked patches, integrate their bound
+evidence, generate the declared web/LaTeX/Word outputs once, and pre-check that
+one exact Page version. This is one release pass, not a claim that the available
+writer provides a multi-paragraph atomic transaction.
+
+For the interactive Page profile, an explicit user instruction such as “go ahead
+to the content and delivery” is the release decision once every planned Page Run
+and required Evidence Result is complete. Do not send the person back to OUTLINE
+solely because a historical `approved:` field still shows `⬜`; record the exact
+instruction in the CONTENT receipt and suggest the next step after this pass.
 
 ## WRITE · four movements, not four phases
 
@@ -62,7 +84,8 @@ not historical Result trees unless a pointer/hash disagrees.
 | Check | Required fact |
 |---|---|
 | Authority | Current Folder/Page Face owner and Context policy resolved |
-| Shape | `G>=1`, with direct approval or a valid inherited `shape-base`; never publish from `v0.*` or an unapproved working Shape |
+| Runs | Every planned Page Run complete; required evidence Task Results ready and bound |
+| Shape | current checked Shape, or an explicit interactive user instruction to adopt the accepted Shape; do not block this Page profile on a duplicate `approved:` tick |
 | Writing | Exact target text accepted by the person, with actor, quoted decision and reviewed Run/Version/Step; no inferred acceptance |
 | Evidence | Every Bullet declares typed Items or justified `none`; required locally attainable Results ready and folded; CITE verification satisfied |
 | Source | Current destination hash and target mapping match the adoption base |
@@ -159,11 +182,12 @@ apply to ordinary interactive feedback: that profile advances Steps/Versions.
 
 ## Build and formal check
 
-Build only the projections requested or required at the formal handoff:
+After the Page release barrier opens, build only the projections requested or required at the formal handoff:
 `delivery/latex/`, `delivery/word/`, slides/render outputs as declared by the
-owner. Routine interactive sentence edits neither rebuild the PDF nor invoke
-this full phase. Separately commissioned expensive exports may use delegated
-Task Runs; a routine mechanical command does not need an invented Run.
+owner. Routine interactive Steps and individual Page Run closures do not write
+Content or rebuild any delivery. Separately commissioned expensive exports may
+use delegated Task Runs; a routine mechanical command does not need an invented
+Run.
 
 Use frozen source identity for background work. Before adoption or calling an
 artifact current, compare its consumed source with the latest accepted Page.
@@ -191,6 +215,7 @@ phase: CONTENT
 cycle: WRITE
 context: <current identity>
 plan: <exact approved/inherited Shape>
+decision: <exact user instruction that authorizes CONTENT when this is the interactive Page profile>
 writing: <accepted Run/Version/Step and human-decision source>
 adoption: <targets; accepted text hash; Page before/after; scoped changes>
 integration: <Item/Result bindings; continuity findings; reopened targets>

@@ -21,31 +21,31 @@ design_profile:
   narrative: required
   display: required
   section_edit: required
-  terminal: accepted
+  terminal: adopted
 ```
 
 ## Phase use
 
-### D1/D2 · bet and realize
+### Commission and Generate
 
-Every finding, recommendation, table, and figure maps through the released
-card grant. A load-bearing gap is preserved for D4 EMIT; Design never Probes.
+Every finding, recommendation, table, and figure maps through released
+Commission inputs. A load-bearing gap returns as a named hold; Design never Probes.
 
-### D2 · narrative requirement
+### Generate · narrative requirement
 Report arc depends on audience:
 - Regulator: methodology → findings → limitations → recommendations
 - Executive: bottom line → evidence → ask
 - Partner: context → joint findings → next steps
 
-### D2 · display requirement
+### Generate · display requirement
 Display map: tables (summary stats, comparisons), figures
 (forest plots, trend charts), KPI callouts.
 
-### D2 · section pass
+### Generate · section pass
 Per-section review on the declared sections; paragraph-level jobs live in the
 Unit's outline. This is the venue closest to an academic paper.
 
-Default section structure (adjust per released card and audience):
+Default section structure (adjust per released Commission and audience):
 
 ```yaml
 sections:
@@ -57,6 +57,6 @@ sections:
   - 06-gate-check          # settlement + caveats before shipping
 ```
 
-### D3/D4 · judge and decide
+### Verify and adopt
 Judge the formal report against the evidence bar and venue rails, render its
-exact version under `delivery/render/`, then accept or emit.
+exact version under `delivery/render/`, then adopt or decline.

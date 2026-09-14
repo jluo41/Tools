@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.1 · 2026-09-12
+
+- Point Page and plugin ownership links at their canonical `skills/page/`
+  homes after the Board/Page family split.
+
 ## 0.6.0 · 2026-09-08
 
 - Fix `Task Folder = Page Folder = tNN_<task>/` as one physical Folder with

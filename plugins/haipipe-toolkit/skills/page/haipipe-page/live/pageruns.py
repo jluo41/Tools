@@ -1,9 +1,10 @@
-"""🪜 Page runs · one page's lifecycle receipts, served as JSON.
+"""🪜 Page workflow passes · one Page's phase receipts, served as JSON.
 
 WHAT THIS ANSWERS: the 📄 Page phases stepper (65-plugin-pageflow.js) has to
 say where ONE Page stands in CONTEXT/OUTLINE/EVIDENCE/CONTENT/CHECK. That truth is not in
 the rendered page: the run contract (haipipe-page-workflow) writes it to
-`<board>/_runs/page/<page-id>/<run-id>.json`, one receipt trail per RUN. So
+`<board>/_runs/page/<page-id>/<run-id>.json`, one legacy-named receipt trail
+per workflow pass. So
 the stepper asks this route, and this route reads those files and nothing
 else — the same one-source rule that keeps the labeling stepper honest about
 `## States`.
@@ -12,7 +13,7 @@ WHY LIVE AND NOT A WRITTEN VIEW: a run lands whenever an orchestrator
 finishes, with no rebuild in between. A stored view would show the previous
 run until someone rebuilt the board, which reads as "the run never happened".
 
-NO RECEIPTS IS AN ANSWER, NOT AN ERROR: most pages have never been RUN. The
+NO RECEIPTS IS AN ANSWER, NOT AN ERROR: most Pages have no workflow pass. The
 route returns an empty list and the surface states the contract's own entry
 rule (an existing Page starts at CHECK, a new one at CONTEXT).
 
@@ -30,7 +31,7 @@ MAX_RUNS = 20
 
 
 def page_runs(board: Path, page_file: str):
-    """-> [run summary] for one page, newest first. Pure filesystem walk."""
+    """Return workflow-pass summaries; name retained for route compatibility."""
     want = Path(page_file).name
     runs_dir = board / "_runs" / "page"
     if not runs_dir.is_dir():

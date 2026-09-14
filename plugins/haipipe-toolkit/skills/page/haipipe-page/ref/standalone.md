@@ -4,7 +4,8 @@
 
 | User supplies | Action |
 |---|---|
-| Ordinary Markdown, text, HTML, code or binary file | `init --file INPUT --dest FOLDER` |
+| Markdown that should become a working Page | `setup INPUT [--dest FOLDER]` |
+| Technical-only Markdown, text, HTML, code or binary intake | `init --file INPUT --dest FOLDER` |
 | Existing Page Face with Opening/Content/Aims | `inspect`, `build` or `serve` it in place |
 | Page Folder with `page.toml` or same-stem Page Face | Open the Folder; do not create a nested Folder |
 | Board membership request | Use Board to register this same source, after Page creation |
@@ -19,6 +20,8 @@ or changing the project environment unnecessarily.
 
 ```bash
 python3 <page-engine>/cli/page.py init --file /absolute/input.html --dest /absolute/my-page
+python3 <page-engine>/cli/page.py setup /absolute/input.md [--dest /absolute/my-page]
+python3 <page-engine>/cli/page.py setup /absolute/existing-page
 python3 <page-engine>/cli/page.py inspect /absolute/my-page
 python3 <page-engine>/cli/page.py build /absolute/my-page
 python3 <page-engine>/cli/page.py serve /absolute/my-page --host <configured-host> --port <available-port> --public-url <configured-origin>
@@ -64,6 +67,37 @@ servers, bundlers and SPA routing are not packaged automatically. Say so when
 the input relies on those. This is a static-file Page workspace, not a general
 application deployment system.
 
+`setup` accepts imported Markdown. In one step it runs the safe import and then
+populates the Page's real working records: source-specific Opening and Aims,
+`outline/<stem>-outline-v0.1.md`, matching reader-move
+`outline/<stem>-preview.md`, Context/Files projections, and a completed
+`rNN_page-setup` Task Run with a Result report. The Shape is intentionally
+`approved: ⬜`; automatic setup cannot impersonate human review. Its semantic
+role labels and Bullet heads are a first pass that the invoking agent must
+inspect and refine before presenting the Page. Setup begins with one primary
+reader move per authored paragraph; its Content Draft may contain one or more
+source sentences. It never creates one Bullet merely because it found one full
+stop. Split a paragraph only when it contains independently removable,
+contradictable, or reorderable moves. Re-running setup refuses authored records unless
+`--force` is explicitly supplied after reviewing the replacement scope.
+Every setup Result includes `checks.json` plus the same checklist in
+`report.md`. Configuration, input preservation on intake, Opening, Outline,
+Bullet/Draft freshness, role syntax, Bullet-head readability, Content, Aim
+structure, static delivery, and copied assets are blocking checks. A blocking
+failure records a failed Run and makes the command fail. Semantic-role and
+Bullet-only argument judgment, Aim achievement, human Shape/Content acceptance,
+and unrequested hosting remain visibly
+`deferred`, `untested`, or `n/a`; setup never converts them into automatic
+passes. The machine audit fingerprints the checked Face, Content, Shape,
+Content Draft, and static delivery. After correcting a generated role or Draft,
+run `setup <existing-page-folder>` again—not only `build`—so a new setup Task
+Run validates the changed records and refreshes both the delivery and audit.
+The setup command already builds `delivery/web/index.html`. Do not invoke a
+second build merely to make setup complete. Do not start a listener for a
+static-site request; `serve` is a separate requested capability and, when used,
+must run under an authorized background process manager rather than holding the
+agent's foreground session open.
+
 The Source workspace edits UTF-8 files up to 2 MiB. Save includes the loaded
 SHA-256 hash; stale writes fail without replacing either version. The browser
 keeps unsaved text on conflict. Reopen/reconcile the source before retrying;
@@ -75,7 +109,7 @@ runtime/private lanes are not web-editable. Registration is edited on disk.
 | Surface | Capability |
 |---|---|
 | `build` → `delivery/web/index.html` | Static reading export and imported assets; no write-back |
-| `serve` → Page | Live source; category-plugin pane for Outline, Runs, Delivery and Folder; Source editor only on writable hosts |
+| `serve` → Page | Live source; category-plugin pane for Outline, Runs, Delivery and Folder, plus optional domain-owned Labeling when direct `labeling/` exists; Source editor only on writable hosts |
 | Board | Groups, membership, navigation and aggregate build over the same Face |
 
 No Board is required for these Page operations. The independent server keeps
@@ -85,6 +119,10 @@ rather than becoming a second picker row. Those names do not imply
 that `board.md`, a Board registry or a Board Python package is needed.
 Board-only agent/terminal and external evidence-producer actions are not
 standalone server capabilities. Do not report an unavailable action as done.
+The optional Labeling presenter is loaded from the separate subjective-label
+plugin and reads only safe receipts and `rlNN` envelopes. Its lower transport
+points back to the current Codex task; it does not invent a standalone semantic
+writer or expose protected corpus text through Source/static routes.
 
 ## Check and hand off
 
@@ -93,15 +131,22 @@ Opening/Outline/Content/Aims completion. An imported scaffold or successful
 build must not be reported as content acceptance or a hosted site.
 
 1. Read the supplied file and identify its dependencies and any sensitive data.
-2. Create or reuse the Page Folder; compare imported bytes with the original.
-3. Build; inspect the actual rendered Page, not only exit status. For HTML,
+2. Create or reuse the Page Folder; use `setup` rather than `init` when the user
+   expects a content-ready Markdown Page. Compare imported bytes with the original.
+3. Inspect generated Opening, semantic roles, Bullet/Draft coverage, Aims,
+   Context/Files, and setup Result; correct obvious semantic errors without
+   marking Shape or Content accepted. Read the Bullet heads with the right-hand
+   prose hidden: they must reconstruct the argument in reader order. A Bullet
+   may map to several sentences when they jointly perform one move. If anything
+   changed, rerun `setup <existing-page-folder>` to refresh the audit and build.
+4. Inspect the actual rendered Page, not only exit status. For HTML,
    inspect its embedded source and asset requests too.
-4. If editing was requested, save a scoped change and re-read the exact source;
+5. If editing was requested, save a scoped change and re-read the exact source;
    verify that the original is unchanged and the rendered Page reflects it.
-5. If hosting was requested, start/reuse an authorized listener and verify the
+6. If hosting was requested, start/reuse an authorized listener and verify the
    actual configured reader URL. Report static export versus live editing
    explicitly. A build without a listener is not a hosted site.
-6. Return the Page Folder/source link and the verified working/reading URL when
+7. Return the Page Folder/source link and the verified working/reading URL when
    available. A technical import/build does not require the scholarly delivery
    packet, a PDF, a writing Run, or human acceptance; those gates apply when
    substantive Page writing or formal research delivery is requested.

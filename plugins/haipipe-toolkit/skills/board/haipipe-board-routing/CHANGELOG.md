@@ -4,8 +4,18 @@ haipipe-board-routing · Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match
 SKILL.md frontmatter `version:`. Newest first.
 
-**v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
-never reaches `1.0.0` without JL's explicit say-so.
+This support skill keeps independent semantic versions. A public
+`haipipe-board` major release does not mechanically promote it.
+
+## 0.11.0 - 2026-09-12
+
+- Route current Page writes to on-stage fields or typed `outline/` records;
+  stop teaching retired `## States`, `## Files`, `## Discussion`, and `## Log`
+  sections.
+- Materialize human proposals as Board-wide `D<nn>` discussion records and,
+  when they block an Aim, mirror the live ask in `Aims › Decision Now`.
+- Permit closure only after a person's answer is recorded; distinguish an
+  unowned Board-altitude Page proposal from an owned Page write.
 
 ## 0.10.1 - 2026-09-08
 

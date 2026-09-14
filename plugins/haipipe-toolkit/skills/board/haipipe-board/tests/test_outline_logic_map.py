@@ -1,4 +1,4 @@
-"""A Section's optional Mermaid argument map leads the Bullet Workspace."""
+"""A Page's Mermaid Structure leads the Draft Space."""
 import sys
 import tempfile
 import unittest
@@ -54,29 +54,67 @@ class OutlineLogicMapTest(unittest.TestCase):
         self.logic.write_text(MAP, encoding="utf-8")
         body = render("S-test", parse_outline(PAGE), self.page)
 
-        self.assertIn("Section logic", body)
-        self.assertIn('aria-label="Section argument map"', body)
+        self.assertIn("Mermaid Structure", body)
+        self.assertIn('aria-label="Mermaid"', body)
         self.assertEqual(body.count('class="logic-node"'), 2)
         self.assertEqual(body.count('class="logic-group"'), 1)
         self.assertIn("C1 · Prescribing behavior", body)
         self.assertIn("Why might physicians differ?", body)
-        self.assertIn('<details class="card logic-card">', body)
-        self.assertIn('<summary class="logic-summary">', body)
-        self.assertNotIn('<details class="card logic-card" open>', body)
-        self.assertLess(body.index("Section logic"), body.index("plan v1.2"))
+        self.assertIn('<details class="card logic-card" aria-label="Mermaid">', body)
+        self.assertIn('<summary class="logic-heading">', body)
+        self.assertNotIn('<details class="card logic-card" aria-label="Mermaid" open>', body)
+        self.assertLess(body.index("Mermaid Structure"), body.index("Physician behavior varies"))
+        self.assertIn('class="card plan-card minimal-plan"', body)
         self.assertIn("S-test-logic.mmd", body)
-        self.assertIn("flowchart TD", body)
-        self.assertIn('aria-label="Diagram zoom controls"', body)
-        self.assertIn('data-logic-zoom="-0.25"', body)
-        self.assertIn('data-logic-zoom="0.25"', body)
-        self.assertIn('data-logic-fit', body)
+        self.assertNotIn("flowchart TD", body)
+        self.assertNotIn('aria-label="Diagram zoom controls"', body)
+        self.assertNotIn("data-logic-zoom", body)
+        self.assertNotIn("data-logic-fit", body)
         self.assertIn('class="logic-canvas"', body)
-        self.assertIn("function setupLogicZoom", body)
+        self.assertNotIn("setupLogicZoom", body)
 
     def test_no_file_means_no_extra_workspace_panel(self):
         self.assertEqual(_logic_map(self.page), "")
         body = render("S-test", parse_outline(PAGE), self.page)
-        self.assertNotIn("Section logic", body)
+        self.assertNotIn("Mermaid Structure", body)
+
+    def test_active_first_page_run_keeps_mermaid_collapsible(self):
+        self.logic.write_text(MAP, encoding="utf-8")
+        runtime = (self.page.parent / "results" /
+                   "rp00_mermaid-structure" / "runtime.yaml")
+        runtime.parent.mkdir(parents=True)
+        for status in ("ready", "running", "waiting-for-feedback", "blocked"):
+            with self.subTest(status=status):
+                runtime.write_text("status: %s\n" % status, encoding="utf-8")
+                body = render("S-test", parse_outline(PAGE), self.page)
+                self.assertIn('<details class="card logic-card" aria-label="Mermaid">', body)
+                self.assertNotIn('<details class="card logic-card" aria-label="Mermaid" open>', body)
+                self.assertNotIn("rp00 open · review now", body)
+
+    def test_completed_first_page_run_keeps_mermaid_collapsible(self):
+        self.logic.write_text(MAP, encoding="utf-8")
+        runtime = (self.page.parent / "results" /
+                   "rp00_mermaid-structure" / "runtime.yaml")
+        runtime.parent.mkdir(parents=True)
+        runtime.write_text("status: complete\n", encoding="utf-8")
+
+        body = render("S-test", parse_outline(PAGE), self.page)
+
+        self.assertIn('<details class="card logic-card" aria-label="Mermaid">', body)
+        self.assertNotIn('<details class="card logic-card" aria-label="Mermaid" open>', body)
+
+    def test_noncanonical_structure_runtime_does_not_open_review_map(self):
+        self.logic.write_text(MAP, encoding="utf-8")
+        runtime = (self.page.parent / "results" /
+                   "rp01_mermaid-structure" / "runtime.yaml")
+        runtime.parent.mkdir(parents=True)
+        runtime.write_text("status: waiting-for-feedback\n", encoding="utf-8")
+
+        body = render("S-test", parse_outline(PAGE), self.page)
+
+        self.assertIn('<details class="card logic-card" aria-label="Mermaid">', body)
+        self.assertNotIn('<details class="card logic-card" aria-label="Mermaid" open>', body)
+        self.assertNotIn("rp00 open · review now", body)
 
     def test_matching_png_does_not_replace_rendered_mermaid(self):
         self.logic.write_text(MAP, encoding="utf-8")
@@ -95,12 +133,13 @@ class OutlineLogicMapTest(unittest.TestCase):
         self.assertIn('class="logic-viewport"', body)
         self.assertIn('<div class="logic-canvas"><svg class="logic-svg"', body)
 
-    def test_malformed_mermaid_falls_back_to_escaped_source(self):
+    def test_malformed_mermaid_does_not_copy_raw_source_into_reader_space(self):
         self.logic.write_text("flowchart TD\nP1 --> P2\n", encoding="utf-8")
         body = _logic_map(self.page)
-        self.assertIn("Mermaid source needs review", body)
-        self.assertIn("no Mermaid node declarations", body)
-        self.assertIn("P1 --&gt; P2", body)
+        self.assertIn("Mermaid preview unavailable", body)
+        self.assertIn("S-test-logic.mmd", body)
+        self.assertNotIn("P1 --&gt; P2", body)
+        self.assertNotIn("flowchart TD", body)
 
     def test_svg_escapes_authored_labels(self):
         svg = _logic_svg('flowchart TD\nP1["<script>alert(1)</script>"]')

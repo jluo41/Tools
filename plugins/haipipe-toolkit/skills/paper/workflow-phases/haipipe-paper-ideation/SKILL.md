@@ -9,8 +9,8 @@ description: >-
   create, refresh, read, or check a Paper Ideation Page; route idea generation,
   novelty testing, pressure testing, and selection to haipipe-ideation.
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-09-08"
+  version: "1.0.2"
+  last_updated: "2026-09-13"
   group-token: "Story00"
   outline:
     mode: grammar
@@ -69,16 +69,51 @@ I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
 - `kind: paper-ideation-handoff` is the selected-state adapter. It points to
   the latest sync plus the sole I3 selection receipt and selected Idea-target
   routes. It does not create a second portfolio or decision.
-- Material Generate or Test changes increment `sync_revision` and refresh this
-  same Page. The Page workflow receipt records the packet path and projected
-  revision; a mismatched revision is stale, not current.
+- Material Generate or Test changes increment `sync_revision`, add the exact
+  `source_hash`, classify the change as `state`, `portfolio`, or `structure`,
+  and route the packet through the current `haipipe-page` update boundary. A
+  `state` change refreshes the generated working projection. A `portfolio`
+  change refreshes it by stable `idea_id` and checks whether the authored shell
+  is affected. A `structure` change stops at the Page OUTLINE/SHAPE workflow
+  when a shape decision is needed. The Page workflow receipt records the
+  packet path, consumed revision/hash, projection surface, and output hash; a
+  mismatched working revision is stale, not current. The Paper-specific
+  `paper_projection` extension lives inside the normal Page phase receipt. The
+  adapter reads that Page-owned receipt and remains the only writer of the sync
+  packet's nested `paper_page` status.
 - When `paper_page.state: missing`, use `/haipipe-page` to mint or bind the one
-  canonical P0 Page. When it is `blocked`, preserve the canonical path and last
-  actual revision, report the named gap, and do not mint a surrogate Page or a
-  second projection receipt.
+  canonical P0 Page and leave all three surfaces `not-requested` until a
+  projection is actually recorded. When it is `blocked`, preserve the
+  canonical path and each last honest surface revision/receipt, report the
+  named gap, and do not mint a surrogate Page, a second projection receipt, or
+  a local Ideation Run.
+- A formal Page-level CONTENT pass may adopt the working projection only after
+  all planned Page Runs and required evidence Results are ready. It then builds
+  the declared delivery once before CHECK. A sync, working receipt, Page
+  approval, or CHECK acceptance never bypasses that release barrier. The
+  `release` and `delivery` surfaces each require their own matching receipt.
 - Raw Result Cards, facts, BibTeX, Task output, Venue rules, and Discovery notes
   remain with their owners. The adapter and Page carry interpretations and
   pointers only.
+
+### 🧱 P0 update surfaces
+
+Keep the three states visible whenever the Ideation portfolio changes:
+
+```text
+Ideation source       cards + sync packet                 revision + source hash
+working P0 view       Outline/preview/Bullet Workspace    working receipt
+released P0 view      adopted Content                     release receipt
+delivery              generated output                    delivery receipt
+```
+
+The semantic sync is not an interactive Page Run and does not mint `rpNN`.
+Only a person's bounded feedback or acceptance request uses the Page Run/Step
+contract. When the P0 working view is current but the released view still
+points to the prior revision, report that split explicitly; never label the
+older Markdown or delivery as the latest P0 Page. Portfolio reordering never
+silently renumbers Page-global paragraph identities; the stable key is
+`idea_id`, not list position.
 
 ## 🌱 Grain and home
 
@@ -432,6 +467,11 @@ G0 is not the Page CHECK gate. A current Page version may be accepted while no
 Idea is selected, and a previously selected Story may remain valid while a
 later Page version adds, defers, or eliminates other candidates.
 
+If a later I2 revision changes an already-selected Idea, preserve the earlier
+I3 receipt and handoff as historical decisions. The new evidence routes that
+Idea back to `haipipe-ideation-select` for a fresh human decision; it never
+automatically revokes, replaces, or rewrites the old selection.
+
 ## ✅ Closing checks
 
 - Division 1 names one direction and what would make an idea worth a paper.
@@ -442,8 +482,10 @@ later Page version adds, defers, or eliminates other candidates.
   Content are the primary working surfaces.
 - Page Shape approval, Page CHECK acceptance, and the sole I3 selection receipt
   remain distinct; Paper creates no second G0 selection receipt.
-- The Page names the current `paper-ideation-sync` path and revision; a stale or
-  blocked sync is visible and no surrogate Page or projection receipt exists.
+- The Page names the current `paper-ideation-sync` path and working-projection
+  revision; a stale or blocked sync is visible, and adopted Content/delivery
+  state is reported separately. Any projection receipt is Page-owned; a
+  blocked route creates no surrogate Page, local Ideation Run, or fake receipt.
 - The number of Idea divisions is dynamic; every admitted Idea Card has one
   retained division, filled or honestly `⬜`.
 - Every disposition row states whether it is an admitted `iNN` card or a

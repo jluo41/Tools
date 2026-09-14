@@ -83,7 +83,7 @@ class StandaloneServerTests(unittest.TestCase):
         self.assertIn(b'id="page-plugin-button"', body)
         self.assertIn(b'id="page-plugin-pane"', body)
         self.assertIn('🧭 Outline'.encode(), body)
-        self.assertIn('⚙️ Runs'.encode(), body)
+        self.assertNotIn('⚙️ Runs'.encode(), body)
         self.assertIn('📤 Delivery'.encode(), body)
         self.assertIn('📂 Folder'.encode(), body)
         self.assertEqual(int(headers['Content-Length']), len(body))
@@ -135,6 +135,67 @@ class StandaloneServerTests(unittest.TestCase):
                 code, headers, body = self.request('HEAD', path)
                 self.assertEqual((code, body), (200, b''))
                 self.assertGreater(int(headers['Content-Length']), 0)
+
+    def test_runs_view_uses_three_lane_contract_without_board(self):
+        code, _, body = self.request(path='/_page/runs?file=' + self.source.name)
+        self.assertEqual(code, 200, body)
+        self.assertIn(b'Run P', body)
+        self.assertIn(b'Run E', body)
+        self.assertIn(b'Supporting Runs', body)
+        self.assertIn(b'No Run P yet', body)
+        self.assertIn(b'No Run E yet', body)
+        self.assertIn(b'No Supporting Run linked yet', body)
+
+    def test_external_labeling_plugin_mounts_without_leaking_into_page_run_workspace(self):
+        job = self.folder / 'labeling'
+        (job / 'runs').mkdir(parents=True)
+        result = job / 'results' / 'rl01_corpus-contract_job-v1'
+        result.mkdir(parents=True)
+        (job / 'runs' / 'rl01_corpus-contract_job-v1.yaml').write_text(
+            'run: rl01_corpus-contract_job-v1\nfamily: labeling\nphase: P0\n'
+            'operation: corpus-contract\ntarget: job-v1\n', encoding='utf-8')
+        (result / 'runtime.yaml').write_text(
+            'run: rl01_corpus-contract_job-v1\nfamily: labeling\n'
+            'operation: corpus-contract\ntarget: job-v1\nstatus: complete\n'
+            'result: results/rl01_corpus-contract_job-v1/result.yaml\n'
+            'outcome: P0 contract landed; human meaning confirmation remains open\n',
+            encoding='utf-8')
+        (result / 'result.yaml').write_text(
+            'run: rl01_corpus-contract_job-v1\nstatus: complete\n'
+            'outcome: P0 contract landed; human meaning confirmation remains open\n',
+            encoding='utf-8')
+        (job / 'corpus').mkdir()
+        (job / 'corpus' / 'items.jsonl').write_text(
+            '{"item_id":"private-1","text":"PROTECTED_SENTINEL"}\n', encoding='utf-8')
+        (job / 'test' / 'sealed').mkdir(parents=True)
+        (job / 'test' / 'sealed' / 'status.json').write_text(
+            '{"custodian":"JL","source_fence_attestation":'
+            '{"source_custodian":"legacy-source"}}\n', encoding='utf-8')
+
+        code, _, page = self.request()
+        self.assertEqual(code, 200)
+        self.assertIn('🏷 Labeling'.encode(), page)
+        self.assertNotIn(b'PROTECTED_SENTINEL', page)
+
+        code, _, labeling = self.request(
+            path='/_page/labeling?file=' + self.source.name)
+        self.assertEqual(code, 200, labeling)
+        self.assertIn(b'Workflow Space', labeling)
+        self.assertIn(b'rl01_corpus-contract_job-v1', labeling)
+        self.assertIn(b'<span>Run</span><b>none</b>', labeling)
+        self.assertIn(b'<span>active custodian</span><b>JL</b>', labeling)
+        self.assertIn(b'<span>source custody</span><b>provenance only', labeling)
+        self.assertIn(b'Codex Chat transport', labeling)
+        self.assertNotIn(b'PROTECTED_SENTINEL', labeling)
+
+        code, _, runs = self.request(path='/_page/runs?file=' + self.source.name)
+        self.assertEqual(code, 200, runs)
+        self.assertNotIn(b'rl01_corpus-contract_job-v1', runs)
+        self.assertIn(b'No Supporting Run linked yet.', runs)
+        self.assertEqual(self.request(path='/labeling/corpus/items.jsonl')[0], 404)
+        code, _, source = self.request(path='/_page/source?file=labeling/corpus/items.jsonl')
+        self.assertEqual(code, 404)
+        self.assertNotIn(b'PROTECTED_SENTINEL', source)
 
     def test_outline_registration_and_response_contract(self):
         code, _, body = self.request('POST', '/_board/outline', {'file': self.source.name})
@@ -351,7 +412,7 @@ class StandaloneServerTests(unittest.TestCase):
         self.assertIn('; Secure', response_headers['Set-Cookie'])
         self.assertEqual(self.request(headers={**headers, 'Authorization': 'Bearer test-token'})[0], 200)
 
-    def test_read_only_outline_keeps_prose_without_editors(self):
+    def test_outline_keeps_prose_without_editors_in_every_mode(self):
         outline = self.folder / 'outline'
         outline.mkdir()
         (outline / 'Q1-example-outline-v0.1.md').write_text(
@@ -362,16 +423,18 @@ class StandaloneServerTests(unittest.TestCase):
             '  Evidence: none · internal definition\n')
         self.source.write_text(self.source.read_text().replace(
             'Example content.', 'Example content. <!-- realizes: C1.P1.B1 -->'))
-        route = '/_board/outline?path=%2F&file=Q1-example.md&lens=div'
+        route = '/_board/outline?path=%2F&file=Q1-example.md&lens=div&focus=C1.P1.B1'
         writable = self.request(path=route)[2].decode()
-        self.assertIn('<form class=preview-form', writable)
+        self.assertNotIn('<form', writable)
+        self.assertIn('id="bullet-C1-P1-B1"', writable)
+        self.assertIn("'bullet-'+id.replace(/\\./g,'-')", writable)
         self.start(read_only=True)
         code, _, body = self.request(path=route)
         self.assertEqual(code, 200)
         markup = body.decode().split('<body', 1)[1].split('<script', 1)[0]
         self.assertNotIn('function readParagraph(group)', body.decode())
         self.assertIn('Example content.', markup)
-        self.assertIn('Read paragraph', markup)
+        self.assertNotIn('Read paragraph', markup)
         self.assertIn('class=preview-copy', markup)
         for control in ('<textarea', '<form', 'Save draft', 'Save comment', 'Edit draft for'):
             self.assertNotIn(control, markup)

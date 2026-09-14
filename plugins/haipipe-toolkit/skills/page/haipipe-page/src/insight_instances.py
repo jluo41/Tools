@@ -38,7 +38,7 @@ def register_instances(root, records):
         folder = path.parent.parent
         try:
             manifest = api.read_yaml(path)
-            if manifest.get("schema") != "haipipe.insight-instance/v1":
+            if manifest.get("schema") not in api.INSTANCE_SCHEMAS:
                 continue
             if not api.INSTANCE.fullmatch(str(manifest.get("instance", ""))):
                 continue
@@ -46,7 +46,7 @@ def register_instances(root, records):
                 run = item.get("run", "")
                 if not api.RUN.fullmatch(run):
                     continue
-                ticket = folder / "runs" / f"{run}.sh"
+                ticket = api.item_ticket(folder, item)
                 if not ticket.is_file():
                     continue
                 for directory in sorted((folder / "results" / run).glob("v*")):

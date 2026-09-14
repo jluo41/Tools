@@ -8,6 +8,19 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.13.0 · 2026-09-13
+
+- Align Discovery with the current Page contract: generated Outline plus the
+  four on-stage Page areas, with writing rules owned by Outline records rather
+  than a `## Writing Style` section.
+- Separate Page-owned `rp00_mermaid-structure` and `rpNN_pNN[-pNN]` interaction
+  Runs from D1's native `rNN` paper/source inventory.
+- Allow Page-owned `rpNN` records/results to share a Page Folder's `runs/` and
+  `results/` lanes without being paired, counted, or checked as D1 Runs.
+- Make the Page release barrier explicit: Page interaction and required Task
+  Results must be ready before CONTENT adoption; Discovery does not mint a
+  division-writing or umbrella Run.
+
 ## 0.12.0 · 2026-09-08
 
 - Retire the Discovery question/QA channel and its bank-owned folders/digests.

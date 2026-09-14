@@ -6,9 +6,9 @@ answers, for every thing the approved outline needs:
 1. **What ready evidence is expected?** SHAPE specifies this.
 2. **Which upstream Results support it?** SURVEY maps and classifies zero or
    more Supporting Run routes.
-3. **Which one local Run makes it ready for this Page?** SURVEY declares
-   exactly one Page · Evidence Item route; LAND allocates it when needed and
-   executes it.
+3. **Which one Page Evidence Run makes it ready for this Page?** SURVEY
+   declares exactly one `RE` lineage per item; LAND allocates it when needed
+   and executes it.
 
 SHAPE and SURVEY are planning cycles. Neither scaffolds or executes a Level-4
 Run. SURVEY names the real owner/parent for each proposed local Run; a full
@@ -35,9 +35,14 @@ The initial type vocabulary is closed:
 |---|---|---|
 | `VALUE` | a checked scalar, interval, count, or comparison | structured value + units + provenance |
 | `CITE` | a source claim ready to cite | verified citation record + supported claim |
-| `DISPLAY` | a figure, table, diagram, or illustration ready to place | governed Result envelope + direct unit pointer, caption claim, and provenance |
+| `DISPLAY` | a table, figure, diagram, illustration, or algorithm block ready to place | governed Result envelope + direct unit pointer, caption claim, and provenance |
 
-Every allocated local Evidence Item Run writes one common envelope at
+`DISPLAY` is the umbrella type for tables, figures, diagrams, illustrations,
+and algorithm blocks. `TABLE` is a legacy compatibility alias for `DISPLAY`.
+They may use different `D_` labels, but they share the same Evidence Item, RE,
+Result, Card, and acceptance model.
+
+Every allocated local Evidence Item `RE` writes one common envelope at
 `<resolved-result>/result.yaml`; sibling `runtime.yaml` owns execution state.
 Type references may extend `payload`, but these keys never disappear:
 
@@ -45,6 +50,7 @@ Type references may extend `payload`, but these keys never disappear:
 item: E01-DISPLAY-example
 type: DISPLAY
 run: b01j01t01r01
+page_run: re01_e01-display-example
 status: complete
 input:
   path: <frozen-local-input>
@@ -207,7 +213,7 @@ collapsed `Run & Result paths` disclosure and must wrap within the card.
 | `Verified` | human at LAND; `CITE` only | `⬜` until a person signs `✅ <who> <timestamp>` after checking source identity, focal claim, and locator; omit on VALUE/DISPLAY |
 | `Supporting Runs` | SURVEY | `[]` or a semicolon-separated list of existing `Family · reuse/rerun/registered · full global Run id` and/or planned `Family · new-* · parent route` entries |
 | `Local Input` | SURVEY; LAND freezes | one envelope plan: Supporting Results plus named governed page-local paths when needed; LAND appends `→ <packet>#<sha256>` |
-| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one owner-native `Page · Evidence Item · <action> · <address> [→ Result]`; existing actions name a full Run id, Task `new-run` names parent `bNNjNNtNN`, and another owner may permit a full reserved address; `new-run` has no Ticket |
+| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one Page `RE` lineage `reNN_<evidence-slug>` plus any underlying owner-native execution id; `new-run` has no Ticket until LAND allocates it |
 | `Decide` | human gate | `☐ make` or signed `☑ make/defer/drop`; because this chooses a branch, auto never converts an owed decision into `make` |
 
 Comments hold rationale; they never replace an expected payload, acceptance
@@ -221,14 +227,14 @@ contract. `provisional` is not a Run action and does not replace `reuse` or
 old store. A newer canonical Result for the same target marks the provisional
 binding stale automatically and reopens LAND or EMBED.
 
-## The Run graph · zero-to-many supports, exactly one local Run
+## The Run graph · zero-to-many supports, exactly one local RE
 
 ```text
 Supporting Runs  0..N  Execution | Discovery | accepted Insight item execution
                          ↓ validated upstream Results
 Local Input       1     one frozen envelope containing those Results/local sources
                          ↓
-Local Run         1     Page · Evidence Item
+Local RE          1     Page · Evidence Item execution lineage
                          ↓
 Ready Result      1     VALUE | CITE | DISPLAY, accepted by this item's contract
                          + signed Verified for CITE
@@ -241,7 +247,8 @@ person to accept the rendered unit; Page closure still requires that later
 human gate when the owner declares it.
 
 This is the precise meaning of “one input and one execution”: one Evidence
-Item has one frozen input envelope and exactly one local execution. The input
+Item has one frozen input envelope and exactly one current RE lineage. The
+lineage may contain retry attempts without changing the Evidence Item. The input
 envelope may contain zero, one, or many Supporting Results plus pre-existing
 governed page-local artifacts named in `Local Input`. Cross-Folder evidence
 must enter through a Supporting Run Result. Calls, retries,
@@ -284,7 +291,7 @@ fields:
 
 Do not store a new Run-description or status file. For an existing Run, its
 Ticket remains the purpose authority and the Evidence Item explains why it is
-used here. For a proposed Page-local Run, the plan remains in
+used here. For a proposed Page-local `RE`, the plan remains in
 `<stem>-evidence-items.md`: Expected and Acceptance define the Result target,
 and Local Input defines the future frozen envelope. LAND creates the authored
 Run and generated Result at the addresses selected by the Folder owner's Run
@@ -304,8 +311,10 @@ Discovery   search · papers · sources · external evidence
 Insight     an accepted instance/item execution Result with a traceable RF
 ```
 
-Insight instance references use `<instance>#<rNN_stem>@<vNNN>` plus the exact
-Result path/hash in the frozen Local Input. `Insight · reuse · <full-id>` may
+Current Insight instance references use `<instance>#<riNN_stem>@<vNNN>` plus
+the base-R pointer and exact Result path/hash in the frozen Local Input.
+Historical `<instance>#<rNN_stem>@<vNNN>` references remain readable.
+`Insight · reuse · <full-id>` may
 support another Page; instance-local Execution supports use `Execution` with
 the same qualified identity dialect. The item schema and workflow are owned
 by `haipipe-page-insight/ref/instance-items.md`. Never flatten such a reference

@@ -1,3 +1,15 @@
+## 1.2.1 · 2026-09-13
+
+- Made G0 read the Paper Ideation sync's working, release, and delivery
+  surfaces separately, preserving I3 as the sole selection authority.
+
+## 1.2.0 · 2026-09-13
+
+- Align Paper Run guidance with the current Page-owned `rp00`/`rpNN` interaction
+  namespace and Page-global `P01…PN` addresses.
+- Keep delegated paragraph writing owner-native and make Page release/CHECK a
+  prerequisite for the Paper G4 build gate.
+
 ## 1.1.7 · 2026-09-08
 
 - Point Page-local Section writing to the paragraph-scoped CONTENT contract without changing Paper journey gates or Evidence/Display namespaces.

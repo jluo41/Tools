@@ -12,8 +12,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.7.0"
-  last_updated: "2026-09-07"
+  version: "2.8.0"
+  last_updated: "2026-09-13"
   summary: "Discovery orchestrator for explicit Block-Job-Task-Run addresses."
 ---
 
@@ -76,7 +76,9 @@ owns relevance, Subject resolution, deduplication, Run allocation, and writes.
    complete Result.
 6. Creator runs D1 SYNTHESIZE, which dispatches
    `haipipe-discovery-synthesize` and the shared Page workflow; Page phases own
-   root Page writes while D1 records the CONTENT no-Run rationale.
+   root Page writes. If human interaction is selected, the Page workflow owns
+   `rp00_mermaid-structure` and selected `rpNN_pNN[-pNN]` Runs; D1 records only
+   that CONTENT commissions no Discovery writing Run.
 7. After Page `04 CHECK` closes the Page, creator runs D1 CLOSE and reconciles
    the Task Face; any hard failure routes backward and CLOSE cannot claim ok;
    Reviewer runs the final gate.

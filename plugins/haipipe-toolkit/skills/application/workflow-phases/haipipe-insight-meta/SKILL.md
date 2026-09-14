@@ -7,8 +7,8 @@ description: >-
   or refreshing an InsightBoard. Trigger: insight meta, data inventory, I0,
   folder-kind meta, legacy page-type meta, /haipipe-insight-meta.
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-08-31"
+  version: "1.1.0"
+  last_updated: "2026-09-13"
   workflow: haipipe-insight-workflow
   phase: I0
   folder_kind: meta
@@ -27,6 +27,9 @@ metadata:
 Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and
 `haipipe-insight-workflow`. Existing folders may retain `page-type: meta`;
 new phase-authored folders use `folder-kind: meta`.
+Read `../../haipipe-insight/ref/page-v2-adapter.md` for Page lifecycle and
+evidence migration, and `../../haipipe-insight/ref/question-groups.md` before
+changing the partition register.
 
 ## Position
 
@@ -41,7 +44,8 @@ Folders owned by I1, not divisions of Meta.
 
 ## Input
 
-- accepted Task/Discovery/other Folder sources, bound by exact PageX paths;
+- accepted Task/Discovery Run Results, bound through full Supporting Run ids,
+  or governed page-local static sources frozen in Local Input;
 - source versions, unit/grain, population, time window, and refresh clocks;
 - the optional partition proposal and shared thresholds from `ref/partition.md`.
 
@@ -54,21 +58,24 @@ after division 1. No question, result, or conclusion appears on this face.
 
 ## Task Face
 
-Resolve every source path; inspect source/run identity; reconcile grain,
+Resolve every source path and Result; inspect source/run identity; reconcile grain,
 population, coverage, and freshness; record staleness rules; and, when
 partition-major, prove that the partition register is coherent. A refresh
 reopens Meta and every downstream row that depended on a changed source.
 
 ## Plugins
 
-- `outline` required for the human-readable inventory plan;
-- `pagex` required when the inventory binds another Folder;
-- `probe` optional only to resolve a missing source fact;
+- `outline` required for Context, inventory, and source Evidence Items;
+- full Supporting Run Results are required for cross-Folder evidence; a related
+  Page link alone is navigation;
+- no active PageX or Probe lane; missing source facts route through Page
+  OUTLINE/EVIDENCE and an explicitly selected supporting worker;
 - `code` forbidden by default: inventory does not execute analysis.
 
 ## Gate and Closure
 
-GI0 closes I0 when all named sources resolve, unit/grain and population/window
+GI0 closes I0 only after the Meta Page reaches CHECK/CLOSE, all named sources
+resolve through the Page v2 evidence graph, unit/grain and population/window
 are explicit, freshness and known limits are visible, and any partition
 register passes its deterministic checks. A description with an unresolved
 load-bearing source is open.
@@ -82,4 +89,5 @@ partition register plus shared thresholds. Do not hand it a preferred question.
 
 - Folder Page: `0-MT-meta/MT00-meta/MT00-meta.md`
 - Shared partition law: `../../haipipe-application/ref/partition.md`
+- Page adapter: `../../haipipe-insight/ref/page-v2-adapter.md`
 - This phase owns no private scripts.

@@ -3,15 +3,15 @@ name: haipipe-page-evidence
 description: >-
   The 02 EVIDENCE phase of a Board Page:
   LAND executes each typed Evidence Item graph (zero-to-many Execution/Discovery
-  Supporting Runs, freezes one Local Input, then executes exactly one local
-  Page Evidence Item Run) and EMBED
+  Supporting Runs, freezes one Local Input, then executes exactly one Page
+  Evidence Run (`RE`) lineage per item) and EMBED
   folds the ready local Result into the next outline version. Never plans the outline,
   writes Content, or interprets evidence inside an upstream Run. Trigger: page
   evidence, EVIDENCE phase, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.22.1"
-  last_updated: "2026-09-08"
+  version: "0.23.1"
+  last_updated: "2026-09-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,7 +23,7 @@ shape and does not write a sentence of `## Content`.
 ```text
 Page planning and evidence loop
   SHAPE    outline    specify item identity + expected ready evidence  👤 approved:
-  SURVEY   outline    inventory supports + input + local Run           👤 Decide
+  SURVEY   outline    inventory supports + input + local RE             👤 Decide
   LAND     this file  allocate planned Tickets, execute → local Result ⚙ ready
   EMBED    this file  bind Result into v<G>.<S>.<E+1>          ⚙ CONTENT when G≥1
 ```
@@ -38,6 +38,7 @@ haipipe-page
   → the exact Page Face owner skill
   → the exact narrative/style policy, when it governs Page interpretation
   → haipipe-plugin-outline/ref/item-table.md
+  → haipipe-page/ref/page-run-families.md
   → haipipe-plugin-outline/ref/plan-grammar.md (EMBED only)
   → haipipe-plugin-outline/ref/evidence/values.md | citations.md | displays.md
     (LAND only, select the item's exact type contract)
@@ -99,24 +100,27 @@ no Page argument: EMBED owns the interpretation.
 | SHAPE | none | 0 | typed item expectation checked; Content release approval is separate |
 | SURVEY | inventory + classify only | 0 allocations, 0 executions | each route is existing Result, Ticket only, rerun, or new design + Decide |
 | LAND · Supporting | allocate/scaffold planned Execution / Discovery routes, then execute or reuse | `sum(S_i)`, `S_i ≥ 0` | every declared Supporting Result valid |
-| LAND · Local | allocate/scaffold, then execute Page · Evidence Item | exactly `N_make` | one ready local Result per make-item |
+| LAND · Local | allocate/scaffold, then execute one Page `RE` per Evidence Item | exactly `N_make` | one ready local Result/Card per make-item |
 | EMBED | none | 0 | every ready Result folded into the next working version |
 
-There is no umbrella EVIDENCE Run. Each independently closable Supporting Run
-and each local Evidence Item Run is one Level-4 Run. Calls, scripts, retries,
-render passes, and agent turns inside one Run do not add identities.
+There is no umbrella Page-wide Evidence Run. Each Evidence Item gets one
+current Page `RE` lineage. Supporting Runs remain owner-native Level-4 Runs;
+calls, scripts, retries, render passes, and agent turns inside one RE do not
+add Page Run identities. A current RE emits one Result, which the Outline may
+show as one Evidence Card with many Labels.
 
 ### Run Profile · Page · Evidence Item
 
 ```text
 ALLOWED      operation: evidence-item; item type: VALUE | CITE | DISPLAY
 TARGET       exactly one E<NN>-<TYPE>-<slug>
-TICKET       Folder dialect selected by haipipe-run; full owner-native Run id
+PAGE RUN     one `reNN_<evidence-slug>` identity for this item's Page lineage
+TICKET       Folder dialect selected by haipipe-run; full owner-native Run id when execution is Task-backed
 INPUTS       one frozen envelope: item contract + 0..N Supporting Result paths,
              Run ids, receipt hashes, and any governed page-local source pointers
 WORKER       haipipe-plugin-outline owns VALUE/CITE/DISPLAY payload rules;
              DISPLAY may dispatch a renderer craft beneath that one plugin
-RESULT       runtime receipt + typed evidence-item result + safe artifact pointers
+RESULT       runtime receipt + typed evidence-item result + safe artifact pointers; bind `page_run: reNN_<slug>`
 ACCEPT       every SHAPE acceptance check passes; provenance resolves; aggregate only
 PROMOTION    LAND binds Result to item; EMBED binds it to the next outline version
 REOPEN       changed support Result/hash or item contract makes the binding stale
@@ -179,16 +183,18 @@ For every item whose `Decide` is `☑ make`:
    sufficient. Never smuggle a sibling Evidence Item's future local Result
    into this envelope; if two items need the same evidence, both name the same
    upstream Supporting Run.
-6. **Allocate and execute exactly one Local Run.** Reuse the real Ticket when
-   SURVEY found one; otherwise allocate one `rNN` and scaffold its Page ·
-   Evidence Item Ticket from the bounded local declaration before execution.
+6. **Allocate and execute exactly one Page `RE` lineage.** Reuse the real
+   Ticket when SURVEY found one; otherwise allocate the next `reNN_<slug>` and
+   scaffold its Page · Evidence Item Ticket from the bounded local declaration
+   before execution.
    A Task declaration names parent `bNNjNNtNN` and LAND writes back the full
    `bNNjNNtNNrNN`; another Folder-local owner follows its current naming
    contract and Run Profile, preserving a reservation only when that owner
-   permits one. Page defines no separate family namespace.
-   It targets this Evidence Item and emits one typed Result. The Run may invoke
-   several scripts or calls internally; they remain one execution because
-   target and Result gate are shared.
+   permits one. The Page `RE` identity is the lineage join; it does not rename
+   the owner-native Ticket or Result. It targets this Evidence Item and emits
+   one typed Result. The RE may invoke several scripts or calls internally;
+   retries remain attempts in the same lineage because target and Result gate
+   are shared.
 7. **Bind the local Result and update its action.** Allocation changes
    `new-run` to `registered`. A Result that passes the authored Acceptance
    checks changes it to `reuse` and
@@ -243,8 +249,9 @@ resolved by its Folder dialect (`results/<RUNNAME>/` for Folder-local, or
 stays at its Supporting Run's own Result path. Never introduce
 `outline/evidence/value/` as a second copy of a VALUE Result.
 
-DISPLAY has one bounded promotion rule because the Page must cite and ship a
-concrete unit: LAND supplies `outline/evidence/display/<unit>/` as the
+DISPLAY is the umbrella Result type for a table, figure, diagram, illustration,
+or algorithm block. It has one bounded promotion rule because the Page must
+cite and ship a concrete unit: LAND supplies `outline/evidence/display/<unit>/` as the
 caller-owned destination required by the display renderer. The governed Result
 envelope records the source local Run id, the resolved Result path, the unit
 pointer, and hashes; it does not require an intermediate duplicate payload that
@@ -304,12 +311,13 @@ LAND   support/local Run truthfully failed or blocked  → EVIDENCE / LAND or HO
 LAND   every locally attainable item is ready; remaining server/person gates named → EVIDENCE / EMBED
 EMBED  ready Result contradicts the outline            → OUTLINE / SHAPE with D<nn>
 EMBED  every make-item Result folded under G=0         → OUTLINE / SHAPE with evidence revision
-EMBED  every ready Result folded; remaining gates named and defer/drop signed under G>=1 → CONTENT / WRITE in final or explicit draft mode
+EMBED  every ready Result folded; remaining gates named and defer/drop signed under G>=1 → CONTENT / WRITE only for a pure evidence revision or an explicit CONTENT instruction
 ```
 
-EVIDENCE routes directly to CONTENT only for a pure evidence revision under an
-already approved `G>=1` Shape. A contradiction or any Shape change still
-returns to SHAPE. Generation zero never reaches CONTENT.
+EVIDENCE routes directly to CONTENT only for a pure evidence revision or an
+explicit CONTENT instruction under an already approved `G>=1` Shape, after all
+remaining gates are named and defer/drop is signed. A contradiction or any
+Shape change still returns to SHAPE. Generation zero never reaches CONTENT.
 
 ## 🧾 Receipt
 
@@ -319,8 +327,8 @@ cycle: LAND | EMBED
 items: n make · n deferred · n dropped · n ready · n folded · n stale
 item-status: grouped by VALUE/CITE/DISPLAY · item → decided · landed · folded · ready · attainability local/server/person
 supporting-runs: Execution n · Discovery n · reused n · rerun n · registered n
-local-runs: n planned · n running · n done · n failed/blocked
-bindings: item id → local global Run id → Result path
+evidence-runs: n planned · n running · n done · n failed/blocked
+bindings: item id → `reNN_<slug>` → owner-native Run id → Result path → Card/Labels
 previews: DISPLAY item → rendered image/PDF viewer link
 folded: item ids written into the next working outline version
 limits: Run ids that did not complete and truthful reasons

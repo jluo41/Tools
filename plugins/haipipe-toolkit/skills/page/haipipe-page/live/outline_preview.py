@@ -76,8 +76,7 @@ def is_section(page):
 
 
 def reader_prose(text):
-    """Sources are in the adjacent Evidence cell; TeX stays in the editor."""
-    text = re.sub(r"\\cite\w*\*?(?:\[[^\]]*\])*\{[^}]*\}", "", text)
+    """Keep authored LaTeX citations visible beside the linked Evidence cell."""
     return re.sub(r"\s+([.,;:!?])", r"\1", re.sub(r"\s+", " ", text)).strip()
 
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0 — 2026-09-13
+
+- Establish `haipipe-task` and `haipipe-page` as peer top-level doors over one
+  physical Task Folder.
+- Define the cross-face handshake from Page proposal through native Task Result
+  and back to Page evidence binding and release.
+- Keep `rNN` Task Runs and `rpNN` Page Runs in independent namespaces that may
+  coexist in the shared `runs/` and `results/` lanes.
+- Define `folder_closed = task_ready AND page_ready` and narrow staleness
+  propagation across the two faces.
+
 ## 1.1.0 — 2026-09-12
 
 - Declare the Page-owned `studio/` lane in the Task Folder, in both

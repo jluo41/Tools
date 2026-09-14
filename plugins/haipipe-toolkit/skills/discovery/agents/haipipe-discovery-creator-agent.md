@@ -12,8 +12,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.17.0"
-  last_updated: "2026-09-07"
+  version: "1.18.0"
+  last_updated: "2026-09-13"
   summary: "Creator for BJTR Task Page + one-Subject Paper Run architecture."
 ---
 
@@ -114,8 +114,10 @@ is no Discovery Idea route or compatibility redirect.
 Batch independent searches and draft each artifact fully before writing. Keep
 all relevance judgment and all file writes in this creator lane.
 Dispatch the shared Page workflow for root Page synthesis; its current phase
-owns each Page mutation. The D1 root Page skips Page EVIDENCE and records the
-CONTENT no-Run rationale, preserving its paper/source-only local Run inventory.
+owns each Page mutation. The D1 root Page skips typed local Page EVIDENCE/LAND
+and records the CONTENT no-Discovery-Run rationale, preserving its
+paper/source-only local Run inventory. Page-owned `rpNN` interaction remains
+outside that inventory and must satisfy the Page release barrier before CONTENT.
 When useful, D1 may write one
 optional Task-side typed record (`summary.md`, `verdict.md`, or `landscape.md`).
 D1 SYNTHESIZE asks `haipipe-plugin-outline/ref/evidence/citations.md` to build

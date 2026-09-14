@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit a serialized Page RUN without invoking any AI agent."""
+"""Audit a serialized Page workflow pass without invoking any AI agent."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from src.page_lifecycle import audit_artifacts, audit_run, traversed_edges  # no
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
-    audit = subparsers.add_parser("audit", help="validate one Page RUN receipt")
+    audit = subparsers.add_parser("audit", help="validate one Page workflow-pass receipt")
     audit.add_argument("receipt", type=Path)
     audit.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()

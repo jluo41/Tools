@@ -94,6 +94,20 @@ def test_create_contract_is_p0_idempotent_and_keeps_seal_opaque(tmp_path: Path) 
     ).read_bytes()
     assert (dest / "gold/cumulative.jsonl").read_bytes() == b""
     assert not any((dest / "rounds").iterdir())
+    run = "rl01_corpus-contract_job-v1"
+    assert (dest / "runs" / f"{run}.yaml").is_file()
+    assert (dest / "results" / run / "runtime.yaml").is_file()
+    assert (dest / "results" / run / "result.yaml").is_file()
+    runtime = yaml.safe_load((dest / "results" / run / "runtime.yaml").read_text())
+    assert runtime["run"] == run
+    assert runtime["status"] == "complete"
+    assert runtime["operation"] == "corpus-contract"
+    assert runtime["inputs"] == [
+        {"path": "corpus/items.jsonl", "sha256": job.sha256_bytes(
+            (src / "corpus/items.jsonl").read_bytes())}
+    ]
+    assert runtime["started_at"] == "2026-09-01T00:00:00-04:00"
+    assert runtime["finished_at"] == runtime["started_at"]
 
     cfg = yaml.safe_load((dest / "config.yaml").read_text())
     assert cfg["authority"] == {
@@ -105,8 +119,11 @@ def test_create_contract_is_p0_idempotent_and_keeps_seal_opaque(tmp_path: Path) 
     }
     state = job.status(dest)
     assert state["phase"] == "P0"
-    assert state["g0_integrity"] is True
+    assert state["p0_contract_integrity_valid"] is True
     assert state["meaning_receipt_valid"] is False
+    assert state["first_blocked_frontier"] == "G0 · human meaning confirmation"
+    assert state["sealed_custodian"] == "JL"
+    assert state["source_custodian_provenance"] == "SOURCE-CUSTODIAN"
 
     second = job.create_contract(
         source_job=src,
@@ -118,6 +135,14 @@ def test_create_contract_is_p0_idempotent_and_keeps_seal_opaque(tmp_path: Path) 
         created_at="2026-09-01",
     )
     assert second["created_count"] == 0
+
+
+def test_shipped_mini_fixture_is_a_valid_p0_source_fence() -> None:
+    fixture = HERE.parent / "fixtures" / "job-mini"
+    status = job.load_mapping(fixture / "test" / "sealed" / "status.json")
+    protected = job.find_protected_manifest(fixture / "test" / "sealed")
+
+    job.validate_source_fence(status, job.sha256_file(protected))
 
 
 def test_create_contract_refuses_changed_destination(tmp_path: Path) -> None:
@@ -161,14 +186,14 @@ def test_status_rehashes_g0_and_requires_meaning_receipt(tmp_path: Path) -> None
     flipped = job.status(dest)
     assert flipped["phase"] == "P0"
     assert flipped["meaning_receipt_valid"] is False
-    assert flipped["first_blocked_frontier"] == "G0 Contract integrity"
+    assert flipped["first_blocked_frontier"] == "G0 · contract integrity"
     assert "P0 authority checksum mismatch: config.yaml" in flipped["integrity_errors"]
 
     items = dest / "corpus" / "items.jsonl"
     write(items, items.read_bytes() + b'{"item_id":"tampered"}\n')
     tampered = job.status(dest)
     assert tampered["phase"] == "P0"
-    assert tampered["g0_integrity"] is False
+    assert tampered["p0_contract_integrity_valid"] is False
     assert "corpus items checksum mismatch" in tampered["integrity_errors"]
 
 
@@ -211,7 +236,7 @@ def test_status_rehashes_each_p0_authority_artifact(tmp_path: Path) -> None:
     register = dest / "register.md"
     write(register, register.read_bytes() + b"tampered\n")
     state = job.status(dest)
-    assert state["g0_integrity"] is False
+    assert state["p0_contract_integrity_valid"] is False
     assert "P0 authority checksum mismatch: register.md" in state["integrity_errors"]
 
 
@@ -239,7 +264,7 @@ def test_confirm_binds_current_semantics_and_is_idempotent(tmp_path: Path) -> No
     assert first["updated_count"] == 2
     state = job.status(dest)
     assert state["phase"] == "P1"
-    assert state["g0_integrity"] is True
+    assert state["p0_contract_integrity_valid"] is True
     assert state["meaning_receipt_valid"] is True
 
     second = job.confirm_meaning(

@@ -1,8 +1,5 @@
 """Evidence run bindings are pointers, never copied run artifacts."""
 import importlib.util
-import re
-import shutil
-import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -35,44 +32,40 @@ page: S-Test
 
 
 class EvidenceRunBindingsTest(unittest.TestCase):
-    @unittest.skipUnless(shutil.which("node"), "Node is needed to exercise browser routing")
+    def test_local_binding_tolerates_runtime_without_ticket(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            row = {
+                "global_id": "rp99_orphan",
+                "run_id": "rp99_orphan",
+                "compact_id": "rp99_orphan",
+                "ticket": None,
+                "runtime": None,
+                "result": "",
+                "status": "Held",
+            }
+            rendered = evidence_status._allocated_local(
+                {"local_run": "Page · Evidence Item · reuse · rp99_orphan",
+                 "address": "", "action": "reuse"},
+                [row],
+                root,
+            )
+
+        self.assertIn("rp99_orphan", rendered)
+        self.assertIn("Run path not found", rendered)
+
     def test_local_task_run_keeps_its_block_and_resolves_its_layer_from_the_card(self):
+        """Evidence is a table; Run inspection belongs to Run Space."""
         with tempfile.TemporaryDirectory() as temp:
             page = Path(temp) / "Q1.md"
             page.write_text("# Q1\n", encoding="utf-8")
             rendered = render(page, "/board.md", "Q1.md")
-        routing = re.search(
-            r"  function runKey\(.*?(?=  if \(requestedFocus\))", rendered, re.S
-        ).group()
-        harness = r"""
-const assert = require('node:assert/strict');
-let focused = '';
-function card(address, layer) {
-  return {
-    getAttribute: name => ({'data-run-address': address, 'data-run-kind': layer,
-                            'data-evidence-id': 'E01-VALUE-result'})[name],
-    classList: {add() {}, remove() {}}, setAttribute() {}, scrollIntoView() {},
-    focus() { focused = address; }
-  };
-}
-const cards = [card('b01.j01.t01.r01', 'supporting'),
-               card('b02.j01.t01.r01', 'local'), card('b03.j01.t01.r01', 'local')];
-const document = {
-  querySelector: () => ({}),
-  querySelectorAll: selector => selector.includes('related-run-card') ? cards : []
-};
-function show() {}
-""" + routing + r"""
-assert.equal(focusRelatedRun('b02j01t01r01', null, 'E01-VALUE-result'), true);
-assert.equal(focused, 'b02.j01.t01.r01');
-assert.equal(focusRelatedRun('b03j01t01r01', true, 'E01-VALUE-result'), true);
-assert.equal(focused, 'b03.j01.t01.r01');
-assert.equal(focusRelatedRun('b04j01t01r01', null, 'E01-VALUE-result'), false);
-assert.equal(focusRelatedRun('b01j01t01r01', null, 'E01-VALUE-result'), true);
-assert.equal(focused, 'b01.j01.t01.r01');
-"""
-        subprocess.run([shutil.which("node"), "-e", harness], check=True,
-                       capture_output=True, text=True)
+        self.assertIn("<title>Evidence Space · Q1</title>", rendered)
+        self.assertIn("No Evidence Result yet.", rendered)
+        self.assertIn("q.get('focus')", rendered)
+        self.assertIn("classList.add('run-focus')", rendered)
+        self.assertIn("scrollIntoView({block:'center'})", rendered)
+        self.assertNotIn("function runKey", rendered)
 
     def test_duplicate_evidence_identity_has_one_anchor_and_visible_conflict(self):
         first = """### E01-VALUE-result · C1.P1.B1 · first target
@@ -437,13 +430,7 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
         self.assertNotIn('Receipt', html)
 
     def test_compact_evidence_chip_focus_lands_on_the_workspace_item_card(self):
-        """A compact `focus=run-<item>` names a real Evidences-lens card.
-
-        The compact Page's Evidence chip routes `lens=workspace&seg=items&
-        focus=run-<id>`; the Evidence Workspace must therefore own one element
-        with exactly that id, and its deep-link script must honour `seg` and a
-        Run-less `focus` by highlighting that card instead of opening a popover.
-        """
+        """A compact `focus=run-<item>` names a real Evidence table row."""
         with tempfile.TemporaryDirectory() as temp:
             page = Path(temp) / "S-Test" / "S-Test.md"
             (page.parent / "outline").mkdir(parents=True)
@@ -463,15 +450,11 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
         self.assertIn('id="run-E02-VALUE-linked-design-counts" '
                       'data-evidence-id="E02-VALUE-linked-design-counts"', html)
         self.assertEqual(html.count('id="run-E02-VALUE-linked-design-counts"'), 1)
-        self.assertIn("#items .run-focus", html)
-        self.assertIn("requestedSeg = params.get('seg') || ''", html)
-        self.assertIn("requestedFocus = params.get('focus') || ''", html)
-        self.assertIn("var target = document.getElementById(requestedFocus);", html)
-        self.assertIn("target.classList.add('run-focus');", html)
-        self.assertIn("target.scrollIntoView({block: 'start'});", html)
-        # Only a named Run may reach the bounded inspector; a bare item focus
-        # never opens a panel.
-        self.assertIn("if (requestedRun) {\n          var buttons", html)
+        self.assertIn("<th>Evidence</th><th>Bullet</th><th>Result</th>", html)
+        self.assertIn("q.get('focus')", html)
+        self.assertIn("classList.add('run-focus')", html)
+        self.assertIn("scrollIntoView({block:'center'})", html)
+        self.assertNotIn("data-seg=", html)
 
     def test_evidence_surface_has_one_items_panel_but_no_retired_probe_segment(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -491,30 +474,16 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
 
             html = render(page, "/examples/Board/board/QA/S-Test.html", "QA/S-Test/S-Test.md")
 
-        self.assertIn('data-seg=items', html)
-        self.assertIn('🧾 Evidences · 3', html)
-        self.assertIn('data-seg=runs', html)
-        self.assertIn('⚙️ Runs · 0', html)
-        self.assertIn('📚 Citations · 1', html)
-        self.assertIn('🧮 Values · 2', html)
-        self.assertIn('🖼 Displays · 0', html)
-        self.assertNotIn('data-seg=pagex', html)
-        self.assertNotIn('🔗 PageX', html)
-        self.assertNotIn('data-seg=runlinks', html)
-        self.assertNotIn('data-seg=bybullet', html)
-        self.assertIn("requestedSeg === 'runlinks'", html)
-        self.assertIn("new URLSearchParams(location.search)", html)
-        self.assertNotIn("board-outline-evidence-focus", html)
-        self.assertNotIn("board-outline-evidence-run", html)
-        self.assertIn("function runKey(value, local)", html)
-        self.assertIn("function focusRelatedRun(address, local, evidenceId)", html)
-        self.assertIn("show('runs', runsButton)", html)
-        self.assertIn("target.classList.add('run-focus')", html)
-        self.assertIn("openRunPanel(panel)", html)
-        self.assertIn("HTMLElement.prototype.showPopover", html)
-        self.assertIn("data-fallback-open", html)
-        self.assertNotIn('data-seg=probe', html)
-        self.assertNotIn('🚪 Cards', html)
+        self.assertIn('<th>Evidence</th><th>Bullet</th><th>Result</th>', html)
+        self.assertEqual(html.count('class=evidence-row'), 3)
+        self.assertIn('E01-CITE-source', html)
+        self.assertIn('E02-VALUE-effect', html)
+        self.assertIn('E03-VALUE-bound', html)
+        self.assertIn("q.get('focus')", html)
+        self.assertNotIn('<nav', html)
+        self.assertNotIn('data-seg=', html)
+        self.assertNotIn('function runKey', html)
+        self.assertNotIn('class=related-run-card', html)
 
     def test_related_run_cards_are_grouped_by_evidence_and_report_unique_count(self):
         snapshot = """plan: v6 · cycle: SURVEY · items 2 · decided 2/2 · VALUE 2
@@ -574,7 +543,7 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
         self.assertIn('<b>Run</b><code class=repo-path>/task/runs/r01_data.ps1</code>', html)
         self.assertNotIn('href="/task/runs/r01_data.ps1"', html)
 
-    def test_render_counts_all_evidence_related_runs_in_internal_lens(self):
+    def test_evidence_space_does_not_duplicate_run_space(self):
         with tempfile.TemporaryDirectory() as temp:
             page = Path(temp) / "S-Test" / "S-Test.md"
             support = page.parent / "outline" / "evidence" / "supporting-runs"
@@ -598,10 +567,10 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
 
             html = render(page, "/examples/Board/board/QA/S-Test.html", "QA/S-Test/S-Test.md")
 
-        self.assertIn('⚙️ Runs · 2', html)
-        self.assertIn('<div id=runs style="display:none">', html)
-        self.assertIn("runs: document.getElementById('runs')", html)
-        self.assertIn("data-evidence-target", html)
+        self.assertIn('<th>Evidence</th><th>Bullet</th><th>Result</th>', html)
+        self.assertEqual(html.count('class=evidence-row'), 1)
+        self.assertNotIn('class=related-run-card', html)
+        self.assertNotIn('data-seg=', html)
 
 
 if __name__ == "__main__":

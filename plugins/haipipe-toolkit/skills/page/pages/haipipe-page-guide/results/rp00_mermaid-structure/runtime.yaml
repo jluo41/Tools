@@ -1,0 +1,20 @@
+run: rp00_mermaid-structure
+family: page
+operation: interactive-writing
+interaction: human-feedback
+target: whole-Page Mermaid Structure + P01..P06
+paragraphs: P01..P06
+ticket: runs/rp00_mermaid-structure.md
+result: results/rp00_mermaid-structure
+status: complete
+version: v001
+step: s011
+version_file: results/rp00_mermaid-structure/v001.md
+version_sha256: 94c41e5d0a5641909ace8cb478f011ccba88552cd69458fd22c33b73dbca7b2e
+worker:
+  kind: skill
+  name: haipipe-writing
+started_at: 2026-09-12T20:45:37Z
+finished_at: 2026-09-13T00:53:17Z
+supersedes: null
+failure: null

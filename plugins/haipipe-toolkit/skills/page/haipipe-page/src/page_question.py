@@ -231,7 +231,7 @@ def _outline_grid(page_src):
     encoded by the Evidence chip colour and its title; a separate Status column
     would repeat that state while stealing width from the plan.  Every chip is
     a deep link into the Outline plugin: Feedback lands on its Context record,
-    an Evidence chip lands on its Evidence Workspace item card, and a Run lands
+    an Evidence chip lands on its Evidence Space item row, and a Run lands
     on its Runs-lens card.  The compact table never opens a popover of its own.
     """
     from live.outline import _latest_plan, _typed_item_review
@@ -296,7 +296,7 @@ def _outline_grid(page_src):
 
         Keep SURVEY's next action separate from path-derived availability.
         The compact chip shows ``plan | run | rerun | reuse`` and its hover
-        names both facts; the Evidence Workspace holds the full Run detail.
+        names both facts; the Evidence Space holds the full Run detail.
         """
         is_paper = (family or "").strip().lower().startswith("page")
         compact = ((compact_paper_run(address) or compact_global_run(address))
@@ -364,8 +364,8 @@ def _outline_grid(page_src):
                 )
             focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item_id)
             return (
-                '<a class="%s" href="%s&amp;lens=workspace&amp;seg=runs&amp;focus=%s&amp;run=%s" '
-                'data-outline-lens="workspace" data-outline-seg="runs" '
+                '<a class="%s" href="%s&amp;lens=run&amp;focus=%s&amp;run=%s" '
+                'data-outline-lens="run" '
                 'data-outline-focus="%s" data-outline-run="%s" title="%s">%s</a>' %
                 (esc(class_name), outline_url, esc(focus), esc(readable),
                  esc(focus), esc(readable), esc(title), esc(text))
@@ -443,13 +443,13 @@ def _outline_grid(page_src):
             )
             # The chip is a route, not a card.  Its full contract (id, name,
             # type, sources, acceptance, routes, Result) lives once, on the
-            # Evidence Workspace item card; the compact Page only names and
+            # Evidence Space item row; the compact Page only names and
             # colours it, then hands the reader to that exact card.
             focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item["id"])
             evidence_parts.append(
                 '<a class="outline-evidence %s" '
-                'href="%s&amp;lens=workspace&amp;seg=items&amp;focus=%s" '
-                'data-outline-lens="workspace" data-outline-seg="items" '
+                'href="%s&amp;lens=evidence&amp;focus=%s" '
+                'data-outline-lens="evidence" '
                 'data-outline-focus="%s" aria-label="%s · %s · %s" '
                 'title="%s · %s · %s"><b>%s</b></a>' %
                 (_outline_status_class(item["status"]), outline_url, esc(focus),
@@ -498,13 +498,14 @@ def _outline_grid(page_src):
         return "".join(chips)
 
     def point_cell(block):
-        """Render the Bullet column as a compact Point + dash annotations."""
+        """Render only the reader-facing Point in the compact Page table.
+
+        Plan annotations are process material.  They remain in ``outline/``
+        and in the Outline plugin instead of leaking into the reading face.
+        """
         point = block["point"]
         label = "[%s · %s]" % (point["number"], point["role"])
         statement = point["statement"] or "(statement not specified)"
-        notes = "".join("<li>%s</li>" % esc(value)
-                        for value in point["annotations"])
-        note_html = '<ul class="outline-point-notes">%s</ul>' % notes if notes else ""
         transition = (
             '<div class="outline-point-transition">→ [%s]</div>'
             % esc(point["transition"])
@@ -512,8 +513,8 @@ def _outline_grid(page_src):
         )
         return ('<div class="outline-point">'
                 '<div><span class="outline-point-label">%s</span> '
-                '<span class="outline-point-statement">%s</span></div>%s%s</div>'
-                % (esc(label), esc(statement), note_html, transition))
+                '<span class="outline-point-statement">%s</span></div>%s</div>'
+                % (esc(label), esc(statement), transition))
 
     rows, seen_div, seen_p = [], set(), set()
     for block in blocks:
@@ -531,9 +532,17 @@ def _outline_grid(page_src):
         address = block["address"]
         feedback = feedback_cell(address)
         evidence, supporting, local = evidence_cell(address)
-        rows.append('<tr class="outline-grid-bullet"><th scope="row"><code>%s</code></th>'
+        # The address is the Bullet's permalink.  Both a Board-hosted Page and
+        # a standalone Page send the same Outline route; the host only decides
+        # whether that route opens in its plugin pane or as a direct page.
+        rows.append('<tr class="outline-grid-bullet"><th scope="row">'
+                    '<a class="outline-bullet-link" '
+                    'href="%s&amp;lens=div&amp;focus=%s" '
+                    'data-outline-lens="div" data-outline-focus="%s" '
+                    'title="Open %s in Draft Space"><code>%s</code></a></th>'
                     '<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' %
-                    (esc(address), point_cell(block), feedback, evidence, supporting, local))
+                    (outline_url, esc(address), esc(address), esc(address), esc(address),
+                     point_cell(block), feedback, evidence, supporting, local))
 
     if not rows:
         rows.append('<tr><td colspan="6" class="mut">No C/P/B plan rows yet.</td></tr>')

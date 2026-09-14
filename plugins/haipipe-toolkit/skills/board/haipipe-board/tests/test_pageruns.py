@@ -1,4 +1,4 @@
-"""The /_board/pageruns summarizer: receipts in, one page's run list out."""
+"""The legacy /_board/pageruns route summarizes Page workflow passes."""
 
 import json
 import tempfile

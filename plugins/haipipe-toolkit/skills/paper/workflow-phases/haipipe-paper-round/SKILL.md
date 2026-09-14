@@ -7,8 +7,8 @@ description: >-
   routes changes to the owning Pages, and closes with an approved response. Use
   when opening, triaging, answering, or closing a revision round.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-08"
+  version: "0.7.1"
+  last_updated: "2026-09-13"
   group-token: "RD"
   outline:
     mode: fixed
@@ -166,19 +166,20 @@ are immutable.
 
 ## 🧭 Page surface and control loop
 
-Round content follows the shared Page surface exactly:
+Round content follows the shared Page surface exactly; the Outline is a
+generated Page projection, not a hand-authored section:
 
 ```text
 ## Opening   identity, base build, feedback intake, and boundary
-## Outline   generated plan table: item · route · owner · state · checked version
+generated Outline   plan table: item · route · owner · state · checked version
 ## Content   the seven roles below, in order
 ## Aims      human decisions, open actions, and the G5 close test
 ```
 
-`## Outline` is a projection of the Round's current plan, not a second
-feedback ledger. The atomic ledger remains Role 2. Do not author `## States`,
-`## Files`, `## Discussion`, or `## Log` on the Page; the corresponding records
-belong under `outline/` and are linked from the Page. This keeps the Round
+The generated Outline is a projection of the Round's current plan, not a
+second feedback ledger. The atomic ledger remains Role 2. Do not author
+`## Outline`, `## States`, `## Files`, `## Discussion`, or `## Log` on the Page;
+the corresponding records belong under `outline/` and are linked from the Page. This keeps the Round
 compatible with the common Page CHECK and prevents an old Round's meeting
 notes from becoming a second authority.
 

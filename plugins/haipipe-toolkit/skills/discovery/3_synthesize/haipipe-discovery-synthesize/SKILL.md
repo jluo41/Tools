@@ -8,8 +8,8 @@ description: >-
   build a landscape, connect findings, /haipipe-discovery-synthesize.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-08"
+  version: "0.3.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md
 ---
 
@@ -31,6 +31,12 @@ The distinction is deliberate:
 Writing is the Page action. Synthesis is the reasoning contract: explain how
 papers relate, where they converge, where they disagree, what remains absent,
 and what the bounded evidence can honestly support.
+
+The Page-facing interaction lane remains Page-owned. If human structure or
+prose review is needed, dispatch through `haipipe-page-workflow`: it allocates
+`rp00_mermaid-structure` first and selected `rpNN_pNN[-pNN]` Runs afterward.
+This skill never allocates those Page Runs, never treats them as Discovery
+`rNN` Runs, and never enters CONTENT before the shared Page release barrier.
 
 ## Authority and boundary
 
@@ -102,8 +108,9 @@ local Bib, or competing Page artifact.
    evidence and verify every Result pointer before writing.
 4. Dispatch the appropriate craft worker when useful (for example
    `research-lit`, `comm-lit-review`, or `academic-researcher`), but keep the
-   worker's output as a draft packet. The Page phase remains the only writer
-   of Page Content, Aims, and CHECK receipts.
+   worker's output as a draft packet. If the Page is in interactive work, keep
+   candidate prose in the Outline preview and let the Page Run settle it. The
+   Page phase remains the only writer of Page Content, Aims, and CHECK receipts.
 5. Organize the root Page by the reader's answer and themes, not by one paper
    per paragraph. A typed `summary.md`, `verdict.md`, or `landscape.md` is an
    optional compact Task-side receipt; it never replaces the root Page.
@@ -136,6 +143,8 @@ open.
 ## Run and handoff laws
 
 - `3_synthesize` never creates `runs/`, `results/`, or a local `rNN`.
+- `3_synthesize` never creates or names `rpNN` Page Runs; the shared Page
+  workflow owns Page interaction and its Version/Step history.
 - D1 `ACQUIRE` remains the only Discovery Run commissioner: one admitted
   canonical Subject per Run and one exact same-stem Result.
 - A Page division may use many Results and one Result may support many

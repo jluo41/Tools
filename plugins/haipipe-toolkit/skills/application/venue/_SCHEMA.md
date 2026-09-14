@@ -9,10 +9,9 @@ venue-<name>/
 └── exemplars/          optional real artifacts to pattern-match
 ```
 
-Venue profiles are **knowledge, not skills and not workflows**. D0 pins one
-primary venue in the Brief roster; D1-D4 read the pack. No venue creates Seed,
-Pitch, Claims, Narrative, Display, Draft, deployment, or another lifecycle.
-Those retired Application stages must never reappear in a venue pack.
+Venue profiles are **knowledge, not skills and not workflows**. The released
+Brief roster pins one primary venue; each Commission compiles the selected
+pack into frozen criteria. No venue creates its own lifecycle.
 
 
 Design profile block (required in every README)
@@ -24,23 +23,25 @@ design_profile:
   narrative: required | optional | none
   display: required | optional | none
   section_edit: required | optional | none
-  terminal: accepted
+  terminal: adopted
 ```
 
-The three composition fields describe what the D2 Unit must contain; they are
-not phases. `evidence_bar` narrows the released card's grant:
+The three composition fields describe what the generated Unit must contain;
+they are not phases. `evidence_bar` narrows the Commission's allowed inputs and
+criteria:
 
-- **light** — every load-bearing move resolves through the card grant; a
+- **light** — every load-bearing move resolves through Commission inputs; a
   non-load-bearing convention may be labeled as a venue convention.
 - **medium** — every primary section/item/move maps to the grant; every open
   load-bearing gap emits a BR00 need and Insight register question.
 - **full** — every displayed fact, metric, recommendation, and decision unit
   maps to an accepted source in the grant; no load-bearing gap remains hidden.
 
-The grant stays inside board `reads:`. Design binds signed Wisdom handoffs and
-other explicitly allowed sources through PageX; it never opens D/I/K pages or
-raw Task results to manufacture support. If the bar cannot be met, D4 emits —
-it does not substitute “common knowledge” or open a private ask session.
+The grant stays inside board `reads:`. Design freezes signed Wisdom handoffs and
+other explicitly allowed sources by exact path/version/hash; it never opens
+D/I/K pages or raw Task results to manufacture support and never creates a new
+PageX lane. If the bar cannot be met, the Run returns a named gap or hold; it
+does not substitute “common knowledge” or open a private ask session.
 
 
 Phase use (required in every README)
@@ -49,15 +50,14 @@ Phase use (required in every README)
 Each pack states only its delta inside the shared workflow:
 
 ```text
-D0 frame      pin audience × job × venue, outcome, guardrail, kill, variables
-D1 bet        compile the venue rails into each named card packet
-D2 realize    author the exact content/spec/layout the profile requires
-D3 judge      test every candidate/variant against rails and evidence bar
-D4 decide     write delivery/render/, then accept or emit
-D5 page down  reread affected prose; the venue adds no independent work
+Commission  pin audience × job × venue and compile rails before release
+Generate    author the exact content/spec/layout the profile requires
+Verify      independently test every candidate against rails and evidence bar
+Preview     write delivery/render/ from exact immutable Result members
+Adopt       a person selects or declines exact verified preview versions
 ```
 
-Acceptance names the exact file under `delivery/render/`. `accepted` is the
+Adoption names the exact file under `delivery/render/`. `adopted` is the
 Application terminal. Build, deploy, distribute, allocate, and measure are
 downstream Task-Face work in another Folder.
 
@@ -70,8 +70,8 @@ always one of:
 
 ```text
 personalization/variable contract
-GD0-closed Brief requirement
-released card grant through a signed Wisdom handoff
+released Brief requirement
+Commission input through a signed Wisdom handoff
 venue convention, explicitly labeled and non-load-bearing
 ```
 

@@ -1,5 +1,11 @@
 # haipipe-insight-information · version history
 
+## 1.1.0 · 2026-09-13
+
+- Replace PageX parent binding with exact Page-version/hash `PARENTS` lineage;
+  actual values remain governed by the Page evidence graph.
+- Require Page CHECK/CLOSE before GI3 and retire active Probe selection.
+
 ## 1.0.2 · 2026-09-01
 
 - Rename optional Execution to Runs and reserve Execute for workflow action.

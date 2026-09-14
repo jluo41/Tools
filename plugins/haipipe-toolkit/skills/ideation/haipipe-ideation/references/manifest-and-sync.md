@@ -76,10 +76,13 @@ novelty report, a selection record, or an authority for factual claims.
 ## Working Paper P0 adapter
 
 After I1 and whenever I2 changes evidence or an Idea, refresh
-`projection/paper-ideation-sync.yaml`:
+`projection/paper-ideation-sync.yaml`. If a Paper P0 path is bound, hand the
+packet to `haipipe-paper-ideation`, which applies the current `haipipe-page`
+update boundary. Updating this packet is the semantic-source step; it does not
+by itself publish the P0 Page's adopted Markdown or delivery.
 
 ```yaml
-version: 1
+version: 2
 kind: paper-ideation-sync
 source:
   ideation_task: b01.j01.t01
@@ -89,10 +92,29 @@ source:
   test_matrix: cards/test-matrix.yaml | null
 stage: I1 | I2
 sync_revision: 3
+source_hash: "sha256:<hash of this semantic packet>"
+projection:
+  change_class: state | portfolio | structure
+  affected_idea_ids: [i01]
+  identity_key: idea_id
 paper_page:
-  state: missing | bound | stale | blocked
+  state: missing | bound | blocked
   path: "Paper-.../A1-Story/Story00-ideation/...md or null"
-  last_projected_revision: 2 | null
+  working:
+    state: not-requested | current | stale | blocked
+    revision: 2 | null
+    source_hash: "sha256:<consumed sync hash>" | null
+    receipt: "Paper-.../A1-Story/Story00-ideation/workflow/receipts/p0-working.yaml" | null
+  release:
+    state: not-requested | current | stale | blocked
+    revision: 2 | null
+    source_hash: "sha256:<released source hash>" | null
+    receipt: "Paper-.../A1-Story/Story00-ideation/workflow/receipts/p0-release.yaml" | null
+  delivery:
+    state: not-requested | current | stale | blocked
+    revision: 2 | null
+    source_hash: "sha256:<delivery source hash>" | null
+    receipt: "Paper-.../A1-Story/Story00-ideation/workflow/receipts/p0-delivery.yaml" | null
 discovery_landscape:
   accepted_syntheses: ["discoveries/.../<page>.md"]
   direct_result_ids: [ext01, ext02]
@@ -136,13 +158,59 @@ I2, the packet projects the current matrix. `paper_page.state: missing` is a
 request for `haipipe-paper-ideation` to mint or bind the one evergreen P0 Page;
 it is not permission for Ideation to create Paper files itself.
 
+`sync_revision` and `source_hash` identify the semantic source. The three
+`paper_page` surfaces are independent attestations, not three names for one
+`current` flag:
+
+- `working` records the latest Page-owned projection refresh. It may be current
+  before adopted Content or delivery is current.
+- `release` records the Page-level CONTENT/release pass. It is current only
+  when it consumed the same semantic revision and source hash as `working`.
+- `delivery` records the generated delivery from that released Page source. It
+  is current only when `release` is current and its receipt names the matching
+  released source.
+
+Every current surface has a real Page-owned phase receipt whose
+`paper_projection` extension records the consumed `sync_revision`,
+`source_hash`, Page path, surface, output hash, and timestamp. A Page update may bring the working
+Outline/preview/Bullet Workspace to the new revision while leaving adopted
+Content and `delivery/` stale by design. A formal Page-level CONTENT pass is
+required before those published surfaces can be called current.
+
+The Page/Paper route writes receipts only. On the next semantic sync, the
+Ideation adapter reads those receipts and writes the nested `paper_page` status
+back into the sync packet; Page never edits the Ideation-owned semantic packet.
+
+`sync_status` is a compatibility summary of the semantic-to-working route:
+`current` means `paper_page.working` is current, `stale` means the packet is
+newer than the working projection or the Page is not bound, and `blocked` means
+the route cannot currently complete. It never promotes `release` or `delivery`.
+
 Use `paper_page.state: blocked` when the canonical Paper P0 target is known but
 the current execution lacks write scope, owner permission, or an available
 Paper projection route. Retain the canonical target in `paper_page.path`, keep
-`last_projected_revision` at the last actually projected revision (or `null`),
-set `sync_status: blocked`, and name the reason in `open_gaps`. Do not mint a
-run-local surrogate Page and do not invent a separate projection receipt: the
-sync packet itself is the durable blocked-return record.
+each surface at its last honest revision and receipt, set `sync_status:
+blocked`, and name the reason in `open_gaps`. Do not mint a run-local surrogate
+Page and do not invent a local Ideation Run. The Page-owned phase receipt is
+the durable success record; the sync packet is the durable blocked-return
+record.
+
+### Projection routing
+
+The `projection.change_class` determines the narrowest Page action:
+
+| Change class | Meaning | Page action | Page Run |
+|---|---|---|---|
+| `state` | evidence/test/status/next-route reading changed | refresh generated working projection | none |
+| `portfolio` | Idea added, removed, merged, deferred, or reordered | refresh by stable `idea_id`; inspect shell impact | none unless a human asks for prose feedback |
+| `structure` | authored P0 divisions or Page shape must change | route through the Page OUTLINE/SHAPE workflow | only if human review is required |
+
+Ideation never sends `prose` as a sync change class: prose feedback is a
+separate Page request and follows the normal Writing Step/Page Run contract.
+Portfolio reordering must not silently renumber existing Page-global paragraph
+identities. If a portfolio change alters the authored shell, the adapter stops
+at the working projection and reports that a Page shape decision is open; it
+does not release Content automatically.
 
 ## Projection law
 
@@ -152,11 +220,15 @@ sync packet itself is the durable blocked-return record.
   narrows, contradicts, or exhausts candidate space. Each entry names evidence
   and affected Idea ids.
 - Generate or Test may add, revise, merge, reorder, defer, or eliminate Ideas.
-  Every material change increments `sync_revision` and updates the same Paper
-  P0 Page rather than minting another portfolio.
-- `paper_page.last_projected_revision` lets both sides detect stale rendering.
-  A Page is current only when it equals `sync_revision` and its normal Page
-  workflow records the projection.
+  Every material change increments `sync_revision` and routes the changed
+  packet to the same Paper P0 working projection rather than minting another
+  portfolio; release of adopted Content remains governed by the Page barrier.
+- A working projection is current only when its revision and source hash equal
+  the sync packet and its normal Page workflow records a working receipt; this
+  does not silently promote adopted Content or delivery to current.
+- The sync operation is not a Page Run and does not mint `rpNN`. Do not create
+  a local Ideation Run for it. If a human asks for bounded prose feedback on
+  the P0 Page, that separate request follows the Page Run/Step contract.
 - The sync packet never contains `decision`, `selected_cards`, `target_routes`,
   or `story_routes`. Those fields belong only to the I3 human selection receipt
   and final handoff.
@@ -166,3 +238,7 @@ sync packet itself is the durable blocked-return record.
 - Paper P0 may display verdict, target, and `went to` only by projecting the I3
   receipt received in the final handoff. Page approval or CHECK is not an
   independent selection.
+- If a later I2 revision changes an Idea that was already selected, preserve the
+  existing I3 receipt and handoff as history. Mark the semantic/P0 projection
+  current as applicable, but route the affected selection back through I3 for a
+  new human decision; never auto-revoke, replace, or rewrite the old selection.

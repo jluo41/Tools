@@ -1,16 +1,16 @@
 ---
 name: haipipe-plugin-labeling
 description: >-
-  The 🏷 Labeling lane and right-pane surface available beside any real Board
-  Page: an optional page-local labeling/ holds the canonical subjective-label
+  The 🏷 Labeling lane and right-pane surface available beside any real Page,
+  including a standalone Page Folder: an optional page-local labeling/ holds the canonical subjective-label
   job, the upper half offers receipt-first Workflow, Data, Guideline, Human,
-  and Quality workspaces, and the persistent lower half reuses Studio Chat as
-  transport. Use
+  and Quality workspaces; Board reuses Studio Chat while standalone uses the
+  current Codex task as transport. Use
   when designing, opening, diagnosing, or implementing the labeling
   plugin/tab/folder, or /haipipe-plugin-labeling.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-04"
+  version: "0.10.0"
+  last_updated: "2026-09-13"
 ---
 
 # /haipipe-plugin-labeling · one job, one folder, one operated surface
@@ -27,7 +27,7 @@ one page folder
     ├── config.yaml · corpus/ · policy/ · rounds/ · gold/ · handoff/
     ├── test/ · evaluation/ · production/ · audit/
     ├── gates/                      P0 contract + G0 receipts
-    ├── runs/ · results/            Level-4 operation envelopes
+    ├── runs/ · results/            Level-4 `rlNN` operation envelopes
     └── REPORT.md · .state.json  rendered/cache only; receipts win
 
 🏷 Labeling tab
@@ -37,7 +37,7 @@ one page folder
 │   ├── Guideline                meaning · regions · policy versions · handoff
 │   ├── Human                    authority · rounds · bounded human work · gold
 │   └── Quality                  sealed Test · executors · Scan · Audit
-└── persistent Studio Chat       always below; discuss/run one routed action
+└── persistent host transport    Board: Studio Chat · standalone: Codex task
 ```
 
 ## 🧩 The four-part plugin contract
@@ -45,7 +45,7 @@ one page folder
 | part | contract |
 |---|---|
 | STORAGE | `<page>/labeling/`, exactly the job layout in `subjective-label/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
-| SURFACE | one optional `🏷 Labeling` right-pane tab on every real Board Page; an absent job is an honest P0 empty state, while existing receipts drive five switchable Workspaces above the Page's persistent existing Chat |
+| SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; existing receipts drive five switchable Workspaces, with Board Studio Chat or the current Codex task as host transport |
 | WRITER | `subjective-label-workflow` dispatches the Building/Scanning ORDER machines; their Keeper, human event writer, runner, reconciler, and auditor own named artifacts |
 | BOUNDARY | Board discovery never enters `labeling/`; the surface never renders protected item text or sealed ids and never treats an observed file as a validated gate |
 
@@ -73,7 +73,8 @@ Workspace is remembered per Board source plus Page file. The five Workspaces ans
 4. **Human** — who is the authority, which rounds and human-work operations
    exist, and which human-gold artifacts are owned by their Keepers?
 5. **Quality** — what sealed-Test, executor, production-Scan, and final-Audit
-   evidence exists?
+   evidence exists? It names the active destination reservation custodian and
+   labels any imported source custody as provenance only.
 
 These are projections over the one canonical `labeling/` tree, not five new
 `*-space/` storage folders. They render safe metadata and artifact state only.
@@ -86,7 +87,7 @@ and receipt validation. A historical lane with no canonical receipt may say
 `REPORT.md`, `.state.json`, and the Page's prose are useful views, never the
 source of the frontier.
 
-The lower half is persistent while every upper Workspace changes. It frames the
+On a Board host, the lower half is persistent while every upper Workspace changes. It frames the
 exact same generated-Page `?pane=chat` document that Studio uses, including its
 composer, sessions, quick actions, settings, GUI/TUI handoff, and optional Draw
 controls. Labeling does not put a second header,
@@ -96,6 +97,13 @@ generated `<page>.html` URL is carried separately and validated server-side.
 Chat may prepare or dispatch work, but a semantic decision becomes real only
 when the owning workflow writer lands its canonical event immediately under
 `labeling/`.
+
+On a standalone host, the domain-owned presenter does not imitate Studio or
+invent an HTTP chat backend. It names the current Codex task as transport and
+offers a copyable next-action prompt derived from canonical status. The same
+rule holds: conversation is transport; only the workflow writer may land a
+semantic event. The Page host keeps `labeling/` private from Source editing and
+static downloads.
 
 The upper/lower boundary has one keyboard- and pointer-accessible splitter. Its
 selected height is a UI preference keyed by the Board source plus Page file,
@@ -119,6 +127,11 @@ doors. Chat may inspect and discuss; it cannot cross the gate.
   agreement or consensus never promotes gold.
 - Missing Keeper, event writer, sealed-test custodian, reconciler, runner, or
   auditor produces `HOLD` naming the missing owner and preserved frontier.
+- For sealed custody, the active owner is the non-placeholder
+  `test/sealed/status.json:custodian` in the current job. An imported
+  `source_fence_attestation.source_custodian` is provenance only: it neither
+  replaces that active owner nor independently triggers `HOLD` once the
+  destination reservation has a valid custodian and rehashes.
 - A backward route appends invalidation and creates new lineage; no closed
   checkpoint, handoff, scorecard, production run, or audit is rewritten.
 
@@ -128,7 +141,10 @@ workflow writer and authority check exist end-to-end.
 
 ## ⚙️ Relationship to Runs
 
-This workbench is the operational surface for one Labeling job. It may allocate
+This workbench is the operational surface for one Labeling job. Newly allocated
+Runs use the native `rlNN_<operation>_<target>` namespace (`rl` = Run of
+Labeling); legacy `rNN_labeling-*` envelopes remain readable without aliases.
+It may allocate
 and resume the 25 independently closable operation kinds declared in
 `ref-run.md`; P0-P5 and their Round/Test/Scan/Audit episodes group those Runs
 without adding umbrella rows. `⚙️ Runs` presents the same Tickets and safe
@@ -154,8 +170,8 @@ When implementing or changing the plugin, keep these pieces aligned:
 ```text
 roster       haipipe-plugin/ref/roster.md · labeling/ row first
 registry     assets/js/10-drawer/60-plugin-labeling.js · one tab registration
-surface      live/labeling.py · GET/HEAD/POST URL twin, read-only
-routes       cli/serve.py · /_board/labeling
+surface      Board `live/labeling.py` or domain `engine/page_plugin.py` · read-only
+routes       Board `cli/serve.py` or standalone Page server · `/_board/labeling`
 skill        this file · storage/surface/writer/boundary law
 tests        receipt parsing, HOLD across GUI/TUI/Draw, protected-text non-rendering,
              availability on ordinary and labeling Pages, dashboard exclusion,

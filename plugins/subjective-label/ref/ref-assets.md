@@ -16,9 +16,9 @@ Human-readable Markdown files are rendered views and never a second source of tr
 │   ├── p0-contract/receipt.json       immutable P0 import/checksum receipt
 │   └── g0/receipt.json                human meaning confirmation + G0 binding
 ├── runs/
-│   └── rNN_labeling-<operation>_<target>.yaml      authored Run Ticket
+│   └── rlNN_<operation>_<target>.yaml              authored Run Ticket
 ├── results/
-│   └── rNN_labeling-<operation>_<target>/
+│   └── rlNN_<operation>_<target>/
 │       ├── runtime.yaml              lifecycle and attempt trail
 │       └── result.yaml               safe pointers to canonical domain Results
 ├── corpus/

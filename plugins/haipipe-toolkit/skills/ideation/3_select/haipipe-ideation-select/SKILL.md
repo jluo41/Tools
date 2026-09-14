@@ -7,8 +7,8 @@ description: >-
   handoff. Use when deciding which research idea and journal target to pursue.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-08"
+  version: "0.1.2"
+  last_updated: "2026-09-13"
   capability_family: "3_select"
 ---
 
@@ -59,7 +59,10 @@ fatal assumption. An optional comparison order is a review aid only.
 Before the person decides, write the machine comparison only into the sync
 packet's `portfolio_recommendation`. Do not invent a separate durable
 recommendation file. Ask `haipipe-paper-ideation` to project that revision into
-the same evergreen P0 cockpit.
+the same evergreen P0 cockpit through the current Page update boundary. A
+working-projection refresh does not publish adopted Page Content or delivery;
+the I3 receipt remains the sole selection authority and the sync does not
+allocate an `rpNN` Page Run.
 
 ## Human receipt
 

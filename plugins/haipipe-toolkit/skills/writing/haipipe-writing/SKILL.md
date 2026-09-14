@@ -10,8 +10,8 @@ description: >-
   write from an outline, draft from evidence, rewrite this, make this readable,
   too long, sounds like AI, plain English, ✎, /haipipe-writing.
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-09-11"
+  version: "0.18.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -77,11 +77,39 @@ checkpoint. Record genuine wording changes with the existing `wdiff.py`
 adapter where its host format supports it; the Step's before/after text and
 reasons are always required. Never inject diff apparatus into a preview
 sentence field that permits prose only.
+For material Page-hosted wording feedback, return the requested change type and
+the local editing reason to the host. During a record-first interactive Page
+Step, do not infer a broader preference or build a taxonomy; the host records
+`Analysis status: deferred` and post-run analysis handles that work after the
+Page Run closes. A different host may explicitly request a provisional,
+Page-local preference inference, but that is not part of the default Page Step.
+The host, not this worker, stores and presents any such field. For feedback
+that changes no prose, return no Before/After or preference card; the host
+records the ordinary disposition.
 
 On a Page handoff, the host's
 `haipipe-page/ref/user-check-packet.md` controls the full-paragraph return and
-two final Workspace links. No chat-only polishing, implicit acceptance, or
-silent rewrite of accepted/out-of-scope paragraphs.
+three final Bullet Workspace, Evidence Workspace, and Current Run links. No
+chat-only polishing, implicit acceptance, or silent rewrite of accepted/out-of-scope
+paragraphs.
+
+For a follow-up local feedback turn, follow the host's rapid foreground mode:
+reuse the loaded context, inspect only the target sentence and its dependent
+Bullet, make the smallest viable patch, and return after the narrow check. Do
+not rescore the Page, reread the whole corpus, infer a broader preference, or
+perform optional export and review work before the person sees the updated
+candidate. Record the local editing reason; the host performs post-run
+preference analysis only after explicit Page Run closure.
+
+The rapid foreground target is under two minutes. Do not create or wait for a
+sub-agent, update plan metadata for a wording-only change, or widen the read
+when the named target and current Run record are available. If they are not
+available, return the missing record as one blocker instead of searching the
+whole repository.
+
+When the host is between interactive Steps or Runs, do not start optional
+builds, exports, broad checks, delegated Task Runs, or sub-agent analysis on
+your own. Return the scoped action and wait for the host's explicit approval.
 
 ## ✍️ Default Page writing style
 

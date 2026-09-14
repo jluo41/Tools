@@ -2,8 +2,7 @@
 (function () {
   var evidencePattern = /\[(E\d+-(VALUE|CITE|DISPLAY)-[a-z0-9]+(?:-[a-z0-9]+)*)(?:(?::|\s+)[^\]]*)?\]/gi;
   function cleanProse(text) {
-    return text.replace(/\\cite\w*\*?(?:\[[^\]]*\])*\{[^}]*\}/g, '')
-      .replace(/\s+/g, ' ').replace(/\s+([.,;:!?])/g, '$1').trim();
+    return text.replace(/\s+/g, ' ').replace(/\s+([.,;:!?])/g, '$1').trim();
   }
   function escapeHTML(text) {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -52,8 +51,13 @@
   function readParagraph(group) {
     var output = group.querySelector('[data-paragraph-reading]');
     if (!output) return;
+    var areas = group.querySelectorAll('.preview-form textarea');
+    // Closed paragraph Runs render accepted prose without editors. The
+    // server has already assembled that read-through, so an empty editor
+    // query must not replace it with the missing-draft placeholder.
+    if (!areas.length) return;
     var text = [];
-    group.querySelectorAll('.preview-form textarea').forEach(function (area) {
+    areas.forEach(function (area) {
       if (area.value.trim()) text.push(readerHTML(area.value, area));
       else if (!area.dataset.shared) text.push(escapeHTML('[' + area.form.elements.address.value + ' draft missing]'));
     });

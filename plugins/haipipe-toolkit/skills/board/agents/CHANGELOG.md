@@ -1,3 +1,19 @@
+## Page Run namespace correction · 2026-09-12
+
+- Treat Page-owned `rpNN` as the current Page Run namespace and `prNN_*` as
+  readable migration input, keeping `PR` unambiguous for Pull Requests.
+
+## Board/Page boundary links · 2026-09-12
+
+- `haipipe-page-auditor-agent` 0.4.1 names its object a Page workflow pass,
+  distinct from a Page-owned `prNN` Page Run; historical `rpNN_*` records stay
+  migration input.
+- `haipipe-page-creator-agent` 0.12.1 and
+  `haipipe-board-reviewer-agent` 0.10.1 resolve Page, phase, producer, and
+  sentence contracts from canonical `skills/page/` paths.
+- The roster points phase agents and their stand-in rule at the canonical Page
+  workflow family rather than removed Board-local paths.
+
 ## haipipe-page-creator-agent 0.12.0 · 2026-09-11
 
 - Adopt accepted interactive Writing Results without redrafting or allocating a replacement Run per paragraph; preserve formal phase/independent CHECK boundaries.

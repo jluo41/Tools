@@ -33,7 +33,7 @@ Weekly Panel Review
 1. Each item: action verb + specific object + measurable completion.
 2. 5-12 items. Fewer = too sparse. More = overwhelming.
 3. Order: prep → action → verify → confirm (if sequential).
-4. Each item maps through the released card grant.
+4. Each item maps through released Commission inputs.
 
 
 ## Self-review checklist

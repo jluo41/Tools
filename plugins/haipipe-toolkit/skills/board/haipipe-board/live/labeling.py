@@ -164,7 +164,7 @@ def _canonical_status(root: Path) -> dict | None:
                 "integrity_errors": ["canonical subjective-label status API unavailable"],
                 "meaning_confirmed": False,
                 "meaning_receipt_valid": False,
-                "g0_integrity": False,
+                "p0_contract_integrity_valid": False,
                 "g0_receipt_valid": False,
                 "next_action": "repair canonical status API before proceeding",
             }
@@ -176,7 +176,7 @@ def _canonical_status(root: Path) -> dict | None:
             "integrity_errors": [f"canonical status could not be derived: {type(error).__name__}"],
             "meaning_confirmed": False,
             "meaning_receipt_valid": False,
-            "g0_integrity": False,
+            "p0_contract_integrity_valid": False,
             "g0_receipt_valid": False,
             "next_action": "repair canonical P0 status before proceeding",
         }
@@ -357,7 +357,7 @@ def inspect(page_src: Path) -> dict:
 
     g2_reported = bool(checkpoints and all(gate_pass.values()) and stop_signoff)
     g0_reported = bool(
-        canonical and canonical.get("g0_integrity")
+        canonical and canonical.get("p0_contract_integrity_valid")
         and canonical.get("meaning_receipt_valid")
         and canonical.get("g0_receipt_valid")
     )

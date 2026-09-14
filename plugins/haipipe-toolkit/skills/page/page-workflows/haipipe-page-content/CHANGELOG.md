@@ -1,3 +1,17 @@
+## 0.14.0 · 2026-09-12
+
+- Require the reserved `rp00_mermaid-structure` gate before Page-level Content
+  release; paragraph Page Runs begin at `rp01`.
+
+## 0.13.0 · 2026-09-12
+
+- Add a Page release barrier: CONTENT waits until every planned Page Run and
+  required evidence Task Result is complete and bound.
+- Keep individual Writing Steps and Page Run closures in the Bullet Workspace;
+  they do not modify Page Content or delivery.
+- Adopt all accepted candidates and generate declared web/LaTeX/Word outputs
+  once in the Page-level CONTENT pass before CHECK.
+
 ## 0.12.0 · 2026-09-11
 
 - Make agreed-text adoption the default CONTENT handoff. No automatic redraft/humanizer or replacement Run per paragraph. Retain explicit delegated single-paragraph promotion and formal delivery gates.

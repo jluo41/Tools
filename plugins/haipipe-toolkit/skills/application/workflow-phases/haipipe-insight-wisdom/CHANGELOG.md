@@ -1,5 +1,12 @@
 # haipipe-insight-wisdom · version history
 
+## 1.2.0 — 2026-09-13
+
+- Require Page CHECK/CLOSE plus exact semantic parent-row lineage before GI5.
+- Export the signed W as an exact frozen Design input with Page version, hash,
+  signature, and GI6 receipt; create no PageX lane or synthetic Run.
+- Retire active Probe routing; applicability evidence follows Page v2.
+
 ## 1.1.0 — 2026-09-08
 
 - Contextualize checked item Results through Supporting Run and local Evidence bindings; preserve human-signed Design authority and pinned historical references.

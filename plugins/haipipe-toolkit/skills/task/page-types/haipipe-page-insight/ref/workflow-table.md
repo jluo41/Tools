@@ -11,7 +11,7 @@ the shared Page workflow; execution uses `haipipe-run`.
 |---|---|---|---|---|
 | Scope | Instance: what topic and data context? | Topic, dataset manifests | `workflow/insight.yaml`, Page scope | Scope resolves; plan items |
 | Plan | Item: what independently answerable work? | Instance, prior items/Results | Question, target, expected Result, acceptance, dependencies | Reuse exact Result, resume, or commission a version |
-| Bind | Execution: which actual inputs and recipe? | Item, snapshots, recipe contracts | Local ticket, planned runtime; explicit upstream calls | Missing parameter support or snapshot: hold this item |
+| Bind | RI: which R and new dataset? | Item, normal R ticket, snapshots, recipe contracts | `riNN` YAML Ticket, frozen v001, planned runtime; explicit upstream calls | Missing R, parameter support, or snapshot: hold this item |
 | Evidence | Execution: are sources ready? | Supporting/local Evidence Runs | Frozen `input.yaml`, named ready Results | `frozen` then `evidence` receipts |
 | Reason | Item: what does evidence establish? | Frozen input and evidence | D/I/K/W/RF candidate, contradictions, limits | Independent CHECK receipt, `reasoned` |
 | Publish | Item: what may others reuse? | Candidate and CHECK | Immutable Result/hash; accepted or reasoned non-answer | Accepted RF gets `published`; non-answer closes without RF |
@@ -28,11 +28,12 @@ decisions remain in force and are not replaced by these receipts.
 |---|---|---|---|---|---|---|
 | Scope / Plan | Insight instance | Declare context and intent | none | 0 | Owner resolves input and question | Planned items only |
 | Bind / Evidence | Item dependencies | Obtain computations and typed evidence | Execution / Discovery / accepted Insight supports; local Page Evidence Item Runs | 0..N supports; one local Run per typed make-item | Producing Task and Page EVIDENCE contracts | Ready evidence |
-| Reason / Publish | Insight Item | Produce its own DIKW Result | Insight · Item | one execution version per frozen contract | Independent CHECK; accepted or truthful non-answer | Versioned Result |
+| Reason / Publish | Insight Item | Produce its own DIKW Result | Insight · Item (`riNN`) | one RI per R+dataset binding; versioned immutable Results | Independent CHECK; accepted or truthful non-answer | Versioned Result |
 | Synthesize | Same Page | Read settled items together | Page writing/display only when independently commissioned | 0..N as Page workflow requires | Page CHECK | Current synthesis |
 
 Item tickets can orchestrate dependencies, which retain their own identities.
-Count declared Insight Items and their execution versions separately. Do not
+Count declared RI bindings and their execution versions separately. The base
+R is referenced, not recounted or overwritten. Do not
 add an episode Run whose only Result duplicates its children. A checkpoint,
 LLM call, or rendering pass is not an additional item.
 
@@ -45,10 +46,10 @@ commissioned under an existing owner contract.
 
 One row per item, generated from intent + tickets + receipts:
 
-| Item / ticket | Question | Target | Dataset versions | Current execution | Checkpoint | Outcome | Last accepted / exact RF |
-|---|---|---|---|---|---|---|---|
-| r01_description | What patterns exist? | wisdom | patient-a@snapshot-01 | instance#r01_description@v002 | evidence | running | v001 / RF1 |
-| r02_temporal-pattern | What changes over time? | knowledge | patient-a@snapshot-01 | none | planned | not run | none |
+| Insight Run | Base R | Question | Target | Dataset versions | Current execution | Checkpoint | Outcome | Last accepted / exact RF |
+|---|---|---|---|---|---|---|---|---|
+| ri01_description | r01_description | What patterns exist? | wisdom | patient-a@snapshot-01 | instance#ri01_description@v002 | evidence | running | v001 / RF1 |
+| ri02_temporal-pattern | r02_temporal-pattern | What changes over time? | knowledge | patient-a@snapshot-01 | none | planned | not run | none |
 
 This row grain is work, not a finding. Several RFs can come from one item
 execution. The evidence table remains Evidence-Item-grained; the Board table
@@ -56,12 +57,14 @@ remains Page-Folder-grained. These three grains stay distinct.
 
 ## Closure and reopening
 
-- Data/recipe/parameters changed: new execution version for affected items;
-  preserve old Results and citations.
+- New dataset or changed base R/question/target/acceptance: allocate a new RI;
+  preserve the base R, old RI Results, and citations.
+- Same RI binding, corrected or newly reviewed publication: allocate a new
+  execution version; preserve the earlier publication.
 - Same frozen contract failed: append retry history to that execution.
 - New question in the topic: add an item; existing items do not reopen.
-- New independent patient/context: new instance, reused Task recipes and item
-  definitions, independent executions. No patient roster in the shared Task.
+- New independent patient/context: new instance and RI, reused normal R/Task
+  recipes, independent executions. No patient roster in the shared Task.
 - Source used by several items changed: reopen their explicit bindings, then
   affected synthesis and consumers. Unrelated siblings remain current.
 - Insufficient evidence: terminate with reason; do not manufacture a finding

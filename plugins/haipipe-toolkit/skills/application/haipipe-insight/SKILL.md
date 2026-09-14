@@ -10,14 +10,18 @@ description: >-
   climb, chain, partition, pooling verdict, Design Handoff, /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-09-07"
+  version: "1.2.1"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-insight · answer as a climb, under Task-backed evidence
 
-`haipipe-application` remains the Application umbrella (two-board pairing, PageX crossing, ends-at-ACCEPTED); this door owns the InsightBoard's own laws and verbs, symmetric to `/haipipe-design` on the other board. Physically it lives inside `skills/application/` because an InsightBoard cannot exist outside an Application; the slash name is first-class regardless.
+`haipipe-application` remains the Application umbrella (two-board pairing,
+signed-input crossing, ends-at-ACCEPTED); this door owns the InsightBoard's own
+laws and verbs, symmetric to `/haipipe-design` on the other board. Physically
+it lives inside `skills/application/` because an InsightBoard cannot exist
+outside an Application; the slash name is first-class regardless.
 
 **The name is reused; the thing is not.** The earlier top-level knowledge-base layer was retired. This Application door does not replace the evidence producers: values bind to named Supporting Run Results through local Evidence Runs, and this door states how one board turns bounded evidence into a signed handoff.
 
@@ -36,6 +40,12 @@ haipipe-insight-workflow      the lane's phase machine: I0-I5, GI0-GI6,
 haipipe-folder                the shared two-face Folder and phase contract
 haipipe-application-workflow  cross-board handoffs only; no duplicate Insight phases
 ```
+
+Read `ref/page-v2-adapter.md` whenever creating, reopening, or checking a rung
+Page. Read `ref/question-groups.md` for question registration, status, or
+dispatch. The first separates Page closure from epistemic advancement; the
+second defines the derived `partition × DIKW target` grouping without adding a
+Folder or second Queue.
 
 `page-type: insight` stays TASK-ONLY: a consumer-neutral topic/data instance
 with item Runs, each carrying a versioned DIKW/RF Result (`/haipipe-task
@@ -64,7 +74,11 @@ Authority to conclude lifts one rung at a time, each rung citing named rows belo
 Level-skipping is a CHECK routing failure, with exactly two exceptions, both inside the X cross group and both recorded in the rung contracts: the contrast I page derives from MIRRORED I rows (I-from-I), and the pooling-verdict K page cites the heterogeneity K row (K-from-K), because its subject is a claim about claims.
 
 The pre-climbed external-parent bridge is not a third skip: the selected Task
-Insight item's accepted Result CHECK-closes the complete `D→I→K→W→RF` chain.
+Insight `riNN` item's accepted Result CHECK-closes the complete
+`D→I→K→W→RF` chain. Its packet carries the RI execution id, the base-R pointer,
+dataset binding, Result path/hash, and RF id; a bare `rNN` cannot identify the
+rebound data execution. Historical items-v1 `#rNN@vNNN` packets remain
+readable under their recorded contract.
 Open sibling items do not invalidate that Result. GI4
 verifies that authority before local I5 performs the new Application-contextual
 operation; see `haipipe-insight-workflow`.
@@ -91,7 +105,13 @@ curiosity-first   a reader of the inventory becomes curious; the register row na
                   raiser and no consumer, because data may land before anyone knows its use
 ```
 
-Either way the question is written ONCE, on the one register facing its rung (QD/QI/QK/QW ids), with target, raiser, what-would-answer and a state cell; on a partition-major board it is asked per partition as Queue COLUMNS, never re-registered (`QK1` spans all partitions; there is no `QK1-B`).
+Either way the question is written ONCE, on the one register facing its rung
+(QD/QI/QK/QW ids), with target, raiser, what-would-answer and a state cell. Its
+derived Question Group is `partition × target rung`: `QI3` under B belongs to
+`QG-B-I`, while the same `QI3` under F belongs to `QG-F-I`. The id is never
+duplicated or partition-suffixed (`QK1` spans all eligible partitions; there is
+no `QK1-B`). `ref/question-groups.md` owns membership, X routing, state, and
+sorting.
 
 ## The three pens · who may write what
 
@@ -148,7 +168,8 @@ handoff. Legacy `page-type:` keys resolve to these skills during migration.
 ## Verbs
 
 ```text
-enter | status      resolve the board · derive frontier from disk · count register cells by state
+enter | status      resolve the board · derive Question Groups from MT00 × the four
+                    rung registers · report each group's member-cell frontier
 meta | sources      create/resume the one MT00 (the umbrella's fn/meta.md)
 question | ask      register one question on the rung register it faces · NEVER answer it there
 climb | chain       open or extend the frontier rung for one question (the umbrella's fn/chain.md) ·
@@ -185,8 +206,8 @@ lap entry: pick one frontier question, a register cell not yet settled
            K before W; partition-major: resolve the partition        + register
            group from the register cell · the register pen
            records the allocation, `⬜ <id>`, in the same lap
-③ CLIMB    run that ONE page through haipipe-page-workflow,      pen: chain page
-           mode: copilot — Evidence Items and their Run/Result records are
+③ CLIMB    run that ONE page through one haipipe-page-workflow   pen: chain page
+           PASS, mode: copilot — Evidence Items and their Run/Result records are
            declared in the outline table (this door points, it does not
            restate their shape) · MATCH existing
            Supporting Run Results BEFORE raising and AGAIN at dispatch — a
@@ -194,7 +215,9 @@ lap entry: pick one frontier question, a register cell not yet settled
            Run and dispatches NOTHING, because a re-run reproducing known
            numbers under a new timestamp muddies the run identity closed pages
            already bind · ✋ a person releases each · focal evidence lands in
-           the consumer-owned Local Run/Result · the rung closes CHECK
+           the consumer-owned Local Run/Result · I/K/W semantic parents use the
+           exact row-lineage grammar in ref/page-v2-adapter.md · only Page CHECK
+           may emit CLOSE; a Page Run close never advances the rung
 ④ SIGN     only when the rung was W: draft the Design Handoff    pen: W page
            division · ✋ a person signs at that page's CHECK (G2)
 ⑤ SETTLE   flip the register cell ✅, 🚫 with a reason, or        pen: register
@@ -219,6 +242,11 @@ the settlement before the cell stops.
 
 **Serial in a chain, parallel across.** One chain is strictly serial — each rung cites only the rung below, so there is nothing inside it to parallelize. Parallelism lives ACROSS: questions each on their own lap, partition mirrors climbing side by side. The design door is the opposite shape: its fan-out is per-card INSIDE one page, one arm-agent each.
 
+A Question Group is the schedulable view across those cells, not a wider
+transition. `QG-B-I` may expose several runnable Information cells, but the
+dispatcher still advances one cell and one Page at a time. Group state is
+always derived from its member cells and is never written independently.
+
 ## The journey, mapped onto existing machinery
 
 The lane has its own phase machine, `haipipe-insight-workflow`: six
@@ -232,7 +260,8 @@ this door        the LAW: one dataset, the Climb Law, the pens, the two ✋ · a
 insight-workflow the PHASES: where a cell is, which gate it faces, the climb order
                  (template, mirrors in parallel, X, every W), receipts, stop rules
 application-wf   cross-board receipts and handoffs; it never renames these phases
-page-workflow    OUTLINE…CHECK inside every single page RUN
+page-workflow    CONTEXT…CHECK inside one bounded Page workflow pass; interactive
+                 Page Runs are optional sibling records and never GI transitions
 ```
 
 ## The auto charter · standing authorization, signed once per run
@@ -251,4 +280,11 @@ A charter names the run, the classes, and the expiry (the run's close); its rece
 
 ## Ends at a signed handoff
 
-A signed Design Handoff is an insight decision, not a design: it names finding, strength, boundary, source versions, design consequence and forbidden overreach, and never message copy. Composing from it is the DesignBoard's, through PageX; shipping and measuring are task-layer work; and the effect read back lands HERE — a refreshed source row on MT00, a reopened chain, a handoff v2 whose staleness reopens exactly the design divisions that cited it.
+A signed Design Handoff is an insight decision, not a design: it names finding,
+strength, boundary, source versions, design consequence and forbidden
+overreach, and never message copy. Design consumes its exact frozen
+path/version/hash and GI6 settlement receipt under `ref/page-v2-adapter.md`; it
+does not create a new PageX lane or synthetic Run. Shipping and measuring are
+task-layer work, and the effect read back lands HERE — a refreshed source row
+on MT00, a reopened chain, and a handoff v2 whose staleness reopens exactly the
+design divisions that cited it.

@@ -11,8 +11,8 @@ description: >-
   Trigger: folder contract, page face, task face, folder kind, phase-owned
   configuration, workflow phase, /haipipe-folder.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-08"
+  version: "0.6.1"
+  last_updated: "2026-09-12"
 ---
 
 # /haipipe-folder · one work object, two faces
@@ -296,6 +296,6 @@ Application `page-type:` merely because the checker still accepts the key.
 
 - `../haipipe-board/src/folder_contract.py` discovers and validates phase contracts.
 - `../haipipe-board/cli/foldercontracts.py` is the executable inventory/gate.
-- `../haipipe-page/SKILL.md` owns the shared Page frame and Page workflow entry.
-- `../haipipe-plugin/SKILL.md` owns reusable plugin mechanics.
+- `../../page/haipipe-page/SKILL.md` owns the shared Page frame and Page workflow entry.
+- `../../page/haipipe-plugin/SKILL.md` owns reusable plugin mechanics.
 - `../../run/haipipe-run/SKILL.md` owns the neutral Level-4 Run contract.

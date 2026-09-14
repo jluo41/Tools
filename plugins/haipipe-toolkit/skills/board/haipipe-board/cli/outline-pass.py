@@ -18,7 +18,8 @@ BOARD_SKILL = HERE.parent                         # haipipe-board/
 sys.path.insert(0, str(BOARD_SKILL))
 from src.plan_shape import (check as plan_shape_check, check_serves,      # noqa: E402
                             check_bullet_grammar, check_head_style,
-                            check_note_quotes_page, check_coverage)
+                            check_note_quotes_page, check_coverage,
+                            paragraph_order_findings)
 from src.outline_version import latest_outline, legacy_integer_issue, version_policy_issues    # noqa: E402
 
 SKILLS = BOARD_SKILL.parent.parent                # skills/
@@ -97,6 +98,7 @@ def main():
         fails += [f"plan-shape-off-type: {m}" for m in plan_shape_check(page, txt, SKILLS)]
         fails += [f"serves-address-stale: {m}" for m in check_serves(page, txt)]
         fails += [f"bullet-missing-note: {m}" for m in check_bullet_grammar(txt)]
+        fails += [f"paragraph-order: {m}" for m in paragraph_order_findings(txt)]
         hf, hg = check_head_style(txt)
         fails += hf + hg                                   # hard here, gaps board-wide
         fails += check_note_quotes_page(page, txt)

@@ -1,6 +1,6 @@
 ---
 name: haipipe-board-reviewer-agent
-description: "Read-only REVIEWER for one HAI-Pipe Board, and the BASE of haipipe-page-check-agent, the RUN controller's 04 CHECK dispatch for judging one exact Page version. In a fresh context it runs the Board mechanical checker, verifies source/render version identity, cold-reads the scoped Page against its requirements, and routes CHECK to CONTEXT, OUTLINE, EVIDENCE, CONTENT, CLOSE, or HOLD. It detects unreadable, unsupported, interchangeable, contradictory, and stale claims, never edits or rebuilds, and cannot approve a version produced by the same actor. Trigger: review board, Page CHECK, route Page version, review board openings, board cold read, check board changes, board reviewer, validate Q pages."
+description: "Read-only REVIEWER for one HAI-Pipe Board, and the BASE of haipipe-page-check-agent, the RUN workflow-pass controller's 04 CHECK dispatch for judging one exact Page version. In a fresh context it runs the Board mechanical checker, verifies source/render version identity, cold-reads the scoped Page against its requirements, and routes CHECK to CONTEXT, OUTLINE, EVIDENCE, CONTENT, CLOSE, or HOLD. It detects unreadable, unsupported, interchangeable, contradictory, and stale claims, never edits or rebuilds, and cannot approve a version produced by the same actor. Trigger: review board, Page CHECK, route Page version, review board openings, board cold read, check board changes, board reviewer, validate Q pages."
 tools:
   - Read
   - Grep
@@ -9,9 +9,9 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-09-04"
-  summary: "Checks one immutable Page version and returns the auditable route consumed by the bounded RUN loop."
+  version: "0.10.1"
+  last_updated: "2026-09-12"
+  summary: "Checks one immutable Page version and returns the auditable route consumed by the bounded workflow-pass loop."
   changelog: "./CHANGELOG.md"
 ---
 
@@ -24,7 +24,7 @@ rules here. This file is a procedure, not a second copy of the contract, and a
 copy is exactly what goes a night out of date while the contract moves:
 
 1. `../haipipe-board/SKILL.md` for Board actions, page states, and synchronization.
-2. `../haipipe-page/SKILL.md` for the base page and evaluation contract.
+2. `../../page/haipipe-page/SKILL.md` for the base page and evaluation contract.
 3. `../haipipe-board/cli/check.py` § the skill-page Opening check (line ~581)
    and `cli/skillpage.py`'s stub (line ~570) WHENEVER a page under review is a
    `Skill-<n>` or `Agent-<n>` page. Their Opening rule is the OPPOSITE of the
@@ -37,7 +37,7 @@ copy is exactly what goes a night out of date while the contract moves:
    VARIANT was deleted on 260819 (`Skill-`/`Agent-` are filename kinds on the
    base Page plus Outline's `ref/skill-record.md`, not a Page Type). Both are executable,
    so the rule is checked rather than merely written.
-4. `../page-workflows/haipipe-page-check/SKILL.md` for the judgment and
+4. `../../page/page-workflows/haipipe-page-check/SKILL.md` for the judgment and
    routing boundary. If the assignment asks whether another phase was performed
    correctly, also load that phase's contract from the same folder.
 5. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
@@ -48,7 +48,7 @@ copy is exactly what goes a night out of date while the contract moves:
 ```text
 input:   Board folder, optional changed pages, and optional expected Page version
 output:  pass | revise | blocked, plus one route legal from CHECK per
-         ../page-workflows/haipipe-page-workflow/ref/page-run-contract.md § Legal routes
+         ../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md § Legal routes
 role:    independent, zero-background reviewer
 ```
 
@@ -155,9 +155,9 @@ actor:    haipipe-board-reviewer-agent
 status:   pass | revise | blocked
 verdict:  pass | revise | blocked
 route:    one route legal from CHECK; the table lives in
-          ../page-workflows/haipipe-page-workflow/ref/page-run-contract.md
+          ../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md
           § Legal routes, never restated here
-          ⚠️ mechanical.errors is PAGE-SCOPED, never board-scoped. The RUN
+          ⚠️ mechanical.errors is PAGE-SCOPED, never board-scoped. The workflow-pass
           controller forces CONTENT while it is above zero, so counting another
           page's errors here makes CLOSE unreachable for every page on the
           board. Filter check.py's output to lines whose first field is this

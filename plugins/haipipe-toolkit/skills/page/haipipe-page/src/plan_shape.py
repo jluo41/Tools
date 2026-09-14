@@ -274,6 +274,72 @@ def check(page_src: pathlib.Path, plan_text: str, skills_root: pathlib.Path):
 _ADDR = re.compile(r"C(\d+)\.P(\d+)\.B(\d+)")
 
 
+def paragraph_order_findings(plan_text: str) -> list[str]:
+    """Require paragraph identities to increase once across the whole Page.
+
+    ``C`` still groups paragraphs into divisions, but it no longer owns a
+    second paragraph counter.  Therefore the canonical reading order is P1,
+    P2, ... PN even when the containing C changes.
+    """
+    findings, expected, current_c = [], 1, None
+    for line in plan_text.splitlines():
+        division = re.match(r"^## C(\d+)\b", line)
+        if division:
+            current_c = int(division.group(1))
+            continue
+        if line.startswith("## ") and current_c is not None:
+            break
+        paragraph = re.match(r"^### C(\d+)\.P(\d+)\b", line)
+        if not paragraph:
+            continue
+        declared_c, declared_p = map(int, paragraph.groups())
+        if current_c is None or declared_c != current_c:
+            findings.append(
+                f"C{declared_c}.P{declared_p} is outside its declared C division"
+            )
+        if declared_p != expected:
+            findings.append(
+                f"C{declared_c}.P{declared_p} must be P{expected} in Page reading order"
+            )
+        expected += 1
+    return findings
+
+
+def global_paragraph_mapping(plan_text: str) -> dict[str, str]:
+    """Map each declared ``C<n>.P<m>`` to its Page-global paragraph identity."""
+    mapping, current_c, number = {}, None, 0
+    for line in plan_text.splitlines():
+        division = re.match(r"^## C(\d+)\b", line)
+        if division:
+            current_c = int(division.group(1))
+            continue
+        if line.startswith("## ") and current_c is not None:
+            break
+        paragraph = re.match(r"^### C(\d+)\.P(\d+)\b", line)
+        if not paragraph:
+            continue
+        number += 1
+        declared_c, declared_p = map(int, paragraph.groups())
+        if current_c is None or declared_c != current_c:
+            raise ValueError(
+                f"C{declared_c}.P{declared_p} is outside its declared C division"
+            )
+        old = f"C{declared_c}.P{declared_p}"
+        if old in mapping:
+            raise ValueError(f"duplicate paragraph identity: {old}")
+        mapping[old] = f"C{declared_c}.P{number}"
+    return mapping
+
+
+def rewrite_paragraph_addresses(text: str, mapping: dict[str, str]) -> str:
+    """Rewrite paragraph and Bullet references in one pass without cascades."""
+    return re.sub(
+        r"C\d+\.P\d+",
+        lambda match: mapping.get(match.group(0), match.group(0)),
+        text,
+    )
+
+
 def plan_addresses(plan_text: str) -> set:
     """-> every C<n>.P<n>.B<n> a plan actually HAS.
 
@@ -282,19 +348,20 @@ def plan_addresses(plan_text: str) -> set:
     divisions, `### ` opens a paragraph, and the explicit ``B<n>`` token is
     the Bullet identity.  Unnumbered ``-`` rows are not addressable and are
     intentionally omitted from the returned set."""
-    out, cn, pn, sn = set(), 0, 0, 0
+    out, cn, pn = set(), 0, 0
     for line in plan_text.splitlines():
         if line.startswith("## ") and not re.match(r"^## C\d+\b", line):
             if cn:
                 break
             continue
-        if re.match(r"^## C\d+\b", line):
-            cn += 1; pn = 0; continue
-        if line.startswith("### "):
-            pn += 1; sn = 0; continue
+        division = re.match(r"^## C(\d+)\b", line)
+        if division:
+            cn = int(division.group(1)); pn = 0; continue
+        paragraph = re.match(r"^### C(\d+)\.P(\d+)\b", line)
+        if paragraph:
+            cn, pn = map(int, paragraph.groups()); continue
         bullet = re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)(\d+)\s*·", line)
         if bullet:
-            sn += 1
             out.add("C%d.P%d.B%d" % (cn, max(pn, 1), int(bullet.group(1))))
     return out
 
@@ -351,10 +418,12 @@ def check_bullet_grammar(plan_text: str):
             if cn:
                 break
             continue
-        if re.match(r"^## C\d+\b", line):
-            cn += 1; pn = 0; continue
-        if line.startswith("### "):
-            pn += 1; sn = 0; continue
+        division = re.match(r"^## C(\d+)\b", line)
+        if division:
+            cn = int(division.group(1)); pn = 0; continue
+        paragraph = re.match(r"^### C(\d+)\.P(\d+)\b", line)
+        if paragraph:
+            cn, pn = map(int, paragraph.groups()); sn = 0; continue
         m = re.match(r"^- B(\d+)\s*·\s*(.*)$", line)
         if not m:
             continue

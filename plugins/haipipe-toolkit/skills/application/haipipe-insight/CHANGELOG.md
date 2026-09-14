@@ -1,5 +1,22 @@
 # haipipe-insight · version history
 
+1.2.1 · 260913
+- Consume current task-side Insight evidence by exact `riNN` execution packet,
+  including its base-R and dataset binding; retain items-v1 addresses as
+  readable history.
+
+1.2.0 · 260913
+- Rebase Application Insight Folders on Page v2: Page workflow passes own
+  CONTEXT through CHECK/CLOSE, while GI gates alone advance epistemic state.
+- Replace active PageX crossing with Supporting Run evidence, exact semantic
+  parent-row lineage, and a frozen signed-W Design input.
+- Define Question Group as the derived `partition × DIKW target` view
+  (`QG-B-I`, `QG-F-W`) without duplicating questions or creating Folders.
+- Migration is OWE-ON-NEXT-TOUCH; historical PageX remains readable only.
+- Clarify from the fresh-context A00 field test that a missing calculation for
+  an existing cell is that Page's Evidence Item; implementation reuse does not
+  create a duplicate register question.
+
 1.1.0 · 260908
 - Distinguish topic/data research instances and independently runnable items from Application rung Folders; require exact item Result evidence at the signed I1/I5 bridge.
 

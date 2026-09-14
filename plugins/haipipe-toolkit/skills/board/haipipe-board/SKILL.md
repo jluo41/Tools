@@ -7,8 +7,8 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "0.183.0"
-  last_updated: "2026-09-12"
+  version: "1.0.6"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md
 ---
 
@@ -25,7 +25,7 @@ how child work objects become Groups and Pages. Markdown is authoritative;
 | Folder | `haipipe-folder` | Page Face + Task Face base contract |
 | Board | `haipipe-board` | container, Groups, Page roster, build, serve, aggregate close |
 | Page | `haipipe-page` | self-contained Folder, file intake, renderer, source editor, standalone hosting, lifecycle entry |
-| Page lifecycle | `haipipe-page-workflow` | `RUN`, phase routing, packet, receipt, stop conditions |
+| Page workflow | `haipipe-page-workflow` | `RUN` verb, workflow-pass routing, packet, receipt, stop conditions |
 | Sentence | `haipipe-sentence` | comment, edit, card |
 | Page lane | the matching plugin | Outline, Studio, Runs, Delivery, Folder, or domain lane |
 
@@ -37,6 +37,14 @@ parser, renderer and live Outline/Evidence presenters are owned by
 `skills/page/haipipe-page`; old Board module paths are compatibility links.
 Standalone Page creation/build/serve uses that skill's `cli/page.py` without
 `board.md`. Board registration is optional and points at the same source.
+
+Keep the three run identities distinct. A **Page Run** reserves
+`rp00_mermaid-structure`, then uses `rpNN_pNN[-pNN]` from `rp01` for numbered paragraph
+groups; it is the Page-owned human-feedback Version/Step record. Historical
+records keep their original meaning but are not a second active namespace. A **Task Run** is delegated
+output work in its native family. The `RUN` verb invokes one **Page workflow
+pass** through the phase controller; that pass and its receipt are not a Page
+Run. Board hosts their projections without minting or renaming any identity.
 
 A Page Folder with `page.toml` may use an ordinary source filename. Register
 its Board-relative Page Face path in the desired `## Pages` group, then build
@@ -100,9 +108,9 @@ close: <the observable condition that closes the Board>
 <optional ASCII relationship map; never a second roster>
 
 ## Pages
-### G1 · <group title>
+### QA · <group title>
 <optional group introduction>
-G1-example.md
+QA1-example.md
 ```
 
 `## Pages` groups and orders Pages. It does not copy their titles, state, or
@@ -119,9 +127,9 @@ the Board-relative `jNN_<job>/tNN_<task>/tNN_<task>.md` path.
 | “create a Board” | OPEN: agree spine, close condition, and Page list before writing |
 | “add a question/group” | update `board.md` and the source tree, then rebuild |
 | “build/rebuild” | `cli/build.py <board-folder>` |
-| “serve” | `cli/serve.py --root <repo-root>` using the repository server configuration |
+| “serve” | read `fn/serve.md`, then use `cli/serve.py --root <selected-root>` |
 | “update one Page” | route to `haipipe-page` |
-| “run one Page” | route to `haipipe-page`, then `haipipe-page-workflow` |
+| “run one Page” | route to `haipipe-page`; `RUN` invokes one `haipipe-page-workflow` pass |
 | “comment/edit/card” | route to `haipipe-sentence` |
 | “draw” | route to `haipipe-plugin-studio` |
 | “compile/export” | route to `haipipe-plugin-delivery` |
@@ -142,7 +150,7 @@ to one Page or to `board.md`. In the same round:
 4. rebuild the Board;
 5. run the checker and inspect the rendered result.
 
-Routine interactive writing follows the Page workflow's scoped save/check path,
+Routine interactive writing follows the selected Page Run's scoped save/check path,
 not a full Board rebuild per Step. An explicitly requested adoption-only pass
 may leave delivery unrefreshed and must say so; it is not formal Page closure.
 Do not call a generated view current until it is actually refreshed/inspected.
@@ -225,13 +233,17 @@ authored `outline/<stem>-preview.md` record with stale-edit protection;
 `live/outline_preview.js` updates the paragraph read-through without reload.
 Do not render a `+ Bullet` button or append form; retain Read paragraph and
 existing editors. A reader may request additions in chat or edit the Markdown.
-`live/outline_comments.py` and `.js` provide sentence-targeted comments below
-each paragraph. They append signed review lanes to the preview Markdown,
-preserve quoted wording through edits, and never launch an agent or publish Content.
+Do not render a separate Comments composer in the Bullet Workspace. New
+candidate-sentence feedback belongs to the active Page Run in chat; historical
+signed preview lanes remain preserved in Markdown and never publish as Content.
 See `haipipe-plugin-outline/ref/content-preview.md` for the SHAPE/CONTENT boundary.
-For a Section with an authored matching `<stem>-logic.mmd`, render its safe
-derived argument map before the plan and paragraph groups; omit the card when
-the source is absent and keep the Mermaid file authoritative.
+Render a Page's authored `<stem>-logic.mmd` as a safe derived Mermaid Structure
+before the plan and paragraph groups. While `rp00_mermaid-structure` is active,
+expand that review artifact; if it is absent, render a blocker naming the
+expected source instead of hiding the card. After `rp00` completes, retain an
+existing map collapsed by default. The plan remains structural authority and
+the Mermaid file remains the reviewable derived source in both Board-hosted and
+standalone Page modes.
 
 - Markdown is the only source; never hand-edit generated `board/` files.
 - A build must remain readable after every `<script>` is removed.
@@ -275,7 +287,8 @@ the source is absent and keep the Mermaid file authoritative.
 | `ref/page-template.md` | creating a generic Q or S Page |
 | `ref/writing-rules.md` | writing or reviewing Page prose |
 | `ref/board-example.md` | a minimal current source-tree example is useful |
-| `ref/page-lifecycle.workflow.js` | maintaining the deterministic Page runner; workflow law remains in `haipipe-page-workflow` |
+| `ref/page-lifecycle.workflow.js` | maintaining the Board-hosted workflow-pass adapter; workflow law remains in `haipipe-page-workflow` |
+| `fn/serve.md` | serving one Board or a root containing multiple Boards |
 
 Compatibility-only readers and schemas live under `ref/legacy/`. They are not
 current authoring contracts.
@@ -298,6 +311,7 @@ not an acceptance test.
 ```text
 haipipe-board/
 ├── SKILL.md                 compact door and routing contract
+├── fn/serve.md              host one Board or selected SPACE root
 ├── ref/                     current schemas and conditional procedures
 ├── cli/                     current commands
 ├── src/                     build and audit implementation

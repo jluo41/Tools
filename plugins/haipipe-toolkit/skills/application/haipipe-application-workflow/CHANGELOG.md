@@ -1,5 +1,31 @@
 # haipipe-application-workflow · version history
 
+3.0.0 · 260913
+- Route only current Design Commission/Generate/Verify/Adopt and `rdNN_*` Runs.
+- Reject PageX, D0-D5, old Division/PageDown receipts, and v1 X2 packets.
+
+2.1.0 · 260913
+- Add the derived `partition × DIKW target` Question Group coordinate to the
+  Insight frontier without changing the register cell as the atomic owner.
+- Require Page `CHECK/CLOSE`, GI6 settlement, and the exact frozen signed-W
+  path/Page-version/content-hash/signature/receipt at X1.
+- Replace the retired Probe release with Page SURVEY `Decide`; keep Page Run
+  closure distinct from Page CLOSE and Application crossing progress.
+
+2.0.0 · 260913
+- Preserve three native machines at crossings: Insight, Design domain, and the
+  Design Folder's Page workflow.
+- Replace the legacy D4/D5 X2 adapter with a v2 packet pinned to generation,
+  verification, render, adoption, Page release, and fresh CHECK receipts.
+
+1.2.0 · 260913
+- Carry the Insight `partition × DIKW target` Question Group beside the atomic
+  register cell in the cross-board frontier.
+- Require Page CHECK/CLOSE plus GI settlement before X1, and freeze the exact
+  signed W path/version/hash/signature/receipt without PageX or a synthetic Run.
+- Map new-computation release to Page SURVEY Decide; Page Run closure never
+  advances an Application crossing.
+
 1.1.0 · 260908
 - Carry the exact item execution/RF packet across X1; local contextual Wisdom still owns the Design handoff.
 

@@ -22,12 +22,11 @@ design_profile:
   narrative: none
   display: none
   section_edit: none
-  terminal: accepted
+  terminal: adopted
 ```
 
-This is a venue reference pack, not a private lifecycle. D0-D5 remain the only
-Design workflow phases. It never invents Seed, Pitch, Claims, deployment, or a
-second status ladder.
+This is a venue reference pack, not a private lifecycle. Commission → Generate
+→ Verify → Adopt remains the only Design workflow.
 
 
 ## Venue template
@@ -42,11 +41,11 @@ template:
     chars: ~30
   - slot: benefit
     job: state the value proposition
-    claim_source: card grant through the signed Wisdom handoff
+    claim_source: Commission input through the signed Wisdom handoff
     chars: ~60
   - slot: CTA
     job: specific action + deadline
-    claim_source: GD0-closed Brief + signed Wisdom handoff
+    claim_source: released Brief + signed Wisdom handoff
     chars: ~50
   - slot: close
     job: reassurance or opt-out
@@ -57,24 +56,24 @@ template:
 
 ## Phase use
 
-### D0/D1 · frame and bet
+### Commission · frame and bet
 
 Pin `kind: sms`, audience, job, one primary venue, CTA availability, opt-out
-mechanism, and variables the system can actually supply. A card may grant only
+mechanism, and variables the system can actually supply. A Commission may use only
 the signed handoff/Brief/other sources allowed by the DesignBoard's `reads:`.
 Design never reads D/I/K pages directly.
 
-### D2 · realize
+### Generate · realize
 
 Follow the 4-slot template. Each slot is one sentence or phrase.
 Total ≤ 160 chars for single-segment SMS.
 Tone per audience profile (warm for patient, clinical for clinician).
 
-### D3/D4 · judge, render, decide
+### Verify, preview, and adopt
 
 Check every candidate or variant for character count, actionable single CTA,
 opt-out, variable availability, audience language, and fidelity to the released
-card. Render only to `delivery/render/`; acceptance names that exact render.
+Commission. Render only to `delivery/render/`; adoption names that exact render.
 
 If a load-bearing premise or variable is missing, emit a BR00 need and its
 Insight register question. Do not substitute “common knowledge,” open a private

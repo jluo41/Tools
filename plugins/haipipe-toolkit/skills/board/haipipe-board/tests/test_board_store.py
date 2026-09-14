@@ -88,8 +88,9 @@ class BoardStoreContractTest(unittest.TestCase):
 
     def test_task_contract_uses_run_results(self):
         text = (self.SKILLS / "task/haipipe-task/SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("Runs/Results", text)
-        self.assertIn("Supporting", text)
+        self.assertIn("Run/Result pairing", text)
+        self.assertIn("Supporting Run", text)
+        self.assertIn("$OUTPUT_ROOT", text)
         self.assertNotIn("fn/qa.md", text)
 
     def test_run_template_resolves_rather_than_hardcodes(self):

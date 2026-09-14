@@ -48,7 +48,7 @@ function fixture() {
     fetch: () => new Promise(resolve => { complete = resolve; }),
   });
   return {
-    form, area, editor, copy, status, reading, stale,
+    form, area, editor, copy, status, reading, stale, group,
     type(text) { area.value = text; events.input({target: area}); },
     cancel() { events.click({target: cancel}); },
     save() { return events.submit({target: area, preventDefault() {}}); },
@@ -129,4 +129,28 @@ test('reader compresses colon and spaced evidence placeholders into a short labe
     assert.doesNotMatch(f.reading.innerHTML, /verification pending|stakes pending/);
     assert.doesNotMatch(f.reading.innerHTML, /evtag|preview-evidence/);
   });
+});
+
+test('reader preserves authored LaTeX citation commands', () => {
+  const f = fixture();
+  f.type(String.raw`Physicians differ \citep{Barnett2017}.`);
+  assert.equal(f.reading.innerHTML, String.raw`Physicians differ \citep{Barnett2017}.`);
+});
+
+test('closed read-only paragraph keeps its server-rendered read-through', () => {
+  const reading = {innerHTML: 'Accepted first sentence. Accepted second sentence.'};
+  const group = {
+    querySelector: () => reading,
+    querySelectorAll: () => [],
+  };
+  const events = {};
+  vm.runInNewContext(source, {
+    document: {
+      querySelectorAll: (selector) => selector === '.paragraph-group' ? [group] : [],
+      querySelector: () => null,
+      addEventListener: (name, fn) => { events[name] = fn; },
+    },
+    window: {addEventListener: (name, fn) => { events[name] = fn; }},
+  });
+  assert.equal(reading.innerHTML, 'Accepted first sentence. Accepted second sentence.');
 });

@@ -121,6 +121,9 @@ body.split .q .qbd .cbody.flat p{font-size:15px;line-height:1.75}
 .outline-grid:not(.narrative-control) th:nth-child(5){width:17%}
 .outline-grid:not(.narrative-control) th:nth-child(6){width:14%}
 .outline-grid code{font:600 10.5px ui-monospace,Menlo,monospace;color:var(--accent);white-space:nowrap}
+.outline-bullet-link{display:inline-block;text-decoration:none;border-radius:3px}
+.outline-bullet-link:hover,.outline-bullet-link:focus-visible{outline:2px solid var(--accent);
+ outline-offset:2px;background:color-mix(in srgb,var(--accent) 8%,transparent)}
 .outline-grid-division th{background:color-mix(in srgb,var(--accent) 9%,var(--bg));
  color:var(--fg);font-size:12.5px}
 .outline-grid-paragraph th,.outline-grid-paragraph td{background:var(--bg);color:var(--mut);font-weight:600}
@@ -133,9 +136,6 @@ body.split .q .qbd .cbody.flat p{font-size:15px;line-height:1.75}
 .outline-point-label{font:650 10.5px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
  color:var(--accent);white-space:nowrap}
 .outline-point-statement{color:var(--fg)}
-.outline-point-notes{margin:3px 0 0 1.1em;padding-left:1em;color:var(--mut);
- font-size:11px;line-height:1.4}
-.outline-point-notes li{padding-left:1px}
 .outline-point-transition{margin:4px 0 0 1.1em;color:var(--accent);font-size:11px;line-height:1.35}
 .outline-feedback{display:inline-block;max-width:100%;margin:0 4px 2px 0;padding:0 4px;
  border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:4px;

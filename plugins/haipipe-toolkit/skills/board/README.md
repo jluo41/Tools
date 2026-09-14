@@ -10,10 +10,10 @@ sentence work so each rule has one owner.
 |---|---|---|
 | Folder | `haipipe-folder` | neutral Page Face + Task Face contract |
 | Board | `haipipe-board` | container, Groups, roster, build, serve, aggregate close |
-| Page | `haipipe-page` | readable frame, Folder-kind resolution, lifecycle entry |
-| Page workflow | `haipipe-page-workflow` | CONTEXT → OUTLINE → EVIDENCE → CONTENT → CHECK router |
-| Plugin | `haipipe-plugin` | plugin definition and roster law |
-| Sentence | `haipipe-sentence` | comment, edit, card, sentence-local record |
+| Page | `skills/page/haipipe-page` | readable frame, Folder-kind resolution, lifecycle entry |
+| Page workflow | `skills/page/page-workflows/haipipe-page-workflow` | CONTEXT → OUTLINE → EVIDENCE → CONTENT → CHECK router |
+| Plugin | `skills/page/haipipe-plugin` | plugin definition and roster law |
+| Sentence | `skills/page/haipipe-sentence` | comment, edit, card, sentence-local record |
 | Write routing | `haipipe-board-routing` | propose Board shape or route one anchored Page write |
 
 Domain Page Types live with the workflow that owns them. Task Pages are owned
@@ -34,6 +34,19 @@ CONTEXT, OUTLINE, and EVIDENCE all use `haipipe-plugin-outline` records.
 CONTENT realizes them on the Page. CHECK evaluates the complete Page rather
 than creating a second content surface.
 
+## Run vocabulary
+
+| Name | Identity | Owner |
+|---|---|---|
+| Page Run | `rp00_mermaid-structure`, then `rpNN_pNN[-pNN]` from `rp01` | Page-owned human-feedback Version/Step history |
+| Task Run | native `rNN` or global run id | output-producing Task/Discovery family |
+| Page workflow pass | phase-controller packet + receipt | `haipipe-page-workflow`; invoked by the `RUN` verb |
+
+A Page workflow pass is not a Page Run. Board may host and present all three,
+but it never renames their identities or becomes their source authority.
+Historical `prNN_*` Page Runs remain readable migration records; new Page Runs
+use `rpNN` so `PR` remains unambiguous shorthand for Pull Request.
+
 ## Public plugins
 
 | Plugin | Lane |
@@ -52,31 +65,29 @@ Evidence Item.
 ## Source layout
 
 ```text
-board/
-├── README.md
-├── CHANGELOG.md
-├── haipipe-folder/
-├── haipipe-board/
-├── haipipe-page/
-├── haipipe-plugin/
-├── haipipe-sentence/
-├── haipipe-board-routing/
-├── page-workflows/
-│   ├── haipipe-page-workflow/
-│   ├── haipipe-page-context/
-│   ├── haipipe-page-outline/
-│   ├── haipipe-page-evidence/
-│   ├── haipipe-page-content/
-│   ├── haipipe-page-check/
-│   └── agents/
-├── page-plugins/
-│   ├── haipipe-plugin-outline/
-│   ├── haipipe-plugin-studio/
-│   ├── haipipe-plugin-runs/
-│   ├── haipipe-plugin-delivery/
-│   └── haipipe-plugin-folder/
-└── agents/
+skills/
+├── board/
+│   ├── README.md + CHANGELOG.md
+│   ├── haipipe-folder/
+│   ├── haipipe-board/
+│   ├── haipipe-board-routing/
+│   ├── agents/
+│   ├── haipipe-page/              compatibility links only
+│   ├── haipipe-plugin@            compatibility symlink
+│   ├── haipipe-sentence@          compatibility symlink
+│   ├── page-workflows@            compatibility symlink
+│   └── page-plugins@              compatibility symlink
+└── page/                           canonical Page family
+    ├── haipipe-page/
+    ├── haipipe-plugin/
+    ├── haipipe-sentence/
+    ├── page-workflows/
+    └── page-plugins/
 ```
+
+The five Board-local Page entries are compatibility surfaces resolving into
+canonical `skills/page/`. They are not second implementations or documentation
+authorities; new links and imports should target `skills/page/` directly.
 
 `haipipe-board/legacy/` contains only explicit compatibility readers and
 one-time migration tools. It is not scanned as a current skill source. Retired
@@ -85,9 +96,13 @@ skills are deleted; Git history is their archive.
 ## Validation
 
 ```bash
-python3 haipipe-board/cli/foldercontracts.py --check
 python3 -m unittest discover -s haipipe-board/tests
+python3 haipipe-board/cli/foldercontracts.py --check
 ```
+
+The Folder-contract command is a cross-family integration audit and names the
+owning external skill for every finding. Use repeatable `--workflow <name>`
+arguments when validating one owner's phase family in isolation.
 
 Use `/workflow-table board` when a cross-skill workflow view is needed. Keep
 test counts in command output and changelogs, not in this README.

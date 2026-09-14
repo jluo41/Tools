@@ -7,8 +7,8 @@ description: >-
   compiled next. Trigger: paper journey, workflow, phase gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "1.1.7"
-  last_updated: "2026-09-08"
+  version: "1.2.1"
+  last_updated: "2026-09-13"
 ---
 
 # /haipipe-paper-workflow · read the journey, test the gate, mint the next work
@@ -125,9 +125,17 @@ G0  Ideation → Story
     it points to those records and never creates, requests, or overwrites a
     second selection receipt. Page Shape approval and Page CHECK acceptance
     remain separate Page decisions and cannot substitute for I3 or G0.
-    If `paper_page.state: blocked`, preserve the canonical Page path and last
-    actual revision, report the named gap, and create no surrogate Page,
-    projection receipt, or selection receipt.
+    Read the Ideation sync's `paper_page` surfaces separately: a current
+    working projection is evidence of the latest P0 display, while release and
+    delivery are current only with their own matching Page-owned receipts. G0
+    validates the latest semantic handoff and reciprocal Story binding; it does
+    not silently promote a stale Page release or delivery. If
+    `paper_page.state: blocked`, preserve the canonical Page path and each last
+    honest surface revision, report the named gap, and create no surrogate
+    Page, projection receipt, or selection receipt. A stale release surface is
+    a Page publication issue, not a second I3 selection state; only apply a
+    stricter G0 policy when the named Paper contract explicitly requires a
+    released P0 view.
 
 G1  Story → Evidence/Execution
     The reviewed Story plan names Seed identity and RQs, C5 evidence basis and
@@ -205,11 +213,14 @@ The Paper-specific Run dialect is defined in
 [`../haipipe-paper/ref/run-naming.md`](../haipipe-paper/ref/run-naming.md).
 Use `pm-<page>-<target>-rNN`, `pa-<page>-<target>-rNN`, or
 `pr-<round>-<target>-rNN` for new Paper-local Evidence/Display Runs. The
-Section's Page-local Paragraph Writing Run follows `haipipe-page-content`:
-`rNN_page-writing_cNN-pNN.md`; its owning semantic Page supplies the Main or
-Appendix meaning. `Ba`/`Bb`/`Bc` are shelf tokens, and `RD<NN>` is the Round
-Page token, not a Run id. Existing `pjNNtNNrNN` files are read-only historical
-Runs and are never bulk-renamed.
+Section's Page-owned interaction follows the shared Page contract:
+`rp00_mermaid-structure` first, then `rpNN_pNN[-pNN]`, with Page-global
+`P01…PN` addresses. Delegated paragraph writing remains an owner-native Task
+Run (`rNN`, `rlNN`, or another current Task identity); historical
+`rNN_page-writing...` forms are read-only and are never bulk-renamed. `Ba`/`Bb`/
+`Bc` are shelf tokens, and `RD<NN>` is the Round Page token, not a Run id.
+Existing `pjNNtNNrNN` files are read-only historical Runs and are never
+bulk-renamed.
 
 ## 🧾 Receipts and phase reading
 
@@ -221,7 +232,9 @@ target, or selection. These are authoring/execution records, not additional
 Story Content divisions. The
 Section Page records its own Page lifecycle and CHECK. Compile writes its
 build manifest and render receipt. The Round records G5 and the frozen build
-hashes. There is no separate child control-page receipt store.
+hashes. The Paper-side G3 release is not a substitute for Page release or
+CHECK; G4 may consume a Section only after the current Page release/CHECK
+contract is satisfied. There is no separate child control-page receipt store.
 
 The current position is read, not guessed from a folder name:
 
@@ -253,8 +266,9 @@ not resolve retired child Page names or hidden compatibility paths.
   operational target and owns any later human-approved rebind.
 - Page Shape approval, Page CHECK acceptance, and the I3 selection receipt are
   distinct decisions; the Paper workflow creates no second selection receipt.
-- When `paper_page.state: blocked`, the canonical Page path and last actual
-  revision remain visible and no surrogate Page or projection receipt is made.
+- When `paper_page.state: blocked`, the canonical Page path and each last honest
+  surface revision remain visible; no surrogate Page, local Ideation Run, or
+  fake projection receipt is made.
 - Every central evidence gap has a substantive C6/C7 research need or an
   explicit scope decision; operations do not displace that explanation.
 - Story CHECK evaluates the blueprint's clarity and coverage, not completion

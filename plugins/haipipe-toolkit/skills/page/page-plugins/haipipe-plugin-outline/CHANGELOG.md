@@ -1,3 +1,96 @@
+## 0.71.1 · 2026-09-14
+
+- Make DISPLAY the umbrella for tables, figures, and algorithm blocks while
+  retaining TABLE as a legacy alias.
+
+## 0.71.0 · 2026-09-13
+
+- Move Draft Space Plan/Draft source paths behind a collapsed `Sources`
+  disclosure so the default reading surface stays focused on Mermaid,
+  Bullets, and candidate prose.
+
+## 0.70.0 · 2026-09-13
+
+- Define the Evidence Item → RE → Result → Card → Labels relationship and
+  present RP, RE, RD, and Supporting Runs in one read-only Run Space.
+
+## 0.69.0 · 2026-09-13
+
+- Restore compact, read-only Evidence route/card tags in the Draft Space
+  Bullet column while keeping full Evidence item details in Evidence Space.
+- Keep each Bullet's authored bracketed role visible, with `[Point]` as the
+  explicit compatibility fallback for legacy plan heads.
+
+## 0.68.0 · 2026-09-13
+
+- Render Mermaid as a collapsed, native open/close disclosure above the
+  read-only Draft table; opening it reveals only the rendered diagram.
+
+## 0.67.0 · 2026-09-13
+
+- Make Draft, Evidence, and Run projections intentionally read-only and remove
+  editor, append, preview-form, and comment controls from the reader surface.
+- Show each Space's source boundary inline: Draft reads `outline/` Markdown,
+  Evidence reads `results/**/result.yaml`, and Run reads `runs/` plus paired
+  Results and inspectable supporting references.
+- Reject legacy Draft write actions at the Outline boundary while keeping
+  Page/Run workflow writers and Markdown authority unchanged.
+
+## 0.66.0 · 2026-09-13
+
+- Reduce the visible Outline surface to exactly Bullet, Evidence, and Run
+  workspaces; Context/process records remain safely on disk and in Folder.
+- Make Evidence Result-first and mount Run P, Run E, and Supporting Runs inside
+  Outline while retaining old deep-link aliases.
+
+## 0.65.2 · 2026-09-13
+
+- Correct remaining Mermaid Structure lifecycle references from the retired
+  `rp01` identity to canonical `rp00_mermaid-structure`.
+
+## 0.65.1 · 2026-09-13
+
+- Remove the paragraph Comments composer and its active POST action from the
+  Bullet Workspace. New candidate feedback stays in the Page Run; historical
+  signed preview lanes remain preserved but unrendered.
+
+## 0.65.0 · 2026-09-12
+
+- Make a paragraph read-only after its canonical Page Run completes: render
+  accepted candidate text without edit/comment controls and reject stale write
+  requests until an explicit new Version reopens the Run.
+
+## 0.64.0 · 2026-09-12
+
+- Resolve the active Mermaid Structure review through the reserved
+  `rp00_mermaid-structure` identity.
+
+## 0.63.0 · 2026-09-12
+
+- Resolve the live Mermaid Structure through `rp01_mermaid-structure`.
+- Define paragraph rows and deep links against Page-global P identities.
+
+## 0.62.0 · 2026-09-12
+
+- Present the Page-wide Mermaid Structure above Bullet Workspace, expanded
+  while `pr01_mermaid-structure` waits for feedback.
+- Render a named missing-map blocker for an open `pr01` instead of silently
+  omitting the Run's primary review artifact.
+
+## 0.61.0 · 2026-09-12
+
+- Make Bullet Workspace show every Bullet's bracketed role, using neutral
+  `[Point]` only when the plan has no authored role.
+- Show `Evidence: none · reason` as an inline `evidence: none` decision with
+  the reason retained in detail, shared by standalone and Board hosts.
+
+## 0.60.0 · 2026-09-12
+
+- Give every `C.P.B` Bullet a stable direct link using
+  `lens=div&focus=C<n>.P<m>.B<k>`, shared by Board and standalone Page hosts.
+- Make compact Page addresses and Bullet Workspace addresses expose that route;
+  opening it expands, scrolls to, and highlights the exact Bullet row.
+
 ## 0.59.0 · 2026-09-11
 
 - Align preview/Content handoff with exact adoption of accepted Writing Steps. Preserve source comments, distinguish history snapshots from current editable prose, and qualify full rebuilds as formal checkpoints.

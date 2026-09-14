@@ -63,6 +63,6 @@ Recommended actions:
 [ ] Subject line ≤ 60 chars and specific
 [ ] 200-800 words (per audience)
 [ ] Sections follow narrative arc
-[ ] Every factual move maps through the released card grant
+[ ] Every factual move maps through released Commission inputs
 [ ] Card id, grant, and exact render version resolve in the Design Folder
 ```

@@ -11,15 +11,48 @@ Card and Venue Fit Card retain the current conclusion plus receipt path; they
 do not duplicate the specialist's search coverage, adversarial comparison, or
 pressure table.
 
-## Paper P0 working-state sync
+## Paper P0 projection receipts
 
 `projection/paper-ideation-sync.yaml` is the I1/I2 adapter defined in
 `manifest-and-sync.md`. It carries the evolving Discovery Landscape,
 Opportunity Map, candidate portfolio, Test Matrix projection, and open gaps to
 the same evergreen Paper P0 Page. It contains no human selection fields and
 does not authorize a Story. Material Generate/Test changes increment its
-revision and make the Paper projection stale until
-`haipipe-paper-ideation` records the same revision.
+revision and make the Page working projection stale until
+`haipipe-paper-ideation` records the same revision through the Page update
+boundary. The working Outline/preview/Bullet Workspace may be refreshed first;
+that refresh is not a Page Run and does not publish adopted Content or
+delivery.
+
+The Page-owned return uses the normal receipt in the Page's
+`workflow/receipts/` lane for each phase pass. Ideation adds a
+`paper_projection` extension inside that receipt; it does not create a second
+Page receipt type or a parallel Page lifecycle:
+
+```yaml
+step: 1
+round: 1
+phase: OUTLINE | CONTENT
+status: ok
+paper_projection:
+  source_packet: projection/paper-ideation-sync.yaml
+  source_revision: 4
+  source_hash: "sha256:<sync packet hash>"
+  page_path: "Paper-.../A1-Story/Story00-ideation/...md"
+  surface: working | release | delivery
+  output_hash: "sha256:<surface output hash>"
+  created_at: "ISO-8601"
+```
+
+The adapter is the only writer of the semantic sync packet, including its
+nested `paper_page` surface state. The Page/Paper route is the only writer of
+the standard phase receipt and its `paper_projection` extension. The adapter
+reads that receipt on the next sync and records the corresponding state; Page
+never edits the semantic packet directly. A `working` extension does not imply
+`release` or `delivery`. A release extension must consume the same
+revision/source hash as the working surface, and a delivery extension must
+identify the released source. Replaying the same source revision and hash is
+idempotent and does not allocate an `rpNN` Page Run.
 
 ## Discovery search request/return
 

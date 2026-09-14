@@ -6,17 +6,18 @@
  *
  * INDEX LEFT, CONTENT RIGHT (JL 260816: "把 workflow 放在最左边…跟具体的内容分开").
  * The LEFT column is an index — 00 CONTEXT … 04 CHECK, names only, one row per
- * phase — and the RIGHT column holds the selected phase's content plus the run
+ * phase — and the RIGHT column holds the selected phase's content plus the pass
  * record, the same left-index-right-content language the board itself speaks. The
  * layout classes (`wf-cols` / `wf-index` / `wf-ix` / `wf-main`) live in
  * 85-workflow.css and are SHARED with 🏷 Labeling: the ruling was about what a
  * workflow surface is, so one member owning the shape would be the drift.
  *
- * WHERE ITS DATA COMES FROM. `GET /_board/pageruns` — the receipts the RUN contract
+ * WHERE ITS DATA COMES FROM. `GET /_board/pageruns` is a compatibility route
+ * for the receipts the Page workflow-pass contract
  * (haipipe-page-workflow) writes to `<board>/_runs/page/<page-id>/<run-id>.json` —
  * and nothing else. Not `## States` (those are the page's Aims, not its
- * construction), and not the DOM. NO RECEIPTS IS AN ANSWER: most pages were never
- * RUN, and the empty state says the contract's own entry rule instead of an error.
+ * construction), and not the DOM. NO RECEIPTS IS AN ANSWER: most pages have no
+ * workflow pass, and the empty state says the contract's entry rule instead of an error.
  *
  * READ-ONLY ON PURPOSE (v1). The one action is the labeling stepper's smallest one:
  * the command a person would type, shown and copyable, never executed here. QB7's
@@ -81,7 +82,7 @@
     return 'just now';
   }
 
-  /* The suggested entry phase is the CONTRACT's, not a guess: the newest run's
+  /* The suggested entry phase is the CONTRACT's, not a guess: the newest pass's
      last route when one exists and is a phase; else CHECK, the run contract's
      default for an existing page whose next need is unknown. */
   function nextPhase(run) {
@@ -130,15 +131,15 @@
       var p = PHASES.filter(function (x) { return x.id === sel; })[0];
       var role;
       if (p.id === lastPhase) {
-        role = closed ? 'last acted in this run · the run CLOSED here'
-                      : 'last acted in this run · routed → ' + esc(route || '?');
+        role = closed ? 'last acted in this pass · the pass CLOSED here'
+                      : 'last acted in this pass · routed → ' + esc(route || '?');
       } else if (p.id === next && !closed) {
-        role = cur ? 'next · ' + esc(lastPhase || 'the run') + ' routed here'
-                   : 'where RUN would enter this page';
+        role = cur ? 'next · ' + esc(lastPhase || 'the pass') + ' routed here'
+                   : 'where a workflow pass would enter this page';
       } else if (cur) {
-        role = visits(p.id) ? 'visited earlier in this run' : 'not visited in this run';
+        role = visits(p.id) ? 'visited earlier in this pass' : 'not visited in this pass';
       } else {
-        role = 'no run recorded yet';
+        role = 'no workflow pass recorded yet';
       }
 
       var content =
@@ -170,7 +171,7 @@
               : '')
           + (runs.length > 1
               ? '<li><span class="ti">🗂</span> ' + (runs.length - 1)
-                + ' earlier run' + (runs.length > 2 ? 's' : '')
+                + ' earlier workflow pass' + (runs.length > 2 ? 'es' : '')
                 + ' in <code>_runs/page/</code></li>'
               : '')
           + '</ul>'
@@ -179,9 +180,9 @@
       } else {
         runBlock =
           '<div class="pf-run">'
-          + '<div class="wf-dh">🧭 no run recorded for this page</div>'
+          + '<div class="wf-dh">🧭 no workflow pass recorded for this page</div>'
           + '<ul class="wf-rows">'
-          + '<li><span class="ti">🚪</span> The run contract’s entry rule: '
+          + '<li><span class="ti">🚪</span> The workflow-pass entry rule: '
           + 'an existing page enters at CHECK so a fresh judge routes it; '
           + 'a brand-new page enters at CONTEXT so policy and requirements '
           + 'are frozen before OUTLINE.</li>'
@@ -226,7 +227,7 @@
       + ' from ' + esc(phase) + '</code>'
       + '<button class="wf-copy" type="button">copy</button>'
       + '<span class="wf-note">paste into the 💬 Chat pane to start '
-      + 'this run</span>'
+      + 'this workflow pass</span>'
       + '</div></div>';
   }
 
@@ -267,7 +268,7 @@
       })
       .catch(function () {
         host.innerHTML = '<div class="wf-empty">⚠️ open this page through '
-          + '<code>serve.py</code> to read its runs — a bare file has no '
+          + '<code>serve.py</code> to read its workflow passes — a bare file has no '
           + 'server to ask.</div>';
       });
   }

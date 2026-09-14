@@ -8,8 +8,8 @@ description: >-
   choose a winner.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-08"
+  version: "0.1.2"
+  last_updated: "2026-09-13"
   capability_family: "1_generate"
 ---
 
@@ -77,7 +77,9 @@ memory, a title hit, or a user hunch into an observed signal.
    Direction, Discovery Landscape, Opportunity Map, and every admitted Idea.
    When the Paper P0 Page is in scope, route the packet to
    `haipipe-paper-ideation`; that owner mints or updates the same evergreen
-   `Story00-ideation` Page.
+   `Story00-ideation` Page through the current Page update boundary. A routine
+   working-projection update does not publish adopted Page Content or delivery,
+   and the sync does not allocate an `rpNN` Page Run.
 
 Parallel workers may expand independent lenses or candidates, but the parent
 desk deduplicates, assigns stable ids, and writes the canonical cards.

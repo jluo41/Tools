@@ -1,3 +1,27 @@
+## 1.7.0 · 2026-09-13
+
+- Define Plugin Outline as the single three-workspace surface: Bullet,
+  Evidence, and Run.
+- Remove top-level Runs presentation while retaining the internal compatibility
+  route and external Supporting Run references.
+
+## 1.6.0 · 2026-09-12
+
+- Reserve Page Run `rp00` for Mermaid Structure and start paragraph Page Runs
+  at `rp01`.
+
+## 1.5.0 · 2026-09-12
+
+- Define the Page lane with `rpNN` Run-of-Page identities and remove the
+  second active interactive-writing namespace.
+- Keep Page Run and owner-native Task Run storage visibly separate.
+
+## 1.4.1 · 2026-09-12
+
+- Align the base Plugin contract with the Page-owned Run namespace: begin at
+  `pr01_mermaid-structure`, continue with `prNN_pNN[-pNN]`, and retain old
+  `rpNN_*` records only as readable migration input.
+
 ## 1.2.0 · 2026-09-12
 
 - Make the category-plugin surface contract host-neutral across standalone and

@@ -9,8 +9,8 @@ description: >-
   and no audit verdict. It publishes the family's Phase × Run Map. Use when asking where a labeling job is, whether it may
   cross, why it is blocked, or /subjective-label-workflow.
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-09-01"
+  version: "0.11.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -57,7 +57,7 @@ independently closable Run instances.
 
 | Phase | Folder / Episode | Phase purpose | Allowed Run operations | Cardinality | Gate / authority | Close / handoff |
 |---|---|---|---|---:|---|---|
-| P0 Contract | contract | establish one fenced job | `corpus-contract` ×1 · `discovery-search` ×D · `guideline-seed` ×1 · `test-reserve` ×1 · `embedding-build` ×1 | D + 4 | G0 · identified human confirms meaning | bound P0 + G0 receipts |
+| P0 Contract | contract | establish one fenced job | `corpus-contract` ×1 · optional: `discovery-search` ×D · `guideline-seed` ×G · `test-reserve` ×T · `embedding-build` ×E | 1 + D + G + T + E | G0 · identified human confirms meaning | bound P0 + G0 receipts |
 | P1 Round × N | `round_<t>` | learn and test the human meaning | per round: `round-prepare` ×1 · `weak-prelabel` ×W_r · `human-calibration` ×1 · `guideline-learn` ×1 · `round-measure` ×1 · `round-close` ×1 | 5N + sum(W_r) | G1 checkpoint · G2 human STOP | closed checkpoint and G_t/D_t |
 | P2 Freeze | freeze | package the stopped Building lineage | `handoff-freeze` ×1 | 1 | exact human FREEZE signature · G3 | valid `handoff/label-v1.yaml` |
 | P3 Test | `test_<n>` | qualify one frozen executor route | `test-gold-lock` ×1 · `executor-predict` ×K · `executor-score` ×K · `executor-select` ×1 | 2K + 2 | blind human T* · G4 | `evaluation/summary.md` |
@@ -65,8 +65,13 @@ independently closable Run instances.
 | P5 Audit | `audit_<n>` | verify the candidate and bound final claims | `audit-sample` ×1 · `audit-human-gold` ×1 · `audit-analyze` ×1 · `dstar-materialize` ×1 | 4 | blind audit human · limitation tick · G6 | audited D* and receipt |
 
 ```text
-expected happy-path Runs = D + sum(W_r) + 5N + 2K + S + 15
+expected happy-path Runs = D + G + T + E + sum(W_r) + 5N + 2K + S + 12
 ```
+
+For P0, `D ≥ 0` is the number of commissioned discovery queries and each of
+`G`, `T`, and `E` is 0 or 1 for an independently commissioned policy revision,
+sealed-frame supersession, or embedding build. They are optional planned
+counts, not prerequisites for G0 and not automatic allocations.
 
 Treat this total as a plan. Count actual Runs only from allocated Tickets with
 valid runtime receipts. Round, Test, Scan, Audit, individual judgments, calls,
@@ -79,7 +84,7 @@ This phase machine owns the Labeling family extension of `haipipe-run`:
 ```text
 ALLOWED    the 25 operation kinds in ref-run.md, across P0-P5
 TARGET     one operation-specific bounded target; episodes are grouping only
-TICKET     runs/<RUNNAME>.yaml, authored after its commission and inputs freeze
+TICKET     runs/rlNN_<operation>_<target>.yaml, authored after its commission and inputs freeze
 INPUTS     exact corpus, policy/handoff, registry, executor/wrapper, scope, and design checksums required by the operation
 WORKER     the side workflow plus its declared skill, human, Keeper, CLI, API, or runner
 RESULT     results/<RUNNAME>/result.yaml pointing to canonical domain artifacts
@@ -146,8 +151,13 @@ rewritten in place.
 ## Receipt chain
 
 ```text
-G0 corpus/manifest.json    G1 checkpoint.json        G2 handoff/label-v1.yaml
-G3 evaluation/registry.yaml  G4 evaluation/summary.md  G5 production/run_<n>/run_report.md
+P0 gates/p0-contract/receipt.json
+G0 gates/g0/receipt.json
+G1 rounds/round_<n>/checkpoint.json
+G2 the final qualifying checkpoint.json, including the human STOP signoff
+G3 handoff/label-v1.yaml + evaluation/registry.yaml
+G4 evaluation/summary.md
+G5 production/run_<n>/run_report.md
 G6 audit/final_<n>/receipt.json
 ```
 

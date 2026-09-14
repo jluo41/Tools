@@ -10,8 +10,8 @@ description: >-
   workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.31.0"
-  last_updated: "2026-09-11"
+  version: "0.54.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md
 ---
 
@@ -26,6 +26,7 @@ haipipe-page
   → Folder-owning workflow or canonical family skill
   → Page Face owner skill
   → phase references and narrative/style policy
+  → haipipe-page/ref/page-run-families.md when naming RP, RE, or RD
   → haipipe-run + selected workers, only when this phase commissions Runs
 ```
 
@@ -38,6 +39,19 @@ commissions. For CONTEXT, OUTLINE, and EVIDENCE those references live under
 `haipipe-plugin-outline`; the Page surface has already installed that plugin
 as the shared presenter. A phase skill may abbreviate this chain, but it may
 not reorder authority or omit the Page Face owner.
+
+## ⚡ Fast feedback Step is the default
+
+For wording feedback on an open Page Run, do not execute the full workflow
+chain again. Use the already loaded context, read only the current Run resume
+view, latest Version tail, named paragraph slice, dependent Bullet, and frozen
+Mermaid description. Make one bounded patch, update only the required Run
+projections and candidate preview, perform one narrow check, and return. Aim
+to finish under two minutes. No sub-agent, broad reread, plan rewrite,
+outline pass, build, export, browser check, full test suite, or post-run
+analysis belongs in this path. A wording-only Step never edits the Page source,
+delivery, or plan metadata. If a required input is absent, return one blocker
+and stop instead of searching the whole repository.
 
 For an in-place Folder, the authoritative `workflow/phase.yaml` resolves the
 owning workflow and Folder kind before Page frontmatter or legacy names. The
@@ -52,10 +66,95 @@ are `ref/phase-cards.md`; the executable packet/receipt law is
 
 For collaborative drafting or feedback-led revision, load
 `ref/interactive-writing-run.md` and its `ref/writing-step-template.md` before
-editing. One Run owns a bounded writing goal, possibly several paragraphs;
-human feedback advances Steps inside a Version. A new chat session or a new
-review window does not create another Run. Ordinary waiting for feedback is
-not a failure, and local edits do not invoke the complete phase controller.
+editing. One Page owns many sibling Page Runs. The first Run is always
+`rp00_mermaid-structure`, where human and agent iterate on the whole-Page
+Mermaid argument map and Page-global `P01..PN` paragraph index until explicit closure.
+Only then may the `N` numbered paragraphs be partitioned into `K`
+independently reviewable groups, where `1 <= K <= N`. Each selected group uses
+the short identity `rpNN_pNN[-pNN]` and one independently closable human
+question. Human feedback advances Steps inside that Run's Version. A new chat
+session or review window does not create another Run. Ordinary waiting for
+feedback is not a failure, and local edits do not invoke the complete phase
+controller. Reserve `rp00` for that structure Run, then allocate paragraph Page
+Runs as `rp01`, `rp02`, and so on. `rp` means Run of Page; its counter is
+independent from the native `rNN` sequence used by delegated Task Runs.
+No earlier spelling is accepted: a noncanonical `interactive-writing`
+identity is Held and cannot stand in for `rp00` or a paragraph Run.
+
+When a person enters, continues, resumes, or asks to review an open Page Run
+before giving feedback, return the pre-Step review packet from
+`../../haipipe-page/ref/user-check-packet.md`: show the latest complete
+candidate, the frozen Mermaid Structure description for each selected
+paragraph, chat-only `S1...Sn` labels, the exact review scope, the proposed next
+Step number, and the three direct workspace links. Do not append a new Step
+until feedback, acceptance, or an explicit close arrives.
+
+New interaction candidates are proposed through
+`../../haipipe-page/fn/runs.md`. Proposal is read-only planning, not allocation:
+it creates no `rpNN`, Ticket, Result, runtime receipt, or live Runs row. After
+human selection, resume a matching open Page Run; otherwise allocate `rpNN`
+only for a genuinely independent goal. A direct bounded feedback request is an
+implicit selection and need not be proposed back to the person first.
+
+While `rp00_mermaid-structure` is open, resume it and show no paragraph candidates. After
+it closes, show all unallocated paragraph-group candidates in frozen `P01..PN`
+reading order, but allocate only the selected next candidate. Sequential work is the default; parallel
+Page Runs require explicit selection and non-overlapping targets. If the plan
+changes, recompute unallocated candidates only and never renumber an allocated
+`rpNN`.
+
+Code, search, Discovery, data, rendering, build, and other independently
+testable output work stays in the owner-native Task Run lane. A later human
+acceptance gate does not convert the producing Task Run into a Page Run.
+
+Use three commit boundaries during interactive work:
+
+```text
+Step            current candidate + dependent Bullets → live Bullet Workspace
+Page Run close  accepted paragraph group + explicit ready Evidence contract
+Page release    all RP Runs + required RE Results → Content + RD delivery + CHECK
+```
+
+The foreground Step is deliberately small. Save the verbatim feedback, complete
+candidate, affected Bullets, narrow source/protected-scope check, and current
+Version/Step; then return the passage. Do not block it on a full build, complete
+test suite, export, or browser verification. Evidence records change during a
+Step only when the feedback changes a citation, value, or figure requirement.
+For every material wording change, save clean Before/After text, a short local
+change label, and why the edit was made. Do not infer a broader preference in
+the foreground Step. The Runs presenter derives granular visual Track Changes;
+neither diff markup nor an unconfirmed preference enters Page Content or shared
+policy. Do not duplicate classification in a separate table; status,
+navigation, acceptance-only, and presenter-only Steps use `Changes` without a
+Track Changes card.
+
+For ordinary follow-up wording feedback, use the rapid foreground budget:
+reuse stable context already loaded in the session, read only `working.md`, the
+latest saved-result tail, the exact target slice, and its dependent Bullet, then
+make one bounded file patch and one narrow hash/scope check. Do not reread the
+whole Page or Version, run `outline-pass.py`, rebuild the Board, run full tests,
+verify the browser, or generate delivery before returning the current Step.
+Keep the Step record complete but compact; broader preference synthesis and
+whole-Page review wait for a checkpoint or an explicit request.
+
+Each ordinary Step is record-first. It captures the person's feedback, performs
+the requested edit, records a local reason, and returns the candidate. It does
+not perform preference inference, taxonomy building, or whole-Run analysis.
+After explicit Page Run closure, prepare one output-only post-run analysis
+proposal according to `ref/post-run-analysis.md`. If it is heavy, ask for
+explicit approval before dispatching it. Do not wait for approval or analysis
+before starting the next Page Run, and never let it mutate the closed writing
+record or Page Content. Follow `ref/interactive-execution-policy.md` for all
+inter-Run and inter-Step work.
+
+Closing one RP Run never adopts Content or builds delivery. It settles that
+Run's text and Bullets and requires every Evidence obligation to be explicit
+and ready (`none` or a bound CITE, VALUE, or DISPLAY Result). Required
+Discovery, citation, figure, or computation work remains a Supporting Run
+feeding an RE and must be ready before the RP becomes complete. CONTENT begins
+only after every planned RP is complete and every required RE Result is bound;
+one Page-level CONTENT pass then adopts all accepted candidates and commissions
+the declared web/LaTeX/Word delivery through one or more `RD` Runs.
 
 SHAPE and SURVEY remain planning capabilities, not one Run each. They can be
 used inside this independently closable interactive Run. `haipipe-writing`
@@ -79,11 +178,15 @@ front phase prepares their context and the last phase judges their result:
 `Outline` and `Content` align with the Page's two substantive structures:
 Outline holds the plan and the frequently revised candidate prose; Content is
 the adopted Page text. Draft and Revise are writing movements, not separate
-phases. An interactive Writing Run can use SHAPE and Writing before adoption.
+phases. Interactive Steps and Page Run closures remain in Outline; after all
+planned Page Runs and their required evidence are complete, one Page-level
+CONTENT pass performs adoption and delivery.
 
 Every user-facing completion after a Page-changing action follows
 `../../haipipe-page/ref/user-check-packet.md`. Routine writing returns the
-saved selected paragraphs, feedback dispositions and two final Workspace links.
+exact Run/Version/Step heading, saved selected paragraphs, a brief change
+explanation, and three final Bullet Workspace, Evidence Workspace,
+and Current Run links.
 Formal delivery also provides current evidence surfaces and the Page-level PDF. Only the new `outline/evidence/display/`,
 `outline/evidence/bibex/` and `delivery/latex/` lanes are eligible. The workflow receipt remains the audit record; it is not the primary
 user-facing answer.
@@ -115,7 +218,7 @@ OUTLINE/SHAPE ── evidence owed ──▶ OUTLINE/SURVEY
        └──────── EVIDENCE/EMBED ◀── EVIDENCE/LAND
                        │ next evidence revision v<G>.<S>.<E+1>
                        ├─ G=0 ───▶ SHAPE; Content remains closed
-                       └─ G≥1 ───▶ CONTENT/WRITE under inherited Shape approval
+                       └─ checked Shape or explicit user CONTENT instruction ─▶ CONTENT/WRITE
                                         │ exact built version
                                         ▼
                                   CHECK/CHECK ──▶ CLOSE
@@ -135,10 +238,10 @@ any earlier owning phase.
 |---:|---|---|---|---|---|
 | `00` | CONTEXT / PREPARE | `haipipe-page-context` | `outline/<stem>-context.md` | none | context resolved and fresh |
 | `01A` | OUTLINE / SHAPE | `haipipe-page-outline` | plan + Evidence Item specification | none | approved evidence-aware Shape |
-| `01B` | OUTLINE / SURVEY | `haipipe-page-outline` | Supporting routes + Local Input + indexed Local Run plan | none | complete decided Run graph |
-| `02A` | EVIDENCE / LAND | `haipipe-page-evidence` | Tickets, Results, frozen input, bindings | `0..N` Supporting + `1` local per make-item | ready typed local Results |
-| `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | next working plan bindings | none | ready Results folded; G=0 → SHAPE; approved G>=1 → CONTENT |
-| `03` | CONTENT / WRITE | `haipipe-page-content` | agreed prose → Page Content + delivery + adoption trace | consumes interactive Writing Result; delegated work only when independently commissioned | fresh pre-check says ready |
+| `01B` | OUTLINE / SURVEY | `haipipe-page-outline` | Supporting routes + Local Input + indexed RE plan | none | complete decided Run graph |
+| `02A` | EVIDENCE / LAND | `haipipe-page-evidence` | Tickets, Results, frozen input, bindings | `0..N` Supporting + `1` RE per make-item | ready typed local Results/Cards |
+| `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | next working plan bindings | none | ready Results folded; `G=0` returns to SHAPE; `G>=1` may route to CONTENT only for a pure evidence revision or an explicit CONTENT instruction after all remaining gates are named |
+| `03` | CONTENT / WRITE | `haipipe-page-content` | all agreed prose → Page Content + RD delivery + adoption trace | enters once all RP Runs and required RE Results are complete | fresh pre-check says ready |
 | `04` | CHECK / CHECK | `haipipe-page-check` | check receipt/findings only | none | CLOSE or a named backward route |
 
 Do not use this compact table for design decisions. Use
@@ -154,15 +257,16 @@ closable Ticket → Result attempt:
 CONTEXT      no Run; it resolves planning inputs
 SHAPE        no Run; it defines Bullet and Evidence Item contracts
 SURVEY       no Run; it inventories/references/reserves the graph
-LAND         Runs exist: Supporting Execution/Discovery/Insight, then local Evidence Item
+LAND         Runs exist: Supporting Execution/Discovery/Insight, then one Page RE per item
 EMBED        no Run; it interprets ready Results into the plan
-CONTENT      adopts agreed Writing Results; delegates bounded builds when needed
+CONTENT      after the Page release barrier, adopts all agreed Writing Results and commissions RD delivery
 CHECK        no Run; it is a version gate
 ```
 
-For interactive writing, the overarching Run records the human exchange across
-these capabilities; planning alone still does not allocate a Run. A writing
-Version's human closure is not the whole-Page CHECK/CLOSE verdict.
+For interactive writing, each sibling Page Run records the human exchange for
+its independently closable Plan/map or paragraph-group goal; planning or a
+`fn/Runs` proposal alone still does not allocate a Run. A writing Version's
+human closure is not the whole-Page CHECK/CLOSE verdict.
 
 The two evidence layers are mandatory and named separately:
 
@@ -171,7 +275,7 @@ Supporting Runs  0..N  Execution, Discovery, or accepted Insight item execution
                          ↓ Results
 Local Input        1    one frozen envelope per Evidence Item
                          ↓
-Local Run          1    Page · Evidence Item
+Page RE            1    Page · Evidence Item execution lineage
                          ↓
 Typed Result       1    VALUE | CITE | DISPLAY
 ```
@@ -190,17 +294,27 @@ Use full real addresses for reuse and rerun:
 global Supporting Run    b01j02t03r04
 Task-local new-run plan  b01j02t03        parent until LAND allocates rNN
 Task-local allocated     b01j02t03r05
+Page Evidence lineage   re01_e03-cite-prior-work → owner-native Ticket/Result
+Page Delivery lineage   rd01_web | rd02_latex | rd03_word | rd04_render
 Other local Run plan     <owner-native parent or permitted reserved address> · plan
 local Ticket filename    r05_page-evidence-item_e03-cite-prior-work
-Paragraph Writing Run    r06_page-writing_c02-p01
+Delegated writing Task   r06_page-writing_c02-p01
+Mermaid Structure        rp00_mermaid-structure
+Interactive paragraph    rp01_p01 or rp02_p02-p03
 ```
 
-SURVEY names the real owner/parent for every new local route. A full address
-may be reserved only when the Folder owner's current Run contract permits it;
-the route remains `new-run` with no Ticket. Read that owner's naming contract
-instead of defining a family namespace in Page skills. LAND allocates the owner-native
-Run id and creates the Evidence Item Ticket. The interactive workflow creates
-one Writing Run for the agreed goal; CONTENT consumes its accepted output.
+SURVEY names the real owner/parent for every new local route. The Page's RE or
+RD is the stable Page-local lineage identity; any underlying owner-native
+Ticket/Result keeps its own naming contract. A full address may be reserved
+only when that owner contract permits it; the route remains `new-run` with no
+Ticket. LAND allocates the owner-native Run id and records it under the RE/RD
+lineage. The interactive workflow creates
+`rp00_mermaid-structure` first, then one `rpNN_pNN[-pNN]` Page Run for each selected
+paragraph group;
+CONTENT consumes its accepted output.
+Those allocations do not consume one another's counters: RP, RE, RD, and Task
+Run `rNN` sequences are independent. Task or Discovery identities are never
+rewritten with an `rp`, `re`, or `rd` prefix.
 The single-paragraph delegated profile remains available when explicitly selected.
 
 ## 🧠 Exact skill routing
@@ -295,7 +409,7 @@ The acts remain at their authorities:
 
 | Act | Owner |
 |---|---|
-| plan `approved:` | SHAPE |
+| plan `approved:` | SHAPE when the person wants a durable plan tick; for the interactive Page profile, an explicit user next-step instruction is sufficient for CONTENT |
 | per-item `Decide` | SURVEY; branching choice, never auto-deferred |
 | CITE item `Verified` and any worker-specific verification | LAND |
 | Page/display `accepted:` and Folder ruling | CHECK |
@@ -306,12 +420,17 @@ is unsigned; a prior explicit durable decision/default policy may be consumed,
 never invented. `page_ruling: none | domain-gate | local` comes from the
 Folder-owning workflow. Do not invent a duplicate Page gate.
 
-## 🔁 Run one automated Page lifecycle
+## 🔁 Execute one automated Page workflow pass
 
 This bounded controller is for phase dispatch and formal completion, not the
 human-feedback journal. Its `step`, limits, `HOLD` and `CLOSE` do not count or
 terminate interactive writing Steps/Versions. Finish a chat turn while waiting;
 resume from the Writing Run files when new feedback arrives.
+
+The `/run` spelling is a compatibility command verb. The durable controller
+bundle is a **Page workflow pass**, not a Page Run. Reserve the Page Run noun
+for `family: page`, `operation: interactive-writing`, whose Version/Step history
+is owned by the Page and shown in the Page Runs lane.
 
 The packet minimally names:
 
@@ -373,6 +492,7 @@ haipipe-page-workflow/
     ├── writing-step-template.md    original input, full output, scoped decisions
     ├── workflow-table.md       canonical design/adoption table
     ├── phase-cards.md          compact six-field operating cards
+    ├── ../../haipipe-page/ref/page-run-families.md  RP/RE/RD and evidence bindings
     ├── page-run-contract.md    packet, receipts, legal routes, compatibility
     ├── producer-contract.md    shared phase-agent packet and return
     └── measured-cost.md        prior measured dispatch costs

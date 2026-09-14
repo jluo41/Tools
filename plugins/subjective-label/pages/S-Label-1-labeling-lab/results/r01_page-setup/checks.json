@@ -1,0 +1,146 @@
+{
+  "schema": "haipipe-page-setup-audit-v1",
+  "blocking_gate": "pass",
+  "summary": {
+    "pass": 6,
+    "missing": 0,
+    "deferred": 8,
+    "untested": 2,
+    "n/a": 1
+  },
+  "artifacts": {
+    "page_face": {
+      "path": "S-Label-1-labeling-lab.md",
+      "sha256": "e52ece300b0a0e64cac15f637e8ea353f5bf958b5569de998e6ea47ac0274f5e"
+    },
+    "content": {
+      "path": "S-Label-1-labeling-lab.md",
+      "sha256": "e52ece300b0a0e64cac15f637e8ea353f5bf958b5569de998e6ea47ac0274f5e"
+    },
+    "static_delivery": {
+      "path": "delivery/web/index.html",
+      "sha256": "abfaa117deb9b406ad87c13ea1dc701a6931db1c2aee180e30732866fa33f19d"
+    }
+  },
+  "checks": [
+    {
+      "id": "source_configuration",
+      "label": "Source/configuration",
+      "status": "pass",
+      "detail": "Page Face `S-Label-1-labeling-lab.md` resolves through page.toml with explicit state and owner.",
+      "blocking": true
+    },
+    {
+      "id": "input_preservation",
+      "label": "Input preservation",
+      "status": "pass",
+      "detail": "The imported editable copy matches `e52ece300b0a0e64cac15f637e8ea353f5bf958b5569de998e6ea47ac0274f5e`. External original was not available during this Folder resume.",
+      "blocking": false
+    },
+    {
+      "id": "opening",
+      "label": "Opening",
+      "status": "pass",
+      "detail": "Opening is Page-specific, non-placeholder prose that names the Page or its subject.",
+      "blocking": true
+    },
+    {
+      "id": "outline_structure",
+      "label": "Outline",
+      "status": "deferred",
+      "detail": "No plan exists on this Page yet.",
+      "blocking": false
+    },
+    {
+      "id": "paragraph_global_order",
+      "label": "Page-global paragraph order",
+      "status": "deferred",
+      "detail": "No plan exists on this Page yet.",
+      "blocking": false
+    },
+    {
+      "id": "content_draft_mapping",
+      "label": "Bullet ↔ Content Draft",
+      "status": "deferred",
+      "detail": "No plan exists on this Page yet.",
+      "blocking": false
+    },
+    {
+      "id": "semantic_role_syntax",
+      "label": "Semantic role syntax",
+      "status": "deferred",
+      "detail": "No plan exists on this Page yet.",
+      "blocking": false
+    },
+    {
+      "id": "bullet_head_readability",
+      "label": "Bullet-head readability",
+      "status": "deferred",
+      "detail": "No plan exists on this Page yet.",
+      "blocking": false
+    },
+    {
+      "id": "content",
+      "label": "Content",
+      "status": "pass",
+      "detail": "Page-authored Content is present.",
+      "blocking": true
+    },
+    {
+      "id": "aims_structure",
+      "label": "Aims structure",
+      "status": "pass",
+      "detail": "3 Aim records have stable IDs, Done when, and Now. No initialized Shape requires division alignment.",
+      "blocking": true
+    },
+    {
+      "id": "static_delivery",
+      "label": "Static website",
+      "status": "pass",
+      "detail": "`delivery/web/index.html` is a marked Page export and contains all 1 current source/assets.",
+      "blocking": true
+    },
+    {
+      "id": "semantic_role_judgment",
+      "label": "Semantic-role judgment",
+      "status": "untested",
+      "detail": "Role labels are mechanically valid, but an agent or person must review whether each role fits its reader move.",
+      "blocking": false
+    },
+    {
+      "id": "outline_logic_judgment",
+      "label": "Bullet-only argument review",
+      "status": "untested",
+      "detail": "An agent or person must read the Bullet heads without the Content Draft and confirm that the argument remains intelligible, ordered, and complete.",
+      "blocking": false
+    },
+    {
+      "id": "aim_targets",
+      "label": "Aim targets",
+      "status": "deferred",
+      "detail": "Targets are recorded, but setup cannot certify that the substantive targets are achieved.",
+      "blocking": false
+    },
+    {
+      "id": "human_shape_approval",
+      "label": "Human Shape approval",
+      "status": "deferred",
+      "detail": "The generated Shape remains unapproved until a person accepts it.",
+      "blocking": false
+    },
+    {
+      "id": "human_content_acceptance",
+      "label": "Human Content acceptance",
+      "status": "deferred",
+      "detail": "Candidate prose exists, but setup does not mark it accepted.",
+      "blocking": false
+    },
+    {
+      "id": "hosting",
+      "label": "Hosted Page",
+      "status": "n/a",
+      "detail": "Setup requested a static build, not a live listener or deployment.",
+      "blocking": false
+    }
+  ]
+}

@@ -43,7 +43,7 @@ list: [DashboardURL].
    `[Name]`, `[Medication]`, `[PharmacyPhone]`, `[ShortURL]`,
    `[ProviderName]`, `[DashboardURL]`
 
-4. Every factual statement maps through the card grant to the signed Wisdom
+4. Every factual statement maps through Commission inputs to the signed Wisdom
    handoff or another source allowed by board `reads:`. Recipient copy contains
    no internal D/I/K/W ids; the Design Folder carries the evidence map.
 

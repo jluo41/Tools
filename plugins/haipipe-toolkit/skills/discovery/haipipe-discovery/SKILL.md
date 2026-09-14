@@ -13,8 +13,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.12.0"
-  last_updated: "2026-09-08"
+  version: "0.13.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md
 ---
 
@@ -99,7 +99,8 @@ Three independent dimensions:
 ~~~text
 HIERARCHY       Block -> Job -> Task Page -> Paper/Source Run
 DOMAIN WORKFLOW D1: SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
-PAGE WORKFLOW   independent Page Face: 00 CONTEXT -> ... -> 04 CHECK
+PAGE WORKFLOW   shared Page Face: 00 CONTEXT -> 01 OUTLINE -> 02 EVIDENCE ->
+                03 CONTENT -> 04 CHECK
 DISCOVERY TYPE  source-map | source-reading | topic-summary | prior-art-verdict |
                 counterevidence-review | landscape-review | benchmark-landscape
                 in ref/page-types.md
@@ -153,8 +154,10 @@ discoveries/
             │       └── bibex/t01_<...>.bib        derived CITE aggregate
             ├── workflow/                          namespaced D1 + Page-phase receipts
             ├── scripts/                           optional instrument
-            ├── runs/r01_<author><year>_<paper>.sh
-            ├── results/r01_<author><year>_<paper>/
+            ├── runs/r01_<author><year>_<paper>.sh  D1 Discovery Run
+            │       (Page-owned rpNN records may share this lane)
+            ├── results/r01_<author><year>_<paper>/  D1 Result
+            │       (Page-owned rpNN Results are not D1 inventory)
             └── summary.md | verdict.md | landscape.md
 ~~~
 
@@ -166,10 +169,19 @@ names are Block, Job, Task, and Run.
 Result is not a fifth hierarchy level. A Content division may use many Results,
 and one Result may support many divisions.
 
+The Page-facing Run lane is separate from the Discovery Run inventory. D1
+allocates only native Discovery `rNN` Runs for canonical paper/source Subjects.
+When the Page needs human interaction, the shared Page workflow allocates
+`rp00_mermaid-structure` first and then selected paragraph-group Page Runs such
+as `rp01_p01` or `rp02_p02-p03`. Those `rpNN` identities own Page feedback,
+Versions, Steps, Bullets, and acceptance; they are not Discovery Runs, do not
+enter `R_discovery`, and must never be renamed as `rNN`.
+
 The Runs plugin is required once a Task Page owns any Paper Run. Discovery uses
-its Folder-local dialect, the exact `runs/<RUNNAME>.sh <-> results/<RUNNAME>/`
-pair; `scripts/` stays optional and appears only as supporting material. Runs
-presents these artifacts but owns no lifecycle. The Outline
+the exact `rNN` `runs/<RUNNAME>.sh <-> results/<RUNNAME>/` pair inside the
+shared Page lanes; Page-owned `rpNN` records/results may coexist there but are
+presented and validated by the Page workflow. `scripts/` stays optional and
+appears only as supporting material. Runs presents these artifacts but owns no lifecycle. The Outline
 plugin owns the Page's Evidence Workspace, CITE verification, and derived Bib;
 the compatibility Evidence entrypoint is not an authority, and there is no
 separate Bibex plugin.
@@ -246,7 +258,10 @@ typed CITE Evidence Item. The D1 root Page uses direct Result/Card/cite lineage
 and does not manufacture a local Page Evidence Item Run to repackage its own
 evidence. A consumer Page may declare a typed item and own its local Run in the
 consumer Folder. D1 SYNTHESIZE dispatches the shared Page workflow; the current
-Page phase owns every Page mutation. Never mint an umbrella Discovery Run.
+Page phase owns every Page mutation. The Page release barrier is separate from
+D1 acquisition: CONTENT may adopt the Page only after the structure Page Run,
+all selected paragraph Page Runs, and all required Task Results are ready and
+bound. Never mint an umbrella Discovery Run for Page synthesis or writing.
 
 ## Routing
 
@@ -353,11 +368,14 @@ Derive the specialist route from `discovery_type`, then enter or resume
 owns acquisition craft and materializes admitted candidates as Runs. Review
 extracts and checks one source at a time; Synthesize combines those accepted
 Results under the current Page phase. Missing evidence routes back through
-Page SURVEY to D1 ACQUIRE. D1 records only Task-side
-progress and an optional typed record; CONTEXT, OUTLINE, CONTENT, and CHECK own
-their respective Page artifacts. The D1 root Page skips EVIDENCE because it
-uses already-authoritative direct Result/cite lineage, and CONTENT records its
-explicit no-Run rationale. Never mint an umbrella Discovery Run for synthesis.
+Page SURVEY to D1 ACQUIRE. D1 records only Task-side progress and an optional
+typed record; CONTEXT, OUTLINE, CONTENT, and CHECK own their respective Page
+artifacts. The D1 root Page skips typed local EVIDENCE/LAND because it uses
+already-authoritative direct Result/cite lineage, but it still follows the
+shared Page release barrier and may use Page Runs for human Shape/prose work.
+CONTENT records that no *Discovery* writing Run is commissioned; this does not
+forbid Page-owned `rpNN` interaction. Never mint an umbrella Discovery Run for
+synthesis.
 
 Before CONTENT, build the derived Bib through the Outline citation authority:
 
@@ -414,8 +432,11 @@ Legacy completion tokens are evidence claims, not formatting. A preserved
 closed. Without that receipt, they reopen as `executing`. Use
 `migrate_bjtr.py --repair-pages` (dry-run first, then `--write`) to refresh only
 Pages carrying the deterministic migration signature; authored Pages are left
-untouched. The checker also requires Writing Style, a bounded Opening, a face
-diagram per Content division, Content/Aim name agreement, and Page/Aim closure.
+untouched. The checker requires the current Page frame, a bounded Opening, a
+face diagram per Content division, Content/Aim name agreement, and Page/Aim
+closure. Writing rules now live in Outline requirement records; `## Writing
+Style`, `## Diagram`, and retired process sections are migration findings, not
+current Page sections.
 
 ## Discovery questions use Runs and Results
 

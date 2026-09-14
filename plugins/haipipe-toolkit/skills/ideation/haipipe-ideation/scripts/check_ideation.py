@@ -35,6 +35,10 @@ MATRIX_NEXT = {
     "abandon",
 }
 IDEA_ID = re.compile(r"^i\d+$")
+PROJECTION_CHANGE_CLASSES = {"state", "portfolio", "structure"}
+PAGE_STATES = {"missing", "bound", "blocked"}
+WORKING_SURFACE_STATES = {"not-requested", "current", "stale", "blocked"}
+RELEASE_SURFACE_STATES = {"not-requested", "current", "stale", "blocked"}
 
 
 @dataclass
@@ -94,12 +98,206 @@ class GateCheck:
                 field = f"{prefix}.{key}" if prefix else key
                 self.fail("missing-field", path, f"required field {field!r} is absent")
 
+    def check_projection_surfaces(self, sync: dict[str, Any], path: Path) -> None:
+        """Validate the v2 semantic-to-Page projection state machine.
+
+        Version 1 remains readable because existing units only have the legacy
+        ``last_projected_revision`` pointer. Version 2 is strict: a current
+        surface needs a Page-owned receipt and cannot outrun the semantic
+        source or its upstream surface.
+        """
+
+        version = sync.get("version")
+        page = sync.get("paper_page")
+        if version == 1:
+            if not isinstance(page, dict):
+                self.fail("invalid-shape", path, "paper_page must be a mapping")
+            return
+        if version != 2:
+            self.fail("unsupported-version", path, "paper-ideation-sync version must be 1 or 2")
+            return
+
+        self.require_keys(sync, ["source_hash", "projection"], path)
+        source_hash = sync.get("source_hash")
+        if not isinstance(source_hash, str) or not source_hash.strip():
+            self.fail("invalid-hash", path, "source_hash must be a non-empty string")
+
+        projection = sync.get("projection")
+        if not isinstance(projection, dict):
+            self.fail("invalid-shape", path, "projection must be a mapping")
+        else:
+            self.require_present(projection, ["change_class", "affected_idea_ids", "identity_key"], path, "projection")
+            if projection.get("change_class") not in PROJECTION_CHANGE_CLASSES:
+                self.fail("invalid-change-class", path, "projection.change_class is invalid")
+            if projection.get("identity_key") != "idea_id":
+                self.fail("unstable-identity", path, "projection.identity_key must be idea_id")
+            affected = projection.get("affected_idea_ids")
+            if not isinstance(affected, list):
+                self.fail("invalid-shape", path, "projection.affected_idea_ids must be a list")
+            else:
+                for idea_id in affected:
+                    if not isinstance(idea_id, str) or not IDEA_ID.fullmatch(idea_id):
+                        self.fail("invalid-id", path, "projection.affected_idea_ids must contain iNN ids")
+                    elif idea_id not in self.ideas:
+                        self.fail("unknown-idea", path, f"projection names unknown Idea {idea_id}")
+
+        if not isinstance(page, dict):
+            self.fail("invalid-shape", path, "paper_page must be a mapping")
+            return
+        self.require_present(page, ["state", "path", "working", "release", "delivery"], path, "paper_page")
+        page_state = page.get("state")
+        if page_state not in PAGE_STATES:
+            self.fail("invalid-state", path, "paper_page.state must be missing, bound, or blocked")
+        if page_state == "missing" and self.nonempty(page.get("path")):
+            self.fail("binding-drift", path, "missing Page binding must have paper_page.path null")
+        if page_state in {"bound", "blocked"} and not self.nonempty(page.get("path")):
+            self.fail("missing-path", path, "bound or blocked Page binding requires paper_page.path")
+
+        revision = sync.get("sync_revision")
+        valid_revision = isinstance(revision, int) and not isinstance(revision, bool) and revision >= 1
+        surfaces: dict[str, dict[str, Any] | None] = {}
+        for name, allowed_states in (
+            ("working", WORKING_SURFACE_STATES),
+            ("release", RELEASE_SURFACE_STATES),
+            ("delivery", RELEASE_SURFACE_STATES),
+        ):
+            surface = page.get(name)
+            surfaces[name] = surface if isinstance(surface, dict) else None
+            if not isinstance(surface, dict):
+                self.fail("invalid-shape", path, f"paper_page.{name} must be a mapping")
+                continue
+            self.require_present(surface, ["state", "revision", "source_hash", "receipt"], path, f"paper_page.{name}")
+            state = surface.get("state")
+            if state not in allowed_states:
+                self.fail("invalid-state", path, f"paper_page.{name}.state is invalid")
+            surface_revision = surface.get("revision")
+            if surface_revision is not None:
+                if not isinstance(surface_revision, int) or isinstance(surface_revision, bool) or surface_revision < 1:
+                    self.fail("invalid-revision", path, f"paper_page.{name}.revision must be a positive integer or null")
+                elif valid_revision and surface_revision > revision:
+                    self.fail("revision-ahead", path, f"paper_page.{name}.revision cannot exceed sync_revision")
+            if self.nonempty(surface.get("receipt")):
+                self.require_unit_path(surface.get("receipt"), path, f"paper_page.{name} receipt")
+                if surface_revision is not None and self.nonempty(surface.get("source_hash")):
+                    self.check_projection_receipt(
+                        surface.get("receipt"),
+                        name,
+                        surface_revision,
+                        surface.get("source_hash"),
+                        page.get("path"),
+                        path,
+                    )
+            if state == "current":
+                if not valid_revision or surface_revision != revision:
+                    self.fail("projection-stale", path, f"paper_page.{name}.current must equal sync_revision")
+                if surface.get("source_hash") != source_hash:
+                    self.fail("hash-drift", path, f"paper_page.{name}.current must match sync source_hash")
+                if not self.nonempty(surface.get("receipt")):
+                    self.fail("receipt-missing", path, f"paper_page.{name}.current requires a Page-owned receipt")
+            elif state == "not-requested":
+                if any(self.nonempty(surface.get(field)) for field in ("revision", "source_hash", "receipt")):
+                    self.fail("surface-drift", path, f"paper_page.{name}.not-requested must have null revision/hash/receipt")
+            elif state == "stale" and valid_revision:
+                if surface_revision == revision and surface.get("source_hash") == source_hash:
+                    self.fail("surface-drift", path, f"paper_page.{name}.stale cannot match the current semantic source")
+
+        working = surfaces["working"]
+        release = surfaces["release"]
+        delivery = surfaces["delivery"]
+        if isinstance(release, dict) and release.get("state") == "current":
+            if not isinstance(working, dict) or working.get("state") != "current":
+                self.fail("release-ahead", path, "current release requires current working projection")
+            elif release.get("revision") != working.get("revision") or release.get("source_hash") != working.get("source_hash"):
+                self.fail("release-drift", path, "current release must consume the current working source")
+        if isinstance(delivery, dict) and delivery.get("state") == "current":
+            if not isinstance(release, dict) or release.get("state") != "current":
+                self.fail("delivery-ahead", path, "current delivery requires current release")
+            elif delivery.get("revision") != release.get("revision") or delivery.get("source_hash") != release.get("source_hash"):
+                self.fail("delivery-drift", path, "current delivery must identify the current released source")
+        if page_state == "missing" and any(
+            isinstance(surface, dict) and surface.get("state") == "current"
+            for surface in surfaces.values()
+        ):
+            self.fail("binding-drift", path, "an unbound Page cannot have a current projection surface")
+
+        expected_sync_status = "blocked" if page_state == "blocked" or (isinstance(working, dict) and working.get("state") == "blocked") else "current" if isinstance(working, dict) and working.get("state") == "current" else "stale"
+        if sync.get("sync_status") != expected_sync_status:
+            self.fail("sync-status-drift", path, f"sync_status should be {expected_sync_status}")
+
+    def check_projection_receipt(
+        self,
+        raw: Any,
+        surface_name: str,
+        revision: Any,
+        source_hash: Any,
+        page_path: Any,
+        owner: Path,
+    ) -> None:
+        linked = self.load_linked(raw, owner, f"paper_page.{surface_name}.receipt")
+        if linked is None:
+            return
+        receipt_path, receipt = linked
+        projection = receipt.get("paper_projection")
+        if not isinstance(projection, dict):
+            self.fail("missing-projection", receipt_path, "Page phase receipt needs a paper_projection extension")
+            return
+        self.require_keys(
+            receipt,
+            ["phase", "status"],
+            receipt_path,
+        )
+        self.require_keys(
+            projection,
+            [
+                "source_packet",
+                "source_revision",
+                "source_hash",
+                "page_path",
+                "surface",
+                "output_hash",
+                "created_at",
+            ],
+            receipt_path,
+            "paper_projection",
+        )
+        if receipt.get("status") != "ok":
+            self.fail("receipt-not-ok", receipt_path, "current or retained projection receipt must have status ok")
+        if projection.get("source_packet") != "projection/paper-ideation-sync.yaml":
+            self.fail("receipt-drift", receipt_path, "paper_projection must name the canonical sync packet")
+        if projection.get("source_revision") != revision:
+            self.fail("receipt-drift", receipt_path, "paper_projection source_revision must match the surface revision")
+        if projection.get("source_hash") != source_hash:
+            self.fail("receipt-drift", receipt_path, "paper_projection source_hash must match the surface source")
+        if projection.get("page_path") != page_path:
+            self.fail("receipt-drift", receipt_path, "paper_projection page_path must match paper_page.path")
+        if projection.get("surface") != surface_name:
+            self.fail("receipt-drift", receipt_path, f"paper_projection surface must be {surface_name}")
+        expected_phases = {
+            "working": {"OUTLINE"},
+            "release": {"CONTENT"},
+            "delivery": {"CONTENT"},
+        }
+        if receipt.get("phase") not in expected_phases[surface_name]:
+            self.fail("invalid-phase", receipt_path, f"{surface_name} projection must use the Page {surface_name} phase")
+
     def resolve_unit_path(self, raw: Any) -> Path | None:
         if not isinstance(raw, str) or not raw.strip():
             return None
         value = raw.split("#", 1)[0]
         path = Path(value)
-        return path if path.is_absolute() else self.root / path
+        if path.is_absolute():
+            return path
+        local = self.root / path
+        if local.exists():
+            return local
+        # Page-owned receipts may be stored beside, rather than inside, the
+        # Ideation unit. Permit a repository-relative pointer by walking
+        # ancestors, while keeping unit-local paths as the first authority.
+        for parent in self.root.parents:
+            candidate = parent / path
+            if candidate.exists():
+                return candidate
+        return local
 
     def require_unit_path(self, raw: Any, owner: Path, field: str) -> None:
         path = self.resolve_unit_path(raw)
@@ -399,8 +597,9 @@ class GateCheck:
         if sync.get("stage") not in {"I1", "I2"}:
             self.fail("invalid-stage", path, "sync stage must be I1 or I2")
         revision = sync.get("sync_revision")
-        if not isinstance(revision, int) or revision < 1:
+        if not isinstance(revision, int) or isinstance(revision, bool) or revision < 1:
             self.fail("invalid-revision", path, "sync_revision must be a positive integer")
+        self.check_projection_surfaces(sync, path)
         source = sync.get("source")
         if isinstance(source, dict):
             for field in ("ideation_manifest", "evidence_bundle", "direction_card"):

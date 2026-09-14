@@ -5,13 +5,14 @@ description: >-
   Markdown, text, HTML or other file, without requiring a Board. Also owns
   the Page Face contract and router of a Folder: what the readable .md is on
   disk, how its phase-owned Folder kind or legacy Page Type is resolved, which
-  Page Phase holds authority, and PREVIEW, CREATE, WORK ON, RUN. Trigger:
+  Page Phase holds authority, and PREVIEW, CREATE, WORK ON, RUNS, RUN. Trigger:
   file to page, HTML page, standalone page, host a page, open page code,
-  create a page, update page, run page lifecycle, Page Face, Folder kind,
-  legacy Page Type, Page Phase, /haipipe-page.
+  create a page, update page, propose Page Runs, human-interaction runs,
+  run page lifecycle, Page Face, Folder kind, legacy Page Type, Page Phase,
+  /haipipe-page.
 metadata:
-  version: "0.67.0"
-  last_updated: "2026-09-12"
+  version: "0.99.1"
+  last_updated: "2026-09-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -38,6 +39,139 @@ that same implementation through compatibility imports; it does not own a
 second Page renderer. The authoritative template is `ref/page-template.md`.
 Legacy Board paths remain compatibility links, not parallel authorities.
 
+## ⚡ Fast feedback Step
+
+When the person gives wording feedback on an already open Page Run, use the
+fast foreground path by default. Read only the Run resume view, the latest
+Version tail, the named paragraph slice, its dependent Bullet, and the frozen
+Mermaid description. Make one bounded patch, update the required small Run
+projections, perform one narrow check, and return the review packet. Target
+under two minutes. Do not reread the whole Page, update the plan for a
+wording-only change, rebuild anything, run broad tests, verify the browser, or
+start or wait for a sub-agent. If a required record is missing, report the one
+blocker instead of scanning the repository.
+
+## 🤝 Two top-level doors, one Folder
+
+`haipipe-page` and `haipipe-task` are peer entry doors. For a Page whose
+`folder-kind: task`, both operate on the same physical `tNN_<task>/` Folder:
+
+```text
+Task door  executable work, P-B-E-R, native rNN, Result readiness
+Page door  human interaction, rpNN, evidence binding, Content, CHECK, release
+```
+
+Enter through Task when the primary product is independently testable output;
+enter through Page when it is reader meaning or human acceptance. Page may
+propose Task work but never allocates its native Run. Task may return a Result
+but never accepts Page wording, closes a Page Run, or releases the Page.
+
+For Task Folders, load `../../task/haipipe-task/ref/task-page.md` as the
+detailed bridge. It owns the cross-face handshake, staleness propagation, and
+the rule that the Folder closes only when both Task readiness and Page
+readiness are current.
+
+## 🏃 Page Run families inside Outline
+
+Load `ref/page-run-families.md` before naming or allocating a Page Run. Plugin
+Outline's Run Space presents the three Page-special families plus the
+owner-native Supporting group, in both standalone and Board-hosted mode:
+
+```text
+RP         rp00_mermaid-structure, then rpNN_pNN[-pNN] from rp01 · human/Page interaction
+RE         reNN_<evidence-slug> · one Page Evidence Item's execution lineage
+RD         rdNN_<target> · one web/LaTeX/Word/slide/render delivery target
+Supporting native rNN/riNN/rlNN/global identity · external/upstream Result reference
+```
+
+This is a projection, not a second Run registry. `RP`, `RE`, and `RD` counters
+are independent, and all are distinct from native `rNN`/`riNN`/`rlNN`
+counters. Execution, Discovery, Insight (`riNN`), Design, and other native
+families retain their identities under Supporting Runs; Page never renames
+them. `rp01`, `re01`, `rd01`, and `r01` may coexist, and no sequence
+renumbers or consumes another. `rp00`
+is reserved exclusively for the whole-Page structure interaction. Every
+Page Run sequence starts with `rp00_mermaid-structure`: the person and agent
+iterate on the whole-Page Mermaid argument map and ordered paragraph index until
+explicit closure. While that Run is open, its review artifact is
+`outline/<stem>-logic.mmd`; the shared Draft Space renders it as a collapsed,
+user-openable disclosure above the plan. A missing map is a visible blocker,
+never an empty surface.
+Only then may sibling paragraph-group Page Runs begin.
+The Page Run namespace has no aliases or legacy fallback. The only legal
+identities are `rp00_mermaid-structure` and paragraph Runs such as `rp01_p01`
+or `rp02_p02-p03`; every other `interactive-writing` identity is held as a
+contract error and cannot unlock later Runs. A phase-controller invocation is a **Page workflow pass**,
+not a Page Run object. Owner-native phase receipts remain machine workflow
+records: Page-heavy standalone Folders commonly use `workflow/receipts/`, while
+the current Board controller's compatibility bundle uses
+`<board>/_runs/page/<page-id>/`. An unallocated `new-*` route is still only an
+Evidence plan.
+
+## 🧑 fn/Runs proposes human interaction
+
+`fn/runs.md` is the read-only proposal function for Page-owned interaction.
+It identifies bounded places where the human must shape, compare, revise, or
+accept the Page, and proposes those as Page Run candidates. A proposal is not
+an allocated Run and receives no `rpNN`, Ticket, Result, or Runs-inventory row
+until the person selects it. An existing matching open Page Run is resumed
+instead of duplicated.
+
+Code, search, Discovery, data, rendering, build, and other output-producing
+work remains a normal Task Run, even when a later human gate reviews that
+output. The Page may point to the needed Task work but never mints or rewrites
+its owner-native identity. Use `/haipipe-page runs <page> [focus]` to propose;
+a direct bounded editing request counts as selecting the matching interaction.
+
+The first Page Run is always `rp00_mermaid-structure`, even when imported
+content already suggests a Shape. It iterates until the person explicitly
+closes the Mermaid Structure and Page-global paragraph index `P01..PN`. Only after that closure may
+`fn/Runs` partition the `N` numbered paragraphs into `K` groups, where
+`1 <= K <= N`. Every paragraph Run name must expose its exact paragraph number
+or contiguous range; semantic titles stay in Goal instead of lengthening the
+identity.
+
+### Three update boundaries
+
+Interactive Page work has three different commit boundaries. Do not collapse
+them into one expensive operation:
+
+```text
+Writing Step      save feedback + candidate prose + dependent Bullets
+                  → refresh the live Draft Space only
+Page Run close    settle its numbered text, Bullets and Evidence contract
+Page release      after every Page Run and required evidence Task Result is ready,
+                  adopt Content once and generate web/LaTeX/Word once
+```
+
+A routine Step never writes adopted Page Content, rebuilds delivery, runs the
+whole test suite, or waits for browser/export verification. Its durable minimum
+is the verbatim feedback, complete saved candidate, affected Bullets, narrow
+source/protected-scope check, and current Version/Step projection. Update an
+Evidence requirement during a Step only when the feedback changes what the
+paragraph must cite, measure, or show.
+Between Steps or Runs, use
+`page-workflows/haipipe-page-workflow/ref/interactive-execution-policy.md`:
+heavy builds, exports, broad checks, delegated Task Runs, and sub-agent
+analysis require an explicit scoped approval before dispatch.
+
+A paragraph Page Run closes only after its text and Bullets are accepted and
+its Evidence contract is explicit: each Bullet names `none` or a ready bound
+CITE, VALUE, or DISPLAY Result. Discovery, figure production, citation lookup,
+and other independently executable support remain Task Runs. Do not mark the
+Page Run complete while required evidence is unresolved.
+
+Closing one paragraph Run does not adopt it into `<page>.md` and does not
+refresh `delivery/`. CONTENT waits behind the Page release barrier: all planned
+Page Runs are complete and every required Task Result is ready and bound. Then
+one Page-level CONTENT pass applies the accepted candidates, integrates the
+evidence, builds the declared web/LaTeX/Word outputs, and routes one exact
+version to CHECK. While the barrier is open, the Draft Space is current
+and delivery is explicitly stale by design. For an interactive Page, the
+person's explicit next-step instruction is the authority for this pass; the
+Outline's `approved:` marker is optional supporting metadata and must not create
+a second approval loop.
+
 ## ✅ Page configuration and completion checklist
 
 For CREATE, a Page configuration/completion audit, or a whole-Page completion
@@ -50,26 +184,66 @@ to the requested operation; a narrow edit is not a whole-Page audit.
 
 ## File → Page Folder → work
 
-For file intake, standalone building, serving, or source editing, read
-`ref/standalone.md` and use `cli/page.py`. This is a technical workspace
-operation, not a request to run the research/writing lifecycle or obtain human
-Shape/Content acceptance. Do not require a Board, group, Paper, evidence Run,
-PDF, or scholarly prose rewrite just to import or host a file. Preserve the
-input verbatim in an editable copy and report any unsupported dependencies.
+For file intake, standalone building, or source editing, read
+`ref/standalone.md` and use `cli/page.py`. For a hosting request, read
+`fn/serve.md` first; it decides whether this Page server or the Board server
+owns the URL. Choose the intake depth explicitly:
+
+- `init` is a technical import only. It preserves the file and produces a
+  visibly incomplete scaffold. Never stop here when the user asked for a Page
+  they can immediately inspect or work on.
+- `setup` is the normal Markdown file-to-working-Page route. It preserves the
+  imported source, reads its H1/H2/prose structure, creates a Page-specific
+  Opening and Aims, and writes an unapproved semantic Shape plus reader-move
+  Content Draft, Context/Files records, and a completed setup Task Run. A
+  non-Section Bullet may map to several sentences; punctuation does not decide
+  outline grain. Paragraph identity is one Page-global `P1..PN` sequence and
+  does not reset at a new `C`. Inspect the generated roles and heads, then read the Bullet
+  column alone. Correct any move whose place in the argument is unclear before
+  handoff; generated does not mean human-approved.
+
+This is not a request to obtain human Shape/Content acceptance. Do not require
+a Board, group, Paper, evidence Run, PDF, or scholarly prose rewrite just to
+import or host a file. Preserve the input verbatim in an editable copy and
+report any unsupported dependencies.
 
 ```bash
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py init --file <input> --dest <page-folder>
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py setup <input.md> [--dest <page-folder>]
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py setup <existing-page-folder>
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py migrate-addresses <existing-page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py inspect <page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py build <page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py serve <page-folder>
 ```
 
+Markdown `setup` already performs `build`; do not run a redundant second build.
+Use `migrate-addresses` explicitly for a pre-0.81 Shape whose paragraph number
+resets inside each division; it preserves prose and rewrites active Page-owned
+references before `setup` revalidates and rebuilds the Page.
+After it returns, inspect the generated Page Face, Shape/Draft coverage, setup
+Result checklist (`checks.json` and `report.md`), and `delivery/web/index.html`.
+Setup fails when a blocking mechanical check is missing; semantic judgment and
+human acceptance stay visibly deferred/untested. If role or Draft inspection
+changes a checked artifact, rerun `setup <existing-page-folder>` so a new Task
+Run fingerprints and validates the current records; `build` alone does not
+refresh the audit. Start `serve` only when the user
+explicitly asks for a hosted/live URL; a request for a built website is
+satisfied by the static delivery and does not authorize an indefinite foreground
+server. When hosting is requested, use the workspace's supported background
+process manager, verify the configured public URL, and return instead of
+blocking on the listener. One skill invocation performs all requested mechanical
+substeps; do not make the user request them separately.
+
 The built `delivery/web/` is a portable static reading site. The server adds
 the Source editor on writable hosts and the same category-plugin pane used by
-Board Pages. Standalone currently advertises only real local presenters:
-Outline, Runs, Delivery, and Folder; Studio remains Board-hosted until its
-chat/draw backend is extracted. Evidence stays an internal Outline workspace,
-never a duplicate top-level Plugin. Choose the configured
+Board Pages. Standalone advertises only real top-level presenters: Outline,
+Delivery, Folder, plus an optional domain-owned Labeling presenter when a
+direct `labeling/` lane and the subjective-label plugin are present. The
+standalone Labeling surface uses the current Codex task as its Chat transport;
+Studio remains Board-hosted until its chat/draw backend is extracted. Evidence
+and Run stay internal Outline workspaces, never duplicate top-level Plugins.
+Choose the configured
 reader-facing origin for links; exposing writable editing beyond loopback
 requires a token. Do not publish private inputs without the user's authority.
 Static files do not provide save-back. Report build, server reachability, and
@@ -81,15 +255,28 @@ move or replace the Page's source. Board Page group descriptions remain
 Board-owned and are outside this file-intake operation.
 
 The reader-facing completion packet is defined in
-`ref/user-check-packet.md`. The Bullet Workspace includes editable Content
-preview beside each Bullet and its Evidence during SHAPE. These candidate
-sentences live in `outline/<stem>-preview.md`, may exist before Shape approval,
-and become exact adoption input for CONTENT when explicitly accepted. See
-`haipipe-plugin-outline/ref/content-preview.md` for the write boundary.
+`ref/user-check-packet.md`. The Draft Space includes a read-only Draft
+projection beside each Bullet during SHAPE. These candidate sentences live in
+`outline/<stem>-preview.md`, may exist before Shape approval, and become exact
+adoption input for CONTENT when explicitly accepted. The Page/Run workflow is
+the writer; the three reader-facing Spaces never write through the browser.
+See `haipipe-plugin-outline/ref/content-preview.md` for the write boundary.
 
 Use `ref/user-check-packet.md` for the two response modes: a routine Writing
-Step returns complete selected paragraphs and the two final Workspace links;
+Step returns its exact Run/Version/Step heading, complete selected paragraphs,
+a frozen Mermaid Structure description beside each paragraph address, a numbered
+blockquote review passage, a brief change explanation, and the three
+final Draft Space, Evidence Space, and Run Space links;
 a formal delivery also returns the evidence/PDF surfaces that are current.
+The Current Run derives granular Track Changes from clean Step-level Before and
+After text and shows each material wording change's local type, rationale, and
+analysis status. Legacy records may retain historical preference fields, but
+interactive Page Steps defer new preference inference to post-run analysis.
+Diff markup never becomes Page prose, and analysis never becomes shared policy
+without confirmation.
+Classification lives in the change-card heading, not a second table. Status,
+navigation, acceptance-only, and presenter-only Steps create no Track Changes;
+the Runs surface expands only the current Step and keeps older Steps collapsed.
 
 ## 📁 What a page is on disk
 
@@ -106,20 +293,17 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 <page>/
 ├── page.toml     optional standalone registration: source + imported content
 ├── <page>.md      Opening · Outline · Content · Aims           THIS contract
-├── outline/       HUMAN process: the plan (versioned, ticked), process records,
-│                  and the nested Evidence Workspace (JL 260903)
+├── outline/       HUMAN process: plan and durable process records
 │   ├── <stem>-context.md  generated PREPARE projection for all Page phases
-│   └── evidence/  typed CITE/VALUE/DISPLAY material and Run lineage:
-│       ├── bibex/       citation files and source metadata
-│       ├── display/     units and recipes · accepted:
-│       ├── supporting-runs/ generated lineage pointers only
-│       └── materials/   dated captures and editable, byte-preserved file imports
+│   ├── <stem>-logic.mmd    derived Mermaid Structure reviewed by rp00
+│   └── evidence/  legacy compatibility material only; no new writes
 ├── workflow/      MACHINE process: one receipt per phase pass
 │              ─── the LOWER, TASK-side part ───
 ├── scripts/       optional owned implementation, any language; shared Task
 │   └── config/    Job code stays one level up in `src/`
-├── runs/          optional authored Run tickets; THE ONE execution door
-├── results/       Folder-local Results only. A canonical Task Page resolves
+├── runs/          authored RP, RE, and RD tickets; THE ONE execution door
+├── results/       canonical Page Evidence Results and Folder-local Results.
+│                  A canonical Task Page resolves
 │                  generated output at `$OUTPUT_ROOT/results/<task>/<run>/`
 │              ─── the UPPER, PAGE part ───
 ├── delivery/      what leaves the page: web/ · latex/ · word/ · slide/ · render/
@@ -134,17 +318,27 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 `outline/` is the human planning/decision record and `workflow/` is the
 machine-readable phase/run record. Page-heavy work commonly stores phase
 receipts under `workflow/receipts/`; executable work commonly stores
-`plan.yaml` and `report.yaml`. Runs is an optional presenter beneath this shared
-Task Face. It pairs the local ticket with either a Folder-local Result or the
-Task dialect's resolved `$OUTPUT_ROOT/results/<task>/<run>/`; scripts, config, and notebooks
-appear only when the dialect owns them. Runs is never a third universal face or
-a lifecycle owner.
+`plan.yaml` and `report.yaml`. Run Space is an Outline projection over this
+shared Task Face. It separates RP, RE, RD, and Supporting Runs. A native Run
+pairs its ticket with either a Folder-local Result or
+the Task dialect's resolved `$OUTPUT_ROOT/results/<task>/<run>/`, but the Page
+surface shows only the Result side; scripts, config, and notebooks
+stay in Folder/detail inspection. Run is never a top-level Page Plugin or a
+lifecycle owner.
 
-All Page Evidence storage is nested under `outline/evidence/`; a root
-`<page>/evidence/` directory is a legacy migration shape, not a new write
-target. The Outline plugin owns the nested workspace and its CITE/VALUE/DISPLAY
-contracts. An existing `outline/evidence/pagex/` lane is also read-only
-migration input; new cross-Folder evidence enters through Supporting Run Results.
+New Page Evidence is an `RE` Page ticket plus a bound Result. A Folder-local
+Result is stored as `results/<re-run>/result.yaml`; a Task-backed Result stays
+at the owner dialect's resolved output path, and the RE records that path and
+hash. One Evidence Item has one current RE lineage and one current Result/Card
+projection; that Result may expose many stable labels such as
+`$V_xxx$`, `\figure{D_xxx}`, `\table{D_xxx}`, `\algorithm{D_xxx}`, and
+`\cite{C_xxx}`. The hidden
+binding retains the Evidence Item, RE, Result path, and provenance. A label
+that needs an independent acceptance or execution lineage becomes another
+Evidence Item/RE. `outline/*-evidence-items.md`, `outline/*-evidence.md`, and
+`outline/evidence/*` are read-only migration inputs, not new write targets.
+New cross-Folder evidence enters through Supporting Run references in the `RE`
+Result; the external Ticket and Result stay at their owner and are never copied.
 
 A unit MAY carry a `README.md`, and it is DERIVED (JL 260831): a generated
 projection of the two-part tree as it actually stands (which lanes exist,
@@ -157,7 +351,7 @@ generator).
 
 A folder is created only when it is used. Values are typed Evidence Items;
 their ready local Result and provenance are shown inside the Outline
-Evidence Workspace. Every number shown on a Page Face that comes from a Run crosses
+Evidence Space. Every number shown on a Page Face that comes from a Run crosses
 ONE page-serving collection job (`task-type: page`, contract
 `haipipe-task-for-page`); the Supporting Run Result becomes the explicit
 cross-Folder evidence edge. A display-input Run therefore feeds the
@@ -246,17 +440,26 @@ index     phase/cycle     skill                                  gate
 ```
 
 The evidence loop law: SHAPE specifies typed Evidence Items; SURVEY
-plans zero-to-many Execution/Discovery Supporting Runs plus exactly one local
-Page Evidence Item Run; LAND produces one ready local Result; EMBED interprets
-it. The ledger is `outline/<stem>-evidence-items.md`
+plans zero-to-many Execution/Discovery Supporting Runs plus exactly one Page
+`RE` lineage per item; LAND produces one ready local Result/Card; EMBED
+interprets it. The ledger is `outline/<stem>-evidence-items.md`
 (`haipipe-plugin-outline/ref/item-table.md`).
 
-Collaborative writing uses one persistent Run for a bounded goal, possibly
-several paragraphs, under
+Collaborative writing uses many sibling persistent `RP` Runs across one Page under
 `../page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
-SHAPE and `haipipe-writing` co-develop Bullets and candidate prose. Human
-feedback advances Steps; explicit closure seals a Version. CONTENT adopts
-agreed wording and delivery without commissioning another Run per paragraph.
+The first selected Run is always `rp00_mermaid-structure`; it establishes and
+explicitly closes the Mermaid argument map and `P01..PN` paragraph index. Then `fn/Runs`
+partitions the numbered paragraphs into independently reviewable groups and
+allocates one Page Run per selected group. Adjacent
+paragraphs share a Run only when they answer one human question and close under
+one acceptance decision. Inside each Run, feedback advances Steps and explicit
+closure settles that group's text, Bullets, and Evidence contract. Closing one
+Run does not modify Page Content or delivery. After all Page Runs and required
+evidence Results are complete, one Page-level CONTENT pass adopts the agreed
+wording. It then commissions one or more `RD` Delivery Runs for the declared
+targets without commissioning an additional delegated Task Run for every
+accepted paragraph. `RD` is a delivery identity, not a second CONTENT or CHECK
+phase.
 The historical/explicitly delegated single-paragraph profile remains in
 `haipipe-page-content/ref/paragraph-run.md`. Neither path adds a plugin.
 
@@ -347,8 +550,10 @@ stated as a `**Covered elsewhere**:` part in its drawer.
 by default immediately after the always-visible Opening. Normally it renders
 the current plan's `▤ Outline table`: `Address · Bullet · Feedback ·
 Evidence · Supporting Run · Local Run`; C/P rows are planning group headers and B rows
-are the checkable claim/evidence rows. Evidence chip colour carries the quick
-signal and its deep-linked Evidence Workspace card carries the detail, so no
+are the checkable claim/evidence rows. The compact reading projection shows
+the Point statement, not the plan's process-only `Note:` annotations; those
+remain in `outline/` and its plugin workspaces. Evidence chip colour carries the quick
+signal and its deep-linked Evidence Space row carries the detail, so no
 separate Status column or Page popover is shown. A Page
 Type may define one generated
 executive projection from its own authoritative Content records. When it does,
@@ -362,10 +567,14 @@ References, and every other optional fold start shut. The `outline/` folder
 remains the authority for every plan, writing rule, evidence, feedback,
 requirement, discussion, file, and log record.
 
-The live Outline/Bullet Workspace makes each paragraph address (`C<n>.P<m>`)
-an expand/collapse control and keeps its Bullets inside that group. Bullet heads
-may be edited and a new Bullet appended through the server-backed Outline
-editor. Markdown remains authoritative: the first write against an approved
+The live Outline/Draft Space makes each paragraph address (`C<n>.P<m>`;
+`P` increases once across the whole Page and never resets at a new `C`)
+an expand/collapse control and keeps its Bullets inside that group. It is a
+read-only projection: each Bullet keeps its bracketed role label and any
+compact Evidence route, while Bullet heads, candidate wording, comments, and
+new Bullets are not editable from the rendered page. Page/Run workflow writers
+update the Markdown authorities; the next GET re-reads the selected plan and
+preview. Markdown remains authoritative: a workflow write against an approved
 Shape creates the next unapproved working Shape and preserves the approved
 file; subsequent writes reuse that working version. Generated Page HTML is
 never an edit target.
@@ -425,6 +634,7 @@ these rows and no rows of its own.
 👁 PREVIEW    /haipipe-page preview <page>                 read verb, writes nothing
 📄 CREATE     /haipipe-page create a new page on <topic>   [on <board>]
 🔧 WORK ON    /haipipe-page working on <page>              or just the path
+🧑 RUNS       /haipipe-page runs <page> [focus]            propose human interaction
 🔁 RUN        /haipipe-page run <page> [from <phase>]
 ```
 
@@ -472,18 +682,21 @@ source-file path, `localhost`, `127.0.0.1`, or `file://`.
 
 ### 👀 User check packet · the only primary return surfaces
 
-For substantive writing or research delivery, after any Page, plan, Page-local evidence, DISPLAY, Content, or derived
-projection change, return the compact packet in
+For substantive writing or research delivery, return the compact packet in
 `ref/user-check-packet.md`. For a routine interactive turn, return the full
 selected paragraphs and concise feedback dispositions, followed by direct
-Bullet Workspace and Evidence Workspace links at the very end. Do not build
-or append a PDF on every wording edit. The following surfaces are the formal
-delivery packet, not mandatory work for each feedback Step:
+Draft Space, Evidence Space, and Current Run links at the very end.
+Only the live
+Draft Space must be refreshed for a routine Step; the Evidence Space
+changes only when that Step changes an evidence requirement. Do not update
+adopted Content or build web, LaTeX, Word, or PDF at Page Run close. The
+following surfaces are the formal Page-release packet, produced once after all
+Page Runs and required evidence Task Results are complete:
 
-1. the verified Board route in two direct views: **Bullet Workspace**
+1. the verified Board route in two direct views: **Draft Space**
    (`lens=div`) and **Outline table** (the compact Page projection);
-2. **Evidence you can open now**: the direct Evidence Workspace link
-   (`lens=workspace&seg=items`) plus, per ready
+2. **Evidence you can open now**: the direct Evidence Space link
+   (`lens=evidence`) plus, per ready
    typed Evidence Item, the DISPLAY unit's `preview.pdf`, the Page's citation
    register, or the VALUE item card deep link;
 3. **Content state**: the Page version and whether Revise ran (owner-selected workers and
@@ -498,7 +711,7 @@ primary completion block. If any requested surface is missing or stale, say so
 explicitly and name the blocker instead of presenting an older file as current.
 The user-check packet is new-layout-only: it accepts only
 `outline/evidence/display/<unit>/preview.pdf`,
-`outline/evidence/bibex/<stem>-bib.html`, the Evidence Workspace one-URL
+`outline/evidence/bibex/<stem>-bib.html`, the Evidence Space one-URL
 route, and `delivery/latex/<stem>.pdf`; legacy locations do not qualify.
 
 **Create from file**: follow `ref/standalone.md`; no Board/group is required.
@@ -512,10 +725,19 @@ their `Now:` lines · `outline/<stem>-files.md` with any Related Board Page row
 the current phase needs · register in `board.md` only if requested · build, check, read the
 RENDER, report the finding count.
 
-**Interactive work on**: a sentence/paragraph feedback request selects the
-persistent Writing Run path above. Resume current decisions and affected
-sources; make the narrow patch, save feedback and result, and return the saved
-passage. Do not use the broad repair/build loop below for that request.
+**Interactive work on**: when the person asks what interaction is needed, use
+`fn/runs.md` and do not allocate before selection. A direct bounded
+sentence/paragraph feedback request is already a selection: resume a matching
+open Page Run or allocate the next Page-local `rpNN` for an independent goal.
+When the person enters or resumes an open Run before giving feedback, return
+the pre-Step review packet with the complete selected paragraphs separated by
+visible `### PNN · Cn.Pm` blocks, `S1...Sn` labels, proposed next Step number,
+review scope, and the three direct links;
+do not create a journal Step yet. After feedback arrives, resume current
+decisions and affected sources; make the narrow patch, save feedback and
+result, refresh the live Draft Space, and return the saved passage. Do
+not write Page Content, refresh delivery, wait for export/browser verification,
+or use the broad repair/build loop below for that request.
 
 **General Page work on**: ONE page is the deliverable. Read the whole file and its
 `outline/` first; if the files record declares Related Board Pages, load the
@@ -556,9 +778,11 @@ language or figure rules to imported HTML/code or its generated wrapper.
 
 - **Formal delivery finishes on the rendered Page.** Build/check and inspect
   the required projection before calling it current. A routine Writing Step
-  instead saves/reads the live preview; an explicitly requested adoption-only
-  operation saves/checks Content and reports delivery as not refreshed. Neither
-  is whole-Page completion. Human approval and write scope remain binding.
+  saves/reads only the live Draft Space candidate. A Page Run close seals
+  its text, Bullets, and Evidence contract but leaves Content and delivery
+  unchanged. Only the Page-level release after all required Runs are complete
+  adopts Content and refreshes web/LaTeX/Word. Human approval and write scope
+  remain binding.
 - **An accepted process ruling lands in its owning skill when a skill update
   is requested.** Apply it only to Pages within the authorized scope; a skill
   update does not regenerate every Paper. Local writing preferences stay in
@@ -629,7 +853,7 @@ page        QB4            #QB4
 face        QB4a           a page whose id carries its parent's number
 group       #group-QB      scrolls the index, opens nothing
 sentence    QB8's grammar  haipipe-sentence owns everything below the section
-bullet      C3.P1.B4       the plan's address; a sentence names it with realizes:
+bullet      C3.P7.B4       division 3, Page paragraph 7, Bullet 4; a sentence names it with realizes:
 thread      D07            board-wide, cited from any page
 ```
 
@@ -655,7 +879,10 @@ Every id inside a fenced figure renders as a link.
 ```text
 haipipe-page/
 ├── SKILL.md            this contract
+├── fn/serve.md         host one Page Folder and route Board hosting
+├── fn/runs.md          propose Page Runs needing human interaction
 ├── ref/page-checklist.md  configuration, four-section and delivery acceptance
+├── ref/page-run-families.md  RP/RE/RD and Evidence Item/Result/Card/Label contract
 ├── ref/glossary.md     every word this family uses, with the path it names
 ├── ref/user-check-packet.md  the four-surface reader-facing completion packet
 └── CHANGELOG.md        version history, and the only home for retired rules

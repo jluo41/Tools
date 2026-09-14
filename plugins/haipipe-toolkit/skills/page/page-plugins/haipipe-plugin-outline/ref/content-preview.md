@@ -40,9 +40,11 @@ their evidence contracts. If one sentence consumes two redundant Bullets,
 merge the points instead of keeping a shared realization. Never satisfy this
 rule by replacing full stops with semicolons in a compound sentence.
 
-The reading view omits raw LaTeX citation commands: the adjacent Evidence
-links carry the source material. Preserve citation commands in the authored
-candidate and its editor; hiding TeX in the reading view never removes a source.
+The reading view shows authored LaTeX citation commands as literal text, while
+the adjacent Evidence links carry the source identity, readiness, and audit
+trail. Preserve the commands unchanged in the authored candidate, resting
+prose, and editor so a reader can verify both the citation placement and its
+Evidence Card without opening the editor.
 Likewise, preserve a full missing-evidence placeholder in the authored preview
 and editor, but show it in resting prose and Read paragraph as an ordinary
 parenthetical citation label, for example `(E33C.SystemStakes)`. Do not render
@@ -104,15 +106,15 @@ candidate and does not restore old Content on reload.
 
 ## Existing Content and later promotion
 
-### Sentence comments below each paragraph
+### Feedback stays in the Page Run
 
-The paragraph's Comments disclosure follows Read paragraph, outside the two
-columns. A person selects a saved `C.P.B` sentence, supplies their name and
-comment, and saves. Show the exact source wording as the quote while composing;
-the saved reading view may hide citation markup as elsewhere. Keep open
-comments and agent replies in this paragraph, not a page-bottom queue.
+The Bullet Workspace does not show a separate Comments disclosure or comment
+composer. A person copies the sentence into chat and gives feedback through
+the active Page Run, so wording, rationale, and acceptance remain in one Step
+history instead of a second review queue.
 
-Comments live in the same `<stem>-preview.md` record, after its candidate prose:
+Historical preview records may still contain signed comment lanes from the
+retired composer after their candidate prose:
 
 ```markdown
 ## C1.P1.B1
@@ -127,35 +129,13 @@ Physicians differ in their prescribing decisions.
 >> Codex · Addressed: Specified opioid prescribing. · 260911 1230 UTC
 ```
 
-The `PC` id is an opaque UUID-derived identity, not a sentence position. The
-quote and Shape capture the saved candidate at comment time; its enclosing
-`C.P.B` is the target. These signed lanes are never candidate prose and never
-part of the published Page or PDF. Preview saves preserve them, even after a
-sentence is cleared. A new comment starts Open; an appended dated agent reply
-containing ` · Addressed:` changes its display to Addressed, not approved.
-An unresolved question remains Open with a reply explaining what is needed.
-Keep the original comment, quote, and replies; do not silently delete or move
-them when revising prose. Removed/reassigned addresses require explicit
-reconciliation by the agent, never automatic reattachment to a different point.
+The `PC` id is an opaque UUID-derived identity, not a sentence position. These
+signed lanes are archival review apparatus, never candidate prose and never
+part of the published Page or PDF. Preview saves preserve them even after a
+sentence is cleared. Do not render, delete, or silently reassign them; new
+feedback belongs to the active Page Run.
 
-When asked to apply comments, read the preview's open lanes before editing.
-Compare the quoted sentence to the current candidate and current Bullet; if
-the target changed meaning or the request is ambiguous, ask rather than apply
-the old instruction to a new claim. Revise candidate prose, adjust the working
-Bullet only when the point changes, and append a brief dated response under
-each addressed comment. Preserve approved Shape files; normal edits stay in
-the existing working version. Re-read the paragraph and recheck evidence and
-one-sentence alignment. Addressed records remain visible for human review.
-
-`comment-preview` compares the displayed saved-sentence token and current
-Bullet fingerprint under the same per-Page lock as preview editing. A changed
-sentence fails visibly and preserves the comment input. A retried submission
-uses the same comment id to avoid duplicates. Comment appends do not stale
-otherwise current prose editors; those editors must preserve all review lanes.
-No model is called by Save comment. The person must ask their agent to read
-and apply the saved comments; this feature does not promise background watching.
-
-### Direct Markdown editing and an optional logic map
+### Direct Markdown editing and the Page Mermaid Structure
 
 Link the current unapproved `outline/<stem>-outline-v*.md` for Bullet heads,
 roles, Notes, and Evidence expectations, and `<stem>-preview.md` for candidate
@@ -165,16 +145,22 @@ review its retained candidate and save against the changed Bullet to refresh
 the binding. Ordinary edits reuse the same working version. Generated HTML and
 evidence snapshots are not editing targets.
 
-When requested, one optional `<stem>-logic.mmd` may summarize the Section's
-argument using paragraph addresses. Mark its source Shape and provisional
-findings explicitly; arrows mean argument flow, not causal proof. It is a
-derived reading aid, not a new process record or plan authority. When the file
-exists, the live Bullet Workspace renders it as a read-only Mermaid card at the
-top of the `By part` lens, above the plan and reading table; the source remains
-available in a folded block, and the whole card is collapsed by default so it
-does not compete with the Bullet/prose reading view. A map may contain branches
-and may show more argument moves than the final manuscript paragraph grouping;
-label that relationship in its source note. Refresh it after structural changes.
+`rp00_mermaid-structure` owns one derived `<stem>-logic.mmd` that presents the
+whole Page argument and its frozen `P01..PN` reading order. Mark its source
+Shape and provisional findings explicitly; arrows mean argument flow, not
+causal proof. The plan remains authority: this map is the first Page Run's
+review artifact, not a second plan or another process record.
+
+The live Bullet Workspace renders the map as a read-only Mermaid card at the
+top of the `By part` lens, above the plan and reading table. While `rp00` is
+`ready`, `running`, `waiting-for-feedback`, or `blocked`, expand the card for
+review. If the source is absent, show an expanded blocker naming the expected
+file instead of silently omitting the interaction. After `rp00` is complete,
+keep an existing map available but collapsed by default. Its source remains in
+a folded block. A map may contain branches and may show more argument moves
+than the final manuscript paragraph grouping; label that relationship in its
+source note. Refresh the plan, paragraph index, and Mermaid together after
+structural changes.
 
 ### Promotion boundary
 
@@ -199,6 +185,10 @@ approve prose, refresh a PDF or close a Page. The agent records the exchange
 under `haipipe-page-workflow/ref/interactive-writing-run.md`.
 
 Return the existing direct Bullet Workspace URL (`lens=div`) for this two-column
-view and the Evidence Workspace URL (`lens=workspace&seg=items`). In a
-preview-only pass, state that the right column is a planning draft and the
-published Content/PDF has not been refreshed.
+view and the Evidence Workspace URL (`lens=workspace&seg=items`). When the
+response concerns one Bullet, append its authored address as
+`focus=C<n>.P<m>.B<k>`; opening the URL must select Bullet Workspace, expand
+the containing paragraph, and focus that exact row. Use the same route whether
+the Page is Board-hosted or standalone. In a preview-only pass, state that the
+right column is a planning draft and the published Content/PDF has not been
+refreshed.

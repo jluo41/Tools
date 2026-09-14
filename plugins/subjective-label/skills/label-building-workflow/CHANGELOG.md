@@ -1,5 +1,16 @@
 # label-building-workflow · CHANGELOG
 
+## 0.8.0 · 2026-09-13
+
+Document the exact read-only `status` invocation, make optional P0 sidecars
+explicitly skippable before G0, and record that `create` now allocates the one
+completed `rlNN_corpus-contract_*` envelope without speculative Runs.
+
+## 0.7.0 · 2026-09-13
+
+Separate the P0 phase frontier from its first blocked gate, which is reported
+unambiguously as `G0 · human meaning confirmation`.
+
 ## 0.6.0 · 2026-09-01
 
 Allocate one Run per independently closable P0-P2 operation through root

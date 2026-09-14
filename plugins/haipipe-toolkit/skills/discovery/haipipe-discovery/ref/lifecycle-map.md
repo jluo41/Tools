@@ -1,4 +1,4 @@
-# Discovery Lifecycle Map (v8 — D1 Task workflow × Page workflow × BJTR Runs)
+# Discovery Lifecycle Map (v9 — D1 Task workflow × Page workflow × BJTR Runs)
 
 A Discovery `tNN_` Folder is one durable research article/question with BOTH a
 Page Face and a Task Face. It is a Task Page, not a flat citation note. This file
@@ -63,6 +63,10 @@ outline/evidence/bibex/tNN_<task>.bib  runs/
 typed Page synthesis                   runtime receipts
 ```
 
+The shared `runs/` and `results/` lanes can also carry Page-owned
+`rp00_mermaid-structure` and `rpNN_pNN[-pNN]` records/results. Those are
+validated by the Page workflow and excluded from the D1 `rNN` inventory.
+
 The Faces work on the same Task question. The Page synthesizes many Results; the Task
 Face plans and executes them. `discovery.yaml` is the Task manifest, not the
 whole folder or the only file that matters.
@@ -74,7 +78,7 @@ whole folder or the only file that matters.
 | `SCOPE` | freeze BJTR identity, type, question, boundary, and admission rule | `discovery.yaml` intent | none |
 | `PREPARE` | author optional reusable instrument | optional used `scripts/` | none |
 | `ACQUIRE` | resolve Triggers, admit Subjects, and execute one analysis per Subject | `runs/`, paired `results/`, Task receipts | `paper-analysis` / `source-analysis` x `N_admitted` |
-| `SYNTHESIZE` | hand accepted Results to the shared Page workflow | Task progress and optional typed record only | none; the D1 root records Page CONTENT no-Run rationale |
+| `SYNTHESIZE` | hand accepted Results to the shared Page workflow | Task progress and optional typed record only | no Discovery Run; the D1 root records that CONTENT commissions no *Discovery* writing Run. Page-owned `rp00`/`rpNN` interaction remains governed by the shared Page workflow |
 | `CLOSE` | reconcile the already-CHECKed Page with the Task Face | `discovery.yaml report/status` and handoff | none |
 
 Low-level calls to arXiv, Crossref, a CLI, an API, or another skill are recorded
@@ -88,10 +92,11 @@ contains the Runs Overview, Human Actions, exact skill chains, and Skill
 Coverage. The separate `haipipe-discovery-workflow` skill is retired; D1 owns
 the domain table while `haipipe-page-workflow` independently owns Page writes.
 
-Expected total Level-4 Runs is `R = N_admitted canonical Subjects`. Search
+Expected total native Discovery Level-4 Runs is `R_discovery = N_admitted canonical Subjects`. Search
 queries, candidate rows, redirects, worker/API calls, synthesis passes, typed
-records, and SYNTHESIZE/CLOSE do not add Discovery Runs. Actual inventory comes only from
-allocated Tickets with runtime receipts.
+records, Page workflow passes, and Page-owned `rpNN` interactions do not add
+Discovery Runs. Actual inventory comes only from allocated Discovery Tickets
+with runtime receipts.
 
 ## Discovery Types and specialist routes
 

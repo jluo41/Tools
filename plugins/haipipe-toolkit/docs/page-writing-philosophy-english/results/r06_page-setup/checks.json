@@ -1,0 +1,147 @@
+{
+  "schema": "haipipe-page-setup-audit-v1",
+  "blocking_gate": "fail",
+  "summary": {
+    "pass": 9,
+    "missing": 1,
+    "deferred": 3,
+    "untested": 2,
+    "n/a": 1
+  },
+  "artifacts": {
+    "page_face": {
+      "path": "page-writing-philosophy-english.md",
+      "sha256": "e8a2aa4a48408330c4eaec68b19b57119149237b4b36c55e0e6226fc3ce3d97c"
+    },
+    "content": {
+      "path": "outline/evidence/materials/page-writing-philosophy-english.md",
+      "sha256": "37c49672fc9f1bf52e9925d6756b433d8d637ff34c4b25debb0b70a06f289073"
+    },
+    "shape": {
+      "path": "outline/page-writing-philosophy-english-outline-v0.1.md",
+      "sha256": "315b35c661ee91fe8514732f9a6d2321b4a6e9af5baac666223202d55ec03f20"
+    },
+    "content_draft": {
+      "path": "outline/page-writing-philosophy-english-preview.md",
+      "sha256": "8705ba0b034f519deee9f29dedacff6d2c482c8c213004a08a3b452c41da7d6d"
+    },
+    "static_delivery": {
+      "path": "delivery/web/index.html",
+      "sha256": "19d2be3038b7a46483f5247d346541deac207a39f24be9a63db7527c0b7e1816"
+    }
+  },
+  "checks": [
+    {
+      "id": "source_configuration",
+      "label": "Source/configuration",
+      "status": "pass",
+      "detail": "Page Face `page-writing-philosophy-english.md` resolves through page.toml with explicit state and owner.",
+      "blocking": true
+    },
+    {
+      "id": "input_preservation",
+      "label": "Input preservation",
+      "status": "pass",
+      "detail": "The imported editable copy matches `37c49672fc9f1bf52e9925d6756b433d8d637ff34c4b25debb0b70a06f289073`. External original was not available during this Folder resume.",
+      "blocking": false
+    },
+    {
+      "id": "opening",
+      "label": "Opening",
+      "status": "pass",
+      "detail": "Opening is Page-specific, non-placeholder prose that names the Page or its subject.",
+      "blocking": true
+    },
+    {
+      "id": "outline_structure",
+      "label": "Outline",
+      "status": "pass",
+      "detail": "Shape has 10 divisions, 58 paragraphs, 58 Bullets, and one Evidence decision per Bullet.",
+      "blocking": true
+    },
+    {
+      "id": "content_draft_mapping",
+      "label": "Bullet ↔ Content Draft",
+      "status": "pass",
+      "detail": "All 58 Bullets have nonempty, fingerprint-current Content Draft records.",
+      "blocking": true
+    },
+    {
+      "id": "semantic_role_syntax",
+      "label": "Semantic role syntax",
+      "status": "pass",
+      "detail": "All 58 Bullets use a recognized semantic role label.",
+      "blocking": true
+    },
+    {
+      "id": "bullet_head_readability",
+      "label": "Bullet-head readability",
+      "status": "missing",
+      "detail": "One or more Bullet heads are clipped, outside the 4–11 word planning range, or written as planner instructions.",
+      "blocking": true
+    },
+    {
+      "id": "content",
+      "label": "Content",
+      "status": "pass",
+      "detail": "Bound editable Content `outline/evidence/materials/page-writing-philosophy-english.md` is nonempty.",
+      "blocking": true
+    },
+    {
+      "id": "aims_structure",
+      "label": "Aims structure",
+      "status": "pass",
+      "detail": "11 Aim records have stable IDs, Done when, and Now. Aim groups [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] align with Shape divisions [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].",
+      "blocking": true
+    },
+    {
+      "id": "static_delivery",
+      "label": "Static website",
+      "status": "pass",
+      "detail": "`delivery/web/index.html` is a marked Page export and contains all 28 current source/assets.",
+      "blocking": true
+    },
+    {
+      "id": "semantic_role_judgment",
+      "label": "Semantic-role judgment",
+      "status": "untested",
+      "detail": "Role labels are mechanically valid, but an agent or person must review whether each role fits its reader move.",
+      "blocking": false
+    },
+    {
+      "id": "outline_logic_judgment",
+      "label": "Bullet-only argument review",
+      "status": "untested",
+      "detail": "An agent or person must read the Bullet heads without the Content Draft and confirm that the argument remains intelligible, ordered, and complete.",
+      "blocking": false
+    },
+    {
+      "id": "aim_targets",
+      "label": "Aim targets",
+      "status": "deferred",
+      "detail": "Targets are recorded, but setup cannot certify that the substantive targets are achieved.",
+      "blocking": false
+    },
+    {
+      "id": "human_shape_approval",
+      "label": "Human Shape approval",
+      "status": "deferred",
+      "detail": "The generated Shape remains unapproved until a person accepts it.",
+      "blocking": false
+    },
+    {
+      "id": "human_content_acceptance",
+      "label": "Human Content acceptance",
+      "status": "deferred",
+      "detail": "Candidate prose exists, but setup does not mark it accepted.",
+      "blocking": false
+    },
+    {
+      "id": "hosting",
+      "label": "Hosted Page",
+      "status": "n/a",
+      "detail": "Setup requested a static build, not a live listener or deployment.",
+      "blocking": false
+    }
+  ]
+}

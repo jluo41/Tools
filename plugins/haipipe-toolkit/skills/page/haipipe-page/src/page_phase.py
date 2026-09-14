@@ -271,6 +271,13 @@ def phase_state(page_md, board=None):
     if folder_contract is not None:
         owner_ruling = folder_contract.page_ruling
         owner_ruling_required = owner_ruling != "none"
+    elif owner_ruling != "ambiguous" and (folder_kind in {
+        "design-card", "design-unit", "design-verdict",
+        "design-division", "design-pagedown",
+    } or legacy_page_type in {"brief", "design", "intervention", "artifact"}):
+        owner_ruling = "unsupported"
+        owner_ruling_required = True
+        owner_ruling_error = "retired Design Folder/Page identity is unsupported"
     divs = len(re.findall(r"^### \d+ · ", page_txt, re.M))
     md_m = page_md.stat().st_mtime
     ap_m = of.stat().st_mtime if of else 0

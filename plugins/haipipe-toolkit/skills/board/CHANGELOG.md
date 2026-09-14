@@ -4,6 +4,34 @@ board — Changelog
 Family-level changes. Skill implementation history remains in
 `haipipe-board/CHANGELOG.md`; agent history remains in `agents/CHANGELOG.md`.
 
+## 1.0.2 · 2026-09-12 - Restore RP Page Run namespace
+
+- Restore `rp01_mermaid-structure` and `rpNN_pNN[-pNN]` as current Page Run
+  identities so `PR` remains reserved for Pull Request shorthand.
+- Keep the short-lived `prNN_*` identity readable as migration input; Board
+  hosts both projections but mints neither identity itself.
+
+## 1.0.1 · 2026-09-12 - Page Run namespace alignment
+
+- Teach Board the Page-owned `pr01_mermaid-structure` first Run and subsequent
+  `prNN_pNN[-pNN]` paragraph identities while retaining old `rpNN_*` records
+  only as readable migration history.
+
+## 1.0.0 · 2026-09-12 - Stable Board boundary
+
+- Promote the public `haipipe-board` door to V1 after aligning it with the
+  canonical Page family: Board owns container/Group/roster/aggregate behavior;
+  Page owns individual Page state, workflow, renderer, and standalone use.
+- Fix the family source map and every active Board-owned cross-family link.
+  Board-local Page/plugin/workflow entries are compatibility links only.
+- Separate Page Run, Task Run, and Page workflow-pass vocabulary; update write
+  routing to current Aims and typed `outline/` records.
+- Add owner-scoped Folder-contract validation and standing V1 boundary tests.
+- Align the generic Board template and minimal example with the checker-backed
+  `QA` Group / `QA1` Page identity grammar.
+- Align the template audit with the Page renderer's visible ASCII-diagram
+  contract so a `text` fence no longer reports false code-folding drift.
+
 ## 2026-09-05 - Current-only Board surface
 
 - Make the family README a current ownership and workflow map rather than a

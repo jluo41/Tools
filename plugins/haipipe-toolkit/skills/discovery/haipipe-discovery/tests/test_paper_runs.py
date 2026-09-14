@@ -50,18 +50,6 @@ This Page owns one bounded evidence question and the records used to answer it.
 Each admitted source enters through a canonical Subject and one numbered Run.
 A reader can see the current boundary, evidence route, and next action here.
 
-## Writing Style
-**Language and voice**: Use plain English and active voice.
-**Sentence shape**: Put one claim on each source line.
-**Evidence rule**: Keep claims tied to their owning Results and cite keys.
-**Required sections**: Keep all four Discovery roles and matching Aims.
-**Optional sections**: Add a top-level Diagram only when it helps.
-**Question and boundary**: State the inquiry and admission rule.
-**Type payload**: Synthesize the selected article promise.
-**Evidence map**: Bind support to Results and cite keys.
-**Limits and next move**: State limits and the next lawful route.
-**Section rules**: Keep subject-specific Content and Aim names aligned.
-
 ## Content
 ### 1 · Question and boundary · demo evidence question
 **Evidence boundary**: how the open question admits a source.
@@ -346,6 +334,22 @@ class PaperRunContractTest(unittest.TestCase):
                 errors,
             )
 
+    def test_page_run_results_are_not_discovery_pairs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            make_topic_contract(topic)
+            page_result = topic / "results" / "rp00_mermaid-structure"
+            page_result.mkdir(parents=True)
+            (page_result / "runtime.yaml").write_text(
+                "family: page\noperation: interactive-writing\nstatus: complete\n",
+                encoding="utf-8",
+            )
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertFalse(
+                any(error.startswith("orphan-result:") for error in errors),
+                errors,
+            )
+
     def test_report_counts_must_match_run_inventory(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             topic = make_topic_path(Path(temp))
@@ -482,20 +486,27 @@ class PaperRunContractTest(unittest.TestCase):
             self.assertEqual(0, exit_code)
             self.assertTrue(canonical.is_file())
 
-    def test_page_requires_writing_style(self) -> None:
+    def test_page_does_not_require_writing_style_section(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_topic_path(Path(temp))
+            make_topic_contract(topic)
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertFalse(errors, errors)
+
+    def test_page_rejects_retired_writing_section(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             topic = make_topic_path(Path(temp))
             make_topic_contract(topic)
             page = topic / f"{topic.name}.md"
             page.write_text(
-                page.read_text(encoding="utf-8").replace(
-                    "## Writing Style", "## Local prose notes"
-                ),
+                page.read_text(encoding="utf-8")
+                .replace("## Content", "## Writing Style\nLegacy notes.\n\n## Content"),
                 encoding="utf-8",
             )
             errors, _, _ = paper_runs.check_topic(topic)
             self.assertTrue(
-                any(error.startswith("page-writing-style-missing:") for error in errors)
+                any(error.startswith("page-retired-section:") for error in errors),
+                errors,
             )
 
     def test_content_division_requires_captioned_face_diagram(self) -> None:

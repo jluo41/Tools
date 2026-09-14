@@ -64,6 +64,27 @@ def fixture(root, patient="patient-a", *, add_open=True):
     return folder, directory
 
 
+def ri_fixture(root, patient="patient-c"):
+    """Create an empty instance, then bind one RI to a normal R ticket."""
+    folder = root / patient
+    data = folder / "outline/evidence/materials/snapshot-01.yaml"
+    write(data, {"snapshot": "immutable-01", "subject": patient, "tables": ["events"]})
+    dataset = {"id": patient, "version": "snapshot-01", "manifest": str(data),
+               "sha256": app.digest(data)}
+    write(folder / "workflow/insight.yaml", {
+        "schema": "haipipe.insight-instance/v1", "instance": f"study/{patient}",
+        "topic": "Rebound a reusable analysis to new data", "datasets": [dataset], "items": []})
+    base = folder / "runs/r01_description.sh"
+    base.parent.mkdir(parents=True)
+    base.write_text("#!/bin/sh\n# reusable normal Run ticket\nexit 0\n", encoding="utf-8")
+    packet = app.bind_insight_run(
+        folder, base_run="r01_description", base_ticket="runs/r01_description.sh",
+        datasets=[f"{patient}@snapshot-01"], stem="description",
+        question="What does the rebound dataset establish?", target="wisdom",
+        expected="A sourced DIKW Result", acceptance="Every claim traces to the new dataset")
+    return folder, base, packet
+
+
 class InsightItemsTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -250,6 +271,47 @@ class InsightItemsTest(unittest.TestCase):
         review["reviewer"] = review["author"]
         write(path, review)
         self.assertTrue(any("reviewer must differ" in e for e in self.faults()))
+
+    def test_bind_allocates_first_class_ri_pointing_to_r_and_new_dataset(self):
+        folder, base, packet = ri_fixture(self.root, "patient-c")
+        manifest, rows, errors = app.inspect(folder)
+        self.assertEqual([], errors)
+        self.assertEqual("haipipe.insight-instance/v2", manifest["schema"])
+        self.assertEqual("ri01_description", packet["insight_run"])
+        self.assertEqual("r01_description", rows[0]["item"]["base_run"]["id"])
+        self.assertEqual(["patient-c@snapshot-01"], rows[0]["item"]["datasets"])
+        self.assertEqual("study/patient-c#ri01_description@v001",
+                         rows[0]["versions"][0]["execution"])
+        self.assertTrue((folder / "runs/ri01_description.yaml").is_file())
+        self.assertTrue(base.is_file())
+
+    def test_second_dataset_gets_new_ri_without_overwriting_base_r(self):
+        folder, base, first = ri_fixture(self.root, "patient-d")
+        before = app.digest(base)
+        manifest_path = folder / "workflow/insight.yaml"
+        manifest = app.read_yaml(manifest_path)
+        data = folder / "outline/evidence/materials/snapshot-02.yaml"
+        write(data, {"snapshot": "immutable-02", "subject": "patient-e"})
+        manifest["datasets"].append({"id": "patient-e", "version": "snapshot-02",
+                                     "manifest": str(data), "sha256": app.digest(data)})
+        write(manifest_path, manifest)
+        second = app.bind_insight_run(
+            folder, base_run="r01_description", base_ticket="runs/r01_description.sh",
+            datasets=["patient-e@snapshot-02"], stem="description",
+            question="What does the second dataset establish?", target="wisdom",
+            expected="A second sourced DIKW Result",
+            acceptance="Every claim traces to the second dataset")
+        self.assertEqual("ri01_description", first["insight_run"])
+        self.assertEqual("ri02_description", second["insight_run"])
+        self.assertEqual(before, app.digest(base))
+        self.assertNotEqual(first["execution"], second["execution"])
+        self.assertEqual([], app.inspect(folder)[2])
+
+    def test_changed_base_r_ticket_stales_ri_binding(self):
+        folder, base, _ = ri_fixture(self.root, "patient-f")
+        base.write_text("#!/bin/sh\n# changed normal Run\nexit 0\n", encoding="utf-8")
+        self.assertTrue(any("base_run" in fault and "hash mismatch" in fault
+                            for fault in app.inspect(folder)[2]))
 
 
 if __name__ == "__main__":

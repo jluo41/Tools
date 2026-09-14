@@ -1,5 +1,9 @@
 # Changelog · haipipe-plugin-delivery
 
+## 0.5.0 — 2026-09-13
+- Bind each delivery target/version to a Page `RD` Delivery Run while keeping
+  the single Delivery tab and Page CHECK close gate.
+
 ## 0.4.1 — 2026-09-07
 - Remove the standalone delivery-QA lane and sibling report from the active
   contract. `delivery/build-manifest.json` is the single build receipt;

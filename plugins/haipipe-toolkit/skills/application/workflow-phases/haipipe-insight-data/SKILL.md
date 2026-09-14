@@ -7,8 +7,8 @@ description: >-
   observations the board must cite once. Trigger: insight data, observations,
   I2, folder-kind data, legacy page-type data, /haipipe-insight-data.
 metadata:
-  version: "1.0.3"
-  last_updated: "2026-09-01"
+  version: "1.1.0"
+  last_updated: "2026-09-13"
   workflow: haipipe-insight-workflow
   phase: I2
   folder_kind: data
@@ -26,6 +26,8 @@ metadata:
 
 Load `haipipe-folder`, `haipipe-page`, `haipipe-insight`, and the workflow.
 Use `folder-kind: data`; `page-type: data` remains a read-only compatibility key.
+Read `../../haipipe-insight/ref/page-v2-adapter.md` before planning evidence or
+claiming GI2.
 
 ## Position
 
@@ -42,7 +44,8 @@ explanation, strength, or recommendation.
 ## Input
 
 - one registered QD ask;
-- one exact source Folder plus an accepted Run/Result backed by a named run;
+- one exact accepted Supporting Run Result, or a governed page-local source
+  frozen in Local Input under the shared Page contract;
 - source version, run identity, unit, window, and coverage.
 
 ## Page Face
@@ -54,10 +57,14 @@ reported once here; higher rungs cite rows instead of restating them.
 ## Task Face
 
 Resolve the source relationship and live status through the Folder's Run/Result
-receipt. For every value coming from a Task or Discovery Folder, verify the
-named Supporting Run, coverage, and runtime receipt; transcribe only
-reproducible observations; and reopen this Folder on rerun. This phase does not
-launch another Folder's Run.
+receipt. That accepted Run/Result is a Supporting Result; resolve its evidence
+through the shared Page graph: Supporting Run Result →
+frozen Local Input → local Page Evidence Run → typed VALUE/CITE/DISPLAY Result.
+For every value coming from a Task or Discovery Folder, verify the named
+Supporting Run, coverage, and runtime receipt; transcribe only reproducible
+observations; and reopen this Folder on rerun. This phase may commission a
+missing Supporting Run only after the Page SURVEY `Decide` gate; it never
+executes another Folder invisibly.
 
 One local Run may normalize or validate an intermediate owned by this Data
 Folder, but it cannot authorize a displayed value. Every displayed number
@@ -68,19 +75,19 @@ Folder.
 
 ## Plugins
 
-- full Supporting Run id required for the source Folder relationship and live
-  task status;
-- a consumer-owned Local Run/Result is required when normalization or validation
-  is performed;
+- full Supporting Run id and accepted Result required for cross-Folder evidence;
+- one frozen Local Input and one consumer-owned local Evidence Run/Result are
+  required for each make-item, including displayed values;
 - `outline` required;
 - `runs` optional only when this Folder itself owns a declared Run/Result
   derivation; scripts remain optional. Otherwise it is absent.
 
 ## Gate and Closure
 
-GI2 passes when every D value is bound by path to an accepted Run/Result backed
-by a named source/run, unit/window and coverage are explicit, gaps are visible,
-and no interpretation has entered.
+GI2 passes only after Page CHECK/CLOSE, when every D value is bound by path to
+an accepted Supporting Result, frozen Local Input, and ready typed local Result;
+unit/window and coverage are explicit, gaps are visible, and no interpretation
+has entered.
 A rerun or changed source version reopens the affected rows and children.
 
 ## Handoff
@@ -91,4 +98,5 @@ coverage/gaps. Do not hand it a precomputed claim.
 ## Files
 
 - Page: `<DataFolder>/<DataFolder>.md`
-- Cross-Folder binding: full Supporting Run ids plus consumer Local Run/Result
+- Evidence graph: `outline/<stem>-evidence-items.md`, generated
+  `outline/evidence/supporting-runs/`, frozen Local Input, and local Results

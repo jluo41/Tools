@@ -3,6 +3,30 @@ haipipe-application — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [3.0.0] — 2026-09-13
+
+- Make Design a clean break: `rdNN_*` identities, no v1, D0-D5, PageX,
+  thread/plugin, Page-Type, or migration adapters.
+- Move Design Brief and Unit out of `workflow-phases/`; keep Insight I0-I5
+  unchanged.
+
+## [2.0.0] — 2026-09-13
+
+- Align the DesignBoard door with Design v3 and Page 0.89: one DS Folder now
+  reports independent Design and Page frontiers.
+- Candidate adoption is the Page domain ruling; `delivery/render/` remains the
+  candidate preview while Page projections use web/LaTeX/Word delivery lanes.
+
+## [1.3.0] — 2026-09-13
+
+- Rebase the Insight lane on Page v2 and retire PageX from current evidence and
+  cross-board writes. Design freezes exact signed-W inputs without inventing a
+  Run identity.
+- Expose Question Groups as the derived `partition × DIKW target` status and
+  scheduling view while preserving one stable question row and CELL frontier.
+- Historical PageX remains readable migration metadata; settled artifacts are
+  OWE-ON-NEXT-TOUCH.
+
 ## [1.2.0] — 2026-09-08
 
 - Dataset-first research uses topic/data instances with item Runs; downstream chains select exact accepted item Results without waiting for unrelated siblings.

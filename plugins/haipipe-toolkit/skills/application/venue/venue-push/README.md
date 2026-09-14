@@ -20,7 +20,7 @@ design_profile:
   narrative: none
   display: none
   section_edit: none
-  terminal: accepted
+  terminal: adopted
 ```
 
 
@@ -30,23 +30,23 @@ design_profile:
 template:
   - slot: title
     job: hook + urgency
-    claim_source: released card grant
+    claim_source: released Commission
     chars: ~50
   - slot: body
     job: benefit + action hint
-    claim_source: GD0-closed Brief + signed Wisdom handoff
+    claim_source: released Brief + signed Wisdom handoff
     chars: ~100
 ```
 
 
 ## Phase use
 
-### D1/D2 · bet and realize
+### Commission and Generate
 
 Keep the grant narrow: one source for the hook and one for the action. Author
-one title, one body, and one deep-link target inside the released card's rails.
+one title, one body, and one deep-link target inside the released Commission's rails.
 
-### D3/D4 · judge and decide
+### Verify and adopt
 Title grabs attention. Body gives one reason + one action.
 No opt-out in body (handled by OS notification settings). Render the exact
-notification to `delivery/render/`, then accept or emit.
+notification to `delivery/render/`, then adopt or decline.

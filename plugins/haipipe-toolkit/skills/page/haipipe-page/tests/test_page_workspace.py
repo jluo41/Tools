@@ -1,4 +1,5 @@
 import hashlib
+import json
 from pathlib import Path
 import shutil
 import subprocess
@@ -10,6 +11,11 @@ ENGINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ENGINE))
 from src.page_workspace import (build_page, create_page, load_page, read_source,
                                 render_page, save_source)
+from src.page_setup import run_setup, setup_markdown_page
+from src.page_setup_check import validate_setup
+from src.page_migration import migrate_global_paragraphs
+from live.outline_preview import bullet_token, read_previews
+from src.plan_shape import iter_plan_bullets
 
 
 def test_import_edit_build_portable(tmp_path):
@@ -149,6 +155,38 @@ def test_runtime_copied_without_board(tmp_path):
     assert 'id="static-workspace"' in markup
 
 
+def test_setup_cli_accepts_file_then_folder(tmp_path):
+    isolated = tmp_path / "runtime"
+    shutil.copytree(ENGINE, isolated, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    source = tmp_path / "working-note.md"
+    source.write_text(
+        "# Working Note\n\n## Problem\n\nA revision can lose context.\n\n"
+        "## Requirement\n\nThe Page should preserve each decision.\n",
+        encoding="utf-8",
+    )
+    cli = [sys.executable, str(isolated / "cli/page.py"), "setup"]
+    created = subprocess.run([*cli, str(source)], cwd=tmp_path, capture_output=True, text=True)
+    assert created.returncode == 0, created.stderr
+    page = tmp_path / "working-note"
+    assert (page / "delivery/web/index.html").is_file()
+    assert (page / "results/r01_page-setup/report.md").is_file()
+    runtime = (page / "results/r01_page-setup/runtime.yaml").read_text()
+    assert "outcome: \"Created semantic records:" in runtime
+    assert "inputs:\n  - path:" in runtime
+    assert "supersedes: null" in runtime
+    assert "failure: null" in runtime
+    first_checks = json.loads((page / "results/r01_page-setup/checks.json").read_text())
+    assert first_checks["blocking_gate"] == "pass"
+    assert '"mode": "create-semantic-records"' in created.stdout
+
+    resumed = subprocess.run([*cli, str(page)], cwd=tmp_path, capture_output=True, text=True)
+    assert resumed.returncode == 0, resumed.stderr
+    assert (page / "results/r02_page-setup/report.md").is_file()
+    second_checks = json.loads((page / "results/r02_page-setup/checks.json").read_text())
+    assert second_checks["blocking_gate"] == "pass"
+    assert '"mode": "resume-and-build"' in resumed.stdout
+
+
 def test_page_styles_are_shared_with_board(tmp_path):
     from src.page_assets import css
     board_assets = ENGINE.parents[1] / "board/haipipe-board/assets/css"
@@ -163,5 +201,268 @@ def test_page_styles_are_shared_with_board(tmp_path):
     assert 'class="single split standalone"' in markup
     assert '<main id="reading" class="wrap">' in markup
     assert 'id="page-plugin-config"' in markup
-    assert markup.index('🧭 Outline') < markup.index('⚙️ Runs') < markup.index('📤 Delivery') < markup.index('📂 Folder')
+    assert markup.index('🧭 Outline') < markup.index('📤 Delivery') < markup.index('📂 Folder')
+    assert '⚙️ Runs' not in markup
     assert '>Evidence</a>' not in markup
+
+
+def test_markdown_setup_populates_real_page_records(tmp_path):
+    original = tmp_path / "argument.md"
+    original.write_text(
+        "# A Useful Argument\n\n```mermaid\nflowchart LR\nA --> B\n```\n\n"
+        "## When revisions lose context\n\n"
+        "Consider a narrow sentence edit. It can unexpectedly undo settled choices.\n\n"
+        "> We want prior decisions to survive the next turn.\n\n"
+        "## Preserve the decision\n\n"
+        "The Page should keep feedback with the prose it changes.\n",
+        encoding="utf-8",
+    )
+    page = create_page(original, tmp_path / "argument-page")
+    result = setup_markdown_page(page)
+    page = load_page(page.folder)
+
+    assert result == {
+        "title": "A Useful Argument", "divisions": 2, "paragraphs": 3,
+        "bullets": 3, "source_sentences": 4,
+        "plan": "outline/argument-page-outline-v0.1.md",
+        "preview": "outline/argument-page-preview.md", "run": "r01_page-setup",
+        "delivery": "delivery/web/index.html", "mode": "create-semantic-records",
+        "checks": {"pass": 11, "missing": 0, "deferred": 3, "untested": 2, "n/a": 1},
+        "blocking_gate": "pass",
+    }
+    face = page.source.read_text(encoding="utf-8")
+    assert "Working Page for" not in face
+    assert "Setup complete; Outline review pending" in face
+    assert "When revisions lose context" in face
+    plan = page.folder / result["plan"]
+    blocks = list(iter_plan_bullets(plan.read_text(encoding="utf-8")))
+    previews = read_previews(page.source)
+    assert len(blocks) == len(previews) == 3
+    assert all(block["address"] in previews for block in blocks)
+    assert [block["paragraph"] for block in blocks] == ["C1.P1", "C1.P2", "C2.P3"]
+    assert previews["C1.P1.B1"]["text"] == (
+        "Consider a narrow sentence edit. It can unexpectedly undo settled choices."
+    )
+    assert "It can unexpectedly undo settled choices" in blocks[0]["head"]
+    assert "[Example]" in plan.read_text(encoding="utf-8")
+    assert "[Requirement]" in plan.read_text(encoding="utf-8")
+    assert (page.folder / "outline/argument-page-context.md").is_file()
+    assert (page.folder / "outline/argument-page-files.md").is_file()
+    assert (page.folder / "results/r01_page-setup/report.md").is_file()
+    audit = json.loads((page.folder / "results/r01_page-setup/checks.json").read_text())
+    assert audit["blocking_gate"] == "pass"
+    for name in ("page_face", "content", "shape", "content_draft", "static_delivery"):
+        artifact = audit["artifacts"][name]
+        path = page.folder / artifact["path"]
+        assert artifact["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert {item["id"] for item in audit["checks"]} == {
+        "source_configuration", "input_preservation", "opening", "outline_structure",
+        "paragraph_global_order",
+        "content_draft_mapping", "semantic_role_syntax", "content", "aims_structure",
+        "bullet_head_readability", "static_delivery", "semantic_role_judgment",
+        "outline_logic_judgment", "aim_targets",
+        "human_shape_approval", "human_content_acceptance", "hosting",
+    }
+
+    markup = render_page(page)
+    assert "The attached source is rendered here directly" not in markup
+    assert "<h1>A Useful Argument</h1>" not in markup
+    assert "<summary>When revisions lose context</summary>" in markup
+    assert "Consider a narrow sentence edit" in markup
+    assert "Content preview" in (page.folder / result["preview"]).read_text(encoding="utf-8")
+    assert "A Useful Argument" in build_page(page).read_text(encoding="utf-8")
+
+
+def test_address_migration_preserves_drafts_and_makes_paragraphs_global(tmp_path):
+    original = tmp_path / "argument.md"
+    original.write_text(
+        "# Argument\n\n## First\n\nThe first move establishes context.\n\n"
+        "## Second\n\nThe second move closes the argument.\n",
+        encoding="utf-8",
+    )
+    page = create_page(original, tmp_path / "page")
+    setup_markdown_page(page)
+    page = load_page(page.folder)
+    plan = page.folder / "outline/page-outline-v0.1.md"
+    preview = page.folder / "outline/page-preview.md"
+    plan.write_text(plan.read_text().replace("C2.P2", "C2.P1"), encoding="utf-8")
+    preview.write_text(preview.read_text().replace("C2.P2", "C2.P1"), encoding="utf-8")
+
+    result = migrate_global_paragraphs(page)
+
+    assert result["changed_addresses"] == 1
+    assert "### C2.P2 ·" in plan.read_text()
+    assert "## C2.P2.B1" in preview.read_text()
+    assert read_previews(page.source)["C2.P2.B1"]["text"] == (
+        "The second move closes the argument."
+    )
+
+
+def test_setup_never_clips_a_long_reader_move_to_a_word_limit(tmp_path):
+    original = tmp_path / "argument.md"
+    sentence = (
+        "Appointment wait time indicates how quickly a clinic can offer an "
+        "initial visit."
+    )
+    comparison = (
+        "Patients may compare wait time when choosing among clinics that offer "
+        "the same service."
+    )
+    limitation = (
+        "Short waits do not guarantee that every patient can use the available "
+        "appointment."
+    )
+    oxford = (
+        "Transportation, work schedules, and insurance rules can still prevent "
+        "practical access."
+    )
+    original.write_text(
+        f"# Access\n\n## Availability\n\n{sentence}\n\n{comparison}\n\n"
+        f"## Constraints\n\n{limitation}\n\n{oxford}\n",
+        encoding="utf-8",
+    )
+    page = create_page(original, tmp_path / "page")
+    result = setup_markdown_page(page)
+    plan = (page.folder / result["plan"]).read_text(encoding="utf-8")
+    assert sentence.rstrip(".") in plan
+    assert comparison.rstrip(".") in plan
+    assert limitation.rstrip(".") in plan
+    assert oxford.rstrip(".") in plan
+    assert "clinic can offer\n" not in plan
+    assert "Transportation, work schedules\n" not in plan
+    blocks = list(iter_plan_bullets(plan))
+    assert [block["paragraph"] for block in blocks] == [
+        "C1.P1", "C1.P2", "C2.P3", "C2.P4",
+    ]
+    assert "[Possibility] Patients may compare" in plan
+    assert "[Possibility] Appointment wait time" not in plan
+    assert "[Possibility] Short waits" not in plan
+    assert "[Mechanism] Transportation, work schedules" in plan
+    checks = json.loads((page.folder / "results/r01_page-setup/checks.json").read_text())
+    readability = next(
+        item for item in checks["checks"] if item["id"] == "bullet_head_readability"
+    )
+    assert readability["status"] == "pass"
+
+
+def test_markdown_setup_refuses_to_replace_authored_records(tmp_path):
+    original = tmp_path / "argument.md"
+    original.write_text("# Argument\n\n## Claim\n\nA claim needs review.\n", encoding="utf-8")
+    page = create_page(original, tmp_path / "page")
+    setup_markdown_page(page)
+    with pytest.raises(ValueError, match="already has authored/setup records"):
+        setup_markdown_page(load_page(page.folder))
+
+
+def test_setup_resume_builds_without_replacing_shape(tmp_path):
+    from src.page_setup import run_setup
+
+    original = tmp_path / "argument.md"
+    original.write_text("# Argument\n\n## Claim\n\nA claim needs review.\n", encoding="utf-8")
+    page = create_page(original, tmp_path / "page")
+    setup_markdown_page(page)
+    page = load_page(page.folder)
+    plan = page.folder / "outline/page-outline-v0.1.md"
+    before = plan.read_bytes()
+    result = run_setup(page)
+    assert result["mode"] == "resume-and-build"
+    assert result["run"] == "r02_page-setup"
+    assert result["delivery"] == "delivery/web/index.html"
+    assert result["blocking_gate"] == "pass"
+    assert result["source_sentences"] == 1
+    assert plan.read_bytes() == before
+
+
+def test_setup_resume_preserves_recorded_source_count_after_preview_normalization(tmp_path):
+    original = tmp_path / "argument.md"
+    original.write_text(
+        "# Argument\n\n## Claim\n\nDetailed edition · Cartoon edition · Compare both series\n",
+        encoding="utf-8",
+    )
+    page = create_page(original, tmp_path / "page")
+    created = setup_markdown_page(page)
+    page = load_page(page.folder)
+    preview = page.folder / "outline/page-preview.md"
+    preview.write_text(
+        preview.read_text(encoding="utf-8").replace(
+            "Detailed edition · Cartoon edition · Compare both series",
+            "Detailed edition . Cartoon edition . Compare both series",
+        ),
+        encoding="utf-8",
+    )
+
+    resumed = run_setup(page)
+
+    assert created["source_sentences"] == 1
+    assert resumed["source_sentences"] == 1
+
+
+def test_setup_resume_rebinds_reviewed_head_without_changing_draft(tmp_path):
+    original = tmp_path / "argument.md"
+    original.write_text(
+        "# Argument\n\n## Claim\n\nA rough draft exposes a hidden question. "
+        "The next draft should preserve the answer.\n",
+        encoding="utf-8",
+    )
+    page = create_page(original, tmp_path / "page")
+    setup_markdown_page(page)
+    page = load_page(page.folder)
+    plan = page.folder / "outline/page-outline-v0.1.md"
+    before = read_previews(page.source)["C1.P1.B1"]["text"]
+    plan.write_text(
+        plan.read_text().replace(
+            "[Requirement] The next draft should preserve the answer",
+            "[Learning] Draft answers must survive the next revision",
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_setup(page)
+    block = iter_plan_bullets(plan.read_text())[0]
+    rebound = read_previews(page.source)["C1.P1.B1"]
+
+    assert result["blocking_gate"] == "pass"
+    assert rebound["text"] == before
+    assert rebound["bullet-sha256"] == bullet_token(block)
+
+
+def test_setup_resume_fails_gate_and_records_audit_when_content_draft_is_missing(tmp_path):
+    from src.page_setup import run_setup
+
+    original = tmp_path / "argument.md"
+    original.write_text("# Argument\n\n## Claim\n\nA claim needs review.\n", encoding="utf-8")
+    page = create_page(original, tmp_path / "page")
+    setup_markdown_page(page, input_file=original)
+    page = load_page(page.folder)
+    (page.folder / "outline/page-preview.md").unlink()
+
+    with pytest.raises(ValueError, match="setup validation failed"):
+        run_setup(page)
+
+    runtime = (page.folder / "results/r02_page-setup/runtime.yaml").read_text()
+    audit = json.loads((page.folder / "results/r02_page-setup/checks.json").read_text())
+    assert "status: failed" in runtime
+    assert audit["blocking_gate"] == "fail"
+    draft = next(item for item in audit["checks"] if item["id"] == "content_draft_mapping")
+    assert draft["status"] == "missing"
+    assert draft["blocking"] is True
+
+
+def test_force_setup_allows_intentional_content_edit_without_recertifying_intake_hash(tmp_path):
+    original = tmp_path / "argument.md"
+    original.write_text("# Argument\n\n## Claim\n\nA claim needs review.\n", encoding="utf-8")
+    page = create_page(original, tmp_path / "page")
+    setup_markdown_page(page, input_file=original)
+    page = load_page(page.folder)
+    page.content.write_text(
+        "# Argument\n\n## Claim\n\nAn intentionally revised claim still needs review.\n",
+        encoding="utf-8",
+    )
+
+    result = setup_markdown_page(page, force=True, input_file=original)
+
+    assert result["blocking_gate"] == "pass"
+    audit = json.loads((page.folder / "results/r02_page-setup/checks.json").read_text())
+    preservation = next(item for item in audit["checks"] if item["id"] == "input_preservation")
+    assert preservation["status"] == "untested"
+    assert preservation["blocking"] is False

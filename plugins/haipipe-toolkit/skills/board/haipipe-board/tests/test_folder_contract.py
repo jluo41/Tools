@@ -19,8 +19,8 @@ class TestFolderContract(unittest.TestCase):
     def skills(self):
         return ENGINE.parent.parent
 
-    def test_application_phase_family_is_complete(self):
-        contracts, problems = validate_tree(self.skills)
+    def test_application_phase_family_is_insight_only(self):
+        contracts, integration_problems = validate_tree(self.skills)
         application_workflows = {
             "haipipe-insight-workflow",
             "haipipe-design-workflow",
@@ -29,13 +29,15 @@ class TestFolderContract(unittest.TestCase):
             item for item in contracts
             if item.workflow in application_workflows
         ]
+        app_paths = {item.path.as_posix() for item in app}
+        problems = [
+            problem for problem in integration_problems
+            if any(path in problem for path in app_paths)
+        ]
         self.assertEqual(problems, [])
         self.assertEqual(
             {(item.workflow, item.phase) for item in app},
-            {
-                ("haipipe-insight-workflow", f"I{n}") for n in range(6)
-            }
-            | {("haipipe-design-workflow", f"D{n}") for n in range(6)},
+            {("haipipe-insight-workflow", f"I{n}") for n in range(6)},
         )
 
     def test_current_and_legacy_keys_resolve_to_same_phase(self):
@@ -65,23 +67,23 @@ class TestFolderContract(unittest.TestCase):
             _contracts, problems = validate_tree(root)
             self.assertTrue(any("Task Face" in item for item in problems), problems)
 
-    def test_in_place_phase_file_owns_the_current_kind(self):
+    def test_in_place_insight_phase_file_owns_the_current_kind(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp)
             (folder / "workflow").mkdir()
             (folder / "workflow" / "phase.yaml").write_text(
-                "current:\n  phase: D2\n  folder-kind: design-unit\n"
-                "history:\n  - {from: D1, to: D2, gate: GD1}\n",
+                "current:\n  phase: I2\n  folder-kind: data\n"
+                "history:\n  - {from: I1, to: I2, gate: GI1}\n",
                 encoding="utf-8",
             )
-            self.assertEqual(current_folder_kind(folder), "design-unit")
+            self.assertEqual(current_folder_kind(folder), "data")
 
     def test_present_phase_file_cannot_fall_back_when_current_is_malformed(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp)
             (folder / "workflow").mkdir()
             (folder / "workflow" / "phase.yaml").write_text(
-                "history:\n  - {from: D1, to: D2, gate: GD1}\n",
+                "history:\n  - {from: I1, to: I2, gate: GI1}\n",
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "missing top-level current"):

@@ -1,5 +1,12 @@
 # haipipe-insight-meta · version history
 
+## 1.1.0 — 2026-09-13
+
+- Rebase I0 on Page v2 Context/Evidence/CHECK: cross-Folder sources enter as
+  accepted Supporting Run Results and governed local static inputs are frozen.
+- Retire active PageX and Probe selection; partition changes now also recompute
+  the derived partition-by-DIKW Question Groups.
+
 ## 1.0.0 — 2026-08-31
 
 - Migrated from `haipipe-page-for-meta` to phase-owned `haipipe-insight-meta`.

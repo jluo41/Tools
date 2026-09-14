@@ -35,6 +35,26 @@ class _SafeMarkup(HTMLParser):
         self.parts.append(escape(data, quote=False))
 
 
+def _markdown_sections(markdown):
+    """Split imported H2 sections without elevating their H1 above the Page."""
+    prelude, sections, current, fence = [], [], None, False
+    for line in markdown.splitlines():
+        if line.lstrip().startswith("```"):
+            fence = not fence
+        if not fence and line.startswith("# ") and current is None and not sections:
+            # The outer Page already carries the document title.  Rendering the
+            # imported H1 again created the large duplicate title seen in both
+            # standalone and Board-mounted Pages.
+            continue
+        if not fence and line.startswith("## "):
+            current = [line[3:].strip(), []]
+            sections.append(current)
+            continue
+        (current[1] if current else prelude).append(line)
+    return "\n".join(prelude).strip(), [(title, "\n".join(lines).strip())
+                                        for title, lines in sections]
+
+
 def render_source_content(page):
     folder = (Path(grammar.BASE or ".") / page["file"]).resolve().parent
     relative = page.get("source_content", "")
@@ -46,7 +66,8 @@ def render_source_content(page):
     if not source.is_file():
         return '<p class="source-error">Attached source is missing.</p>'
     href = quote(grammar._rel(source), safe="/")
-    title = f'<p class="source-caption">Source: <a href="{esc(href)}">{esc(source.name)}</a></p>'
+    title = (f'<p class="source-caption">Editable Content · '
+             f'<a href="{esc(href)}">{esc(source.name)}</a></p>')
     if source.suffix.lower() in {".html", ".htm"}:
         # Opaque origin: imported scripts cannot call the editor API or access
         # the host document. Assets remain relative to the imported HTML.
@@ -80,8 +101,21 @@ def render_source_content(page):
             # A supplied document is not executable Page grammar. In particular,
             # ![[...]] must not invoke the repository-walking embed resolver.
             from .page_stage import render_doc
+            prelude, sections = _markdown_sections(markdown)
+            if sections:
+                chunks = ([f'<div class="cbody prelude">{render_doc(prelude)}</div>']
+                          if prelude else [])
+                for index, (heading, section) in enumerate(sections):
+                    chunks.append(
+                        f'<details class="csec"{" open" if index == 0 else ""}>'
+                        f'<summary>{grammar.inline(heading)}</summary>'
+                        f'<div class="cbody">{render_doc(section)}</div></details>'
+                    )
+                rendered = "".join(chunks)
+            else:
+                rendered = render_doc(markdown)
             sanitizer = _SafeMarkup()
-            sanitizer.feed(render_doc(markdown))
+            sanitizer.feed(rendered)
             content = ''.join(sanitizer.parts)
         finally:
             grammar.PAGE_DIR = old

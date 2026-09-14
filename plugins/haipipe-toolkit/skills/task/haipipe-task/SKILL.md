@@ -10,8 +10,8 @@ description: >-
   report, run, audit, insight, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-09-08"
+  version: "1.2.0"
+  last_updated: "2026-09-13"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -73,6 +73,27 @@ A Task Page declares `folder-kind: task`. The Task state becomes settled only
 when P-B-E-R is terminal, every load-bearing Result receipt is current, and the
 Task Page's `#### READING · current` gate passes. A new Run reopens every
 dependent reading.
+
+## Two top-level doors, one Folder
+
+`haipipe-task` and `haipipe-page` are peer entry doors over the same physical
+`tNN_<task>/` Folder. Choose the door by the primary product of the requested
+work, then preserve the other face's authority:
+
+```text
+haipipe-task  independently testable work → Task Run → durable Result
+haipipe-page  human-shaped meaning → Page Run → accepted text → release
+```
+
+Task owns Folder identity, P-B-E-R, native `rNN` allocation, execution,
+receipts, Results, and task readiness. Page owns the readable Page frame,
+`rpNN` interaction, evidence binding, Content adoption, CHECK, and release.
+Page may propose needed Task work but never mints its `rNN`; Task may return a
+Result but never declares Page text accepted or released. The two counters are
+independent, so `r01` and `rp01` may coexist in one Folder.
+
+Load `ref/task-page.md` whenever work crosses these doors. It is the detailed
+authority for the handoff, cross-face staleness, and Folder closure equation.
 
 ## Commands
 

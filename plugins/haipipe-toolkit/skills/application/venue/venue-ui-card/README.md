@@ -20,33 +20,33 @@ design_profile:
   narrative: required
   display: required
   section_edit: optional
-  terminal: accepted
+  terminal: adopted
 ```
 
 ## Phase use
 
-### D1/D2 · bet and realize
+### Commission and Generate
 
-Every load-bearing UI element and displayed value maps through the released
-card grant. Data bindings name accepted sources; raw results never substitute.
+Every load-bearing UI element and displayed value maps through released
+Commission inputs. Data bindings name accepted sources; raw results never substitute.
 
-### D2 · hierarchy
+### Generate · hierarchy
 Hierarchical arc:
 - Header: hook / alert
 - Body: detail / evidence
 - Action: what to do
 
-### D2 · display requirement
+### Generate · display requirement
 Widget map: header type, body elements (gauge, list, chart),
 action button, data sources. Each unit carries a per-unit Job:
 one sentence on what the reader must see or do (the absorbed
-minimap concern) — if the card has sub-widgets, one Job per widget.
+minimap concern) — if the unit has sub-widgets, one Job per widget.
 
-### D2 · optional widget pass
+### Generate · optional widget pass
 Per-widget review pass on multi-widget cards; simple cards
 (header + body + button) skip.
 
-### D3/D4 · judge and decide
+### Verify and adopt
 UI spec with layout, content, interaction, and data binding,
 owned by the Design Unit. Include an ASCII wireframe, judge every widget and
-binding, render to `delivery/render/`, then accept or emit.
+binding, render to `delivery/render/`, then adopt or decline.

@@ -7,8 +7,8 @@ description: >-
   red-team, or compare admitted research ideas before human selection.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-08"
+  version: "0.1.2"
+  last_updated: "2026-09-13"
   capability_family: "2_test"
 ---
 
@@ -75,7 +75,10 @@ supports it.
    execution gate. Resume the affected axis when new evidence lands.
 8. Refresh `projection/paper-ideation-sync.yaml` and route it to the same
    evergreen Paper P0 Page whenever an Idea, evidence reading, comparison
-   order, elimination, or next route changes.
+   order, elimination, or next route changes. Use the Page's current update
+   boundary: the working projection may become current while adopted Content
+   and delivery remain stale until the Page release barrier opens. This sync
+   does not allocate an `rpNN` Page Run.
 
 Independent Idea checks may run in parallel. Writes remain one canonical card
 and receipt per Idea; the router reconciles the matrix only after checking the

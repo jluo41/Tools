@@ -52,9 +52,13 @@ four Markdown headings into every source file.
 | Area | What it must contain | Completion test |
 |---|---|---|
 | Opening | A Page-specific explanation of the subject, why it matters, and what this Page covers. | A new reader can identify the purpose and boundary without guessing from the title. Generic intake text, placeholders and internal addresses alone do not pass. Opening is never omitted. |
-| Outline | The actual structure/plan and its applicable support, projected from the authoritative `outline/` records or the resolved owner's supported generated projection. | The projection reflects the current plan and intended Content; discrepancies and unresolved planning decisions are named. Do not copy a table or add an authored `## Outline` merely to satisfy this checklist. |
+| Outline | The actual structure/plan and its applicable support, projected from the authoritative `outline/` records or the resolved owner's supported generated projection. | Reading the Bullet heads alone reconstructs the argument in reader order. Each Bullet names one complete reader move and may map to one or more Draft sentences; punctuation never determines Bullet count. Discrepancies and unresolved planning decisions are named. Do not copy a table or add an authored `## Outline` merely to satisfy this checklist. |
 | Content | The actual work promised by Opening and Aims: authored material or the bound imported file. | The material is readable, its relevant assets/links work, and it fulfills the declared scope. A filename, blank heading, stock sample or successful build alone does not pass. Technical imports do not require scholarly rewriting. |
 | Aims | Explicit targets with stable IDs, a `Done when:` test, a factual `Now:`, and an evidence-supported tick. | A reader can see what is met, open, waiting or held and why. Division-level groups match Content; genuinely cross-division targets use the existing Page-level form. Default intake Aims do not certify all content goals. Aims is never omitted. |
+
+The Outline check also requires one uninterrupted Page-global paragraph
+sequence: `P1, P2, …, PN`. `P` does not reset when `C` changes, so after
+`C1.P3` the next paragraph is `C2.P4`; `B` restarts within each paragraph.
 
 ### Missing areas and legitimate exceptions
 
@@ -120,4 +124,13 @@ Keep this reusable checklist here. Do not automatically create a Page-local
 `CHECKLIST.md`, a fifth Page section, another status ledger, or new manifest
 fields. Report findings in the response; use existing Aims, plan or phase
 records only when updating that Page is authorized. Audits alone are read-only.
-This document guides agent checks; it does not add automatic CLI enforcement.
+The Markdown `setup` command writes a deterministic mechanical audit to its
+Result as `checks.json` and repeats it in `report.md`. Mechanical failures block
+the command. Its `bullet_head_readability` gate rejects clipped or dangling
+heads, planner imperatives, and setup heads outside a provisional 4–24 word
+range. Setup preserves a complete source clause instead of cutting at a word
+limit; the OUTLINE phase performs the semantic rewrite into its stricter
+4–11-word house style. Argument coherence still requires the Bullet-only reading
+test and remains explicitly untested;
+Aim achievement and human acceptance are also untested or deferred.
+This document remains the authority for the distinction between those gates.

@@ -2,7 +2,7 @@ board: Agent Roster
 ====================
 
 The Board family owns a producer base, an approver, a reviewer, an auditor,
-and (under `../page-workflows/agents/`) one agent per current lifecycle phase:
+and (under `../../page/page-workflows/agents/`) one agent per current lifecycle phase:
 
 ```text
 haipipe-page-creator-agent      producer BASE + the two non-phase verbs
@@ -10,8 +10,9 @@ haipipe-page-creator-agent      producer BASE + the two non-phase verbs
 haipipe-page-approver-agent     rule-bound machine ticks against approve-rules/
 haipipe-board-reviewer-agent    fresh read-only board review; base of the judge
 haipipe-page-auditor-agent      packet builder + receipt keeper, NOT a dispatcher
-../page-workflows/agents/       00 context, 01 outline, 02 evidence,
-                                03 content, and 04 check (the judge)
+../../page/page-workflows/agents/
+                               00 context, 01 outline, 02 evidence,
+                               03 content, and 04 check (the judge)
 ```
 
 The main session and `haipipe-board` remain the interactive writers. They
@@ -23,7 +24,7 @@ Dispatch
 --------
 
 ```text
-interactive one-off                  automatic one-Page RUN
+interactive one-off                  automatic one-Page workflow pass
 current session / haipipe-board      MAIN session invokes the Workflow;
         │                            auditor-agent validates the packet before,
         │ writes known change        stores + audits the receipt after
@@ -37,7 +38,7 @@ reviewer-agent: board review                   ├── producer: one current p
                                                           ↺ bounded
 ```
 
-The RUN lane is narrower than the Board door. It drives one already
+The workflow-pass lane is narrower than the Board door. The `RUN` verb drives one already
 identified persistent Page and never proposes Board structure, registers a
 Page, synchronizes a transcript, or edits `board.md`. Those actions still need
 the current conversation's context and remain with `haipipe-board`.
@@ -52,8 +53,8 @@ Board operations and synchronization  → ../haipipe-board/SKILL.md
 Board source and rendering grammar    → ../haipipe-board/ref/board-form.md
 Cold-read rules and prompt            → ../haipipe-board/ref/writing-rules.md
 Mechanical checks                     → ../haipipe-board/cli/check.py
-Page RUN packet and receipt           → ../page-workflows/haipipe-page-workflow/ref/page-run-contract.md
-Page RUN Workflow                     → ../haipipe-board/ref/page-lifecycle.workflow.js
+Page workflow-pass packet + receipt  → ../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md
+Board-hosted pass adapter            → ../haipipe-board/ref/page-lifecycle.workflow.js
 Lifecycle receipt audit               → ../haipipe-board/cli/pageflow.py
 Design rulings                        → ../../diagrams/BoardSkillBoard-260722/
 ```
@@ -62,7 +63,7 @@ Registration
 ------------
 
 Agent source definitions live in this folder and in
-`../page-workflows/agents/`. Claude's plugin convention only discovers
+`../../page/page-workflows/agents/`. Claude's plugin convention only discovers
 top-level `agents/*.md`, so each live agent has a symlink under
 `../../../agents/` to its source. As of 260819 the symlinked roster is:
 
@@ -80,4 +81,4 @@ symlink into `skills/`. The workspace's `~/.claude/agents/` uses the same
 pattern for immediate local dispatch. The `name:` frontmatter supplies the
 callable agent type after discovery — and only after: a type not registered
 when the session started is dispatched through the stand-in rule in
-`../page-workflows/agents/README.md`.
+`../../page/page-workflows/agents/README.md`.

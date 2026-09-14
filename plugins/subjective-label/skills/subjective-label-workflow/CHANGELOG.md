@@ -1,5 +1,23 @@
 # subjective-label-workflow · CHANGELOG
 
+## 0.11.0 · 2026-09-13
+
+Make P0 cardinality match its optional sidecars: one required corpus-contract
+Run plus only the discovery, policy-revision, reservation-supersession, and
+embedding Runs that were independently commissioned.
+
+## 0.10.0 · 2026-09-13
+
+Correct the receipt chain: distinguish the P0 contract receipt from G0 human
+meaning confirmation, keep G2 on the final STOP-qualified checkpoint, and bind
+both the handoff and frozen evaluation registry at G3.
+
+## 0.9.0 · 2026-09-13
+
+Adopt `rlNN_<operation>_<target>` as the native monotonic Labeling Run
+namespace while retaining legacy `rNN_labeling-*` envelopes as read-only
+history without aliases.
+
 ## 0.8.0 · 2026-09-01
 
 Publish the first concrete Phase × Run Map under the generic `haipipe-run`

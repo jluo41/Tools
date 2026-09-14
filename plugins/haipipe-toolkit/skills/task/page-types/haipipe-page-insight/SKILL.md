@@ -2,14 +2,14 @@
 name: haipipe-page-insight
 description: >-
   Create or update a task-side Insight Page Folder for one research topic and
-  data context. Its Insight Items are independently runnable questions; each
-  produces a versioned DIKW result and reusable findings. Use for dataset or
-  patient insight instances, item Runs, resumable checkpoints, shared Task
-  analysis calls, and exact instance/item/result citations. Application
+  data context. Each riNN Insight Run points to one reusable normal rNN Run,
+  freezes a new dataset binding, and produces an independent versioned DIKW
+  Result. Use for dataset or patient insight instances, RI binding, resumable
+  checkpoints, shared Task analysis calls, and exact RI/result citations. Application
   InsightBoard rung pages remain owned by haipipe-insight-workflow.
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-09-08"
+  version: "1.1.0"
+  last_updated: "2026-09-13"
   outline:
     mode: fixed
     source: "this SKILL.md"
@@ -22,8 +22,10 @@ metadata:
 An Insight Folder is one addressable research topic in an explicit data
 context. Its same-stem Markdown file is the Page Face. Its **Insight Items**
 are the questions and insight work performed inside that Page: one item owns
-one local Run ticket and a history of immutable execution Results. An item is
-not another Page Folder. The Page organizes the findings from its items.
+one `riNN` Insight Run binding and a history of immutable execution Results.
+The RI ticket points to one normal `rNN` Run ticket/recipe and freezes the new
+dataset binding; it never rewrites or impersonates that base R. An item is not
+another Page Folder. The Page organizes the findings from its items.
 
 Load `haipipe-page` and `haipipe-page-workflow` for the shared Page frame and
 authoring controls. Read `ref/instance-items.md` for identity, schemas, runtime
@@ -41,7 +43,7 @@ shared Folder-kind migration:
 ```yaml
 page-type: insight
 scope: task
-insight-layout: items-v1
+insight-layout: items-v2
 insight-instance: sms/patient-a-study
 ```
 
@@ -57,13 +59,45 @@ not split a Page merely because a question or finding has its own completion
 state. Do not automatically turn each data row, patient, DIKW rung, figure,
 tool call, or finding into a Run.
 
+## R and RI are different Runs
+
+```text
+r01_description                    normal Task Run · reusable method/ticket
+  ├── ri01_description             points to r01 + patient-a@snapshot-01
+  │     └── @v001                  independent DIKW Result
+  └── ri02_description             points to r01 + patient-b@snapshot-01
+        └── @v001                  independent DIKW Result
+```
+
+`rNN` answers **what executable method is reused**. `riNN` answers **which
+new frozen dataset is bound to that method for Insight work**. RI is a
+first-class Level-4 Run with its own authored YAML Ticket, runtime receipt,
+Result, status, and monotonic local counter. It remains in the Page's Task Runs
+lane with `family: insight`; it does not create a third Page lane.
+
+The RI relation is immutable:
+
+```text
+RI identity = base R ticket id + base ticket hash + dataset snapshot(s)
+              + question + DIKW target + acceptance
+```
+
+A different dataset allocates a new `riNN`; it is never `rerun` or `v002` of
+the old dataset. A retry of the exact frozen RI contract appends an attempt.
+A corrected or newly reviewed DIKW publication over the same RI binding may
+allocate the next `vNNN`, preserving all earlier Results. A changed base R,
+question, target, or acceptance allocates a new RI and may record
+`supersedes:`; it must not silently retarget an existing RI.
+
 ## The item is the unit of insight work
 
-One item declares its question, frozen inputs, target, expected Result, and
-acceptance test. Its stable id is its `rNN_<stem>` ticket stem; do not add a
-second `itemNN` namespace or an `items/<item>/` Folder hierarchy. A proposed
-row has no actual Run until its ticket exists. The human label may say
-“Item 1”; the address remains `r01_description`.
+One item declares its question, base R, frozen datasets, target, expected
+Result, and acceptance test. Its stable id is its `riNN_<stem>` ticket stem;
+do not add a second `itemNN` namespace or an `items/<item>/` Folder hierarchy.
+A proposed row has no actual Run until its RI ticket exists. The human label
+may say “Item 1”; the address remains `ri01_description`. Historical
+`items-v1` records whose item id is `rNN_<stem>` remain readable, but new work
+must allocate RI.
 
 Each execution may call shared Task capabilities, gather evidence, reason
 through DIKW, and return positive, null, contradictory, or insufficient
@@ -73,9 +107,9 @@ only a migration default.
 
 ```text
 Folder instance
-  r01_description@v001       bounded question → evidence → D/I/K/W/RF
-  r02_temporal-pattern@v001  bounded question → evidence → D/I/K/W/RF
-  r01_description@v002       later execution, preserves v001
+  ri01_description@v001       r01 + dataset A → evidence → D/I/K/W/RF
+  ri02_description@v001       r01 + dataset B → evidence → D/I/K/W/RF
+  ri01_description@v002       later publication, preserves v001
 ```
 
 An **Insight Item** is a domain work unit. An **Evidence Item** is a typed
@@ -115,11 +149,12 @@ checkpoints, Result validation, and publication. Its workflow and Phase × Run
 Map live in `ref/workflow-table.md`; Page authoring still uses the shared Page
 workflow. DIKW is inside each item Result, not four new phase-owned Folders.
 
-Use the Insight instance dialect in `haipipe-run`: one stable local ticket
-resolves to versioned execution addresses in this instance. Record the full
-address; `r01` alone is never a cross-Folder execution reference. A shared
-recipe, a test execution of that recipe, and an instance execution are three
-different identities. `ref/task-calls.md` owns the binding protocol.
+Use the Insight instance dialect in `haipipe-run`: one `riNN` ticket points to
+one normal R ticket and resolves to versioned execution addresses in this
+instance. Record the full RI address; `r01` alone names only the reusable base
+Run and is never the rebound dataset execution. A shared recipe, its normal R
+execution, and an RI execution are three different identities.
+`ref/task-calls.md` owns the binding protocol.
 
 Shared Task code stays with the producing Task. The Insight supplies the data
 manifest, allowed parameters, and output scope through a small local ticket.
@@ -157,9 +192,11 @@ truthful outcome; it must not be published as an accepted finding.
 Item acceptance is independent of sibling items. A completed item can be
 reused while another is open. The Page closes only when its declared items
 are terminal or explicitly held outside the current scope, its synthesis is
-current, and Page CHECK passes. A data/recipe/source change preserves old
-Results and reopens only dependent bindings. It never rewrites history or
-silently upgrades an existing Design citation to the latest version.
+current, and Page CHECK passes. A new dataset/source snapshot allocates a
+sibling RI. A changed base recipe, question, target, or acceptance also
+allocates a new RI. Both preserve old Results and reopen only dependent
+bindings; neither silently upgrades an existing Design citation to the latest
+version.
 
 ## Handoff
 
@@ -177,7 +214,12 @@ do not block this bridge. An explicit no-answer cannot satisfy the bridge.
 
 ## Validation and files
 
-- `scripts/insight_items.py check <folder>` validates manifests, ticket/Result
+- `scripts/insight_items.py bind <folder> --base-run <rNN> --base-ticket <path>
+  --dataset <id@version> --stem <stem> --question <text> --target <rung>
+  --expected <text> --acceptance <text>` allocates the next RI, freezes v001,
+  and leaves it planned. It does not execute the base R or fabricate a Result.
+- `scripts/insight_items.py check <folder>` validates manifests, R→RI binding,
+  ticket/Result
   pairing, immutable execution identities, source hashes, checkpoints, DIKW
   references, and accepted finding addresses. It is a structural/provenance
   check, not independent scientific review.

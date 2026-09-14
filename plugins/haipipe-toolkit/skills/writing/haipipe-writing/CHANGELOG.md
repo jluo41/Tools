@@ -1,3 +1,36 @@
+## 0.18.0 · 2026-09-13
+
+- Clarify that interactive Page Steps record only the local editing reason;
+  broader preference inference is deferred to post-run analysis.
+
+## 0.17.0 · 2026-09-13
+
+- Keep follow-up Page Steps record-first: make the scoped prose edit and record
+  its local reason, while deferring preference inference to post-run analysis.
+
+## 0.16.0 · 2026-09-13
+
+- Follow the Page host's rapid foreground mode for local feedback turns:
+  reuse loaded context, make the smallest patch, and return after the narrow
+  check without blocking on rescoring, corpus reads, exports, or review work.
+
+## 0.15.0 · 2026-09-12
+
+- Emit Track Changes metadata only for material wording edits; feedback that
+  changes no prose returns an ordinary disposition without Before/After or a
+  preference card.
+
+## 0.14.0 · 2026-09-12
+
+- Return Page-hosted feedback classification and bounded preference inference
+  alongside clean Before/After and rationale, while keeping visual diff markup
+  out of prose and one-off inferences out of shared policy.
+
+## 0.13.0 · 2026-09-12
+
+- Follow the Page host's three-link Step handoff, including the readable
+  Current Run history projection.
+
 ## 0.12.0 · 2026-09-11
 
 - Support scoped interactive candidates before publication gates; retain original feedback, item dispositions and accepted text. Use current policy on local edits and the shared final Workspace link packet.
@@ -264,3 +297,7 @@ division whose headings had just been repaired.
 Not built yet: an end-to-end driver for the `realize` and `rewrite` paths. Today
 the host or a person/model supplies the candidate prose and calls `wdiff apply`
 per sentence or rewritten run.
+## 0.19.0 · 2026-09-13
+
+- Keep the Writing worker record-first between interactive Steps and require
+  host approval before optional heavy work or delegated analysis.

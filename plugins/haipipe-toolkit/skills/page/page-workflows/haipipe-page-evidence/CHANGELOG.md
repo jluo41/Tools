@@ -1,3 +1,13 @@
+## 0.23.1 · 2026-09-14
+
+- Clarify the DISPLAY payload family: table, figure, diagram, illustration, or
+  algorithm block.
+
+## 0.23.0 · 2026-09-13
+
+- Make `RE` the Page-local Evidence Run lineage for one Evidence Item and
+  retain the underlying owner-native Ticket/Result binding.
+
 ## 0.22.0 · 2026-09-06
 
 - Search governed current and old Result stores before declaring evidence

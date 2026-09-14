@@ -7,8 +7,8 @@ description: >-
   happened and the board must record it. Trigger: route, write back, owning
   page, we decided, board structure, regroup, /haipipe-board-routing.
 metadata:
-  version: "0.10.1"
-  last_updated: "2026-09-08"
+  version: "0.11.0"
+  last_updated: "2026-09-12"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -124,8 +124,8 @@ Rendering the index, checking a page, and checking a sentence all belong to `hai
 
 ```
 1  READ the input        what happened · what kind of record it deserves
-                         (a Log line · a State entry · a lane reply ·
-                          a Files row · a Decision Now row); a derived view,
+                         (an Aim `Now:` fact · a D<nn> decision thread · an
+                          outline log/files record · a lane reply); a derived view,
                           aggregated from state the pages already hold,
                           deserves NO write, because a copy drifts
 
@@ -143,12 +143,13 @@ Rendering the index, checking a page, and checking a sentence all belong to `hai
                          history), so never resolve by name pattern; aliases in
                          ## Links resolve older ids
 
-4  PICK the section      the page spec says what each section owes; the input's
-                         kind decides where it lands (see the table there)
+4  PICK the surface      the Page contract says whether the input belongs in
+                         Opening, Content, Aims, or a typed `outline/` record
 
-5  WRITE anchored        append under the named ## heading, at the section
-                         boundary; the sentence spec says how the line must
-                         read (dated, signed, one sentence per line)
+5  WRITE anchored        edit the owning on-stage field or typed record while
+                         preserving its schema and id; never synthesize a
+                         retired `## States`, `## Files`, `## Discussion`, or
+                         `## Log` section
 ```
 
 `board.md ## Pages` remains the ONLY Page registry. The shared SPACE registry is
@@ -169,12 +170,14 @@ touch SPACE configuration. Never print credentials or edit machine-local
 ## ⚖️ The two write laws, inherited not invented
 
 **The human-decision law (QC1b §5).**
-Routing may append Log lines and factual State rows. When it has inspected the
-evidence, it may move an Aim among the allowed State statuses and records the
-reason in Log. It may not close a `### Decision Now` checkbox or change a
-page-level human gate. Every proposal lands under the owning page's
-`### Decision Now`, inside `## States` (JL 260731: never make the decision in
-chat); a row the human has answered is closed with the answer recorded, and a row nobody answered waits for them.
+Routing may update factual Aim `Now:` lines and append typed log records. When
+it has inspected the evidence, it may move an Aim among the allowed statuses
+and records the reason in `outline/<stem>-log.md`. It may never decide for the
+person or change a page-level human gate. A proposal receives a Board-wide
+`D<nn>` thread in `outline/<stem>-discussion.md`; when it blocks an Aim, that
+Aim's `Now:` points to the thread and the live ask is mirrored under
+`Aims › Decision Now`. Routing closes the row only after the person answered,
+recording the option, who, when, and their words. An unanswered row waits.
 
 **The cross-board law (QB1 §4).**
 Mechanical writes carry no judgement and are always allowed.
@@ -204,9 +207,9 @@ Routing therefore ends in one of exactly three states:
 ```
 LANDED     the write is on the owning page, and the reply names it
 PROPOSED   no page owns this: routing drafts the page id, title, and group
-           it would open, and waits; it never creates silently; the draft
-           itself is a decision, so it goes to the nearest owning page's
-           Decision Now rather than staying in chat
+           it would open, and waits; it never creates silently. If an existing
+           governance Page owns the proposal, route its D<nn> thread there;
+           otherwise return the pending Board-altitude proposal for approval
 REPORTED   the owner is another family's board: a report, not an edit
 ```
 

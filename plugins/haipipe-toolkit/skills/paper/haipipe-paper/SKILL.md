@@ -7,9 +7,9 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "1.0.3"
-  last_updated: "2026-09-08"
-  summary: "Story absorbs Paper planning; Discovery/Task/Run execute outside the Paper Page graph; Compile remains a verb."
+  version: "1.1.0"
+  last_updated: "2026-09-13"
+  summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
 # /haipipe-paper · compose a paper from evidence-bearing Pages
@@ -36,12 +36,17 @@ haipipe-page
     haipipe-paper-section · haipipe-paper-round, or haipipe-paper-venue
   → phase references / the Story's Section row and style policy
   → haipipe-run + selected workers, only where Runs exist
-  → paper/haipipe-paper/ref/run-naming.md when a Paper-local Run is planned
+  → paper/haipipe-paper/ref/page-integration.md and ref/run-naming.md when a
+    Paper-local Run or Page release is planned
 ```
 
 For CONTEXT, OUTLINE, and EVIDENCE, the exact material contracts are
 `haipipe-plugin-outline/ref/...` files. The Page surface already installs the
 shared Outline presenter; it is not a final execution dependency.
+
+Read [`ref/page-integration.md`](ref/page-integration.md) for the Paper-specific
+consequences of the shared Page contract. This router owns no second Page
+lifecycle, Page Run namespace, Evidence Workspace, or Page release protocol.
 
 `haipipe-paper-assemble` is a separate complete-paper verb after routing; it is
 not inserted into a Page phase.
@@ -134,7 +139,7 @@ Evidence Items and the same Supporting-to-local Run graph.
 │   ├── <stem>-outline-vN.md   Bullet Workspace authority
 │   ├── <stem>-evidence-items.md  authored item/Run graph
 │   └── evidence/              Evidence Workspace material by VALUE/CITE/DISPLAY
-├── runs/                      Page-local or Paper-local L4 Run Tickets
+├── runs/                      Page-owned interaction or Paper-local L4 Tickets
 ├── results/                   paired local Results/runtime receipts
 └── delivery/                  generated Page-level TeX/PDF/DOCX when requested
 ```
@@ -146,9 +151,11 @@ Results; the Page cites their `E<NN>-<TYPE>-<slug>` and full Run/Result ids.
 
 Paper-local Evidence/Display Runs use the semantic lane-aware ids in
 [`ref/run-naming.md`](ref/run-naming.md): `pm-…` for Main, `pa-…` for
-Appendix, and `pr-…` for Round. Page-local Content Runs keep the shared
-`rNN_page-writing_cNN-pNN.md` Ticket grammar from `haipipe-page-content`. The former `pjNNtNNrNN` form remains
-read-only history; Paper work never silently renames it.
+Appendix, and `pr-…` for Round. Human feedback uses the Page-owned
+`rp00_mermaid-structure` and `rpNN_pNN[-pNN]` identities; delegated paragraph
+writing remains an owner-native Task Run. The former `pjNNtNNrNN` and legacy
+interactive `rNN_page-writing...` forms remain read-only history; Paper work
+never silently renames them.
 
 One Page may own many DISPLAY items. One local DISPLAY Result may contain
 several artifacts or panels, but it has one message, one frozen Local Input,

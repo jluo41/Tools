@@ -8,8 +8,8 @@ description: >-
   edit this sentence, card on these words, sentence address,
   /haipipe-sentence.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-11"
+  version: "0.5.1"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -77,14 +77,11 @@ Hover the sentence and click the `＋` in its rail, or select text inside it and
 
 There is no comment box at the bottom of the page and never will be: a queue down there makes the reader rebuild the context the writer already had. `## Discussion` is a different grammar and holds only discussion pinned to no sentence.
 
-For candidate sentences in the Outline Bullet Workspace, use the paragraph's
-bottom Comments disclosure instead of the published sentence rail. Select the
-saved `C.P.B` sentence; the comment stores its exact wording in the same preview
-Markdown. `haipipe-plugin-outline/ref/content-preview.md` owns this rehearsal
-extension and its agent-response format. Read its open comments before a
-requested revision, preserve their quotes, and append responses after changes.
-This paragraph-scoped composer is not a page-bottom queue and does not create
-published Content lanes, new Shape versions, or an automatic agent run.
+Candidate sentences in the Outline Bullet Workspace do not use this published
+sentence-comment rail or a paragraph Comments composer. Copy the saved
+`C.P.B` sentence into chat and give feedback through the active Page Run;
+`haipipe-plugin-outline/ref/content-preview.md` owns that rehearsal boundary.
+Historical signed preview lanes remain preserved but are not rendered.
 
 ### ✎ edit · replace one line, leave one record
 

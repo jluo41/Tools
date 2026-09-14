@@ -62,25 +62,27 @@ class OutlinePreviewTest(unittest.TestCase):
                           'Physician choices depend on the clinical context')
         _, error = self.save('Stale form.', result['record_token'])
         self.assertIn('Bullet changed', error)
-        self.assertIn('Bullet changed · review this draft', plan_card(self.page))
+        self.assertIn('Draft changed', plan_card(self.page))
 
     def test_clear_is_saved_and_does_not_restore_content_seed(self):
         result, _ = self.save('Candidate.')
         self.save('', result['record_token'])
         self.assertEqual(read_previews(self.page)['C1.P1.B1']['text'], '')
         card = plan_card(self.page)
-        self.assertNotIn('>Existing prose.</textarea>', card)
+        self.assertNotIn('<textarea', card)
+        self.assertIn('Not drafted', card)
 
     def test_shared_realization_is_seeded_once_with_explicit_cross_reference(self):
         seeds = content_seeds(self.page)
         self.assertEqual(seeds['C1.P1.B1']['text'], 'Existing prose.')
         self.assertEqual(seeds['C1.P1.B2']['shared'], 'C1.P1.B1')
         card = plan_card(self.page)
-        self.assertIn('Bullet &amp; Evidence', card)
-        self.assertEqual(card.count('>Existing prose.</textarea>'), 1)
-        self.assertIn('Read paragraph', card)
+        self.assertIn('<span>Bullet</span><span>Draft</span>', card)
+        self.assertEqual(card.count('Existing prose.'), 1)
+        self.assertNotIn('<textarea', card)
+        self.assertNotIn('Read paragraph', card)
 
-    def test_script_like_prose_is_escaped_in_form(self):
+    def test_script_like_prose_is_escaped_in_read_only_projection(self):
         self.save('</textarea><script>alert(1)</script>')
         card = plan_card(self.page)
         self.assertNotIn('<script>alert(1)</script>', card)
@@ -91,29 +93,69 @@ class OutlinePreviewTest(unittest.TestCase):
         self.assertIsNotNone(error)
         self.assertEqual(read_previews(self.page), {})
 
-    def test_reading_first_table_hides_editors_notes_and_plan_metadata(self):
+    def test_reading_first_table_is_static_and_has_no_comments_or_editors(self):
         card = plan_card(self.page)
-        self.assertEqual(card.count('<details class=preview-editor>'), 2)
-        self.assertEqual(card.count('<details class=point-tools>'), 2)
-        self.assertIn('<span class=preview-copy>Existing prose.</span>', card)
+        self.assertEqual(card.count('<details class=preview-editor>'), 0)
+        self.assertEqual(card.count('<details class=point-tools>'), 0)
+        self.assertIn('<div class=preview-copy>Existing prose.</div>', card)
         self.assertIn('<details class=plan-details>', card)
+        self.assertIn('<details class=source-details>', card)
+        self.assertIn('<summary>Sources</summary>', card)
         self.assertNotIn('<details class=preview-editor open', card)
-        self.assertIn('data-preview-cancel', card)
-        self.assertIn('title="C1.P1.B1">B1</span>', card)
-        # Controls and annotations remain available; source is not discarded.
-        self.assertIn('compare equivalent encounters', card)
-        self.assertIn('data-bullet-edit=', card)
+        self.assertIn('title="Open C1.P1.B1">B1</a>', card)
+        self.assertIn('<span class=point-label>[Point]</span>', card)
+        self.assertNotIn('data-bullet-edit=', card)
+        self.assertNotIn('data-preview-write', card)
+        self.assertNotIn('Save draft', card)
+        self.assertNotIn('Comment', card)
 
-    def test_mobile_keeps_two_columns_and_metadata_is_folded(self):
+    def test_mobile_keeps_two_columns_and_metadata_is_omitted(self):
         self.assertIn('grid-template-columns:minmax(0,2fr) minmax(0,3fr)', _PAGE)
         self.assertNotIn('.point-group{{grid-template-columns:minmax(0,1fr);', _PAGE)
         self.assertNotIn("content:'Content preview'", _PAGE)
-        self.assertIn('<details class=page-details><summary>Page details</summary>', _PAGE)
+        self.assertNotIn('<details class=page-details>', _PAGE)
 
     def test_sentence_span_is_not_a_repeated_paragraph_heading(self):
         self.plan.write_text(PLAN.replace('C1.P1 · Variation', 'C1.P1 · Variation · S1 to S6'))
         self.assertIn('<span class=mut>Variation</span></summary>', plan_card(self.page))
         self.assertIn('S1 to S6', self.plan.read_text())
+
+    def test_renderer_preserves_page_global_paragraph_numbers(self):
+        self.plan.write_text(
+            PLAN
+            + '\n## C2 · Consequences\n'
+            + '### C2.P2 · First consequence\n'
+            + '- B1 · The second Page paragraph remains P2\n'
+            + '  Evidence: none · rendering fixture\n'
+            + '### C2.P3 · Second consequence\n'
+            + '- B1 · The third Page paragraph remains P3\n'
+            + '  Evidence: none · rendering fixture\n'
+        )
+        card = plan_card(self.page)
+        self.assertIn('data-paragraph="C2.P2"', card)
+        self.assertIn('data-paragraph="C2.P3"', card)
+        self.assertNotIn('data-paragraph="C2.P1"', card)
+
+    def test_legacy_local_paragraph_display_starts_at_page_p1(self):
+        self.plan.write_text(
+            PLAN
+            + '\n### C1.P2 · Second introduction move\n'
+            + '- B1 · The second Page paragraph is P2\n'
+            + '  Evidence: none · rendering fixture\n'
+            + '\n## C2 · Consequences\n'
+            + '### C2.P1 · Legacy local first paragraph\n'
+            + '- B1 · The third Page paragraph is P3\n'
+            + '  Evidence: none · rendering fixture\n'
+        )
+        card = plan_card(self.page)
+        self.assertIn('<span class=addr>C1.P1</span>', card)
+        self.assertIn('title="Open C1.P1.B1">B1</a>', card)
+        self.assertIn('<span class=addr>C1.P2</span>', card)
+        self.assertIn('<span class=addr>C2.P3</span>', card)
+        self.assertIn('data-display-point="C2.P3.B1"', card)
+        self.assertIn('data-outline-focus="C2.P3.B1"', card)
+        self.assertNotIn('<span class=addr>C1.P3</span>', card)
+        self.assertNotIn('<span class=addr>C2.P4</span>', card)
 
     def test_section_rejects_multiple_sentences_without_writing(self):
         self.page.write_text('page-type: section\n## Content\n')
@@ -154,14 +196,17 @@ class OutlinePreviewTest(unittest.TestCase):
         self.plan.write_text(PLAN.replace('B1 · Physician', 'B1 · [Phenomenon] Physician'))
         self.assertIn('<span class=point-label>[Phenomenon]</span><span class=point-statement>', plan_card(self.page))
 
-    def test_reader_copy_hides_tex_without_changing_citation_source(self):
+    def test_reader_copy_shows_tex_without_changing_citation_source(self):
         prose = r'Physicians differ \citep{Barnett2017}.'
         self.save(prose)
-        self.assertEqual(reader_prose(prose), 'Physicians differ.')
-        self.assertIn('<span class=preview-copy>Physicians differ.</span>', plan_card(self.page))
+        self.assertEqual(reader_prose(prose), prose)
+        self.assertIn(
+            r'<div class=preview-copy>Physicians differ \citep{Barnett2017}.</div>',
+            plan_card(self.page),
+        )
         self.assertEqual(read_previews(self.page)['C1.P1.B1']['text'], prose)
 
-    def test_reader_compacts_evidence_placeholder_but_editor_preserves_source(self):
+    def test_reader_compacts_evidence_placeholder_without_rendering_an_editor(self):
         self.plan.write_text(PLAN.replace(
             '  Evidence: none · illustrative planning fixture',
             '  Evidence: E33-CITE-opioid-system-stakes · support system stakes\n'
@@ -182,19 +227,19 @@ class OutlinePreviewTest(unittest.TestCase):
         prose = ('Decisions affect patients and systems '
                  '[E33-CITE-opioid-system-stakes: source verification pending].')
         result, _ = self.save(prose)
-        for source, tail in [
-            (prose, 'source verification pending].</textarea>'),
+        for source in [
+            prose,
             ('Decisions affect patients and systems '
-             '[E33-CITE-opioid-system-stakes pending].',
-             'opioid-system-stakes pending].</textarea>'),
+             '[E33-CITE-opioid-system-stakes pending].'),
         ]:
             if source != prose:
                 result, _ = self.save(source, result['record_token'])
             card = plan_card(self.page)
             self.assertIn('(E33C.SystemStakes)', card)
             self.assertNotIn('class="evtag warn preview-evidence"', card)
-            resting = re.findall(r'<span class=preview-copy>(.*?)</span></summary>', card)
+            resting = re.findall(r'<div class=preview-copy>(.*?)</div>', card)
             self.assertTrue(resting)
             self.assertNotIn('[E33-CITE-opioid-system-stakes', ' '.join(resting))
-            self.assertIn(tail, card)
+            self.assertNotIn('source verification pending].</textarea>', card)
+            self.assertNotIn('data-preview-write', card)
             self.assertEqual(read_previews(self.page)['C1.P1.B1']['text'], source)
