@@ -1,178 +1,237 @@
 [submodule "references/academic-research-skills"]
 	path = references/academic-research-skills
 	url = https://github.com/Imbad0202/academic-research-skills
+	update = none
 [submodule "references/aris"]
 	path = references/aris
 	url = https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep
+	update = none
 [submodule "references/ft50-empirical-writing"]
 	path = references/ft50-empirical-writing
 	url = https://github.com/liyuanbo1024/ft50-empirical-writing
+	update = none
 [submodule "references/paperjury"]
 	path = references/paperjury
 	url = https://github.com/u7079256/paperjury
+	update = none
 [submodule "references/auto-empirical-research-skills"]
 	path = references/auto-empirical-research-skills
 	url = https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills
+	update = none
 [submodule "references/statspai"]
 	path = references/statspai
 	url = https://github.com/brycewang-stanford/StatsPAI
+	update = none
 [submodule "references/awesome-journal-skills"]
 	path = references/awesome-journal-skills
 	url = https://github.com/brycewang-stanford/Awesome-Journal-Skills
+	update = none
 [submodule "references/aer-skills"]
 	path = references/aer-skills
 	url = https://github.com/brycewang-stanford/AER-Skills
+	update = none
 [submodule "references/auto-research-skills"]
 	path = references/auto-research-skills
 	url = https://github.com/brycewang-stanford/Auto-Research-Skills
 	ignore = dirty
+	update = none
 [submodule "references/tools/statsmodels"]
 	path = references/tools/statsmodels
 	url = https://github.com/statsmodels/statsmodels
+	update = none
 [submodule "references/tools/dowhy"]
 	path = references/tools/dowhy
 	url = https://github.com/py-why/dowhy
+	update = none
 [submodule "references/tools/causalml"]
 	path = references/tools/causalml
 	url = https://github.com/uber/causalml
+	update = none
 [submodule "references/tools/econml"]
 	path = references/tools/econml
 	url = https://github.com/py-why/EconML
+	update = none
 [submodule "references/tools/python-causality-handbook"]
 	path = references/tools/python-causality-handbook
 	url = https://github.com/matheusfacure/python-causality-handbook
+	update = none
 [submodule "references/paper2beamer-skills"]
 	path = references/paper2beamer-skills
 	url = https://github.com/Sheng910411/paper2beamer-skills
+	update = none
 [submodule "references/research-genealogy"]
 	path = references/research-genealogy
 	url = https://github.com/unumbrela/research-genealogy
+	update = none
 [submodule "references/paper-to-patent-skill-snipp-zha"]
 	path = references/paper-to-patent-skill-snipp-zha
 	url = https://github.com/snipp-zha/Paper-to-patent-Skill
+	update = none
 [submodule "references/paper-to-patent-tangrj"]
 	path = references/paper-to-patent-tangrj
 	url = https://github.com/TangRj-Git/paper-to-patent
+	update = none
 [submodule "references/paper-to-patent-wyxsjtu"]
 	path = references/paper-to-patent-wyxsjtu
 	url = https://github.com/wyxsjtu/paper-to-patent
+	update = none
 [submodule "references/literature-source-tracing"]
 	path = references/literature-source-tracing
 	url = https://github.com/hengdaoye50/literature-source-tracing
+	update = none
 [submodule "references/intelligrapher"]
 	path = references/intelligrapher
 	url = https://github.com/MrLee2R/Intelligrapher
+	update = none
 [submodule "references/happy-figure-skill"]
 	path = references/happy-figure-skill
 	url = https://github.com/BAIKEMARK/happy-figure-skill
+	update = none
 [submodule "references/science-superpowers"]
 	path = references/science-superpowers
 	url = https://github.com/K-Dense-AI/science-superpowers
+	update = none
 [submodule "references/superpower-socialscience-skills"]
 	path = references/superpower-socialscience-skills
 	url = https://github.com/ptreezh/superpower-socialscience-skills
+	update = none
 [submodule "references/mathmodel-skill"]
 	path = references/mathmodel-skill
 	url = https://github.com/handsomeZR-netizen/mathmodel-skill
+	update = none
 [submodule "references/claude-code-math-skills"]
 	path = references/claude-code-math-skills
 	url = https://github.com/lonexreb/claude-code-math-skills
+	update = none
 [submodule "references/stop-slop"]
 	path = references/stop-slop
 	url = https://github.com/hardikpandya/stop-slop
+	update = none
 [submodule "references/stop-slop-zh"]
 	path = references/stop-slop-zh
 	url = https://github.com/VincentOld/stop-slop-zh
+	update = none
 [submodule "references/llm-wiki-skill"]
 	path = references/llm-wiki-skill
 	url = https://github.com/oscarxl/llm-wiki-skill
+	update = none
 [submodule "references/tools/chatgpt-comparison-detection"]
 	path = references/tools/chatgpt-comparison-detection
 	url = https://github.com/Hello-SimpleAI/chatgpt-comparison-detection
+	update = none
 [submodule "references/research-workflows/ai-scientist"]
 	path = references/research-workflows/ai-scientist
 	url = https://github.com/SakanaAI/AI-Scientist
+	update = none
 [submodule "references/workflow-diagrams/aris"]
 	path = references/workflow-diagrams/aris
 	url = https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep
+	update = none
 [submodule "references/workflow-diagrams/ccskill"]
 	path = references/workflow-diagrams/ccskill
 	url = https://github.com/anthropics/skills
+	update = none
 [submodule "references/workflow-diagrams/excalidraw-diagram-skill"]
 	path = references/workflow-diagrams/excalidraw-diagram-skill
 	url = https://github.com/coleam00/excalidraw-diagram-skill
+	update = none
 [submodule "references/workflow-diagrams/nature-paper-skills"]
 	path = references/workflow-diagrams/nature-paper-skills
 	url = https://github.com/Boom5426/Nature-Paper-Skills
+	update = none
 [submodule "references/nature-paper-skills"]
 	path = references/nature-paper-skills
 	url = https://github.com/Boom5426/Nature-Paper-Skills
+	update = none
 [submodule "references/paperspine"]
 	path = references/paperspine
 	url = https://github.com/WUBING2023/PaperSpine
+	update = none
 [submodule "references/paper-rag-skill"]
 	path = references/paper-rag-skill
 	url = https://github.com/GeederX/paper-rag-skill
+	update = none
 [submodule "references/cite-guard"]
 	path = references/cite-guard
 	url = https://github.com/jon-chun/cite-guard
+	update = none
 [submodule "references/ieee-latex-writer"]
 	path = references/ieee-latex-writer
 	url = https://github.com/Listen-Sun/ieee-latex-writer
+	update = none
 [submodule "references/research-agent-skills"]
 	path = references/research-agent-skills
 	url = https://github.com/SolomonMg/research-agent-skills
+	update = none
 [submodule "references/reprorun"]
 	path = references/reprorun
 	url = https://github.com/WUBING2023/ReproRun
+	update = none
 [submodule "references/research-co-pilot"]
 	path = references/research-co-pilot
 	url = https://github.com/Marazii/research-co-pilot
+	update = none
 [submodule "references/grant-writer-skills"]
 	path = references/grant-writer-skills
 	url = https://github.com/stamate/grant-writer-skills
+	update = none
 [submodule "references/scipilot-figure-skill"]
 	path = references/scipilot-figure-skill
 	url = https://github.com/Haojae/scipilot-figure-skill
+	update = none
 [submodule "references/academic-humanizer"]
 	path = references/academic-humanizer
 	url = https://github.com/AIScientists-Dev/academic-humanizer
+	update = none
 [submodule "plugins/haipipe-toolkit/skills/paper/venue"]
 	path = plugins/haipipe-toolkit/skills/paper/venue
 	url = git@github.com:jluo41/Venue-Paper.git
+	update = none
 [submodule "references/sepia"]
 	path = references/sepia
 	url = https://github.com/Nanako0129/sepia.git
+	update = none
 [submodule "references/stop-that-shit"]
 	path = references/stop-that-shit
 	url = https://github.com/lennney/stop-that-shit.git
+	update = none
 [submodule "references/no-ai-slop"]
 	path = references/no-ai-slop
 	url = https://github.com/petergyang/no-ai-slop
+	update = none
 [submodule "references/humanizer-blader"]
 	path = references/humanizer-blader
 	url = https://github.com/blader/humanizer
+	update = none
 [submodule "references/cursor-plugins"]
 	path = references/cursor-plugins
 	url = https://github.com/cursor/plugins
+	update = none
 [submodule "references/slopkit"]
 	path = references/slopkit
 	url = https://github.com/ehmo/slopkit
+	update = none
 [submodule "references/humanizer-adam"]
 	path = references/humanizer-adam
 	url = https://github.com/Aboudjem/humanizer-skill
+	update = none
 [submodule "references/stephenturner-skills"]
 	path = references/stephenturner-skills
 	url = https://github.com/stephenturner/skills
+	update = none
 [submodule "references/elithrar-dotfiles"]
 	path = references/elithrar-dotfiles
 	url = https://github.com/elithrar/dotfiles
+	update = none
 [submodule "references/soundshuman"]
 	path = references/soundshuman
 	url = https://github.com/aashaexo/soundshuman
+	update = none
 [submodule "references/anti-ai-slop-writing"]
 	path = references/anti-ai-slop-writing
 	url = https://github.com/jalaalrd/anti-ai-slop-writing
+	update = none
 [submodule "references/writing-dna-skill"]
 	path = references/writing-dna-skill
 	url = https://github.com/larashero3-dotcom/writing-dna-skill.git
+	update = none
