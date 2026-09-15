@@ -13,7 +13,7 @@ import json
 from pathlib import Path
 import re
 
-from live.outline_preview import bullet_token, read_previews
+from live.outline_preview import bullet_token, read_drafts
 from src.page_workspace import dependency_files, load_page
 from src.plan_shape import iter_plan_bullets, paragraph_order_findings
 
@@ -174,24 +174,24 @@ def _plan_and_drafts(
         f"Paragraph identities form one uninterrupted P1–P{len(paragraphs)} Page sequence.",
         "; ".join(order_findings[:8]) or "Paragraph identities are not Page-global.",
     )
-    previews = read_previews(page.source)
-    mapping_ok = len(previews) == len(blocks) and all(
-        block["address"] in previews
-        and previews[block["address"]].get("text", "").strip()
-        and previews[block["address"]].get("bullet-sha256") == bullet_token(block)
+    drafts = read_drafts(page.source)
+    mapping_ok = len(drafts) == len(blocks) and all(
+        block["address"] in drafts
+        and drafts[block["address"]].get("text", "").strip()
+        and drafts[block["address"]].get("bullet-sha256") == bullet_token(block)
         for block in blocks
     )
-    if not previews and not expect_shape:
+    if not drafts and not expect_shape:
         mapping = SetupCheck(
             "content_draft_mapping", "Bullet ↔ Content Draft", "deferred",
-            "This existing Page has no Content Draft workspace; setup did not invent one.",
+            "This existing Page has no embedded Draft in its Outline; setup did not invent one.",
         )
     else:
         mapping = _check(
             "content_draft_mapping", "Bullet ↔ Content Draft", mapping_ok,
             f"All {len(blocks)} Bullets have nonempty, fingerprint-current Content Draft records.",
             "Content Draft coverage is missing, empty, extra, or stale against the current Shape.",
-            blocking=expect_shape or bool(previews),
+            blocking=expect_shape or bool(drafts),
         )
     roles = []
     for block in blocks:
@@ -221,7 +221,7 @@ def _plan_and_drafts(
 
     def clipped(block: dict[str, str], statement: str) -> bool:
         draft = re.sub(
-            r"\s+", " ", previews.get(block["address"], {}).get("text", "")
+            r"\s+", " ", drafts.get(block["address"], {}).get("text", "")
         ).strip()
         head = re.sub(r"\s+", " ", statement).strip()
         remainder = draft[len(head):] if head and draft.startswith(head) else ""
@@ -307,12 +307,11 @@ def _delivery(page, delivery: Path) -> SetupCheck:
 
 
 def _artifacts(page, plan: Path | None, delivery: Path) -> dict[str, dict[str, str]]:
-    preview = page.folder / "outline" / f"{page.source.stem}-preview.md"
     candidates = {
         "page_face": page.source,
         "content": page.content or page.source,
         "shape": plan,
-        "content_draft": preview if preview.is_file() else None,
+        "content_draft": plan if plan is not None and plan.is_file() else None,
         "static_delivery": delivery,
     }
     records = {}

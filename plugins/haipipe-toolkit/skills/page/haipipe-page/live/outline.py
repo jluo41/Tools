@@ -17,8 +17,8 @@ No claude call at render time. A bad anchor renders as a named ❌, and the
 
 LIVE AND STORAGE-LESS for reads, the QPf1 folderstat precedent: rendered from
 the .md on every open, so it can never be stale. The POST twin keeps the
-shell's `tab: {url, write}` contract, but the three-space reader is deliberately
-read-only; Markdown and Result writers live in their owning workflows.
+shell's `tab: {url, write}` contract, but the four-space reader is deliberately
+read-only; Markdown, Result, and delivery writers live in their owning workflows.
 
 TWO LENSES, one parse (QPf12 §2): 🧭 By division and 🚦 By progress are the
 same data sorted twice, both rendered server-side, toggled client-side by
@@ -48,12 +48,14 @@ from src.item_table import (
     wall_label,
 )
 from src.plan_shape import iter_plan_bullets, presentation_point
-from live.outline_preview import read_previews, content_seeds, bullet_token, reader_prose
+from live.outline_preview import draft_path, read_drafts, bullet_token, reader_prose, read_opening_draft
+from src.evidence_labels import collect_result_labels, resolve_inline_labels
 
 # Aim state emoji (haipipe-page): current set + the older ones still parsed.
 DONE = {"✅"}
 STATE_EMOJI = ("✅", "⬜", "🔨", "🧠", "❄️", "🟡", "🟠", "⏸️")
-_STRUCTURE_RUN = "rp00_mermaid-structure"
+_STRUCTURE_RUN = "rp-struct-01"
+_LEGACY_STRUCTURE_RUN = "rp00_mermaid-structure"
 
 _SEC_ALIAS = {"opening": "opening", "question": "opening",
               "content": "content",
@@ -294,6 +296,11 @@ details.paragraph-group[open]>summary::before{{content:"▾"}}
 details.paragraph-group>summary:hover{{background:color-mix(in srgb,var(--acc) 7%,var(--card))}}
 .paragraph-group .prow{{margin:0;padding:0;border:0;background:none}}
 .paragraph-group .prow::before{{display:none}}
+/* Paragraph headers do not share the bullet address gutter.  The global
+   `.addr` rule reserves a wide bullet column so Cx.Px.Bx rows stay aligned;
+   applying that same width to the paragraph summary creates an artificial
+   gap between `C1.P1` and its title (JL 260914 screenshot). */
+details.paragraph-group>summary .addr{{min-width:0;margin-right:0}}
 .paragraph-bullets{{padding:0;border-top:1px solid var(--line)}}
 .point-group{{padding:0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:0}}
 .point-plan,.point-preview{{min-width:0;overflow-wrap:anywhere}}
@@ -302,6 +309,14 @@ details.paragraph-group>summary:hover{{background:color-mix(in srgb,var(--acc) 7
 .preview-columns{{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:0;font:500 12px/1.5 system-ui,sans-serif;color:var(--mut);padding:8px 0;border-bottom:1px solid var(--line)}}
 .preview-columns>span:last-child{{padding-left:16px}}
 .point-preview>.preview-copy{{font:16px/1.65 Georgia,serif;color:var(--fg);text-transform:none;letter-spacing:normal;padding:0;white-space:pre-wrap;min-height:44px;display:block}}
+.resolved-evidence{{display:inline;margin:0 1px;vertical-align:baseline}}
+.resolved-evidence>summary{{display:inline;cursor:pointer;list-style:none;color:var(--fg);font:inherit}}
+.resolved-evidence>summary::-webkit-details-marker{{display:none}}
+.resolved-evidence>summary:after{{content:"⌄";color:var(--mut);font:11px system-ui,sans-serif;margin-left:2px}}
+.resolved-evidence[open]>summary:after{{content:"⌃"}}
+.resolved-evidence-detail{{display:block;margin:3px 0 5px;padding:4px 7px;border:1px solid var(--line);border-radius:5px;background:var(--card);font:11px/1.45 system-ui,sans-serif;color:var(--mut);white-space:normal}}
+.resolved-evidence-detail code{{color:var(--fg);font:10.5px ui-monospace,Menlo,monospace;overflow-wrap:anywhere}}
+.missing-evidence-token{{color:var(--warn);font:13px ui-monospace,Menlo,monospace}}
 .preview-placeholder{{color:var(--mut);font:13px/1.55 system-ui,sans-serif}}
 .preview-stale{{font:12px/1.5 system-ui,sans-serif;color:var(--warn);margin-bottom:6px}}
 .page-details{{margin:2px 0 8px}}
@@ -309,7 +324,7 @@ details.paragraph-group>summary:hover{{background:color-mix(in srgb,var(--acc) 7
 .plan-card{{border:0;border-radius:0;padding:0}}
 .plan-details{{margin:8px 0}}
 .division-title{{font-size:14px;margin:14px 0 8px}}
-@media(max-width:560px){{body{{padding:12px}}.point-plan{{padding:10px 9px 10px 0}}.point-preview{{padding:10px 0 10px 10px}}.preview-columns>span:last-child{{padding-left:10px}}.point-head{{font-size:13px!important}}.point-evidence{{margin-left:0}}.point-preview>.preview-copy{{font-size:14px;line-height:1.65}}.spaces{{gap:4px}}.spaces .space{{font-size:11px;padding:4px 6px}}}}
+@media(max-width:560px){{body{{padding:12px}}.point-plan{{padding:10px 9px 10px 0}}.point-preview{{padding:10px 0 10px 10px}}.preview-columns>span:last-child{{padding-left:10px}}.point-head{{font-size:13px!important}}.point-preview>.preview-copy{{font-size:14px;line-height:1.65}}.spaces{{gap:4px}}.spaces .space{{font-size:11px;padding:4px 6px}}}}
 .point-group:last-child{{border-bottom:0}}
 .point-head{{display:block;font-size:14px;line-height:1.55}}
 .point-address{{font:500 10.5px ui-monospace,Menlo,monospace;color:var(--mut);margin-right:5px;
@@ -319,15 +334,14 @@ details.paragraph-group>summary:hover{{background:color-mix(in srgb,var(--acc) 7
 .point-label{{font:650 12px -apple-system,sans-serif;color:var(--acc);margin-right:6px}}
 .point-statement{{color:var(--fg)}}
 /* Evidence is part of the Bullet's reading contract, but the full item still
-   lives in Evidence Space. Keep only a compact, read-only route/card row here
-   so the left pane tells the reader that support exists without becoming a
-   second Evidence workspace. */
-.point-evidence{{display:flex;flex-wrap:wrap;gap:5px;align-items:baseline;
- margin:5px 0 0 76px;font:12px/1.45 ui-monospace,Menlo,monospace;
+   lives in Evidence Space. Keep only a compact, read-only route here and let
+   it follow the waypoint naturally. A source-free `none` decision has no
+   visible marker; its meaning remains in the authored Markdown and the row's
+   data attributes. */
+.point-evidence{{display:inline;margin-left:6px;font:12px/1.45 ui-monospace,Menlo,monospace;
  color:var(--mut)}}
-.point-evidence-label{{flex:none;font:600 10px/1.45 -apple-system,sans-serif;
- color:var(--mut);letter-spacing:.04em;text-transform:uppercase}}
-.point-evidence .evchip,.point-evidence .evtag{{display:inline-block}}
+.point-evidence .evchip,.point-evidence .evtag{{display:inline;margin-left:4px}}
+.point-evidence .evchip:first-child,.point-evidence .evtag:first-child{{margin-left:0}}
 .point-notes{{margin:3px 0 0 1.2em;padding:0 0 0 1em;color:var(--mut);font-size:12.5px;line-height:1.5}}
 .point-notes li{{padding-left:2px}}
 .point-transition{{margin:6px 0 0 1.2em;color:var(--acc);font-size:12.5px;line-height:1.45}}
@@ -500,6 +514,33 @@ object.evfig{{height:32vh}}
  font:12px/1.5 system-ui,sans-serif}}
 .source-details[open]>summary{{color:var(--fg)}}
 .source-details .source-map{{margin:4px 0 0}}
+.draft-mode-switcher{{display:flex;align-items:center;gap:5px;margin:2px 0 12px}}
+.draft-mode-label{{font:600 10px/1.5 system-ui,sans-serif;color:var(--mut);
+ text-transform:uppercase;letter-spacing:.05em;margin-right:2px}}
+.draft-mode-tab{{font:600 11.5px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+ border:1px solid var(--line);border-radius:7px;padding:3px 9px;cursor:pointer;
+ background:var(--card);color:var(--mut)}}
+.draft-mode-tab.on{{border-color:var(--acc);color:var(--acc)}}
+.paragraph-reading{{display:none}}
+.reading-line{{display:grid;grid-template-columns:2.6em minmax(0,1fr);gap:10px;
+ padding:8px 0;border-bottom:1px solid var(--line);align-items:start}}
+.reading-line:last-child{{border-bottom:0}}
+.reading-address{{padding-top:3px;font:500 11px/1.5 ui-monospace,Menlo,monospace;
+ color:var(--mut)}}
+.reading-copy{{max-width:78ch;font:16px/1.7 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+ color:var(--fg);overflow-wrap:anywhere}}
+.reading-copy .resolved-evidence-detail{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
+.draft-lens[data-draft-mode="reading"] .paragraph-bullets{{display:none}}
+.draft-lens[data-draft-mode="reading"] .paragraph-reading{{display:block}}
+.draft-lens[data-draft-mode="reading"] details.paragraph-group>summary{{cursor:pointer}}
+.draft-lens[data-draft-mode="reading"] details.paragraph-group>summary::before{{content:"▸";color:var(--acc);flex:none;width:10px}}
+.draft-lens[data-draft-mode="reading"] details.paragraph-group[open]>summary::before{{content:"▾"}}
+.draft-lens[data-draft-mode="reading"] details.paragraph-group>summary:hover{{background:color-mix(in srgb,var(--acc) 7%,var(--card))}}
+.draft-lens[data-draft-mode="reading"] .paragraph-group{{margin-bottom:28px}}
+@media (max-width:700px){{
+ .reading-line{{grid-template-columns:2.3em minmax(0,1fr);gap:7px;padding:7px 0}}
+ .reading-copy{{font-size:15px;line-height:1.65}}
+}}
 .lens{{display:none}} .lens.show{{display:block}}
 code{{font:12px ui-monospace,Menlo,monospace}}
 </style></head><body>
@@ -508,18 +549,29 @@ code{{font:12px ui-monospace,Menlo,monospace}}
  <button class="space on" data-space=bullet data-default=div>Draft Space</button>
  <button class=space data-space=evidence data-default=evidence>Evidence Space</button>
  <button class=space data-space=run data-default=run>Run Space</button>
+ <button class=space data-space=delivery data-default=delivery>Delivery Workspace</button>
 </div>
-<div class="lens show" id=lens-div>{by_div}</div>
+<div class="lens show draft-lens" id=lens-div data-draft-mode=table>
+ <div class=draft-mode-switcher role=group aria-label="Draft view">
+  <span class=draft-mode-label>View</span>
+  <button type=button class="draft-mode-tab on" data-draft-mode=table>Table</button>
+  <button type=button class=draft-mode-tab data-draft-mode=reading>Reading</button>
+ </div>
+ {by_div}
+</div>
 <div class=lens id=lens-evidence><iframe class=workspace-frame
  title="Evidence Space" data-src="{evidence_url}"></iframe></div>
 <div class=lens id=lens-run><iframe class=workspace-frame
  title="Run Space" data-src="{run_url}"></iframe></div>
+<div class=lens id=lens-delivery><iframe class=workspace-frame
+ title="Delivery Workspace" data-src="{delivery_url}"></iframe></div>
 <script>
-var SPACE_FOR={{div:'bullet',evidence:'evidence',run:'run',workspace:'evidence'}};
+var SPACE_FOR={{div:'bullet',evidence:'evidence',run:'run',delivery:'delivery',workspace:'evidence'}};
 var params=new URLSearchParams(location.search), requested=params.get('lens')||'',
     requestedSeg=params.get('seg')||'',
-    requestedFocus=params.get('focus')||'', requestedRun=params.get('run')||'';
-/* v4 keeps old workspace URLs readable while exposing three plain spaces. */
+    requestedFocus=params.get('focus')||'', requestedRun=params.get('run')||'',
+    requestedDraftMode=params.get('view')==='reading'?'reading':'table';
+/* v4 keeps old workspace URLs readable while exposing four plain spaces. */
 if(requested==='prog')requested='div';
 if(requested==='workspace')requested=(requestedSeg==='runs'||requestedRun)?'run':'evidence';
 if(!requested&&(requestedSeg||requestedFocus||requestedRun))
@@ -542,7 +594,7 @@ function showLens(c){{
     if(c)c.classList.add('on');
     var lens=document.getElementById('lens-'+c.dataset.lens);
     lens.classList.add('show');
-    if(c.dataset.lens==='evidence'||c.dataset.lens==='run'){{
+    if(c.dataset.lens==='evidence'||c.dataset.lens==='run'||c.dataset.lens==='delivery'){{
       var frame=lens.querySelector('iframe'),src=workspaceSource(frame,c.dataset.lens);
       if(src)frame.setAttribute('src',src);
     }} else {{
@@ -563,7 +615,7 @@ function activateLens(name){{
     var lens=document.getElementById('lens-'+name);
     if(lens){{document.querySelectorAll('.lens').forEach(function(x){{x.classList.remove('show');}});
       lens.classList.add('show');
-      if(name==='evidence'||name==='run'){{
+      if(name==='evidence'||name==='run'||name==='delivery'){{
         var frame=lens.querySelector('iframe'),src=workspaceSource(frame,name);
         if(src)frame.setAttribute('src',src);
       }}
@@ -576,6 +628,26 @@ document.querySelectorAll('.lens-chip').forEach(function(c){{
 document.querySelectorAll('.space').forEach(function(c){{
   c.addEventListener('click',function(){{activateLens(c.dataset.default);}});
 }});
+function activateDraftMode(mode,writeUrl){{
+  mode=mode==='reading'?'reading':'table';
+  var lens=document.getElementById('lens-div');
+  if(lens)lens.setAttribute('data-draft-mode',mode);
+  document.querySelectorAll('.draft-mode-tab').forEach(function(x){{
+    x.classList.toggle('on',x.dataset.draftMode===mode);
+  }});
+  if(mode==='reading')document.querySelectorAll('#lens-div details.paragraph-group').forEach(function(x){{
+    x.open=true;
+  }});
+  if(writeUrl!==false)try{{
+    var u=new URL(location.href);
+    if(mode==='reading')u.searchParams.set('view','reading');
+    else u.searchParams.delete('view');
+    history.replaceState(null,'',u.href);
+  }}catch(e){{}}
+}}
+document.querySelectorAll('.draft-mode-tab').forEach(function(c){{
+  c.addEventListener('click',function(){{activateDraftMode(c.dataset.draftMode,true);}});
+}});
 document.querySelectorAll('a.badge').forEach(function(a){{
   a.addEventListener('click',function(ev){{
     ev.preventDefault();
@@ -585,6 +657,9 @@ document.querySelectorAll('a.badge').forEach(function(a){{
   }});
 }});
 function focusRecord(id){{
+  /* A bullet permalink is a table address. Switch back before focusing so the
+     target is visible even when the reader arrived in immersive mode. */
+  activateDraftMode('table',false);
   /* Bullet URLs keep the authored C.P.B address readable.  The DOM id uses a
      prefixed, CSS-safe form so it cannot collide with another record kind. */
   var domId=/^C\\d+\\.P\\d+\\.B\\d+$/.test(id)?'bullet-'+id.replace(/\\./g,'-'):id;
@@ -629,6 +704,7 @@ document.addEventListener('click',function(ev){{
   }}catch(e){{}}
 }});
 if(requested)activateLens(requested);
+activateDraftMode(requestedDraftMode,false);
 if(requestedFocus&&requested==='div')setTimeout(function(){{
   focusRecord(requestedFocus);}},0);
 </script>
@@ -980,8 +1056,15 @@ def _mermaid_structure_review_open(page_src):
     """Whether the mandatory first Page Run is still an active review."""
     if page_src is None:
         return False
-    runtime = page_src.parent / "results" / _STRUCTURE_RUN / "runtime.yaml"
-    if not runtime.is_file():
+    runtime = next(
+        (
+            page_src.parent / "results" / run_id / "runtime.yaml"
+            for run_id in (_STRUCTURE_RUN, _LEGACY_STRUCTURE_RUN)
+            if (page_src.parent / "results" / run_id / "runtime.yaml").is_file()
+        ),
+        None,
+    )
+    if runtime is None or not runtime.is_file():
         return False
     try:
         text = runtime.read_text(encoding="utf-8", errors="replace")
@@ -1001,10 +1084,22 @@ def _closed_page_run_paragraphs(page_src):
     if not results.is_dir() or results.is_symlink():
         return set()
     closed = set()
-    for runtime in results.glob("rp*_p*/runtime.yaml"):
+    runtimes = list(results.glob("rp-para-*_P*/runtime.yaml"))
+    # Keep old generated Pages readable while new tickets use typed RP ids.
+    runtimes.extend(results.glob("rp*_p*/runtime.yaml"))
+    seen = set()
+    for runtime in runtimes:
+        if runtime in seen:
+            continue
+        seen.add(runtime)
         run_id = runtime.parent.name
-        if (not re.fullmatch(r"rp(?:0[1-9]|[1-9]\d*)_p(?:0[1-9]|[1-9]\d*)"
-                             r"(?:-p(?:0[1-9]|[1-9]\d*))?", run_id, re.I)
+        if (not (re.fullmatch(
+                    r"rp-para-(?:0[1-9]|[1-9]\d+)_P(?:0[1-9]|[1-9]\d+)"
+                    r"(?:-P(?:0[1-9]|[1-9]\d+))?", run_id, re.I
+                ) or re.fullmatch(
+                    r"rp(?:0[1-9]|[1-9]\d*)_p(?:0[1-9]|[1-9]\d*)"
+                    r"(?:-p(?:0[1-9]|[1-9]\d*))?", run_id, re.I
+                ))
                 or runtime.is_symlink() or runtime.parent.is_symlink()):
             continue
         try:
@@ -1080,41 +1175,24 @@ def _logic_map(page_src):
     )
 
 
-def _opening_preview_card(page_src, path_q="", file_q=""):
+def _opening_preview_card(page_src, path_q="", file_q="", evidence_bindings=None):
     """Project an accepted Page Opening candidate into Draft Space.
 
     C0.P1 is page-level Opening prose rather than a C.P.B plan bullet. Keep its
-    candidate in the existing preview record and render it as the first
+    candidate in the selected Outline Markdown and render it as the first
     read-only paragraph group, using the same two-column shape as the planned
     paragraphs below; do not turn it into a synthetic Bullet or change Page
     Content.
     """
     if page_src is None:
         return ""
-    path = page_src.parent / "outline" / (page_src.stem + "-preview.md")
-    if not path.is_file():
+    path = draft_path(page_src)
+    prose = read_opening_draft(page_src)
+    if path is None or not prose:
         return ""
-    try:
-        text = path.read_text(encoding="utf-8", errors="replace")
-    except OSError:
-        return ""
-    candidate = re.search(
-        r"(?ms)^## Candidate (?:P00|C0\.P1)(?:\s+·[^\n]*)?\s*\n\s*\n(.*?)(?=^## Candidate job\b|^## Acceptance boundary\b|\Z)",
-        text,
-    )
-    if not candidate:
-        return ""
-    prose = candidate.group(1).strip()
     if not prose:
         return ""
 
-    def field(name):
-        hit = re.search(rf"(?m)^{re.escape(name)}:\s*(.+?)\s*$", text)
-        return hit.group(1).strip() if hit else ""
-
-    run = field("Run")
-    run_match = re.match(r"(rp\d+_[A-Za-z0-9_-]+)", run)
-    run_id = run_match.group(1) if run_match else run
     outline_url = ("/_board/outline?path=%s&file=%s" %
                    (quote(path_q), quote(file_q))) if path_q and file_q else ""
     permalink = _e(("%s&lens=div&focus=c0-p1-opening" % outline_url)
@@ -1133,8 +1211,13 @@ def _opening_preview_card(page_src, path_q="", file_q=""):
         '<span class=point-statement>Overview of the literature stream</span>'
         '</div></div>'
         '<div class=point-preview><div class=preview-copy>%s</div></div>'
-        '</div></div></details>' %
-        (permalink, _preview_reader_html(prose, {}))
+        '</div></div>'
+        '<div class=paragraph-reading><div class="reading-line opening-reading">'
+        '<span class=reading-address>C0.P1</span><div class=reading-copy>%s</div>'
+        '</div></div>'
+        '</details>' %
+        (permalink, _preview_reader_html(prose, {}, evidence_bindings),
+         _preview_reader_html(prose, {}, evidence_bindings))
     )
 
 
@@ -1635,17 +1718,57 @@ _PREVIEW_EVIDENCE_RE = re.compile(
 )
 
 
-def _preview_reader_html(text, item_by_id):
-    """Render concise evidence labels while preserving full authored placeholders.
+def _resolved_evidence_html(token, binding):
+    """Render a resolved Page token with its authored identity folded below it."""
+    if not binding:
+        return '<span class=missing-evidence-token>%s</span>' % _e(token)
+    display = str(binding.get("display", "")).strip()
+    status = str(binding.get("status", "resolved")).strip().lower()
+    visible = display if display and status not in {"pending", "unresolved", "missing"} else token
+    meta = [
+        ("token", token),
+        ("kind", binding.get("kind", "")),
+        ("item", binding.get("item", "")),
+        ("evidence run", binding.get("page_run", "") or binding.get("run", "")),
+        ("owner run", binding.get("run", "")),
+        ("result", binding.get("result", "")),
+        ("target", binding.get("target", "")),
+        ("provenance", binding.get("provenance", "")),
+    ]
+    detail = " ".join(
+        '<span><b>%s</b> <code>%s</code></span>'
+        % (_e(key), _e(str(value)))
+        for key, value in meta if str(value).strip()
+    )
+    return (
+        '<details class=resolved-evidence><summary>%s</summary>'
+        '<span class=resolved-evidence-detail>%s</span></details>'
+        % (_e(visible), detail)
+    )
 
-    The complete placeholder remains in the preview Markdown and textarea. The
-    resting sentence needs only a compact status-bearing label because the
-    adjacent Bullet column already owns the full Evidence link and contract.
+
+def _preview_token_html(text, bindings):
+    """Render Page VALUE/DISPLAY/CITE tokens in one authored text segment."""
+    return "".join(
+        _resolved_evidence_html(str(span.get("token")), span.get("binding"))
+        if span.get("token") else _e(str(span.get("text", "")))
+        for span in resolve_inline_labels(text, bindings)
+    )
+
+
+def _preview_reader_html(text, item_by_id, evidence_bindings=None):
+    """Render the reader projection without changing authored evidence tokens.
+
+    Legacy bracket evidence references keep their compact wall label. New
+    LaTeX-like tokens use the Result manifest binding: a resolved display is
+    visible in the sentence and the original token/provenance is expandable;
+    an unresolved token remains visible and is marked as missing.
     """
     prose = reader_prose(text)
+    bindings = evidence_bindings or {}
     chunks, cursor = [], 0
     for match in _PREVIEW_EVIDENCE_RE.finditer(prose):
-        chunks.append(_e(prose[cursor:match.start()]))
+        chunks.append(_preview_token_html(prose[cursor:match.start()], bindings))
         item_id, item_type = match.group(1), match.group(2)
         item = item_by_id.get(item_id) or {
             "id": item_id,
@@ -1659,7 +1782,7 @@ def _preview_reader_html(text, item_by_id):
         )
         chunks.append("(%s)" % _e(label))
         cursor = match.end()
-    chunks.append(_e(prose[cursor:]))
+    chunks.append(_preview_token_html(prose[cursor:], bindings))
     return "".join(chunks)
 
 
@@ -2168,8 +2291,8 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         return paragraph_display.get(match.group(1), match.group(1)) + match.group(2)
 
     preview_blocks = {b["address"]: b for b in iter_plan_bullets(txt)}
-    preview_records = read_previews(page_src)
-    preview_seeds = content_seeds(page_src)
+    preview_records = read_drafts(page_src)
+    evidence_bindings = collect_result_labels(page_src.parent)
     approved = bool(re.search(r"^approved:\s*✅", txt, re.M))
     cards, units, keys, serves, display_serves = _disk_state(page_src)
     page_text = page_src.read_text(encoding="utf-8", errors="replace")
@@ -2181,15 +2304,18 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
     aims = {k: v for k, v in _aim_rows(txt).items() if v[0]}
     aims.update(_aim_rows(page_text))
     scaffolds = {}
+    source_realizations = {}
     for m in re.finditer(r"(?m)^([^\n]*?)<!--\s*realizes:\s*"
                          r"(C\d+\.P\d+\.[BS]\d+)\s*-->\s*$", page_text):
+        address = re.sub(r"\.S(\d+)$", r".B\1", m.group(2))
+        prose = reader_prose(m.group(1)).strip()
+        if prose:
+            source_realizations.setdefault(address, []).append(prose)
         sm = re.search(r"\b(C\d+\.P\d+\.S\d+)\b", m.group(1))
         if sm:
             # canonical B key: a slot plan's realizes may say .S<n>; slot
             # number == position, so it is the same bullet (JAMA repro 260831)
-            scaffolds.setdefault(
-                re.sub(r"\.S(\d+)$", r".B\1", m.group(2)), []
-            ).append(sm.group(1))
+            scaffolds.setdefault(address, []).append(sm.group(1))
 
     # A card names the bullets it SERVES, so the plan never has to be edited
     # to carry an id that did not exist when it was frozen. Many-to-many: PP04
@@ -2237,30 +2363,41 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
     # into several scaffolds (`realizes: C3.P1.B2`); the outline surface keeps
     # the stable Point join and does not pretend to own those later splits.
     rows, tally, cited, bundle_rows = [], {}, set(), []
-    opening_card = _opening_preview_card(page_src, path_q, file_q)
+    opening_card = _opening_preview_card(page_src, path_q, file_q, evidence_bindings)
     if opening_card:
         rows.append(opening_card)
     paragraph_bullets = []
+    paragraph_reading = []
     current_paragraph = ""
     current_paragraph_title = ""
 
     def _flush_paragraph():
         """Close one paragraph group, keeping all its Bullets inside it."""
-        nonlocal paragraph_bullets, current_paragraph, current_paragraph_title
+        nonlocal paragraph_bullets, paragraph_reading, current_paragraph, current_paragraph_title
         if not current_paragraph:
             return
         display_paragraph = paragraph_display.get(current_paragraph, current_paragraph)
+        reading_body = "".join(paragraph_reading)
+        if not reading_body:
+            reading_body = (
+                '<div class=reading-line><span class=reading-address>—</span>'
+                '<div class=reading-copy><span class=preview-placeholder>'
+                'Not drafted</span></div></div>'
+            )
         rows.append(
             '<details class="paragraph-group" open data-paragraph="%s">'
             '<summary class="prow"><span class=addr>%s</span>'
             '<span class=mut>%s</span></summary>'
             '<div class=paragraph-bullets><div class=preview-columns>'
-            '<span>Bullet</span><span>Draft</span></div>%s</div></details>'
+            '<span>Bullet</span><span>Draft</span></div>%s</div>'
+            '<div class=paragraph-reading>%s</div>'
+            '</details>'
             % (_e(current_paragraph), _e(display_paragraph),
                _e(re.sub(r"\s*·\s*S\d+\s+to\s+S\d+\s*$", "", current_paragraph_title)),
-               "".join(paragraph_bullets))
+               "".join(paragraph_bullets), reading_body)
         )
         paragraph_bullets = []
+        paragraph_reading = []
         current_paragraph = ""
         current_paragraph_title = ""
 
@@ -2330,6 +2467,12 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         full_addr = "C%d.P%d.%s" % (cn, max(pn, 1), bullet_id)
         addr = full_addr
         display_addr = display_address(full_addr)
+        parsed_block = preview_blocks.get(full_addr)
+        if parsed_block is not None:
+            # Draft is embedded in the same Outline Markdown.  The parsed
+            # plan body deliberately excludes the Draft field, so evidence
+            # marks and Bullet presentation never scan candidate prose.
+            body = parsed_block["body"]
 
         # New typed Evidence Items are the current contract.  Their short
         # inline tags keep the Shape readable; each is a route to the item's
@@ -2340,11 +2483,6 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             nid += 1
             typed_chips.append(_typed_item_chip(item, outline_url))
         none_reason = typed.get("none_by_target", {}).get(full_addr, "")
-        if none_reason:
-            typed_chips.append(
-                '<span class="evtag mut evidence-none" title="%s">evidence: none</span>'
-                % _e(none_reason)
-            )
 
         def _backlink(exclude=()):
             """The ↩ tag: cards that name THIS bullet in their `serves:`.
@@ -2392,45 +2530,61 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             at = body.rfind(emo)
             if at > hit_at and at >= 0 and len(body) - at <= 64:
                 hit, hit_at = (emo, kind), at
-        def _bullet_row(head_raw, chips_html, bullet_id, _edit_value=None):
+        def _bullet_row(head_raw, chips_html, bullet_id, _edit_value=None,
+                        evidence_none_reason=""):
             """Render one static Bullet/Draft row without changing its source."""
             point = presentation_point(
                 head_raw, number=int(re.search(r"\d+", bullet_id).group(0))
             )
             statement = point["statement"] or "—"
             record = preview_records.get(addr)
-            seed = preview_seeds.get(addr, {})
-            value = record["text"] if record else seed.get("text", "")
             block = preview_blocks.get(addr)
-            token = bullet_token(block) if block else ""
-            stale = bool(record and record.get("bullet-sha256") != token)
+            value = block.get("draft", "") if block else (record or {}).get("text", "")
+            if not value:
+                # A realized Page sentence is a useful read-only fallback for
+                # a legacy/minimal Outline that has no embedded Draft field.
+                # It never becomes a new Draft authority or an editor value.
+                value = " ".join(source_realizations.get(addr, []))
             if value:
-                copy = _preview_reader_html(value, preview_item_by_id)
-            elif seed.get("shared"):
-                copy = '<span class=preview-placeholder>See %s</span>' % _e(seed["shared"])
-            elif seed.get("unmapped"):
-                copy = '<span class=preview-placeholder>Needs remapping</span>'
+                copy = _preview_reader_html(value, preview_item_by_id, evidence_bindings)
             else:
                 copy = '<span class=preview-placeholder>Not drafted</span>'
+            # The reader is a projection of the same Draft value, not a second
+            # source. Keep one lightweight line per Bullet so the source join
+            # remains visible without bringing Point/Evidence metadata along.
+            paragraph_reading.append(
+                '<div class="reading-line" data-point="%s">'
+                '<span class=reading-address>%s</span>'
+                '<div class=reading-copy>%s</div></div>'
+                % (_e(addr), _e(bullet_id), copy)
+            )
             preview = (
-                '<div class=point-preview>%s<div class=preview-copy>%s</div></div>'
-                % ('<div class=preview-stale>Draft changed</div>' if stale else '', copy)
+                '<div class=point-preview><div class=preview-copy>%s</div></div>'
+                % copy
             )
             focus_id = "bullet-" + re.sub(r"[^A-Za-z0-9_-]", "-", addr)
             permalink = "%s&lens=div&focus=%s" % (outline_url, quote(display_addr))
             evidence = (
-                '<div class=point-evidence aria-label="Evidence">'
-                '<span class=point-evidence-label>Evidence</span>%s</div>'
+                '<span class=point-evidence aria-label="Evidence routes">%s</span>'
                 % chips_html
                 if chips_html else ""
             )
+            evidence_state = "none" if evidence_none_reason else (
+                "routed" if chips_html else "missing"
+            )
+            evidence_attrs = ' data-evidence-state="%s"' % evidence_state
+            if evidence_none_reason:
+                evidence_attrs += ' data-evidence-reason="%s"' % _e(
+                    evidence_none_reason
+                )
             return ('<div id="%s" class=point-group data-point="%s" data-display-point="%s">'
-                    '<div class=point-plan><div class=point-head>'
+                    '<div class=point-plan><div class=point-head%s>'
                     '<a class=point-address href="%s" data-outline-lens="div" '
                     'data-outline-focus="%s" title="Open %s">%s</a>'
                     '<span class=point-label>[%s]</span>'
-                    '<span class=point-statement>%s</span></div>%s</div>%s</div>'
-                    % (_e(focus_id), _e(addr), _e(display_addr), _e(permalink),
+                    '<span class=point-statement>%s</span>%s</div></div>%s</div>'
+                    % (_e(focus_id), _e(addr), _e(display_addr), evidence_attrs,
+                       _e(permalink),
                        _e(display_addr), _e(display_addr), _e(bullet_id),
                        _e(point["role"]), _e(statement), evidence, preview))
 
@@ -2447,7 +2601,8 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             edit_head = re.sub(r"\s+\u241e.*$", "", edit_head).strip()
             plain_chips = [chip for chip in [_backlink(), *typed_chips] if chip]
             paragraph_bullets.append(
-                _bullet_row(body, " ".join(plain_chips), bullet_id, edit_head)
+                _bullet_row(body, " ".join(plain_chips), bullet_id, edit_head,
+                            none_reason)
             )
             continue
         emo, kind = hit
@@ -2558,15 +2713,18 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
                    _e(bundle["summary"]))
             )
         # Keep the Bullet statement and its compact Evidence routes together in
-        # the left pane. The routes sit on their own wrapping line so a long
-        # evidence label never squeezes the statement into a narrow column.
+        # the left pane. The routes follow the statement inline and wrap only
+        # when the column itself needs to wrap.
         edit_head = re.split(
             r"\s+(?=(?:Note|Evidence|Accept|Answered|Drawn|Routed|More):)",
             body,
             maxsplit=1,
         )[0]
         edit_head = re.sub(r"\s+\u241e.*$", "", edit_head).strip()
-        paragraph_bullets.append(_bullet_row(raw_said, " ".join(chips), bullet_id, edit_head))
+        paragraph_bullets.append(
+            _bullet_row(raw_said, " ".join(chips), bullet_id, edit_head,
+                        none_reason)
+        )
 
     _flush_paragraph()
 
@@ -2598,8 +2756,8 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         '<summary>Sources</summary>'
         '<div class=source-map aria-label="Draft Space sources">'
         '<span>Plan <code>outline/%s</code></span>'
-        '<span>Draft <code>outline/%s-preview.md</code></span>'
-        '</div></details>' % (_e(f.name), _e(page_src.stem))
+        '<span>Draft <code>outline/%s</code></span>'
+        '</div></details>' % (_e(f.name), _e(f.name))
     )
     if minimal:
         return '<div class="card plan-card minimal-plan">%s%s</div>' % (
@@ -2945,84 +3103,13 @@ def _records_html(items, kind):
     return head + ("".join(out) or '<div class=mut>nothing here yet</div>')
 
 def _lenses(page_src, root=None):
-    """Return one Context Workspace over the separate process records.
+    """Legacy compatibility hook; Context is an off-stage Page record.
 
-    The generated Context overview, Requirement, Discussion, Feedback, Files,
-    Log, and Skills remain separate stores on disk. The workspace merges only
-    their presentation, replacing the old Plan Context/Page Records split.
+    The reader-facing Outline has Draft, Evidence, Run, and Delivery Spaces.
+    Keep this old helper callable for imports from pre-v4 code, but never expose
+    a legacy Context surface.
     """
-    if page_src is None:
-        return "", "", "", "", ""
-    context, records, lenses = [], [], []
-    for key, label, suffix in _SIBLINGS:
-        f = page_src.parent / "outline" / ("%s-%s.md" % (page_src.stem, suffix))
-        if not f.is_file():
-            continue
-        items = _records(f.read_text(encoding="utf-8", errors="replace"))
-        n = sum(1 for k, _ in items if k == "rec")
-        chip = ('\n <button class="chip lens-chip" data-lens=%s '
-                'title="outline/%s">%s%s</button>'
-                % (key, f.name, label, (" · %d" % n) if n else ""))
-        context.append(chip)
-        lenses.append('\n<div class=lens id=lens-%s><div class=card>%s</div></div>'
-                      % (key, _records_html(items, key)))
-    # Skills is an Outline-owned Page Record under outline/skill/.  A former
-    # sibling skill/ store remains a read-only fallback during migration.
-    skill_dirs = [page_src.parent / "outline" / "skill",
-                  page_src.parent / "skill"]
-    skill_dir = next((d for d in skill_dirs
-                      if (d / (page_src.stem + ".md")).is_file()),
-                     skill_dirs[0])
-    skill_store = skill_dir / (page_src.stem + ".md")
-    if skill_store.is_file():
-        skill_text = skill_store.read_text(encoding="utf-8", errors="replace")
-        skill_count = sum(
-            1 for line in skill_text.splitlines()
-            if line.startswith("- ") and " · removed" not in line
-        )
-        context.append(
-            '\n <button class="chip lens-chip" data-lens=skills '
-            'title="outline/skill/%s">🛠 Skills · %d</button>'
-            % (skill_store.name, skill_count)
-        )
-        skill_view = skill_dir / (page_src.stem + "-skill.html")
-        skill_url = ""
-        if skill_view.is_file() and root is not None:
-            try:
-                skill_url = "/" + skill_view.resolve().relative_to(
-                    Path(root).resolve()).as_posix() + "?embed=1"
-            except ValueError:
-                skill_url = ""
-        if skill_url:
-            skill_body = (
-                '<iframe class=workspace-frame title="Skills" data-src="%s"></iframe>'
-                % html.escape(skill_url, quote=True)
-            )
-        else:
-            active = [
-                line[2:].split(" · ", 1)[0]
-                for line in skill_text.splitlines()
-                if line.startswith("- ") and " · removed" not in line
-            ]
-            skill_body = '<div class=card>%s</div>' % (
-                "".join('<div class=rpre>🛠 %s</div>' % _e(name) for name in active)
-                or '<div class=mut>no skills ranked yet</div>'
-            )
-        lenses.append('\n<div class=lens id=lens-skills>%s</div>' % skill_body)
-    context_html = ('<div class=subchips data-subspace=context>%s</div>'
-                    % "".join(context)) if context else ""
-    records_html = ""
-    context_space = ('\n <button class=space data-space=context '
-                     'data-default=%s>Context Workspace</button>'
-                     % ("ctx" if any("data-lens=ctx" in x for x in context)
-                        else "req" if any("data-lens=req" in x for x in context)
-                        else "disc" if any("data-lens=disc" in x for x in context)
-                        else "fb" if any("data-lens=fb" in x for x in context)
-                        else "files" if any("data-lens=files" in x for x in context)
-                        else "log" if any("data-lens=log" in x for x in context)
-                        else "skills")) if context else ""
-    records_space = ""
-    return context_space, records_space, context_html, records_html, "".join(lenses)
+    return "", "", "", "", ""
 
 def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=False):
     """-> the full html page: both lenses rendered, chips toggle."""
@@ -3084,14 +3171,17 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
             if o.get("lead") else "")
     evidence_url = ""
     run_url = ""
+    delivery_url = ""
     if page_src is not None:
         encoded = (quote(path_q or ""), quote(file_q or page_src.name))
         evidence_url = "/_board/evidence?path=%s&file=%s&embed=1" % encoded
         run_url = "/_board/runs?path=%s&file=%s&embed=1" % encoded
+        delivery_url = "/_board/delivery?path=%s&file=%s&workspace=1" % encoded
     return _PAGE.format(title=_e(title), lead=lead, tally=_tally(o),
                         chip=chip, by_div=by_div, by_prog="".join(prog),
                         evidence_url=html.escape(evidence_url, quote=True),
-                        run_url=html.escape(run_url, quote=True))
+                        run_url=html.escape(run_url, quote=True),
+                        delivery_url=html.escape(delivery_url, quote=True))
 
 
 class OutlineMixin:

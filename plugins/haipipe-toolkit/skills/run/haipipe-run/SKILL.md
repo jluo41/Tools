@@ -12,8 +12,8 @@ description: >-
   result, calibration run, qualification run, production scan, final audit,
   /haipipe-run.
 metadata:
-  version: "0.24.0"
-  last_updated: "2026-09-13"
+  version: "0.25.0"
+  last_updated: "2026-09-14"
 ---
 
 # /haipipe-run · one attempt, two projections, one receipt
@@ -76,7 +76,8 @@ attempt and creates its authored Ticket.
 
 A Page-owned `fn/Runs` candidate is also planning, not an allocated Run. It has
 no identity, Ticket, Result, runtime receipt, or inventory row until the person
-selects or directly commissions it. Do not mint `rpNN` before selection; resume
+selects or directly commissions it. Do not mint a typed RP identity before
+selection; resume
 an existing matching open Page Run instead of allocating a duplicate.
 
 Do not confuse a workflow's `RUN` or `Execute` verb with this Level-4 identity.
@@ -100,12 +101,18 @@ objects:
 
 ```text
 Run P      family=page + operation=interactive-writing
-           local identity rp00_mermaid-structure or rpNN_pNN[-pNN]
-           mandatory whole-Page Mermaid Structure, then one numbered paragraph group;
+           local identity rp-struct-NN, rp-sec-NN, or rp-para-NN_Pxx[-Pyy]
+           rp-struct-01 is one whole-Page Structure Run for SHAPE + SURVEY;
+           later Page Runs cover sections or numbered paragraph groups;
            Page owns human feedback, Version/Step history, working state,
            and explicit closure
 Run E      Page-owned Evidence production
-           one VALUE/TABLE/DISPLAY/CITE target; Ticket in runs/, Result in results/
+           one value, display, or citation Evidence Item; IDs are
+           re-value-NN_<slug>, re-display-NN_<slug>, or re-cite-NN_<slug>;
+           one Result/Card may expose zero-to-many `$V_xxx$`,
+           `\\figure{D_xxx}` / `\\table{D_xxx}` / `\\algorithm{D_xxx}`, and
+           `\\cite{C_xxx}` labels; labels are not Runs;
+           Ticket in runs/, Result in results/
 Supporting Run
            external/upstream native family, including Discovery
            keeps its rNN / rlNN / bNNjNNtNNrNN / family-specific identity;
@@ -115,19 +122,25 @@ Supporting Run
 Page Evidence Items appear as Run E. External Execution, Discovery, Insight,
 Design, Labeling, and other independently commissioned work appear as
 Supporting Runs when an Evidence Result references them. Labeling uses `rlNN`;
-ordinary local Task work may use `rNN`. New Run P records use only `rpNN`,
-meaning Run of Page.
+ordinary local Task work may use `rNN`. New Run P records use only typed
+`rp-*` identities, meaning Run of Page.
 A human review or acceptance gate on code, search, data, build, or another Task
 Result does not reclassify the producing work as a Page Run.
 A Page workflow pass has no Level-4 Run identity merely because its
 compatibility command uses the verb `run`.
 
 One Page may therefore own many sibling Page Runs. The first is always
-`rp00_mermaid-structure`; it must explicitly close the whole-Page Mermaid map
+`rp-struct-01`; its SHAPE and SURVEY cycles share one Ticket, one paired Result,
+and may have several human participants. Record `participants` on the Run and
+`contributors` on each Step; a new participant does not create a child Run.
+Later structural passes use `rp-struct-02`, `rp-struct-03`, … only for a
+genuinely independent post-closure goal. `rp-struct-01` must explicitly close
+the whole-Page Mermaid map
 and `P01..PN` index before any paragraph Page Run exists. The Page then
 partitions `N` numbered paragraphs into `K` independently closable groups,
 where `1 <= K <= N`; ten paragraphs may yield 10, 8, or 6 paragraph Page Runs.
-Every group has its own closure boundary and short `rpNN_pNN[-pNN]` identity.
+Every group has its own closure boundary and short `rp-para-NN_Pxx[-Pyy]`
+identity. Section-level writing uses the sibling `rp-sec-NN` sequence.
 
 ### Cross-face handoff
 
@@ -225,8 +238,8 @@ kind-specific Result gate. A phase may extend the vocabulary only when the new
 family has an independently testable target and Result contract.
 
 Name new Task Runs with the owning family's monotonic address and a
-family-bearing stem. Name interactive Page Runs with the separate `rpNN`
-counter (`rp` means Run of Page):
+family-bearing stem. Name interactive Page Runs with explicit typed local
+identities (`rp` means Run of Page):
 
 ```text
 r01_execution_fit-model
@@ -236,18 +249,21 @@ r04_page-writing_c02-p01
 r05_page-display_c02-f01
 rl06_guideline-learn_round-03
 rl07_executor-predict_test-v1-executor-a
-rp00_mermaid-structure
-rp01_p01
-rp02_p02-p03
+rp-struct-01
+rp-struct-02
+rp-sec-01
+rp-para-01_P01
+rp-para-02_P02-P03
 ```
 
 Use lowercase ASCII, digits, underscores, and hyphens. Never renumber. When
 intent, target, frozen inputs, or acceptance semantics change materially,
 allocate a new Run and record `supersedes:` rather than overwriting history.
-The declared interactive Page dialect is the scoped exception: it allocates
-from the Page Folder's own `rpNN` sequence, and evolving feedback advances
-Steps/Versions rather than Run ids. The `rpNN` counter neither consumes nor
-renumbers the Task Run `rNN` counter; `rp01` and `r01` may coexist.
+The declared interactive Page dialect allocates independent monotonic
+sequences for `rp-struct-NN`, `rp-sec-NN`, and `rp-para-NN_Pxx[-Pyy]`.
+Evolving feedback advances Steps/Versions rather than Run ids. These typed
+RP sequences neither consume nor renumber the Task Run `rNN` counter; an RP
+identity and `r01` may coexist.
 
 For Insight instance work, a new dataset allocates a new `riNN`; it never
 becomes a rerun or later version of the old dataset. The RI points to the
@@ -263,7 +279,7 @@ refers to another Run:
 ```text
 Task local identity   r04_execution_fit-model
 Task global identity  b01j02t03r04
-Page local identity   rp00_mermaid-structure or rp01_p01
+Page local identity   rp-struct-01 or rp-para-01_P01
 ```
 
 A Paper Board has a separate local namespace because the Paper itself is the
@@ -284,7 +300,8 @@ historical Paper dialect; new Paper work must not mint it.
 `reuse` and `rerun` references require the full owner-native identity:
 `bNNjNNtNNrNN` for a Job-backed Task or global Supporting Run, a
 `pm-/pa-/pr-` id for a current Paper-local Run, and the local `rNN_…` Task stem
-or `rpNN_…` Page stem only when the owning Folder's path is carried with it.
+or `rp-struct-NN` / `rp-sec-NN` / `rp-para-NN_Pxx[-Pyy]` Page stem only when
+the owning Folder's path is carried with it.
 `rerun` adds an attempt under the same Run identity because target, frozen
 inputs, and acceptance are unchanged. If any changes materially, mint a new
 Run and set `supersedes: bNNjNNtNNrNN` in its receipt.
@@ -298,8 +315,9 @@ Load it before executing human-feedback Page writing.
 ```text
 family / operation   page / interactive-writing
 interaction          human-feedback
-Run target           whole-Page Mermaid Structure, or one independently reviewable numbered paragraph group
-authored Run         runs/rp00_mermaid-structure.md or runs/rpNN_pNN[-pNN].md
+Run target           whole-Page SHAPE + SURVEY Structure, or one independently reviewable numbered paragraph group
+authored Run         runs/rp-struct-NN.md, runs/rp-sec-NN.md, or
+                     runs/rp-para-NN_Pxx[-Pyy].md
 paired Result        results/<run>/working.md + runtime.yaml + vNNN.md
 human Step           one ## Step sNNN section in vNNN.md, with feedback + result
 accepted episode     ## Version closure in vNNN.md with explicit human decision
@@ -312,9 +330,10 @@ A human-accepted writing Version is not Page CHECK closure or evidence readiness
 The invariant tested on disk is scoped human agreement plus preserved history,
 not a machine score that declares prose good.
 
-Across the Page, `rp00_mermaid-structure` must close before independently closable
+Across the Page, `rp-struct-01` must close before independently closable
 paragraph groups receive sibling Page Run identities. Each identity shows its
-exact serial or range, such as `rp01_p01` or `rp02_p02-p03`; semantic wording
+exact serial or range, such as `rp-para-01_P01` or `rp-para-02_P02-P03`;
+section-level writing uses `rp-sec-NN`; semantic wording
 belongs in Goal. Inside one Page Run, sentences, Steps, Versions, and internal
 agent calls do not receive child Run identities. Adjacent paragraphs share one
 Run only when the human must judge them together under one acceptance decision.

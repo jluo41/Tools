@@ -136,15 +136,26 @@ class StandaloneServerTests(unittest.TestCase):
                 self.assertEqual((code, body), (200, b''))
                 self.assertGreater(int(headers['Content-Length']), 0)
 
-    def test_runs_view_uses_three_lane_contract_without_board(self):
+    def test_delivery_workspace_is_read_only_and_reports_current_source(self):
+        path = '/_page/delivery?file=' + self.source.name + '&workspace=1'
+        code, _, body = self.request(path=path)
+        self.assertEqual(code, 200, body)
+        self.assertIn(b'Delivery Workspace', body)
+        self.assertIn(b'Page source is authoritative', body)
+        self.assertIn(b'not built', body)
+        code, headers, body = self.request('HEAD', path)
+        self.assertEqual((code, body), (200, b''))
+        self.assertGreater(int(headers['Content-Length']), 0)
+
+    def test_runs_view_uses_three_area_contract_without_board(self):
         code, _, body = self.request(path='/_page/runs?file=' + self.source.name)
         self.assertEqual(code, 200, body)
-        self.assertIn(b'Run P', body)
-        self.assertIn(b'Run E', body)
+        self.assertIn(b'Paper Writing', body)
+        self.assertIn(b'Evidence', body)
         self.assertIn(b'Supporting Runs', body)
-        self.assertIn(b'No Run P yet', body)
-        self.assertIn(b'No Run E yet', body)
-        self.assertIn(b'No Supporting Run linked yet', body)
+        self.assertIn(b'No Structure Run yet', body)
+        self.assertIn(b'No Value Run yet', body)
+        self.assertIn(b'No Task Run yet', body)
 
     def test_external_labeling_plugin_mounts_without_leaking_into_page_run_workspace(self):
         job = self.folder / 'labeling'
@@ -190,8 +201,11 @@ class StandaloneServerTests(unittest.TestCase):
 
         code, _, runs = self.request(path='/_page/runs?file=' + self.source.name)
         self.assertEqual(code, 200, runs)
-        self.assertNotIn(b'rl01_corpus-contract_job-v1', runs)
-        self.assertIn(b'No Supporting Run linked yet.', runs)
+        self.assertIn(b'Supporting Runs', runs)
+        self.assertIn(b'Task', runs)
+        self.assertIn(b'Corpus Contract', runs)
+        self.assertIn(b'rl01_corpus-contract_job-v1', runs)
+        self.assertNotIn(b'No Task Run yet.', runs)
         self.assertEqual(self.request(path='/labeling/corpus/items.jsonl')[0], 404)
         code, _, source = self.request(path='/_page/source?file=labeling/corpus/items.jsonl')
         self.assertEqual(code, 404)

@@ -7,7 +7,7 @@ description: >-
   Context record inside the shared Outline plugin. Use before SHAPE, whenever
   the governing inputs changed, or when another phase reports missing or
   conflicting context. Trigger: page context, CONTEXT phase, PREPARE context,
-  Context Workspace, outline context, collect page requirements,
+  Context record, outline context, collect page requirements,
   /haipipe-page-context.
 metadata:
   version: "0.1.3"
@@ -21,14 +21,15 @@ Enter through `haipipe-page` and `haipipe-page-workflow`, then load this phase,
 the Folder-owning workflow or canonical family skill, the exact Page Face
 owner, and
 `haipipe-plugin-outline/ref/record-shape.md`, in that canonical order. The
-Outline plugin presents the generated record after authority is resolved.
+Outline plugin keeps the generated record in the off-stage Markdown process
+lane; Folder inspection opens it after authority is resolved.
 
 CONTEXT is a Page phase, not a new Plugin. Its output is presented in
 `haipipe-plugin-outline` beside the Page's other process records:
 
 ```text
-haipipe-page-context      owns PREPARE and the generated context projection
-haipipe-plugin-outline   owns the Context Workspace that presents it
+haipipe-page-context      owns PREPARE and the generated context record
+haipipe-plugin-outline   owns the three reader Spaces; Context stays off-stage
 source records           remain authoritative and physically separate
 ```
 
@@ -48,25 +49,13 @@ ROUTES   OUTLINE · CONTEXT again · HOLD
 RUNS     none. PREPARE is planning/context resolution, not a Level-4 Run
 ```
 
-## 🧭 One Context Workspace, not two record groups
+## 🧭 Context is a record, not a fourth Space
 
-The Outline plugin exposes three workspaces:
-
-```text
-🧭 Outline
-├── Bullet Workspace
-├── Evidence Workspace
-└── Context Workspace
-    ├── Overview                 generated <stem>-context.md
-    ├── Policy & Requirements   Folder owner + Page Face owner + Requirement
-    ├── Related Information     Files rows and bounded related Page fragments
-    ├── Feedback & Decisions    Feedback + open Discussion
-    └── Records                 Files + Log + ranked Skills
-```
-
-This is one surface over several authorities. Do not concatenate the source
-files, move them into a new folder, or make the generated Context record a
-second source of truth. The record points to the sources and states how they
+The three reader-facing Spaces are Draft, Evidence, and Run. CONTEXT writes
+`outline/<stem>-context.md` for later phases and Folder inspection; it does not
+add a Context tab, card group, or fourth workspace. Do not concatenate the
+source files, move them into a new folder, or make the generated Context record
+a second source of truth. The record points to the sources and states how they
 resolved for this Page version.
 
 ## ① Collect

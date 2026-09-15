@@ -8,8 +8,8 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "1.7.0"
-  last_updated: "2026-09-12"
+  version: "1.9.0"
+  last_updated: "2026-09-14"
 ---
 
 # /haipipe-plugin · a page's material, as one contract
@@ -103,24 +103,30 @@ This contract stays the base every one of them loads on top of; the board pages 
 ## 🗂 Outline's three workspaces and the Run door (260913)
 
 A unit folder has TWO PARTS. The UPPER, page part has one combined
-`outline/` planning authority and one visible surface with exactly **Bullet
-Workspace + Evidence Workspace + Run Workspace**. Context and process records
+`outline/` planning authority and one visible surface with exactly **Draft
+Space + Evidence Space + Run Space**. Context and process records
 stay on disk and are inspectable through Folder, but do not compete as a
-visible workspace. Evidence Workspace is Result-first. Run Workspace contains
+visible workspace. Evidence Space is Result-first. Run Space contains
 Run P, Run E, and Supporting Runs. It also has two
 presentation CATEGORY folders that group lanes without changing their grammar,
 writer or gate — `delivery/` (latex · word ·
 slide · render — what leaves the page) and `studio/` (chat · draw — the
 HUMAN's room: the person talks and sketches, and the chat may redraw on
 their ask). The LOWER, Task-side material is
-presented inside Outline as **Run Workspace**. A **Run P** begins with
-the reserved Page-local `rp00_mermaid-structure`, then uses
-`rpNN_pNN[-pNN]` from `rp01` for
-numbered paragraph groups, and preserves interactive human-feedback
-Version/Step history. A **Run E** is a Page-owned Evidence attempt. A
+presented inside Outline as **Run Workspace**. A **Run P** uses three explicit
+Page-local kinds: `rp-struct-NN` for Mermaid Structure + Outline Bullets,
+`rp-sec-NN` for Section-level writing, and `rp-para-NN_Pxx[-Pyy]` for fixed
+paragraph/paragraph-group writing. The initial structure identity is
+`rp-struct-01`; the presenter preserves interactive human-feedback
+Version/Step history. A complete Section draft → review/rating → diagnose →
+revise cycle is one Step inside its Run; a later independently commissioned
+Section session gets a new `rp-sec-NN`. A **Run E** is a Page-owned Evidence attempt with
+`re-value-NN_<slug>`, `re-display-NN_<slug>`, or `re-cite-NN_<slug>` as its
+typed identity. One RE Result/Card may expose many `$V_xxx$`,
+`\figure{D_xxx}`, `\table{D_xxx}`, and `\cite{C_xxx}` Labels. A
 **Supporting Run** keeps its external owner-native identity; its owner retains
 the authored Ticket and runtime internals while the Page inspects the generated
-Result by logical Run address without copying it. The Page `rpNN` and Task `rNN` counters are independent
+Result by logical Run address without copying it. The typed Page RP/RE and Task `rNN` counters are independent
 and may both begin at 01 in one Folder. A standalone/Discovery Folder stores both projections at
 its root; a canonical Task Page stores the ticket inside the Task and its
 generated Result at the containing Job's `results/<task>/<run>/`. A custom
@@ -133,17 +139,19 @@ scripts lane. The ticket is the ONE execution door under the simple-code law.
 Computational projections may be regenerated under their owner's Run rules.
 Interactive writing Results also contain irreplaceable human feedback and
 accepted wording: never treat them as a disposable cache or regenerate their
-completed Steps/Versions. Results are never evidence merely by existing, and become Page
-evidence only when an evidence lane binds or aggregates them. Rows and physical
+completed Steps/Versions. Results are never evidence merely by existing, and
+become Page evidence only when an Evidence Item/RE Result binds them. There is
+no Evidence storage lane under `outline/`; the Outline owns the Item contract,
+while `runs/` and `results/` own execution and payloads. Rows and physical
 dialects: `ref/roster.md` and `haipipe-plugin-runs`.
 
-For a Board Page, `outline/evidence/supporting-runs/` is a small **derived binding lane**: it
-maps an Evidence Item to Supporting Runs and its Local Run declaration, with
-pointers to the owning Ticket/receipt where those already exist. It never
-stores a copied Ticket or Result. Actual page-local execution stays at the
+For a Board Page, the Evidence Item contract is in the authored
+`outline/<stem>-evidence-items.md`; its Supporting Run and Local Run references
+resolve directly through the owning `runs/` and `results/` records. There is no
+`outline/evidence/supporting-runs/` binding lane. Actual page-local execution stays at the
 sibling `runs/` (Tickets) and `results/` (paired generated Results). `⚙️ Runs`
 presents Page-owned writing history plus the output side of allocated
-Supporting Task Runs, while `🧭 Outline → Evidence Workspace` owns why
+Supporting Task Runs, while `🧭 Outline → Evidence Space` owns why
 each output is needed and any unallocated route.
 
 ## 🔌 The two plugin kinds, and the tab bar they make (260831)
@@ -152,14 +160,16 @@ A LANE contract owns one rostered folder's LAW—storage grammar, the one
 writer, and the gate. For generic Page material it is an internal reference
 owned by its category, never a second Plugin skill.
 A CATEGORY plugin owns one SURFACE over a whole category. It may delegate a
-lane to another contract or own it directly: `haipipe-plugin-outline` owns
-Citation/Bib, Value, and Display inside its Evidence Workspace. PageX remains
-read-only migration input. A storage lane therefore does not require a duplicate
-Plugin or Skill. Outline now combines Context, Bullet, and Evidence workspaces; Delivery and Studio
-remain category surfaces:
+lane to another contract or own it directly: `haipipe-plugin-outline` owns the
+CITE, VALUE, and DISPLAY Evidence Item contracts and their read-only
+presentation; the Run producer owns the Result payload. PageX is retired and
+must be moved to the migration archive. A storage lane therefore does not
+require a duplicate Plugin or Skill. Outline now presents exactly three
+reader-facing Spaces—Draft, Evidence, and Run—while Context stays off-stage;
+Delivery and Studio remain category surfaces:
 
 ```text
-🧭 Outline   haipipe-plugin-outline    Context + Bullet + Evidence over the
+🧭 Outline   haipipe-plugin-outline    Draft + Evidence + Run over the
                                        outline/ process; FIRST/default tab
 📤 Delivery  haipipe-plugin-delivery   latex · word · slide · render — the
                                        🎞 segment carries the deck's ✨ pen
@@ -168,21 +178,19 @@ remain category surfaces:
                                        scene the chat redraws changes in front
                                        of the person talking. Both tools keep
                                        every rule and pen they had
-⚙️ Runs      haipipe-plugin-runs       Page Runs: feedback Versions/Steps;
-                                       Task Runs: delegated Results, including
-                                       Discovery; Scripts below, optional
 📂 Folder    haipipe-plugin-folder     the roster itself, the meta-surface
 ```
 
 The reader-facing Plugin picker follows one fixed sequence:
-🧭 Outline · 🎨 Studio · ⚙️ Runs · 📤 Delivery · 📂 Folder · 🏷 Labeling.
+🧭 Outline · 🎨 Studio · 📤 Delivery · 📂 Folder · 🏷 Labeling.
 Optional entries still keep their assigned place when applicable;
 an unassigned third-party entry follows these in stable registration order.
-On every source-backed Board Page, `⚙️ Runs` remains visible even when neither
-lane has an allocated Run; each lane has a truthful empty state and does not
-create empty `runs/` or `results/` folders. `🏷 Labeling` is a
-domain extension and follows its own applicability rules. Skill is an internal Outline → Context Workspace → Records
-surface backed by the nested `outline/skill/` store, so it has no duplicate top-level
+On every source-backed Board Page, Run Space remains visible inside Outline
+even when neither lane has an allocated Run; each lane has a truthful empty
+state and does not create empty `runs/` or `results/` folders. `🏷 Labeling` is a
+domain extension and follows its own applicability rules. Skill is an internal
+Outline record reached through Folder inspection, backed by the nested
+`outline/skill/` store, so it has no duplicate top-level
 picker row. Neither Evidence nor Probe has a skill or a top-level picker entry:
 Evidence is an internal Outline workspace and Probe is retired history.
 No lane sells its own strip row; the shell's

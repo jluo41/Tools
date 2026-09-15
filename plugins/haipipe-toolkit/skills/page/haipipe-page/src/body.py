@@ -3,6 +3,7 @@ resolution, topic/explanation bullets, checklists, fences, comment lanes, logs.
 BASE (the board folder) is set by the entry point; LINKS is filled by
 parse.parse_board from board.md's ## Links. Both live here because inline()
 is where paths become hrefs."""
+import os
 import re
 from functools import lru_cache
 
@@ -50,7 +51,6 @@ def resolve(token):
             except ValueError:
                 pass
         return None
-    import os
     # THE PAGE'S OWN FOLDER FIRST. The ladder below only ever walked UP from the
     # board folder, and a page's companion folder sits BELOW it, so a page in
     # `QBt-page-types/` naming `slides/QBt9-for-slide/out/deck.html` got no link
@@ -71,7 +71,6 @@ def resolve(token):
         cand = (here / tok)
         if cand.exists():
             try:
-                import os
                 return os.path.relpath(cand, BASE)
             except ValueError:
                 return None

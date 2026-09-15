@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Generate ``outline/<stem>-evidence.md`` from typed Evidence Items.
+"""Retired Evidence snapshot generator.
 
-The authored half comes from ``<stem>-evidence-items.md``. The generated half
-joins each item to its local Page Evidence Item Result and the outline fold.
-Status is always derived; nobody types it into either source file.
+Current Evidence is rendered from ``<stem>-evidence-items.md`` plus
+``results/**/result.yaml``. This historical command is intentionally unable to
+write ``outline/<stem>-evidence.md`` or ``outline/evidence/``.
 """
-import argparse
 import datetime
 import importlib.util
 import re
@@ -24,7 +23,6 @@ from src.item_table import (  # noqa: E402
     cycle_now, item_status, read_items, readable_global_run, readable_paper_route,
     readable_task, repo_root, resolve, run_registry,
 )
-from src.common import evidence_run_dir  # noqa: E402
 
 BEGIN = "# --- evidence-status:begin (generated) ---"
 END = "# --- evidence-status:end ---"
@@ -185,12 +183,12 @@ def _allocated_local(item: dict, local_rows: list[dict], root: Path) -> str:
 
 
 def build_run_bindings(page_md: Path) -> str:
-    """Project Run lineage into ``outline/evidence/supporting-runs/``.
+    """Return an in-memory diagnostic of the Item-to-Run graph.
 
-    The projection contains pointers only: no Run, Result, runtime, log, or
-    output is copied into Evidence.  Physical page-local pairs remain at the
-    sibling ``runs/`` and ``results/`` roots and external supporting work stays
-    in its owning task/discovery tree.
+    This helper is intentionally not a writer. No Run, Result, runtime, log,
+    or output is copied into an Evidence folder. Physical page-local pairs
+    remain at the sibling ``runs/`` and ``results/`` roots and external
+    supporting work stays in its owning task/discovery tree.
     """
     items = read_items(page_md)
     root = repo_root(page_md.parent)
@@ -226,37 +224,12 @@ def build_run_bindings(page_md: Path) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("target", type=Path)
-    parser.add_argument("--all", action="store_true")
-    args = parser.parse_args()
-    pages = (
-        [
-            page_dir / f"{page_dir.name}.md"
-            for group in args.target.iterdir()
-            if group.is_dir() and not group.name.startswith(("_", ".", "board"))
-            for page_dir in group.iterdir()
-            if page_dir.is_dir() and (page_dir / f"{page_dir.name}.md").exists()
-        ]
-        if args.all else [args.target]
+    print(
+        "evidence-status.py is retired: Evidence is live from the Item contract "
+        "and results/**/result.yaml; migrate old snapshots to "
+        "_archive/legacy-outline-evidence/ instead of regenerating them."
     )
-    count = 0
-    for page in pages:
-        text = build(page)
-        if not text:
-            continue
-        output = page.parent / "outline" / f"{page.stem}-evidence.md"
-        output.write_text(text, encoding="utf-8")
-        bindings = evidence_run_dir(page.parent) / f"{page.stem}-run-bindings.md"
-        bindings.parent.mkdir(parents=True, exist_ok=True)
-        bindings.write_text(build_run_bindings(page), encoding="utf-8")
-        count += 1
-        shown = output.relative_to(Path.cwd()) if output.is_relative_to(Path.cwd()) else output
-        shown_bindings = (bindings.relative_to(Path.cwd())
-                          if bindings.is_relative_to(Path.cwd()) else bindings)
-        print(f"wrote {shown}")
-        print(f"wrote {shown_bindings}")
-    print(f"{count} file(s)")
+    return 2
 
 
 if __name__ == "__main__":

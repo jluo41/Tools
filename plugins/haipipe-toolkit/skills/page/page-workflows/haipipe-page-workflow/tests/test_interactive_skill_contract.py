@@ -16,6 +16,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
     def test_relative_instruction_links_resolve(self):
         files = [
             WORKFLOW / "SKILL.md",
+            WORKFLOW / "ref/structure-run.md",
             WORKFLOW / "ref/interactive-writing-run.md",
             WORKFLOW / "ref/workflow-table.md",
             SKILLS / "page/page-workflows/haipipe-page-content/SKILL.md",
@@ -67,7 +68,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
         for text in (contract, template):
             self.assertIn("S1", text)
             self.assertIn("Current Run", text)
-            self.assertIn("Evidence Workspace", text)
+            self.assertIn("Evidence Space", text)
         self.assertIn("heading `<Run> · <Version/Step>`", contract)
         self.assertIn("Nothing follows the three links", template)
         self.assertIn("remain chat-only coordinates", template)
@@ -158,12 +159,12 @@ class InteractiveSkillContractTest(unittest.TestCase):
         packet = (SKILLS / "page/haipipe-page/ref/user-check-packet.md").read_text()
         self.assertIn("all three direct clickable links at the very end", packet)
         self.assertIn("lens=div", packet)
-        self.assertIn("lens=workspace&seg=items", packet)
+        self.assertIn("lens=evidence&focus=run-", packet)
         self.assertIn("[Current Run]", packet)
         self.assertIn("&run=<exact-run-id>", packet)
         self.assertIn("own Markdown blockquote", packet)
-        self.assertIn("Prefix every sentence with a stable bold review label", packet)
-        self.assertIn("These labels are chat review coordinates only", packet)
+        self.assertIn("Prefix every sentence with a stable bold\n   review label", packet)
+        self.assertIn("Sentence labels are\n   chat review coordinates only", packet)
         contract = (WORKFLOW / "ref/interactive-writing-run.md").read_text()
         self.assertIn("not a newly implemented CLI", contract)
         self.assertIn("waiting-for-feedback", contract)
@@ -183,9 +184,9 @@ class InteractiveSkillContractTest(unittest.TestCase):
                 self.assertIn("Page Run close", text)
                 self.assertIn("Page release", text)
 
-        self.assertIn("Save the fast foreground", contract)
+        self.assertIn("Save the completed Step", contract)
         self.assertIn("Do not write adopted Page Content", contract)
-        self.assertIn("every planned Page Run and required evidence Task Result", flat_contract)
+        self.assertIn("required structure/Bullet RP Runs", flat_contract)
         self.assertIn("## Page release barrier", content)
         self.assertIn("generate the declared web/LaTeX/Word outputs once", content)
         self.assertIn("Evidence closure", template)
@@ -197,12 +198,12 @@ class InteractiveSkillContractTest(unittest.TestCase):
         presenter = (SKILLS / "page/page-plugins/haipipe-plugin-runs/SKILL.md").read_text()
         for text in (contract, run_contract, presenter):
             with self.subTest(source=text[:40]):
-                self.assertIn("rpNN", text)
-                self.assertIn("rp00", text)
-                self.assertIn("rp01", text)
-                self.assertIn("r01", text)
-        self.assertIn("Delegated Paragraph Writing is a Task Run", presenter)
-        self.assertIn("Paragraph groups are sibling Runs", contract)
+                self.assertIn("rp-struct-01", text)
+                self.assertRegex(text, r"rp-sec-(?:NN|\d{2})")
+                self.assertRegex(text, r"rp-para-\d{2}_P\d{2}")
+        self.assertIn("r01", run_contract + presenter)
+        self.assertIn("Delegated Paragraph Writing remains a Task Run", presenter)
+        self.assertIn("The three RP kinds are sibling Page Runs", contract)
 
     def test_runs_function_proposes_only_human_interaction(self):
         runs_fn = (SKILLS / "page/haipipe-page/fn/runs.md").read_text()
@@ -213,13 +214,13 @@ class InteractiveSkillContractTest(unittest.TestCase):
         self.assertIn("fn/runs.md", page)
         self.assertIn("../../haipipe-page/fn/runs.md", workflow)
         self.assertIn("A proposal is not an allocated Run", runs_fn)
-        self.assertIn("Do not mint\n`rpNN` before selection", runs_fn)
+        self.assertIn("Do not mint\nany RP identity before selection", runs_fn)
         self.assertIn("Resume an existing matching\n   open Page Run", runs_fn)
         self.assertIn("code/search/data/build produces output", runs_fn)
         self.assertIn("normal Task Run", runs_fn)
         self.assertIn("A Page-owned `fn/Runs` candidate is also planning", run_contract)
 
-    def test_page_has_closed_mermaid_structure_then_numbered_paragraph_runs(self):
+    def test_page_has_explicit_structure_section_and_paragraph_run_ids(self):
         runs_fn = (SKILLS / "page/haipipe-page/fn/runs.md").read_text()
         contract = (WORKFLOW / "ref/interactive-writing-run.md").read_text()
         workflow = (WORKFLOW / "SKILL.md").read_text()
@@ -227,21 +228,62 @@ class InteractiveSkillContractTest(unittest.TestCase):
 
         for text in (runs_fn, contract, workflow, run_contract):
             with self.subTest(source=text[:40]):
-                self.assertIn("rp00_mermaid-structure", text)
+                self.assertIn("rp-struct-01", text)
                 self.assertIn("P01..PN", text)
                 self.assertIn("1 <= K <= N", text)
                 self.assertIn("sibling", text)
 
         self.assertIn("Ten paragraphs may therefore produce 10, 8, or 6", runs_fn)
-        self.assertIn("rp01_p01", runs_fn)
-        self.assertIn("rp02_p02-p03", runs_fn)
-        self.assertIn("Do not propose or allocate any\nparagraph Page Run", runs_fn)
+        self.assertIn("rp-sec-01", runs_fn)
+        self.assertIn("rp-para-01_P03", runs_fn)
+        self.assertIn("rp-para-02_P04-P05", runs_fn)
+        self.assertIn("Section candidates become legal only after", runs_fn)
         self.assertIn(
             "but allocate only the selected next candidate",
             " ".join(workflow.split()),
         )
         self.assertIn("Candidate positions are planning labels", runs_fn)
-        self.assertIn("never future `rpNN` identities", contract)
+        self.assertIn("next free identity whose kind matches", contract)
+
+    def test_structure_run_fuses_shape_survey_and_allows_multiple_contributors(self):
+        structure = (WORKFLOW / "ref/structure-run.md").read_text()
+        outline = (SKILLS / "page/page-workflows/haipipe-page-outline/SKILL.md").read_text()
+        runs_fn = (SKILLS / "page/haipipe-page/fn/runs.md").read_text()
+        for text in (structure, outline, runs_fn):
+            with self.subTest(source=text[:40]):
+                self.assertIn("rp-struct-01", text)
+                self.assertIn("SHAPE", text)
+                self.assertIn("SURVEY", text)
+                self.assertIn("participants", text)
+                self.assertIn("contributors", text)
+        self.assertIn("no separate", structure)
+        self.assertIn("same paired Structure Result", runs_fn)
+
+    def test_draft_paragraph_header_does_not_reserve_bullet_gutter(self):
+        outline = (SKILLS / "page/haipipe-page/live/outline.py").read_text()
+        self.assertIn(
+            "details.paragraph-group>summary .addr{{min-width:0;margin-right:0}}",
+            outline,
+        )
+
+    def test_evidence_labels_use_generic_display_namespace(self):
+        families = (SKILLS / "page/haipipe-page/ref/page-run-families.md").read_text()
+        page = (SKILLS / "page/haipipe-page/SKILL.md").read_text()
+        evidence = (SKILLS / "page/page-workflows/haipipe-page-evidence/SKILL.md").read_text()
+        displays = (SKILLS / "page/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md").read_text()
+        citations = (SKILLS / "page/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md").read_text()
+
+        for text in (families, page, evidence):
+            with self.subTest(source=text[:40]):
+                self.assertRegex(text, r"\$V_[A-Za-z0-9_-]+\$")
+                self.assertRegex(text, r"\\figure\{D_[A-Za-z0-9_-]+\}")
+                self.assertRegex(text, r"\\table\{D_[A-Za-z0-9_-]+\}")
+                self.assertRegex(text, r"\\cite\{C_[A-Za-z0-9_-]+\}")
+        self.assertIn("`DISPLAY` is the umbrella type", families)
+        self.assertIn("display_kind", displays)
+        self.assertIn(r"\figure{D_<slug>}", displays)
+        self.assertIn(r"\cite{C_<slug>}", citations)
+        self.assertIn("it does not create a new Run", families)
 
 
 if __name__ == "__main__":

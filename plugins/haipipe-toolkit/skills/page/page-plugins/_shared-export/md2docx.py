@@ -195,22 +195,31 @@ class Displays:
         if base:
             self._scan(base)
         # A SECOND unit root, for callers whose units live outside the paper
-        # convention: a board page's plugin folder is `<page>/display/` (the
-        # page-as-small-paper contract, QPf5), and without this hook every
-        # projection of such a page shipped its evidence citations as plain
-        # text (JL 260816: "both word and latex didn't include the display?").
+        # convention: a board page's v4 Result payloads live under
+        # `<page>/results/<run>/payload/<unit>/` (with the retired
+        # `<page>/display/` shape still accepted for compatibility). Without
+        # this hook every projection of such a page ships its evidence
+        # citations as plain text.
         if extra_root and os.path.isdir(extra_root):
             self._scan(extra_root)
 
     def _scan(self, base):
-        for unit in sorted(os.listdir(base)):
-            f = os.path.join(base, unit, "float.tex")
-            if not os.path.exists(f):
-                continue
+        # The paper convention has one level (`displays/<unit>`); v4 Page
+        # Results add two levels (`results/<run>/payload/<unit>`). Scanning
+        # only immediate children made valid Result payloads invisible to
+        # Word RD while the Evidence Space could still render them.
+        files = sorted(
+            os.path.join(root, name)
+            for root, _dirs, names in os.walk(base)
+            for name in names if name == "float.tex"
+        )
+        for f in files:
+            unit_dir = os.path.dirname(f)
+            unit = os.path.basename(unit_dir)
             tex = open(f, encoding="utf-8", errors="replace").read()
             m = re.search(r"\\begin\{(table|figure)", tex)
             lab = re.search(r"\\label\{([^}]+)\}", tex)
-            assets = os.path.join(base, unit, "assets")
+            assets = os.path.join(unit_dir, "assets")
             # THE UNIT'S OWN CAPTION. Without it the .docx printed
             # "Figure 1. display01a-hero-concept", a folder name, where the
             # published caption belongs (JL 2026-07-28). It is read here rather
@@ -225,11 +234,16 @@ class Displays:
                     depth += (tex[k] == "{") - (tex[k] == "}")
                     k += 1
                 cap = tex[i + 9:k - 1].strip()
+            note_match = re.search(
+                r"\\begin\{flushleft\}(.*?)\\end\{flushleft\}",
+                tex, flags=re.S)
+            note = note_match.group(1).strip() if note_match else ""
             rec = {
                 "unit": unit,
                 # the RAW tex. detex is deferred to emit time so the Resolver can
                 # turn a \ref inside the caption into its number first.
                 "caption": cap,
+                "note": note,
                 "kind": m.group(1) if m else "unknown",
                 "label": lab.group(1) if lab else None,
                 "body": os.path.join(assets, "table-body.tex"),
@@ -415,6 +429,9 @@ def detex(s):
                     ("beta", "\u03b2"), ("kappa", "\u03ba"), ("mu", "\u03bc")):
         s = s.replace("\\" + cmd + " ", ch).replace("\\" + cmd, ch)
     s = re.sub(r"\$([^$]*)\$", r"\1", s)          # drop the math delimiters
+    # A `\\` inside a command argument (most commonly `\\shortstack`) is a
+    # visual line break, not a Word table row. Keep the header in one cell.
+    s = re.sub(r"\\\\", " ", s)
     # SUPERSCRIPTS. `$^{***}$` lost its delimiters above and then its braces
     # below, so every significance star in every table cell shipped as the
     # literal `9.3438^***` (JL 2026-07-28). Word can superscript a run, but this
@@ -572,6 +589,7 @@ class Inline:
     CITE = re.compile(r"\\cite[a-z]*\{([^}]*)\}")
     REF = re.compile(r"\\ref\{([^}]*)\}")
     BRACKET_REF = re.compile(r"\b(Table|Figure)\s+\[([^\]]+)\]")
+    DISPLAY_PLACEHOLDER = re.compile(r"/(table|figure)\{([^}]+)\}")
     QREF = re.compile(r"\s*\[Q-[A-Za-z0-9]+-\d+\]")
     VALHOLE = re.compile(r"\{VAL:\?[^}]*\}")
 
@@ -638,6 +656,13 @@ class Inline:
         self.pending.append(("Display", f"placeholder reference {kind} [{slug}], unresolved"))
         return f"{kind} [{slug}]"
 
+    def _display_placeholder(self, m):
+        kind, slug = m.group(1).capitalize(), m.group(2)
+        self.report.append(("placeholder-ref",
+                            f"{kind} [{slug}] is pending and has no Display Result"))
+        self.pending.append(("Display", f"placeholder reference {kind} [{slug}], unresolved"))
+        return f"{kind} [pending: {slug}]"
+
     def render(self, text):
         self.pending, self.cited = [], getattr(self, "cited", set())
         t = text
@@ -646,6 +671,7 @@ class Inline:
         t = self.CITE.sub(self._cite, t)
         t = self.REF.sub(self._ref, t)
         t = self.BRACKET_REF.sub(self._bracket_ref, t)
+        t = self.DISPLAY_PLACEHOLDER.sub(self._display_placeholder, t)
         t = self.QREF.sub("", t)                 # the bracket is bookkeeping
         # Inline code is operational text, not typography. Stash it before the
         # prose smart-dash pass so CLI flags such as `--execute` remain exactly
@@ -861,7 +887,7 @@ class Docx:
                    + "".join(f'<w:gridCol w:w="{w}"/>' for w in col_widths(rows, ncol))
                    + "</w:tblGrid>")
         jc = {"l": "left", "c": "center", "r": "right"}
-        spec = [c for c in align if c in jc]
+        spec = _alignment_columns(align)
         # the LEADING bold rows are the header: repeat them when the table breaks
         head = 0
         for r in rows:
@@ -1104,7 +1130,12 @@ def parse_table_body(path):
     raw = re.sub(r"\\addlinespace(?:\[[^\]]*\])?", "", raw)
     raw = re.sub(r"\\(?:noalign|centering|small|footnotesize)\b", "", raw)
     rows = []
-    for line in raw.split(r"\\"):
+    # `\\` is both a tabular row terminator and a line break inside commands
+    # such as `\shortstack{(1)\\Basic}`. Splitting the raw string first made
+    # Word's Table 2 header become six one-cell rows. Respect TeX brace depth:
+    # only a top-level `\\` ends a row; an inner one is ordinary text and is
+    # later rendered as a space by `detex`.
+    for line in _split_table_rows(raw):
         line = re.sub(r"^\s*\[[0-9.]+\s*[a-z]*\]", "", line.strip())   # \\[2pt]
         line = line.replace("$", "")                                    # math mode
         line = line.strip()
@@ -1141,6 +1172,86 @@ def split_cells(line):
         i += 1
     out.append(buf)
     return out
+
+
+def _alignment_columns(spec):
+    """Read effective left/centre/right alignment from a LaTeX preamble.
+
+    Table units commonly use ``>{\\raggedright}p{...}`` and repeated
+    ``*{6}{>{\\centering}X}`` columns. Taking every ``l``, ``c`` and ``r``
+    character from the raw preamble accidentally treated letters in commands
+    such as ``\\raggedright`` as column declarations, which centred the first
+    label column in Word. This small parser expands repeats and skips modifiers.
+    """
+    columns, pending, i = [], None, 0
+
+    while i < len(spec):
+        if spec[i] in "><":
+            arg, end = _braced_arg(spec, i + 1)
+            if arg is not None:
+                if "\\raggedright" in arg:
+                    pending = "l"
+                elif "\\centering" in arg:
+                    pending = "c"
+                elif "\\raggedleft" in arg:
+                    pending = "r"
+                i = end
+                continue
+        if spec[i] == "*":
+            count, pos = _braced_arg(spec, i + 1)
+            inner, end = _braced_arg(spec, pos) if count is not None else (None, pos)
+            if count is not None and inner is not None:
+                try:
+                    columns.extend(_alignment_columns(inner) * int(count))
+                except ValueError:
+                    pass
+                i = end
+                pending = None
+                continue
+        if spec[i] in "lcr":
+            columns.append(pending or spec[i])
+            pending = None
+            i += 1
+            continue
+        if spec[i] in "pmbX":
+            columns.append(pending or ("c" if spec[i] == "X" else "l"))
+            pending = None
+            i += 1
+            if spec[i - 1] in "pmb" and i < len(spec) and spec[i] == "{":
+                _width, i = _braced_arg(spec, i)
+            continue
+        i += 1
+    return columns
+
+
+def _split_table_rows(raw):
+    """Split tabular content on top-level TeX row breaks only."""
+    rows, buf, depth, i = [], [], 0, 0
+    while i < len(raw):
+        ch = raw[i]
+        if ch == "{":
+            depth += 1
+            buf.append(ch)
+            i += 1
+            continue
+        if ch == "}":
+            depth = max(0, depth - 1)
+            buf.append(ch)
+            i += 1
+            continue
+        if ch == "\\" and i + 1 < len(raw) and raw[i + 1] == "\\":
+            if depth == 0:
+                rows.append("".join(buf))
+                buf = []
+            else:
+                buf.extend((ch, raw[i + 1]))
+            i += 2
+            continue
+        buf.append(ch)
+        i += 1
+    if buf:
+        rows.append("".join(buf))
+    return rows
 
 
 # --------------------------------------------------------------- driver
@@ -1299,6 +1410,8 @@ def main():
                         d.table(rows, align=align,
                                 caption="Table %d. %s" % (
                                     n, inline.caption(rec["caption"]) or unit))
+                        if rec.get("note"):
+                            d.para(inline.caption(rec["note"]), style="TableNote")
                     else:
                         report.append(("no-table-body", f"{unit} has no parsable table-body.tex"))
                     placed.add(unit)

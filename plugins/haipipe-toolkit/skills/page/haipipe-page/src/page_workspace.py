@@ -379,5 +379,13 @@ def build_page(context, output=None):
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
     confined(output, "index.html").write_text(markup, encoding="utf-8")
-    (output / ".haipipe-page-export").write_text("Generated Page reading bundle\n", encoding="utf-8")
+    source_relative = context.source.relative_to(context.folder).as_posix()
+    marker = {
+        "schema": "haipipe-page-export/v2",
+        "source": source_relative,
+        "source_sha256": sha256(context.source.read_bytes()).hexdigest(),
+    }
+    (output / ".haipipe-page-export").write_text(
+        json.dumps(marker, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     return output / "index.html"

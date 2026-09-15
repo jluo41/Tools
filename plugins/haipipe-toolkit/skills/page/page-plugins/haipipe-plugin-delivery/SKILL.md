@@ -56,7 +56,7 @@ the category  <page>/delivery/ (flat names are compatibility reads only)
   its ✨ bar moved into the Slides segment here, still one explicit press.
 - **The separate 📜 and 📝 strip rows are folded** (82-plugin-delivery.js,
   replacing 82-plugin-exports.js), the way Citations folded into Outline's
-  Evidence Workspace.
+  Evidence Space.
 - **The tab auto-calls no model.** LaTeX/Word build on click through their
   own deterministic pens; the deck authors only on the ✨ press; Render shows
   the live lane and may invoke only its explicit Folder-native writer/adapter.
@@ -74,13 +74,25 @@ source, and `haipipe-page-check` remains the only human whole-Page close gate.
 ## 🗺 Status · 🟢 built 260831
 
 `live/delivery.py` serves GET `/_board/delivery` (the segmented surface) and
-its POST twin; `82-plugin-delivery.js` registers the ONE row.
+its POST twin; `82-plugin-delivery.js` registers the ONE row. Outline also
+embeds the same read-only route with `workspace=1` as its Delivery Workspace.
 
-## 🚫 No standalone delivery check lane
+## 🔍 Delivery Workspace · consistency projection
 
-Delivery has no separate quality lane or sibling report. Its machine receipt
-is the single `build-manifest.json`, whose `status`, `readiness`,
-`checks`, and `render` fields describe what was built and which blockers remain.
+Delivery Workspace is not a second builder, quality gate, or duplicate content
+store. It is a deterministic GET-only projection inside Outline that compares
+the current Page Markdown (the authority) with each saved delivery lane. It
+checks the source path and SHA-256, the web Markdown mirror, manifest-declared
+artifact hashes, and artifact freshness. Each lane is shown as `pass`, `stale`,
+`unverified`, or `not-built`, with the exact reason and the manifest/artifact
+path that needs attention.
+
+The route is `/_board/delivery?path=…&file=…&workspace=1` in both standalone
+and Board-hosted mode. It reads `delivery/build-manifest.json`, any lane
+manifest, `delivery/web/.haipipe-page-export`, and saved artifacts; it never
+rebuilds or edits them. The Page CHECK phase remains the human whole-Page close
+gate, while this workspace prevents a delivery from being presented as current
+when it no longer matches the正文 source.
 The Page workflow's `haipipe-page-check` owns the human whole-Page close gate;
 Delivery only projects the declared outputs and their build diagnostics.
 

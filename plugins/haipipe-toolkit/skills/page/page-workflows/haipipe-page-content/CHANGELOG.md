@@ -1,3 +1,8 @@
+## 0.15.0 · 2026-09-14
+
+- Update the release barrier to consume typed RP identities and the unified
+  Evidence/Card label contract before delivery.
+
 ## 0.14.0 · 2026-09-12
 
 - Require the reserved `rp00_mermaid-structure` gate before Page-level Content
@@ -167,3 +172,7 @@
 - Define one normal Level-4 `Page · Division Writing` Run per commissioned
   Content division, with candidate, trace, runtime, and promotion contracts.
 - Keep `04 CHECK` independent and solely authorized to close a Page.
+## 0.15.0 · 2026-09-14
+
+- Require the structure/Bullet, Section, paragraph, and evidence release
+  dependencies before CONTENT adoption.

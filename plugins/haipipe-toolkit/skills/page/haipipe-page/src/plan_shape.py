@@ -829,6 +829,47 @@ def presentation_point(head: str, continuation_lines=(), number=None) -> dict:
     }
 
 
+_DRAFT_START = re.compile(r"^Draft:\s*(.*)$", re.I)
+_DRAFT_STOP = re.compile(
+    r"^(?:Note|Annotation|More|Role|Transition|Evidence|Accept|Answered|Drawn|Routed|Status|Tag|Supports|Target):\s*",
+    re.I,
+)
+
+
+def split_embedded_draft(continuation):
+    """Split one Bullet's embedded Draft from plan metadata and review lanes."""
+    plan_lines, draft_lines, review_lines = [], [], []
+    in_draft = False
+    in_review = False
+    for raw in continuation or ():
+        line = str(raw).strip()
+        if line.startswith("> Comment "):
+            in_draft = False
+            in_review = True
+            review_lines.append(line)
+            continue
+        if in_review:
+            if line.startswith("> ") or line.startswith(">> "):
+                review_lines.append(line)
+                continue
+            in_review = False
+        if not in_draft:
+            start = _DRAFT_START.match(line)
+            if start:
+                in_draft = True
+                if start.group(1).strip():
+                    draft_lines.append(start.group(1).strip())
+                continue
+            plan_lines.append(line)
+            continue
+        if _DRAFT_STOP.match(line):
+            in_draft = False
+            plan_lines.append(line)
+        else:
+            draft_lines.append(line)
+    return plan_lines, "\n".join(draft_lines).strip(), "\n".join(review_lines).rstrip()
+
+
 def iter_plan_bullets(plan_text: str):
     """Yield stable, presentation-ready Bullet blocks in plan order.
 
@@ -875,6 +916,7 @@ def iter_plan_bullets(plan_text: str):
                and not re.match(r"^- ", lines[j])):
             continuation.append(lines[j].strip())
             j += 1
+        plan_continuation, draft, reviews = split_embedded_draft(continuation)
         bullet_no = explicit_no or sn
         address = "C%d.P%d.B%d" % (cn, max(pn, 1), bullet_no)
         blocks.append({
@@ -885,9 +927,11 @@ def iter_plan_bullets(plan_text: str):
             "paragraph_title": paragraph_title,
             "bullet": "B%d" % bullet_no,
             "head": head,
-            "continuation": continuation,
-            "body": " ".join([head] + [x for x in continuation if x]),
-            "point": presentation_point(head, continuation, bullet_no),
+            "continuation": plan_continuation,
+            "draft": draft,
+            "reviews": reviews,
+            "body": " ".join([head] + [x for x in plan_continuation if x]),
+            "point": presentation_point(head, plan_continuation, bullet_no),
         })
         i = j
     return blocks

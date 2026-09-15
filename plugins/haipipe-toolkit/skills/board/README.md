@@ -24,9 +24,9 @@ Application family. This folder does not maintain a duplicate Page Type set.
 
 | Phase | Skill | Primary work | Primary workspace |
 |---:|---|---|---|
-| 00 CONTEXT | `haipipe-page-context` | collect, resolve, freeze allowed context | Context Workspace |
-| 01 OUTLINE | `haipipe-page-outline` | SHAPE bullets; SURVEY Evidence Items and Runs | Bullet + Evidence Workspaces |
-| 02 EVIDENCE | `haipipe-page-evidence` | LAND Supporting/Local Results; EMBED evidence | Evidence, then Bullet Workspace |
+| 00 CONTEXT | `haipipe-page-context` | collect, resolve, freeze allowed context | off-stage Context record |
+| 01 OUTLINE | `haipipe-page-outline` | SHAPE bullets; SURVEY Evidence Items and Runs | Draft + Evidence Spaces |
+| 02 EVIDENCE | `haipipe-page-evidence` | LAND Supporting/Local Results; EMBED evidence | Evidence Space, then Draft Space |
 | 03 CONTENT | `haipipe-page-content` | WRITE from the approved plan and ready evidence | Page Content |
 | 04 CHECK | `haipipe-page-check` | check one whole Page version | workflow receipt |
 

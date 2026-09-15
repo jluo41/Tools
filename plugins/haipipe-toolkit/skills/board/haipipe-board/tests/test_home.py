@@ -38,16 +38,24 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertEqual(cards[0]["settled"], 1)
             self.assertTrue(cards[0]["ready"])
             page = render_home(root)
+            self.assertIn("<title>Physician Space</title>", page)
+            self.assertIn("<h1>Physician Space</h1>", page)
+            self.assertNotIn("Fusion Space", page)
+            self.assertNotIn('class="workspace-title"', page)
             self.assertIn("A &lt;Board&gt;", page)
             self.assertIn('class="t">A &lt;Board&gt;</span>', page)
             self.assertIn('class="ir home-row"', page)
             self.assertIn('id="board-list"', page)
             self.assertIn('placeholder="Search boards"', page)
-            self.assertIn('class="board-list"', page)
+            self.assertIn('class="board-list project-groups"', page)
+            self.assertIn('class="project-group"', page)
+            self.assertIn('<span class="project-name">SPACE / Shared</span>', page)
             self.assertIn("/project/diagram/01-topic/board/index.html", page)
+            self.assertIn('<span class="home-folder">/Task/01-topic</span>', page)
             self.assertNotIn("Open board", page)
+            self.assertNotIn("JJ-LUO", page)
+            self.assertNotIn("Physician-SPACE", page)
             self.assertNotIn('class="summary"', page)
-            self.assertNotIn('class="project-group"', page)
             self.assertNotIn('class="kind-section"', page)
             self.assertNotIn('class="row-status"', page)
             self.assertNotIn('class="row-pages"', page)
@@ -57,7 +65,10 @@ class SpaceHomeTest(unittest.TestCase):
     def test_home_can_be_branded_for_a_space(self):
         with tempfile.TemporaryDirectory() as tmp:
             page = render_home(Path(tmp), "Physician-SPACE", "https://physician.jjluo.com")
-            self.assertIn("<h1>Physician-SPACE</h1>", page)
+            self.assertIn("<h1>Physician Space</h1>", page)
+            self.assertNotIn('class="workspace-title"', page)
+            self.assertNotIn("Fusion Space", page)
+            self.assertNotIn("Physician-SPACE", page)
             self.assertNotIn("https://physician.jjluo.com", page)
 
     def test_groups_task_discovery_paper_design_and_skill_boards_with_skill_precedence(self):
@@ -87,6 +98,13 @@ class SpaceHomeTest(unittest.TestCase):
             page = render_home(root)
             for title in ("Task", "Discovery", "Paper", "Design", "Paper Skill"):
                 self.assertIn(f'class="t">{title}</span>', page)
+            for project in ("Project-A", "SPACE / Shared", "Tools &amp; Skills"):
+                self.assertIn(f'<span class="project-name">{project}</span>', page)
+            self.assertIn('<section class="space-section" data-space-key="examples"', page)
+            self.assertIn('<section class="space-section" data-space-key="Tools"', page)
+            self.assertLess(
+                page.index('data-space-key="examples"'),
+                page.index('data-space-key="Tools"'))
             self.assertNotIn("Task Boards", page)
             self.assertNotIn("Discovery Boards", page)
             self.assertNotIn("Paper Boards", page)
@@ -149,10 +167,40 @@ class SpaceHomeTest(unittest.TestCase):
             page = render_home(root)
             for title in ("One Task", "One Paper", "Two Task"):
                 self.assertIn(f'class="t">{title}</span>', page)
-            self.assertNotIn("<h2>Project-One</h2>", page)
-            self.assertNotIn("<h2>Project-Two</h2>", page)
+            self.assertIn('<span class="project-name">Project-One</span>', page)
+            self.assertIn('<span class="project-name">Project-Two</span>', page)
+            self.assertLess(
+                page.index('<span class="project-name">Project-One</span>'),
+                page.index('<span class="project-name">Project-Two</span>'))
             self.assertNotIn("Task Boards", page)
             self.assertNotIn("Paper Boards", page)
+
+    def test_projects_are_collapsible_and_reorderable_without_new_source_state(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            board = root / "examples" / "Project-One" / "diagram" / "01-topic"
+            (board / "board").mkdir(parents=True)
+            (root / "examples" / "Project-One" / "project.yaml").write_text(
+                "id: Project-One\n")
+            (board / "board.md").write_text("# Topic\nspine: s\n")
+            (board / "board" / "index.html").write_text("index")
+
+            page = render_home(root)
+            self.assertIn('<details class="project-group"', page)
+            self.assertIn('class="project-grip"', page)
+            self.assertNotIn('class="project-move', page)
+            self.assertIn("localStorage", page)
+            self.assertIn("restoreOrder", page)
+            self.assertIn("saveOrder", page)
+            self.assertIn("restoreCollapsed", page)
+            self.assertIn("saveCollapsed", page)
+            self.assertIn("pointerdown", page)
+            self.assertIn("pointermove", page)
+            self.assertIn("pointerup", page)
+            self.assertIn("addEventListener('toggle'", page)
+            self.assertNotIn(' open role="listitem"', page)
+            self.assertIn('class="space-projects"', page)
+            self.assertIn("project-collapsed:v2", page)
 
     def test_index_only_lists_boards_that_can_be_opened(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -169,6 +217,7 @@ class SpaceHomeTest(unittest.TestCase):
 
             page = render_home(root)
             self.assertIn('class="t">Ready Board</span>', page)
+            self.assertIn('<span class="home-folder">/Task/01-ready</span>', page)
             self.assertNotIn("Pending Board", page)
 
     def test_legacy_examples_project_groups_without_a_manifest(self):

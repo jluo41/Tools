@@ -8,7 +8,7 @@ Use the current split:
 
 ```text
 Related Page/Folder relationship
-  → Context Workspace · navigation, policy, requirement, or bounded context
+  → off-stage Context record · navigation, policy, requirement, or bounded context
 
 Cross-Folder evidentiary material
   → Supporting Run · full bNNjNNtNNrNN id · accepted Result
@@ -33,6 +33,7 @@ For every existing `PageX Bindings` value:
    SURVEY pass. Never delete historical files or receipts merely to modernize
    the current graph.
 
-The old `outline/evidence/pagex/` lane and PageX service routes may remain
-read-only so historical Pages render and can be migrated. They are not valid
-new write targets, Run families, Result types, or authority sources.
+The old `outline/evidence/pagex/` lane and PageX service routes are not read by
+v4. Move their material to `_archive/legacy-outline-evidence/` before using
+the Page. They are not valid write targets, Run families, Result types, or
+authority sources.

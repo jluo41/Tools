@@ -18,7 +18,7 @@ materializes a Result.
 
 ```text
 <stem>-evidence-items.md  AUTHORED   item identity + expectation + audited candidate Run graph
-<stem>-evidence.md        GENERATED  the same items joined to Run receipts and Results
+<stem>-evidence.md        RETIRED    old generated snapshot; move to the migration archive
 ```
 
 ## The unit · one typed item with a readable name
@@ -35,10 +35,10 @@ The initial type vocabulary is closed:
 |---|---|---|
 | `VALUE` | a checked scalar, interval, count, or comparison | structured value + units + provenance |
 | `CITE` | a source claim ready to cite | verified citation record + supported claim |
-| `DISPLAY` | a table, figure, diagram, illustration, or algorithm block ready to place | governed Result envelope + direct unit pointer, caption claim, and provenance |
+| `DISPLAY` | a table, figure, or algorithm block ready to place | governed Result envelope + direct unit pointer, caption claim, and provenance |
 
-`DISPLAY` is the umbrella type for tables, figures, diagrams, illustrations,
-and algorithm blocks. `TABLE` is a legacy compatibility alias for `DISPLAY`.
+`DISPLAY` is the umbrella type for tables, figures, and algorithm blocks.
+`TABLE` is a legacy compatibility alias for `DISPLAY`.
 They may use different `D_` labels, but they share the same Evidence Item, RE,
 Result, Card, and acceptance model.
 
@@ -50,7 +50,7 @@ Type references may extend `payload`, but these keys never disappear:
 item: E01-DISPLAY-example
 type: DISPLAY
 run: b01j01t01r01
-page_run: re01_e01-display-example
+page_run: re-display-01_example-display
 status: complete
 input:
   path: <frozen-local-input>
@@ -58,13 +58,42 @@ input:
 supporting_results: []
 local_sources: []
 payload:
-  unit: <page>/outline/evidence/display/<unit>/
+  unit: <resolved-result>/payload/<unit>/
   artifacts: []
 acceptance:
   checks: []
   passed: true
 provenance: {}
 ```
+
+The same envelope may carry a root-level `labels:` manifest. It is the stable
+join from authored LaTeX-like placeholders to the Result/Card projection:
+
+```yaml
+labels:
+  - token: "$V_effect$"
+    kind: VALUE
+    target: payload.effect
+    status: resolved
+    display: "100"
+  - token: "\\table{D_regression_main}"
+    kind: DISPLAY
+    display_kind: table
+    target: payload.unit
+    status: resolved
+    display: "Main regression table"
+  - token: "\\cite{C_prior_work}"
+    kind: CITE
+    target: payload.sources.prior_work
+    status: unresolved
+```
+
+`labels` is zero-to-many per Result/Card, while the Evidence Item, local RE,
+Result, and Card remain one-to-one. A resolved `display` is only a reader
+projection: Draft Space may show it inline and hide the original `token` plus
+Item/RE/Result/target metadata in an expandable binding. Authored Markdown
+keeps the token. Pending or missing labels remain visibly unresolved and are
+not treated as a writing-quality failure during draft review.
 
 `supporting_results` entries name the full Run id, Result path, and hash;
 `local_sources` entries name governed paths and hashes. DISPLAY records unit
@@ -172,7 +201,7 @@ the item detail. A wall must never show only `E01 · VALUE`, because that hides
 what the evidence contains. It must also present `Supporting Runs` and `Local
 Run` as separate columns; they are different graph layers, not one folded
 `Route` field. A real global Supporting Run is shown in readable dotted form, such as
-`b01.j02.t03.r04`, links to its owning card in the Outline Evidence Workspace,
+`b01.j02.t03.r04`, links to its owning card in the Outline Evidence Space,
 and carries a short next-action label (`run`, `rerun`, or `reuse`). A real
 Ticket that has never produced an attempt receipt is `registered`; a prior
 failed, smoke-only, invalid, or explicitly stale attempt is `rerun`. `Ticket
@@ -190,7 +219,7 @@ uses `new`, `rerun`, `run only`, or `ready` as one mixed status. `CITE`
 items share the Evidence column with VALUE and DISPLAY;
 several citation items may support one bullet.
 
-The Outline Evidence Workspace reuses this same `E<n><kind>.<Label>` identity.
+The Outline Evidence Space reuses this same `E<n><kind>.<Label>` identity.
 Its `Evidences` lens renders one card per Evidence Item and explains what that
 Evidence is about, what it must contain, and when it is ready. Its `Runs` lens
 groups by Evidence and renders one card per mapped Supporting or local
@@ -213,7 +242,7 @@ collapsed `Run & Result paths` disclosure and must wrap within the card.
 | `Verified` | human at LAND; `CITE` only | `⬜` until a person signs `✅ <who> <timestamp>` after checking source identity, focal claim, and locator; omit on VALUE/DISPLAY |
 | `Supporting Runs` | SURVEY | `[]` or a semicolon-separated list of existing `Family · reuse/rerun/registered · full global Run id` and/or planned `Family · new-* · parent route` entries |
 | `Local Input` | SURVEY; LAND freezes | one envelope plan: Supporting Results plus named governed page-local paths when needed; LAND appends `→ <packet>#<sha256>` |
-| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one Page `RE` lineage `reNN_<evidence-slug>` plus any underlying owner-native execution id; `new-run` has no Ticket until LAND allocates it |
+| `Local Run` | SURVEY declares; LAND allocates/binds | exactly one typed Page `RE` lineage: `re-value-NN_<slug>`, `re-display-NN_<slug>`, or `re-cite-NN_<slug>`, plus any underlying owner-native execution id; `new-run` has no Ticket until LAND allocates it |
 | `Decide` | human gate | `☐ make` or signed `☑ make/defer/drop`; because this chooses a branch, auto never converts an owed decision into `make` |
 
 Comments hold rationale; they never replace an expected payload, acceptance
@@ -260,11 +289,11 @@ for the Page. EMBED owns that interpretation and writes it into the next
 outline version.
 
 VALUE and CITE payloads remain only at their governed Result addresses.
-DISPLAY is the bounded Page-facing exception: LAND supplies
-`outline/evidence/display/<unit>/` directly to the renderer as the caller-owned
-unit directory. The governed Result envelope records the source local Run id,
-resolved Result path, unit pointer, and hashes. There is no intermediate
-duplicate payload to copy; the Result envelope remains the provenance authority.
+DISPLAY payloads live at the resolved Result address and are exposed through
+the Result manifest's unit pointer. The governed Result envelope records the
+source local Run id, resolved Result path, unit pointer, and hashes. There is
+no `outline/evidence/display/` lane and no intermediate duplicate payload to
+copy; the Result envelope remains the provenance authority.
 For a consumer-serving canonical Task, the admitted PHI-safe unit is the narrow
 Page-authority exception to `$OUTPUT_ROOT`; `result.yaml` and `runtime.yaml`
 remain in the resolved Result store and point to/hash the unit.
@@ -280,7 +309,7 @@ Never translate a different owner's namespace into a BJTR id.
 
 ## Run detail · description, availability, and action are different facts
 
-The Evidence Workspace presents every mapped Run with three independent
+The Evidence Space presents every mapped Run with three independent
 fields:
 
 | Field | Meaning | Authority |
@@ -291,14 +320,14 @@ fields:
 
 Do not store a new Run-description or status file. For an existing Run, its
 Ticket remains the purpose authority and the Evidence Item explains why it is
-used here. For a proposed Page-local `RE`, the plan remains in
+used here. For a proposed Page-local `RE`, the contract remains in
 `<stem>-evidence-items.md`: Expected and Acceptance define the Result target,
 and Local Input defines the future frozen envelope. LAND creates the authored
 Run and generated Result at the addresses selected by the Folder owner's Run
 dialect. For a canonical Task, the Ticket is under the Task's `runs/` and the
 Result is under resolved `$OUTPUT_ROOT/results/<task>/<RUNNAME>/`. Raw paths are
 selectable text in the Runs-lens card, never download anchors. A Run chip
-opens that exact card via `lens=workspace&seg=runs&focus=run-<item>&run=<address>`;
+opens that exact card via `lens=run&focus=run-<item>&run=<address>`;
 an Evidence chip uses `seg=items` and opens the Evidence Item card instead.
 
 ## Families and actions are separate dimensions
@@ -374,7 +403,7 @@ closable and preserves LAND's item-level parallelism.
 
 There is no active `PageX Bindings` field. A Result owned by another Folder
 enters this graph as a Supporting Run with a full Run id and validated Result
-path. A related Page or Folder link belongs to Context Workspace and remains
+path. A related Page or Folder link belongs to the off-stage Context record and remains
 navigation or a constraint until a Supporting Run makes an independently
 auditable Result available.
 
@@ -382,8 +411,8 @@ A governed static source already owned by this Page may be named directly in
 `Local Input` with its path and frozen hash. That exception does not authorize
 copying an external Result into the Page or using a whole Folder as evidence.
 
-For legacy binding migration only, read `evidence/pagex.md`. Its historical
-fields are not part of the current authored grammar.
+`evidence/pagex.md` is historical reference only. It is not read by the
+current Page; move any old PageX material out of the active tree before use.
 
 ## What SHAPE, SURVEY, LAND, and EMBED write
 

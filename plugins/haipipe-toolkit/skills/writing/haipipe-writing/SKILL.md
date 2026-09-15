@@ -89,7 +89,7 @@ records the ordinary disposition.
 
 On a Page handoff, the host's
 `haipipe-page/ref/user-check-packet.md` controls the full-paragraph return and
-three final Bullet Workspace, Evidence Workspace, and Current Run links. No
+three final Draft Space, Evidence Space, and Current Run links. No
 chat-only polishing, implicit acceptance, or silent rewrite of accepted/out-of-scope
 paragraphs.
 
@@ -188,8 +188,8 @@ The realization worker:
    and introduced AI tells. If the problem is the plan, evidence, or promise,
    route back to the owning phase instead of repairing it in prose.
 
-For a Page-changing host response, return the direct Bullet Workspace
-(`&lens=div`) and Evidence Workspace (`&lens=workspace&seg=items`) links from
+For a Page-changing host response, return the direct Draft Space
+(`&lens=div`) and Evidence Space (`&lens=evidence`) links from
 the same verified public Board URL using the host's user-check packet. A
 compact Page link or embedded Evidence iframe is secondary and never a
 substitute for those direct workspace views.

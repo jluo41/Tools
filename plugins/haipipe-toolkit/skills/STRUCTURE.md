@@ -77,7 +77,7 @@ extra folder levels:
 04 CHECK     -> haipipe-page-check    whole-page consistency and readiness
 ```
 
-The outline plugin owns the Bullet and Evidence Workspaces. The evidence
+The outline plugin owns the Draft and Evidence Spaces. The evidence
 plugin consumes the Survey table and lands the two Run kinds. Page CHECK is a
 read-only whole-page gate; it is not a QA folder or a replacement for a Run.
 
@@ -148,7 +148,7 @@ display / writing     rendering and prose engines
 ```
 
 The old `probe` name is compatibility-only. New work goes through the Page
-Evidence Workspace and its Supporting/Local Run records. `PageX`, QA Probe,
+Evidence Space and its Supporting/Local Run records. `PageX`, QA Probe,
 and the former Task/Discovery QA collector are not live workflow stages.
 Historical design diagrams may mention the retired vocabulary; they are
 non-runtime records and must not be used as routing instructions.

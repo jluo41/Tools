@@ -13,7 +13,7 @@ if sys.version_info < (3, 11):
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.page_workspace import build_page, create_page, load_page, source_files
 from src.page_setup import run_setup
-from src.page_migration import migrate_global_paragraphs
+from src.page_migration import migrate_embedded_drafts, migrate_global_paragraphs
 
 
 def main(argv=None):
@@ -38,6 +38,11 @@ def main(argv=None):
         help="Rewrite active Page records to Page-global paragraph addresses",
     )
     migrate.add_argument("page", type=Path)
+    migrate_drafts = commands.add_parser(
+        "migrate-drafts",
+        help="Embed a legacy standalone Draft Markdown into the current Outline",
+    )
+    migrate_drafts.add_argument("page", type=Path)
     for command in ("inspect", "build", "serve"):
         sub = commands.add_parser(command)
         sub.add_argument("page", type=Path)
@@ -100,6 +105,10 @@ def main(argv=None):
         elif args.command == "migrate-addresses":
             context = load_page(args.page)
             print(json.dumps(migrate_global_paragraphs(context), indent=2))
+            return
+        elif args.command == "migrate-drafts":
+            context = load_page(args.page)
+            print(json.dumps(migrate_embedded_drafts(context), indent=2))
             return
         else:
             context = load_page(args.page)

@@ -247,7 +247,7 @@ identity. A phase-varying Folder remains phase-owned.
 A Folder owner selects plugins; plugins never decide the owner. Record each selected
 plugin as required, optional, or forbidden and state why. Cross-Folder input
 does not require a separate binding plugin: bounded informational context is
-named by source address in the Context Workspace; evidence is bound through an
+named by source address in the off-stage Context record; evidence is bound through an
 Evidence Item's full Supporting Run id or frozen Local Input address. There is
 no separate Task plugin. `PageX` is read-only migration history and must not be
 selected, scaffolded, or written for a new Folder.

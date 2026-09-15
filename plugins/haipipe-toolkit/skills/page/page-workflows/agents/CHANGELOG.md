@@ -113,3 +113,8 @@
 - Align producer guidance with `v<G>.<S>[.<E>]`: evidence folds preserve the
   Shape approval and route G>=1 to CONTENT, while bounded Shape changes require
   their own review.
+## haipipe-page-outline-agent 0.4.3 · 2026-09-14
+
+- Make SHAPE/PROPOSE propose one open-ended, context-specific Role for every
+  Bullet from the Page's logic flow; keep final Role acceptance with the person
+  and exclude a generic `[Boundary]` role.

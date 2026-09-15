@@ -430,7 +430,7 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
         self.assertNotIn('Receipt', html)
 
     def test_compact_evidence_chip_focus_lands_on_the_workspace_item_card(self):
-        """A compact `focus=run-<item>` names a real Evidence table row."""
+        """A compact `focus=run-<item>` names a real Evidence card."""
         with tempfile.TemporaryDirectory() as temp:
             page = Path(temp) / "S-Test" / "S-Test.md"
             (page.parent / "outline").mkdir(parents=True)
@@ -444,16 +444,27 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
 - **Acceptance**: one number per fact
 """, encoding="utf-8"
             )
+            result = page.parent / "results" / "re02_e02-linked-design-counts"
+            result.mkdir(parents=True)
+            (result / "result.yaml").write_text(
+                "item: E02-VALUE-linked-design-counts\n"
+                "type: VALUE\nrun: re02_e02-linked-design-counts\n"
+                "status: complete\nbullet: C2.P1.B3\nlabel: DesignCounts\n",
+                encoding="utf-8",
+            )
             from src.page_question import _outline_grid  # noqa: F401  (route producer)
             html = render(page, "/examples/Board/board/QA/S-Test.html", "QA/S-Test/S-Test.md")
 
         self.assertIn('id="run-E02-VALUE-linked-design-counts" '
                       'data-evidence-id="E02-VALUE-linked-design-counts"', html)
         self.assertEqual(html.count('id="run-E02-VALUE-linked-design-counts"'), 1)
-        self.assertIn("<th>Evidence</th><th>Bullet</th><th>Result</th>", html)
+        self.assertIn('data-evidence-type="VALUE"', html)
+        self.assertIn("<details class=evidence-card", html)
+        self.assertNotIn("<th>Evidence</th>", html)
         self.assertIn("q.get('focus')", html)
         self.assertIn("classList.add('run-focus')", html)
         self.assertIn("scrollIntoView({block:'center'})", html)
+        self.assertIn("row.open=true", html)
         self.assertNotIn("data-seg=", html)
 
     def test_evidence_surface_has_one_items_panel_but_no_retired_probe_segment(self):
@@ -471,19 +482,73 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
 - **Type**: VALUE
 """, encoding="utf-8"
             )
+            for item_id, item_type, bullet in (
+                ("E01-CITE-source", "CITE", "C1.P1.B1"),
+                ("E02-VALUE-effect", "VALUE", "C1.P1.B2"),
+                ("E03-VALUE-bound", "VALUE", "C1.P1.B3"),
+            ):
+                result = page.parent / "results" / ("re-" + item_id.lower())
+                result.mkdir(parents=True)
+                (result / "result.yaml").write_text(
+                    "item: %s\ntype: %s\nrun: %s\nstatus: complete\n"
+                    "bullet: %s\n" % (item_id, item_type, result.name, bullet),
+                    encoding="utf-8",
+                )
 
             html = render(page, "/examples/Board/board/QA/S-Test.html", "QA/S-Test/S-Test.md")
 
-        self.assertIn('<th>Evidence</th><th>Bullet</th><th>Result</th>', html)
-        self.assertEqual(html.count('class=evidence-row'), 3)
+        self.assertEqual(html.count('<details class=evidence-card'), 3)
+        self.assertEqual(html.count('class=evidence-type-section'), 2)
+        self.assertIn('data-evidence-type="CITE"', html)
+        self.assertIn('data-evidence-type="VALUE"', html)
+        self.assertIn('>Citations<', html)
+        self.assertIn('>Values<', html)
         self.assertIn('E01-CITE-source', html)
         self.assertIn('E02-VALUE-effect', html)
         self.assertIn('E03-VALUE-bound', html)
+        self.assertIn("Evidence Label", html)
+        self.assertIn("Evidence Run", html)
+        self.assertIn("Supporting Runs", html)
         self.assertIn("q.get('focus')", html)
         self.assertNotIn('<nav', html)
         self.assertNotIn('data-seg=', html)
+
+    def test_retired_outline_evidence_is_ignored_and_reported_as_migration_blocker(self):
+        with tempfile.TemporaryDirectory() as temp:
+            page = Path(temp) / "S-Test" / "S-Test.md"
+            outline = page.parent / "outline"
+            outline.mkdir(parents=True)
+            page.write_text("# Test\n", encoding="utf-8")
+            (outline / "S-Test-evidence.md").write_text(
+                "### E99-VALUE-legacy · C1.P1.B1 · legacy item\n"
+                "- **Type**: VALUE\n",
+                encoding="utf-8",
+            )
+            html = render(page, "/board.md", "S-Test/S-Test.md")
+
+        self.assertIn("v4 migration required", html)
+        self.assertIn("outline/S-Test-evidence.md", html)
+        self.assertIn("No Evidence Result yet.", html)
+        self.assertNotIn("E99-VALUE-legacy", html)
         self.assertNotIn('function runKey', html)
         self.assertNotIn('class=related-run-card', html)
+
+    def test_retired_outline_evidence_folder_is_ignored_and_reported(self):
+        with tempfile.TemporaryDirectory() as temp:
+            page = Path(temp) / "S-Test" / "S-Test.md"
+            retired = page.parent / "outline" / "evidence" / "probe" / "PP99"
+            retired.mkdir(parents=True)
+            page.write_text("# Test\n", encoding="utf-8")
+            (retired / "card.md").write_text(
+                "# E99-VALUE-legacy\nquestion: should not render\n",
+                encoding="utf-8",
+            )
+            html = render(page, "/board.md", "S-Test/S-Test.md")
+
+        self.assertIn("v4 migration required", html)
+        self.assertIn("outline/evidence", html)
+        self.assertIn("No Evidence Result yet.", html)
+        self.assertNotIn("E99-VALUE-legacy", html)
 
     def test_related_run_cards_are_grouped_by_evidence_and_report_unique_count(self):
         snapshot = """plan: v6 · cycle: SURVEY · items 2 · decided 2/2 · VALUE 2
@@ -557,6 +622,14 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
 - **Supporting Runs**: Execution · rerun · b03j01t01r01
 - **Local Run**: Page · Evidence Item · new-run · pj01t01r01
 """, encoding="utf-8")
+            result = page.parent / "results" / "re01_e01-effect"
+            result.mkdir(parents=True)
+            (result / "result.yaml").write_text(
+                "item: E01-VALUE-effect\n"
+                "type: VALUE\nrun: re01_e01-effect\nstatus: planned\n"
+                "bullet: C1.P1.B1\n",
+                encoding="utf-8",
+            )
             (support / "S-Test-run-bindings.md").write_text(
                 """## E01-VALUE-effect · C1.P1.B1 · effect
 - **Supporting Runs**:
@@ -567,8 +640,10 @@ plan: v5 · approved: ✅ · cycle: SURVEY · items 1 · decided 1/1 · VALUE 1 
 
             html = render(page, "/examples/Board/board/QA/S-Test.html", "QA/S-Test/S-Test.md")
 
-        self.assertIn('<th>Evidence</th><th>Bullet</th><th>Result</th>', html)
-        self.assertEqual(html.count('class=evidence-row'), 1)
+        self.assertEqual(html.count('<details class=evidence-card'), 1)
+        self.assertIn('data-evidence-type="VALUE"', html)
+        self.assertIn('>Values<', html)
+        self.assertIn("Evidence Run", html)
         self.assertNotIn('class=related-run-card', html)
         self.assertNotIn('data-seg=', html)
 

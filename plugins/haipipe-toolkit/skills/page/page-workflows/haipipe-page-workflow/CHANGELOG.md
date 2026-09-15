@@ -1,3 +1,22 @@
+## 0.57.0 · 2026-09-14
+
+- Define one shared `rp-struct-01` Structure Run for both SHAPE and SURVEY;
+  record multi-person participation on the Run/Steps and add the canonical
+  `ref/structure-run.md` contract.
+
+## 0.56.0 · 2026-09-14
+
+- Replace RP allocation bands with explicit typed structure, Section, and
+  paragraph identities; align Evidence Run and `V_`/`D_`/`C_` label language.
+
+## 0.55.0 · 2026-09-14
+
+- Allocate RP identities by scope band: `rp00`–`rp10` for structure/Bullets,
+  `rp11`–`rp50` for Sections, and `rp51`–`rp99` for paragraphs.
+- Define a complete Section draft/review/rating/diagnose/revise cycle as one
+  Step inside a Run; a later independently commissioned Section session gets a
+  new Run.
+
 ## 0.54.0 · 2026-09-13
 
 - Add the shared Page Run-family contract: RP writing, RE item-scoped

@@ -1,3 +1,47 @@
+## 0.78.0 · 2026-09-14
+
+- Remove `\\illustration{D_xxx}` and `\\diagram{D_xxx}` from Page-facing
+  Evidence Label syntax; conceptual renderer outputs use `\\figure{D_xxx}`.
+
+## 0.77.0 · 2026-09-14
+
+- Standardize the Result `labels:` manifest and its one-Result-to-many-Labels
+  join across VALUE, DISPLAY, and CITE evidence.
+- Preserve authored Page tokens in Draft Space while showing resolved display
+  values through expandable provenance details.
+
+## 0.76.0 · 2026-09-14
+
+- Make Role proposal part of Outline `PROPOSE`: the producer and
+  `rp00_mermaid-structure` propose one open-ended, context-specific tag for
+  every Bullet from the logic flow. Keep the renderer display-only and do not
+  introduce a generic `[Boundary]` role.
+
+## 0.75.0 · 2026-09-14
+
+- Align Evidence Space with typed RE identities and `V_`/`D_`/`C_` labels;
+  table and figure are now explicit `DISPLAY` label examples.
+
+## 0.74.0 · 2026-09-14
+
+- Hard-cut the retired `outline/evidence/` folder and generated
+  `outline/<stem>-evidence.md` snapshot from the current Evidence surface.
+  Move old material to `_archive/legacy-outline-evidence/`; the authored
+  `outline/<stem>-evidence-items.md` contract remains current.
+
+## 0.73.0 · 2026-09-14
+
+- Append Draft Evidence routes directly after each Bullet statement.
+- Remove the repeated `EVIDENCE` heading and visible `evidence: none` pill from
+  source-free Draft rows while preserving the decision in Markdown metadata.
+
+## 0.72.0 · 2026-09-14
+
+- Split Evidence Space into Displays, Citations, and Values sections.
+- Replace the flat Result table with collapsed, read-only Evidence Item cards
+  that reveal Label, Item, Evidence Run, Supporting Runs, Result, and
+  contract details on demand.
+
 ## 0.71.1 · 2026-09-14
 
 - Make DISPLAY the umbrella for tables, figures, and algorithm blocks while
@@ -1156,3 +1200,15 @@ First contract for a plugin that had already SHIPPED without one.
 
 - Align the Evidence Item table's EMBED reference with the next
   `v<G>.<S>.<E+1>` evidence revision.
+## 0.74.0 · 2026-09-14
+
+- Hard-cut the retired `outline/*-evidence*.md` and `outline/evidence/*`
+  locations: they are no longer compatibility inputs or renderer sources.
+- Require old Evidence material to move to
+  `_archive/legacy-outline-evidence/` before a Page is v4-ready; current
+  Evidence reads only `results/**/result.yaml` and its payload metadata.
+## 0.77.0 · 2026-09-14
+
+- Align the Outline entry point with the minimal Run Space projection:
+  Page Writing, Page Evidence, and Supporting Runs, with Value/Display/Citation
+  labels matching the reader-facing cards.

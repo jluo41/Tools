@@ -3,14 +3,14 @@ name: haipipe-plugin-outline
 description: >-
   The outline/ plugin of a Board page: the page's single planning authority,
   its process records, and one minimal 🧭 tab with Draft, Evidence, and
-  Run workspaces; Draft keeps compact Evidence routes in its Bullet column;
-  first and default on every page. Evidence is Result-first,
-  Run is split into RP, RE, RD, and Supporting Runs, and Context records stay
+  Run workspaces; Draft appends compact Evidence routes to each Bullet;
+  first and default on every page. Evidence is typed and Result-first,
+  Run is organized as Page Writing, Page Evidence, and Supporting Runs, and Context records stay
   off-stage in the Folder. Trigger: outline
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.71.1"
+  version: "0.78.0"
   last_updated: "2026-09-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -24,14 +24,15 @@ workspaces:
 
 ```text
 Draft Space          Mermaid Structure + paragraph/Bullet table + compact Evidence routes
-Evidence Space       one Result-first Evidence table
-Run Space            RP + RE + RD + Supporting Runs
+Evidence Space       Value + Display + Citation sections with collapsed Result cards
+Run Space            Page Writing + Page Evidence + Supporting Runs
 ```
 
 Context, requirement, discussion, feedback, files, log, and Skill records
 remain durable Markdown process records. They are not visible workspaces;
 inspect them through 📂 Folder when needed. This is a presentation removal, not
-a destructive data migration.
+a destructive data migration; v4 is a migration gate and retired Evidence files
+must leave the active tree before the Page is rendered as current.
 
 ```text
   this file      the process records and ONE three-workspace tab
@@ -59,30 +60,27 @@ Folder-owner's resolved canonical Result path, plus payload files.
 ├── <stem>-outline-v<G>.<S>[.<E>].md
 │                              generation · Shape · optional evidence revision · authored · versioned
 ├── <stem>-context.md         what phases MAY USE generated · CONTEXT/PREPARE
-├── <stem>-preview.md         actual candidate prose by C.P.B · authored during SHAPE
-├── <stem>-logic.mmd          derived Page Mermaid Structure · rp00 review projection · not a plan
+├── <stem>-outline-v<G>.<S>[.<E>].md
+│                             plan fields + embedded `Draft:` candidate prose · SHAPE authority
+├── <stem>-logic.mmd          derived Page Mermaid Structure · rp-struct-NN review projection · not a plan
+├── <stem>-evidence-items.md  authored Evidence Item contracts · Outline authority
 ├── <stem>-requirement.md     what we MUST obey   V<n> generated venue · W<n> authored writing
 │                             cli/requirement.py refreshes V and preserves W
 ├── <stem>-discussion.md      what is still ASKED authored · open D<nn> threads · never versioned
 ├── <stem>-feedback.md        what OTHERS said    generated · cli/feedback.py collect · page writes Landed
-├── <stem>-evidence-items.md  legacy compatibility index · read-only migration input
-├── <stem>-evidence.md        legacy generated status · read-only fallback
 ├── <stem>-files.md           what it READS/WRITES authored · F<n> records · Path + Role
 ├── <stem>-log.md             what CHANGED        authored · dated records · append-only · newest first
 ├── skill/                    ranked Page Skills; one primary store + derived editor
 │   ├── <stem>.md             PRIMARY · one name per row · order is the person's rank
 │   └── <stem>-skill.html     DERIVED · embedded editor
-└── evidence/                 legacy compatibility material; no new writes
-    ├── bibex/                citation authority and derived workbench
-    ├── display/              display evidence units
-    ├── supporting-runs/      generated Evidence Item lineage; pointers only
-    └── materials/            immutable captured source material
+└── _archive/legacy-outline-evidence/  old Evidence material; migration only
 ```
 
 Do not create new files under `outline/evidence/` or `<page>/evidence/`.
 VALUE, DISPLAY (including table/figure), and CITE are Result payload types, not
-  storage lanes. DISPLAY includes tables, figures, diagrams, illustrations,
-  and algorithm blocks; `TABLE` is a legacy compatibility alias for DISPLAY.
+  storage lanes. DISPLAY includes tables, figures, and algorithm blocks;
+  `TABLE` is a legacy compatibility alias for DISPLAY. Conceptual renderer
+  outputs are cited as figures.
 A Page-owned Evidence attempt is an `RE`; its Result is canonical under
 `results/<re-run>/`. One Evidence Item maps to one current RE lineage and one
 current Result/Card projection. That Result may expose many stable inline
@@ -91,8 +89,11 @@ Evidence Labels (`$V_xxx$`, `\figure{D_xxx}`, `\table{D_xxx}`,
 RE, Result path, and
 provenance. External evidence remains at the Supporting Run's real Result path
 and is referenced from the RE Result manifest, never copied.
-Old `*-evidence-items.md`, `*-evidence.md`, and `outline/evidence/*` remain
-readable migration input so old Pages continue to render.
+Old `*-evidence.md` snapshots and every `outline/evidence/*` artifact must be
+moved to `_archive/legacy-outline-evidence/` before a Page is accepted as v4.
+The current `*-evidence-items.md` is different: it is the authored Outline
+contract for Item identity, expectation, and Run graph. The runtime does not
+read the retired folder or generated snapshot as a compatibility path.
 
 - **One question per file, and the questions do not overlap.** A fact that
   answers another file's question is misplaced: a settled thread is a log
@@ -160,12 +161,12 @@ readable migration input so old Pages continue to render.
   Structure projection. The live Draft Space renders it at the top of
   the `By part` lens, above the plan and reading table, with its source path
   available under a collapsed `Sources` disclosure. Raw Mermaid source stays in Markdown and is not copied into
-  the reader surface. While `rp00_mermaid-structure` has an active
+  the reader surface. While `rp-struct-01` has an active
   `ready`, `running`, `waiting-for-feedback`, or `blocked` status, the card
   must contain every Page-global `P01..PN` paragraph node; if the file is
   missing, the same location shows a named blocker instead of disappearing.
   The map may show branched argument moves; outside the
-  mandatory `rp00` lifecycle, legacy Section maps may retain their own
+  mandatory `rp-struct-01` lifecycle, legacy Section maps may retain their own
   orientation-only grain. Content,
   Aims, and every other fold start shut. This folder
   remains the only authority for all nine records. A manuscript Section keeps
@@ -208,20 +209,25 @@ The full grammar is `ref/plan-grammar.md`; the approved example is
   sentence slot (`S<n> · …`); on every other page one bullet is one point that
   CONTENT turns into one or more sentences.
 - **Point presentation is source-compatible**: a head may begin `[Role]` (or
-  `[n · Role]`) followed by a concise declarative planning statement. The live
-  Outline and compact Page table print `[n · Role] statement`, strip source
-  labels such as `Note:`, and render short `Note:`/`Annotation:`/indented `-`
-  lines as dash annotations. `Transition:` is one arrow between adjacent
-  Points, not an extra Bullet or manuscript sentence. New or edited Points
-  must use plain subject–verb language; a role tag is optional and should not
-  be added merely to make a line look structured; planner imperatives (`Open with`,
+  `[n · Role]`) followed by a concise declarative planning statement. During an
+  Outline `PROPOSE`, the Outline producer working inside `rp-struct-01` propose
+  one context-specific Role for every Bullet from the page's logic flow. The
+  label is open-ended rather than a fixed vocabulary. The live Outline and
+  compact Page table print `[n · Role] statement`, strip source labels such as
+  `Note:`, and render short `Note:`/`Annotation:`/indented `-` lines as dash
+  annotations. `Transition:` is one arrow between adjacent Points, not an
+  extra Bullet or manuscript sentence. New or edited Points must use plain
+  subject–verb language; a Role is optional only for backward-compatible
+  authored input, not for a new `PROPOSE` output, and should name what the
+  Point does rather than decorate the row; planner imperatives (`Open with`,
   `Explain`, `Introduce`, `Name`, `Connect`, `Ask`, `Keep`, `Return`, `Hand`,
   `State`) are compatibility-only legacy input. Legacy heads remain readable
-  with the neutral `Point` role until an author migrates them through a new
-  unapproved Shape.
+  with the neutral `Point` role until the Outline producer re-proposes them
+  through a new unapproved Shape. The presenter never infers a Role and does
+  not create a generic `Boundary` role.
 - **The Bullet head stays concise.** Actual candidate sentences may be written
-  during SHAPE in `<stem>-preview.md`, beside the plan. Promoted sentences live
-  on the Page. A Note
+  during SHAPE in the selected Outline Markdown's `Draft:` field. Promoted
+  sentences live on the Page. A Note
   is at most 30 words (a wrapped source line is still one Note); a Note that
   carries prose is CONTENT leaking upward.
 - **Every Bullet declares its evidence boundary.** Use one or more typed
@@ -272,16 +278,20 @@ The Draft Space uses two columns per paragraph: **Bullet** on the left and
 **Draft** on the right. It is a static, read-only projection: no tap-to-edit,
 editor, add button, form, comment composer, or browser write-back script is
 rendered. The plan and candidate wording remain Markdown authorities under
-`outline/`: the UI keeps the plan filename and
-`outline/<stem>-preview.md` under a collapsed `Sources` disclosure, while the Mermaid card identifies
+`outline/`: the UI keeps the selected Outline filename under a collapsed
+`Sources` disclosure, while the Mermaid card identifies
 `outline/<stem>-logic.mmd`. Keep the two columns side by side on phones; omit
 process metadata and controls that do not help reading. The left column shows
-the authored role beside each statement, with neutral `[Point]` only as a
-compatibility fallback. When a Bullet has typed or legacy evidence, the same
-left column shows a compact, read-only Evidence route/card tag; the full item
-card remains in Evidence Space. New candidate-sentence feedback belongs to the active
+the authored or proposed role beside each statement, with neutral `[Point]` only as a
+compatibility fallback. When a Bullet has typed or legacy evidence, the route
+is appended inline immediately after that Bullet's statement; it is a compact,
+read-only link and the full item card remains in Evidence Space. A valid
+source-free `Evidence: none` decision remains in Markdown but has no visible
+Draft badge; an omitted decision may show only a compact `missing` warning.
+New candidate-sentence feedback belongs to the active
 Page Run in chat, where wording, rationale, and acceptance share one Step
-history. Historical signed preview lanes remain preserved in Markdown but are
+history. Historical signed review lanes remain embedded in the Outline
+Markdown but are
 not rendered. The Draft Space has no separate Comments disclosure or comment
 composer. Read `ref/content-preview.md` when a workflow writes or consumes
 candidate prose; it owns storage and the CONTENT handoff.
@@ -293,8 +303,8 @@ live page, 💬 Chat is the fallback). Every other tab shows one material; only
 
 ```text
 🧭 Draft Space            default · Mermaid + paragraph/Bullet table
-   Evidence Space         one Result-first Evidence table
-   Run Space              RP + RE + RD + Supporting Runs
+   Evidence Space         Value + Display + Citation · collapsed Result cards
+   Run Space              Page Writing + Page Evidence + Supporting Runs
 ```
 
 These are the only visible workspaces. Durable Context, Requirement,
@@ -315,14 +325,17 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
 - **Two Bullet lenses over one parse**: By part is one card per Content division
   with its Aims, ticks and `Now:` facts; 🚦 What is left is the same rows with
   ⬜ before ✅, because opening it is asking what the page still owes.
-- **Evidence Space is one table, not another plugin or lens collection.**
-  Its only columns are `Evidence · Bullet · Result`. Each unique Evidence id
-  appears once. VALUE, DISPLAY, and CITE are compact type labels on the same
-  table, not sub-tabs. `DISPLAY` (including the legacy `TABLE` alias) is
-  shown as one type, not a fourth lane;
-  the standalone Evidence tab is retired;
-  `/_board/evidence` exists only as the embedded compatibility renderer for
-  this Workspace.
+- **Evidence Space is typed, not flat.** It has three compact sections:
+  `Display` (`DISPLAY`, including the legacy `TABLE` alias), `Citation`
+  (`CITE`), and `Value` (`VALUE`). Each unique Evidence Item appears once as
+  a read-only card that is collapsed by default. The summary shows only its
+  type, readable Evidence Label, short description, Bullet address, and
+  status. Opening it reveals the immutable Item id, Evidence Run, Supporting
+  Runs, Result, Expected, and Acceptance. Thus Label, Item, and Run remain
+  visibly different concepts; Supporting Runs remain inspectable references,
+  never copied artifacts. Result paths live behind a small `Sources` disclosure.
+  The standalone Evidence tab is retired; `/_board/evidence` is the current
+  read-only Result-first renderer used by this Workspace.
 - **Each Run chip opens the exact Runs-lens card, not a file download or the
   owning Evidence card.** The detail begins
   with a readable Purpose derived from an allocated Run's Ticket name and the
@@ -331,10 +344,11 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   separates Availability from Next action and prints Run and Result paths as
   selectable text. New commission data belongs to the RE ticket and its
   generated `results/<re-run>/result.yaml`; the old
-  `outline/<stem>-evidence-items.md` is compatibility input only.
+  `outline/<stem>-evidence-items.md` remains the current authored Item
+  contract; the retired `outline/evidence/` folder is not read.
 - **Probe is not a lens or lane.** Do not create or restore a Probe tab or
-  `outline/evidence/probe/`; legacy Probe artifacts may be read only for
-  migration and must be routed into typed Evidence Items.
+  `outline/evidence/probe/`. Any old Probe artifact must be moved into the
+  migration archive and re-expressed as a typed Result before use.
 - **Process records remain off-stage.** Context, Requirement, Discussion,
   Feedback, Files, Log, and Skills are inspected through Folder when needed;
   Outline must not recreate them as chips, cards, or hidden workspace lenses.
@@ -354,7 +368,7 @@ checker concern at the phase boundary, not an alarm in the planning workspace.
   or silently discard the conflict; SHAPE resolves it. Run groups and item
   counts use unique identities so duplicate records do not break deep links.
 - **Both failure modes render as a named row, never a blank**: 🕳 owed and
-  nothing there (a bullet cites `Display2` and no unit folder exists) · 🎈
+  nothing there (a bullet cites `\\figure{D_example}` and no unit folder exists) · 🎈
   there and uncited (a card no bullet names).
 - **The tab calls no model.** It reads the plan, the page, the record files and
   the sibling lanes on every open. It performs no writes. Page/Run workflows
@@ -374,22 +388,24 @@ live 🧭 tab; item state on the compact table is conveyed only by chip colour
 and the chip's title, and every chip (Feedback, Evidence, Supporting Run,
 Local Run) is a deep link into the one live 🧭 tab rather than a card of its own.
 
-In that compact Evidence column, a valid source-free Bullet renders `none` and
-exposes its reason on hover. An omitted evidence decision renders `missing` as
-  a defect; it is never visually conflated with an intentional source-free move.
+In the live Draft Space, a valid source-free Bullet renders no Evidence badge
+and keeps its reason in the row's source metadata; an omitted evidence decision
+may render `missing` as a compact defect marker. The intent is never visually
+conflated in the underlying Markdown, while the normal Draft reading path stays
+free of a repeated `EVIDENCE` heading and empty pill.
 
 ### 🔒 Read-only boundary
 
 The Draft Space is a reader-only projection of the current plan and candidate
 wording. It renders the Mermaid map as a collapsed, native open/close
 disclosure and the Bullet/Draft table, plus navigation
-and an on-demand `Sources` disclosure for the source paths. It emits no Bullet editor, append control, preview
+and an on-demand `Sources` disclosure for the source paths. It emits no Bullet editor, append control, Draft
 form, comment composer, or write-back script. The outer Outline POST remains a
 shell-registration compatibility route; `edit-preview`, `edit-bullet`, and
 `append-bullet` are rejected server-side as read-only requests.
 
-The owning Page/Run workflow writes the Markdown sources—usually the selected
-`outline/<stem>-outline-v*.md` plan or `outline/<stem>-preview.md` candidate—then
+The owning Page/Run workflow writes the selected
+`outline/<stem>-outline-v*.md`, including its `Draft:` fields, then
 the next GET refreshes the projection. Generated HTML is never an edit target,
 and a stale browser form cannot bypass this boundary. The underlying Markdown
 writer contracts and approved-Shape immutability still apply outside the
@@ -441,9 +457,9 @@ source entries, realized placements, key mentions, or cited-sentence density.
 ### Evidence stays with the Bullet
 
 ```text
-① COMPACT, never a second workspace   the Bullet keeps a small Evidence route; full detail lives in Evidence Space
+① COMPACT, never a second workspace   append a small Evidence route to the Bullet; full detail lives in Evidence Space
 ② a TAG, not a pill        10.5px monospace · nowrap · 4px radius · 0 4px padding
-③ the note is a WORD       `in bibex/` → nothing (the colour says it) · `no unit declared yet` → `owed`
+③ the note is a WORD       `in the Result payload` → nothing (the colour says it) · `no Result yet` → `owed`
 ④ never say it twice       a chip is `E<n><V/C/D>.<Label>` (Label ≤ 12 chars); the ↩ tag is suppressed for a card the row already names
 ```
 
@@ -454,8 +470,9 @@ the live tab, an Evidence chip is a route to its Evidence Space item
 card, never a popover; inside the live tab the THING itself
 (the reference as printed, the card's own question, the unit's own claim) is
 shown on that card, and a 📚 panel prints `Author et al.`, never the author list.
-`CITE` is one Evidence Item type, not a separate table column: one bullet may
-show several compact `E<n>C.<Label>` chips beside its VALUE and DISPLAY items.
+`CITE` is one Evidence Item type, not a separate table column: one Bullet may
+show several compact `E<n>C.<Label>` chips immediately after its statement,
+beside its VALUE and DISPLAY items.
 A Results bullet may legitimately show no CITE chip when it reports only this
 study's analysis and points to its own displays.
 
@@ -481,15 +498,17 @@ acceptance, provenance, or execution lineage must be promoted to another
 Evidence Item and another RE. The authoritative syntax and binding contract
 is `haipipe-page/ref/page-run-families.md`.
 
-## 🔗 The Evidence Space · one Result-first table
+## 🔗 The Evidence Space · typed Result sections
 
-The table projects each Evidence id to its Bullet address and canonical Result.
-New authority lives in `runs/` and `results/<re-run>/result.yaml`; payload files
-remain beside that Result. An external source stays at the Supporting Run's
-real Result path and is referenced from the RE manifest without copying.
-Legacy `outline/*-evidence*.md` and `outline/evidence/*` may fill missing labels
-or not-yet-run rows during migration, but the renderer must prefer Result data
-and must not write back into those legacy locations.
+The Evidence Space groups each current Result by type into Displays, Citations,
+and Values. Each card projects one Evidence Item to its Bullet address and
+canonical Result. New authority lives in `runs/` and
+`results/<re-run>/result.yaml`; payload files remain beside that Result. An
+external source stays at the Supporting Run's real Result path and is
+referenced from the RE manifest without copying. Legacy
+`outline/*-evidence.md` and `outline/evidence/*` are retired locations. They
+are not read, merged, or used to fill missing rows. Move them to
+`_archive/legacy-outline-evidence/` before the Page enters the v4 surface.
 
 ## ✍️ Who writes what
 
@@ -503,8 +522,8 @@ requirement V   the generator; V1 always, V2–V4 only when     cli/requirement.
 requirement W   the page author; generator preserves verbatim never (authored)
 discussion      any phase or the page chat, as D<nn> records  never (authored)
 feedback        the generator; the page writes Landed only   cli/feedback.py collect <page>.md
-evidence-items  legacy compatibility index                    no new writes
-evidence        legacy generated status fallback              no new writes
+evidence-items  SHAPE/SURVEY Item contract                       Outline/EVIDENCE
+evidence        retired legacy artifact                         move to archive
 files           any phase or the page chat                    never (authored)
 log             every phase and the page chat, append only    never (authored)
 skills          scan seed + person's rank/add/remove gestures  /_board/skill (embedded sibling store)
@@ -539,9 +558,9 @@ owns the exact fast-path return; never claim a deferred generated surface is
 current.
 
 Interactive Run history lives in the paired `results/<run>/vNNN.md` journals,
-not a second editable Outline. The current preview remains the working source;
-a historical Step is a snapshot. Preserve any historical signed preview lanes
-verbatim when updating preview prose, but record new feedback in the Writing
+not a second editable Outline. The current Draft remains the working source;
+a historical Step is a snapshot. Preserve any historical signed review lanes
+verbatim when updating Draft prose, but record new feedback in the Writing
 Run. The generated Paper Round Feedback record is not a chat-feedback inbox.
 Human acceptance of a paragraph does not tick the whole Shape or Page.
 

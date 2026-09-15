@@ -11,6 +11,6 @@ written: 260912
 - **Path:** outline/evidence/materials/page-writing-philosophy-english.md
 - **Role:** imported Markdown and the one content authority for the article.
 
-### F3 · Shape and Content Draft
-- **Path:** outline/page-writing-philosophy-english-outline-v0.1.md and outline/page-writing-philosophy-english-preview.md
-- **Role:** reader moves and matching candidate prose awaiting review.
+### F3 · Shape and Draft
+- **Path:** outline/page-writing-philosophy-english-outline-v0.1.md
+- **Role:** reader moves, bullet tags, evidence decisions, and matching candidate prose in embedded `Draft:` fields.

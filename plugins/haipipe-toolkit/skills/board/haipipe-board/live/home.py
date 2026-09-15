@@ -32,6 +32,7 @@ BOARD_KINDS = (
     ("Design Board", "🎨"),
     ("Skill Board", "🧩"),
 )
+HOME_BRAND = "Physician Space"
 PROJECT_FIELD = re.compile(r"^(id|profile|state):\s*(.*?)\s*$")
 
 
@@ -144,8 +145,13 @@ def _manifests(root: Path):
             yield Path(dirpath) / "board.md"
 
 
-def discover_boards(root: Path) -> list[dict[str, object]]:
-    """Read lightweight metadata from every real Board source folder."""
+def discover_boards(root: Path, *, include_page_state: bool = True) -> list[dict[str, object]]:
+    """Read metadata from every real Board source folder.
+
+    The full form keeps the page counts used by diagnostics and tests.  Home
+    does not display those counts, so it opts out of reading every Page file;
+    this keeps a refresh proportional to the Board manifests it must list.
+    """
     root = root.resolve()
     cards = []
     for manifest in _manifests(root):
@@ -157,8 +163,9 @@ def discover_boards(root: Path) -> list[dict[str, object]]:
         spine_match = SPINE.search(text)
         title = title_match.group(1).strip() if title_match else board.name
         spine = spine_match.group(1).strip() if spine_match else "No spine declared."
-        pages = list(page_files(board))
-        states = [STATE.search(p.read_text(encoding="utf-8", errors="ignore")) for p in pages]
+        pages = list(page_files(board)) if include_page_state else []
+        states = [STATE.search(p.read_text(encoding="utf-8", errors="ignore"))
+                  for p in pages]
         settled = sum(match is not None and match.group(1) in {"✅", "⏸️"}
                       for match in states)
         rel = board.relative_to(root).as_posix()
@@ -175,6 +182,23 @@ def discover_boards(root: Path) -> list[dict[str, object]]:
         0 if c["project_scope"] == "project" else 1,
         str(c["project_path"]).lower(), str(c["kind"]).lower(),
         str(c["path"]).lower()))
+
+
+def home_folder_path(card: dict[str, object]) -> str:
+    """Return the short folder address shown below a Home Board title."""
+    kind = str(card["kind"])
+    if kind.endswith(" Board"):
+        kind = kind[:-len(" Board")]
+    folder = Path(str(card["path"])).name
+    return f"/{kind}/{folder}"
+
+
+def home_section(card: dict[str, object]) -> str:
+    """Return the SPACE-root folder that owns a Home project section."""
+    source = (card["project_path"] if card.get("project_scope") == "project"
+              else card["path"])
+    parts = Path(str(source)).parts
+    return parts[0] if parts else "SPACE"
 
 
 # A folder name that says what KIND of board it is rather than WHICH one.
@@ -266,29 +290,75 @@ def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
     generated index are shown because every visible row must be actionable.
     The source metadata remains available to the search index and to the
     Board itself, but it is deliberately not repeated in the directory.
+    Project grouping is derived from the same ownership metadata as before;
+    collapse state and ordering are browser-local preferences, never source
+    files or a second registry.
     """
-    cards = discover_boards(root)
+    cards = discover_boards(root, include_page_state=False)
     open_cards = [card for card in cards if card["ready"]]
-    rows = []
+    section_groups: dict[str, dict[str, list[dict[str, object]]]] = {}
     for card in open_cards:
-        title = html.escape(str(card["title"]))
-        href = html.escape(str(card["href"]), quote=True)
-        search = html.escape(
-            " ".join((str(card["project"]), str(card["title"]),
-                      str(card["slug"]), str(card["path"]),
-                      str(card["spine"]), str(card["kind"]))),
-            quote=True,
-        )
-        rows.append(
-            f'''<a class="ir home-row" href="{href}" data-search="{search}"
-  role="listitem"><span class="t">{title}</span></a>''')
-    if rows:
-        body = "\n".join(rows)
+        section = home_section(card)
+        projects = section_groups.setdefault(section, {})
+        projects.setdefault(str(card["project_key"]), []).append(card)
+
+    groups = []
+    project_index = 0
+    ordered_sections = sorted(
+        section_groups,
+        key=lambda section: (0 if section.lower() == "examples" else 1,
+                             section.lower()),
+    )
+    for section in ordered_sections:
+        project_groups = section_groups[section]
+        project_rows = []
+        section_label = html.escape(section, quote=True)
+        for project_key, group_cards in project_groups.items():
+            project_name = str(group_cards[0]["project"])
+            project_label = html.escape(project_name, quote=True)
+            project_key_attr = html.escape(project_key, quote=True)
+            group_search = html.escape(
+                " ".join((project_name, str(group_cards[0]["project_path"]))),
+                quote=True,
+            )
+            rows = []
+            for card in group_cards:
+                title = html.escape(str(card["title"]))
+                folder = html.escape(home_folder_path(card))
+                href = html.escape(str(card["href"]), quote=True)
+                row_search = html.escape(
+                    " ".join((project_name, str(card["title"]),
+                              str(card["slug"]), str(card["path"]),
+                              str(card["spine"]), str(card["kind"]))),
+                    quote=True,
+                )
+                rows.append(
+                    f'''<a class="ir home-row" href="{href}" data-search="{row_search}"
+  role="listitem"><span class="home-copy"><span class="t">{title}</span>
+  <span class="home-folder">{folder}</span></span></a>''')
+            group_id = f"project-list-{project_index}"
+            project_index += 1
+            project_rows.append(
+                f'''<details class="project-group" data-project-key="{project_key_attr}"
+  data-search="{group_search}" role="listitem"><summary class="project-summary"
+  aria-controls="{group_id}"><span class="project-grip"
+  role="img" aria-label="Drag to reorder {project_label}" title="Drag to reorder">⠿</span>
+  <span class="project-name">{project_label}</span></summary>
+  <div id="{group_id}" class="project-list" role="list" aria-label="{project_label} boards">
+  {''.join(rows)}</div></details>''')
+        groups.append(
+            f'''<section class="space-section" data-space-key="{section_label}"
+  data-search="{section_label}" aria-labelledby="space-title-{len(groups)}">
+  <h2 class="space-heading" id="space-title-{len(groups)}">{section_label}</h2>
+  <div class="space-projects" role="list" aria-label="{section_label} projects">
+  {''.join(project_rows)}</div></section>''')
+    if groups:
+        body = "\n".join(groups)
     elif cards:
         body = '<p class="empty">No boards are ready to open.</p>'
     else:
         body = '<p class="empty">No boards found below this SPACE root.</p>'
-    heading = html.escape(space_name.strip() or "Boards")
+    heading = html.escape(HOME_BRAND)
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{heading}</title><style>
@@ -299,21 +369,159 @@ def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
 main{{max-width:820px;margin:0 auto;padding:34px 22px 90px}}
 .site-head{{margin:0 0 22px}}h1{{font-size:26px;line-height:1.35;margin:0;font-weight:700}}
 .toolbar{{margin:0 0 12px}}.search{{display:block;max-width:420px}}.search input{{width:100%;min-height:38px;border:1px solid var(--line);border-radius:var(--radius-control);background:var(--card);color:var(--fg);font:inherit;padding:5px 9px;outline:none}}.search input::placeholder{{color:var(--mut)}}.search input:focus{{border-color:var(--accent)}}
-.board-list{{min-width:0}}.ir{{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden}}.ir:hover{{border-color:var(--accent)}}.ir .t{{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:600}}.empty,.no-results{{color:var(--mut);padding:14px 0}}[hidden]{{display:none!important}}.sr-only{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
-@media (max-width:680px){{main{{padding:28px 14px 62px}}.site-head{{margin-bottom:18px}}h1{{font-size:24px}}.search input{{min-height:40px}}.ir{{padding:9px 12px}}}}
+.board-list{{min-width:0}}.space-section{{margin:26px 0 0}}.space-heading{{margin:0;padding:0 0 7px;border-bottom:2px solid var(--fg);font-size:12px;line-height:1.4;letter-spacing:.15em;text-transform:uppercase;color:var(--mut)}}.space-projects{{min-width:0}}.project-group{{margin:17px 0 0;min-width:0}}.project-summary{{display:flex;align-items:center;gap:7px;min-height:34px;padding:0 0 7px;border-bottom:1px solid var(--line);list-style:none;cursor:pointer;color:var(--fg);font-size:16px;font-weight:700}}.project-summary::-webkit-details-marker{{display:none}}.project-summary::before{{content:"▸";width:11px;color:var(--accent);font-size:11px;line-height:1}}.project-group[open]>.project-summary::before{{content:"▾"}}.project-grip{{color:var(--mut);font:14px/1 ui-monospace,Menlo,monospace;cursor:grab;user-select:none;touch-action:none;opacity:.72}}.project-grip:active{{cursor:grabbing}}.project-name{{min-width:0;overflow-wrap:anywhere}}.project-list{{min-width:0;padding-top:2px}}.project-group.dragging{{opacity:.55}}.project-group.drag-over>.project-summary{{border-color:var(--accent)}}.ir{{position:relative;display:flex;gap:10px;align-items:baseline;padding:9px 13px;border:1px solid var(--line);border-radius:var(--radius-surface);margin:6px 0;text-decoration:none;color:var(--fg);background:var(--card);overflow:hidden}}.ir:hover{{border-color:var(--accent)}}.home-copy{{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}}.ir .t{{min-width:0;overflow-wrap:anywhere;font-weight:600}}.home-folder{{min-width:0;color:var(--mut);font:12px/1.55 ui-monospace,Menlo,monospace;overflow-wrap:anywhere;word-break:break-word}}.empty,.no-results{{color:var(--mut);padding:14px 0}}[hidden]{{display:none!important}}.sr-only{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
+@media (max-width:680px){{main{{padding:28px 14px 62px}}.site-head{{margin-bottom:18px}}h1{{font-size:24px}}.search input{{min-height:40px}}.ir{{padding:9px 12px}}.project-summary{{gap:5px}}}}
 </style></head><body><main><header class="site-head"><h1>{heading}</h1></header>
 <div class="toolbar"><label class="search"><span class="sr-only">Search boards</span><input id="board-filter" type="search" placeholder="Search boards" aria-label="Search boards" autocomplete="off"></label></div>
-<div id="board-list" class="board-list" role="list" aria-label="Boards">{body}</div><p id="no-results" class="no-results" hidden>No matching boards.</p></main><script>
+<div id="board-list" class="board-list project-groups" role="list" aria-label="Projects">{body}</div><p id="no-results" class="no-results" hidden>No matching boards.</p></main><script>
 const filter = document.getElementById('board-filter');
 const noResults = document.getElementById('no-results');
-const rows = Array.from(document.querySelectorAll('.home-row'));
+const groups = Array.from(document.querySelectorAll('.project-group'));
+const projectLists = Array.from(document.querySelectorAll('.space-projects'));
+const storagePrefix = 'fusion-space:home:' + location.origin + location.pathname;
+const orderStorageKey = storagePrefix + ':project-order';
+// v2 makes the new default (all Projects closed) apply once to existing tabs;
+// explicit choices made after that continue to persist locally.
+const collapsedStorageKey = storagePrefix + ':project-collapsed:v2';
+
+function readStorage(key, fallback) {{
+  try {{
+    const value = JSON.parse(window.localStorage.getItem(key) || 'null');
+    return value === null ? fallback : value;
+  }} catch (error) {{
+    return fallback;
+  }}
+}}
+function writeStorage(key, value) {{
+  try {{ window.localStorage.setItem(key, JSON.stringify(value)); }}
+  catch (error) {{ /* private browsing or a restricted origin */ }}
+}}
+function currentGroups() {{
+  return Array.from(document.querySelectorAll('.project-group'));
+}}
+function saveOrder() {{
+  writeStorage(orderStorageKey, currentGroups().map((group) => group.dataset.projectKey));
+}}
+function restoreOrder() {{
+  const saved = readStorage(orderStorageKey, []);
+  if (!Array.isArray(saved)) return;
+  const order = new Map(saved.map((key, index) => [String(key), index]));
+  projectLists.forEach((projectList) => {{
+    const ordered = Array.from(projectList.children)
+      .filter((child) => child.classList.contains('project-group'))
+      .sort((left, right) =>
+        (order.get(left.dataset.projectKey) ?? Number.MAX_SAFE_INTEGER) -
+        (order.get(right.dataset.projectKey) ?? Number.MAX_SAFE_INTEGER));
+    ordered.forEach((group) => projectList.appendChild(group));
+  }});
+}}
+function saveCollapsed() {{
+  writeStorage(collapsedStorageKey,
+    groups.filter((group) => !group.open).map((group) => group.dataset.projectKey));
+}}
+function restoreCollapsed() {{
+  const saved = readStorage(collapsedStorageKey, null);
+  if (!Array.isArray(saved)) return;
+  const collapsed = new Set(saved.map((key) => String(key)));
+  groups.forEach((group) => {{ group.open = !collapsed.has(group.dataset.projectKey); }});
+}}
+function projectAtPoint(x, y) {{
+  const node = document.elementFromPoint(x, y);
+  return node ? node.closest('.project-group') : null;
+}}
+function placeGroup(group, target, clientY) {{
+  if (!group || !target || group === target) return false;
+  const projectList = group.parentElement;
+  if (!projectList || target.parentElement !== projectList) return false;
+  const rect = target.getBoundingClientRect();
+  if (clientY < rect.top + rect.height / 2) projectList.insertBefore(group, target);
+  else {{
+    const reference = target.nextElementSibling;
+    if (reference === group) return false;
+    if (reference) projectList.insertBefore(group, reference);
+    else projectList.appendChild(group);
+  }}
+  return true;
+}}
+let draggedGroup = null;
+let pointerGroup = null;
+let pointerId = null;
+let pointerStartX = 0;
+let pointerStartY = 0;
+let pointerMoved = false;
+function clearDragState() {{
+  if (draggedGroup) draggedGroup.classList.remove('dragging');
+  groups.forEach((group) => group.classList.remove('drag-over'));
+  draggedGroup = null;
+  pointerGroup = null;
+  pointerId = null;
+  pointerMoved = false;
+}}
+groups.forEach((group) => {{
+  group.addEventListener('toggle', saveCollapsed);
+  const grip = group.querySelector('.project-grip');
+  grip.addEventListener('click', (event) => {{
+    event.preventDefault();
+    event.stopPropagation();
+  }});
+  grip.addEventListener('pointerdown', (event) => {{
+    pointerGroup = group;
+    pointerId = event.pointerId;
+    pointerStartX = event.clientX;
+    pointerStartY = event.clientY;
+    pointerMoved = false;
+    draggedGroup = group;
+    if (grip.setPointerCapture) grip.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  }});
+  grip.addEventListener('pointermove', (event) => {{
+    if (pointerGroup !== group || pointerId !== event.pointerId) return;
+    const distance = Math.hypot(event.clientX - pointerStartX,
+                                event.clientY - pointerStartY);
+    if (!pointerMoved && distance < 8) return;
+    pointerMoved = true;
+    draggedGroup = group;
+    group.classList.add('dragging');
+    event.preventDefault();
+    groups.forEach((candidate) => candidate.classList.remove('drag-over'));
+    const target = projectAtPoint(event.clientX, event.clientY);
+    if (target && target !== group) target.classList.add('drag-over');
+  }});
+  const finishPointerDrag = (event) => {{
+    if (pointerGroup !== group || pointerId !== event.pointerId) return;
+    if (pointerMoved) {{
+      event.preventDefault();
+      const target = projectAtPoint(event.clientX, event.clientY);
+      if (placeGroup(group, target, event.clientY)) saveOrder();
+    }}
+    if (grip.hasPointerCapture && grip.hasPointerCapture(event.pointerId))
+      grip.releasePointerCapture(event.pointerId);
+    clearDragState();
+  }};
+  grip.addEventListener('pointerup', finishPointerDrag);
+  grip.addEventListener('pointercancel', finishPointerDrag);
+}});
+restoreOrder();
+restoreCollapsed();
 function applyFilter() {{
   const query = filter.value.trim().toLowerCase();
   let visible = 0;
-  rows.forEach((row) => {{
-    const match = !query || row.dataset.search.toLowerCase().includes(query);
-    row.hidden = !match;
-    if (match) visible += 1;
+  groups.forEach((group) => {{
+    const groupMatch = !query || group.dataset.search.toLowerCase().includes(query);
+    const groupRows = Array.from(group.querySelectorAll('.home-row'));
+    let groupVisible = 0;
+    groupRows.forEach((row) => {{
+      const match = groupMatch || row.dataset.search.toLowerCase().includes(query);
+      row.hidden = !match;
+      if (match) groupVisible += 1;
+    }});
+    group.hidden = groupVisible === 0;
+    if (query && groupVisible) group.open = true;
+    visible += groupVisible;
+  }});
+  document.querySelectorAll('.space-section').forEach((section) => {{
+    section.hidden = !Array.from(section.querySelectorAll('.project-group'))
+      .some((group) => !group.hidden);
   }});
   noResults.hidden = visible !== 0 || !query;
 }}

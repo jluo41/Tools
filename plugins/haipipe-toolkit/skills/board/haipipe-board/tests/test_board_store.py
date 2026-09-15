@@ -1,7 +1,7 @@
 """`store:` on board.md — the optional key that routes commissioned output.
 
 A board that owns its evidence base declares where work it commissions writes
-its Results and notebooks. The Evidence Workspace resolves the line once and
+its Results and notebooks. The Evidence Space resolves the line once and
 hands the executor an absolute path, so the key must not climb.
 """
 import re

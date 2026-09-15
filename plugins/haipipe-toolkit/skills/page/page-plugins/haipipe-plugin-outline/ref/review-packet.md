@@ -6,18 +6,18 @@ decision-ready conversation; it neither rewrites the plan nor grants a human
 approval on the person's behalf.
 
 Before the four review parts, return the two direct live workspace links when
-the Board is available: **Bullet Workspace** (`<Board URL>&lens=div`) and
-**Evidence Workspace** (`<Board URL>&lens=workspace&seg=items`). Use the same
+the Board is available: **Draft Space** (`<Board URL>&lens=div`) and
+**Evidence Space** (`<Board URL>&lens=evidence`). Use the same
 verified configured public origin as the Outline table. The embedded
 `/_board/evidence?...&embed=1` URL is an iframe implementation detail, not the
 primary Evidence link.
 
 ## 1 · Current Shape
 
-- Review the two-column Bullet Workspace: Bullet/Evidence beside actual
+- Review the two-column Draft Space: Bullet/Evidence beside actual
   candidate prose, then `Read paragraph` for continuity and voice. Name the
   paragraph where the intended point and the written sentence diverge. The
-  candidate in `<stem>-preview.md` may be revised during SHAPE before approval;
+  candidate in the selected Outline Markdown's `Draft:` field may be revised during SHAPE before approval;
   see `content-preview.md`. Label missing-evidence placeholders and stale
   Bullet bindings. Preview review does not approve or promote Page Content.
 
@@ -38,8 +38,9 @@ primary Evidence link.
 
 ## 2 · Evidence owed
 
-- Link `outline/<stem>-evidence-items.md` and report its item count by type
-  and derived status from `outline/<stem>-evidence.md` when present. Also
+- Link `outline/<stem>-evidence-items.md` and report its item count by type;
+  derive current readiness from `results/**/result.yaml`, never from the
+  retired `outline/<stem>-evidence.md` snapshot. Also
   report `typed-item Bullets · explicit-none Bullets · missing decisions`; the
   last number must be zero before approval.
 - Keep citation units explicit: `CITE Items · verified source entries · citation
@@ -84,8 +85,8 @@ primary Evidence link.
 
 ```text
 ## 🔗 Workspaces
-Bullet Workspace    <Board URL>&lens=div
-Evidence Workspace  <Board URL>&lens=workspace&seg=items
+Draft Space         <Board URL>&lens=div
+Evidence Space      <Board URL>&lens=evidence
 
 ## 🧭 Current Shape
 <link · approval state · arc · C/P map · candidate paragraph findings · Section form audit when applicable>

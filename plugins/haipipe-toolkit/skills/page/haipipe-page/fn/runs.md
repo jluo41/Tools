@@ -31,10 +31,11 @@ do not infer its identity or lifecycle from the Page.
 
 ## PROPOSE is read-only
 
-1. Detect the Page stage. If `rp00_mermaid-structure` does not exist, propose
-   only the Mermaid Structure candidate. If it exists but is open, resume it and propose no
-   paragraph Run. Paragraph candidates become legal only after its explicit
-   Version closure.
+1. Detect the Page stage and the RP kind. If `rp-struct-01` does not
+   exist, propose only the initial structure/Bullet candidate. If the current
+   structure/Bullet Run is open, resume it and propose no Section or paragraph
+   Run. Section candidates become legal only after the structure contract is
+   explicitly closed.
 2. Find concrete unresolved places where a person's feedback changes the Page:
    scope, structure, wording, comparison, acceptance, or another Page-owned
    decision.
@@ -50,49 +51,71 @@ do not infer its identity or lifecycle from the Page.
 
 | Candidate | Human decision needed | Goal | Scope / review window | Why now | Next action |
 |---|---|---|---|---|---|
-| `1` | `<question>` | `<bounded interaction goal>` | `<Page addresses>` | `<current gap>` | `start` or `resume <existing rpNN>` |
+| `1` | `<question>` | `<bounded interaction goal>` | `<Page addresses>` | `<current gap>` | `start` or `resume <existing RP>` |
 
 **A proposal is not an allocated Run.** Do not create Tickets, Results,
 runtime receipts, folders, or placeholder rows while proposing. **Do not mint
-`rpNN` before selection.** Candidate numbers are presentation labels only and
+any RP identity before selection.** Candidate numbers are presentation labels only and
 may be recomputed on the next read.
 
-## Mermaid Structure first, then numbered paragraphs
+## RP names: structure, Section, then paragraph
 
-The first Page Run is mandatory for every Page, including an imported Page that
-already has a draft Shape:
+The first structure Run is mandatory for every Page, including an imported Page
+that already has a draft Shape. RP identities state their scope explicitly:
+
+| IDs | Scope | Human-facing work |
+|---|---|---|
+| `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, evidence decisions, and Mermaid representation |
+| `rp-sec-NN` | Section-level | One named Section drafting/revision session/round and its review loop |
+| `rp-para-NN_Pxx[-Pyy]` | Paragraph-level | One fixed paragraph or contiguous paragraph group |
+
+For the initial candidate, propose:
 
 | Candidate | Human decision needed | Goal | Scope / review window | Why now | Next action |
 |---|---|---|---|---|---|
-| `1` | Agree the Page's visual structure | Mermaid Structure | Whole-Page Mermaid argument map and paragraph index | Paragraph work needs a closed reading order | `start` or `resume rp00_mermaid-structure` |
+| `1` | Agree the Page's direction, visual structure, and evidence routes | Page Structure Run: SHAPE + SURVEY | Whole-Page map, ordered Bullets, Point roles, evidence decisions, and paragraph index | Section and paragraph work need a closed reading order | `start` or `resume rp-struct-01` |
 
-Selection allocates exactly `rp00_mermaid-structure`. Human and agent may take
-many Steps and Versions to settle the visual structure. Do not propose or allocate any
-paragraph Page Run until the person explicitly closes this Run. Its closure
-must freeze the Page-global reading order as `P01`, `P02`, ... `PN` and map
-each serial number to the plan address such as `C2.P3`.
+Selection allocates exactly `rp-struct-01`. Human and agent may take
+many Steps to settle the structure/Bullets, and several people may contribute
+to those Steps. Record one shared `participants` list and each Step's
+`contributors`; do not allocate a second RP because another person joins.
+The structure contract must freeze
+the Page-global reading order as `P01`, `P02`, ... `PN` and map each serial to
+the plan address such as `C2.P3` before Section or paragraph work is proposed.
+Later structure/Bullet refinement is a separately commissioned Run such as
+`rp-struct-02`, not a prose Run. A Survey pass is not such a refinement: it is
+the SURVEY cycle of the open `rp-struct-01`.
 
-Starting or resuming `rp00` must create or refresh
+Starting or resuming `rp-struct-01` must create or refresh
 `outline/<stem>-logic.mmd` from the current plan. This is the Run's primary
 review artifact: it shows the complete Page argument flow and every `P01..PN`
-node. While `rp00` is open, Bullet Workspace renders the map expanded above
+node. While the structure Run is open, Draft Space renders the map expanded above
 the plan; if the file is absent, the presenter names that absence as a blocker
 instead of silently showing only Bullets. Every structural feedback Step
 updates the plan, paragraph index, and Mermaid source together before asking
-for more feedback.
+for more feedback. The SURVEY cycle additionally records the per-Item evidence
+route and planned Supporting/Local work in the same paired Structure Result;
+it does not execute or claim those Results.
 
-After that closed index defines `N` paragraphs, partition them into `K`
-independently closable paragraph groups:
+After the structure contract closes, propose Section-level candidates in
+`rp-sec-NN`. A Section Run covers a complete Section drafting/revision round;
+each complete draft → review/rating → diagnose → revise cycle is one Step
+inside that Run. A later independently commissioned Section session gets a new
+new `rp-sec-NN` Run. It is not a new Run merely because one Step or one chat turn
+finished.
+
+Paragraph-level work uses `rp-para-NN_Pxx[-Pyy]`. Partition the closed index into `K`
+independently reviewable paragraph groups:
 
 ```text
 1 <= K <= N
-Page Runs after Mermaid Structure = K
-total Page Runs = 1 Mermaid Structure + K paragraph-group Runs
+paragraph Runs after the structure = K
+total paragraph Runs = K; Section Runs are allocated separately when selected
 ```
 
 Ten paragraphs may therefore produce 10, 8, or 6 paragraph Page Runs. Every
-candidate and allocated Run must show the exact paragraph serial or contiguous
-range. Split
+candidate and allocated paragraph Run must show the exact paragraph serial or
+contiguous range. Split
 paragraphs that ask different questions, use different evidence, change
 different meanings, or can be accepted separately. Group adjacent paragraphs
 only when the human must evaluate them together as one rhetorical move.
@@ -101,29 +124,32 @@ List all unallocated paragraph-group candidates, but allocate only the selected
 next candidate. Sequential execution is the default: close or pause the active
 group before starting the next. Parallel Page Runs require explicit selection
 and non-overlapping targets. If the agreed plan changes, recompute only the
-unallocated candidates; never renumber or silently redefine allocated `rpNN`
-Runs. Candidate positions are planning labels, not promises of future `rpNN`
-identities.
+unallocated candidates; never renumber or silently redefine allocated RP Runs.
+Candidate positions are planning labels, not promises of future identities.
 
-Use short canonical identities after selection:
+Use scope-valid canonical identities after selection:
 
 ```text
-rp00_mermaid-structure  whole-Page Mermaid Structure + P01..PN index
-rp01_p01                paragraph P01
-rp02_p02-p03            paragraphs P02-P03, judged together
-rp03_p04                paragraph P04
+rp-struct-01             whole-Page Mermaid Structure + P01..PN index
+rp-struct-02             structure/Bullet refinement
+rp-sec-01                Section-level drafting/revision round
+rp-sec-02                later independent Section round
+rp-para-01_P03           paragraph P03
+rp-para-02_P04-P05       paragraphs P04-P05, judged together
 ```
 
-Do not add a semantic slug to paragraph Run identities. Put the descriptive
-name in the Goal column. `rpNN_pNN[-pNN]` makes both the Run order and paragraph
-order visible on a narrow screen.
+The semantic slug is optional for structure and Section Runs but must remain
+scope-valid; put the full descriptive goal in the Goal column. Paragraph Runs
+must expose the exact serial or contiguous range. `rp` means Run of Page, and
+its counter is independent from Task `rNN`.
 
 For every selected paragraph Run, copy the frozen Mermaid Structure description
 from the Page-global paragraph index into the Goal and review packet. The
 description is a stable reader-facing label, such as `Scope and acceptance`;
 it is not a new paragraph title and must not be regenerated from draft prose.
 
-Example after a ten-paragraph Mermaid Structure Run closes:
+Example after the structure contract closes and a Section candidate is also
+available:
 
 | Candidate | Paragraph group | Human decision |
 |---|---|---|
@@ -159,34 +185,39 @@ bounded request to revise/discuss named Page text. Before writing, re-read the
 current Run inventory and source identities.
 
 ```text
-matching open goal       → resume the same rpNN and append the next Step
-matching closed goal     → reopen the same rpNN in the next vNNN.md
-genuinely independent goal → allocate the next free rpNN
+matching open goal       → resume the same typed RP and append the next Step
+same paragraph target, closed goal → reopen the same rp-para-NN_Pxx[-Pyy] in the next vNNN.md
+later independent Section session → allocate the next free rp-sec-NN
+genuinely independent structure/Bullet goal → allocate the next free rp-struct-NN
 ```
 
-For the first goal, create `runs/rp00_mermaid-structure.md`. For a selected paragraph
-group, create `runs/rpNN_pNN[-pNN].md` and the paired
+For the first goal, create `runs/rp-struct-01.md`. For a selected
+structure/Bullet, Section, or paragraph goal, create a scope-valid
+`runs/<rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]>.md` and the paired
 `results/<same-run>/runtime.yaml`, `working.md`, and `v001.md`. Capture the
-selecting request as `## Step s001`. Within one open Version, every later
-human-feedback turn appends another `## Step sNNN` to that same Markdown file;
-do not create one file or Run per Step.
+selecting request as the start of `## Step s001`. For a Section Run, do not
+close that Step until the candidate has gone through draft, review/rating,
+diagnosis, revision, and post-revision review/diagnosis. Within one open
+Version, later feedback belongs to the current or next completed Step; do not
+create one file or Run per Step.
 
-Use the next free Page-local `rpNN` only at allocation time, except that the
-first selected Mermaid Structure candidate always receives
-`rp00_mermaid-structure`. `rp00` is reserved for this goal; paragraph Run
-allocation starts at `rp01`. Its sequence is independent from Task `rNN`; `rp01`
-and `r01` may coexist. If the human changes
+Use the next free typed Page-local RP only at allocation time, except that the
+first selected Mermaid Structure candidate always receives `rp-struct-01`.
+The `struct`, `sec`, and `para` sequences are independent from one another and
+from Task `rNN`; `rp-para-01_P03` and `r01` may coexist. If the human changes
 the requested goal enough that it is independently closable, propose or start
 a new Page Run rather than silently expanding the old scope.
 
-Paragraph groups are sibling Page Runs, not children of the Mermaid Structure Run or of one
-whole-Page Run. Each sibling owns its own Versions, Steps, review window, and
-explicit closure.
+Structure, Section, and paragraph Runs are sibling Page Runs, not children of
+one another. Each owns its own Versions, Steps, review window, and explicit
+closure. A Section Step is a cycle inside its Section Run; it is not a child
+Run.
 
 ## Return after work starts
 
 Once selected work is saved, follow the interactive-writing contract and the
-Page user-check packet. Report the actual `rpNN`, current `vNNN/sNNN`, saved
-scope, feedback disposition, and next human decision. For `rp00`, show the
+Page user-check packet. Report the actual typed RP identity, current
+`vNNN/sNNN`, saved scope, feedback disposition, and next human decision. For
+`rp-struct-01`, show the
 current Mermaid Structure and `P01..PN` mapping first. Do not present an
 unselected proposal as `Ready`, `Waiting`, or `Held` in the Runs inventory.

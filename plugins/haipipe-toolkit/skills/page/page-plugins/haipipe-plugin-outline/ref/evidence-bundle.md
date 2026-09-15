@@ -65,10 +65,10 @@ obligations:
 resources:
   items: [E01-VALUE-adjusted-effect]
   supporting_runs: [b01j02t03r04]
-  evidence_runs: [re01_e01-adjusted-effect]
+  evidence_runs: [re-value-01_adjusted-effect]
   local_runs: [b03j01t02r01]
   cards: [evidence-card:E01-VALUE-adjusted-effect]
-  labels: ["$V_adjusted_fx$", "\\cite{C_prior_work}"]
+  labels: ["$V_adjusted_fx$", "\\figure{D_effect_forest}", "\\table{D_regression_main}", "\\cite{C_prior_work}"]
 feedback:
   - E03-CITE-prior-work: Verified ✅ on the authored item row
   - E04-DISPLAY-effect-forest: accepted
@@ -98,8 +98,10 @@ An item's evidence obligation is ready only when it has a ready local Result:
 
 - every declared Supporting Result passes its owning Run gate;
 - one frozen Local Input records those sources and hashes;
-- exactly one current Page `RE` lineage emits an accepted VALUE, CITE, or
-  DISPLAY Result; its read-only Card and Labels are derived from that Result.
+- exactly one current typed Page `RE` lineage emits an accepted VALUE, CITE, or
+  DISPLAY Result; its read-only Card and zero-to-many Labels are derived from
+  that Result. DISPLAY uses `D_` for tables, figures, and algorithm blocks;
+  conceptual diagrams and AI illustrations use the ordinary figure label.
 - a CITE item's authored `Verified` gate is signed before that Result is ready.
 
 Sentence or Display work that remains belongs to CONTENT or CHECK, not to a new

@@ -4,8 +4,9 @@
     python3 cli/outline-pass.py <page>.md            run everything, print the receipt-lite
     python3 cli/outline-pass.py <page>.md --no-build skip the board rebuild
 
-haipipe-page-outline §①: regenerate the three derived files (requirement,
-feedback, evidence), run the plan checks for THIS page (hard: any ❌ exits 1),
+haipipe-page-outline §①: regenerate the three derived files (context,
+requirement, feedback), derive Evidence live from the authored Item contract
+and current Results, run the plan checks for THIS page (hard: any ❌ exits 1),
 run cli/check.py scoped to the page, rebuild the board, and print what the
 pass must read before writing a bullet. It writes no plan, no thread and no
 log record: those are the phase's own pen.
@@ -57,12 +58,11 @@ def main():
     o = page.parent / "outline"
     out = []
 
-    # ① the four derived files, regenerated whole. context-record.py joined
+    # ① the three derived files, regenerated whole. context-record.py joined
     # 260904 with the 00 CONTEXT phase: its record is generated like the other
     # three, so a hand-written one is a contract break, not a shortcut.
     for script, label in (("context-record.py", "context"),
-                          ("requirement.py", "requirement"), ("feedback.py", "feedback"),
-                          ("evidence-status.py", "evidence")):
+                          ("requirement.py", "requirement"), ("feedback.py", "feedback")):
         cmd = [str(HERE / script)] + (["collect"] if script == "feedback.py" else []) + [str(page)]
         rc, txt = _run(cmd)
         out.append((label, rc, txt.splitlines()[-1] if txt else ""))
@@ -81,10 +81,9 @@ def main():
         print("feedback     " + (m.group(1).strip() if m else "(no status line)"))
     else:
         print("feedback     none routed")
-    ev = o / f"{stem}-evidence.md"
-    if ev.is_file():
-        m = re.search(r"(?m)^plan:.*?· (cycle: .+)$", ev.read_text(encoding="utf-8", errors="replace"))
-        print("evidence     " + (m.group(1) if m else "(no plan line)"))
+    item_file = o / f"{stem}-evidence-items.md"
+    print("evidence     " + ("Item contract + results/**/result.yaml" if item_file.is_file()
+                             else "Item contract missing"))
 
     # ③ the plan checks, HARD for this page
     plan = _latest_plan(page)

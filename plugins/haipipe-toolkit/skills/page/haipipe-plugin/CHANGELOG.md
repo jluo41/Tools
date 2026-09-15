@@ -1,3 +1,9 @@
+## 1.9.0 · 2026-09-14
+
+- Replace compact Page Run examples with typed RP/RE identities and document
+  `DISPLAY` labels such as `\\figure{D_xxx}`, `\\table{D_xxx}`, and citations
+  as `\\cite{C_xxx}`.
+
 ## 1.7.0 · 2026-09-13
 
 - Define Plugin Outline as the single three-workspace surface: Bullet,

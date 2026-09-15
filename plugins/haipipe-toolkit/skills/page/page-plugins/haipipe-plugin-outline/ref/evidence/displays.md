@@ -1,33 +1,33 @@
-# Displays lane · the Page as a small paper
+# DISPLAY Results · the Page's typed visual evidence
 
 Read this reference from `haipipe-plugin-outline` when a Page Evidence Item is
-`DISPLAY`, or when the 🧭 Outline plugin's Evidence Workspace must present a display unit. The Outline
+`DISPLAY`, or when the 🧭 Outline plugin's Evidence Space must present a display unit. The Outline
 plugin owns the Page-facing lane and surface. Renderer skills still
 own their craft and `recipe/`; they are workers, not Page plugins.
 
-This reference defines where a unit lives on a Page, which renderer makes it,
-and how a sentence cites it.
+This reference defines the typed DISPLAY Result payload, which renderer makes
+it, and how a sentence cites it. It does not define an Outline Evidence
+folder.
 The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-output-contract.md` is adopted verbatim (QPf5, ruled JL 260815), and this reference cites it the way Delivery's `ref/latex.md` cites `md2tex.py` — a caller, never a fork.
 
-## 🗂 Storage · one unit per folder, the paper contract at a page address
+## 🗂 Storage · one payload under one Result
 
 ```text
-<page>/outline/evidence/display/
-└── Display<n>-<slug>/            the unit · under a PAPER Section page, whose id already
-                                  carries the section index (S-<desk>-Main-<N>-<Title>);
-                                  any other page uses <stem>-Display<n>-<slug> · JL 260908
-    ├── README.md                 claim · kind · source Result · accepted:
-    ├── intake/                   🧑 manifest.yaml + small approved extracts
-    ├── recipe/                   🎨 renderer-owned script, spec, receipts
-    ├── float.tex                 the unit test: the float a citing page would \input
-    ├── preview.tex ▶ preview.pdf ⚙️ the standalone look the tab frames
-    ├── assets/                   ⚙️ the WINNING render
-    └── candidates/ · versions/   ⚙️ the also-rans and the history
+<page>/results/<re-run>/
+├── result.yaml                   typed DISPLAY Result envelope
+└── payload/<unit>/                one renderer payload; no Outline Evidence copy
+    ├── manifest.yaml              frozen input and source hashes
+    ├── recipe/                    renderer-owned recipe and receipts
+    ├── preview.tex ▶ preview.pdf  standalone preview
+    ├── assets/                    winning render
+    └── candidates/ · versions/    optional renderer history
 ```
 
 The kind is MIXED, and the split runs through the unit: `intake/`, `recipe/`, `float.tex`, `README.md` are PRIMARY originals; `preview.pdf`, `assets/`, `candidates/`, `versions/` are regenerable from them.
 What of the derived half is committed is QPf5's open Decision Now row (default ⭐B: sources + `assets/` + `float.tex` in, previews and candidates ignored) — read the row there, this file does not rule it.
-The address delta a fresh agent must know: the renderer skills speak PAPER addresses (`displays/displayNN-slug/`, a paper root, the lifecycle gallery); on a page the unit lives at `<page>/outline/evidence/display/`, `preview.tex` compiles standalone from the unit folder, and no paper root exists or is walked for.
+The address rule is simple: the Result manifest names the resolved payload
+directory. A renderer never discovers or writes an `outline/evidence/display/`
+directory.
 
 ## ✍️ Writer · a family routed by kind, and a gate no machine may tick
 
@@ -81,7 +81,7 @@ Input through this path:
   one frozen Evidence Item Local Input
         │  ① INTAKE reads/copies it and records the SAME sha256
         ▼
-  display/<stem>-Display<N>-<slug>/intake/inputs/<file>
+  <resolved-result>/payload/<unit>/intake/inputs/<file>
         │  ② RENDER reads the frozen copy at run time
         ▼
   assets/table-body.tex · float.tex · preview.pdf
@@ -129,7 +129,7 @@ not authorize any other generated output inside the Job.
 
 `POST /_board/display` (`live/plugview.py`) remains the compatibility route
 that writes the derived `<stem>-view.html` shown inside the 🖼 Displays segment
-of the 🧭 Outline plugin's Evidence Workspace. It is not a standalone Plugin surface.
+of the 🧭 Outline plugin's Evidence Space. It is not a standalone Plugin surface.
 Units lay as a horizontal strip, one filling the pane, snap-shifted right to the next; a chip row names every unit and clicking a chip shifts the strip to it.
 Each card leads with the framed `preview.pdf` (or a 🕳 no-render-yet notice naming which step is missing), then the README rows, then the unit's folder tree with the ⚙️ derived halves marked — the drawn thing first, its description under it (JL 260819: "display the pdf at the very top, and then show information").
 The strip header reports three independently computed counts: **declared** means a unit folder exists, **rendered** means a winning asset and `preview.pdf` both exist, and **accepted** means the README carries a human `accepted: ✅ ...` decision. Folder count is never presented as completed work.
@@ -137,20 +137,37 @@ The no-render notice is evidence-driven: it identifies the first missing step am
 An empty `display/` renders the contract's ghost scaffold, so an empty tab teaches the unit shape instead of showing a blank.
 The surface is read-only by contract: renderers write `recipe/` and `assets/`, a person rules `intake/` and the tick, the pane writes nothing.
 
-## 📎 Citation · a unit is evidence, and the citation lives in the sentence
+## 📎 Page label · the display is cited by a `D_` placeholder
 
-What no other plugin has: a display unit is an EVIDENCE CARD the page's own prose cites.
-The citation's home is the SENTENCE (JL 260816): name the unit's short id in the prose where the claim lives, and it chips as the evidence card in place:
+What no other plugin has: a display unit is an EVIDENCE CARD the Page's own
+prose cites. The Page-facing citation is a LaTeX-like placeholder in the
+sentence where the claim lives; the later resolver maps it to the display's
+Result/Card:
 
 ```text
 Steps ① ③ ⑤ are a person's and steps ② ④ are machinery
-— the split of hands QPf5-Display1 draws.
-                     └────🖼 chip────┘
+— the split of hands \\figure{D_hands} draws.
+                     └────🖼 display card────┘
 ```
 
-The `> Display:` lane under a sentence is the FILING surface, kept for two cases: a machine appending evidence writes a lane and never edits prose, and a binding no sentence carries naturally lands there rather than clotting the line.
-`dialect: paper` (`src/dialect_paper.py`) indexes every `<page>/outline/evidence/display/*/float.tex` under the board and renders either surface as a chip card — owed, STALE, candidate, or ok — linking to the unit; a chip landing as `#<unit-id>` shifts the 🖼 strip to that card.
-Inside its own Page, write the bare Page-local id (`Display1`, `Display2`, …); cross-page prose may use the fully qualified `<stem>-DisplayN` id. Both aliases resolve to the same unit and both exporters place that unit once. A backticked id is a code span, and a code span QUOTES instead of chipping.
+The `> Display:` lane under a sentence is retired for v4. A DISPLAY Result
+owns its payload and the Evidence Space card links to it; the plan only names
+the Evidence Item and Bullet.
+The Result manifest is the index for the card. It exposes the current preview,
+status, and provenance without discovering an Outline Evidence folder.
+In Page prose, use `\\table{D_<slug>}` for a table, `\\figure{D_<slug>}` for a
+figure, or `\\algorithm{D_<slug>}` for an algorithm block. All are
+`DISPLAY` labels; `display_kind` differentiates table, figure, and algorithm.
+Conceptual diagrams and AI-generated illustrations are cited as ordinary
+figures with `\\figure{D_<slug>}`; they do not create `\\diagram` or
+`\\illustration` Page syntax. These macros are Page placeholder syntax that is intentionally LaTeX-like; they are
+not promised to compile as standalone native LaTeX commands. The LaTeX
+delivery worker translates the bound display into its real float/environment,
+while web/Word projections use their own renderer. The authored Page keeps the
+same `D_` token across projections.
+renderer-owned unit id (for example `Display1`) belongs in the Result/Card
+metadata, not as a competing Page placeholder. A backticked token quotes the
+syntax and is not resolved.
 Naming a ⬜ unit is legal and useful — it binds a pending render, and the chip says what is owed.
 Candidate rendering does not wait for final Page closure: PHI-safe aggregate
 intake may be rendered for review while a worker-specific provenance gate is
@@ -160,21 +177,22 @@ checks pass. Final Page closure and release still require the separate human
 THE PROJECTIONS INHERIT THE CITATION (JL 260816): the latex export embeds a cited unit as a real float after the citing paragraph (the winning asset, the unit's own caption and label), and the word export embeds the rasterized figure with the inline `(Figure n)` and a 🖼 Display comment on the sentence — the per-projection mechanics are Delivery's `ref/latex.md` and `ref/word.md`, not this file's.
 
 
-## Legacy compatibility only
+## 🚫 Retired locations
 
-Old flat display lanes and symlink stubs are read-only migration inputs.
-Current writers use only `outline/evidence/display/`; historical locations
-do not qualify for the user-check packet and never become new write targets.
+`outline/evidence/display/`, flat `display/`, and symlink stubs are not read by
+v4. Move their material to `_archive/legacy-outline-evidence/` and create a
+typed DISPLAY Result. Historical files do not qualify for the user-check
+packet and never become new write targets.
 
 ## 📂 Files and ownership
 
 - `../../../../../display/ref/display-unit-output-contract.md`
   The unit's internal shape; adopted verbatim, never forked.
-- `../../../../../board/haipipe-board/live/plugview.py`
-  The 🖼 surface: strip, chips, trees, ghost scaffold; read-only.
-- `../../../../../board/haipipe-board/src/dialect_paper.py`
-  The citation index: `<page>/outline/evidence/display/*/float.tex` → evidence chips.
+- `../../../../../page/haipipe-page/live/evidence.py`
+  The Evidence Space DISPLAY card and preview: read-only.
+- `<page>/results/<re-run>/result.yaml`
+  The Result index: typed manifest → Evidence card.
 - `../../../../../board/haipipe-board/assets/js/10-drawer/07-plugin-outline.js`
   The drawer registration for the shared Outline workspaces.
 - `../../../../haipipe-plugin/ref/roster.md`
-  The internal `display/` storage row owned by `haipipe-plugin-outline`.
+  The Result/payload storage contract owned by the Run producer.

@@ -126,6 +126,17 @@ def pages_only_index(meta):
     return (meta.get("index_view") or "").strip().lower() == "pages"
 
 
+def is_block_board(meta):
+    """Whether the Board is a BJTR Block whose reader list can stay title-only."""
+    return meta.get("board_kind") in {"task-block", "discovery-block"}
+
+
+def block_task_token(q):
+    """Return the short human-facing Task address (``tNN``) for a Block row."""
+    match = re.search(r"t\d{2}", q.get("id", ""), flags=re.IGNORECASE)
+    return match.group(0).lower() if match else ""
+
+
 def group_canvas(meta, group, members):
     """The live linked drawing for one generated Group page."""
     host = (meta.get("excalidraw") or "").strip().rstrip("/")
@@ -386,9 +397,9 @@ def board_status(qs):
             f'<p class="bstat-legend">{legend}</p></details>')
 
 
-def _gt_link(group, group_href):
+def _gt_link(group, group_href, address=None):
     """A group heading links to its own page when the packaging has one."""
-    h = group_href(bd.group_token(group))
+    h = group_href(bd.group_token(address or group))
     return f'<a href="{h}">{inline(group)}</a>' if h else inline(group)
 
 
@@ -463,7 +474,7 @@ def _gi_body(gi):
     return "".join(parts)
 
 
-def index_rows(meta, qs, href_for=None, group_href=None):
+def index_rows(meta, qs, href_for=None, group_href=None, compact_titles=False):
     """The index listing: group headings, group intros (prose AND their ascii
     figures), and one row per page.
 
@@ -477,6 +488,7 @@ def index_rows(meta, qs, href_for=None, group_href=None):
     """
     href_for = href_for or (lambda q: "#" + q["id"])
     group_href = group_href or (lambda tok: None)
+    compact_titles = compact_titles or is_block_board(meta)
 
     def st(q):
         return stinfo(q["state"])
@@ -500,7 +512,7 @@ def index_rows(meta, qs, href_for=None, group_href=None):
             # the id stays in its own namespace and never collides with a page.
             rows.append(f'<div class="grp" id="group-{esc(bd.group_token(cur))}"'
                         f' data-g="{esc(cur)}">'
-                        f'<span class="gt">{_gt_link(cur, group_href)}</span></div>')
+                        f'<span class="gt">{_gt_link(cur, group_href, cur)}</span></div>')
             # Group intro (QC2): one sentence always visible; if more lines follow,
             # they open on click via a native <details>. No script involved, so the
             # strip-scripts invariant is untouched.
@@ -515,6 +527,11 @@ def index_rows(meta, qs, href_for=None, group_href=None):
                 else:
                     rows.append(f'<div class="gi one">{summary}</div>')
         if q.get("kind") == "doc":
+            if compact_titles:
+                rows.append(
+                    f'<a class="ir compact" href="{href_for(q)}">'
+                    f'<span class="t">{nav_inline(q["title"])}</span></a>')
+                continue
             rows.append(
                 f'<a class="ir doc" href="{href_for(q)}">'
                 f'<span class="s">📄</span><span class="i">{esc(q["id"])}</span>'
@@ -528,6 +545,16 @@ def index_rows(meta, qs, href_for=None, group_href=None):
                 rows.append(f'<div class="dsub" data-sub="{esc(tok)}">'
                             f'<span class="st">{esc(tok)}</span>'
                             f'<span class="sl">{esc(_token_label(tok))}</span></div>')
+        if compact_titles:
+            # Keep data-f for the existing archive route, but do not expose the
+            # status, full internal address, owner, completion wash, or percentage.
+            df = f' data-f="{esc(q["file"])}"' if q.get("file") else ""
+            token = block_task_token(q)
+            short_id = f'<span class="i">{esc(token)}</span>' if token else ""
+            rows.append(
+                f'<a class="ir compact" href="{href_for(q)}"{df}>'
+                f'{short_id}<span class="t">{nav_inline(q["title"])}</span></a>')
+            continue
         # 完成度上色：一条没做 = 白，越接近做完越绿（绿色叠加的透明度 = 完成比例）
         fr = frac_done(q)
         pct = round(fr * 100)
@@ -731,13 +758,14 @@ def render(meta, qs):
              f'<div class="idx">{idx}</div>')
     progress_label = (("discovery tasks closed" if block_kind == "discovery-block"
                        else "tasks closed") if task_board else "questions settled")
-    overview = (heading + pages if minimal_index else
+    quiet_index = minimal_index or task_board
+    overview = (heading + pages if quiet_index else
                 heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
                 f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
                 f'<p class="bar">{bar}  {done}/{nq} {progress_label}{stagebar}</p>'
                 + bmap + rf + board_status(qs) + pages)
     return TPL.format(title=esc(meta["title"]), overview=overview,
-                      activity="" if minimal_index else ACTIVITY_HTML,
+                      activity="" if quiet_index else ACTIVITY_HTML,
                       index=idx,
                       sidebar=sidebar,
                       cards="\n".join(cards), js=JS, css=CSS,
@@ -1021,7 +1049,7 @@ def tree_sidebar(meta, qs, root):
             + '</nav>')
 
 
-def tree_row(q, href):
+def tree_row(q, href, compact_titles=False):
     """One index row, in the SAME markup `render()` emits.
 
     The classes are load-bearing: `.ir` with `.s/.i/.t/.w` is what board.css
@@ -1029,6 +1057,12 @@ def tree_row(q, href):
     applied and the index rendered as a wall of inline links (JL 260731, with
     a screenshot). Only the href differs between its consumers.
     """
+    if compact_titles:
+        df = f' data-f="{esc(q["file"])}"' if q.get("file") else ""
+        token = block_task_token(q)
+        short_id = f'<span class="i">{esc(token)}</span>' if token else ""
+        return (f'<a class="ir compact" href="{href}"{df}>'
+                f'{short_id}<span class="t">{nav_inline(q["title"])}</span></a>')
     if q.get("kind") == "doc":
         return (f'<a class="ir doc" href="{href}">'
                 f'<span class="s">📄</span><span class="i">{esc(q["id"])}</span>'
@@ -1244,6 +1278,7 @@ def render_tree(meta, qs, out_dir, only=None):
     groups = {}
     for q in qs:
         groups.setdefault(q.get("group") or "", []).append(q)
+    compact_titles = is_block_board(meta)
 
     def shell(title, body, root, crumb="", sidebar="", source_dir=None):
         # `root` is already the hop from this file up to board/, and the board
@@ -1328,7 +1363,7 @@ def render_tree(meta, qs, out_dir, only=None):
         rows = []
         for q in members:
             gt = bd.group_token(q.get("group") or "") or "_ungrouped"
-            rows.append(tree_row(q, f'{gt}/{tree_page_name(q)}'))
+            rows.append(tree_row(q, f'{gt}/{tree_page_name(q)}', compact_titles))
         # A group page is not a bare list (JL 260731: "can we give the group
         # some things too, like what the purpose of this group is"). The intro
         # already lives in board.md under the `### ` heading and was simply
@@ -1372,7 +1407,8 @@ def render_tree(meta, qs, out_dir, only=None):
     bd.EMBED_SEEN.clear()
     bd.EMBEDS.clear()
     rows = index_rows(meta, qs, href_for=_href,
-                      group_href=lambda tok: f"{tok}.html")
+                      group_href=lambda tok: f"{tok}.html",
+                      compact_titles=compact_titles)
     # The default index carries Board-level orientation; a Board can opt into
     # `index-view: pages` when the page roster is the only useful landing view.
     hrefs = tree_href_map(qs)
@@ -1380,7 +1416,7 @@ def render_tree(meta, qs, out_dir, only=None):
                f'<span class="board-mark" aria-hidden="true">{MARK_SVG}</span>'
                f'<h1 class="h1">{esc(meta["title"])}</h1></div>')
     block_kind = meta.get("board_kind")
-    task_board = block_kind in {"task-block", "discovery-block"}
+    task_board = is_block_board(meta)
     all_pages_label = ("ALL DISCOVERY TASKS" if block_kind == "discovery-block"
                        else "ALL TASKS")
     pages = (f'<h3 class="sec" id="qlist">{all_pages_label if task_board else "ALL PAGES"}</h3>'
@@ -1393,7 +1429,8 @@ def render_tree(meta, qs, out_dir, only=None):
         f'{"discovery tasks" if block_kind == "discovery-block" else "tasks"} closed</p>'
         if task_board else ""
     )
-    body = (heading + pages if pages_only_index(meta) else
+    quiet_index = pages_only_index(meta) or task_board
+    body = (heading + pages if quiet_index else
             heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
             f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
             + task_progress
@@ -1410,7 +1447,7 @@ def render_tree(meta, qs, out_dir, only=None):
                  encoding="utf-8")
     written.append(f)
 
-    # Compatibility page only. The live Evidence and Runs plugins own the
+    # Compatibility page only. The live Evidence and Run Spaces own the
     # normal surfaces; this keeps bookmarks from becoming a 404.
     bd.CARDS.clear()
     bd.CHIP_N = 0

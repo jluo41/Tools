@@ -101,7 +101,7 @@ def main():
         page_frame = page.frame_locator("#fp")
         outline_frame = page.frame_locator("#fx-outline")
         evidence_frame = outline_frame.frame_locator(
-            'iframe[title="Evidence Workspace"]'
+            'iframe[title="Evidence Space"]'
         )
         FOCUS, EVIDENCE_LABEL, cases = discover_cases(page_frame)
         EVIDENCE_ID = FOCUS.removeprefix("run-")
@@ -170,12 +170,12 @@ def main():
                 ).first.wait_for(timeout=30_000)
 
         # The Evidence chip: same route family, different segment.  It must
-        # activate Evidence Workspace -> Evidences and focus the exact item
+        # activate Evidence Space -> Evidences and focus the exact item
         # card, and the Page itself must hold no Evidence popover at all.
         page.reload(wait_until="domcontentloaded")
         chip = page_frame.locator(
-            f'a.outline-evidence[data-outline-lens="workspace"]'
-            f'[data-outline-seg="items"][data-outline-focus="{FOCUS}"]'
+            f'a.outline-evidence[data-outline-lens="evidence"]'
+            f'[data-outline-focus="{FOCUS}"]'
         ).first
         chip.wait_for(timeout=30_000)
         expect(chip).to_have_text(EVIDENCE_LABEL)
@@ -204,7 +204,7 @@ def main():
             raise AssertionError("Evidence: focused item card is not in the viewport")
         outline_href = outline_frame.locator("body").evaluate("() => location.href")
         evidence_href = evidence_frame.locator("body").evaluate("() => location.href")
-        if f"focus={FOCUS}" not in outline_href or "seg=items" not in outline_href:
+        if f"focus={FOCUS}" not in outline_href or "lens=evidence" not in outline_href:
             raise AssertionError(f"Evidence: outer deep link lost: {outline_href}")
         if "run=" in outline_href or "run=" in evidence_href:
             raise AssertionError(f"Evidence: a Run leaked into the route: {evidence_href}")
@@ -213,7 +213,7 @@ def main():
         print(f"PASS {'Evidence chip':<22} {EVIDENCE_LABEL}")
 
         # The typed Evidence chip INSIDE the Outline plugin (its Bullet
-        # Workspace plan card) is the same route: it switches the lens in
+        # Draft Space plan card) is the same route: it switches the lens in
         # place, lands on the same card, opens no popover, and leaves the
         # complete route in the Outline document's own URL (JL 260907: the
         # Page chip was fixed and this one still popped).
@@ -226,7 +226,7 @@ def main():
         bullet_space.wait_for(timeout=30_000)
         bullet_space.tap()
         typed = outline_frame.locator(
-            f'a.evchip.typed-ev[data-outline-seg="items"]'
+            f'a.evchip.typed-ev[data-outline-lens="evidence"]'
             f'[data-outline-focus="{FOCUS}"]').first
         typed.wait_for(timeout=30_000)
         expect(typed).to_have_text(EVIDENCE_LABEL)
@@ -247,7 +247,7 @@ def main():
             raise AssertionError(f"Bullet chip: inner deep link lost: {evidence_href}")
         if "run=" in outline_href or "run=" in evidence_href:
             raise AssertionError(f"Bullet chip: a Run leaked into the route: {evidence_href}")
-        print(f"PASS {'Bullet Workspace chip':<22} {EVIDENCE_LABEL}")
+        print(f"PASS {'Draft Space chip':<22} {EVIDENCE_LABEL}")
 
         # Feedback: the first routed chip on the Page (or --feedback-url).
         feedback_url = args.feedback_url or args.url
@@ -266,8 +266,8 @@ def main():
         if not feedback_row:
             raise AssertionError("Feedback: chip has no record identity")
         feedback.tap()
-        context_space = outline_frame.locator('button.space[data-space="context"]')
-        expect(context_space).to_have_class(re.compile(r"\bon\b"), timeout=30_000)
+        draft_space = outline_frame.locator('button.space[data-space="bullet"]')
+        expect(draft_space).to_have_class(re.compile(r"\bon\b"), timeout=30_000)
         feedback_lens = outline_frame.locator('.lens-chip[data-lens="fb"]')
         expect(feedback_lens).to_have_class(re.compile(r"\bon\b"), timeout=30_000)
         feedback_card = outline_frame.locator(f"#{feedback_id}")
@@ -294,7 +294,7 @@ def main():
 
         mode = "fallback" if args.fallback_popover else "native"
         print(f"mobile {args.engine} Outline links OK · {mode} Popover API · "
-              "3 Runs + Evidence + Bullet Workspace chip + Feedback + close/reopen")
+              "3 Runs + Evidence + Draft Space chip + Feedback + close/reopen")
         browser.close()
 
 

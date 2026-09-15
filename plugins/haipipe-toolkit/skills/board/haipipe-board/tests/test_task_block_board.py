@@ -183,8 +183,25 @@ def test_task_block_build_emits_job_groups_and_addressed_task_pages(tmp_path):
     assert (block / "board" / "j01.html").is_file()
     assert (block / "board" / "j01" / "b03j01t01-measure_result.html").is_file()
     index = (block / "board" / "index.html").read_text(encoding="utf-8")
+    main_index = index[index.index('<div class="idx">'):]
     assert "ALL TASKS" in index
-    assert "0/2 tasks closed" in index
+    assert "j01 · first job" in main_index
+    assert '<a href="j01.html">j01 · first job</a>' in main_index
+    assert '<a class="ir compact"' in main_index
+    assert '<span class="i">t01</span>' in main_index
+    assert '<span class="t">First task</span>' in main_index
+    assert '<span class="s">🟡</span>' not in main_index
+    assert '<span class="i">b03j01t01</span>' not in main_index
+    assert '<span class="w">🔧 CC</span>' not in main_index
+    assert 'title="75% done"' not in main_index
+    group_page = (block / "board" / "j01.html").read_text(encoding="utf-8")
+    assert '<h1 class="h1">j01 · first job</h1>' in group_page
+    assert '<span class="i">t01</span>' in group_page
+    assert '<span class="t">First task</span>' in group_page
+    assert '<div class="spine">' not in index
+    assert 'Close when' not in index
+    assert '0/2 tasks closed' not in index
+    assert 'SECTION MATRIX' not in index
 
 
 def test_discovery_block_uses_the_same_bjtr_projection_without_task_contract_errors(tmp_path):
@@ -230,7 +247,11 @@ def test_discovery_block_uses_the_same_bjtr_projection_without_task_contract_err
     rendered_page = next((block / "board" / "j01").glob("*.html"))
     page = rendered_page.read_text(encoding="utf-8")
     assert "ALL DISCOVERY TASKS" in index
-    assert "0/2 discovery tasks closed" in index
+    assert "0/2 discovery tasks closed" not in index
+    assert '<a href="j01.html">j01 · first job</a>' in index
+    assert '<div class="spine">' not in index
+    assert 'Close when' not in index
+    assert 'SECTION MATRIX' not in index
     assert '<span class="kind">DISCOVERY</span>' in page
 
 

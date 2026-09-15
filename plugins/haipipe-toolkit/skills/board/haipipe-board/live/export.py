@@ -142,56 +142,101 @@ class ExportMixin:
         return page_src.stem
 
     def _page_units(self, page_src):
-        """[(short, rec)] for every unit under `<page>/outline/evidence/display/`
-        (the page-as-small-paper plugin, QPf5). `short` is `<stem>-DisplayN`,
-        the id the page's prose cites; rec reads the unit's OWN float.tex for
-        label, kind, and caption, never composing a second one."""
+        """[(short, rec)] for the Page's display Result payloads.
+
+        v4 stores display units under ``results/*/payload/<unit>/``. The
+        retired ``outline/evidence/display/`` lane remains a read-only
+        compatibility fallback, but must not be the only source: otherwise a
+        valid v4 Evidence Space display silently disappears from RD output.
+        """
         out = []
         stem = page_src.stem
         seen = set()
+
+        def add_float(f):
+            d = f.parent
+            if d.name in seen:
+                return
+            seen.add(d.name)
+            tex = f.read_text(encoding="utf-8", errors="replace")
+            lab = re.search(r"\\label\{([^}]+)\}", tex)
+            kind = re.search(r"\\begin\{(table|figure)", tex)
+            cap, i = "", tex.find("\\caption{")
+            if i >= 0:
+                k, depth = i + 9, 1
+                while k < len(tex) and depth:
+                    depth += (tex[k] == "{") - (tex[k] == "}")
+                    k += 1
+                cap = tex[i + 9:k - 1].strip()
+            note_match = re.search(
+                r"\\begin\{flushleft\}(.*?)\\end\{flushleft\}",
+                tex, flags=re.S)
+            note = note_match.group(1).strip() if note_match else ""
+            # A page stem may itself contain hyphens (for example QC1-lbp).
+            # The old first-two-segments rule collapsed every display on such
+            # a page to the same short id and made placement impossible.
+            prefix = stem + "-Display"
+            aliases = []
+            if d.name.startswith(prefix):
+                number = d.name[len(stem) + 1:].split("-", 1)[0]
+                short = stem + "-" + number
+                # A Page is a local namespace. Its prose normally says
+                # `Display1`, while cross-page material may say
+                # `<stem>-Display1`; both address the same unit and the
+                # exporter must place it once.
+                aliases = [short, number]
+            else:
+                short = "-".join(d.name.split("-")[:2])
+                aliases = [short]
+            # A Page may cite the display by its manuscript-facing
+            # reference (for example ``\\ref{fig:theory-model}``) rather
+            # than by the board short id. Keep that reference as a full
+            # alias so the exporter can place the winning asset without
+            # rewriting the already-correct Figure reference.
+            if lab:
+                aliases.append("\\ref{%s}" % lab.group(1))
+            out.append((short,
+                        {"dir": d, "label": lab.group(1) if lab else None,
+                         "kind": kind.group(1) if kind else "figure",
+                         "caption": cap, "note": note, "aliases": aliases}))
+
+        # v4 Result payloads are authoritative. Read only DISPLAY envelopes
+        # whose payload unit resolves inside this Page's results tree.
+        result_root = page_src.parent / "results"
+        if result_root.is_dir():
+            try:
+                import yaml
+            except ImportError:
+                yaml = None
+            if yaml is not None:
+                for manifest in sorted(result_root.rglob("result.yaml")):
+                    try:
+                        document = yaml.safe_load(
+                            manifest.read_text(encoding="utf-8"))
+                    except (OSError, yaml.YAMLError):
+                        continue
+                    if not isinstance(document, dict) or \
+                            str(document.get("type", "")).upper() != "DISPLAY":
+                        continue
+                    payload = document.get("payload")
+                    unit_ref = (payload.get("unit")
+                                if isinstance(payload, dict) else None)
+                    if not isinstance(unit_ref, str) or not unit_ref.strip():
+                        continue
+                    unit = (manifest.parent / unit_ref).resolve()
+                    try:
+                        unit.relative_to(result_root.resolve())
+                    except ValueError:
+                        continue
+                    f = unit / "float.tex"
+                    if f.is_file():
+                        add_float(f)
+
+        # Legacy fallback only. New Page writes must never target this lane,
+        # but old units remain readable while a Page is being migrated.
         for ddir in evidence_lane_dirs(page_src.parent, "display"):
             for f in sorted(ddir.glob("*/float.tex")):
-                d = f.parent
-                if d.name in seen:
-                    continue
-                seen.add(d.name)
-                tex = f.read_text(encoding="utf-8", errors="replace")
-                lab = re.search(r"\\label\{([^}]+)\}", tex)
-                kind = re.search(r"\\begin\{(table|figure)", tex)
-                cap, i = "", tex.find("\\caption{")
-                if i >= 0:
-                    k, depth = i + 9, 1
-                    while k < len(tex) and depth:
-                        depth += (tex[k] == "{") - (tex[k] == "}")
-                        k += 1
-                    cap = tex[i + 9:k - 1].strip()
-                # A page stem may itself contain hyphens (for example QC1-lbp).
-                # The old first-two-segments rule collapsed every display on such
-                # a page to the same short id and made placement impossible.
-                prefix = stem + "-Display"
-                aliases = []
-                if d.name.startswith(prefix):
-                    number = d.name[len(stem) + 1:].split("-", 1)[0]
-                    short = stem + "-" + number
-                    # A Page is a local namespace. Its prose normally says
-                    # `Display1`, while cross-page material may say
-                    # `<stem>-Display1`; both address the same unit and the
-                    # exporter must place it once.
-                    aliases = [short, number]
-                else:
-                    short = "-".join(d.name.split("-")[:2])
-                    aliases = [short]
-                # A Page may cite the display by its manuscript-facing
-                # reference (for example ``\\ref{fig:theory-model}``) rather
-                # than by the board short id.  Keep that reference as a full
-                # alias so the exporter can place the winning asset without
-                # rewriting the already-correct Figure reference.
-                if lab:
-                    aliases.append("\\ref{%s}" % lab.group(1))
-                out.append((short,
-                            {"dir": d, "label": lab.group(1) if lab else None,
-                             "kind": kind.group(1) if kind else "figure",
-                             "caption": cap, "aliases": aliases}))
+                add_float(f)
         return out
 
     def _first_unit_mention(self, body, unit):
@@ -214,6 +259,27 @@ class ExportMixin:
             if body[line_start:match.start()].lstrip().startswith("%"):
                 continue
             return match
+        return None
+
+    @staticmethod
+    def _sentence_boundary_after(body, start):
+        """Return the end of the sentence containing a display reference.
+
+        Page prose is stored one sentence per source line, but the manuscript
+        exporters join those lines into a paragraph. Placing a display at the
+        next paragraph break therefore left a table after all of the results
+        it was meant to organize. Decimal values are skipped so ``9.34`` and
+        ``0.001`` do not look like sentence endings.
+        """
+        for i in range(max(0, start), len(body)):
+            if body[i] not in ".!?":
+                continue
+            if body[i] == "." and i + 1 < len(body) and body[i + 1].isdigit():
+                continue
+            if i and body[i - 1] == "\\":
+                continue
+            if i + 1 == len(body) or body[i + 1].isspace():
+                return i + 1
         return None
 
     def _run(self, cmd, timeout, cwd=None, env=None):
@@ -312,10 +378,9 @@ document.getElementById('rebuild').onclick = function () {
         units = self._page_units(page_src)
         if units:
             body = tex.read_text(encoding="utf-8")
-            # Insert from the last first-reference toward the first.  If one
-            # paragraph cites Display2 and then Display4, forward insertion at
-            # the same paragraph boundary reverses their floats.  Reverse
-            # source-order placement preserves the sentence's evidence order.
+            # Insert from the last first-reference toward the first. If one
+            # sentence cites Display2 and then Display4, reverse source-order
+            # placement preserves the sentence's evidence order.
             ranked = []
             for short, u in units:
                 mention = self._first_unit_mention(body, u)
@@ -338,10 +403,15 @@ document.getElementById('rebuild').onclick = function () {
                     # tabularx already sizes itself to the master's
                     # linewidth, so direct input preserves the headers,
                     # rules, and table notes.
+                    note = u.get("note", "")
+                    note_block = ("\n\\par\\smallskip\n\\begin{flushleft}\n"
+                                  "\\footnotesize\n%s\n\\end{flushleft}\n"
+                                  % note if note else "")
                     block = ("\\begin{table}[H]\n\\centering\n"
-                             "\\input{%s/assets/table-body}\n"
-                             "\\caption{%s}\n%s\\end{table}"
-                             % (rel, u["caption"], lab))
+                             "\\caption{%s}\n%s"
+                             "\\input{%s/assets/table-body}\n%s"
+                             "\\end{table}"
+                             % (u["caption"], lab, rel, note_block))
                 elif next((f for f in ("figure.pdf", "figure.png", "figure.jpg")
                            if (u["dir"] / "assets" / f).is_file()), None):
                     # width AND height capped with keepaspectratio, and
@@ -367,9 +437,13 @@ document.getElementById('rebuild').onclick = function () {
                     continue          # ⬜ no winning render yet: nothing to print
                 m = self._first_unit_mention(body, u)
                 if m:
-                    at = body.find("\n\n", m.end())
-                    at = len(body) if at < 0 else at
-                    body = body[:at] + "\n\n" + block + body[at:]
+                    at = self._sentence_boundary_after(body, m.end())
+                    if at is None:
+                        at = body.find("\n\n", m.end())
+                        at = len(body) if at < 0 else at
+                    before, after = body[:at].rstrip(), body[at:].lstrip()
+                    body = (before + "\n\n" + block +
+                            ("\n\n" + after if after else "\n"))
                     # Prose cites a stable display short-id so the board can
                     # locate the unit.  In an exported document, readers see
                     # the conventional Figure/Table reference instead.
@@ -664,6 +738,17 @@ document.getElementById('rebuild').onclick = function () {
                     key = u["label"] or u["dir"].name
                     if key in done:
                         continue
+                    # The Page may already use the manuscript form
+                    # `Table~\ref{tab:x}`. Appending a second reference for the
+                    # Word bridge made the reader see `Table 2 (Table 2)` and
+                    # printed duplicate Display cards. Only bridge short-id
+                    # mentions; an existing `\ref{}` is already sufficient for
+                    # Inline to resolve and annotate.
+                    if u["label"] and _re.search(
+                            r"\\(?:auto|C|c)?ref\{%s\}" %
+                            _re.escape(u["label"]), ln):
+                        done.add(key)
+                        continue
                     hits = [m for alias in u.get("aliases", [short])
                             if (m := re.search(r"(?<![\w-])%s(?![\w-])"
                                               % re.escape(alias), ln))]
@@ -702,7 +787,12 @@ document.getElementById('rebuild').onclick = function () {
         if units:
             # the unit index for the page address, and the Display comment
             # bubble beside the Citation ones — the docx's evidence card
-            cmd += ["--display-root", str(evidence_lane_dir(page_src.parent, "display")),
+            # reads the current v4 Result payload tree; md2docx also retains
+            # recursive compatibility for older display roots.
+            display_root = page_src.parent / "results"
+            if not display_root.is_dir():
+                display_root = evidence_lane_dir(page_src.parent, "display")
+            cmd += ["--display-root", str(display_root),
                     "--lanes", "Citation,Display"]
         if proot:
             cmd += ["--paper-root", str(proot)]

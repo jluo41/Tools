@@ -2,11 +2,11 @@
 name: page-run-families
 description: >-
   The canonical Page-local Run-family contract. It distinguishes RP writing
-  Runs, RE Evidence Runs, RD Delivery Runs, workflow passes, and owner-native
-  Supporting Runs, and defines how Evidence Items, Results, Cards, and Labels
-  bind to one another.
+  Runs, typed RE Evidence Runs, RD Delivery Runs, workflow passes, and
+  owner-native Supporting Runs, and defines how Evidence Items, Results,
+  Cards, and Labels bind to one another.
 metadata:
-  version: "0.1.1"
+  version: "0.3.1"
   last_updated: "2026-09-14"
 ---
 
@@ -21,47 +21,75 @@ shown as a Supporting Run when it supplies a Page.
 Page workflow pass                 controller receipt; not a Level-4 Run
         │
         ├── RP  Page Writing Run   human/agent structure or prose iteration
-        ├── RE  Page Evidence Run  one Page Evidence Item's execution lineage
-        └── RD  Page Delivery Run  one target/version shipped from the Page
+        ├── RE  Page Evidence Run  one Page Evidence Item's lineage
+        └── RD  Page Delivery Run  one delivery target/version
 
 owner-native rNN / bNN.jNN.tNN.rNN  Supporting Run; never renamed to RP/RE/RD
 ```
 
 ## The three Page-special families
 
-| Family | Meaning | Typical identity | Owns | Does not own |
+| Family | Meaning | Canonical identity | Owns | Does not own |
 |---|---|---|---|---|
-| `RP` | Page Writing Run | `rp00_mermaid-structure`, `rp01_p01-p03` | bounded human/Page interaction, feedback Steps, candidate prose | final Page Content, evidence truth, delivery acceptance |
-| `RE` | Page Evidence Run | `re01_e18-variable-operationalization` | one Page Evidence Item's frozen input, execution/normalization, and current Result lineage | upstream source truth, unrelated Evidence Items, whole-Page acceptance |
-| `RD` | Page Delivery Run | `rd01_web`, `rd02_latex`, `rd03_word` | one delivery target/version, its artifact, and build receipt | Page prose authority, Evidence truth, human CHECK close |
+| `RP` | Page Writing Run | `rp-struct-01`, `rp-sec-01`, `rp-para-01_P03-P05` | bounded human/Page interaction, feedback Steps, candidate structure/prose; `rp-struct-01` fuses SHAPE + SURVEY | final Page Content, evidence truth, delivery acceptance |
+| `RE` | Page Evidence Run | `re-value-01_<slug>`, `re-display-01_<slug>`, `re-cite-01_<slug>` | one Evidence Item's frozen input, evidence work, and current Result lineage | upstream source truth, unrelated items, whole-Page acceptance |
+| `RD` | Page Delivery Run | `rd01_web`, `rd02_latex`, `rd03_word` | one delivery target/version, artifact, and build receipt | Page prose authority, Evidence truth, human CHECK close |
 
-The counters are independent. `rp03`, `re03`, and `rd03` are unrelated
-identities. A family prefix is never rewritten into an owner-native Run id,
-and an owner-native Run id is never made to look like an `RP`, `RE`, or `RD`.
+`RP`, `RE`, and `RD` counters are independent. The typed RP and RE
+sequences are also independent within their own kinds: `rp-struct-01` and
+`rp-sec-01` may coexist, as may `re-value-01` and `re-display-01`. Never
+renumber an allocated identity. Existing records using the retired compact
+forms such as `rp00_mermaid-structure` or `re01_<slug>` are compatibility input
+only during migration; active Page folders, packets, links, and new allocation
+use the canonical forms above.
 
 ### RP · Page Writing Run
 
-`RP` is the persistent interaction unit for agreeing structure or wording.
-`rp00_mermaid-structure` is reserved for the Page-global argument map and
-paragraph index. Later `rpNN_pNN[-pNN]` Runs cover one independently closable
-human question. A new chat window does not create a new RP; feedback advances
-Steps and Versions inside the existing RP.
+`RP` has three explicit kind tokens. The kind is part of the identity; there
+are no hidden numeric bands:
 
-Closing an RP settles a candidate wording and its local decisions. CONTENT
-adopts accepted wording into the Page source. RP never silently changes the
-Page source, Evidence Result, or delivery artifact merely because a Step
-closed.
+| Identity | Scope | Required output and boundary |
+|---|---|---|
+| `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, and Mermaid representation |
+| `rp-sec-NN` | Section-level writing | one named Section drafting/revision session and its review loop |
+| `rp-para-NN_Pxx[-Pyy]` | paragraph-level writing | one fixed paragraph or contiguous paragraph group |
+
+`NN` starts at `01` independently for each kind. `rp-struct-01` is the first
+Structure Run and contains both SHAPE and SURVEY. It can have several human
+participants; record one shared Run and one paired Result, with contributors
+on each Step. `rp-struct-02` is a later independent structure/Bullet Run, not a
+new Survey pass or a new participant.
+After the structure contract is closed, Section Runs begin at `rp-sec-01` and
+paragraph Runs begin at `rp-para-01_P01` (or the selected exact target).
+The paragraph target is mandatory and uses the Page-global `P01..PN` index.
+
+```text
+RP Run   = one independently commissioned writing session/round at a fixed scope
+Step     = one complete draft → review/rating → diagnose → revise cycle
+Version  = one append-only candidate snapshot/journal inside that Run
+```
+
+A complete Section cycle is one Step, not a new Run. A later independent
+Section session receives the next `rp-sec-NN`. A revisit of the same fixed
+paragraph target normally reopens its existing `rp-para-NN_Pxx[-Pyy]` in a
+new Version; a materially different target or goal receives a new Run.
 
 ### RE · Page Evidence Run
 
-`RE` is the Page-owned identity for one Evidence Item's evidence-making work.
-It may call, reuse, or normalize zero-to-many owner-native Supporting Runs and
-freezes one Local Input. It emits one typed Page Evidence Result for the
-target item. Ordinary retries are attempts within the same RE lineage; create
-a new RE only when the evidence contract or lineage is materially replaced,
-or when the old lineage must remain auditable as retired.
+`RE` is the Page-owned evidence lineage for one Evidence Item. Its kind token
+names the focal Result, not every label that the Result may expose:
 
-The Page contract is therefore:
+| Identity | Focal Result | Additional field |
+|---|---|---|
+| `re-value-NN_<slug>` | one value or coherent value set | `kind: value` |
+| `re-display-NN_<slug>` | one display unit | `kind: display`; `display_kind: table\|figure\|algorithm` |
+| `re-cite-NN_<slug>` | one citation/source bundle | `kind: cite` |
+
+`DISPLAY` is the umbrella type. A table, figure, or algorithm block is a
+display subtype and uses the same `D_` label namespace; there is no `re-table`
+or `re-figure` family. Conceptual diagrams or AI illustrations, when used,
+are delivered as ordinary figures and therefore use `\figure{D_<slug>}` rather
+than introducing `\diagram{...}` or `\illustration{...}` Page labels.
 
 ```text
 one Evidence Item obligation
@@ -71,21 +99,94 @@ one Evidence Item obligation
                                 └── zero-to-many Evidence Labels
 ```
 
-Supporting Runs may be many because they are upstream inputs. They do not
-replace the Page's RE and they do not become the Page's Evidence Card.
+An RE may consume zero-to-many owner-native Supporting Runs and freezes one
+Local Input. A single Result/Card may therefore expose all of these labels:
+
+```text
+RE → Result/Card
+       ├── $V_adjusted_effect$
+       ├── $V_ci_lower$
+       ├── \figure{D_effect_forest}
+       ├── \table{D_regression_main}
+       ├── \algorithm{D_algorithm_block}
+       └── \cite{C_prior_work}
+```
+
+The placeholder is deliberately LaTeX-like and may remain unresolved during
+writing. Its hidden binding records the label, Evidence Item, RE, Result path,
+Card projection, and provenance. The later resolver replaces or renders the
+placeholder; it does not create a new Run.
+
+Use one RE when the labels share the same focal target, frozen inputs, worker,
+and acceptance gate. Split into another Evidence Item and RE when a value,
+display, or citation needs an independent execution lineage, provenance,
+acceptance decision, or lifecycle. A citation attached to a value is normally
+just a `C_` Label on that value's Card, not a second `re-cite`.
+
+The canonical conceptual binding is:
+
+```yaml
+item: E18
+page_run: re-value-01_adjusted-effect
+kind: value
+result: results/re-value-01_adjusted-effect/result.yaml
+labels:
+  - token: "$V_adjusted_effect$"
+    kind: VALUE
+    target: payload.value.adjusted_effect
+  - token: "\\cite{C_analysis_source}"
+    kind: CITE
+    target: payload.sources.analysis_source
+```
+
+### Result `labels:` manifest
+
+The root-level `labels:` list is the machine-readable bridge between authored
+tokens and the current Result/Card. It is optional while an RE is pending, but
+each token emitted or resolved by a ready Result must have one entry:
+
+```yaml
+labels:
+  - token: "$V_adjusted_effect$"
+    kind: VALUE
+    key: V_adjusted_effect
+    target: payload.estimate
+    status: resolved
+    display: "100"
+  - token: "\\figure{D_effect_forest}"
+    kind: DISPLAY
+    display_kind: figure
+    target: payload.unit
+    status: resolved
+    display: "Effect forest"
+  - token: "\\cite{C_analysis_source}"
+    kind: CITE
+    target: payload.sources.analysis_source
+    status: unresolved
+```
+
+`token` is the authored identity and is never deleted when `display` is
+available. `display` is the reader-facing value used by Draft Space and the
+Evidence Card; `status: unresolved|pending|missing` keeps the token visible.
+The renderer may place the display inline, but its disclosure must retain the
+token, Item, current RE, Result path, target, and provenance. `labels` is a
+one-to-many projection of one Result/Card; it does not create additional Items,
+Runs, or Cards. Duplicate tokens within one Page are a contract error and are
+not silently merged.
+
+An RE is not the underlying computation or search. Those remain native
+Supporting Runs; the RE binds their validated Results into one Page evidence
+contract. An Evidence Result becomes Page evidence only at LAND, and Page
+interpretation belongs to EMBED.
 
 ### RD · Page Delivery Run
 
 `RD` is commissioned after the content/evidence release barrier is open. One
-RD targets one delivery lane and concrete source version: for example web,
-LaTeX, Word, slides, or a rendered recipient preview. It records the output
-artifact, source/version binding, build diagnostics, and the delivery receipt
-(normally `delivery/<lane>/build-manifest.json`).
-
+RD targets one delivery lane and concrete source version: web, LaTeX, Word,
+slides, or a rendered recipient preview. A rebuild of the same target may be
+another attempt in the same RD lineage when its contract is unchanged.
 Different targets or materially different source versions use different RD
-identities. A rebuild of the same target may be a new attempt in the same RD
-lineage when the target contract is unchanged. RD can report a failed or
-partial build; only Page CHECK decides whether the whole Page is closed.
+identities. RD does not reopen or rewrite an RE.
 
 ## Evidence Item, Result, Card, and Label
 
@@ -93,93 +194,49 @@ These words name different layers and must not be used interchangeably:
 
 | Object | Layer | Definition | Authority |
 |---|---|---|---|
-| Evidence Item | authored plan | one immutable, typed obligation such as `E18-VALUE-...` | Outline SHAPE/SURVEY |
-| Evidence Run (`RE`) | execution | the Page-local lineage that makes that item ready | Page EVIDENCE/LAND |
-| Evidence Result | fact | the typed `result.yaml` plus payload emitted by the RE | Result path and its provenance |
-| Evidence Card | UI projection | a read-only view of one current Result, with its item and run context | derived from Result |
-| Evidence Label | inline reference | a stable token that points to one Result payload/claim/display/citation | label binding in the Result manifest |
+| Evidence Item | authored plan | one typed obligation, such as `E18-VALUE-variable-operationalization` | Outline SHAPE/SURVEY |
+| Evidence Run (`RE`) | execution/lineage | the Page-local typed lineage that makes that item ready | Page EVIDENCE/LAND |
+| Evidence Result | fact | typed `result.yaml` plus payload emitted or bound by the RE | Result path and provenance |
+| Evidence Card | UI projection | read-only view of one current Result with item and run context | derived from Result |
+| Evidence Label | inline reference | stable token pointing to one Result payload, claim, display, or citation | Result manifest binding |
 
-An Evidence Item is not a Card and is not a Run. In the current Page state,
-one item normally has one current RE and one current Result, so the UI may
-make them look like one card. That is a convenient one-to-one projection,
-not a definition of the objects.
-
-One Result/Card may expose many labels. For example:
-
-```text
-RE → Result/Card
-       ├── $V_adjusted_fx$
-       ├── \figure{D_effect_forest}
-       ├── \table{D_regression_main}
-       ├── \algorithm{D_algorithm_block}
-       └── \cite{C_prior_work}
-```
-
-`DISPLAY` is the umbrella type for a placed visual or structured presentation:
-a table, figure, diagram, illustration, or algorithm block. `TABLE` is only a
-compatibility alias/subtype of `DISPLAY`, not a fourth Page Run family or a
-separate Card lane. A table, figure, or algorithm-block label therefore uses
-the `D_` namespace. These are deliberately LaTeX-like placeholders. Their visible value or
-display may be embedded now, while the hidden binding retains the label, the
-Evidence Item, the RE, the Result path, and the provenance needed to resolve
-it later. A label is not an independent Evidence Item merely because it is
-used several times. If a label needs its own acceptance decision, provenance,
-or execution lineage, split the obligation into another Evidence Item and RE.
-
-The canonical binding shape is conceptual; implementations may serialize it
-in YAML or JSON:
-
-```yaml
-item: E18-VALUE-variable-operationalization
-page_run: re01_e18-variable-operationalization
-result: results/re01_e18-variable-operationalization/result.yaml
-labels:
-  - token: "$V_adjusted_fx$"
-    kind: VALUE
-    target: payload.value.adjusted_fx
-  - token: "\\cite{C_prior_work}"
-    kind: CITE
-    target: payload.sources.prior_work
-```
-
-The `item` and `page_run` fields are the stable joins. The `result` is the
-fact source. The Card and inline labels are recomputed views and must not
-become competing stores of evidence truth.
+An Evidence Item is not a Card and is not a Run. One current item has one
+current RE and one current Result/Card projection. One Result/Card may expose
+many labels. A label can be referenced by many Bullets or paragraphs, but its
+current authority is one Result/Card binding.
 
 ## Storage and routing
 
 Page-special tickets use the Page-readable family identity:
 
 ```text
-runs/rpNN_<slug>     Writing Run ticket
-runs/reNN_<slug>     Evidence Run ticket
-runs/rdNN_<slug>     Delivery Run ticket
-results/reNN_<slug>/result.yaml
-delivery/<lane>/     RD-produced delivery artifacts and receipts
+runs/rp-struct-NN.md
+runs/rp-sec-NN.md
+runs/rp-para-NN_Pxx[-Pyy].md
+runs/re-value-NN_<slug>.md
+runs/re-display-NN_<slug>.md
+runs/re-cite-NN_<slug>.md
+runs/rdNN_<target>.md
+results/<same-run>/
+delivery/<lane>/
 ```
 
-An `RE` is the Page ticket/lineage identity. An owner-native Task may still
-own the actual executable Ticket and canonical Result under the Folder/Task
-dialect. The RE records that full owner-native id, Result path, and hash; it
-never copies or renames the upstream Result just to make it appear Page-local.
-When the Folder uses its own canonical output root, `results/<re-run>/` is the
-Page-readable binding/projection and the owner-native resolved Result path is
-the fact source.
-
-The Run Space may present four logical groups—RP, RE, RD, and Supporting
-Runs—even though the Page has one Run presenter. The Delivery plugin remains
-one visible tab; its build actions and receipts are RD-backed rather than a
-second delivery-quality system.
+The Folder dialect may place the executable owner-native Ticket and canonical
+Result elsewhere. The RE records that full owner-native id, Result path, and
+hash; it never copies or renames an upstream Result to imitate Page-local
+storage.
 
 ## Boundaries
 
-- `RP`, `RE`, and `RD` are Page-local Run families, not new workflow phases.
-- The workflow pass receipt is not an RP, RE, or RD and must not be counted as
-  one.
-- `RE` is item-scoped; there is no umbrella Page-wide “Evidence Run”.
-- Supporting Runs remain accountable to their owner. The Page RE only binds
-  their outputs into the Page's frozen Local Input and Result.
-- `RD` does not reopen or rewrite evidence. A stale delivery routes to a new
-  delivery attempt/RD, and a changed evidence obligation routes through the
-  normal EVIDENCE/CONTENT rules first.
+- `RP`, `RE`, and `RD` are Page-local Run families, not workflow phases.
+- RP kind tokens are `struct`, `sec`, and `para`; paragraph identities expose
+  their exact `Pxx` target or contiguous range.
+- RE kind tokens are `value`, `display`, and `cite`; `display_kind` distinguishes
+  table, figure, and algorithm. Other renderer mechanisms remain internal and
+  are cited as the resulting Page `figure` when they become a display.
+- One Evidence Item has one current RE lineage and one current Result/Card;
+  that Card may expose many `V_`, `D_`, and `C_` Labels.
+- Supporting Runs remain accountable to their owner. The Page RE binds their
+  outputs into the frozen Local Input and Result.
+- A workflow pass is not an RP, RE, or RD and must not be counted as one.
 - Page CHECK remains the only human whole-Page close gate.

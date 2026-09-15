@@ -6,7 +6,8 @@ import re
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from live.outline import plan_card, _edit_plan_bullet, _PAGE
+from live.outline import (plan_card, _edit_plan_bullet, _PAGE,
+                          parse_outline, render as render_outline)
 from live.outline_preview import (save_preview, read_previews, bullet_token,
                                   record_token, content_seeds, sentence_count, reader_prose)
 from src.plan_shape import iter_plan_bullets
@@ -18,9 +19,11 @@ approved: ✅ JL
 - B1 · Physician behavior varies across clinical settings
   Note: compare equivalent encounters
   Evidence: none · illustrative planning fixture
+  Draft: Existing prose.
 - B2 · Encounters leave different room for judgment
   Note: define discretion
   Evidence: none · illustrative planning fixture
+  Draft: Encounters leave different room for judgment.
 '''
 
 
@@ -35,16 +38,18 @@ class OutlinePreviewTest(unittest.TestCase):
         self.plan.write_text(PLAN)
         self.token = bullet_token(iter_plan_bullets(PLAN)[0])
 
-    def save(self, text, previous='missing', token=None):
+    def save(self, text, previous=None, token=None):
+        if previous is None:
+            previous = record_token(read_previews(self.page).get('C1.P1.B1'))
         return save_preview(self.page, 'C1.P1.B1', text, token or self.token, previous)
 
     def test_roundtrip_preserves_approved_source_and_page(self):
-        before = self.page.read_bytes(), self.plan.read_bytes()
+        before_page = self.page.read_bytes()
         result, error = self.save('Physicians choose differently.\nA candidate for discussion.')
         self.assertIsNone(error)
         self.assertEqual(read_previews(self.page)['C1.P1.B1']['text'],
                          'Physicians choose differently. A candidate for discussion.')
-        self.assertEqual(before, (self.page.read_bytes(), self.plan.read_bytes()))
+        self.assertEqual(before_page, self.page.read_bytes())
         self.assertEqual(len(list(self.plan.parent.glob('*-outline-*'))), 1)
         second, error = self.save('Revised candidate.', result['record_token'])
         self.assertIsNone(error)
@@ -52,7 +57,7 @@ class OutlinePreviewTest(unittest.TestCase):
 
     def test_concurrent_stale_edit_is_rejected_without_losing_saved_text(self):
         result, _ = self.save('First editor saved this.')
-        _, error = self.save('Second editor would overwrite it.')
+        _, error = self.save('Second editor would overwrite it.', 'missing')
         self.assertIn('another editor', error)
         self.assertEqual(read_previews(self.page)['C1.P1.B1']['text'], result['text'])
 
@@ -62,12 +67,12 @@ class OutlinePreviewTest(unittest.TestCase):
                           'Physician choices depend on the clinical context')
         _, error = self.save('Stale form.', result['record_token'])
         self.assertIn('Bullet changed', error)
-        self.assertIn('Draft changed', plan_card(self.page))
+        self.assertNotIn('Draft changed', plan_card(self.page))
 
     def test_clear_is_saved_and_does_not_restore_content_seed(self):
         result, _ = self.save('Candidate.')
         self.save('', result['record_token'])
-        self.assertEqual(read_previews(self.page)['C1.P1.B1']['text'], '')
+        self.assertNotIn('C1.P1.B1', read_previews(self.page))
         card = plan_card(self.page)
         self.assertNotIn('<textarea', card)
         self.assertIn('Not drafted', card)
@@ -78,7 +83,9 @@ class OutlinePreviewTest(unittest.TestCase):
         self.assertEqual(seeds['C1.P1.B2']['shared'], 'C1.P1.B1')
         card = plan_card(self.page)
         self.assertIn('<span>Bullet</span><span>Draft</span>', card)
-        self.assertEqual(card.count('Existing prose.'), 1)
+        # Table and immersive reader are two projections of the same embedded
+        # Draft value; one is hidden at a time by the view switch.
+        self.assertEqual(card.count('Existing prose.'), 2)
         self.assertNotIn('<textarea', card)
         self.assertNotIn('Read paragraph', card)
 
@@ -91,7 +98,7 @@ class OutlinePreviewTest(unittest.TestCase):
     def test_unknown_address_does_not_create_draft(self):
         _, error = save_preview(self.page, 'C1.P9.B1', 'Text', self.token, 'missing')
         self.assertIsNotNone(error)
-        self.assertEqual(read_previews(self.page), {})
+        self.assertNotIn('C1.P9.B1', read_previews(self.page))
 
     def test_reading_first_table_is_static_and_has_no_comments_or_editors(self):
         card = plan_card(self.page)
@@ -99,6 +106,19 @@ class OutlinePreviewTest(unittest.TestCase):
         self.assertEqual(card.count('<details class=point-tools>'), 0)
         self.assertIn('<div class=preview-copy>Existing prose.</div>', card)
         self.assertIn('<details class=plan-details>', card)
+
+    def test_draft_has_table_and_immersive_reading_projections(self):
+        card = plan_card(self.page)
+        self.assertIn('<div class=paragraph-reading>', card)
+        self.assertIn('<div class="reading-line" data-point="C1.P1.B1">', card)
+        self.assertIn('<span class=reading-address>B1</span>', card)
+        self.assertEqual(card.count('class="reading-line" data-point='), 2)
+        page = render_outline('S-test', parse_outline(self.page.read_text()),
+                              self.page, self.page.parent, '/board.md',
+                              'S-test/S-test.md')
+        self.assertIn('data-draft-mode=table', page)
+        self.assertIn('data-draft-mode=reading', page)
+        self.assertIn("requestedDraftMode=params.get('view')==='reading'", page)
         self.assertIn('<details class=source-details>', card)
         self.assertIn('<summary>Sources</summary>', card)
         self.assertNotIn('<details class=preview-editor open', card)
@@ -161,7 +181,7 @@ class OutlinePreviewTest(unittest.TestCase):
         self.page.write_text('page-type: section\n## Content\n')
         _, error = self.save('First sentence. Second sentence.')
         self.assertIn('one sentence', error)
-        self.assertEqual(read_previews(self.page), {})
+        self.assertEqual(read_previews(self.page)['C1.P1.B1']['text'], 'Existing prose.')
         result, error = self.save('The estimate is 2.54 MME (95% CI, 1.2 to 3.4).')
         self.assertIsNone(error)
         self.assertEqual(sentence_count(result['text']), 1)

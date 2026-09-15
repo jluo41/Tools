@@ -1,15 +1,15 @@
-run: rp03_p03-p05
+run: rp-para-03_P03-P05
 family: page
 operation: interactive-writing
 interaction: human-feedback
 target: C2.P3, C2.P4, C2.P5
 paragraphs: P03-P05
-ticket: runs/rp03_p03-p05.md
-result: results/rp03_p03-p05
+ticket: runs/rp-para-03_P03-P05.md
+result: results/rp-para-03_P03-P05
 status: complete
 version: v001
 step: s004
-version_file: results/rp03_p03-p05/v001.md
+version_file: results/rp-para-03_P03-P05/v001.md
 version_sha256: bb99ad0005c952c04e7c4b3ad1fa9f47cacf816a629b7015f09f25c6e8edce4d
 worker:
   kind: skill

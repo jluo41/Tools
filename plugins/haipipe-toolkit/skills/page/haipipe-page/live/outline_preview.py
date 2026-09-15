@@ -6,7 +6,7 @@ import fcntl
 from contextlib import contextmanager
 from pathlib import Path
 
-from src.plan_shape import iter_plan_bullets
+from src.plan_shape import iter_plan_bullets, split_embedded_draft
 from src.outline_version import latest_outline, version_tag
 
 
@@ -25,20 +25,44 @@ def page_lock(page):
             fcntl.flock(handle, fcntl.LOCK_UN)
 
 
+def draft_path(page):
+    """Return the current Outline Markdown, the sole Draft authority."""
+    return latest_outline(page.parent / "outline", page.stem)
+
+
 def preview_path(page):
-    return page.parent / "outline" / (page.stem + "-preview.md")
+    """Compatibility name: Draft now lives in the selected Outline file."""
+    return draft_path(page)
 
 
-def read_previews(page):
-    path = preview_path(page)
-    if not path.exists():
+def read_drafts(page):
+    """Read Draft records embedded in the selected Outline Markdown."""
+    path = draft_path(page)
+    if path is None or not path.is_file():
         return {}
-    text = path.read_text(encoding="utf-8")
+    records = {}
+    for block in iter_plan_bullets(path.read_text(encoding="utf-8", errors="replace")):
+        if not block.get("draft"):
+            continue
+        records[block["address"]] = {
+            "plan": version_tag(path),
+            "bullet-sha256": bullet_token(block),
+            "text": block.get("draft", ""),
+            "reviews": block.get("reviews", ""),
+        }
+    return records
+
+
+def read_legacy_previews(page):
+    """Read a retired standalone preview for the one-time migration only."""
+    path = page.parent / "outline" / (page.stem + "-preview.md")
+    if not path.is_file():
+        return {}
+    text = path.read_text(encoding="utf-8", errors="replace")
     records = {}
     for match in re.finditer(r"(?ms)^## (C\d+\.P\d+\.B\d+)\s*\n(.*?)(?=^## |\Z)", text):
         header, _, body = match[2].strip().partition("\n\n")
         fields = dict(re.findall(r"(?m)^([\w-]+): (.*)$", header))
-        # Signed preview comments are review apparatus, never candidate prose.
         parts = re.split(r"(?m)(?=^> Comment )", body, maxsplit=1)
         records[match[1]] = {**fields, "text": parts[0].strip()}
         if len(parts) > 1:
@@ -46,25 +70,122 @@ def read_previews(page):
     return records
 
 
+def read_previews(page):
+    """Backward-compatible API returning embedded Draft records."""
+    return read_drafts(page)
+
+
+def read_opening_draft(page):
+    """Read the optional page-level Opening Draft from the current Outline."""
+    path = draft_path(page)
+    if path is None or not path.is_file():
+        return ""
+    text = path.read_text(encoding="utf-8", errors="replace")
+    section = re.search(r"(?ms)^## Opening Draft\s*\n(.*?)(?=^## |\Z)", text)
+    if not section:
+        return ""
+    body = section.group(1).strip()
+    draft = re.search(r"(?ms)^Draft:\s*(.*?)(?=^> Comment |\Z)", body)
+    return (draft.group(1) if draft else body).strip()
+
+
+def read_legacy_opening(page):
+    """Read the retired C0/P00 Opening candidate for migration only."""
+    path = page.parent / "outline" / (page.stem + "-preview.md")
+    if not path.is_file():
+        return ""
+    text = path.read_text(encoding="utf-8", errors="replace")
+    candidate = re.search(
+        r"(?ms)^## Candidate (?:P00|C0\.P1)(?:\s+·[^\n]*)?\s*\n\s*\n(.*?)(?=^## Candidate job\b|^## Acceptance boundary\b|\Z)",
+        text,
+    )
+    return candidate.group(1).strip() if candidate else ""
+
+
 def record_token(record):
     # Appending review must not invalidate an otherwise current prose editor.
     return digest(repr(sorted((k, v) for k, v in record.items() if k != "reviews"))) if record else "missing"
 
 
-def write_previews(page, records):
-    """Atomic write under page_lock; preserve signed review lanes verbatim."""
-    path = preview_path(page)
-    output = "# %s · Content preview\n\nPlanning draft for discussion; not promoted Page Content.\n" % page.stem
-    for key, record in records.items():
-        output += "\n## %s\nplan: %s\nbullet-sha256: %s\n\n%s\n" % (
-            key, record["plan"], record["bullet-sha256"], record["text"])
-        if record.get("reviews"):
-            output += "\n" + record["reviews"] + "\n"
-    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
-                                     prefix=".preview-", delete=False) as handle:
-        handle.write(output)
+def _write_embedded_drafts(plan, records):
+    """Atomically update Draft fields while preserving the rest of the plan."""
+    lines = plan.read_text(encoding="utf-8", errors="replace").splitlines()
+    output, cn, pn, i = [], 0, 0, 0
+    while i < len(lines):
+        line = lines[i]
+        division = re.match(r"^## (C\d+)\s*·", line)
+        if division:
+            cn, pn = int(division.group(1)[1:]), 0
+        paragraph = re.match(r"^### C\d+\.P(\d+)\s*·", line)
+        if paragraph:
+            pn = int(paragraph.group(1))
+        bullet = re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)(\d+)\s*·", line)
+        if not bullet:
+            output.append(line)
+            i += 1
+            continue
+        address = "C%d.P%d.B%d" % (cn, max(pn, 1), int(bullet.group(1)))
+        j = i + 1
+        continuation = []
+        while j < len(lines) and lines[j].startswith("  ") and not re.match(r"^- ", lines[j]):
+            continuation.append(lines[j].strip())
+            j += 1
+        plan_lines, _old_draft, _old_reviews = split_embedded_draft(continuation)
+        output.append(line)
+        output.extend("  " + item for item in plan_lines if item)
+        record = records.get(address)
+        if record is not None:
+            draft = str(record.get("text", "")).strip()
+            if draft:
+                draft_lines = draft.splitlines()
+                output.append("  Draft: " + draft_lines[0])
+                output.extend("  " + item for item in draft_lines[1:])
+            reviews = str(record.get("reviews", "")).strip()
+            if reviews:
+                output.extend("  " + item for item in reviews.splitlines())
+        i = j
+    text = "\n".join(output).rstrip() + "\n"
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=plan.parent,
+                                     prefix=".outline-", delete=False) as handle:
+        handle.write(text)
         temporary = Path(handle.name)
-    temporary.replace(path)
+    temporary.replace(plan)
+
+
+def write_drafts(page, records):
+    """Write Draft records into the selected Outline Markdown."""
+    plan = draft_path(page)
+    if plan is None:
+        raise FileNotFoundError("No Outline Markdown exists for this Page")
+    if plan.is_symlink() or plan.parent.is_symlink():
+        raise ValueError("Outline source must be a local Markdown file")
+    _write_embedded_drafts(plan, records)
+
+
+def write_opening_draft(page, text):
+    """Write the optional page-level Opening Draft into the current Outline."""
+    if not str(text or "").strip():
+        return
+    plan = draft_path(page)
+    if plan is None:
+        raise FileNotFoundError("No Outline Markdown exists for this Page")
+    source = plan.read_text(encoding="utf-8", errors="replace")
+    section = re.compile(r"(?ms)^## Opening Draft\s*\n.*?(?=^## |\Z)")
+    lines = str(text).strip().splitlines()
+    replacement = "## Opening Draft\n\nDraft: " + "\n".join(lines) + "\n"
+    updated = section.sub(replacement, source, count=1)
+    if updated == source:
+        updated = source.rstrip() + "\n\n" + replacement
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=plan.parent,
+                                     prefix=".outline-", delete=False) as handle:
+        handle.write(updated.rstrip() + "\n")
+        temporary = Path(handle.name)
+    temporary.replace(plan)
+
+
+def write_previews(page, records):
+    """Compatibility API: write Draft records into the Outline Markdown."""
+    write_drafts(page, records)
 
 
 def bullet_token(block):
@@ -135,7 +256,7 @@ def content_seeds(page):
 
 
 def save_preview(page, address, text, expected_bullet, expected_record):
-    """Compare-and-save one rehearsal; approved Shape and Page stay immutable."""
+    """Compare-and-save one Draft in the Outline Markdown."""
     if not isinstance(text, str) or len(text) > 20000:
         return None, "Preview must be text of at most 20,000 characters"
     text = " ".join(text.split())
@@ -152,14 +273,16 @@ def save_preview(page, address, text, expected_bullet, expected_record):
             return None, "Bullet no longer exists; reload the workspace"
         if expected_bullet != bullet_token(blocks[address]):
             return None, "Bullet changed; reload and review before saving"
-        path = preview_path(page)
+        path = draft_path(page)
+        if path is None:
+            return None, "No Outline Markdown exists for this Page"
         if path.is_symlink() or path.parent.is_symlink():
-            return None, "Preview source must be a local Markdown file"
-        records = read_previews(page)
+            return None, "Outline source must be a local Markdown file"
+        records = read_drafts(page)
         if expected_record != record_token(records.get(address)):
             return None, "This draft changed in another editor; reload before saving"
         records[address] = {**records.get(address, {}), "plan": version_tag(plan),
                             "bullet-sha256": expected_bullet, "text": text}
-        write_previews(page, records)
+        write_drafts(page, records)
         return {"address": address, "text": text, "record_token": record_token(records[address]),
-                "version": version_tag(plan), "preview": str(path)}, None
+                "version": version_tag(plan), "outline": str(path)}, None

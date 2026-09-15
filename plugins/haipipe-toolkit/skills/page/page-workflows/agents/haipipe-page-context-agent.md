@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-context-agent
-description: "Write-scoped CONTEXT producer for one Board Page. PREPARE collects, resolves, and freezes the Page's governing policy, requirements, ownership, related information, feedback, decisions, records, and current planning/evidence state into outline/<stem>-context.md. It writes no plan, evidence Result, Page Content, or human tick and commissions no Level-4 Run. Trigger: page context producer, CONTEXT phase, PREPARE, Context Workspace, context agent."
+description: "Write-scoped CONTEXT producer for one Board Page. PREPARE collects, resolves, and freezes the Page's governing policy, requirements, ownership, related information, feedback, decisions, records, and current planning/evidence state into outline/<stem>-context.md. It writes no plan, evidence Result, Page Content, or human tick and commissions no Level-4 Run. Trigger: page context producer, CONTEXT phase, PREPARE, off-stage Context record, context agent."
 tools:
   - Read
   - Write
@@ -13,7 +13,7 @@ model: inherit
 metadata:
   version: "0.1.1"
   last_updated: "2026-09-04"
-  summary: "The producer for 00 CONTEXT/PREPARE and the generated Context Workspace overview."
+  summary: "The producer for 00 CONTEXT/PREPARE and the generated off-stage Context record."
   changelog: "./CHANGELOG.md"
 ---
 

@@ -1,3 +1,32 @@
+## 0.103.0 · 2026-09-14
+
+- Keep Page-facing DISPLAY labels aligned with LaTeX semantics: table, figure,
+  and algorithm only. Conceptual diagrams and AI illustrations resolve as
+  ordinary `\\figure{D_xxx}` displays rather than new label commands.
+
+## 0.102.0 · 2026-09-14
+
+- Add one shared Result `labels:` parser/resolver for `$V_…$`, `D_` display,
+  and `C_` citation tokens.
+- Show resolved values in Draft Space with expandable authored-token and
+  provenance details; keep unresolved tokens visible.
+- Expose the same many-label binding on Result-first Evidence Cards.
+
+## 0.101.0 · 2026-09-14
+
+- Replace numeric RP bands with explicit `rp-struct-NN`, `rp-sec-NN`, and
+  `rp-para-NN_Pxx[-Pyy]` identities. Define typed RE identities and make
+  `DISPLAY` the umbrella for tables, figures, diagrams, illustrations, and
+  algorithm blocks, with `D_` labels such as `\\figure{D_xxx}`.
+
+## 0.100.0 · 2026-09-14
+
+- Define Page-local RP allocation bands: `rp00`–`rp10` for Mermaid
+  Structure/Outline Bullets, `rp11`–`rp50` for Section-level Runs, and
+  `rp51`–`rp99` for paragraph-level Runs. Clarify that a complete Section
+  draft/review/diagnose/revise cycle is one Step, while a later independent
+  Section session is a new Run.
+
 ## 0.99.1 · 2026-09-14
 
 - Clarify that DISPLAY covers tables, figures, diagrams, illustrations, and

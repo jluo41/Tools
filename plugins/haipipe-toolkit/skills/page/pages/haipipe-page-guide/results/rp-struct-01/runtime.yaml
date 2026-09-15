@@ -1,15 +1,15 @@
-run: rp00_mermaid-structure
+run: rp-struct-01
 family: page
 operation: interactive-writing
 interaction: human-feedback
-target: whole-Page Mermaid Structure + P01..P06
+target: whole-Page SHAPE + SURVEY Structure + P01..P06
 paragraphs: P01..P06
-ticket: runs/rp00_mermaid-structure.md
-result: results/rp00_mermaid-structure
+ticket: runs/rp-struct-01.md
+result: results/rp-struct-01
 status: complete
 version: v001
 step: s011
-version_file: results/rp00_mermaid-structure/v001.md
+version_file: results/rp-struct-01/v001.md
 version_sha256: 94c41e5d0a5641909ace8cb478f011ccba88552cd69458fd22c33b73dbca7b2e
 worker:
   kind: skill

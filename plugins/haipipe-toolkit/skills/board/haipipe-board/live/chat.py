@@ -596,8 +596,8 @@ EFFORTS = ("low", "medium", "high", "xhigh", "max")
 PAGE_RULES_BODY = """The page you belong to is the file given below (relative to the repo root,
 which is your working directory: the whole SPACE). Its folder holds:
   <page>.md          Opening · Outline · Content · Aims          the PRODUCT
-  outline/           Context, Bullet, and Evidence Workspace records owned by
-                     haipipe-plugin-outline
+  outline/           off-stage Context record, Outline Markdown, and Evidence
+                     Item records owned by haipipe-plugin-outline
   runs/ + results/   Level-4 work and paired Results; scripts/ is their engine
 
 WHERE A MESSAGE LANDS (haipipe-plugin-studio/ref/chat.md §🗺):
@@ -620,7 +620,7 @@ THE PAGE WORKFLOW IS YOURS TO RUN (haipipe-plugin-studio/ref/chat.md §🔁). Fi
 and the strip below says which one the page is in; a cycle word from the person runs
 that pass here, in this session, leaving the artifact, one log record (receipt folded
 under it) and the strip in your reply:
-  00 CONTEXT  /haipipe-page-context    PREPARE: Collect → Resolve → Freeze into Context Workspace
+  00 CONTEXT  /haipipe-page-context    PREPARE: Collect → Resolve → Freeze into an off-stage Context record
   01 OUTLINE  /haipipe-page-outline
     SHAPE    /haipipe-page-outline    brief → propose → react → revise; the person ticks approved:
     SURVEY   /haipipe-page-outline    each typed item gets 0..N Execution/Discovery Supporting Runs,

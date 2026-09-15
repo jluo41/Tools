@@ -21,7 +21,7 @@ class BoardV1ContractTest(unittest.TestCase):
         self.assertIsNotNone(match)
         version = match.group(1)
         self.assertEqual(version.split(".", 1)[0], "1")
-        self.assertTrue(changelog.startswith(f"## {version} · 2026-09-12\n"))
+        self.assertTrue(changelog.startswith(f"## {version} · 2026-09-13\n"))
 
     def test_page_compatibility_surfaces_resolve_to_one_canonical_family(self):
         canonical = SKILLS / "page"

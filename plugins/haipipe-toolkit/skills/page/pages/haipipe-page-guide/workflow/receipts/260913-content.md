@@ -10,11 +10,11 @@ plan: outline/haipipe-page-guide-outline-v0.1.md · current historical Shape; no
 
 ## Writing adopted
 
-- `rp00_mermaid-structure` · `v001/s011`
-- `rp01_p01` · `v001/s007`
-- `rp02_p02` · `v001/s003`
-- `rp03_p03-p05` · `v001/s004`
-- `rp04_p06` · `v001/s002`
+- `rp-struct-01` · `v001/s011`
+- `rp-para-01_P01` · `v001/s007`
+- `rp-para-02_P02` · `v001/s003`
+- `rp-para-03_P03-P05` · `v001/s004`
+- `rp-para-04_P06` · `v001/s002`
 
 The accepted P01–P06 candidates were adopted into the Page Markdown source. The source remains the authority for the Page. The Content preview was refreshed with 23 accepted Bullet records, and all records remain on `plan: v0.1`.
 

@@ -1,7 +1,7 @@
 # VALUE Results · one checked quantity ready for one Page use
 
 Read this reference from `haipipe-plugin-outline` when an Evidence Item is
-`VALUE`, or when Evidence Workspace must explain a number's provenance. The
+`VALUE`, or when Evidence Space must explain a number's provenance. The
 Outline plugin owns only the workspace and presentation. The Page EVIDENCE
 phase owns LAND/EMBED; the local Run owns the Result.
 
@@ -18,6 +18,15 @@ Acceptance: recomputes from named Supporting Results; aggregate only
 The local Result must contain exactly what SHAPE's `Expected` and `Acceptance`
 fields require. A bare number, an unlabeled interval, or a number copied from
 another Page is not a ready VALUE Result.
+
+In Page prose, cite a resolved value through its LaTeX-like `V_` label, for
+example `$V_adjusted_effect$`, `$V_ci_lower$`, or `$V_ci_upper$`. The label is
+the stable join to a payload field on the current Result/Card; it is not a
+second VALUE Run. Missing values remain as the same `$V_<slug>$` placeholder
+until LAND supplies the bound Result. This is Page placeholder syntax, not a
+native LaTeX math command: LaTeX/web/Word delivery workers translate the
+resolved binding while the authored token remains the stable cross-delivery
+identity.
 
 ## 🔗 One graph, two Run layers
 
@@ -83,7 +92,7 @@ Raw rows and PHI never enter this Result.
 
 ## 🧭 Workspace and writing join
 
-Evidence Workspace derives one row per VALUE item:
+Evidence Space derives one row per VALUE item:
 
 ```text
 Item                          Supporting Runs   Local Run       State    Result
@@ -111,10 +120,11 @@ bound       Result → item → Bullet → Content all resolve
 - Cross-Folder quantities enter through named Supporting Run Results.
 - A Page-local governed static source may enter only through the frozen Local
   Input exception in the item-table contract.
-- Legacy Probe `## Values` records and `PP<NN>.v<n>` references are read-only
-  migration input. SURVEY converts their evidentiary source to a Supporting
-  Result or governed Local Input; new work receives an `E<NN>-VALUE-<slug>` id
-  and one local VALUE Run/Result.
+- Legacy Probe `## Values` records and `PP<NN>.v<n>` references are not read by
+  v4. Move the old Probe material to `_archive/legacy-outline-evidence/`, then
+  re-express its evidentiary source as a Supporting Result or governed Local
+  Input. New work receives an `E<NN>-VALUE-<slug>` id and one local VALUE
+  Run/Result.
 
 The common item and graph laws are in `../item-table.md`; LAND/EMBED authority
 is in `haipipe-page-evidence`. This reference owns no scripts or writer.

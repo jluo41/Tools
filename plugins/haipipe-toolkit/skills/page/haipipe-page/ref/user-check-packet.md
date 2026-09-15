@@ -20,17 +20,20 @@ does not rebuild anything unless the person asked for a rebuild.
 
 Select the routine writing packet below for a feedback Step. The four-surface
 packet is for formal review/delivery. For that formal packet, the main response
-contains these four user-check surfaces. Detailed
+contains these four user-check surfaces plus the read-only Delivery Workspace
+consistency receipt. Detailed
 source paths, logs, manifests, hashes, and phase receipts stay in the durable
 records and may be mentioned only when they explain a missing or stale surface.
 
 When a person says enter, continue, resume, or review an open Page Run before
 giving new feedback, use the pre-Step review packet below. It shows the latest
-saved candidate, the frozen Mermaid Structure description for every selected
-paragraph, and the next proposed Step number, but does not append a new Step or
-claim a new durable record. Never return only a status summary or links when the
-person has asked to enter a Step: return the full selected paragraphs, Mermaid
-descriptions, sentence labels, review scope, and all three links.
+saved candidate, the fixed structure/Section/paragraph scope, the frozen
+Mermaid Structure description for every selected paragraph when prose is in
+scope, and the next proposed Step number. It does not append a new Step or
+claim a new durable record. Never return only a status summary or links when
+the person has asked to enter a Step: return the full selected scope, Mermaid
+descriptions where applicable, sentence labels for prose, review scope, and
+all three links.
 
 ## Routine interactive writing · return what the person can review
 
@@ -39,7 +42,7 @@ descriptions, sentence labels, review scope, and all three links.
 Use this packet before new feedback arrives:
 
 ```markdown
-## ✍️ <rpNN_pNN[-pNN]> · next Step <vNNN/sNNN>
+## ✍️ <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]> · next Step <vNNN/sNNN>
 
 ### P01 · <C.P> · <Mermaid Structure description>
 
@@ -59,29 +62,37 @@ Reply with sentence-numbered feedback, acceptance, or an explicit close.
 [Draft Space](<verified direct URL>) · [Evidence Space](<verified direct URL>) · [Current Run](<verified Runs URL with &run=<exact-run-id>>)
 ```
 
-The `next Step` label is a proposed input location, not a saved Step. Do not
+The `next Step` label is a proposed input location, not a saved Step. For a
+Section-level Run, the saved Step must include the complete draft →
+review/rating → diagnose → revise cycle and the post-revision
+review/diagnosis. Do not
 write `sNNN` to the Version journal until the person supplies feedback,
 acceptance, or an explicit close. Resolve each description from the closed
-`rp00_mermaid-structure` index or its authored `outline/<stem>-logic.mmd`; if
+`rp-struct-01` index or its authored `outline/<stem>-logic.mmd`; if
 the description is missing or ambiguous, show a named blocker rather than
 inventing one.
 
 After a saved writing Step:
 
 1. Start with the exact durable identity as the heading:
-   `## <rpNN_pNN[-pNN]> · <vNNN/sNNN>`. For example,
-   `## rp01_p01 · v001/s003`. The Run id states which interaction is open;
-   the paragraph suffix states its frozen Page-global scope.
-2. Immediately show the full selected one-to-three paragraphs in reader order,
-   including unchanged sentences. Put each paragraph under its own visible
-   `### PNN · Cn.Pm · <Mermaid Structure description>` label and its own Markdown blockquote. Leave a blank line
-   between paragraph blocks; never place different paragraphs in one continuous
-   quote. Prefix every sentence with a stable bold review label: `**S1**`,
-   `**S2**`, and so on. These labels are chat review coordinates only: do not
-   write them into the Workspace candidate or final Page Content. Use exactly
-   the saved Workspace's reader projection, not a newly polished chat version.
-   Keep evidence placeholders honest in the source; use the same compact labels
-   as the Workspace in the chat passage.
+   `## <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]> · <vNNN/sNNN>`.
+   For example, `## rp-para-01_P03 · v001/s003`. The Run id states which
+   interaction is open;
+   its scope suffix states the fixed structure, Section, or paragraph target.
+2. Immediately show the complete saved candidate for the fixed Run scope. For
+   a paragraph Run, show the full selected one-to-three paragraphs in reader
+   order, including unchanged sentences. Put each paragraph under its own
+   visible `### PNN · Cn.Pm · <Mermaid Structure description>` label and its
+   own Markdown blockquote. For a Section Run, show the complete Section
+   candidate followed by its review/rating, diagnosis, revision summary, and
+   post-revision review/diagnosis. For a structure/Bullet Run, show the
+   Mermaid map, ordered Bullets, and the `P01..PN` index. Sentence labels are
+   chat review coordinates only. Prefix every sentence with a stable bold
+   review label, but do not write those labels into the Workspace candidate or
+   final Page Content. Use exactly the saved Workspace's reader
+   projection, not a newly polished chat version. Keep evidence placeholders
+   honest in the source; use the same compact labels as the Workspace in the
+   chat passage.
 3. Then briefly explain what changed and why. Default to one concise paragraph,
    not a fixed three-bullet status block. Use itemized dispositions only when
    several feedback items genuinely need separate treatment. Distinguish
@@ -105,14 +116,17 @@ After a saved writing Step:
    collapsed until the reader opens them.
 4. Show the Section Mermaid before the paragraph only when the argument or
    paragraph relationships changed; a wording edit needs no repeated diagram.
-5. Put **all three direct clickable links at the very end**:
+5. For a routine writing packet, put **all three direct clickable links at the very end**:
    `[Draft Space](<verified …&lens=div>) ·
    [Evidence Space](<verified …&lens=evidence>) ·
    [Current Run](<verified …/_board/runs?path=…&file=…&run=<exact-run-id>>)`. The
    Current Run route opens the readable Run projection and expands its current
    Step plus prior history; it is not a raw Markdown, result-directory, or
    Python implementation link.
-   Nothing, including source paths or a work summary, follows those links.
+   Nothing, including source paths or a work summary, follows those links. A
+   formal delivery packet adds `[Delivery Workspace](<verified …&lens=delivery>)`
+   after the Current Run link; that receipt is the source-to-artifact check,
+   not a second human approval gate.
 
 The current candidate is `planning draft`, not automatically published Content.
 Do not append the full audit packet, PDF or whole Section to each local turn.
@@ -136,7 +150,7 @@ made-up live link or a localhost/raw-HTML substitute.
 ## The four surfaces (JL 260907: "在写 page 的时候，response 里要强调")
 
 ```text
-1. Outline and Bullet workspaces
+1. Draft and Evidence Spaces
    return both direct links from the same verified Board route:
      🧭 Draft Space  `<Board URL…&lens=div>` · Mermaid + read-only paragraph/Bullet/Draft table
      ▤ Outline table    `<Board URL…>` · the compact Page projection
@@ -149,15 +163,14 @@ made-up live link or a localhost/raw-HTML substitute.
 2. Evidence you can open now
    return the direct Evidence Space route even when no item is ready:
      `<Board URL…&lens=evidence>`
-   one line per typed Evidence Item whose Result is ready, grouped by type:
+   one compact card per current Result, grouped by type:
      🖼 DISPLAY  the unit's standalone `preview.pdf` (figure or table);
                 an unaccepted but freshly rendered preview is still a current draft
-     📚 CITE     the Page's citation register `outline/evidence/bibex/<stem>-bib.html`,
-                or the Evidence Space 📚 Citations segment when no register is built
-     🧮 VALUE    the item's row in the Evidence Space (one-URL route
+     📚 CITE     the current typed CITE Result card in Evidence Space
+     🧮 VALUE    the item's card in the Evidence Space (one-URL route
                 `lens=evidence&focus=run-<item>`), which names the value,
                 its Run and its Result
-   plus the direct Evidence Space → Evidence table link above.  Do not use the
+   plus the direct Evidence Space → typed section/card link above.  Do not use the
    embedded `/_board/evidence?...&embed=1` iframe URL as the primary response
    link; it is an implementation detail of the Outline plugin.
    An item that is not ready is listed as `not current · <blocking step>`.
@@ -187,16 +200,16 @@ in the final user-check block, after prose/status commentary:
 1. Draft Space: [Open Draft Space](<verified configured Board URL…&lens=div>)
    Outline table: [Open Outline table](<verified configured Board URL>)
 2. Evidence Space: [Open Evidence Space](<verified configured Board URL…&lens=evidence>)
-   🖼 [<Display id>](<unit>/preview.pdf) · 📚 [citations](<page>/outline/evidence/bibex/<stem>-bib.html) · 🧮 [<Value id>](<…&seg=items&focus=run-<item>>)
+     🖼 [<Display id>](<resolved Result payload>/preview.pdf) · 📚 [<CITE item>](<…&lens=evidence&focus=run-<item>>) · 🧮 [<Value id>](<…&lens=evidence&focus=run-<item>>)
 3. Content: v<G>.<S> · revised · owner policy checked · style verdict ✓   (or: first draft · not yet revised)
 4. Latest Page-level PDF: [Open the Page PDF](<page>/delivery/latex/<stem>.pdf)
 ```
 
 If no Evidence Item is declared, write `none declared for this Page`; do not
-invent a link. If a DISPLAY unit has a fresh `preview.pdf` but its human
-`accepted:` tick is still open, link it and label it `current draft ·
+invent a link. If a DISPLAY Result has a fresh payload `preview.pdf` but its
+human `accepted:` gate is still open, link it and label it `current draft ·
 acceptance pending`. Human acceptance is a separate gate and does not hide a
-usable draft preview. If a DISPLAY unit's `preview.pdf` is missing or stale,
+usable draft preview. If a DISPLAY Result's `preview.pdf` is missing or stale,
 write `not current` with the blocking step. If the Page has no Content yet,
 surface 3 reads `no Content yet · phase <PHASE>` and surface 4 is omitted. If
 the Page PDF build failed, write `not current` with the build failure and, when
@@ -204,17 +217,15 @@ useful, label the last successful file explicitly as `stale`, never as latest.
 
 ## Artifact identity
 
-The current display review artifact is the unit's `preview.pdf`, generated
-from the unit's frozen intake, recipe, winning asset, and wrapper. The winning
-`assets/figure.pdf` is a renderer output and is not the primary user-check link
-when the standalone preview exists.
+The current display review artifact is the `preview.pdf` inside the current
+DISPLAY Result payload, generated from its frozen intake, recipe, winning asset,
+and wrapper. The Result payload is the user-check link; a retired Outline
+Evidence unit is never substituted.
 
-The citation surface is the Page's own register
-`outline/evidence/bibex/<stem>-bib.html` (built by the bibex door from
-`outline/evidence/bibex/<stem>.bib`). The value surface is the Evidence
-Workspace item card reached by the one-URL route the compact Outline table
-already uses (`lens=evidence&focus=run-<item>`); do not paste raw
-numbers into the packet, the card is the reader's source.
+The citation and value surfaces are the Evidence Space item cards reached by
+the one-URL route (`lens=evidence&focus=run-<item>`). A card names the current
+Result payload and its provenance; do not paste raw numbers or create a second
+citation register in the Page Folder.
 
 The only eligible Page-level artifact is
 `<page>/delivery/latex/<stem>.pdf`, the LaTeX Delivery lane's compiled Page.
@@ -225,13 +236,12 @@ outline/configuration file. A Page that is not CHECK-closed may still return a
 fresh draft Page PDF; label its lifecycle state rather than hiding the
 readable artifact.
 
-Resolve DISPLAY units only from the current lane:
-`<page>/outline/evidence/display/<unit>/preview.pdf`, and citations only from
-`<page>/outline/evidence/bibex/`. Do not search, read, or return legacy
-`<page>/display/`, flat `bibex/`, root `evidence/`, or any other compatibility
-lane. An old artifact may remain historical material, but it is not eligible
-for the user-check packet. If the new path is absent, report `not current ·
-new lane required` and do not fall back.
+Resolve DISPLAY previews and CITE payloads only from the current Result named
+by the Evidence Item card. Do not search, read, or return `outline/evidence/`,
+flat `display/` or `bibex/`, root `evidence/`, or any other compatibility lane.
+An old artifact belongs in `_archive/legacy-outline-evidence/` and is not
+eligible for the user-check packet. If the current Result or payload is absent,
+report `not current · Result required` and do not fall back.
 
 ## Freshness and link checks
 

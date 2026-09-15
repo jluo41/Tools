@@ -109,7 +109,7 @@ Own when `operation: context | outline | evidence | content`:
 - Reading `../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md` and the matching phase
   contract before touching the target.
 - Performing exactly one phase, not continuing into the phase it recommends.
-- CONTEXT: generate only the source-bound Context Workspace projection.
+- CONTEXT: generate only the source-bound off-stage Context record.
 - OUTLINE: SHAPE/SURVEY the Bullet and Evidence Item plan; create no Run.
 - EVIDENCE: LAND Supporting/local Results and EMBED them into the plan; never
   author target prose.

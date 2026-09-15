@@ -71,20 +71,20 @@ A proposal is not yet a Run and receives no `rpNN` until the person selects or d
 A selected candidate resumes a matching open Page Run or allocates the next `rpNN` for an independent goal, and later feedback appends Steps to that Run's current Version. <!-- realizes: C2.P4.B3 -->
 Code, search, data, rendering, build, Discovery, and other output-producing work remains a normal Task Run even when a later human gate reviews its Result. <!-- realizes: C2.P4.B4 -->
 
-#### 2.4 · Mermaid Structure then paragraphs
-(Close the whole-Page configuration before numbered paragraph work begins.)
-The first Page Run is always `rp00_mermaid-structure`, where the person and agent iterate on the complete Mermaid argument map until the person explicitly closes it. <!-- realizes: C2.P5.B1 -->
-That Mermaid Structure closure freezes the Page-global reading order as `P01`, `P02`, through `PN`, with every serial mapped to its plan address. <!-- realizes: C2.P5.B2 -->
-After the Mermaid Structure closes, the Runs function creates Steps, each with a scope covering one or more of the `N` numbered paragraphs. <!-- realizes: C2.P5.B3 -->
-Each selected paragraph Run uses a short identity that exposes the exact serial or contiguous range, such as `rp01_p01` or `rp02_p02-p03`; its descriptive wording stays in Goal. <!-- realizes: C2.P5.B4 -->
+#### 2.4 · Structure Run then paragraphs
+(Close the whole-Page structure before numbered paragraph work begins.)
+The first Page Run is always `rp-struct-01`: one shared Structure Run in which the person and agent complete both SHAPE and SURVEY for the whole Page. <!-- realizes: C2.P5.B1 -->
+The Structure Run's closure freezes the Page-global reading order as `P01`, `P02`, through `PN`, with every serial mapped to its plan address; multiple people may contribute Steps to this same Run. <!-- realizes: C2.P5.B2 -->
+After `rp-struct-01` closes, the Runs function creates paragraph Runs, each with a scope covering one or more of the `N` numbered paragraphs. <!-- realizes: C2.P5.B3 -->
+Each selected paragraph Run uses a typed identity that exposes the exact serial or contiguous range, such as `rp-para-01_P01` or `rp-para-02_P02-P03`; its descriptive wording stays in Goal. <!-- realizes: C2.P5.B4 -->
 Different human questions or acceptance boundaries call for different Step scopes, while code, Discovery, data, rendering, and build remain normal Task Runs. <!-- realizes: C2.P5.B5 -->
 
 ```mermaid
 flowchart LR
-  O["rp00_mermaid-structure"] -->|human closes Mermaid Structure + P01..PN| I["numbered paragraph index"]
-  I --> R1["rp01_p01"]
-  I --> R2["rp02_p02-p03"]
-  I --> RN["rpNN_pNN"]
+  O["rp-struct-01"] -->|human closes SHAPE + SURVEY + P01..PN| I["numbered paragraph index"]
+  I --> R1["rp-para-01_P01"]
+  I --> R2["rp-para-02_P02-P03"]
+  I --> RN["rp-para-NN_PNN"]
 ```
 
 ### 3 · Continuing work
@@ -121,12 +121,12 @@ Those records do not imply that a browser button executes an agent, and acceptin
 ### A2 · Board and plugins
 - 🔨 A2.1 · Page and Board share one content authority.
   **Done when:** ownership and membership are explicit, and each claimed plugin capability has been exercised.
-  **Now:** standalone Page exposes Outline, Runs, Delivery, and Folder through the same category-plugin order as Board. Runs separates Page feedback history from Task Results, including Discovery; `rp00_mermaid-structure` has closed the Mermaid Structure and `P01..P06` index, and `rp01_p01` now owns review of the first paragraph. The shared presenter is exercised in both hosts. Evidence remains inside Outline; Studio is omitted until its chat/draw backend is available. No Board membership is registered.
+  **Now:** standalone Page exposes Outline, Runs, Delivery, and Folder through the same category-plugin order as Board. Runs separates Page feedback history from Task Results, including Discovery; `rp-struct-01` has closed the fused SHAPE+SURVEY Structure and `P01..P06` index, and `rp-para-01_P01` now owns review of the first paragraph. The shared presenter is exercised in both hosts. Evidence remains inside Outline; Studio is omitted until its chat/draw backend is available. No Board membership is registered.
 
 ### A3 · Continuing work
 - 🔨 A3.1 · Subsequent feedback can target the real Page records.
   **Done when:** the real Outline and source open, and supported edits are distinguished from unavailable actions.
-  **Now:** `rp00_mermaid-structure` is closed at `v001/s011`; `rp01_p01` is open at `v001/s003` with the complete C1.P1 closure proposal ready for feedback. Runs preserves both interaction records read-only and does not claim that the browser itself executes the agent.
+  **Now:** `rp-struct-01` is closed at `v001/s011`; `rp-para-01_P01` is open at `v001/s003` with the complete C1.P1 closure proposal ready for feedback. Runs preserves both interaction records read-only and does not claim that the browser itself executes the agent.
 
 ### P · Page-level
 - ⬜ P1 · The Page satisfies the user's requested workflow.

@@ -4,8 +4,8 @@ import html
 import re
 
 from live.outline_preview import (
-    page_lock, preview_path, read_previews, record_token, bullet_token,
-    write_previews, reader_prose,
+    page_lock, draft_path, read_drafts, record_token, bullet_token,
+    write_drafts, reader_prose,
 )
 from src.outline_version import latest_outline
 from src.plan_shape import iter_plan_bullets
@@ -54,6 +54,10 @@ def comment_list(records, paragraph):
 
 
 def paragraph_comments(records, blocks, paragraph, path_q, file_q, read_only=False):
+    # Comments are kept as historical Markdown only; Draft Space has no
+    # comment disclosure, composer, or browser write-back surface.
+    return ''
+    # Legacy code below remains readable for old imports but is unreachable.
     if read_only:
         listing, count = comment_list(records, paragraph)
         if not any(comments(record) for address, record in records.items()
@@ -95,7 +99,9 @@ def comment_summary(records, paragraph):
 
 
 def save_comment(page, payload):
-    """Append once, with exact saved-sentence and Bullet checks; never publish."""
+    """Reject the retired browser comment writer without touching Markdown."""
+    return None, "Draft Space is read-only; comments belong to the active Page Run"
+    # Legacy validation below remains readable for old records but is unreachable.
     address, identity = payload.get("address"), payload.get("comment_id")
     if not isinstance(address, str) or not re.fullmatch(r"C\d+\.P\d+\.B\d+", address):
         return None, "Choose a sentence"
@@ -110,10 +116,12 @@ def save_comment(page, payload):
     if '·' in author:
         return None, "Use a name without the middle-dot separator"
     with page_lock(page):
-        path = preview_path(page)
+        path = draft_path(page)
+        if path is None:
+            return None, "No Outline Markdown exists for this Page"
         if path.is_symlink() or path.parent.is_symlink():
-            return None, "Preview source must be local Markdown"
-        records = read_previews(page)
+            return None, "Outline source must be local Markdown"
+        records = read_drafts(page)
         record = records.get(address)
         # Lost-response retries are idempotent even if prose subsequently changed.
         for other_address, other_record in records.items():
@@ -137,7 +145,7 @@ def save_comment(page, payload):
         lane = '> Comment %s · [%s] %s · %s\n> Quote: %s\n> Shape: %s' % (
             author, identity, message, date, record['text'], record['plan'])
         record['reviews'] = (record.get('reviews', '').rstrip() + '\n\n' + lane).strip()
-        write_previews(page, records)
+        write_drafts(page, records)
         listing, count = comment_list(records, address.rsplit('.', 1)[0])
         return {"comment_id": identity, "comments_html": listing, "open_count": count,
                 "summary": comment_summary(records, address.rsplit('.', 1)[0])}, None

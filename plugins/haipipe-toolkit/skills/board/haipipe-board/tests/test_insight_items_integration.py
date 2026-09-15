@@ -68,7 +68,7 @@ class InsightIntegrationTest(unittest.TestCase):
         self.assertNotIn("<script>", html)
         self.assertIn("&lt;script&gt;", html)
 
-    def test_runs_panel_projects_versions_but_not_unallocated_items(self):
+    def test_runs_panel_keeps_local_insight_runs_off_stage(self):
         write(self.exec_a.parent / "v002/runtime.yaml", {
             "schema": "haipipe.insight-runtime/v1", "execution": "study/patient-a#r01_description@v002",
             "family": "insight", "operation": "item", "status": "planned", "checkpoints": {},
@@ -80,10 +80,14 @@ class InsightIntegrationTest(unittest.TestCase):
         self.assertEqual("Ready", by_id["study/patient-a#r01_description@v002"]["status"])
         self.assertNotIn("r02_temporal", str(rows))
         html = render_runs(self.page, "", "")
-        self.assertIn("@v001", html)
-        self.assertIn("@v002", html)
+        self.assertIn("Supporting Runs", html)
+        self.assertIn("Task", html)
+        self.assertIn("0 Tasks", html)
+        self.assertNotIn("2 Runs", html)
+        self.assertNotIn("Insight", html)
+        self.assertNotIn("r02_temporal", html)
 
-    def test_ri_binding_is_registered_and_shown_in_existing_task_runs_lane(self):
+    def test_ri_binding_is_registered_but_stays_off_stage(self):
         folder, _base, packet = ri_fixture(self.root, "patient-c")
         page = folder / "I01-ri-topic.md"
         page.write_text("# RI topic\npage-type: insight\ninsight-layout: items-v2\n")
@@ -105,10 +109,13 @@ class InsightIntegrationTest(unittest.TestCase):
         self.assertIn("Reusable method for study/patient-c#ri01_description@v001",
                       by_id["r01_description"]["outcome"])
         body = render_runs(page, "", "")
-        self.assertIn("riNN", body)
-        self.assertIn(packet["execution"], body)
-        self.assertIn("0 Page Runs · 2 Task Runs", body)
-        self.assertIn("not available yet", body)
+        self.assertIn("Supporting Runs", body)
+        self.assertIn("Task", body)
+        self.assertIn("0 Tasks", body)
+        self.assertNotIn("2 Runs", body)
+        self.assertNotIn("Insight · RI · Wisdom", body)
+        self.assertNotIn("Planned binding", body)
+        self.assertNotIn(packet["execution"], body)
 
 
 if __name__ == "__main__":

@@ -113,7 +113,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
             / "haipipe-plugin-runs" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("Runs, not Execution", runs)
-        self.assertIn("Task Face", runs)
+        self.assertIn("Task Page", runs)
         self.assertIn("optional", runs)
         self.assertIn("JOB-BACKED TASK", runs)
         self.assertIn("FOLDER-LOCAL", runs)
@@ -442,9 +442,10 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
             self.skills / "task" / "page-types"
             / "haipipe-page-insight" / "SKILL.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("insight-layout: items-v1", insight)
+        self.assertIn("insight-layout: items-v2", insight)
+        self.assertIn("Historical\n`items-v1` records", insight)
         self.assertIn("one item owns", insight)
-        self.assertIn("one local Run ticket", insight)
+        self.assertIn("one `riNN` Insight Run binding", insight)
         self.assertNotIn("One Page covers one answerable insight question", insight)
         self.assertIn("scope: task", insight)
         self.assertIn("RF<n> Reusable Finding", insight)
@@ -464,7 +465,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
             / "haipipe-page-insight" / "agents" / "openai.yaml"
         ).read_text(encoding="utf-8")
         self.assertIn('display_name: "Task Insight Page"', manifest)
-        self.assertIn("Reusable Findings", manifest)
+        self.assertIn("DIKW findings", manifest)
         self.assertNotIn("Application-local", manifest)
         self.assertNotIn("Design Handoff", manifest)
 
@@ -515,7 +516,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
             / "ref" / "item-table.md"
         ).read_text(encoding="utf-8")
         self.assertIn("exactly one owner-native", item_table)
-        self.assertIn("Task `new-run` names parent `bNNjNNtNN`", item_table)
+        self.assertIn("Supporting or Task-local: parent `bNNjNNtNN`", item_table)
         self.assertIn("new-run → registered → reuse", item_table)
         self.assertIn("A failed attempt\nends as `rerun`", item_table)
         self.assertNotIn("exactly one Paper-local", item_table)
@@ -617,7 +618,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         live_delivery = (
             self.skills / "board" / "haipipe-board" / "live" / "delivery.py"
         ).read_text(encoding="utf-8")
-        self.assertIn("Evidence Workspace is an internal lens", outline)
+        self.assertIn("A Page-owned Evidence attempt is an `RE`", outline)
         self.assertIn("ref/evidence/pagex.md", outline)
         self.assertNotIn("haipipe-plugin-evidence/ref/pagex.md", outline)
         self.assertIn("Folder-native `haipipe-application/fn/render.md`", delivery)

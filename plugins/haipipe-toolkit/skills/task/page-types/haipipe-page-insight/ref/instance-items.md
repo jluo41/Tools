@@ -5,7 +5,7 @@
 ```text
 I01-<topic-instance>/
 ├── I01-<topic-instance>.md       topic Page and item findings
-├── outline/                     existing plan and Evidence Workspace
+├── outline/                     existing plan and Evidence Space
 ├── workflow/insight.yaml        instance, dataset versions, RI intent
 ├── runs/r01_description.sh      normal reusable R ticket; never rewritten by RI
 ├── runs/ri01_description.yaml   RI ticket: points to R + freezes new dataset

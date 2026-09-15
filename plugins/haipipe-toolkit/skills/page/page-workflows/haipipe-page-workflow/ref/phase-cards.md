@@ -32,12 +32,13 @@ These cards describe phase authority, not one Run or one human Step per card.
 ```
 
 `CONTEXT`, `OUTLINE`, and `EVIDENCE` use the same
-`haipipe-plugin-outline` surface. They do not share phase authority:
+`haipipe-plugin-outline` storage and renderer. They do not share phase authority;
+Context is an off-stage record, not a fourth reader Space:
 
 ```text
-Context Workspace    CONTEXT prepares governing inputs
-Bullet Workspace     OUTLINE shapes the argument
-Evidence Workspace   OUTLINE surveys; EVIDENCE lands and embeds
+Draft Space          OUTLINE shapes the argument and candidate prose
+Evidence Space       OUTLINE surveys; EVIDENCE lands and embeds Results
+Run Space            Page Writing + Page Evidence + Supporting Runs
 ```
 
 ## 00 · CONTEXT / PREPARE · `haipipe-page-context`

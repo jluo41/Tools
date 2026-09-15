@@ -58,7 +58,6 @@ class PluginMenuTest(unittest.TestCase):
         sources = {
             "outline": ROOT / "07-plugin-outline.js",
             "studio": ROOT / "50-structure.js",
-            "runs": ROOT / "85-plugin-runs.js",
             "delivery": ROOT / "82-plugin-delivery.js",
             "folder": ROOT / "06-plugin-folder.js",
             "labeling": ROOT / "60-plugin-labeling.js",
@@ -82,6 +81,8 @@ class PluginMenuTest(unittest.TestCase):
             )
             self.assertIsNotNone(match, plugin_id)
             self.assertEqual(int(match.group(1)), expected[plugin_id])
+        runs = (ROOT / "85-plugin-runs.js").read_text(encoding="utf-8")
+        self.assertNotIn("window.boardPlugins.register({", runs)
         for source in ROOT.glob("*.js"):
             self.assertNotIn("id: 'evidence'", source.read_text(encoding="utf-8"))
         skill = (ROOT / "83-plugin-skillmap.js").read_text(encoding="utf-8")

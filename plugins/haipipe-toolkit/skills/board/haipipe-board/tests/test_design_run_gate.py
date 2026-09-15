@@ -41,6 +41,13 @@ class NativeDesignBoardGateTest(unittest.TestCase):
         check_design_family(self.case.owner, report)
         self.assertTrue(any(row[1] == "design-run-contract" for row in report.rows))
 
+    def test_page_delivery_result_is_not_sent_to_design_gate(self):
+        delivery = self.case.owner / "results" / "rd01_latex"
+        delivery.mkdir(parents=True)
+        report = Report()
+        check_design_family(self.case.owner, report)
+        self.assertFalse(any(row[1] == "design-run-contract" for row in report.rows))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,18 +1,25 @@
 """Outline's minimal, Result-first Evidence Space.
 
-The live surface is one table read primarily from ``results/*/result.yaml``.
-The former generated evidence snapshot remains a read-only compatibility
-index for old Pages and for not-yet-run requirements; it is not the new
-Evidence authority. This module presents only and never executes a Run.
+The live surface is grouped by Evidence type and reads only
+``results/*/result.yaml``. Each item is a collapsed, read-only summary whose
+details distinguish the Evidence Label, Evidence Item, Evidence Run, and
+Supporting Runs. Retired Outline Evidence files are never an input or
+fallback; their presence is reported as a migration blocker. This module
+presents only and never executes a Run.
 """
 from __future__ import annotations
 
+import base64
+import csv
 import html
+import io
 import json
+import mimetypes
 import pathlib
 import re
 
 from src.common import evidence_run_dirs
+from src.evidence_labels import parse_result_labels
 from src.item_table import (readable_global_run, readable_paper_route,
                             readable_task, wall_label)
 
@@ -76,21 +83,73 @@ html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fall
 @media(max-width:560px){#items,#runs{padding:10px 10px 18px}.runmap-head{grid-template-columns:auto minmax(0,1fr) auto}.runmap-addr{display:none}.runmap-line{grid-template-columns:1fr}.runmap-label{padding:0}.lineage-list{gap:4px}.run-detail{grid-template-columns:1fr;gap:1px}.run-path{grid-template-columns:3.2em minmax(0,1fr)}.related-run-head .run-availability{width:100%;margin-left:0}}
 .ghost{color:var(--mut);padding:24px 0;font-size:13.5px}
 #seg{display:none;border:0;width:100%;height:calc(100vh - 92px)}
-.evidence-list{padding:8px 16px 20px}.evidence-table{width:100%;border-collapse:collapse}
-.evidence-table th,.evidence-table td{padding:9px 7px;border-bottom:1px solid var(--line);
- text-align:left;vertical-align:top}.evidence-table th{color:var(--mut);font-size:10.5px;
- text-transform:uppercase;letter-spacing:.04em}.evidence-table code{font-size:11.5px}
-.evidence-name{display:block;font-weight:650}.evidence-kind{display:inline-block;margin-left:5px;
- color:var(--acc);font:650 9.5px -apple-system,sans-serif;text-transform:uppercase}
-.evidence-result{display:block;color:var(--mut);font-size:11.5px;overflow-wrap:anywhere}
+.evidence-list{padding:10px 16px 22px;max-width:980px;margin:0 auto}
+.evidence-overview{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 11px}
+.evidence-overview span{border:1px solid var(--line);border-radius:999px;padding:2px 8px;
+ color:var(--mut);font-size:11.5px}.evidence-overview .total{color:var(--fg);font-weight:650}
+.source-details{margin:0 0 14px;color:var(--mut);font-size:11.5px}
+.source-details summary{display:inline-block;cursor:pointer}.source-details summary:hover{color:var(--fg)}
+.source-details .source-body{margin-top:5px;padding:6px 8px;border:1px solid var(--line);
+ border-radius:6px;overflow-wrap:anywhere}.source-details code{font-size:11px;color:var(--fg)}
+.evidence-type-section{margin:18px 0 22px}.evidence-type-head{display:flex;align-items:baseline;
+ gap:7px;margin:0 0 7px;padding:0 2px}.evidence-type-title{font-size:15px;margin:0}
+.evidence-type-count{color:var(--mut);font-size:11.5px}.evidence-type-hint{margin-left:auto;
+ color:var(--mut);font-size:11.5px}.evidence-cards{display:grid;gap:7px}
+.evidence-card{border:1px solid var(--line);border-radius:9px;background:var(--bg);overflow:hidden;
+ scroll-margin-top:14px}.evidence-card:hover{border-color:#b8c4d2}
+.evidence-migration-blocker{margin:0 0 12px;padding:8px 10px;border:1px solid var(--warn);
+ border-left:3px solid var(--warn);border-radius:7px;color:var(--warn);font-size:12px}
+.evidence-migration-blocker code{color:inherit}
+.evidence-card>summary{list-style:none;cursor:pointer}.evidence-card>summary::-webkit-details-marker{display:none}
+.evidence-summary{display:grid;grid-template-columns:1.1em minmax(7em,auto) auto minmax(8em,1fr) auto auto;
+ align-items:center;gap:7px;padding:9px 10px;min-width:0}.evidence-chevron{color:var(--mut);font-size:18px;
+ line-height:1;transition:transform .12s ease}.evidence-card[open] .evidence-chevron{transform:rotate(90deg)}
+.evidence-card[open]{border-color:var(--acc)}.evidence-label{font-weight:650;overflow-wrap:anywhere}
+.evidence-kind{color:var(--acc);font:650 9.5px -apple-system,sans-serif;text-transform:uppercase;
+ letter-spacing:.035em;border:1px solid var(--acc);border-radius:999px;padding:0 6px;white-space:nowrap}
+.evidence-title{color:var(--mut);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evidence-bullet{color:var(--mut);font-size:11px;white-space:nowrap}.evidence-summary code{background:none;padding:0}
 .evidence-status{font-weight:650}.evidence-status.complete,.evidence-status.ready,
 .evidence-status.folded,.evidence-status.accepted{color:var(--ok)}
 .evidence-status.specified,.evidence-status.planned{color:var(--warn)}
-.evidence-row.run-focus{outline:2px solid var(--acc);outline-offset:-2px}
-@media(max-width:620px){.evidence-list{padding:6px 10px 16px}.evidence-table thead{display:none}
- .evidence-table,.evidence-table tbody,.evidence-table tr,.evidence-table td{display:block}
- .evidence-table tr{padding:9px 0;border-bottom:1px solid var(--line)}
- .evidence-table td{border:0;padding:2px 0}.evidence-table td:nth-child(2){color:var(--mut)}}
+.evidence-detail{border-top:1px solid var(--line);padding:7px 11px 9px}.evidence-detail-row{display:grid;
+ grid-template-columns:8.5em minmax(0,1fr);gap:8px;padding:3px 0;font-size:12.5px;line-height:1.45}
+.evidence-detail-label{color:var(--mut);font:650 10px -apple-system,sans-serif;text-transform:uppercase;
+ letter-spacing:.035em;padding-top:2px}.evidence-detail-value{min-width:0;overflow-wrap:anywhere}
+.evidence-detail-value code{font-size:11.5px;background:none;padding:0;overflow-wrap:anywhere;word-break:break-word}
+.evidence-preview{margin:0 0 8px;padding:8px;border:1px solid var(--line);border-radius:7px;background:var(--card)}
+.evidence-preview-label{margin:0 0 5px;color:var(--mut);font:650 9.5px -apple-system,sans-serif;
+ text-transform:uppercase;letter-spacing:.05em}.evidence-preview-copy{margin:4px 0 0;font-size:12.5px;line-height:1.48}
+.evidence-preview-copy p{margin:4px 0}.evidence-preview-image{display:block;width:100%;max-height:420px;object-fit:contain;
+ border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+.evidence-preview-pdf{display:block;width:100%;height:min(55vh,460px);min-height:260px;border:1px solid var(--line);
+ border-radius:5px;background:var(--bg)}.evidence-preview-link{font-size:11.5px;color:var(--acc)}
+.evidence-preview-empty{color:var(--mut);font-size:12.5px}.evidence-preview-hero{font-size:24px;line-height:1.15;
+ font-weight:700;color:var(--fg);letter-spacing:-.02em}.evidence-preview-hero small{font-size:12px;font-weight:500;
+ color:var(--mut);letter-spacing:0}.evidence-preview-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(8em,1fr));
+ gap:5px;margin-top:7px}.evidence-preview-fact{padding:5px 6px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+.evidence-preview-fact b{display:block;color:var(--mut);font:650 9.5px -apple-system,sans-serif;text-transform:uppercase;
+ letter-spacing:.03em}.evidence-preview-fact span{display:block;margin-top:1px;font-size:12px;overflow-wrap:anywhere}
+.evidence-preview-table{width:100%;border-collapse:collapse;font-size:11.5px;background:var(--bg)}
+.evidence-preview-table th,.evidence-preview-table td{padding:4px 6px;border:1px solid var(--line);text-align:left;vertical-align:top}
+.evidence-preview-table th{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.025em;font-weight:650}
+.evidence-preview-table-wrap{overflow:auto;max-height:360px;border:1px solid var(--line);border-radius:5px}
+.evidence-preview-source{padding:6px 0;border-top:1px solid var(--line)}.evidence-preview-source:first-child{border-top:0;padding-top:0}
+.evidence-preview-source-head{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;font-size:12px}
+.evidence-preview-source-head b{font-weight:650}.evidence-preview-source-head code{color:var(--mut);font-size:10.5px;background:none;padding:0}
+.evidence-preview-source p{margin:3px 0 0;font-size:12.5px;line-height:1.45}
+.evidence-card.run-focus{outline:2px solid var(--acc);outline-offset:3px}
+.evidence-label-list{display:grid;gap:5px}.evidence-label-binding{border:1px solid var(--line);
+ border-radius:6px;padding:4px 7px;background:var(--card)}.evidence-label-binding>summary{cursor:pointer;
+ list-style:none;display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}.evidence-label-binding>summary::-webkit-details-marker{display:none}
+.evidence-label-visible{font-weight:650;color:var(--fg)}.evidence-label-token{color:var(--acc);font:11px ui-monospace,Menlo,monospace;
+ overflow-wrap:anywhere}.evidence-label-state{color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em}
+.evidence-label-meta{margin-top:4px;color:var(--mut);font-size:11.5px;line-height:1.45}.evidence-label-meta code{color:var(--fg)}
+@media(max-width:620px){.evidence-list{padding:6px 10px 16px}.evidence-type-hint{display:none}
+ .evidence-summary{grid-template-columns:1.1em auto auto 1fr;gap:6px;padding:8px 9px}
+ .evidence-summary .evidence-title{grid-column:2 / -1;white-space:normal;overflow:visible}
+ .evidence-summary .evidence-bullet{grid-column:2 / 4}.evidence-summary .evidence-status{justify-self:end}
+ .evidence-detail-row{grid-template-columns:1fr;gap:1px}.evidence-detail-label{padding-top:2px}}
 """
 
 
@@ -1201,23 +1260,50 @@ def _top_field(text: str, name: str) -> str:
     return match.group(1).strip().strip("'\"") if match else ""
 
 
-def _result_records(page_home: pathlib.Path, legacy: list[dict[str, object]]) -> list[dict[str, object]]:
-    """Prefer Run Results as Evidence truth; keep the old snapshot as fallback.
+def _result_document(text: str) -> dict[str, object]:
+    """Parse a Result envelope without treating its payload as trusted HTML."""
+    try:
+        value = json.loads(text)
+    except (TypeError, ValueError):
+        try:
+            import yaml
+            try:
+                value = yaml.safe_load(text)
+            except yaml.YAMLError:
+                return {}
+        except ImportError:
+            return {}
+    return value if isinstance(value, dict) else {}
 
-    New Evidence lives in ``results/<run>/result.yaml``.  The generated
-    ``outline/*-evidence.md`` file is accepted only as a compatibility index
-    for Bullet address, title, and not-yet-run requirements.
-    """
+
+def _document_text(document: dict[str, object], key: str, text: str) -> str:
+    value = document.get(key)
+    if isinstance(value, (str, int, float, bool)):
+        return str(value).strip()
+    return _top_field(text, key)
+
+
+def _supporting_run_ids(document: dict[str, object], text: str) -> list[str]:
+    """Return only owner-native Supporting Run ids for the compact card."""
+    values = document.get("supporting_results")
+    found = []
+    if isinstance(values, list):
+        for value in values:
+            if isinstance(value, dict) and value.get("run"):
+                found.append(str(value["run"]).strip())
+            elif isinstance(value, str) and value.strip():
+                found.append(value.strip())
+    if found:
+        return found
+    return [value.strip() for value in re.findall(
+        r"(?m)^\s*-\s+run:\s*([^#\n]+)", text
+    ) if value.strip()]
+
+
+def _result_records(page_home: pathlib.Path) -> list[dict[str, object]]:
+    """Read the current Evidence surface exclusively from Run Results."""
     records: dict[str, dict[str, object]] = {}
     order: list[str] = []
-    for source in legacy:
-        item_id = str(source.get("id", ""))
-        if not item_id:
-            continue
-        clone = dict(source)
-        clone["fields"] = dict(source.get("fields", {}))
-        records[item_id] = clone
-        order.append(item_id)
 
     result_root = page_home / "results"
     if result_root.is_dir() and not result_root.is_symlink():
@@ -1229,25 +1315,39 @@ def _result_records(page_home: pathlib.Path, legacy: list[dict[str, object]]) ->
                 text = manifest.read_text(encoding="utf-8", errors="replace")
             except (OSError, ValueError):
                 continue
-            item_id = _top_field(text, "item")
+            document = _result_document(text)
+            item_id = _document_text(document, "item", text)
             if not _RESULT_ITEM.fullmatch(item_id):
                 continue
-            kind = _top_field(text, "type") or item_id.split("-", 2)[1].upper()
-            status = _top_field(text, "status") or "ready"
-            run_id = _top_field(text, "run") or manifest.parent.name
-            bullet = _top_field(text, "bullet")
-            title = _top_field(text, "title")
-            supporting = re.findall(r"(?m)^\s*-\s+run:\s*([^#\n]+)", text)
+            kind = (_document_text(document, "type", text)
+                    or item_id.split("-", 2)[1].upper())
+            status = _document_text(document, "status", text) or "ready"
+            owner_run = _document_text(document, "run", text)
+            page_run = _document_text(document, "page_run", text)
+            run_id = page_run or owner_run or manifest.parent.name
+            bullet = _document_text(document, "bullet", text)
+            title = _document_text(document, "title", text)
+            label = _document_text(document, "label", text)
+            expected = _document_text(document, "expected", text)
+            acceptance = _document_text(document, "acceptance", text)
+            labels = parse_result_labels(text)
+            for result_label in labels:
+                result_label.update({
+                    "item": item_id,
+                    "page_run": page_run,
+                    "run": owner_run,
+                    "result": manifest.relative_to(page_home).as_posix(),
+                    "provenance": _document_text(document, "provenance", text),
+                })
+            supporting = _supporting_run_ids(document, text)
             record = records.get(item_id)
             if record is None:
                 slug = item_id.split("-", 2)[-1].replace("-", " ")
-                record = {"id": item_id, "address": bullet, "title": title or slug,
+                record = {"id": item_id, "address": bullet, "title": title or label or slug,
                           "fields": {}}
                 records[item_id] = record
                 order.append(item_id)
             elif bullet:
-                # A migrated Result may carry the canonical Draft address;
-                # prefer it over the compatibility snapshot when present.
                 record["address"] = bullet
             if title:
                 record["title"] = title
@@ -1256,65 +1356,628 @@ def _result_records(page_home: pathlib.Path, legacy: list[dict[str, object]]) ->
                 "type": kind.upper(),
                 "status": status.lower(),
                 "run": run_id,
+                "page_run": page_run,
+                "owner run": owner_run if page_run and owner_run != page_run else "",
                 "bullet": bullet,
+                "label": label,
+                "expected": expected,
+                "acceptance": acceptance,
                 "result": manifest.relative_to(page_home).as_posix(),
                 "supporting runs": "; ".join(value.strip() for value in supporting),
+                "labels": labels,
+                "display_kind": (_document_text(document, "display_kind", text)
+                                  or (str(document.get("payload", {}).get("display_kind", ""))
+                                      if isinstance(document.get("payload"), dict) else "")),
             })
             record["fields"] = fields
+            record["result_document"] = document
+            record["result_file"] = manifest
 
     return [records[item_id] for item_id in order]
 
 
-def _minimal_table(records: list[dict[str, object]]) -> str:
+def _evidence_type(record: dict[str, object]) -> str:
+    fields = record.get("fields", {})
+    kind = str(fields.get("type", "")).strip().upper()
+    if kind == "TABLE":
+        return "DISPLAY"
+    return kind if kind in {"DISPLAY", "CITE", "VALUE"} else "OTHER"
+
+
+def _status_parts(record: dict[str, object]) -> tuple[str, str]:
+    fields = record.get("fields", {})
+    raw = str(fields.get("status", "specified")).strip()
+    status = raw.lstrip("📝🔗🟢📌✅⚠️⏸✖⛔ ").lower() or "specified"
+    token = re.sub(r"[^a-z0-9_-]", "-", status)
+    return status, token
+
+
+def _detail_row(label: str, value: str, *, code: bool = False) -> str:
+    if not value:
+        return ""
+    rendered = "<code>%s</code>" % html.escape(value) if code else html.escape(value)
+    return ('<div class=evidence-detail-row><span class=evidence-detail-label>%s</span>'
+            '<span class=evidence-detail-value>%s</span></div>' %
+            (html.escape(label), rendered))
+
+
+def _label_details(labels: object) -> str:
+    """Render resolved values with their original token in disclosure.
+
+    The visible value is intentionally short. Opening the row exposes the
+    authored token, target path, Evidence Item, Page RE, and Result path so a
+    resolved number never loses its evidence identity.
+    """
+    if not isinstance(labels, list):
+        return ""
+    rows = []
+    for raw in labels:
+        if not isinstance(raw, dict):
+            continue
+        token = str(raw.get("token", "")).strip()
+        if not token:
+            continue
+        display = str(raw.get("display", "")).strip()
+        status = str(raw.get("status", "unresolved")).strip().lower()
+        visible = display if display and status not in {"pending", "unresolved", "missing"} else token
+        meta = [
+            ("kind", raw.get("kind", "")),
+            ("target", raw.get("target", "")),
+            ("item", raw.get("item", "")),
+            ("evidence run", raw.get("page_run", "")),
+            ("owner run", raw.get("run", "")),
+            ("result", raw.get("result", "")),
+            ("provenance", raw.get("provenance", "")),
+        ]
+        meta_html = "".join(
+            '<span><b>%s</b> <code>%s</code></span> '
+            % (html.escape(key), html.escape(str(value)))
+            for key, value in meta if str(value).strip()
+        )
+        rows.append(
+            '<details class=evidence-label-binding><summary>'
+            '<span class=evidence-label-visible>%s</span>'
+            '<code class=evidence-label-token>%s</code>'
+            '<span class=evidence-label-state>%s</span></summary>'
+            '<div class=evidence-label-meta>%s</div></details>'
+            % (html.escape(visible), html.escape(token), html.escape(status), meta_html)
+        )
+    return '<div class=evidence-label-list>%s</div>' % "".join(rows) if rows else ""
+
+
+_PREVIEW_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".svg"}
+_PREVIEW_PATH_KEYS = {
+    "artifact", "artifacts", "asset", "assets", "figure", "image", "preview",
+    "preview_path", "table", "file", "path",
+}
+_PREVIEW_COPY_KEYS = {
+    "reader_takeaway", "caption_claim", "summary", "interpretation",
+    "aggregate_values", "outcome",
+}
+_PREVIEW_SUFFIX_ORDER = {
+    ".png": 0, ".jpg": 0, ".jpeg": 0, ".webp": 0, ".svg": 1,
+    ".pdf": 2, ".csv": 3, ".tsv": 3, ".md": 4,
+}
+
+
+def _payload(document: dict[str, object]) -> object:
+    value = document.get("payload")
+    return value if value is not None else {}
+
+
+def _preview_scalar(value: object) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (str, int, float)):
+        return str(value)
+    if isinstance(value, list) and all(
+        isinstance(item, (str, int, float, bool)) for item in value
+    ):
+        return ", ".join(_preview_scalar(item) for item in value)
+    return ""
+
+
+def _find_preview_scalar(value: object, keys: set[str], *, path: tuple[str, ...] = (),
+                         depth: int = 0) -> tuple[str, str]:
+    """Find one useful scalar in a shallow Result payload tree."""
+    if depth > 3:
+        return "", ""
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if str(key).lower() in keys:
+                text = _preview_scalar(child)
+                if text:
+                    return " · ".join((*path, str(key))), text
+        for key, child in value.items():
+            if isinstance(child, (dict, list)):
+                found = _find_preview_scalar(
+                    child, keys, path=(*path, str(key)), depth=depth + 1
+                )
+                if found[1]:
+                    return found
+    elif isinstance(value, list):
+        for index, child in enumerate(value[:8]):
+            found = _find_preview_scalar(
+                child, keys, path=(*path, str(index + 1)), depth=depth + 1
+            )
+            if found[1]:
+                return found
+    return "", ""
+
+
+def _preview_label(value: str) -> str:
+    return re.sub(r"[_-]+", " ", value).strip().title()
+
+
+def _preview_facts(payload: object, *, skip: set[str] | None = None,
+                   limit: int = 8, prefix: str = "") -> str:
+    if not isinstance(payload, dict):
+        return ""
+    skip = {item.lower() for item in (skip or set())}
+    rows = []
+    for key, value in payload.items():
+        if str(key).lower() in skip:
+            continue
+        text = _preview_scalar(value)
+        if not text:
+            continue
+        label = _preview_label(str(key))
+        if prefix:
+            label = "%s · %s" % (_preview_label(prefix), label)
+        rows.append(
+            '<div class=evidence-preview-fact><b>%s</b><span>%s</span></div>' %
+            (html.escape(label), html.escape(text))
+        )
+        if len(rows) >= limit:
+            break
+    return '<div class=evidence-preview-facts>%s</div>' % "".join(rows) if rows else ""
+
+
+def _preview_table(rows: object, *, limit: int = 8) -> str:
+    if not isinstance(rows, list) or not rows or not all(
+        isinstance(row, dict) for row in rows[:limit]
+    ):
+        return ""
+    selected = [row for row in rows[:limit] if isinstance(row, dict)]
+    columns = []
+    for row in selected:
+        for key in row:
+            if str(key) not in columns:
+                columns.append(str(key))
+    columns = columns[:8]
+    if not columns:
+        return ""
+    head = "".join("<th>%s</th>" % html.escape(key) for key in columns)
+    body = []
+    for row in selected:
+        cells = []
+        for key in columns:
+            value = _preview_scalar(row.get(key, ""))
+            if not value and row.get(key) is not None:
+                value = json.dumps(row.get(key), ensure_ascii=False, default=str)
+            cells.append("<td>%s</td>" % html.escape(value))
+        body.append("<tr>%s</tr>" % "".join(cells))
+    return ('<div class=evidence-preview-table-wrap><table class=evidence-preview-table>'
+            '<thead><tr>%s</tr></thead><tbody>%s</tbody></table></div>') % (
+                head, "".join(body)
+            )
+
+
+def _payload_table(payload: object) -> str:
+    if isinstance(payload, list):
+        return _preview_table(payload)
+    if not isinstance(payload, dict):
+        return ""
+    for key in ("rows", "table", "data", "ladder", "comparisons"):
+        table = _preview_table(payload.get(key))
+        if table:
+            return table
+    return ""
+
+
+def _preview_texts(document: dict[str, object], payload: object) -> list[str]:
+    keys = ("reader_takeaway", "caption_claim", "summary", "interpretation",
+            "aggregate_values", "outcome")
+    values = []
+    for source in (payload, document):
+        if not isinstance(source, dict):
+            continue
+        for key in keys:
+            text = _preview_scalar(source.get(key))
+            if text and text not in values:
+                values.append(text)
+    return values
+
+
+def _preview_path_hints(payload: object) -> tuple[str, list[str]]:
+    """Return a unit directory and explicit browser-preview artifact hints."""
+    if not isinstance(payload, dict):
+        return "", []
+    unit = _preview_scalar(payload.get("unit"))
+    hints: list[str] = []
+
+    def collect(value: object, key: str = "") -> None:
+        if isinstance(value, str):
+            if value.strip():
+                hints.append(value.strip())
+            return
+        if isinstance(value, list):
+            for item in value:
+                collect(item, key)
+            return
+        if isinstance(value, dict):
+            for child_key, child_value in value.items():
+                if str(child_key).lower() in _PREVIEW_PATH_KEYS:
+                    collect(child_value, str(child_key))
+
+    for key, value in payload.items():
+        if str(key).lower() in _PREVIEW_PATH_KEYS:
+            collect(value, str(key))
+    return unit, hints
+
+
+def _safe_preview_file(candidate: pathlib.Path, page_home: pathlib.Path) -> pathlib.Path | None:
+    try:
+        if candidate.is_symlink() or not candidate.is_file():
+            return None
+        resolved = candidate.resolve()
+        root = page_home.resolve()
+        relative = resolved.relative_to(root)
+        # Hidden lanes must not become a back door into the reader. An explicit
+        # archive is readable only when an active Result names its artifact;
+        # it is not consulted as a legacy Evidence source.
+        if any(part.startswith(".") for part in relative.parts):
+            return None
+        if len(relative.parts) >= 2 and relative.parts[:2] == ("outline", "evidence"):
+            return None
+        return resolved
+    except (OSError, RuntimeError, ValueError):
+        return None
+
+
+def _preview_artifact(record: dict[str, object], page_home: pathlib.Path) -> pathlib.Path | None:
+    document = record.get("result_document", {})
+    if not isinstance(document, dict):
+        return None
+    payload = _payload(document)
+    unit, hints = _preview_path_hints(payload)
+    result_file = record.get("result_file")
+    result_dir = result_file.parent if isinstance(result_file, pathlib.Path) else page_home / "results"
+    bases = [result_dir, page_home]
+    if unit:
+        unit_path = pathlib.Path(unit)
+        bases.insert(0, unit_path if unit_path.is_absolute() else page_home / unit_path)
+        bases.insert(1, unit_path if unit_path.is_absolute() else result_dir / unit_path)
+    candidates = []
+    for hint in hints:
+        raw = hint.split("#", 1)[0].strip().strip("'\"")
+        if not raw or "://" in raw or raw.startswith("data:"):
+            continue
+        path = pathlib.Path(raw)
+        if path.is_absolute():
+            candidates.append(path)
+        else:
+            candidates.extend(base / path for base in bases)
+    if unit:
+        for base in bases[:2]:
+            candidates.extend(base / name for name in (
+                "preview.png", "figure.png", "table.png", "preview.svg",
+                "figure.svg", "preview.pdf", "figure.pdf", "table.pdf",
+            ))
+    seen = set()
+    valid = []
+    for candidate in candidates:
+        key = str(candidate)
+        if key in seen:
+            continue
+        seen.add(key)
+        found = _safe_preview_file(candidate, page_home)
+        if found and found.suffix.lower() in _PREVIEW_SUFFIX_ORDER:
+            valid.append(found)
+    return min(valid, key=lambda path: _PREVIEW_SUFFIX_ORDER[path.suffix.lower()]) if valid else None
+
+
+def _render_delimited(path: pathlib.Path) -> str:
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")[:512 * 1024]
+        reader = csv.reader(io.StringIO(text), delimiter="\t" if path.suffix.lower() == ".tsv" else ",")
+        parsed = []
+        for index, row in enumerate(reader):
+            parsed.append(row)
+            if index >= 8:
+                break
+    except (OSError, csv.Error):
+        return ""
+    if not parsed:
+        return ""
+    columns = [value or "Column %d" % (index + 1)
+               for index, value in enumerate(parsed[0][:8])]
+    rows = [dict(zip(columns, row[:8])) for row in parsed[1:8]]
+    return _preview_table(rows)
+
+
+def _preview_asset_data(path: pathlib.Path) -> str:
+    """Inline a small approved preview because ``results/`` is not public static."""
+    if path.suffix.lower() not in _PREVIEW_IMAGE_SUFFIXES | {".pdf"}:
+        return ""
+    try:
+        if path.stat().st_size > 12 * 1024 * 1024:
+            return ""
+        mime = mimetypes.guess_type(str(path))[0]
+        if not mime:
+            return ""
+        encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+    except OSError:
+        return ""
+    return "data:%s;base64,%s" % (mime, encoded)
+
+
+def _render_preview_artifact(path: pathlib.Path, data_url: str) -> str:
+    suffix = path.suffix.lower()
+    if not data_url and suffix not in {".csv", ".tsv", ".md"}:
+        return ""
+    if suffix in _PREVIEW_IMAGE_SUFFIXES:
+        return '<img class=evidence-preview-image src="%s" alt="Evidence display preview" loading="lazy">' % html.escape(data_url, quote=True)
+    if suffix == ".pdf":
+        return ('<object class=evidence-preview-pdf data="%s" type="application/pdf">'
+                '<a class=evidence-preview-link href="%s" target="_blank" rel="noopener">'
+                'Open PDF preview</a></object>' %
+                (html.escape(data_url, quote=True), html.escape(data_url, quote=True)))
+    if suffix in {".csv", ".tsv"}:
+        return _render_delimited(path)
+    if suffix == ".md":
+        try:
+            return '<div class=evidence-preview-copy>%s</div>' % _md_lite(
+                path.read_text(encoding="utf-8", errors="replace")[:12000]
+            )
+        except OSError:
+            return ""
+    return ""
+
+
+def _result_preview(record: dict[str, object], page_home: pathlib.Path,
+                    root: pathlib.Path | None) -> str:
+    """Render substantive Result content, never the envelope metadata."""
+    document = record.get("result_document", {})
+    if not isinstance(document, dict):
+        document = {}
+    payload = _payload(document)
+    kind = _evidence_type(record)
+    content = []
+    artifact = _preview_artifact(record, page_home)
+    if artifact:
+        rendered = _render_preview_artifact(artifact, _preview_asset_data(artifact))
+        if rendered:
+            content.append(rendered)
+
+    if kind == "VALUE":
+        hero_path, hero = _find_preview_scalar(
+            payload, {"estimate", "effect", "odds_ratio", "coefficient",
+                      "mean", "median", "value", "n"}
+        )
+        if hero:
+            unit = _preview_scalar(payload.get("unit")) if isinstance(payload, dict) else ""
+            suffix = " · " + unit if unit else ""
+            caption = _preview_label(hero_path) if hero_path else "Value"
+            content.append('<div class=evidence-preview-hero>%s<small>%s%s</small></div>' %
+                           (html.escape(hero), html.escape(caption), html.escape(suffix)))
+        table = _payload_table(payload)
+        if table:
+            content.append(table)
+        hero_key = hero_path.rsplit(" · ", 1)[-1] if hero_path else ""
+        facts = _preview_facts(
+            payload, skip={hero_key, "unit"} | _PREVIEW_COPY_KEYS, limit=5
+        )
+        if isinstance(payload, dict):
+            for key, value in payload.items():
+                if isinstance(value, dict):
+                    nested = _preview_facts(
+                        value, skip=_PREVIEW_COPY_KEYS, limit=4, prefix=str(key)
+                    )
+                    if nested:
+                        facts += nested
+        if facts:
+            content.append(facts)
+    elif kind == "CITE" and isinstance(payload, dict):
+        sources = payload.get("sources")
+        if isinstance(sources, list):
+            source_cards = []
+            for source in sources[:6]:
+                if not isinstance(source, dict):
+                    continue
+                cite = _preview_scalar(source.get("cite"))
+                identity = _preview_scalar(source.get("identity"))
+                claim = _preview_scalar(source.get("claim"))
+                head = " · ".join(value for value in (cite, identity) if value)
+                source_cards.append(
+                    '<article class=evidence-preview-source><div class=evidence-preview-source-head>'
+                    '<b>%s</b><code>%s</code></div><p>%s</p></article>' %
+                    (html.escape(head or "Source"), html.escape(identity), html.escape(claim))
+                )
+            if source_cards:
+                content.append("".join(source_cards))
+    elif kind == "DISPLAY":
+        table = _payload_table(payload)
+        if table and not artifact:
+            content.append(table)
+        content.append(_preview_facts(
+            payload, skip={"unit", "artifact", "artifacts", "preview"} | _PREVIEW_COPY_KEYS
+        ))
+    else:
+        table = _payload_table(payload)
+        if table:
+            content.append(table)
+        content.append(_preview_facts(payload, skip=_PREVIEW_COPY_KEYS))
+
+    texts = _preview_texts(document, payload)
+    if texts:
+        content.append('<div class=evidence-preview-copy>%s</div>' % "".join(
+            "<p>%s</p>" % html.escape(text) for text in texts[:3]
+        ))
+    content = [part for part in content if part]
+    if not content:
+        status = str(record.get("fields", {}).get("status", "not ready"))
+        content.append('<div class=evidence-preview-empty>Result content is not available yet · %s</div>' %
+                       html.escape(status))
+    return '<section class=evidence-preview><div class=evidence-preview-label>Preview</div>%s</section>' % "".join(content)
+
+
+def _evidence_sections(records: list[dict[str, object]],
+                       page_home: pathlib.Path | None = None,
+                       root: pathlib.Path | None = None) -> str:
+    """Render compact typed sections with collapsed, progressive-disclosure cards."""
     if not records:
         return '<div class=ghost>No Evidence Result yet.</div>'
-    rows = []
+
+    if page_home is None:
+        for record in records:
+            result_file = record.get("result_file")
+            if isinstance(result_file, pathlib.Path):
+                page_home = result_file.parent.parent.parent
+                break
+    page_home = page_home or pathlib.Path.cwd()
+    root = root or page_home
+
+    groups: dict[str, list[dict[str, object]]] = {
+        "DISPLAY": [], "CITE": [], "VALUE": [], "OTHER": [],
+    }
     for record in records:
-        item_id = str(record.get("id", ""))
-        fields = record.get("fields", {})
-        kind = str(fields.get("type", ""))
-        status = str(fields.get("status", "specified")).lstrip("📝🔗🟢📌✅⚠️⏸✖⛔ ").lower()
-        expected = str(fields.get("expected", ""))
-        result = str(fields.get("result", fields.get("has", "")))
-        title = str(record.get("title", ""))
-        address = str(record.get("address", fields.get("target", "")))
-        focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item_id)
-        rows.append(
-            '<tr class=evidence-row id="%s" data-evidence-id="%s"><td><span class=evidence-name><code>%s</code>'
-            '<span class=evidence-kind>%s</span></span><span class=mut>%s</span></td>'
-            '<td><code>%s</code></td><td><span class="evidence-status %s">%s</span>'
-            '<span class=evidence-result>%s</span><span class=mut>%s</span></td></tr>' % (
-                html.escape(focus, quote=True), html.escape(item_id, quote=True),
-                html.escape(item_id), html.escape(kind),
-                html.escape(title), html.escape(address or "—"), html.escape(status, quote=True),
-                html.escape(status or "specified"), html.escape(result or "not ready"),
-                html.escape(expected),
+        groups[_evidence_type(record)].append(record)
+
+    headings = {
+        "DISPLAY": ("Displays", "figures · tables · algorithms"),
+        "CITE": ("Citations", "verified source claims"),
+        "VALUE": ("Values", "scalars · intervals · comparisons"),
+        "OTHER": ("Other", "migration items"),
+    }
+    sections = []
+    for kind in ("DISPLAY", "CITE", "VALUE", "OTHER"):
+        items = groups[kind]
+        if not items:
+            continue
+        title, hint = headings[kind]
+        cards = []
+        for record in items:
+            item_id = str(record.get("id", "")).strip()
+            fields = record.get("fields", {})
+            status, status_token = _status_parts(record)
+            title_text = str(record.get("title", "")).strip()
+            label = str(fields.get("label", "")).strip()
+            if not label:
+                label = title_text or item_id.split("-", 2)[-1].replace("-", " ")
+            address = str(record.get("address", fields.get("target", ""))).strip()
+            run_id = str(fields.get("run", "") or fields.get("local run", "")).strip()
+            result_path = str(fields.get("result", "")).strip()
+            result_note = str(fields.get("has", "")).strip()
+            supporting = str(fields.get("supporting runs", "")).strip()
+            focus = "run-" + re.sub(r"[^A-Za-z0-9_-]", "-", item_id)
+            safe_kind = html.escape(kind, quote=True)
+            safe_item = html.escape(item_id, quote=True)
+            display_title = title_text if title_text and title_text.lower() != label.lower() else ""
+            label_html = _label_details(fields.get("labels", []))
+            detail = "".join((
+                _result_preview(record, page_home, root),
+                ('<div class=evidence-detail-row><span class=evidence-detail-label>'
+                 'Evidence Labels</span><span class=evidence-detail-value>%s</span></div>'
+                 % label_html) if label_html else "",
+                _detail_row("Evidence Label", label),
+                _detail_row("Evidence Item", item_id, code=True),
+                _detail_row("Type", kind),
+                _detail_row("Bullet", address, code=True),
+                _detail_row("Status", status),
+                _detail_row("Evidence Run", run_id or "not allocated", code=bool(run_id)),
+                _detail_row("Owner Run", str(fields.get("owner run", "")).strip(), code=True),
+                _detail_row("Supporting Runs", supporting or "none"),
+                _detail_row("Result", result_path or (result_note or "not ready"), code=bool(result_path)),
+                _detail_row("Expected", str(fields.get("expected", "")).strip()),
+                _detail_row("Acceptance", str(fields.get("acceptance", "")).strip()),
+            ))
+            cards.append(
+                '<details class=evidence-card id="%s" data-evidence-id="%s" data-evidence-type="%s">'
+                '<summary class=evidence-summary><span class=evidence-chevron aria-hidden=true>›</span>'
+                '<span class=evidence-kind>%s</span><span class=evidence-label>%s</span>'
+                '<span class=evidence-title>%s</span><code class=evidence-bullet>%s</code>'
+                '<span class="evidence-status %s">%s</span></summary>'
+                '<div class=evidence-detail>%s</div></details>' % (
+                    html.escape(focus, quote=True), safe_item, safe_kind,
+                    safe_kind, html.escape(label), html.escape(display_title),
+                    html.escape(address or "—"), html.escape(status_token, quote=True),
+                    html.escape(status), detail,
+                )
+            )
+        sections.append(
+            '<section class=evidence-type-section data-evidence-type="%s">'
+            '<header class=evidence-type-head><h2 class=evidence-type-title>%s</h2>'
+            '<span class=evidence-type-count>%d</span><span class=evidence-type-hint>%s</span></header>'
+            '<div class=evidence-cards>%s</div></section>' % (
+                html.escape(kind, quote=True), html.escape(title), len(items),
+                html.escape(hint), "".join(cards)
             )
         )
-    return ('<table class=evidence-table><thead><tr><th>Evidence</th><th>Bullet</th>'
-            '<th>Result</th></tr></thead><tbody>%s</tbody></table>' % "".join(rows))
+    return "".join(sections)
 
 
-def render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
-    """Render the v4 Evidence Space as one Result-first table."""
+def _minimal_table(records: list[dict[str, object]]) -> str:
+    """Compatibility name retained for callers of the former flat renderer."""
+    return _evidence_sections(records)
+
+
+def _retired_evidence_paths(page_home: pathlib.Path) -> list[str]:
+    """Return only the presence of retired Evidence paths, never their content."""
+    outline = page_home / "outline"
+    found = []
+    if outline.is_dir():
+        found.extend(sorted(
+            path.relative_to(page_home).as_posix()
+            for path in outline.glob("*-evidence.md")
+            if path.is_file() or path.is_symlink()
+        ))
+        retired_folder = outline / "evidence"
+        if retired_folder.exists() or retired_folder.is_symlink():
+            found.append(retired_folder.relative_to(page_home).as_posix())
+    return found
+
+
+def _migration_notice(page_home: pathlib.Path) -> str:
+    paths = _retired_evidence_paths(page_home)
+    if not paths:
+        return ""
+    listed = ", ".join("<code>%s</code>" % html.escape(path) for path in paths[:3])
+    extra = " and %d more" % (len(paths) - 3) if len(paths) > 3 else ""
+    return (
+        '<div class=evidence-migration-blocker><strong>v4 migration required.</strong> '
+        'Retired Evidence paths are ignored: %s%s. Move them to '
+        '<code>_archive/legacy-outline-evidence/</code> before accepting this Page as v4.</div>'
+        % (listed, extra)
+    )
+
+
+def render(page_src: pathlib.Path, path_q: str, file_q: str,
+           root: pathlib.Path | None = None) -> str:
+    """Render the v4 Evidence Space as typed, Result-first disclosure cards."""
     page_home = page_src.parent
-    snapshot = page_home / "outline" / f"{page_src.stem}-evidence.md"
-    text = snapshot.read_text(encoding="utf-8", errors="replace") if snapshot.is_file() else ""
-    _plan, legacy = _evidence_snapshot(text)
-    records = _result_records(page_home, legacy)
-    body = _minimal_table(records)
+    records = _result_records(page_home)
+    body = _evidence_sections(records, page_home=page_home, root=root or page_home)
+    migration_notice = _migration_notice(page_home)
+    counts = {kind: sum(1 for record in records if _evidence_type(record) == kind)
+              for kind in ("DISPLAY", "CITE", "VALUE")}
+    overview = ("<span class=total>%d Evidence Items</span>" % len(records) +
+                "<span>%d Displays</span>" % counts["DISPLAY"] +
+                "<span>%d Citations</span>" % counts["CITE"] +
+                "<span>%d Values</span>" % counts["VALUE"])
     return f"""<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Evidence Space · {html.escape(page_src.stem)}</title><style>{_CSS}</style>
 <body class=embedded><header><h1>Evidence Space</h1></header>
-<div class=source-map>Result <code>results/**/result.yaml</code></div>
-<div class=evidence-list>{body}</div>
+<div class=evidence-list><div class=evidence-overview>{overview}</div>{migration_notice}
+<details class=source-details><summary>Sources</summary><div class=source-body>Result <code>results/**/result.yaml</code>.</div></details>
+{body}</div>
 <script>(function(){{var q=new URLSearchParams(location.search),id=q.get('focus');if(!id)return;
-var row=document.getElementById(id);if(row){{row.classList.add('run-focus');row.scrollIntoView({{block:'center'}});}}}})();</script>
+var row=document.getElementById(id);if(row){{row.open=true;row.classList.add('run-focus');row.scrollIntoView({{block:'center'}});}}}})();</script>
 </body>"""
 
 
 class EvidenceTabMixin:
-    """Compatibility route for Outline's internal read-only workspace."""
+    """Current read-only Result-first route for Outline's Evidence Space."""
 
     # ---- GET/HEAD /_board/evidence?path=…&file=… ------------------------
     def evidence_tab_view(self, head_only=False):
@@ -1325,7 +1988,7 @@ class EvidenceTabMixin:
         got = self.target({"path": path_q, "file": file_q})
         if got[0] is None:
             return self.reply(400, {"ok": False, "err": got[1]})
-        body = render(got[0], path_q, file_q).encode("utf-8")
+        body = render(got[0], path_q, file_q, root=got[1]).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))

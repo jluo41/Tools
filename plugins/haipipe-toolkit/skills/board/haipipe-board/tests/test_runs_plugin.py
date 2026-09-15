@@ -126,12 +126,13 @@ Open the Current Run.
     def test_unresolved_supporting_run_is_a_held_supporting_row(self):
         self.assertEqual(local_runs(self.page), [])
         body = render(self.page, "/examples/paper/board/MAIN/S-Test.html", "MAIN/S-Test.md")
-        self.assertIn("No Run P yet.", body)
-        self.assertIn("<h2>Run P</h2>", body)
-        self.assertIn("<h2>Run E</h2>", body)
+        self.assertIn("No Structure Run yet.", body)
+        self.assertIn("No Paragraph Run yet.", body)
+        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn(">Evidence</button>", body)
         self.assertIn("b03.j01.t01.r01", body)
         self.assertIn("Held", body)
-        self.assertIn("not available yet", body)
+        self.assertIn("No Result available yet.", body)
         self.assertIn("Supporting Runs", body)
         self.assertNotIn("newrun", body)
 
@@ -156,12 +157,12 @@ Open the Current Run.
         self.assertEqual(rows[0]["status"], "Done")
         self.assertEqual(rows[0]["refs"], ["E01-VALUE-effect"])
         body = render(self.page, "/examples/paper/board/MAIN/S-Test.html", "MAIN/S-Test.md")
-        self.assertIn("<h2>Run P</h2>", body)
-        self.assertIn("<h2>Run E</h2>", body)
-        self.assertIn("<h2>Supporting Runs</h2>", body)
-        self.assertIn("<h2>Run E</h2>", body)
-        self.assertIn("<th>Type / Where</th>", body)
-        self.assertIn("<th>What happened</th>", body)
+        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn(">Evidence</button>", body)
+        self.assertIn(">Supporting Runs</button>", body)
+        self.assertIn("Value · E01", body)
+        self.assertNotIn("<th>", body)
+        self.assertNotIn("What happened", body)
         self.assertIn("P j01.t01.r01", body)
         self.assertIn("results/b01.j01.t01.r01", body)
         self.assertNotIn("runtime.yaml", body)
@@ -171,8 +172,84 @@ Open the Current Run.
         self.assertNotIn("href=", body)
         self.assertNotIn(">Ticket<", body)
         self.assertNotIn(">Receipt<", body)
-        self.assertIn("b03.j01.t01.r01</code></td>", body)
+        self.assertIn("b03.j01.t01.r01", body)
+        self.assertNotIn("b03.j01.t01.r01</code></td>", body)
         self.assertNotIn("global Run Index", body)
+
+    def test_page_evidence_has_value_display_citation_cards_and_real_results(self):
+        runs = self.page.parent / "runs"
+        runs.mkdir(exist_ok=True)
+        records = (
+            ("re-value-01", "E01-VALUE-effect", "value.yaml", "estimate: 1.2\n"),
+            ("re-display-02", "E02-DISPLAY-figure", "display.md", "Figure 2 renders the trend.\n"),
+            ("re-cite-03", "E03-CITE-method", "citation.md", "Smith et al. (2024).\n"),
+        )
+        for stem, item, result_name, result_text in records:
+            (runs / (stem + ".md")).write_text(
+                "---\nrun: %s\nfamily: page\noperation: evidence-item\n"
+                "target: %s\n---\n" % (stem, item), encoding="utf-8")
+            result = self.page.parent / "results" / stem
+            result.mkdir(parents=True)
+            (result / "runtime.yaml").write_text(
+                "run: %s\nstatus: complete\noperation: evidence-item\n"
+                "target: %s\n" % (stem, item), encoding="utf-8")
+            (result / result_name).write_text(result_text, encoding="utf-8")
+
+        body = render(self.page, "", "")
+
+        self.assertIn("<h3>Value</h3>", body)
+        self.assertIn("<h3>Display</h3>", body)
+        self.assertIn("<h3>Citation</h3>", body)
+        self.assertIn("Value · E01", body)
+        self.assertIn("Display · E02", body)
+        self.assertIn("Citation · E03", body)
+        self.assertIn("estimate: 1.2", body)
+        self.assertIn("Figure 2 renders the trend.", body)
+        self.assertIn("Smith et al. (2024).", body)
+        self.assertNotIn("<th>", body)
+
+    def test_supporting_runs_group_by_task_and_keep_member_results_on_demand(self):
+        result_root = self.page.parent / "results" / "supporting"
+        result_root.mkdir(parents=True)
+        (result_root / "result.yaml").write_text(
+            "item: E02-DISPLAY-support\n"
+            "supporting_results:\n"
+            "  - run: b03.j01.t04.r01\n"
+            "    kind: Task\n"
+            "    result: discoveries/t04-r01.md\n"
+            "  - run: b03.j01.t04.r02\n"
+            "    kind: Task\n"
+            "    result: discoveries/t04-r02.md\n"
+            "  - run: b03.j01.t05.r01\n"
+            "    kind: Discovery\n"
+            "    result: discoveries/t05-r01.md\n",
+            encoding="utf-8")
+        discoveries = self.page.parent / "discoveries"
+        discoveries.mkdir()
+        for name, text in (
+                ("t04-r01.md", "Task 04 Run 01 result."),
+                ("t04-r02.md", "Task 04 Run 02 result."),
+                ("t05-r01.md", "Task 05 discovery result.")):
+            (discoveries / name).write_text(text, encoding="utf-8")
+        registry = {
+            "b03j01t04r01": {"status": "complete", "family": "Task",
+                             "target": "Compute estimate", "result": "discoveries/t04-r01.md"},
+            "b03j01t04r02": {"status": "complete", "family": "Task",
+                             "target": "Validate estimate", "result": "discoveries/t04-r02.md"},
+            "b03j01t05r01": {"status": "complete", "family": "Discovery",
+                             "target": "Find supporting paper", "result": "discoveries/t05-r01.md"},
+        }
+        with patch("live.runs.run_registry", return_value=registry):
+            body = render(self.page, "", "")
+
+        self.assertIn("<h3>Task</h3>", body)
+        self.assertIn("<h3>Discovery</h3>", body)
+        self.assertIn("T04 · 2 Runs", body)
+        self.assertIn("T05 · 1 Run", body)
+        self.assertIn("Task 04 Run 01 result.", body)
+        self.assertIn("Task 04 Run 02 result.", body)
+        self.assertIn("Task 05 discovery result.", body)
+        self.assertNotIn("<th>", body)
 
     def test_standalone_local_run_keeps_r_identity_and_summarizes_result(self):
         (self.page.parent / "page.toml").write_text(
@@ -201,8 +278,11 @@ Open the Current Run.
             row["outcome"],
             "Resumed and rebuilt Page — 3 sections; 8 reader-move Bullets · Mechanical gate PASS",
         )
-        self.assertNotIn("r01_page-setup", body)
-        self.assertIn("No Run E yet.", body)
+        # Page Setup is a local process record, not a Page Writing or
+        # Page Evidence Run; it remains available from Folder/off-stage.
+        self.assertNotIn("Page Setup", body)
+        self.assertNotIn('data-run="r01_page-setup"', body)
+        self.assertIn("No Value Run yet.", body)
         self.assertNotIn("no item binding recorded", body)
 
     def test_task_page_resolves_job_backed_result_and_full_address(self):
@@ -238,7 +318,10 @@ Open the Current Run.
                          "results/t01_measure_result/r01_execution_measure-result")
         self.assertEqual(rows[0]["status"], "Done")
         body = render(page, "", "")
-        self.assertNotIn("b03.j02.t01.r01", body)
+        # The Page Run Space only exposes external Supporting Runs. A local
+        # Task page's own execution remains available to its native surface.
+        self.assertNotIn("T01 · 1 Run", body)
+        self.assertNotIn('data-run="b03.j02.t01.r01"', body)
         self.assertNotIn("j02_replication_measurement/results/t01_measure_result", body)
         self.assertNotIn("runtime.yaml", body)
         self.assertNotIn("P r01_execution_measure-result", body)
@@ -351,11 +434,11 @@ Open the Current Run.
         self.assertEqual(rows[0]["kind"], "Paragraph writing")
         self.assertEqual(rows[0]["lane"], "task")
         body = render(self.page, "", "")
-        self.assertIn("Writing instructions / Prompt", body)
+        self.assertIn(">Prompt</summary>", body)
         self.assertIn("Explain the empty field.", body)
         self.assertIn("&lt;script&gt;", body)
         self.assertNotIn("<script>alert", body)
-        self.assertIn("Not available yet.", body)
+        self.assertIn("No Result available yet.", body)
         # An orphan remains discoverable, but cannot claim to be ready.
         (result / "runtime.yaml").unlink()
         self.assertEqual(local_runs(self.page)[0]["target"], "C1.P2")
@@ -372,8 +455,10 @@ Open the Current Run.
         body = render(self.page, "", "")
         self.assertIn("An empty field is not zero.", body)
         self.assertIn("C1.P2.B1", body)
-        self.assertIn("<h2>Run P</h2>", body)
-        self.assertIn("<th>Version / Step</th>", body)
+        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn("<h3>Paragraph</h3>", body)
+        self.assertNotIn("<th>Version / Step</th>", body)
+        self.assertIn("class=run-card", body)
         self.assertIn('aria-expanded="false"', body)
         self.assertNotIn("href=", body)
 
@@ -475,18 +560,16 @@ Open the Current Run.
         self.assertEqual(rows[0]["version"], "v001")
         self.assertEqual(rows[0]["step"], "s002")
         body = render(self.page, "", "")
-        self.assertIn("Make the opening clear", body)
-        self.assertIn("v001/s002", body)
-        self.assertIn("Latest feedback", body)
-        self.assertIn("Current saved result", body)
+        self.assertNotIn("Make the opening clear", body)
+        self.assertNotIn("v001/s002", body)
+        self.assertIn("Review context", body)
+        self.assertIn("Result", body)
         self.assertIn("Please make this less abstract.", body)
         self.assertIn("The Page keeps the writing history.", body)
-        self.assertIn("Earlier steps · 1", body)
+        self.assertIn("Earlier results · 1", body)
         self.assertIn("<summary>Technical details</summary>", body)
-        self.assertIn('class="runs-table', body)
+        self.assertIn("class=run-card", body)
         self.assertIn("@media(max-width:700px)", body)
-        self.assertIn("table.runs-table>thead", body)
-        self.assertNotIn(".runs-table thead{display:none}", body)
         self.assertIn(".step-history pre{white-space:pre-wrap", body)
         self.assertNotIn("Page Run brief", body)
         self.assertNotIn("family: page", body)
@@ -539,18 +622,62 @@ Open the Current Run.
         expanded = render(self.page, "", "", stem)
 
         self.assertIn('data-run="rp01_p01"', expanded)
-        self.assertIn(
-            'data-run="rp01_p01" tabindex="0" aria-expanded="false"',
+        self.assertRegex(
             collapsed,
-        )
-        self.assertIn(
-            'data-run="rp01_p01" tabindex="0" aria-expanded="true"',
-            expanded,
+            r'data-run="rp01_p01"[^>]*aria-expanded="false"',
         )
         self.assertRegex(
             expanded,
-            r'<tr class="detail" data-key="p-\d+"><td colspan=5>',
+            r'data-run="rp01_p01"[^>]*aria-expanded="true"',
         )
+        self.assertRegex(
+            expanded,
+            r'<div class=run-card-detail data-key="writing-paragraph-\d+">',
+        )
+
+    def test_structure_run_shows_shared_participants_and_step_contributors(self):
+        stem = "rp-struct-01"
+        ticket = self.page.parent / "runs" / (stem + ".md")
+        ticket.parent.mkdir(exist_ok=True)
+        ticket.write_text(
+            "---\nrun: rp-struct-01\nfamily: page\n"
+            "operation: interactive-writing\ninteraction: human-feedback\n"
+            "target: whole-Page SHAPE + SURVEY\n"
+            "participants: [person-a, person-b]\n"
+            "coordinator: person-a\n---\n"
+            "- Goal: Agree the shared Page structure.\n",
+            encoding="utf-8",
+        )
+        result = self.page.parent / "results" / stem
+        result.mkdir(parents=True)
+        (result / "runtime.yaml").write_text(
+            "run: rp-struct-01\nstatus: waiting-for-feedback\n"
+            "operation: interactive-writing\ninteraction: human-feedback\n"
+            "target: whole-Page SHAPE + SURVEY\n"
+            "participants: [person-a, person-b]\ncoordinator: person-a\n"
+            "contributors: [person-b]\nversion: v001\nstep: s001\n",
+            encoding="utf-8",
+        )
+        (result / "working.md").write_text(
+            "Run: rp-struct-01\nCurrent: v001/s001\nState: waiting-for-feedback\n",
+            encoding="utf-8",
+        )
+        (result / "v001.md").write_text(
+            "## Step s001\n\n### Human feedback\nReview the shared structure.\n\n"
+            "### Saved result\nThe shared structure is ready for review.\n",
+            encoding="utf-8",
+        )
+
+        rows = local_runs(self.page)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["run_id"], "rp-struct-01")
+        self.assertEqual(rows[0]["participants"], "[person-a, person-b]")
+        self.assertEqual(rows[0]["contributors"], "[person-b]")
+        body = render(self.page, "", "")
+        self.assertIn("Collaboration", body)
+        self.assertIn("person-a, person-b", body)
+        self.assertIn("person-b", body)
+        self.assertNotIn("rp-struct-02", body)
 
     def test_page_and_task_runs_keep_separate_local_identity_sequences(self):
         page_stem = "rp00_mermaid-structure"
@@ -583,8 +710,8 @@ Open the Current Run.
         self.assertEqual(by_id[f"P {task_stem}"]["lane"], "task")
         # The fixture also contributes one unresolved Supporting Run.
         body = render(self.page, "", "")
-        self.assertIn("<h2>Run P</h2>", body)
-        self.assertIn("<h2>Supporting Runs</h2>", body)
+        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn(">Supporting Runs</button>", body)
 
     def test_mermaid_structure_must_close_before_numbered_paragraph_runs(self):
         runs = self.page.parent / "runs"
@@ -619,25 +746,26 @@ Open the Current Run.
             )
             return result
 
-        structure = writing_run("rp00_mermaid-structure", "Mermaid Structure + P01..PN")
-        writing_run("rp01_p01-p03", "P01-P03")
+        structure = writing_run("rp-struct-01", "Mermaid Structure + P01..PN")
+        writing_run("rp-para-01_P01-P03", "P01-P03")
 
         by_id = {row["run_id"]: row for row in local_runs(self.page)}
-        self.assertEqual(by_id["rp00_mermaid-structure"]["status"], "Waiting")
-        self.assertEqual(by_id["rp01_p01-p03"]["status"], "Held")
-        self.assertTrue(any("requires a closed rp00_mermaid-structure" in finding
-                            for finding in by_id["rp01_p01-p03"]["audit"]))
+        self.assertEqual(by_id["rp-struct-01"]["status"], "Waiting")
+        self.assertEqual(by_id["rp-para-01_P01-P03"]["status"], "Held")
+        self.assertTrue(any("requires a closed rp-struct-01" in finding
+                            for finding in by_id["rp-para-01_P01-P03"]["audit"]))
         body = render(self.page, "", "")
-        self.assertIn("rp00 · Mermaid Structure", body)
-        self.assertIn("rp01 · P01-P03", body)
+        self.assertIn("<h3>Structure</h3>", body)
+        self.assertIn("<h3>Paragraph</h3>", body)
+        self.assertIn("Paragraph · P01–P03", body)
         self.assertIn("Argument flow", body)
         self.assertIn("establishes the question", body)
         self.assertIn("class=logic-steps", body)
-        self.assertIn("Whole-page argument flow and paragraph order (P01–P06)", body)
-        self.assertIn('aria-label="Page Mermaid Structure"', body)
+        self.assertNotIn("Whole-page argument flow and paragraph order", body)
+        self.assertIn('aria-label="Scrollable Mermaid Structure"', body)
 
         (structure / "runtime.yaml").write_text(
-            "run: rp00_mermaid-structure\nstatus: complete\noperation: interactive-writing\n"
+            "run: rp-struct-01\nstatus: complete\noperation: interactive-writing\n"
             "version: v001\nstep: s001\n",
             encoding="utf-8",
         )
@@ -648,13 +776,13 @@ Open the Current Run.
             encoding="utf-8",
         )
         by_id = {row["run_id"]: row for row in local_runs(self.page)}
-        self.assertEqual(by_id["rp00_mermaid-structure"]["status"], "Done")
-        self.assertEqual(by_id["rp01_p01-p03"]["status"], "Waiting")
+        self.assertEqual(by_id["rp-struct-01"]["status"], "Done")
+        self.assertEqual(by_id["rp-para-01_P01-P03"]["status"], "Waiting")
 
     def test_noncanonical_structure_identity_is_rejected(self):
         rows = [
             {"lane": "page", "run_id": "rp01_mermaid-structure", "status": "Done"},
-            {"lane": "page", "run_id": "rp02_p01", "status": "Waiting"},
+            {"lane": "page", "run_id": "rp-para-01_P01", "status": "Waiting"},
         ]
 
         _audit_page_run_order(rows)
@@ -666,7 +794,7 @@ Open the Current Run.
                          "rp01_mermaid-structure")
         self.assertEqual(_page_run_label("rp01_p1"), "rp01_p1")
         self.assertEqual(rows[1]["status"], "Held")
-        self.assertTrue(any("requires a closed rp00_mermaid-structure" in finding
+        self.assertTrue(any("requires a closed rp-struct-01" in finding
                             for finding in rows[1]["audit"]))
 
     def test_interactive_page_run_completes_only_with_version_closure(self):
@@ -719,7 +847,7 @@ Open the Current Run.
         self.assertEqual(rows[0]["lane"], "task")
         self.assertEqual(rows[0]["kind"], "Discovery")
         self.assertEqual(rows[0]["origin"], "Linked")
-        self.assertIn("<h2>Supporting Runs</h2>", body)
+        self.assertIn(">Supporting Runs</button>", body)
         self.assertIn("Discovery", body)
         self.assertIn("discoveries/result-card.md", body)
         self.assertNotIn("private/run.sh", body)
@@ -737,7 +865,7 @@ Open the Current Run.
             body = render(self.page, "", "")
         self.assertEqual(row["status"], "Held")
         self.assertEqual(row["result"], "")
-        self.assertIn("not available yet", body)
+        self.assertIn("No Result available yet.", body)
 
     def test_orphan_interactive_result_is_visible_and_held(self):
         result = self.page.parent / "results" / "rp08_page-writing_orphan"

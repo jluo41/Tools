@@ -70,7 +70,8 @@ application deployment system.
 `setup` accepts imported Markdown. In one step it runs the safe import and then
 populates the Page's real working records: source-specific Opening and Aims,
 `outline/<stem>-outline-v0.1.md`, matching reader-move
-`outline/<stem>-preview.md`, Context/Files projections, and a completed
+`outline/<stem>-outline-v<G>.<S>[.<E>].md` with embedded `Draft:` fields,
+Context/Files projections, and a completed
 `rNN_page-setup` Task Run with a Result report. The Shape is intentionally
 `approved: ⬜`; automatic setup cannot impersonate human review. Its semantic
 role labels and Bullet heads are a first pass that the invoking agent must

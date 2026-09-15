@@ -10,8 +10,8 @@ description: >-
   single-paragraph compatibility path. Trigger: page content, adopt agreed text,
   CONTENT phase, WRITE cycle, publish page, build page, /haipipe-page-content.
 metadata:
-  version: "0.14.0"
-  last_updated: "2026-09-12"
+  version: "0.15.0"
+  last_updated: "2026-09-14"
   # version history: ./CHANGELOG.md
 ---
 
@@ -37,16 +37,18 @@ both roles. For `folder-kind: task`, load the reader-facing
 | Judge whole-Page completion | `haipipe-page-check`, not the writer |
 
 A candidate may be drafted while Shape is unapproved or evidence is missing.
-It stays in `outline/<stem>-preview.md`. Those discussions do not have to wait
-for CONTENT's publication gates. Conversely, a saved preview alone is not human
+It stays in the selected Outline Markdown as each Bullet's `Draft:` field.
+Those discussions do not have to wait for CONTENT's publication gates.
+Conversely, a saved Draft alone is not human
 acceptance or a completed Writing Result.
 
 ## Page release barrier
 
-Do not enter CONTENT merely because one paragraph Page Run closes. The release
-barrier requires `rp00_mermaid-structure`, every planned paragraph Page Run,
-and every required evidence Task Result to be complete and bound. Until then,
-the working Shape and candidate prose remain current in the Bullet Workspace;
+Do not enter CONTENT merely because one Section or paragraph Page Run closes.
+The release barrier requires the planned `rp-struct-NN`, `rp-sec-NN`, and
+`rp-para-NN_Pxx[-Pyy]` Runs, and every
+required evidence Task Result to be complete and bound. Until then,
+the working Shape and candidate prose remain current in the Draft Space;
 `<page>.md` and `delivery/` remain unchanged and are labelled stale by design.
 
 When the barrier opens, perform one Page-level CONTENT pass. Apply all accepted
@@ -232,8 +234,8 @@ A controller-dispatched receipt also obeys
 
 Use `../../haipipe-page/ref/user-check-packet.md`. Routine writing returns
 complete selected paragraphs and concise item-based reasons; formal delivery
-adds the actual evidence/PDF states. Put direct verified **Bullet Workspace**
-(`lens=div`) and **Evidence Workspace** (`lens=workspace&seg=items`) links at
+adds the actual evidence/PDF states. Put direct verified **Draft Space**
+(`lens=div`) and **Evidence Space** (`lens=evidence`) links at
 the end, not raw HTML, localhost or a file download. Do not claim a saved or
 updated Workspace until the source has been saved and read back.
 

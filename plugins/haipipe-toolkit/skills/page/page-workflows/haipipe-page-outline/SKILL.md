@@ -7,18 +7,19 @@ description: >-
   Evidence Item, compact Label, and expected ready payload) and SURVEY (inventory zero-to-many
   Execution/Discovery Supporting Runs, one Local Input, and exactly one local
   Page Evidence Item Run declaration). Writes the versioned plan, the derived
-  Mermaid Structure used by rp00, Evidence Item table, open threads and log;
-  records evidence-to-Run lineage but allocates no Ticket and executes no material. Trigger: page outline, OUTLINE
+  Mermaid Structure and Outline Bullets used by RP `rp-struct-NN`, Evidence Item table, open threads and log;
+  records evidence-to-Run lineage but allocates no Ticket and executes no material. Both cycles are recorded in the
+  shared `rp-struct-01` Structure Run, and multiple people may contribute Steps to that Run. Trigger: page outline, OUTLINE
   phase, shape the plan, survey the evidence items, evidence item table, review,
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.42.0"
-  last_updated: "2026-09-12"
+  version: "0.45.0"
+  last_updated: "2026-09-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-page-outline · SHAPE the plan, then SURVEY what it owes
+# /haipipe-page-outline · one Structure Run with SHAPE, then SURVEY
 
 Enter through the canonical Page chain, in order:
 
@@ -26,6 +27,7 @@ Enter through the canonical Page chain, in order:
 haipipe-page
   → haipipe-page-workflow
   → haipipe-page-outline
+  → ../haipipe-page-workflow/ref/structure-run.md
   → the exact Folder-owning workflow or canonical family skill
   → the exact Page Face owner skill
   → the exact writing/style policy, when applicable
@@ -52,17 +54,20 @@ use only the approved arcs and decisions of declared sibling Pages and the
 Story's Section Narrative row, resolved through Context; it does not import
 sibling prose.
 
-The Page workflow gives OUTLINE two planning cycles. Its sibling
+The Page workflow gives OUTLINE two planning cycles inside one Structure Run.
+`rp-struct-01` is allocated once and shared by every contributor; a new person
+or a new cycle does not create another planning Run. Its sibling
 `haipipe-page-evidence` owns LAND and EMBED; `haipipe-page-content` owns the
 later WRITE cycle. All governing context must first be resolved by
 `haipipe-page-context`.
 
-The reader sees these authorities through one Outline plugin with three
-workspaces: **Context Workspace** for governing inputs, **Bullet Workspace**
-for the plan, and **Evidence Workspace** for what each Bullet needs.
-Requirement, Discussion, Feedback, Files, Log, and Skills remain separate
-records on disk but appear together inside Context Workspace. None is copied
-back into `page.md`.
+The reader sees these authorities through one Outline plugin with three minimal
+workspaces: **Draft Space** for the Mermaid map and Bullet/Draft table,
+**Evidence Space** for typed Results, and **Run Space** for Page Writing, Page
+Evidence, and Supporting Runs. Context, Requirement, Discussion, Feedback,
+Files, Log, and Skills remain separate records on disk and stay off-stage;
+Folder inspection is the only way to open them. None is copied back into
+`page.md`.
 
 Both the main Page and the Outline plan card expose the same compact numbered
 workflow strip: `1 SHAPE  2 SURVEY  3 LAND  4 EMBED`, with the current cycle
@@ -73,15 +78,15 @@ that matters is evaluated by the owning phase's checker at its boundary.
 
 ```text
 OUTLINE part
-  SHAPE    this file    plan + typed item expectation          👤 approved:
-  SURVEY   this file    classify supports + Local Input + Local Run    👤 Decide, per item
+  SHAPE    rp-struct-01  plan + typed item expectation     👤 approved:
+  SURVEY   rp-struct-01  classify supports + Local Input + route plan  👤 Decide, per item
   LAND     evidence     allocate planned routes, execute → Result     ⚙ local work exhausted; external gates named
   EMBED    evidence     fold Results into v<G>.<S>.<E+1>        ⚙ CONTENT when G≥1
 ```
 
 ## 🧱 Bullet · the Outline's primary unit
 
-**Highest-priority revision boundary.** Any edit to existing Bullet Workspace
+**Highest-priority revision boundary.** Any edit to existing Draft Space
 text must load `haipipe-writing` and obey its surgical-revision rule. The object
 the person names sets the boundary: a sentence request edits only that Content
 preview sentence; a Bullet request edits only that Bullet; neither authorizes
@@ -92,13 +97,14 @@ it as part of the patch. A paragraph-wide or structural rewrite requires
 explicit approval. When scope is ambiguous, make the smaller edit and leave
 any broader proposal in Discussion rather than applying it.
 
-SHAPE now shapes both the plan and its candidate prose. In the Bullet Workspace,
-read the left-column Bullet/Evidence beside the right-column Content preview,
-then read the assembled paragraph. Draft and revise those candidate sentences
+SHAPE now shapes both the plan and its candidate prose. In the Draft Space,
+read the left-column Bullet/Evidence beside the right-column Draft, then read
+the assembled paragraph. Draft and revise those candidate sentences
 during the human discussion, even at v0 or before all Evidence is ready. Mark
 missing factual material explicitly. The source and write protocol are
 `haipipe-plugin-outline/ref/content-preview.md`; load it for this work.
-This preview stays in `outline/<stem>-preview.md`. Collaborative writing uses
+The candidate stays as a `Draft:` field in the selected
+`outline/<stem>-outline-v<G>.<S>[.<E>].md`. Collaborative writing uses
 `../haipipe-page-workflow/ref/interactive-writing-run.md`: the current Writing
 Run saves each human exchange as a Step, without another Run per edit or
 paragraph. CONTENT later adopts explicitly agreed wording without redrafting.
@@ -109,21 +115,21 @@ review-window size, final link placement and low-latency completion.
 
  When the person and AI are revising one
 paragraph, every response after an applied revision must return the live
-**Bullet Workspace** link and the complete assembled Content preview paragraph
+**Draft Space** link and the complete assembled Draft paragraph
 as it reads after that save, in Bullet order and including unchanged sentences.
 Render the chat copy through the same reader-facing projection as the live
 `Read paragraph`: preserve ordinary manuscript citations, but replace every
 raw pending placeholder such as `[E05-VALUE-headline-association pending]`
 with its compact parenthetical wall label such as `(E05V.Headline)`. Never put
 the full technical Evidence id, pending-status prose, chip, or card inside the
-paragraph handed to the person; those details belong in Evidence Workspace.
+paragraph handed to the person; those details belong in Evidence Space.
 Changed sentences, a diff, or a summary may accompany the paragraph but may
-not replace it. Reproduce the saved preview rather than silently polishing a
+not replace it. Reproduce the saved Draft rather than silently polishing a
 second copy in chat, and show the declared review window (normally one to three complete
-paragraphs), never unrelated Section text. Continue to return the **Evidence Workspace** link where
+paragraphs), never unrelated Section text. Continue to return the **Evidence Space** link where
 the live-Board handoff below requires it. Keep this routine handoff compact:
 the complete saved passage, a brief change explanation, then the
-Bullet Workspace, Evidence Workspace, and Current Run links at the very end.
+Draft Space, Evidence Space, and Current Run links at the very end.
 Do not append the Outline table, PDF, or section-wide material unless the person
 requests a formal review or those artifacts were themselves changed.
 
@@ -135,9 +141,15 @@ or the clearer Point form `[Role]` followed by one concise substantive planning
 statement. Neither form is final manuscript prose.
 
 In Section rehearsal, revise Bullet and candidate sentence together, starting
-from either side. Give each revised Bullet an honest functional `[Role]` when
-requested, visible beside its substantive statement. Split independent points,
-merge redundant ones, and review evidence bindings rather than hiding several
+from either side. During `PROPOSE`, the Outline producer and the whole-Page
+Structure Run propose one context-specific functional `[Role]` for every new
+Bullet, using the Mermaid logic flow, paragraph move, neighboring Points, and
+the Page's subject as the basis. The tag is a proposal for human review, not a
+fixed taxonomy: the producer may use `Phenomenon`, `Example`, `Mechanism`,
+`Translation`, or another clear role when the argument calls for it. Do not
+invent a generic `[Boundary]` role; a limitation belongs in the Point's actual
+meaning only when the logic requires it. Split independent points, merge
+redundant ones, and review evidence bindings rather than hiding several
 sentences in one row. Keep edits in the same unapproved working Shape after
 the first protected fork; ordinary saves do not create versions or approvals.
 The precise reader/save boundary is `ref/content-preview.md` under the Outline
@@ -170,10 +182,14 @@ transition into an extra Bullet/Sentence. The 4–11-word check excludes the
 `S<n> ·` slot and `[Role]` metadata and applies to the concise statement.
 
 For new or edited Bullets, the statement must be plain subject–verb planning
-language, not a command to the future writer. Use an explicit role only when
-it helps the reader (`[Phenomenon]`, `[Example]`, `[Gap]`, `[Mechanism]`, or
-another honest role); otherwise omit the tag and state the substantive point
-directly. Do not start
+language, not a command to the future writer. In a new or rewritten
+`PROPOSE` output, every Bullet carries one proposed `[Role]`. The label is
+contextual and open-ended rather than a controlled vocabulary; it should name
+what that Point does in the current logic flow (`[Phenomenon]`, `[Example]`,
+`[Mechanism]`, `[Translation]`, or another honest label). Do not use a generic
+`[Boundary]` role. A human may revise or remove a proposed role during SHAPE;
+legacy plans remain readable with the neutral fallback until they are
+re-proposed. Do not start
 the visible head with planner imperatives such as `Open with`, `Explain`,
 `Introduce`, `Name`, `Connect`, `Ask`, `Keep`, `Return`, `Hand`, or `State`.
 Keep rationale and scope as short dash annotations; use `Transition:` for the
@@ -181,7 +197,7 @@ single relation arrow between adjacent Points. Existing imperative heads are
 compatibility input only and are not silently rewritten; migrating them
 requires a new unapproved Shape and human review.
 
-The Bullet is the shared unit across Bullet Workspace and Evidence Workspace.
+The Bullet is the shared unit across Draft Space and Evidence Space.
 SHAPE revises its intended move; SURVEY maps what supports it without changing
 its meaning; LAND and EMBED return ready material; CONTENT alone writes its Page
 prose. Evidence Items serve a Bullet—they do not become competing outline rows.
@@ -198,16 +214,16 @@ Q        what will this page say, division by division, bullet by bullet;
          what does each bullet owe; and where in tasks/ does each owed thing
          come from?
 READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
-         (open rows) · outline/<stem>-evidence.md (the table joined to the
-         disk) · the owning workflow phase's outline policy · the page · the current plan ·
+         (open rows) · outline/<stem>-evidence-items.md (the authored Item
+         contract) · the owning workflow phase's outline policy · the page · the current plan ·
          the project's Execution/Discovery Run inventories (SURVEY only) ·
          outline/<stem>-context.md · declared sibling Pages' approved arcs and
          decisions + the Story Section Narrative row through Context · outline/skill/<stem>.md when present
 WRITES   outline/<stem>-outline-v<G>.<S>[.<E>].md · outline/<stem>-evidence-items.md ·
          outline/<stem>-logic.mmd when shaping the whole-Page Mermaid Structure ·
          outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
-         record) · outline/evidence/supporting-runs/<stem>-run-bindings.md
-         (generated pointers) · outline/<stem>-preview.md · never the page
+         record) · current `runs/` tickets and `results/` manifests ·
+         embedded `Draft:` fields in the selected Outline Markdown · never the page
 CHECKS   ⓪ ARC ① COVERAGE ② ADDRESS ③ VALUE ④ SHAPE, all pass before the
          person is asked (SHAPE); every make-item has an audited Supporting/Local
          Run map, one explicit Local Input, and one decision (SURVEY)
@@ -256,20 +272,26 @@ BOTH sides do; it ends when the shape is agreed, never earlier.
             declared sibling Pages' approved arcs/decisions + Story Section row + owning
             phase policy + venue; the log is history, never a Shape authority;
             every owed thing is a named typed Evidence Item with Label + Expected + Accept;
-            rp00 also writes the complete `P01..PN` Mermaid Structure derived from this plan
+            the Outline producer writes the complete `P01..PN` Mermaid Structure and Outline Bullets into the shared `rp-struct-01` Structure Run, including one contextual Role tag on every proposed Bullet
 3 REACT     the person reads the rendered plan on the 🧭 tab: ticks, comments, redirects
 4 REVISE    update the same unapproved working Shape and Mermaid Structure together;
             save the human exchange as a Writing Step
 loop 3 ⇄ 4 until the person ticks approved:
 ```
 
-During an open `rp00_mermaid-structure`, the current
+During an open `rp-struct-01` Structure Run, the current
 `outline/<stem>-logic.mmd` is a required review projection of the plan, not an
 optional decoration. It carries every Page-global paragraph id and appears
-expanded above Bullet Workspace. A missing or stale map blocks the next human
+expanded above Draft Space. A missing or stale map blocks the next human
 review request. The plan remains the planning authority; the Mermaid source is
 regenerated when structural feedback changes the argument flow or paragraph
 index.
+
+SHAPE and SURVEY are recorded as bounded Steps in that same Run. A team may
+share the Run: keep one `participants` list, record each Step's
+`contributors`, and close once the declared owner or agreed group decision
+accepts the result. SURVEY may plan local and Supporting routes, but actual
+allocation and execution remain with EVIDENCE/LAND.
 
 Before Content, Shape proposals use `v0.<S>` and evidence-only folds use
 `v0.<S>.<E>`. Both copilot and auto may survey, land, and fold evidence under
@@ -291,9 +313,9 @@ on the 🧭 tab. "Draft" and "Brief" are not cycle names: candidate drafting may
 SHAPE inside the interactive Writing Run; Brief supplies its input. Published
 Content remains a later adoption authority.
 
-The live Bullet Workspace also provides a bounded SHAPE hand-edit path: a
-person may revise one Bullet; additions are made through Markdown or chat,
-not a `+ Bullet` UI control. The first write
+The live Draft Space is read-only. Page/Run workflow writers provide the
+bounded SHAPE hand-edit path: they may revise one Bullet; additions are made
+through Markdown or chat, not a `+ Bullet` UI control. The first write
 against an approved plan creates the next unapproved Shape version and leaves
 the approved file untouched; later writes stay on that working version. This
 editor changes no Page prose, Evidence Result, or generated Board HTML.
@@ -512,12 +534,12 @@ the records already on disk, not a second plan and not a prose draft:
    `Decide:` tick is never inferred from a vague positive reaction.
 
 Use clickable links in the response when the host supports them. For a live
-Board route, always return both direct plugin views: **Bullet Workspace**
-(`&lens=div`) and **Evidence Workspace** (`&lens=workspace&seg=items`). The
+Board route, always return both direct plugin views: **Draft Space**
+(`&lens=div`) and **Evidence Space** (`&lens=evidence`). The
 compact Outline table and embedded `/_board/evidence?...&embed=1` route are
 useful projections, but neither replaces those two direct workspace links.
 For paragraph-focused revision, the same response also reproduces the complete
-assembled paragraph from the saved Content preview; a list of changed Bullets
+assembled paragraph from the saved Draft fields; a list of changed Bullets
 or isolated sentences is not the paragraph handoff.
 If the packet would be long, preserve all four parts but collapse routine
 items into counts and show only material evidence/feedback rows; offer the
@@ -603,7 +625,7 @@ contract permits it. Record that authority and keep the route labelled
 - **Plan exactly one Local Input.** State whether its one future frozen
   envelope contains Supporting Results, named governed page-local static
   paths, or `item contract only`. Cross-Folder evidence must enter through a
-  Supporting Run Result; Related Page links from Context Workspace are
+  Supporting Run Result; Related Page links from Folder inspection are
   navigation/constraints only. A sibling item's future local Result is
   not a local source; both items must name the shared upstream
   Execution/Discovery Run instead.
@@ -635,13 +657,13 @@ contract permits it. Record that authority and keep the route labelled
   merely because CONTENT later places the same source more than once.
 - **A SURVEY row is complete** when every declared Supporting and Local route
   is honestly classified (existing Result, Ticket only, rerun, or new design),
-  one Local Input is explicit, the derived
-  `outline/evidence/supporting-runs/` map is current, and Decide is signed (`☑ make`, `☑ defer`,
+  one Local Input is explicit, the current `runs/` and `results/` references
+  are resolved, and Decide is signed (`☑ make`, `☑ defer`,
   or `☑ drop`). A planned route is a plan, not `Ready` evidence. LAND refuses
   `☐`, an ambiguous route, or a fake/guessed Run identity.
 
-The Outline plugin's Evidence Workspace joins the generated evidence snapshot
-and `outline/evidence/supporting-runs/` map into one card per Evidence Item. Its identity is the same
+The Outline plugin's Evidence Space joins the authored Item contract with
+current Result manifests into one card per Evidence Item. Its identity is the same
 compact `E<n><kind>.<Label>` used by the Outline Table; Supporting and Local
 Runs are grouped Run items inside that card. The internal `Evidences` lens
 explains each Evidence contract; the internal `Runs` lens groups by Evidence
@@ -663,7 +685,7 @@ Do not present `new`, `rerun`, `run only`, and `ready` as one status scale.
 
 ### 🧑 The Decide ends the cycle
 
-A person reads the table on the 🧭 tab (the Evidence Workspace lens, which renders
+A person reads the table on the 🧭 tab (the Evidence Space lens, which renders
 the table joined to the disk with a derived Status chip per row) and writes
 one Decide per row. A machine may transcribe a chat decision with the quote;
 it never ticks `☑` on its own. `cli/evidence-status.py` prints the classified

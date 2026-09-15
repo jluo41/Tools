@@ -72,7 +72,7 @@ creating or changing Board structure.
 ├── board.md                       Board identity, map, grouping, order
 ├── <N>-Q<group>-<slug>/           generic Board Group
 │   └── <page>/<page>.md           one Page Folder
-│       ├── outline/               Context, Bullet, Evidence workspaces
+│       ├── outline/               Context record, Draft, Evidence, Run Spaces
 │       ├── workflow/              Page-phase receipts
 │       ├── studio/                Chat and Draw
 │       ├── runs/                  optional Run tickets
@@ -227,15 +227,14 @@ never writes a Board roster into Project or SPACE metadata.
 
 ## 🚫 Preserve these invariants
 
-The live Bullet Workspace joins Bullet/Evidence with editable Content preview
-in two columns, grouped by paragraph. `live/outline_preview.py` saves the
-authored `outline/<stem>-preview.md` record with stale-edit protection;
-`live/outline_preview.js` updates the paragraph read-through without reload.
-Do not render a `+ Bullet` button or append form; retain Read paragraph and
-existing editors. A reader may request additions in chat or edit the Markdown.
-Do not render a separate Comments composer in the Bullet Workspace. New
-candidate-sentence feedback belongs to the active Page Run in chat; historical
-signed preview lanes remain preserved in Markdown and never publish as Content.
+The live Draft Space presents the selected Outline's Bullet/Draft table in two
+columns, grouped by paragraph. `live/outline_preview.py` reads and writes
+embedded `Draft:` fields in `outline/<stem>-outline-v*.md`; the selected
+Outline remains the sole Shape, tag, evidence-decision, and Draft authority.
+Do not render a `+ Bullet` button, append form, editor, or separate Comments
+composer. Draft Space is read-only; candidate changes belong to the owning
+Page/Run workflow and its Markdown write. Historical signed review lanes stay
+preserved in Markdown and never publish as Content.
 See `haipipe-plugin-outline/ref/content-preview.md` for the SHAPE/CONTENT boundary.
 Render a Page's authored `<stem>-logic.mmd` as a safe derived Mermaid Structure
 before the plan and paragraph groups. While `rp00_mermaid-structure` is active,
@@ -247,28 +246,29 @@ standalone Page modes.
 
 - Markdown is the only source; never hand-edit generated `board/` files.
 - A build must remain readable after every `<script>` is removed.
-- A compact Page Run link must land on the exact card in `Outline → Evidence
-  Workspace → Runs`, preserving its Evidence Item and Run address even while
+- A compact Page Run link must land on the exact card in `Outline → Run Space`,
+  preserving its Evidence Item and Run address even while
   the Page or plugin is still loading. A pending default refresh must not
   consume, discard, or overwrite that deep-link state; the normal route must
   not trap a mobile reader in a long popover.
-- A compact Page Feedback link must land on the exact record in `Outline →
-  Context Workspace → Feedback`; a rendered Feedback token is always
-  interactive, never an inert badge.
+- A compact Page Feedback link must land on the exact record in the off-stage
+  Context record; it is not a reader-facing Space.
 - A compact Page Evidence chip must land on the exact item card in `Outline →
-  Evidence Workspace → Evidences` through the same one-URL route
+  Evidence Space` through the same one-URL route
   (`lens` + `seg` + `focus`), scrolled into view and highlighted. The compact
   Page opens no Evidence popover and keeps no second copy of the item's
   fields; `none` and `missing` cells stay inert text with their reason on
   hover. The typed Evidence chip inside the Outline plugin's Bullet
-  Workspace takes the same route to the same card, switching lens in
+  Draft Space takes the same route to the same card, switching lens in
   place; it opens no popover either. A `Routed:` value may name several
   rows separated by spaces, commas, or semicolons, and every Feedback
   chip's focus id must equal a register record id.
-- A Page-changing reader response must return the two direct Outline-plugin
-  workspace links derived from the same verified public Board URL:
-  `&lens=div` for **Bullet Workspace** and `&lens=workspace&seg=items` for
-  **Evidence Workspace**. The compact Page URL and an embedded
+- A routine Page-changing reader response must return the three direct
+  Outline-plugin Space links derived from the same verified public Board URL:
+  `&lens=div` for **Draft Space**, `&lens=evidence` for **Evidence Space**, and
+  `&lens=run&run=<id>` for **Run Space**. A formal delivery response also
+  returns `&lens=delivery` for **Delivery Workspace**, which is the read-only
+  source-to-artifact consistency receipt. The compact Page URL and an embedded
   `/_board/evidence?...&embed=1` iframe URL may be included as secondary
   projections, but never replace these direct links.
 - Archive moves source under `_archive/`; it never deletes the record.

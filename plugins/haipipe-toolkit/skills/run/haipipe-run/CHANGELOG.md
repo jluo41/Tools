@@ -1,5 +1,18 @@
 # haipipe-run · CHANGELOG
 
+## 0.26.0 · 2026-09-14
+
+Clarify that `rp-struct-01` is one multi-person Structure Run containing the
+SHAPE and SURVEY cycles, with later structure ids reserved for independent
+post-closure goals.
+
+## 0.25.0 · 2026-09-14
+
+Align the Page-facing Run contract with typed `rp-struct-NN`, `rp-sec-NN`,
+`rp-para-NN_Pxx[-Pyy]`, and `re-value/display/cite` identities. Clarify that
+`DISPLAY` covers tables and figures and that `V_`, `D_`, and `C_` placeholders
+are labels bound to a Result/Card, not child Runs.
+
 ## 0.24.0 · 2026-09-13
 
 Define the Page projection as Run P, Run E, and Supporting Runs inside Plugin

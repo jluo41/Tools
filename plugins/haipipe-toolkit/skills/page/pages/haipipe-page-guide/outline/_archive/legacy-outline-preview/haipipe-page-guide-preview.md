@@ -90,7 +90,7 @@ Code, search, data, rendering, build, Discovery, and other output-producing work
 plan: v0.1
 bullet-sha256: dddfd60205b38d92634b3021b44a2cb70e7e30ad15af962905917c74a3629fec
 
-The first Page Run is always `rp00_mermaid-structure`, where the person and agent iterate on the complete Mermaid argument map until the person explicitly closes it.
+The first Page Run is always `rp-struct-01`, one shared Structure Run where the person and agent complete SHAPE and SURVEY for the whole Page until the person explicitly closes it. Multiple people may contribute Steps to this same Run.
 
 ## C2.P5.B2
 plan: v0.1
@@ -108,7 +108,7 @@ After the Mermaid Structure closes, the Runs function creates Steps, each with a
 plan: v0.1
 bullet-sha256: d80abe0efb1d62b802d7efcca45844f80874b6d2d9b27ddc85b96c4df8685364
 
-Each selected paragraph Run uses a short identity that exposes the exact serial or contiguous range, such as `rp01_p01` or `rp02_p02-p03`; its descriptive wording stays in Goal.
+Each selected paragraph Run uses a typed identity that exposes the exact serial or contiguous range, such as `rp-para-01_P01` or `rp-para-02_P02-P03`; its descriptive wording stays in Goal.
 
 ## C2.P5.B5
 plan: v0.1

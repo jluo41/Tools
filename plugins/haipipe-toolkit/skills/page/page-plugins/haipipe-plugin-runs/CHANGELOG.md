@@ -1,3 +1,19 @@
+## 0.29.0 · 2026-09-14
+
+- Present SHAPE and SURVEY as cycles of one shared Structure card and expose
+  participants/contributors in its collapsed collaboration details.
+
+## 0.28.0 · 2026-09-14
+
+- Redesign Run Space as minimal result-first cards: Page Writing is grouped
+  into Structure/Section/Paragraph, Page Evidence into Value/Display/Citation,
+  and Supporting Runs into Task/Discovery columns with Task-level grouping.
+- Keep review inside the Paragraph Run, keep metadata and technical paths
+  collapsed, and show actual Result content first when a card opens.
+- Present typed RP and RE identities, including the generic `DISPLAY` kind;
+  keep inline Evidence Labels as zero-to-many bindings on a Result/Card rather
+  than child Runs.
+
 ## 0.26.0 · 2026-09-13
 
 - Move the presenter from a top-level Runs plugin into Outline's Run Workspace.
@@ -257,3 +273,7 @@
 - Surface broken current-Step pointers and unresolved allocated Task identities
   as Held findings, sort newer same-status Runs first, and expose Page-owned
   supporting code only in a collapsed read-only Scripts inventory.
+## 0.27.0 · 2026-09-14
+
+- Present RP scope bands and distinguish Section-level Steps from later
+  independently commissioned Section Runs.

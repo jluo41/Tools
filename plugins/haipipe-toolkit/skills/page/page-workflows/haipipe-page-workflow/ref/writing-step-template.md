@@ -5,7 +5,7 @@ Replace every placeholder with an actual value or explicit `not supplied`.
 Record messages verbatim in fenced blocks; use a longer fence when the message
 itself contains backticks. Do not invent a person, timestamp or message id.
 
-## runs/rp00_mermaid-structure.md or runs/rpNN_pNN[-pNN].md
+## runs/<rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]>.md
 
 ```yaml
 family: page
@@ -13,16 +13,19 @@ operation: interactive-writing
 interaction: human-feedback
 target: C1.P1, C1.P2
 paragraphs: P01-P02
-result: results/<same rpNN Page Run identity>
+result: results/<same typed RP identity>
+participants: [<stable human identities; omit when not supplied>]
+coordinator: <stable identity or not supplied>
 ```
 
-- Goal: <whole-Page Mermaid Structure interaction, or one numbered paragraph-group decision>
-- Mermaid Structure description: <frozen paragraph job/reader move for each selected PNN; omit for rp00>
+- Goal: <structure/Bullet, Section-level, or paragraph-level writing goal>
+- RP kind: <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]>
+- Mermaid Structure description: <frozen paragraph job/reader move for each selected PNN; required for prose Runs>
 - Page and Board: <resolved paths>
-- Scope: <paragraphs/map; excluded and already accepted targets>
+- Scope: <map, Section, paragraph/range; excluded and already accepted targets>
 - Sources: <current Shape, preview, Context, Evidence table; exact style policy>
-- Success: <Mermaid Structure/index closure, or human agreement on the numbered text>
-- Review: <whole Mermaid Structure for rp00; otherwise the exact numbered paragraph group and each frozen Mermaid Structure description>
+- Success: <structure/Bullet closure, completed Section draft/review/diagnose/revise Step, or human agreement on the fixed paragraph text>
+- Review: <the exact fixed scope and its applicable Mermaid Structure descriptions>
 
 ## results/<run>/v001.md
 
@@ -37,6 +40,10 @@ Prior Version: none, or <closed vNNN.md · SHA-256>
 ```
 
 ## Step s001
+
+A Step is a complete scoped cycle, not merely one chat turn. For a
+Section-level Run, record the candidate draft, review/rating, diagnosis,
+revision, and post-revision review/diagnosis before `### Saved result`.
 
 ### Human feedback
 
@@ -72,6 +79,13 @@ recoverable baseline. Record any external edit before rebasing onto it.>
 
 Repeat for every item; preserve original annotation indices when supplied.
 If there is no itemized feedback, write `Initial brief; no annotation items`.
+
+For `rp-struct-01`, add the people who actually contributed this Step without
+creating a new Run:
+
+```text
+Contributors: <stable identities, or not supplied>
+```
 
 ### Saved result
 
@@ -141,7 +155,7 @@ reference the earlier Step carrying the current map.>
 - Sentence/Bullet and evidence boundaries: <findings>
 - Protected/out-of-scope text: <before/after identity; unchanged or conflict>
 - Human acceptance: <none, or exact scoped quote + actor + reviewed identity>
-- Foreground surface: <Bullet Workspace refreshed; no Content/delivery write>
+- Foreground surface: <Draft Space refreshed from the selected Outline; no Content/delivery write>
 - Dependencies: <evidence owed, Task Run ids, delivery deferred to Page release, next question>
 - Post-run analysis: <none while open; after explicit close, queued/running/complete Task Run id and input hash>
 
@@ -153,7 +167,7 @@ heading and its own blockquote. Number every sentence for review, but never
 write the labels into the candidate, Version result, or final Content.
 
 ```markdown
-## ✍️ <rpNN_pNN[-pNN]> · <vNNN/sNNN>
+## ✍️ <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]> · <vNNN/sNNN>
 
 ### P01 · <C.P> · <Mermaid Structure description>
 
@@ -171,7 +185,7 @@ write the labels into the candidate, Version result, or final Content.
 when multiple feedback items require separate dispositions. Omit an Evidence
 section when no citation, value, or figure requirement changed or remains open.>
 
-[Bullet Workspace](<verified direct URL>) · [Evidence Workspace](<verified direct URL>) · [Current Run](<verified Runs URL with &run=<exact-run-id>>)
+[Draft Space](<verified direct URL>) · [Evidence Space](<verified direct URL>) · [Current Run](<verified Runs URL with &run=<exact-run-id>>)
 ```
 
 Nothing follows the three links. `S1`, `S2`, ... restart for the displayed
@@ -198,7 +212,8 @@ Next: <what the human/agent does next>
 ## Version closure · the Page Run close event
 
 Append this section to `v001.md` only when the person explicitly closes the
-Page Run. This seals the Version before any post-run analysis Task is launched.
+Page Run. A completed Section Step does not by itself close the Run. This
+seals the Version before any post-run analysis Task is launched.
 
 ### Human close
 
@@ -217,7 +232,7 @@ Page Run. This seals the Version before any post-run analysis Task is launched.
 ## runtime.yaml · current projection, not human-decision authority
 
 ```yaml
-run: <rp00_mermaid-structure or rpNN_pNN[-pNN]>
+run: <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]>
 family: page
 operation: interactive-writing
 interaction: human-feedback

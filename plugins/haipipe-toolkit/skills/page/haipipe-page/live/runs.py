@@ -1,9 +1,11 @@
 """The Run Space inside 🧭 Outline, read-only.
 
-The Page-facing vocabulary has three lanes: Run P for human/Page interactions,
-Run E for Page-owned Evidence production, and Supporting Runs for linked work
+The Page-facing vocabulary has three areas: local Page Runs for human/Page
+interactions and Page-owned Evidence, plus Supporting Runs for linked work
 owned elsewhere. Supporting Runs remain inspectable references; they are never
-copied into this Page.
+copied into this Page. The reader-facing projection is result-first: a closed
+card shows only what the Run is called and what it is doing, while its real
+Result appears when the card is opened.
 
 Native families remain intact below this projection, so Board and standalone
 Page resolve the same records. ``new-*`` remains a plan rather than a Run.
@@ -32,17 +34,42 @@ except ImportError:
 
 _TICKET_SUFFIXES = {".sh", ".ps1", ".py", ".do", ".r", ".R", ".yaml", ".yml", ".md"}
 _TICKET_NAME = re.compile(
-    r"(?:^rp\d+|^rl\d+|^ri\d+|^rd\d+|^r\d+|^run[-_]|^b\d+[._]j\d+[._]t\d+[._]r\d+|^p[._]?j\d+[._]?t\d+[._]?r\d+)",
+    r"(?:^rp-(?:struct|sec|para)-\d{2}(?:_P\d{2}(?:-P\d{2})?)?"
+    r"|^re-(?:value|display|cite)-\d{2}(?:_[a-z0-9][a-z0-9_-]*)?"
+    r"|^rp\d+|^rl\d+|^ri\d+|^rd\d+|^r\d+|^run[-_]"
+    r"|^b\d+[._]j\d+[._]t\d+[._]r\d+|^p[._]?j\d+[._]?t\d+[._]?r\d+)",
     re.I,
 )
 _STATE_ORDER = {"Running": 0, "Waiting": 1, "Failed": 2, "Held": 3,
                 "Ready": 4, "Done": 5}
 _PAGE_WRITING_OPERATIONS = {"interactive-writing", "paragraph-writing"}
-_STRUCTURE_RUN = "rp00_mermaid-structure"
+_STRUCTURE_RUN = "rp-struct-01"
+_LEGACY_STRUCTURE_RUNS = {"rp00_mermaid-structure"}
+_STRUCTURE_RUNS = {_STRUCTURE_RUN, *_LEGACY_STRUCTURE_RUNS}
+_STRUCTURE_RUN_RE = re.compile(r"rp-struct-(?:0[1-9]|[1-9]\d+)", re.I)
+_EVIDENCE_TYPES = {
+    "VALUE": "Value",
+    "TABLE": "Display",  # legacy alias retained for old Result manifests
+    "DISPLAY": "Display",
+    "CITE": "Citation",
+}
+_EVIDENCE_TYPE_ORDER = ("Value", "Display", "Citation")
+_SECTION_RUN = re.compile(r"rp-sec-(?:0[1-9]|[1-9]\d+)", re.I)
 _PARAGRAPH_RUN = re.compile(
-    r"(rp(?:0[1-9]|[1-9]\d+))_p(0[1-9]|[1-9]\d+)"
-    r"(?:-p(0[1-9]|[1-9]\d+))?"
+    r"(rp-para-(?:0[1-9]|[1-9]\d+))_P((?:0[1-9]|[1-9]\d+))"
+    r"(?:-P((?:0[1-9]|[1-9]\d+)))?",
+    re.I,
 )
+_LEGACY_PARAGRAPH_RUN = re.compile(
+    r"(rp(?:0[1-9]|[1-9]\d+))_p(0[1-9]|[1-9]\d+)"
+    r"(?:-p(0[1-9]|[1-9]\d+))?",
+    re.I,
+)
+
+
+def _is_structure_run(run_id: str) -> bool:
+    """Recognize the current structure Run and readable legacy records."""
+    return run_id in _STRUCTURE_RUNS or _STRUCTURE_RUN_RE.fullmatch(run_id) is not None
 
 
 _CSS = """
@@ -53,19 +80,17 @@ _CSS = """
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,
  BlinkMacSystemFont,'Segoe UI',sans-serif}header{padding:10px 16px 7px}h1{font-size:16px;margin:0}
 .embedded header{display:none}
-.source-map{margin:8px 16px 6px;color:var(--mut);font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
-.source-map code{color:var(--fg);font-size:11px}
 .mut{color:var(--mut);font-size:12.5px}.lead{margin:3px 0 0}.summary{display:flex;gap:8px;
  padding:7px 16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12.5px}
 .wrap{padding:0 16px 16px;overflow:auto}.note{margin:9px 0;font-size:12.5px;color:var(--mut)}
-table{width:100%;border-collapse:collapse;font-size:12.5px}th,td{text-align:left;vertical-align:top;
- border-bottom:1px solid var(--line);padding:8px 6px}th{font-size:11px;color:var(--mut);
- text-transform:uppercase;letter-spacing:.035em}tr.run{cursor:pointer}tr.run:hover td{background:var(--card)}
 code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.route{font-weight:650;white-space:nowrap}.state{font-weight:650;white-space:nowrap}
-tr.run td:first-child::after{content:'›';display:inline-block;margin-left:7px;color:var(--mut);font:bold 16px/1 sans-serif;transition:transform .15s}tr.run[aria-expanded=true] td:first-child::after{transform:rotate(90deg)}
 .state.ready{color:var(--acc)}.state.running,.state.waiting{color:var(--warn)}.state.done{color:var(--ok)}.state.failed,.state.held{color:var(--bad)}
-.repo-path{white-space:normal;overflow-wrap:anywhere;word-break:break-word;user-select:text}.detail[hidden]{display:none}
-.detail td{padding:0 7px 10px;background:var(--card)}.detailbox{border-left:3px solid var(--acc);padding:12px 14px;margin:3px 0;font-size:14px}
+.repo-path{white-space:normal;overflow-wrap:anywhere;word-break:break-word;user-select:text}
+.run-space-switcher{display:flex;gap:6px;overflow-x:auto;padding:0 0 9px;margin:0 0 11px;border-bottom:1px solid var(--line);scrollbar-width:none}.run-space-switcher::-webkit-scrollbar{display:none}.run-space-tab{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:7px;padding:5px 10px;font-size:13px;line-height:1.35;cursor:pointer;white-space:nowrap;flex:none}.run-space-tab:hover{border-color:var(--acc)}.run-space-tab.on{border-color:var(--acc);color:var(--acc);font-weight:650;background:var(--bg)}.run-space-panels{min-width:0}.run-space-panel[hidden]{display:none}.run-space-overview{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.run-space-overview span{border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--mut);font-size:11.5px;line-height:1.4;white-space:nowrap}.run-space-overview .total{color:var(--fg);font-weight:650}.run-subspace{margin:13px 0 18px}.run-subspace>h3{font-size:13px;margin:0 0 6px;color:var(--mut);font-weight:700;letter-spacing:.02em}
+.run-cards{display:grid;gap:7px}.run-card{border:1px solid var(--line);border-radius:9px;background:var(--bg);overflow:hidden}.run-card-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 12px;cursor:pointer}.run-card-summary:hover{background:var(--card)}
+.run-card-summary::after{content:'›';grid-column:2;grid-row:1 / span 2;align-self:center;color:var(--mut);font:bold 18px/1 sans-serif;transition:transform .15s}.run-card-summary[aria-expanded=true]::after{transform:rotate(90deg)}
+.run-card-name{font-weight:700;min-width:0;overflow-wrap:anywhere}.run-card-action{grid-column:1;color:var(--mut);font-size:13px;overflow-wrap:anywhere}.run-state-dot{grid-column:2;grid-row:1;align-self:start;margin-right:18px;font-size:11px;line-height:1;color:var(--mut)}.run-state-dot.done{color:var(--ok)}.run-state-dot.running,.run-state-dot.waiting{color:var(--warn)}.run-state-dot.failed,.run-state-dot.held{color:var(--bad)}.run-state-dot.ready{color:var(--acc)}
+.run-card-detail[hidden]{display:none}.run-card-detail{border-top:1px solid var(--line);padding:12px;background:var(--card)}.detailbox{font-size:14px}
 .detailbox p{margin:7px 0}.detailbox .kv{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px}.detailbox h3{font-size:15px;margin:0}.detailbox h4{font-size:13px;margin:13px 0 5px;color:var(--mut)}
 .detail-head{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:10px}.detail-title{font-size:16px;font-weight:700}
 .run-meta{display:grid;grid-template-columns:minmax(0,2fr) minmax(110px,1fr);gap:8px;margin:0 0 14px}
@@ -91,17 +116,10 @@ tr.run td:first-child::after{content:'›';display:inline-block;margin-left:7px;
 .step-history{min-width:0;overflow-wrap:anywhere;margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--bg)}
 .technical dl{margin:8px 0}.technical dt{margin-top:7px;color:var(--mut);font-size:11px;font-weight:700;text-transform:uppercase}.technical dd{margin:1px 0}
 .refs{margin:5px 0 0;padding-left:18px}.run-preview{overflow-wrap:anywhere;font-size:13px;line-height:1.6;margin:8px 0}
-.detailbox h2{font-size:14px;margin:14px 0 5px}.summary{flex-wrap:wrap}
-.lane{margin:16px 0 22px}.lane h2{font-size:14px;margin:0 0 2px}.lane-empty{margin:8px 0 0;
- padding:11px 12px;border:1px dashed var(--line);border-radius:7px;color:var(--mut)}
+.detailbox h2{font-size:14px;margin:14px 0 5px}.summary{flex-wrap:wrap}.run-result{margin:0 0 10px;padding:11px 12px;border-left:3px solid var(--ok);border-radius:7px;background:var(--bg)}.run-result h3{margin:0 0 7px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}.run-output{overflow-wrap:anywhere;word-break:break-word}.run-output pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:9px;border-radius:6px;background:var(--card);font-size:12.5px}.run-result-empty{color:var(--mut);font-size:13px}.run-context,.support-member{margin-top:9px;border-top:1px solid var(--line);padding-top:8px}.run-context summary,.support-member>summary{cursor:pointer;font-weight:650;color:var(--mut)}.support-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.support-column{min-width:0}.support-column>h3{font-size:13px;margin:0 0 6px}.support-group-detail{margin:0}.support-member{padding:0 0 8px}.support-member:last-child{border-bottom:0}.support-member>summary code{font-weight:650}.lane-empty{margin:8px 0 0;padding:10px 12px;border:1px dashed var(--line);border-radius:7px;color:var(--mut)}
 .scripts{margin:16px 0}.scripts summary{cursor:pointer;font-weight:650}.scripts ul{padding-left:20px}
-@media(max-width:700px){body{font-size:15px}.wrap{padding:0 10px 14px;overflow:visible}.summary{padding:7px 10px}
- table.runs-table,table.runs-table>tbody{display:block}table.runs-table>thead{display:none}.runs-table>tbody>tr.run{display:grid;grid-template-columns:1fr auto;gap:3px 10px;padding:10px 8px;border-bottom:1px solid var(--line)}
- .runs-table>tbody>tr.run>td{display:block;padding:0;border:0}.runs-table>tbody>tr.run>td:nth-child(2){grid-column:1/-1;font-size:14px}.runs-table>tbody>tr.run>td:nth-child(3){color:var(--mut)}
- .runs-table>tbody>tr.run>td:nth-child(4){grid-column:2;grid-row:1;text-align:right}.runs-table>tbody>tr.run>td:nth-child(5){display:none}
- .task-runs>tbody>tr.run>td:nth-child(2){grid-column:1/-1;font-size:12px;color:var(--mut)}.task-runs>tbody>tr.run>td:nth-child(3){grid-column:1/-1;color:var(--fg);font-size:14px}
- .runs-table>tbody>tr.detail{display:block}.runs-table>tbody>tr.detail[hidden]{display:none}.runs-table>tbody>tr.detail>td{display:block;padding:0 4px 12px;border-bottom:1px solid var(--line)}
- .detailbox{border-left:0;border-top:3px solid var(--acc);padding:13px 10px;margin:0}.run-meta{grid-template-columns:1fr 1fr}.run-meta .wide{grid-column:1/-1}
+@media(max-width:700px){body{font-size:15px}.wrap{padding:0 10px 14px;overflow:visible}.summary{padding:7px 10px}.run-space-switcher{margin-bottom:9px}.run-space-tab{font-size:13px;padding:5px 9px}.run-space-overview{gap:5px}.run-space-overview span{font-size:11px;padding:2px 7px}.support-grid{grid-template-columns:1fr}
+ .run-card-summary{padding:10px}.run-card-detail{padding:10px}.detailbox{padding:0}.run-meta{grid-template-columns:1fr 1fr}.run-meta .wide{grid-column:1/-1}
  .detailbox .kv{grid-template-columns:96px minmax(0,1fr)}
  .detail-head{display:none}.review-card{padding:10px}.md-table{display:table}.run-logic-viewport{display:none}.logic-steps{display:block}.detail-title{font-size:17px}}
 """
@@ -136,7 +154,8 @@ def _fields(runtime: Path | None) -> dict[str, str]:
 
     return {name: field(name) for name in
             ("run", "global_id", "status", "target", "result", "ticket", "family",
-             "operation", "interaction", "mode", "version", "step", "outcome", "summary")}
+             "operation", "interaction", "mode", "version", "step", "outcome", "summary",
+             "participants", "coordinator", "contributors")}
 
 
 def _writing_operation(fields: dict[str, str]) -> bool:
@@ -151,9 +170,13 @@ def _is_page_run(fields: dict[str, str]) -> bool:
 
 def _page_run_label(run_id: str) -> str:
     """Keep the Page Run column short while preserving its canonical identity."""
-    if run_id == _STRUCTURE_RUN:
-        return "rp00 · Mermaid Structure"
-    match = _PARAGRAPH_RUN.fullmatch(run_id)
+    if run_id in _LEGACY_STRUCTURE_RUNS:
+        return "rp00 · Mermaid Structure (legacy)"
+    if _is_structure_run(run_id):
+        return f"{run_id.lower()} · Mermaid Structure"
+    if _SECTION_RUN.fullmatch(run_id):
+        return f"{run_id.lower()} · Section"
+    match = _PARAGRAPH_RUN.fullmatch(run_id) or _LEGACY_PARAGRAPH_RUN.fullmatch(run_id)
     if not match:
         return run_id
     scope = f"P{match.group(2)}"
@@ -163,32 +186,34 @@ def _page_run_label(run_id: str) -> str:
 
 
 def _valid_page_run_id(run_id: str) -> bool:
-    """Accept only the current Page Run namespace; no aliases or fallback."""
-    return run_id == _STRUCTURE_RUN or bool(_PARAGRAPH_RUN.fullmatch(run_id))
+    """Accept typed Page Run ids, while keeping old records readable."""
+    return (_is_structure_run(run_id) or _SECTION_RUN.fullmatch(run_id) is not None
+            or _PARAGRAPH_RUN.fullmatch(run_id) is not None
+            or _LEGACY_PARAGRAPH_RUN.fullmatch(run_id) is not None)
 
 
 def _audit_page_run_order(rows: list[dict]) -> None:
     """Reject noncanonical ids and require the closed Mermaid Structure Run."""
     page_rows = [row for row in rows if row.get("lane") == "page"]
     structure = next((row for row in page_rows
-                      if row["run_id"] == _STRUCTURE_RUN), None)
+                      if _is_structure_run(row["run_id"])), None)
     structure_closed = bool(structure and structure.get("status") == "Done")
     for row in page_rows:
         run_id = row["run_id"]
         if not _valid_page_run_id(run_id):
             row["status"] = "Held"
             row.setdefault("audit", []).append(
-                "invalid Page Run identity; expected rp00_mermaid-structure "
-                "or rpNN_pNN[-pNN] from rp01"
+                "invalid Page Run identity; expected rp-struct-NN, rp-sec-NN, "
+                "or rp-para-NN_Pxx[-Pyy]"
             )
             continue
-        if run_id == _STRUCTURE_RUN:
+        if _is_structure_run(run_id):
             continue
         if structure_closed:
             continue
         row["status"] = "Held"
         row.setdefault("audit", []).append(
-            "paragraph Page Run requires a closed rp00_mermaid-structure"
+            "Page Section/Paragraph Run requires a closed rp-struct-01"
         )
 
 
@@ -258,6 +283,237 @@ def _result_outcome(runtime: Path | None, fields: dict[str, str]) -> str:
                       for line in summary.group(1).splitlines() if line.strip()), "")
         return with_action(first)
     return ""
+
+
+def _evidence_type(row: dict) -> str:
+    """Return the reader-facing Page Evidence subspace for one Run."""
+    candidates = [row.get("target", ""), *row.get("refs", [])]
+    for value in candidates:
+        match = re.search(
+            r"E\d+-(VALUE|TABLE|DISPLAY|CITE)(?:-|$)",
+            str(value or ""),
+            re.I,
+        )
+        if match:
+            return _EVIDENCE_TYPES[match.group(1).upper()]
+    return ""
+
+
+def _evidence_item_label(row: dict) -> str:
+    """Turn an Evidence Item id into a short card label."""
+    candidates = [row.get("target", ""), *row.get("refs", [])]
+    for value in candidates:
+        match = re.search(r"(E\d+)-(?:VALUE|TABLE|DISPLAY|CITE)(?:-|$)",
+                          str(value or ""), re.I)
+        if match:
+            return match.group(1).upper()
+    return "Evidence"
+
+
+def _page_writing_subspace(row: dict) -> str:
+    """Map one local interactive Run to Structure, Section, or Paragraph."""
+    if _is_structure_run(str(row.get("run_id", ""))):
+        return "Structure"
+    if _SECTION_RUN.fullmatch(str(row.get("run_id", ""))):
+        return "Section"
+    target = str(row.get("target", ""))
+    if re.search(r"(?:^|-)P\d+", target, re.I) or "_p" in row.get("run_id", "").lower():
+        return "Paragraph"
+    return "Section"
+
+
+def _run_pills(items: list[tuple[str, int]]) -> str:
+    """Render the compact, non-interactive count pills used by each space."""
+    return "".join(
+        '<span class="run-pill%s">%d %s</span>' % (
+            " total" if index == 0 else "", count, html.escape(label)
+        )
+        for index, (label, count) in enumerate(items)
+    )
+
+
+def _fallback_evidence_counts(rows: list[dict]) -> tuple[int, dict[str, int]]:
+    """Count unique Evidence Item ids when no Result snapshot is available."""
+    items: dict[str, str] = {}
+    for row in rows:
+        for value in [row.get("target", ""), *row.get("refs", [])]:
+            for match in re.finditer(
+                    r"\b(E\d+)-(VALUE|TABLE|DISPLAY|CITE)(?:-[a-z0-9-]+)?\b",
+                    str(value or ""), re.I):
+                items.setdefault(match.group(1).upper(),
+                                 _EVIDENCE_TYPES[match.group(2).upper()])
+    counts = {label: 0 for label in _EVIDENCE_TYPE_ORDER}
+    for kind in items.values():
+        if kind in counts:
+            counts[kind] += 1
+    return len(items), counts
+
+
+def _evidence_summary_counts(page_src: Path, rows: list[dict]) -> tuple[int, dict[str, int]]:
+    """Use the same current Result records as Evidence Space for its pills."""
+    try:
+        from live.evidence import _evidence_type as result_evidence_type
+        from live.evidence import _result_records
+        records = _result_records(page_src.parent)
+    except (ImportError, OSError, ValueError, TypeError, AttributeError):
+        records = []
+        result_evidence_type = None
+    if records and result_evidence_type is not None:
+        counts = {label: 0 for label in _EVIDENCE_TYPE_ORDER}
+        for record in records:
+            kind = result_evidence_type(record)
+            if kind == "DISPLAY":
+                counts["Display"] += 1
+            elif kind == "CITE":
+                counts["Citation"] += 1
+            elif kind == "VALUE":
+                counts["Value"] += 1
+        return len(records), counts
+    return _fallback_evidence_counts(rows)
+
+
+def _short_text(value: str, limit: int = 150) -> str:
+    """Keep a reader-facing action short without inventing a summary."""
+    clean = _plain_inline_markdown(value)
+    if len(clean) <= limit:
+        return clean
+    return clean[: limit - 1].rstrip() + "…"
+
+
+def _run_name(row: dict) -> str:
+    """Return the semantic name shown on a closed Run card."""
+    if row.get("lane") == "page" and row.get("operation") == "interactive-writing":
+        run_id = str(row.get("run_id", ""))
+        if _is_structure_run(run_id):
+            return "Structure"
+        target = str(row.get("target", "")).strip()
+        if _SECTION_RUN.fullmatch(run_id):
+            return "Section · " + target if target else "Section"
+        legacy_paragraph = ("_p" in run_id.lower() or
+                            bool(re.fullmatch(r"rp\d+", run_id, re.I)))
+        if (_PARAGRAPH_RUN.fullmatch(run_id) or legacy_paragraph) and target:
+            return "Paragraph · " + target.replace("-", "–")
+        return "Section" if legacy_paragraph else _page_run_label(run_id)
+    if row.get("operation") == "paragraph-writing":
+        target = str(row.get("target", "")).strip()
+        return "Paragraph · " + (target or "Writing")
+    evidence_type = _evidence_type(row)
+    if evidence_type:
+        return f"{evidence_type} · {_evidence_item_label(row)}"
+    # Insight and other task dialects already provide the useful semantic
+    # name in ``kind``. Keep that name on the closed card; the full address
+    # remains available inside the opened Run details.
+    kind = str(row.get("kind", "")).strip()
+    if kind and str(row.get("operation", "")).lower() in {"item", "insight"}:
+        return _short_text(kind, 100)
+    operation = str(row.get("operation", "")).strip()
+    if operation:
+        return operation.replace("-", " ").title()
+    return str(row.get("run_id", "Run"))
+
+
+def _run_action(row: dict) -> str:
+    """Return the one-line activity shown before a card is opened."""
+    if row.get("lane") == "page" and row.get("operation") == "interactive-writing":
+        if _is_structure_run(str(row.get("run_id", ""))):
+            return "Agree the Page structure and evidence routes"
+        target = str(row.get("target", "")).strip()
+        return "Review and modify " + (target or "the Page")
+    evidence_type = _evidence_type(row)
+    if evidence_type:
+        return f"Produce {evidence_type.lower()} evidence"
+    return _short_text(row.get("outcome") or row.get("target") or _what_happened(row))
+
+
+def _result_source_files(row: dict, root: Path) -> list[Path]:
+    """Resolve only safe, conventional Result payload files for preview."""
+    result_path = row.get("result_path") or _repo_path(root, row.get("result", ""))
+    if not result_path:
+        return []
+    if result_path.is_file():
+        return [result_path]
+    if not result_path.is_dir() or result_path.is_symlink():
+        return []
+    preferred = []
+    if row.get("operation") == "paragraph-writing":
+        preferred.extend(("paragraph.md", "result.md"))
+    evidence_type = _evidence_type(row)
+    if evidence_type == "Display":
+        preferred.extend(("display.md", "table.md"))
+    elif evidence_type == "Citation":
+        preferred.extend(("citation.md", "source.md"))
+    preferred.extend(("result.md", "facts.md", "summary.md", "report.md", "result.yaml",
+                      "value.yaml", "result.json", "result.csv"))
+    files = []
+    for name in preferred:
+        candidate = result_path / name
+        if candidate not in files and _confined_file(candidate, result_path):
+            files.append(candidate)
+    return files
+
+
+def _yaml_result_payload(text: str) -> str:
+    """Extract the substantive payload from a Result envelope, not its metadata."""
+    lines = text.splitlines()
+    start = next((index for index, line in enumerate(lines)
+                  if re.match(r"^payload:\s*$", line)), None)
+    if start is not None:
+        payload = []
+        for line in lines[start + 1:]:
+            if line and not line[0].isspace():
+                break
+            payload.append(line[2:] if line.startswith("  ") else line)
+        value = "\n".join(payload).strip()
+        if value:
+            return value
+    values = []
+    for key in ("reader_takeaway", "interpretation", "outcome", "summary"):
+        match = re.search(rf"^{re.escape(key)}:\s*(.+?)\s*$", text, re.M)
+        if match:
+            values.append(match.group(1).strip().strip("'\""))
+    if values:
+        return "\n\n".join(values)
+
+    # Small domain Result files such as ``value.yaml`` often contain only
+    # substantive fields and therefore have no explicit ``payload`` key.
+    # Keep those values visible while filtering the lifecycle envelope.
+    metadata = {
+        "schema", "run", "global_id", "status", "target", "ticket",
+        "result", "runtime", "family", "operation", "interaction",
+        "version", "step", "item", "supporting_results",
+    }
+    fields = []
+    for line in lines:
+        match = re.match(r"^([A-Za-z_][A-Za-z0-9_-]*):\s*(.+?)\s*$", line)
+        if match and match.group(1).lower() not in metadata:
+            fields.append(line.strip())
+    return "\n".join(fields)
+
+
+def _render_result_file(path: Path) -> str:
+    """Render one safe Result payload as readable HTML."""
+    boundary = path.parent
+    text = _preview_text(path, boundary)
+    if not text:
+        return ""
+    suffix = path.suffix.lower()
+    if suffix == ".md":
+        return _markdown_fragment(text)
+    if suffix in {".yaml", ".yml"}:
+        payload = _yaml_result_payload(text)
+        return "<pre>%s</pre>" % html.escape(payload) if payload else ""
+    return "<pre>%s</pre>" % html.escape(text.strip())
+
+
+def _result_preview(row: dict, root: Path) -> str:
+    """Show the actual safe Result payload before any Run metadata."""
+    for path in _result_source_files(row, root):
+        rendered = _render_result_file(path)
+        if rendered:
+            return '<section class=run-result><h3>Result</h3><div class=run-output>%s</div></section>' % rendered
+    if row.get("outcome"):
+        return '<section class=run-result><h3>Result</h3><p class=run-output>%s</p></section>' % _inline_markdown(row["outcome"])
+    return '<section class="run-result run-result-empty"><h3>Result</h3><p>No Result available yet.</p></section>'
 
 
 def _what_happened(row: dict) -> str:
@@ -580,7 +836,7 @@ def _meta_grid(fields: list[tuple[str, str, bool]]) -> str:
 
 def _mermaid_run_visual(page_src: Path, row: dict) -> str:
     """Reuse the Page's deterministic Mermaid renderer for the structure Run."""
-    if row.get("run_id") != _STRUCTURE_RUN:
+    if not _is_structure_run(str(row.get("run_id", ""))):
         return ""
     logic = page_src.parent / "outline" / f"{page_src.stem}-logic.mmd"
     source = _preview_text(logic, logic.parent)
@@ -627,25 +883,17 @@ def _mermaid_run_visual(page_src: Path, row: dict) -> str:
 
 
 def _page_run_detail(row: dict, root: Path, page_src: Path) -> str:
-    """Reader-first Page Run summary with history and internals on demand."""
-    version_step = "/".join(filter(None, (row.get("version", ""), row.get("step", ""))))
-    scope = ("Whole-page argument flow and paragraph order (P01–P06)"
-             if row.get("run_id") == _STRUCTURE_RUN
-             else row.get("target") or "Page")
-    fields = [
-        ("Goal", html.escape(row.get("goal") or "Not recorded"), True),
-        ("Scope", html.escape(scope), True),
-        ("Status", '<span class="state %s">%s</span>' %
-         (html.escape(row["status"].lower()), html.escape(row["status"])), False),
-        ("Version / Step", html.escape(version_step or "Not started"), False),
-    ]
+    """Reader-first Page Run detail: Result first, history and metadata later."""
     chunks = [
         '<div class=detail-head><span class=detail-title>%s</span></div>' %
-        html.escape(_page_run_label(row["run_id"])),
-        _meta_grid(fields),
+        html.escape(_run_name(row)),
     ]
     earlier_steps: list[tuple[str, str, str, str]] = []
     working_text = ""
+    current_request = ""
+    current_interpretations: list[str] = []
+    current_result = ""
+    current_track_changes = ""
     if row.get("runtime"):
         directory = row["runtime"].parent
         findings = _interactive_findings(row["runtime"], row)
@@ -664,35 +912,46 @@ def _page_run_detail(row: dict, root: Path, page_src: Path) -> str:
                 result = _saved_result_focus(section)
                 track_changes = _track_change_html(section)
                 if (path.stem, step_id) == current_key:
-                    if request:
-                        chunks.append("<section class=\"review-card feedback\"><h3>Latest feedback</h3>%s%s</section>" %
-                                      (_markdown_fragment(request),
-                                       ("<h4>What this means</h4><ul>%s</ul>" % "".join(
-                                           f"<li>{_inline_markdown(item)}</li>" for item in interpretations
-                                       )) if interpretations else ""))
-                    if result:
-                        visual = _mermaid_run_visual(page_src, row)
-                        chunks.append("<section class=\"review-card result\"><h3>Current saved result</h3>%s%s</section>" %
-                                      (visual, _markdown_fragment(result) + track_changes))
+                    current_request = request
+                    current_interpretations = interpretations
+                    current_result = result
+                    current_track_changes = track_changes
                 else:
                     earlier_steps.append((f"{path.stem}/{step_id}", request, result,
                                           track_changes))
     else:
         chunks.append("<p class=note>This Page Run has no current lifecycle projection.</p>")
 
+    visual = _mermaid_run_visual(page_src, row)
+    result_body = (visual + _markdown_fragment(current_result) + current_track_changes
+                   if current_result else "")
+    if result_body:
+        chunks.append('<section class=run-result><h3>Result</h3><div class=run-output>%s</div></section>' % result_body)
+    else:
+        chunks.append('<section class="run-result run-result-empty"><h3>Result</h3><p>No Result available yet.</p></section>')
+
     next_action = _working_field(working_text, "Next")
-    if next_action:
-        chunks.append('<p class=next-action><b>Next</b><br>%s</p>' %
-                      _inline_markdown(next_action))
+    if current_request or next_action:
+        context = []
+        if current_request:
+            context.append("<h4>Review input</h4>%s" % _markdown_fragment(current_request))
+        if current_interpretations:
+            context.append("<h4>Interpretation</h4><ul>%s</ul>" % "".join(
+                f"<li>{_inline_markdown(item)}</li>" for item in current_interpretations
+            ))
+        if next_action:
+            context.append("<h4>Next</h4>%s" % _inline_markdown(next_action))
+        chunks.append("<details class=run-context><summary>Review context</summary>%s</details>" %
+                      "".join(context))
     if earlier_steps:
         entries = []
         for label, request, result, track_changes in reversed(earlier_steps):
-            body = (("<h4>Feedback</h4>%s" % _markdown_fragment(request)) if request else "")
-            body += (("<h4>Saved result</h4>%s" % _markdown_fragment(result)) if result else "")
+            body = (("<h4>Review input</h4>%s" % _markdown_fragment(request)) if request else "")
+            body += (("<h4>Result</h4>%s" % _markdown_fragment(result)) if result else "")
             body += track_changes
             entries.append("<details class=step-history><summary>%s</summary>%s</details>" %
                            (html.escape(label), body or "<p>No readable summary recorded.</p>"))
-        chunks.append("<details class=history><summary>Earlier steps · %d</summary>%s</details>" %
+        chunks.append("<details class=history><summary>Earlier results · %d</summary>%s</details>" %
                       (len(entries), "".join(entries)))
 
     technical = [
@@ -708,6 +967,19 @@ def _page_run_detail(row: dict, root: Path, page_src: Path) -> str:
     if row.get("refs"):
         technical_html += "<h4>Evidence bindings</h4><ul class=refs>%s</ul>" % "".join(
             "<li><code>%s</code></li>" % html.escape(ref) for ref in row["refs"]
+        )
+    if _is_structure_run(str(row.get("run_id", ""))):
+        collaboration = (
+            row.get("participants") or "not supplied",
+            row.get("coordinator") or "not supplied",
+            row.get("contributors") or "current Step not supplied",
+        )
+        technical_html += (
+            "<h4>Collaboration</h4><dl>"
+            "<dt>Participants</dt><dd><code>%s</code></dd>"
+            "<dt>Coordinator</dt><dd><code>%s</code></dd>"
+            "<dt>Step contributors</dt><dd><code>%s</code></dd>"
+            "</dl>" % tuple(html.escape(value) for value in collaboration)
         )
     for finding in row.get("audit", []):
         technical_html += "<p class=note>Run audit finding: %s.</p>" % html.escape(finding)
@@ -851,7 +1123,11 @@ def _evidence_refs(page_src: Path, *, run_id: str, ticket: Path) -> list[str]:
 
 def _sort_key(row: dict) -> tuple:
     """Order active/recovery work first, then newer Run numbers."""
-    numbers = re.findall(r"r(?:p|l|i|d)?(\d+)", row.get("run_id", ""), re.I)
+    numbers = re.findall(
+        r"(?:r(?:p|l|i|d)?|rp-(?:struct|sec|para)-|re-(?:value|display|cite)-|rd)(\d+)",
+        row.get("run_id", ""),
+        re.I,
+    )
     newest = -int(numbers[-1]) if numbers else 0
     return _STATE_ORDER.get(row["status"], 9), newest, row["run_id"]
 
@@ -879,7 +1155,8 @@ def local_runs(page_src: Path) -> list[dict]:
             paired_runtimes.add(runtime)
         fields = _fields(runtime)
         ticket_fields = _fields(ticket) if ticket.suffix.lower() in {".md", ".yaml", ".yml"} else {}
-        for key in ("target", "family", "operation", "interaction", "mode", "version", "step"):
+        for key in ("target", "family", "operation", "interaction", "mode", "version", "step",
+                    "participants", "coordinator", "contributors"):
             fields[key] = fields.get(key) or ticket_fields.get(key, "")
         if not fields.get("operation") and re.fullmatch(r"r\d+_page-writing_c\d+-p\d+", ticket.stem):
             fields["operation"] = "paragraph-writing"
@@ -957,6 +1234,9 @@ def local_runs(page_src: Path) -> list[dict]:
             "operation": fields.get("operation", ""),
             "version": fields.get("version", ""),
             "step": fields.get("step", ""),
+            "participants": fields.get("participants", ""),
+            "coordinator": fields.get("coordinator", ""),
+            "contributors": fields.get("contributors", ""),
             "goal": _ticket_note(ticket, "Goal"),
             "status": "Held" if audit else _status(runtime, fields),
             "audit": audit,
@@ -991,6 +1271,9 @@ def local_runs(page_src: Path) -> list[dict]:
             "operation": fields.get("operation", ""),
             "version": fields.get("version", ""),
             "step": fields.get("step", ""),
+            "participants": fields.get("participants", ""),
+            "coordinator": fields.get("coordinator", ""),
+            "contributors": fields.get("contributors", ""),
             "goal": "",
             "status": "Held",
             "refs": [],
@@ -1315,48 +1598,40 @@ def run_inventory(page_src: Path) -> list[dict]:
 def _detail(row: dict, root: Path, page_src: Path) -> str:
     if row.get("lane") == "page" and row.get("operation") == "interactive-writing":
         return _page_run_detail(row, root, page_src)
-    fields = [("Run", html.escape(row["run_id"])),
-              ("Purpose", html.escape(row["target"]))]
-    if row.get("lane") == "page":
-        fields.extend([
-            ("Goal", html.escape(row.get("goal") or "not recorded")),
-            ("Version / Step", html.escape("/".join(filter(None, (
-                row.get("version", ""), row.get("step", "")))) or "not started")),
-            ("Run record", _linked(row["ticket"], label=_shown_path(row["ticket"], root))),
-            ("Writing Result", _linked(row.get("result_path"),
-                                        label=_shown_path(row.get("result_path"), root))),
-        ])
-    else:
-        # A Page consumes a delegated Result. Ticket, command and runtime are
-        # deliberately not projected across the Task ownership boundary.
-        fields.insert(1, ("Kind / where", html.escape(
-            f"{row.get('kind', 'Task')} · {row.get('origin', 'Local')}")))
-        fields.insert(3, ("What happened", html.escape(_what_happened(row))))
-        result_path = row.get("result_path") or _repo_path(root, row.get("result", ""))
-        fields.append(("Result", _linked(result_path,
-                                           label=_shown_path(result_path, root))
-                       if result_path else "not available yet"))
-    chunks = ["<p class=kv><b>%s</b><span>%s</span></p>" % (label, value)
-              for label, value in fields]
+    # The first thing in every non-interactive detail is the actual Result.
+    # Ownership and record metadata remain available below the fold.
+    chunks = [
+        '<div class=detail-head><span class=detail-title>%s</span></div>' %
+        html.escape(_run_name(row)),
+        _result_preview(row, root),
+    ]
     for finding in row.get("audit", []):
         chunks.append("<p class=note>Run audit finding: %s.</p>" % html.escape(finding))
-    if row["refs"]:
-        chunks.append("<p><b>Evidence</b></p><ul class=refs>%s</ul>" % "".join(
-            "<li><code>%s</code></li>" % html.escape(ref) for ref in row["refs"]
-        ))
     if row.get("operation") == "paragraph-writing":
         if row["runtime"] is None:
             chunks.append("<p class=note>Missing runtime.yaml: this writing Run has no lifecycle receipt.</p>")
-        previews = ([('Writing instructions / Prompt', row['ticket'], row['ticket'].parent)]
-                    if row.get("ticket") else [])
-        if row["runtime"]:
-            directory = row["runtime"].parent
-            previews.extend((label, directory / name, directory) for label, name in
-                            (("Paragraph", "paragraph.md"), ("Trace / Review", "trace.md")))
-        for label, path, boundary in previews:
-            text = _preview_text(path, boundary)
-            chunks.append("<h2>%s</h2><pre class=run-preview>%s</pre>" %
-                          (label, html.escape(text or "Not available yet.")))
+        if row.get("ticket"):
+            prompt = _preview_text(row["ticket"], row["ticket"].parent)
+            if prompt:
+                chunks.append("<details class=run-context><summary>Prompt</summary><pre class=run-preview>%s</pre></details>" %
+                              html.escape(prompt))
+        if row.get("runtime"):
+            trace = _preview_text(row["runtime"].parent / "trace.md", row["runtime"].parent)
+            if trace:
+                chunks.append("<details class=run-context><summary>Trace</summary><pre class=run-preview>%s</pre></details>" %
+                              html.escape(trace))
+    context = []
+    if row.get("refs"):
+        context.append("<h4>Evidence bindings</h4><ul class=refs>%s</ul>" % "".join(
+            "<li><code>%s</code></li>" % html.escape(ref) for ref in row["refs"]
+        ))
+    result_path = row.get("result_path") or _repo_path(root, row.get("result", ""))
+    if result_path:
+        context.append("<h4>Result source</h4><code class=repo-path>%s</code>" %
+                       html.escape(_shown_path(result_path, root)))
+    if context:
+        chunks.append("<details class=technical><summary>Run details</summary>%s</details>" %
+                      "".join(context))
     return "<div class=detailbox>%s</div>" % "".join(chunks)
 
 
@@ -1375,49 +1650,137 @@ def _scripts(page_src: Path, root: Path) -> str:
             "<ul>%s</ul></details>" % (len(files), items))
 
 
-def _lane_table(rows: list[dict], lane: str, root: Path, page_src: Path,
-                selected_run: str = "") -> str:
+def _run_card(row: dict, key: str, root: Path, page_src: Path,
+              selected_run: str = "") -> str:
+    """Render one semantic Run card with its Result behind the disclosure."""
+    expanded = bool(selected_run and row.get("run_id") == selected_run)
+    state = str(row.get("status", "Held"))
+    return (
+        '<article class=run-card>'
+        '<div class=run-card-summary data-key="%s" data-run="%s" tabindex="0" '
+        'role="button" aria-expanded="%s">'
+        '<div class=run-card-name>%s</div>'
+        '<span class="run-state-dot %s" title="%s" aria-label="Status: %s">●</span>'
+        '<div class=run-card-action>%s</div></div>'
+        '<div class=run-card-detail data-key="%s"%s>%s</div>'
+        '</article>' % (
+            html.escape(key), html.escape(str(row.get("run_id", ""))),
+            "true" if expanded else "false", html.escape(_run_name(row)),
+            html.escape(state.lower()), html.escape(state), html.escape(state),
+            html.escape(_run_action(row)), html.escape(key),
+            "" if expanded else " hidden", _detail(row, root, page_src),
+        )
+    )
+
+
+def _run_subspace(title: str, rows: list[dict], prefix: str, root: Path,
+                  page_src: Path, selected_run: str = "") -> str:
+    """Render one stable Page Run or Evidence subspace."""
     if not rows:
-        message = {
-            "p": "No Run P yet.",
-            "e": "No Run E yet.",
-            "support": "No Supporting Run linked yet.",
-        }.get(lane, "No Run yet.")
-        return '<div class=lane-empty><b>%s</b></div>' % html.escape(message)
-    rendered = []
-    headings = ("<th>Run</th><th>Goal</th><th>Version / Step</th><th>Status</th><th>Result</th>"
-                if lane == "p" else
-                "<th>Run</th><th>Type / Where</th><th>What happened</th><th>Status</th><th>Result</th>")
-    for index, row in enumerate(rows):
-        key = f"{lane}-{index}"
-        expanded = bool(selected_run and row["run_id"] == selected_run)
-        expanded_text = "true" if expanded else "false"
-        hidden = "" if expanded else " hidden"
-        state = row["status"].lower()
-        if lane == "p":
-            middle = html.escape("/".join(filter(None, (row.get("version", ""),
-                                                         row.get("step", "")))) or "—")
-            result = "history" if row["runtime"] else "—"
-            cells = (html.escape(_page_run_label(row["run_id"])),
-                     html.escape(row.get("goal") or row["target"]),
-                     middle, html.escape(state), html.escape(row["status"]), result)
-        else:
-            result = "output" if row.get("result") else "—"
-            kind_origin = f"{row.get('kind', 'Task')} · {row.get('origin', 'Local')}"
-            cells = (html.escape(row["run_id"]), html.escape(kind_origin),
-                     html.escape(_what_happened(row)), html.escape(state),
-                     html.escape(row["status"]), result)
-        rendered.append(
-            '<tr class="run" data-key="%s" data-run="%s" tabindex="0" aria-expanded="%s"><td><code class=route>%s</code></td>'
-            '<td>%s</td><td>%s</td><td><span class="state %s">%s</span></td><td>%s</td></tr>'
-            '<tr class="detail" data-key="%s"%s><td colspan=5>%s</td></tr>' %
-            ((html.escape(key), html.escape(row["run_id"]), expanded_text) + cells +
-             (html.escape(key), hidden, _detail(row, root, page_src))))
-    return '<table class="runs-table %s-runs"><thead><tr>%s</tr></thead><tbody>%s</tbody></table>' % (lane, headings, "".join(rendered))
+        return '<section class=run-subspace><h3>%s</h3><div class=lane-empty>No %s Run yet.</div></section>' % (
+            html.escape(title), html.escape(title))
+    cards = "".join(_run_card(row, f"{prefix}-{index}", root, page_src, selected_run)
+                     for index, row in enumerate(rows))
+    return '<section class=run-subspace><h3>%s</h3><div class=run-cards>%s</div></section>' % (
+        html.escape(title), cards)
+
+
+def _support_group(row: dict) -> tuple[str, str]:
+    """Return a stable Task-level grouping key and short reader label."""
+    value = str(row.get("compact_id") or row.get("global_id") or row.get("run_id", ""))
+    match = re.search(r"b(\d+)j(\d+)t(\d+)(?:r\d+)?", value.replace(".", ""), re.I)
+    if not match:
+        return "unassigned", "Unassigned"
+    block, job, task = match.groups()
+    return f"b{block}j{job}t{task}", f"T{int(task):02d}"
+
+
+def _support_group_detail(group: dict, root: Path, page_src: Path,
+                          selected_run: str = "") -> str:
+    """Keep the Task card compact while retaining every child Result on demand."""
+    members = []
+    for row in group["rows"]:
+        member_label = "%s · %s" % (row.get("run_id", "Run"), _run_action(row))
+        opened = " open" if row.get("run_id") == selected_run else ""
+        members.append(
+            '<details class=support-member%s><summary><code>%s</code></summary>%s</details>' %
+            (opened, html.escape(member_label), _detail(row, root, page_src))
+        )
+    return '<div class=support-group-detail>%s</div>' % "".join(members)
+
+
+def _support_groups(rows: list[dict]) -> dict[str, list[dict]]:
+    groups: dict[str, list[dict]] = {}
+    for row in rows:
+        key, _label = _support_group(row)
+        groups.setdefault(key, []).append(row)
+    return groups
+
+
+def _support_column(title: str, rows: list[dict], root: Path, page_src: Path,
+                   selected_run: str = "") -> str:
+    groups = _support_groups(rows)
+    if not groups:
+        return '<section class=support-column><h3>%s</h3><div class=lane-empty>No %s Run yet.</div></section>' % (
+            html.escape(title), html.escape(title))
+    cards = []
+    for index, (key, members) in enumerate(sorted(groups.items())):
+        _group_key, label = _support_group(members[0])
+        group_id = f"support-{title.lower()}-{index}"
+        expanded = bool(selected_run and any(row.get("run_id") == selected_run for row in members))
+        status = min((row.get("status", "Held") for row in members),
+                     key=lambda value: _STATE_ORDER.get(value, 9))
+        action = _short_text(members[0].get("outcome") or members[0].get("target") or
+                             "%d supporting results" % len(members))
+        count_label = "Run" if len(members) == 1 else "Runs"
+        cards.append(
+            '<article class=run-card><div class=run-card-summary data-key="%s" data-run="%s" '
+            'tabindex="0" role="button" aria-expanded="%s">'
+            '<div class=run-card-name>%s · %d %s</div>'
+            '<span class="run-state-dot %s" title="%s" aria-label="Status: %s">●</span>'
+            '<div class=run-card-action>%s</div></div>'
+            '<div class=run-card-detail data-key="%s"%s>%s</div></article>' % (
+                html.escape(group_id), html.escape(members[0].get("run_id", "")),
+                "true" if expanded else "false", html.escape(label), len(members), count_label,
+                html.escape(status.lower()), html.escape(status), html.escape(status),
+                html.escape(action), html.escape(group_id), "" if expanded else " hidden",
+                _support_group_detail({"rows": members}, root, page_src, selected_run),
+            )
+        )
+    return '<section class=support-column><h3>%s</h3><div class=run-cards>%s</div></section>' % (
+        html.escape(title), "".join(cards))
+
+
+def _run_space_tab(key: str, title: str, active: bool) -> str:
+    """Render one compact Evidence-style selector for a Run Space lane."""
+    selected = "true" if active else "false"
+    selected_class = " on" if active else ""
+    return (
+        '<button type=button class="run-space-tab%s" id="run-space-tab-%s" '
+        'role=tab data-space="%s" aria-selected="%s" '
+        'aria-controls="run-space-panel-%s">%s</button>' % (
+            selected_class, html.escape(key, quote=True), html.escape(key, quote=True),
+            selected, html.escape(key, quote=True), html.escape(title)
+        )
+    )
+
+
+def _run_space_panel(key: str, body: str, pills: str, active: bool) -> str:
+    """Render only the selected lane while retaining accessible tab semantics."""
+    hidden = "" if active else " hidden"
+    return (
+        '<section class="run-space-panel%s" id="run-space-panel-%s" role=tabpanel '
+        'data-space-panel="%s" aria-labelledby="run-space-tab-%s"%s>'
+        '<div class=run-space-overview>%s</div>%s</section>' % (
+            " on" if active else "", html.escape(key, quote=True),
+            html.escape(key, quote=True), html.escape(key, quote=True), hidden,
+            pills, body
+        )
+    )
 
 
 def render(page_src: Path, _path_q: str, _file_q: str,
-           selected_run: str = "") -> str:
+           selected_run: str = "", selected_space: str = "") -> str:
     rows = run_inventory(page_src)
     run_p = [row for row in rows
              if row.get("lane") == "page" or row.get("operation") == "paragraph-writing"]
@@ -1426,31 +1789,89 @@ def render(page_src: Path, _path_q: str, _file_q: str,
              and row.get("origin") != "Linked"
              and row.get("operation") != "paragraph-writing"
              and (row.get("operation") == "evidence-item" or row.get("refs"))]
-    supporting = [row for row in rows if row.get("origin") == "Linked"]
+    # Supporting Runs are references to work owned outside this Page. Local
+    # delivery, setup, design, and other Task/Insight records stay off-stage
+    # in Folder; they are not a catch-all lane. Page-integrated plugin records
+    # such as Labeling are also supporting work, even when stored locally.
+    # External Results are still inspected by reference; this list never
+    # copies them.
+    supporting = [row for row in rows
+                  if row.get("lane") != "page"
+                  and row not in run_e
+                  and (row.get("origin") == "Linked"
+                       or row.get("family") == "Labeling")]
     root = repo_root(page_src.parent)
-    sections = [
-        ("Run P", run_p, "p"),
-        ("Run E", run_e, "e"),
-        ("Supporting Runs", supporting, "support"),
-    ]
-    lane_sections = "".join(
-        "<section class=lane><h2>%s</h2>%s</section>" % (
-            title, _lane_table(lane_rows, lane, root, page_src, selected_run))
-        for title, lane_rows, lane in sections
+    writing = {name: [] for name in ("Structure", "Section", "Paragraph")}
+    for row in run_p:
+        writing[_page_writing_subspace(row)].append(row)
+    evidence = {name: [] for name in _EVIDENCE_TYPE_ORDER}
+    for row in run_e:
+        evidence[_evidence_type(row) or "Value"].append(row)
+    writing_sections = "".join(
+        _run_subspace(name, writing[name], "writing-%s" % name.lower(), root, page_src, selected_run)
+        for name in ("Structure", "Section", "Paragraph")
     )
-    source_map = ("<div class=source-map>Tickets <code>runs/</code> · "
-                  "Results <code>results/</code> · Supporting <code>linked refs</code></div>")
-    main = source_map + "<div class=wrap>%s</div>" % lane_sections
+    evidence_sections = "".join(
+        _run_subspace(name, evidence[name], "evidence-%s" % name.lower(), root, page_src, selected_run)
+        for name in _EVIDENCE_TYPE_ORDER
+    )
+    task_support = [row for row in supporting if str(row.get("kind", "")).lower() != "discovery"]
+    discovery_support = [row for row in supporting if str(row.get("kind", "")).lower() == "discovery"]
+    evidence_total, evidence_counts = _evidence_summary_counts(page_src, run_e)
+    support_sections = '<div class=support-grid>%s%s</div>' % (
+        _support_column("Task", task_support, root, page_src, selected_run),
+        _support_column("Discovery", discovery_support, root, page_src, selected_run),
+    )
+    selected_by_run = {
+        "writing": any(row.get("run_id") == selected_run for row in run_p),
+        "evidence": any(row.get("run_id") == selected_run for row in run_e),
+        "supporting": any(row.get("run_id") == selected_run for row in supporting),
+    }
+    active_space = selected_space if selected_space in selected_by_run else "writing"
+    for key in ("evidence", "supporting"):
+        if selected_by_run[key]:
+            active_space = key
+            break
+    space_specs = (
+        ("writing", "Paper Writing", writing_sections, _run_pills([
+            ("Writing Runs", len(run_p)),
+            ("Structure", len(writing["Structure"])),
+            ("Sections", len(writing["Section"])),
+            ("Paragraphs", len(writing["Paragraph"])),
+        ])),
+        ("evidence", "Evidence", evidence_sections, _run_pills([
+            ("Evidence Items", evidence_total),
+            ("Displays", evidence_counts["Display"]),
+            ("Citations", evidence_counts["Citation"]),
+            ("Values", evidence_counts["Value"]),
+        ])),
+        ("supporting", "Supporting Runs", support_sections, _run_pills([
+            ("Supporting Runs", len(supporting)),
+            ("Tasks", len(_support_groups(task_support))),
+            ("Discoveries", len(_support_groups(discovery_support))),
+        ])),
+    )
+    tabs = "".join(_run_space_tab(key, title, key == active_space)
+                    for key, title, _body, _pills in space_specs)
+    panels = "".join(_run_space_panel(key, body, pills, key == active_space)
+                      for key, _title, body, pills in space_specs)
+    main = (
+        '<div class=wrap><div class=run-space-switcher role=tablist '
+        'aria-label="Run Space sections">%s</div><div class=run-space-panels>%s</div></div>' %
+        (tabs, panels)
+    )
     return f"""<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1">
 <title>Run Space · {html.escape(page_src.stem)}</title><style>{_CSS}</style>
 <body class=embedded><header><h1>Run Space</h1></header>{main}
 <script>
 (function () {{
  function remember(r,open){{var u=new URL(window.location.href);if(open)u.searchParams.set('run',r.dataset.run);else u.searchParams.delete('run');history.replaceState(null,'',u);}}
- function toggle(r){{var key=r.dataset.key;var d=document.querySelector('tr.detail[data-key="'+key+'"]');if(d){{d.hidden=!d.hidden;r.setAttribute('aria-expanded',String(!d.hidden));remember(r,!d.hidden);}}}}
- document.addEventListener('click',function(e){{var r=e.target.closest('tr.run');if(r)toggle(r);}});
- document.addEventListener('keydown',function(e){{var r=e.target.closest('tr.run');if(r&&(e.key==='Enter'||e.key===' ')){{e.preventDefault();toggle(r);}}}});
- var wanted=new URLSearchParams(window.location.search).get('run');if(wanted){{var rows=document.querySelectorAll('tr.run');for(var i=0;i<rows.length;i++){{if(rows[i].dataset.run===wanted){{rows[i].scrollIntoView({{block:'start'}});break;}}}}}} }})();
+ function selectSpace(key,rememberUrl){{var tabs=document.querySelectorAll('.run-space-tab');var panels=document.querySelectorAll('.run-space-panel');for(var i=0;i<tabs.length;i++){{var on=tabs[i].dataset.space===key;tabs[i].classList.toggle('on',on);tabs[i].setAttribute('aria-selected',String(on));}}for(var j=0;j<panels.length;j++){{var show=panels[j].dataset.spacePanel===key;panels[j].hidden=!show;panels[j].classList.toggle('on',show);}}if(rememberUrl){{var u=new URL(window.location.href);u.searchParams.set('space',key);history.replaceState(null,'',u);}}}}
+ function toggle(r){{var key=r.dataset.key;var d=document.querySelector('.run-card-detail[data-key="'+key+'"]');if(d){{d.hidden=!d.hidden;r.setAttribute('aria-expanded',String(!d.hidden));remember(r,!d.hidden);}}}}
+ document.addEventListener('click',function(e){{var tab=e.target.closest('.run-space-tab');if(tab)selectSpace(tab.dataset.space,true);}});
+ document.addEventListener('click',function(e){{var r=e.target.closest('.run-card-summary');if(r)toggle(r);}});
+ document.addEventListener('keydown',function(e){{var r=e.target.closest('.run-card-summary');if(r&&(e.key==='Enter'||e.key===' ')){{e.preventDefault();toggle(r);}}}});
+ var initial=new URLSearchParams(window.location.search).get('space');var active=document.querySelector('.run-space-tab.on');selectSpace(initial||((active&&active.dataset.space)||'writing'),false);var wanted=new URLSearchParams(window.location.search).get('run');if(wanted){{var rows=document.querySelectorAll('.run-card-summary');for(var i=0;i<rows.length;i++){{if(rows[i].dataset.run===wanted){{var panel=rows[i].closest('.run-space-panel');if(panel)selectSpace(panel.dataset.spacePanel,false);rows[i].scrollIntoView({{block:'start'}});break;}}}}}} }})();
 </script>"""
 
 
@@ -1462,10 +1883,11 @@ class RunsTabMixin:
         path_q = (query.get("path") or [""])[0]
         file_q = (query.get("file") or [""])[0]
         run_q = (query.get("run") or [""])[0]
+        space_q = (query.get("space") or [""])[0]
         page_src, error = self.target({"path": path_q, "file": file_q})
         if page_src is None:
             return self.reply(400, {"ok": False, "err": error})
-        body = render(page_src, path_q, file_q, run_q).encode("utf-8")
+        body = render(page_src, path_q, file_q, run_q, space_q).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))

@@ -129,6 +129,13 @@ class OutlineReviewPacketTest(unittest.TestCase):
             self.assertIn("E01-VALUE-review-cohort-counts", body)
             self.assertIn("E1V.ReviewCohort", body)
             self.assertIn('class=point-evidence', body)
+            self.assertNotIn('class=point-evidence-label', body)
+            self.assertNotIn('<div class=point-evidence', body)
+            self.assertIn(
+                '<span class=point-statement>frame the physician decision problem</span>'
+                '<span class=point-evidence',
+                body,
+            )
             self.assertIn('class="evchip warn typed-ev"', body)
             self.assertIn('data-outline-lens="evidence"', body)
             self.assertIn('<span class=point-label>[Point]</span>', body)
@@ -137,6 +144,27 @@ class OutlineReviewPacketTest(unittest.TestCase):
             for field in ("Target", "Expected", "Acceptance", "Supporting Runs",
                           "Local Input", "Local Run", "Result", "Decide"):
                 self.assertNotIn("<b>%s</b>" % field, body)
+
+    def test_source_free_evidence_decision_is_not_a_visible_draft_block(self):
+        with tempfile.TemporaryDirectory() as directory:
+            page = self._page(directory)
+            outline = page.parent / "outline"
+            (outline / "SM00-abstract-outline-v1.md").write_text(
+                PLAN.replace(
+                    "Evidence: E01-VALUE-review-cohort-counts · scored physicians and reviews",
+                    "Evidence: none · this waypoint is conceptual and needs no source",
+                ),
+                encoding="utf-8",
+            )
+            (outline / "SM00-abstract-evidence-items.md").write_text(
+                "# SM00 · evidence items\npage: SM00\nkind: evidence-items · authored\n",
+                encoding="utf-8",
+            )
+            body = plan_card(page)
+            self.assertIn('data-evidence-state="none"', body)
+            self.assertIn('data-evidence-reason="this waypoint is conceptual and needs no source"', body)
+            self.assertNotIn("evidence: none", body)
+            self.assertNotIn('class=point-evidence-label', body)
 
     def test_outline_owns_one_internal_evidence_workspace(self):
         with tempfile.TemporaryDirectory() as directory:

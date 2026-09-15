@@ -23,9 +23,11 @@ URL uses the nested category path.
 from __future__ import annotations
 
 import datetime
+import hashlib
 import html
 import json
 import pathlib
+import re
 
 _CSS = """
 :root{--bg:#ffffff;--fg:#1c1d1f;--mut:#71727a;--line:#e4e4e7;--card:#f7f7f8;--acc:#3b6ea5}
@@ -55,6 +57,298 @@ nav button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
  border-radius:6px;padding:3px 10px;font-size:13px;cursor:pointer}
 #sbar .st{color:var(--mut);font-size:12px;max-width:40%}
 .ghost{color:var(--mut);padding:24px 16px;font-size:13.5px}
+"""
+
+
+_LANES = (
+    ("web", "🌐", "Web"),
+    ("latex", "📜", "LaTeX"),
+    ("word", "📝", "Word"),
+    ("slide", "🎞", "Slides"),
+    ("render", "📱", "Render"),
+)
+
+
+def _sha256(path: pathlib.Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _manifest(path: pathlib.Path):
+    if not path.is_file():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _inside(base: pathlib.Path, raw):
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    candidate = pathlib.Path(raw)
+    if candidate.is_absolute():
+        return None
+    try:
+        resolved = (base / candidate).resolve()
+        resolved.relative_to(base.resolve())
+    except (OSError, ValueError):
+        return None
+    return resolved
+
+
+def _source_path_matches(base: pathlib.Path, page_src: pathlib.Path, raw) -> bool:
+    if not isinstance(raw, str) or not raw.strip():
+        return True
+    actual = page_src.resolve().relative_to(base.resolve()).as_posix()
+    expected = pathlib.PurePosixPath(raw.replace("\\", "/")).as_posix()
+    return expected == actual or pathlib.PurePosixPath(expected).name == page_src.name
+
+
+def _source_fields(data):
+    if not isinstance(data, dict):
+        return None, None
+    source = data.get("source")
+    if isinstance(source, dict):
+        return source.get("path"), source.get("sha256")
+    return data.get("source_page"), data.get("source_sha256")
+
+
+def _artifact_specs(data, lane):
+    """Return (label, path, expected_sha256) entries from either manifest shape."""
+    if not isinstance(data, dict):
+        return []
+    raw = data.get("artifacts") if isinstance(data.get("artifacts"), dict) else None
+    if raw is None:
+        outputs = data.get("outputs")
+        raw = outputs.get(lane) if isinstance(outputs, dict) else None
+        if raw is None and lane == "slide" and isinstance(outputs, dict):
+            raw = outputs.get("slides")
+    if not isinstance(raw, dict):
+        return []
+    specs = []
+    for key, value in raw.items():
+        if key.endswith("_sha256") or key in {"sha256", "status", "build", "draft_consistency", "pdf_twin"}:
+            continue
+        if not isinstance(value, str) or not value.strip():
+            continue
+        expected = raw.get("sha256") if key == "path" else raw.get(key + "_sha256")
+        specs.append((key, value, expected if isinstance(expected, str) else None))
+    return specs
+
+
+def _marker_source_hash(path: pathlib.Path):
+    if not path.is_file():
+        return None
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    match = re.search(r"source_sha256[\"']?\s*[=:]\s*[\"']?([0-9a-f]{64})", text, re.I)
+    return match.group(1).lower() if match else None
+
+
+def _check_row(label, state, detail):
+    return {"label": label, "state": state, "detail": detail}
+
+
+def check_delivery(page_src: pathlib.Path):
+    """Read-only consistency receipt for the current Page source and deliveries.
+
+    The Page Markdown is the authority. This function never rebuilds, edits, or
+    promotes an artifact; it only compares the current source with the saved
+    delivery manifests, mirrors, hashes, and modification times.
+    """
+    page_src = pathlib.Path(page_src).resolve()
+    base = page_src.parent
+    source_hash = _sha256(page_src)
+    source_mtime = page_src.stat().st_mtime
+    actual_source = page_src.relative_to(base).as_posix()
+    root_manifest_path = base / "delivery" / "build-manifest.json"
+    root_manifest = _manifest(root_manifest_path)
+    lanes = []
+
+    for lane, icon, label in _LANES:
+        lane_dir = base / "delivery" / lane
+        if lane == "render" and not lane_dir.is_dir() and (base / "render").is_dir():
+            lane_dir = base / "render"
+        lane_manifest_path = lane_dir / "build-manifest.json"
+        lane_manifest = _manifest(lane_manifest_path)
+        data = lane_manifest or root_manifest
+        manifest_path = lane_manifest_path if lane_manifest else root_manifest_path if root_manifest else None
+        manifest_source_path, manifest_source_hash = _source_fields(data)
+        if data is None:
+            manifest_source_path, manifest_source_hash = None, None
+        specs = _artifact_specs(data, lane)
+        files = []
+        artifact_rows = []
+        hard_failure = False
+        hash_unverified = False
+        has_material = lane_dir.is_dir() and any(p.is_file() for p in lane_dir.iterdir())
+
+        for key, raw_path, expected_hash in specs:
+            path = _inside(base, raw_path)
+            lane_path = _inside(lane_dir, raw_path)
+            if lane_path is not None and (path is None or not path.exists()):
+                path = lane_path
+            if path is None:
+                artifact_rows.append(_check_row(key, "stale", "manifest path is outside this Page"))
+                hard_failure = True
+                continue
+            has_material = True
+            if not path.is_file():
+                artifact_rows.append(_check_row(key, "stale", "missing: %s" % raw_path))
+                hard_failure = True
+                continue
+            files.append(path)
+            if expected_hash:
+                actual_hash = _sha256(path)
+                if actual_hash != expected_hash:
+                    artifact_rows.append(_check_row(key, "stale", "hash differs: %s" % raw_path))
+                    hard_failure = True
+                else:
+                    artifact_rows.append(_check_row(key, "pass", raw_path))
+            else:
+                artifact_rows.append(_check_row(key, "unverified", "no artifact hash in manifest"))
+                hash_unverified = True
+
+        if lane == "web":
+            index = lane_dir / "index.html"
+            mirror = lane_dir / page_src.name
+            marker = lane_dir / ".haipipe-page-export"
+            if index.is_file():
+                has_material = True
+                if index not in files:
+                    files.append(index)
+            if mirror.is_file():
+                has_material = True
+                files.append(mirror)
+                if _sha256(mirror) != source_hash:
+                    artifact_rows.append(_check_row("content mirror", "stale", "web Markdown differs from Page source"))
+                    hard_failure = True
+                else:
+                    artifact_rows.append(_check_row("content mirror", "pass", "web Markdown matches Page source"))
+            elif index.is_file():
+                artifact_rows.append(_check_row("content mirror", "stale", "missing: delivery/web/%s" % page_src.name))
+                hard_failure = True
+            marker_hash = _marker_source_hash(marker)
+            if marker.is_file() and marker_hash:
+                if marker_hash != source_hash:
+                    artifact_rows.append(_check_row("export marker", "stale", "marker points to an older Page source"))
+                    hard_failure = True
+                else:
+                    artifact_rows.append(_check_row("export marker", "pass", "source fingerprint recorded"))
+            elif index.is_file():
+                artifact_rows.append(_check_row("export marker", "unverified", "legacy marker has no source fingerprint"))
+                hash_unverified = True
+
+        source_state = "pass"
+        source_detail = "current Page source"
+        if data is None and has_material:
+            source_state = "unverified"
+            source_detail = "no build manifest"
+            hash_unverified = True
+        elif data is not None:
+            if not _source_path_matches(base, page_src, manifest_source_path):
+                source_state = "stale"
+                source_detail = "manifest names %s, current source is %s" % (manifest_source_path, actual_source)
+                hard_failure = True
+            elif manifest_source_hash is None:
+                source_state = "unverified"
+                source_detail = "manifest has no source fingerprint"
+                hash_unverified = True
+            elif manifest_source_hash.lower() != source_hash:
+                source_state = "stale"
+                source_detail = "manifest fingerprint differs from current source"
+                hard_failure = True
+        artifact_rows.insert(0, _check_row("source fingerprint", source_state, source_detail))
+
+        if files:
+            old = [p for p in files if p.exists() and p.stat().st_mtime < source_mtime]
+            if old:
+                artifact_rows.append(_check_row("freshness", "stale", "%d artifact(s) predate the Page source" % len(old)))
+                hard_failure = True
+            else:
+                artifact_rows.append(_check_row("freshness", "pass", "artifacts are at least as new as the Page source"))
+        elif has_material:
+            artifact_rows.append(_check_row("freshness", "unverified", "no inspectable artifact files"))
+            hash_unverified = True
+
+        if not has_material:
+            state = "not-built"
+        elif hard_failure:
+            state = "stale"
+        elif hash_unverified:
+            state = "unverified"
+        else:
+            state = "pass"
+        lanes.append({
+            "lane": lane, "icon": icon, "label": label, "state": state,
+            "manifest": manifest_path.relative_to(base).as_posix() if manifest_path else None,
+            "rows": artifact_rows,
+        })
+
+    counts = {state: sum(1 for lane in lanes if lane["state"] == state)
+              for state in ("pass", "stale", "unverified", "not-built")}
+    overall = "stale" if counts["stale"] else "unverified" if counts["unverified"] else "pass"
+    return {
+        "schema": "page-delivery-consistency/v1",
+        "source": {"path": actual_source, "sha256": source_hash, "mtime": source_mtime},
+        "overall": overall,
+        "counts": counts,
+        "lanes": lanes,
+    }
+
+
+def render_workspace(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
+    """Render the internal read-only Delivery Workspace check."""
+    receipt = check_delivery(page_src)
+    state = receipt["overall"]
+    state_icon = {"pass": "✅", "stale": "⚠️", "unverified": "❓"}[state]
+    counts = receipt["counts"]
+    summary = "%s %d current · %d stale · %d unverified · %d not built" % (
+        state_icon, counts["pass"], counts["stale"], counts["unverified"], counts["not-built"])
+    cards = []
+    for lane in receipt["lanes"]:
+        icon = {"pass": "✅", "stale": "⚠️", "unverified": "❓", "not-built": "⬜"}[lane["state"]]
+        rows = "".join(
+            "<li><b>%s</b> <span class=%s>%s</span><span class=mut>%s</span></li>" %
+            (html.escape(row["label"]), row["state"], row["state"], html.escape(row["detail"]))
+            for row in lane["rows"])
+        manifest = (" · manifest: <code>%s</code>" % html.escape(lane["manifest"])
+                    if lane["manifest"] else " · no manifest")
+        cards.append("<section class=card><h2>%s %s <span class=state-%s>%s</span></h2>"
+                     "<div class=mut>%s</div><ul>%s</ul></section>" %
+                     (lane["icon"], html.escape(lane["label"]), lane["state"],
+                      lane["state"], manifest, rows or "<li>no delivery files</li>"))
+    source = receipt["source"]
+    return f"""<!doctype html><meta charset=utf-8>
+<title>📤 Delivery Workspace · {html.escape(page_src.stem)}</title>
+<style>
+:root{{--bg:#fff;--fg:#1c1d1f;--mut:#71727a;--line:#e4e4e7;--card:#f7f7f8;--acc:#3b6ea5;--bad:#a43d35;--warn:#996b00;--ok:#24733d}}
+@media(prefers-color-scheme:dark){{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;--line:#2c2e33;--card:#1d1f23;--acc:#7aa7d8;--bad:#f08b80;--warn:#e4bd62;--ok:#8bd49a}}
+body{{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}}
+header{{padding:14px 18px 8px;border-bottom:1px solid var(--line)}}
+h1{{font-size:18px;margin:0 0 3px}} h2{{font-size:14px;margin:0 0 4px}}
+.mut{{color:var(--mut);font-size:12px}} code{{font:11.5px ui-monospace,Menlo,monospace}}
+.source{{margin:12px 18px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card)}}
+.source div{{margin:2px 0}} .toolbar{{float:right;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:6px;padding:3px 8px;cursor:pointer}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:12px 18px}}
+.card{{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--card)}}
+.card ul{{padding-left:18px;margin:7px 0 0}} .card li{{margin:2px 0}} .card li b{{display:inline-block;min-width:112px}}
+.pass,.state-pass{{color:var(--ok)}} .stale,.state-stale{{color:var(--bad)}} .unverified,.state-unverified{{color:var(--warn)}} .not-built,.state-not-built{{color:var(--mut)}}
+.state-pass,.state-stale,.state-unverified,.state-not-built{{font-size:12px;font-weight:600}}
+</style>
+<header><button class=toolbar onclick="location.reload()">Refresh check</button>
+<h1>📤 Delivery Workspace · {html.escape(page_src.stem)}</h1>
+<div class=mut>Read-only consistency projection · Page source is authoritative · this view never rebuilds or edits delivery files</div></header>
+<div class=source><div><b>Authority</b> <code>{html.escape(source["path"])}</code></div>
+<div><b>SHA-256</b> <code>{source["sha256"]}</code></div><div><b>Result</b> {html.escape(summary)}</div></div>
+<main class=grid>{''.join(cards)}</main>
 """
 
 
@@ -240,14 +534,18 @@ class DeliveryTabMixin:
         q = parse_qs(urlparse(self.path).query)
         path_q = (q.get("path") or [""])[0]
         file_q = (q.get("file") or [""])[0]
+        workspace = (q.get("workspace") or [""])[0].lower() in {"1", "true", "yes"}
         got = self.target({"path": path_q, "file": file_q})
         if got[0] is None:
             return self.reply(400, {"ok": False, "err": got[1]})
-        body = render(
-            got[0], path_q, file_q,
-            interactive=getattr(self, "delivery_interactive", True),
-            asset_base=getattr(self, "delivery_asset_base", ""),
-        ).encode("utf-8")
+        if workspace:
+            body = render_workspace(got[0], path_q, file_q).encode("utf-8")
+        else:
+            body = render(
+                got[0], path_q, file_q,
+                interactive=getattr(self, "delivery_interactive", True),
+                asset_base=getattr(self, "delivery_asset_base", ""),
+            ).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))

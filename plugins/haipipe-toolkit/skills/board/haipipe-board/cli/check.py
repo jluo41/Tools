@@ -1879,10 +1879,18 @@ def check_native_design_runs(d, rep):
     """Delegate allocated native Design Runs to their worker-owned gate."""
     import importlib.util
 
-    folders = {p.parent.parent for p in d.rglob("runs/rd*_*.yaml")}
+    # Only the native Design Run grammar belongs to the Design Unit gate.
+    # Page delivery Runs also use the `rdNN_<target>` prefix (for example
+    # `rd01_latex`), but they are Page-owned delivery records, not Design
+    # Tickets.  Matching every `results/rd*_*` folder made the shared checker
+    # misclassify those valid Page Results as orphan Design Results.
+    folders = set()
+    for pattern in ("runs/rd*_generate_*.yaml", "runs/rd*_verify_*.yaml",
+                    "results/rd*_generate_*", "results/rd*_verify_*"):
+        paths = d.rglob(pattern)
+        folders.update(p.parent.parent for p in paths
+                       if p.is_file() or p.is_dir())
     folders.update(p.parent.parent for p in d.rglob("runs/r*_design_*.yaml"))
-    folders.update(p.parent.parent for p in d.rglob("results/rd*_*")
-                   if p.is_dir())
     folders.update(p.parent.parent for p in d.rglob("results/r*_design_*")
                    if p.is_dir())
     if not folders:

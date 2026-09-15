@@ -288,6 +288,29 @@ class WordTitleTest(unittest.TestCase):
         self.assertIsNotNone(mention)
         self.assertEqual(mention.group(), r"\ref{tab:qv2}")
 
+    def test_page_units_read_v4_display_result_payloads(self):
+        unit = self.root / "results" / "re-display" / "payload" / "QV2-Display1-result"
+        unit.mkdir(parents=True)
+        (unit / "float.tex").write_text(
+            "\\begin{table}[H]\\caption{Result}\\label{tab:qv2-v4}\\end{table}"
+        )
+        (self.root / "results" / "re-display" / "result.yaml").write_text(
+            "type: DISPLAY\n"
+            "status: complete\n"
+            "payload:\n"
+            "  unit: payload/QV2-Display1-result\n",
+            encoding="utf-8",
+        )
+
+        class Fake(ExportMixin):
+            pass
+
+        units = Fake()._page_units(self.page)
+        self.assertEqual(len(units), 1)
+        self.assertEqual(units[0][0], "QV2-Display1")
+        self.assertEqual(units[0][1]["dir"], unit.resolve())
+        self.assertIn(r"\ref{tab:qv2-v4}", units[0][1]["aliases"])
+
     def test_display_mentions_are_ranked_by_source_order(self):
         body = (
             "% source QV2-Display9\n"
@@ -305,6 +328,17 @@ class WordTitleTest(unittest.TestCase):
         )
         self.assertIsNone(fake._first_unit_mention(body, hidden))
         self.assertIsNone(fake._first_unit_mention(body, fenced))
+
+    def test_display_is_inserted_after_the_first_reference_sentence(self):
+        fake = ExportMixin()
+        body = r"Intro. Table \ref{tab:qv2} organizes the estimates. Follow-up."
+        display = {"aliases": [r"\ref{tab:qv2}"]}
+        mention = fake._first_unit_mention(body, display)
+
+        self.assertIsNotNone(mention)
+        boundary = fake._sentence_boundary_after(body, mention.end())
+        self.assertEqual(body[:boundary],
+                         r"Intro. Table \ref{tab:qv2} organizes the estimates.")
 
     def test_word_parser_reads_tabularx_without_leaking_tex_scaffolding(self):
         writer = (

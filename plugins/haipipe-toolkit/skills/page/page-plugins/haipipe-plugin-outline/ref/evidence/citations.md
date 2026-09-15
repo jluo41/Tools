@@ -4,6 +4,14 @@ This reference is loaded by `haipipe-plugin-outline` when work reads or
 writes citation entries, verifies a source, builds a citation workbench, or
 aggregates Discovery Result Bibs. The parent skill remains the only Plugin.
 
+Page-facing citation labels use the same placeholder contract as other
+Evidence Labels: write `\\cite{C_<slug>}` in prose. The `C_` token joins to the
+current CITE Result/Card and may remain unresolved while writing; the later
+resolver supplies the verified citation. A BibTeX key is Result payload
+metadata, not a replacement for the Page label. The command is a Page
+placeholder, not a claim that the authored Markdown is standalone LaTeX; each
+delivery worker translates the bound citation into its own output syntax.
+
 ## One law
 
 A machine may copy a BibTeX entry verbatim from a trusted publisher/index or
@@ -15,12 +23,12 @@ A person supplying citation metadata is not the same as supplying a complete
 BibTeX entry. Formatting supplied fields into BibTeX is composition; only a
 complete supplied entry may land through the person route.
 
-## Authority mode A · ordinary Page
+## Authority mode A · Page Evidence Result
 
 ```text
-<page>/outline/evidence/bibex/
-├── <stem>.bib           PRIMARY · the Page's own person/workflow material
-└── <stem>-bib.html      DERIVED · citation workbench
+<page>/results/<re-run>/
+├── result.yaml          PRIMARY · the typed CITE Result envelope
+└── payload/              PRIMARY · the cited source metadata/payload
 ```
 
 Refresh may subset entries from a trusted seed Bib. A person-supplied complete
@@ -36,8 +44,8 @@ entry may land verbatim. The workbench regenerates freely.
                          ├── deduplicate exact entries
                          └── stable key sort
                          ↓
-<task>/outline/evidence/bibex/<task>.bib        DERIVED · Page Evidence Bib
-<task>/outline/evidence/bibex/<task>-bib.html   DERIVED · citation workbench
+<task>/results/<re-run>/result.yaml              DERIVED · Page CITE Result
+<task>/results/<re-run>/payload/                 PRIMARY · cited source payload
 ```
 
 Only Results whose runtime says `status: complete` enter the union. Every
@@ -96,5 +104,6 @@ Deterministic validation proves shape and identity consistency; `verified`
 remains a person's judgment. Discovery reads it from
 `runtime.yaml#bib.verification`; ordinary Pages read the owning CITE gate.
 
-During category-folder migration, a legacy flat `bibex/` lane and
-`outline/evidence/bibex/` are the same logical citation storage lane.
+`outline/evidence/bibex/` and flat `bibex/` are retired locations. They are not
+read, merged, or used as fallback. Move their material to
+`_archive/legacy-outline-evidence/` and create a typed CITE Result instead.

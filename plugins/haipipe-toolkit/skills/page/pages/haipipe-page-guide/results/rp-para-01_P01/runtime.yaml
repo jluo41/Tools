@@ -1,15 +1,15 @@
-run: rp01_p01
+run: rp-para-01_P01
 family: page
 operation: interactive-writing
 interaction: human-feedback
 target: C1.P1
 paragraphs: P01
-ticket: runs/rp01_p01.md
-result: results/rp01_p01
+ticket: runs/rp-para-01_P01.md
+result: results/rp-para-01_P01
 status: complete
 version: v001
 step: s007
-version_file: results/rp01_p01/v001.md
+version_file: results/rp-para-01_P01/v001.md
 version_sha256: ce1ab7b229d7fa024652fb04910fb04e0e0677321a02d0f227be6c82ad2ec104
 worker:
   kind: skill

@@ -10,7 +10,7 @@ description: >-
   evidence, EVIDENCE phase, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.23.1"
+  version: "0.25.0"
   last_updated: "2026-09-14"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -61,9 +61,9 @@ display and prose requirements, not another execution owner.
 ## ⚡ Phase card
 
 ```text
-READS    target Page · checked v0 plan or approved G>=1 plan · outline/<stem>-evidence-items.md ·
-         selected Run Tickets/receipts/Results · frozen Context · existing
-         evidence lanes
+READS    target Page · checked v0 plan or approved G>=1 plan · current
+         outline/<stem>-evidence-items.md contract · selected Run
+         Tickets/receipts/Results · frozen Context · current Result manifests
 WRITES   Supporting and local Run receipts/Results in their owner-governed
          Run and Result stores ·
          one local Page Evidence Item Result per make-item · Result pointers
@@ -114,13 +114,14 @@ show as one Evidence Card with many Labels.
 ```text
 ALLOWED      operation: evidence-item; item type: VALUE | CITE | DISPLAY
 TARGET       exactly one E<NN>-<TYPE>-<slug>
-PAGE RUN     one `reNN_<evidence-slug>` identity for this item's Page lineage
+PAGE RUN     one typed `re-value-NN_<slug>`, `re-display-NN_<slug>`, or
+             `re-cite-NN_<slug>` identity for this item's Page lineage
 TICKET       Folder dialect selected by haipipe-run; full owner-native Run id when execution is Task-backed
 INPUTS       one frozen envelope: item contract + 0..N Supporting Result paths,
              Run ids, receipt hashes, and any governed page-local source pointers
 WORKER       haipipe-plugin-outline owns VALUE/CITE/DISPLAY payload rules;
              DISPLAY may dispatch a renderer craft beneath that one plugin
-RESULT       runtime receipt + typed evidence-item result + safe artifact pointers; bind `page_run: reNN_<slug>`
+RESULT       runtime receipt + typed evidence-item result + safe artifact pointers; bind the matching typed RE id
 ACCEPT       every SHAPE acceptance check passes; provenance resolves; aggregate only
 PROMOTION    LAND binds Result to item; EMBED binds it to the next outline version
 REOPEN       changed support Result/hash or item contract makes the binding stale
@@ -177,14 +178,15 @@ For every item whose `Decide` is `☑ make`:
 5. **Freeze one Local Input.** Materialize the SURVEY plan as one immutable
    envelope containing exact Supporting Result pointers/hashes plus any named
    pre-existing governed page-local artifacts. Cross-Folder evidence must
-   arrive through a Supporting Run Result; Related Pages in Context Workspace
+   arrive through a Supporting Run Result; Related Pages in the off-stage Context record
    do not become evidence automatically. Zero supports is valid only when the
    planned local material or item contract is
    sufficient. Never smuggle a sibling Evidence Item's future local Result
    into this envelope; if two items need the same evidence, both name the same
    upstream Supporting Run.
 6. **Allocate and execute exactly one Page `RE` lineage.** Reuse the real
-   Ticket when SURVEY found one; otherwise allocate the next `reNN_<slug>` and
+   Ticket when SURVEY found one; otherwise allocate the next typed RE id:
+   `re-value-NN_<slug>`, `re-display-NN_<slug>`, or `re-cite-NN_<slug>`, and
    scaffold its Page · Evidence Item Ticket from the bounded local declaration
    before execution.
    A Task declaration names parent `bNNjNNtNN` and LAND writes back the full
@@ -193,8 +195,11 @@ For every item whose `Decide` is `☑ make`:
    permits one. The Page `RE` identity is the lineage join; it does not rename
    the owner-native Ticket or Result. It targets this Evidence Item and emits
    one typed Result. The RE may invoke several scripts or calls internally;
-   retries remain attempts in the same lineage because target and Result gate
-   are shared.
+   its Result/Card may expose zero-to-many `$V_xxx$`, `\figure{D_xxx}`,
+   `\table{D_xxx}`, and `\cite{C_xxx}` Labels. A label does not allocate a
+   child Run; split only when the label needs independent provenance,
+   acceptance, or lifecycle. Retries remain attempts in the same lineage
+   because target and Result gate are shared.
 7. **Bind the local Result and update its action.** Allocation changes
    `new-run` to `registered`. A Result that passes the authored Acceptance
    checks changes it to `reuse` and
@@ -241,24 +246,32 @@ hashes, payload paths, acceptance checks, and provenance. Its sibling
 `runtime.yaml` owns execution lifecycle facts. `haipipe-plugin-outline` owns
 the exact common keys and typed payload extensions:
 
+The same manifest may include root-level `labels:` entries for the current
+Result/Card. Each entry joins one authored `$V_<slug>$`, `\table{D_<slug>}` /
+`\figure{D_<slug>}` / `\algorithm{D_<slug>}`, or `\cite{C_<slug>}` token to `kind`, `target`,
+`status`, and optional reader-facing `display`. One RE/Result/Card can expose
+zero-to-many labels; a resolved `display` never erases its token, and the
+reader-side disclosure preserves Item, RE, Result path, target, and provenance.
+An unresolved label remains visible during draft review and is a release gate
+only when the selected final export requires that evidence.
+
 VALUE, CITE, and DISPLAY are Result types, not three sibling payload
-directories. Their contracts and lineage remain in `outline/`; the
-authoritative payload from a real local Run lives at the Result address
-resolved by its Folder dialect (`results/<RUNNAME>/` for Folder-local, or
-`$OUTPUT_ROOT/results/<task>/<RUNNAME>/` for a Task), while an external payload
-stays at its Supporting Run's own Result path. Never introduce
+directories. The Evidence Item contract is declared by the Outline plan and
+its Result manifest; its Page-owned execution lineage is the `RE` ticket under
+`runs/`. The authoritative payload from a real local Run lives at the Result
+address resolved by its Folder dialect (`results/<RUNNAME>/` for Folder-local,
+or `$OUTPUT_ROOT/results/<task>/<RUNNAME>/` for a Task), while an external
+payload stays at its Supporting Run's own Result path. Never introduce
 `outline/evidence/value/` as a second copy of a VALUE Result.
 
-DISPLAY is the umbrella Result type for a table, figure, diagram, illustration,
-or algorithm block. It has one bounded promotion rule because the Page must
-cite and ship a concrete unit: LAND supplies `outline/evidence/display/<unit>/` as the
-caller-owned destination required by the display renderer. The governed Result
-envelope records the source local Run id, the resolved Result path, the unit
-pointer, and hashes; it does not require an intermediate duplicate payload that
-is later copied into the Page. LAND may render this candidate and mark
-the local Result ready when the Evidence Item's `Acceptance` checks pass. The
-lowercase human `accepted:` decision on the display unit is separate and is
-administered later by CHECK; it is not a LAND or EMBED prerequisite.
+DISPLAY is the umbrella Result type for a table, figure, or algorithm block.
+Conceptual diagrams and AI illustrations are cited as ordinary figures. LAND may render a concrete unit and mark the local Result
+ready when the Evidence Item's `Acceptance` checks pass. The governed Result
+envelope records the source local Run id, resolved Result path, unit pointer,
+and hashes; it does not require an intermediate `outline/evidence/display/`
+copy that is later moved into the Page. The lowercase human `accepted:`
+decision on the display unit is separate and is administered later by CHECK;
+it is not a LAND or EMBED prerequisite.
 
 For a consumer-serving canonical Task, that PHI-safe admitted unit is the one
 narrow Page-authority exception to the rule that generated output stays under
@@ -270,7 +283,7 @@ Result store.
 |---|---|
 | VALUE | value(s), units, population/denominator, method label, uncertainty when expected, reproducible provenance |
 | CITE | verified source identity, supported focal claim, locator, and provenance to Discovery/support Results; the CITE row's `Verified` gate is signed |
-| DISPLAY | frozen intake, build recipe, selected artifact plus required image/PDF `preview`, caption claim, and provenance |
+| DISPLAY | frozen intake, build recipe, selected artifact plus required image/PDF `preview`, caption claim, `display_kind`, and provenance |
 
 No local Result may contain raw sensitive rows, credentials, or an argument
 about what the Page should conclude.
@@ -328,7 +341,7 @@ items: n make · n deferred · n dropped · n ready · n folded · n stale
 item-status: grouped by VALUE/CITE/DISPLAY · item → decided · landed · folded · ready · attainability local/server/person
 supporting-runs: Execution n · Discovery n · reused n · rerun n · registered n
 evidence-runs: n planned · n running · n done · n failed/blocked
-bindings: item id → `reNN_<slug>` → owner-native Run id → Result path → Card/Labels
+bindings: item id → typed RE id → owner-native Run id → Result path → Card/Labels
 previews: DISPLAY item → rendered image/PDF viewer link
 folded: item ids written into the next working outline version
 limits: Run ids that did not complete and truthful reasons
@@ -337,13 +350,16 @@ route: CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
 next_cycle: PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE  # omit on HOLD
 ```
 
-The material lanes remain under `outline/evidence/`. Resolve execution
-artifacts through the Folder owner's Run dialect: a Folder-local owner may use
-sibling `runs/` and `results/`; a canonical Task keeps its Ticket under the
-Task's `runs/` and its generated Result under the resolved
+Legacy material under `outline/evidence/` and generated `*-evidence.md` files
+are not read by LAND or EMBED. Before execution, move them to
+`_archive/legacy-outline-evidence/`; an unmigrated Page is a migration blocker,
+not a partially supported Page.
+Resolve execution artifacts through the Folder owner's Run dialect: a
+Folder-local owner uses sibling `runs/` and `results/`; a canonical Task keeps
+its Ticket under the Task's `runs/` and its generated Result under the resolved
 `$OUTPUT_ROOT/results/<task>/<RUNNAME>/`. No LAND step may copy a Result merely to make it
-look local, recreate a root `<page>/evidence/` category, or create a standalone
-Evidence tab.
+look local, create a new `outline/evidence/` lane, recreate a root
+`<page>/evidence/` category, or create a standalone Evidence tab.
 
 Read fully only the target Page, checked v0 plan or approved G>=1 plan, Evidence Item table, named Run
 receipts, and Results required by the current item graph. Keep broad build logs

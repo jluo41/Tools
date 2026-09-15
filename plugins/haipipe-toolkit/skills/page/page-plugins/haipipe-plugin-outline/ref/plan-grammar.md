@@ -95,17 +95,21 @@ The live Outline and the compact Page table render that block as:
 → [illustration: general pattern → specific example]
 ```
 
-`[Role]` is optional presentation metadata; `[1 · Role]` is also accepted and
-the number is checked against the Bullet number when present. `Role:` is an
-equivalent continuation. The statement is a concise planning statement, not
-drafted Content, and may be declarative (the old imperative job head remains a
-valid backward-compatible form). `Note:`, `Annotation:`, `More:`, and indented
+`[Role]` is optional only for backward-compatible authored input; every new
+Outline `PROPOSE` must carry one proposed Role per Bullet. `[1 · Role]` is also
+accepted and the number is checked against the Bullet number when present.
+`Role:` is an equivalent continuation. The proposed label is contextual and
+open-ended, chosen from the Point's logic flow rather than a fixed vocabulary.
+`[Boundary]` is not a generic role. The statement is a concise planning
+statement, not drafted Content, and may be declarative (the old imperative job
+head remains a valid backward-compatible form). `Note:`, `Annotation:`, `More:`, and indented
 `-` lines become short dash annotations; `Transition:` becomes one arrow
 between adjacent Point groups. `Evidence:`, `Accept:`, `Answered:`, `Drawn:`,
 and `Routed:` remain process metadata and are not duplicated in the reader
 view. The existing 4–11 word head check counts only the statement, not the
 `S<n> ·` slot or `[Role]` metadata. No renderer invents a role for an old plan:
-legacy Bullets use the neutral `Point` label until an author supplies one.
+legacy Bullets use the neutral `Point` label until the Outline producer
+re-proposes them through a new unapproved Shape.
 
 The address is `C<n>.P<m>.B<k>`, where `m` is Page-global. `C` prints once on the division heading;
 the rows carry `B<k>`. A continuation line starts with one of `Note`,
@@ -118,9 +122,11 @@ role word (`One contract, two readers`).
 ### Point writing style · required for new or edited Bullets
 
 The visible Point is a planning sentence, not an instruction to the future
-writer. New or edited Bullets therefore use an explicit role only when it helps
-the reader distinguish the Point's function. Otherwise omit the tag and use a
-plain declarative statement with an actor or subject and a verb:
+writer. Every Bullet in a new or rewritten Outline `PROPOSE` carries one
+contextual Role proposed from the Page's logic flow. The label is open-ended,
+not a controlled vocabulary, and should distinguish the Point's function. A
+plain declarative statement with an actor or subject and a verb remains
+required:
 
 ```markdown
 - B1 · [Phenomenon] Physician behavior varies within clinical settings.
@@ -132,7 +138,8 @@ plain declarative statement with an actor or subject and a verb:
   - Focus: opioid prescribing variation
 ```
 
-The same plan without role tags is equally canonical:
+The same plan without role tags remains readable as legacy compatibility input,
+but it is not a valid new `PROPOSE` output:
 
 ```markdown
 - B1 · Physician behavior varies within clinical settings.
@@ -189,8 +196,8 @@ first use; a metaphor (`rung`) is rewritten to the plain thing (`step`).
 
 ## 4 · What a bullet never carries
 
-SHAPE may rehearse actual sentences in the separate `<stem>-preview.md`
-record shown beside these Bullets. See `content-preview.md`. The restrictions
+SHAPE may rehearse actual sentences in the selected Outline Markdown's
+`Draft:` fields shown beside these Bullets. See `content-preview.md`. The restrictions
 below apply to Bullet heads and Notes, not to the right-column candidate prose.
 
 - the drafted sentence: the sentence lives on the page; a Note that quotes

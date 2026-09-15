@@ -54,6 +54,10 @@
     ins[0].focus();
   }
   function wireStruct() {
+    // BJTR Block indexes are intentionally title-only reading lists. Keep the
+    // writer controls on generic Boards, but do not reintroduce archive/chat/
+    // add buttons into a Block whose visible row contains only its title.
+    if (document.querySelector('a.ir.compact')) return;
     document.querySelectorAll('div.grp').forEach(function (g) {
       if (g.querySelector('.gadd')) return;
       var name = g.getAttribute('data-g') || '';

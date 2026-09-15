@@ -1,4 +1,4 @@
-"""The lightweight Page surface has exactly three Outline workspaces."""
+"""The lightweight Page surface has four Outline workspaces."""
 import tempfile
 import unittest
 from pathlib import Path
@@ -67,13 +67,15 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def test_outline_has_only_the_three_requested_workspaces(self):
+    def test_outline_has_only_the_four_requested_workspaces(self):
         body = render_outline(
             "S-Test", parse_outline(self.page.read_text(encoding="utf-8")),
             self.page, self.folder, "/board.md", "S-Test/S-Test.md",
         )
-        for name in ("Draft Space", "Evidence Space", "Run Space"):
+        for name in ("Draft Space", "Evidence Space", "Run Space", "Delivery Workspace"):
             self.assertEqual(body.count(">" + name + "</button>"), 1)
+        self.assertIn("lens-delivery", body)
+        self.assertIn("workspace=1", body)
         for removed in ("Context Workspace", "Page Records", "What is left", "Page details"):
             self.assertNotIn(removed, body)
         self.assertIn("logic-viewport", body)
@@ -83,20 +85,45 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
         body = render_evidence(self.page, "/board.md", "S-Test/S-Test.md")
         self.assertIn("E01-VALUE-estimate", body)
         self.assertIn("results/pj01t01r01_estimate/result.yaml", body)
-        self.assertIn("<th>Evidence</th><th>Bullet</th><th>Result</th>", body)
+        self.assertIn("Evidence Items", body)
+        self.assertIn(">Values<", body)
+        self.assertIn('data-evidence-type="VALUE"', body)
+        self.assertIn("<details class=evidence-card", body)
+        self.assertIn("Evidence Label", body)
+        self.assertIn("Evidence Item", body)
+        self.assertIn("Evidence Run", body)
+        self.assertNotIn("<th>Evidence</th>", body)
         self.assertNotIn("<nav", body)
-        self.assertNotIn("Citations ·", body)
-        self.assertNotIn("Displays ·", body)
 
     def test_run_workspace_has_p_e_and_external_support(self):
         body = render_runs(self.page, "/board.md", "S-Test/S-Test.md")
-        self.assertIn("<h2>Run P</h2>", body)
-        self.assertIn("<h2>Run E</h2>", body)
-        self.assertIn("<h2>Supporting Runs</h2>", body)
+        self.assertIn(">Paper Writing</button>", body)
+        self.assertIn(">Evidence</button>", body)
+        self.assertIn(">Supporting Runs</button>", body)
+        self.assertIn('class="run-space-tab on"', body)
+        self.assertIn('class="run-pill total">', body)
+        self.assertIn("Writing Runs", body)
+        self.assertIn("Evidence Items", body)
+        self.assertIn("Discoveries", body)
+        self.assertIn("<h3>Value</h3>", body)
+        self.assertIn("<h3>Display</h3>", body)
+        self.assertIn("<h3>Citation</h3>", body)
+        self.assertIn("class=run-card", body)
+        self.assertEqual(body.count('class="run-space-tab'), 3)
+        self.assertEqual(body.count('class="run-space-panel'), 3)
+        self.assertNotIn("<th>", body)
         self.assertIn("P j01.t01.r01", body)
         self.assertIn("b01.j01.t01.r01", body)
         self.assertNotIn("<h2>Task Runs</h2>", body)
         self.assertNotIn("<summary>Scripts", body)
+
+        selected = render_runs(self.page, "/board.md", "S-Test/S-Test.md",
+                               "P j01.t01.r01")
+        self.assertIn('class="run-space-tab on" id="run-space-tab-evidence"', selected)
+        self.assertIn(
+            '<section class="run-space-panel on" id="run-space-panel-evidence"',
+            selected,
+        )
 
 
 if __name__ == "__main__":

@@ -28,8 +28,8 @@ file                     answers                  id            labels          
 <stem>-evidence-items.md what each typed item      E<NN>-TYPE-   Target · Label · Need · Expected ·  SHAPE specifies; SURVEY plans;  (ref/item-table.md)
                          must become and its Runs  <slug>        Acceptance · Supporting Runs ·      LAND freezes input + binds Result
                                                                 Local Input · Local Run · Decide · Verified (CITE only)
-<stem>-evidence.md       what is READY             E<NN>-TYPE-   Status · Label · Target · Expected · cli/evidence-status.py          evidence-stale · -hand-edited
-                                                  <slug>        Supporting Runs · Local Input · Local Run · Has
+<stem>-evidence.md       retired generated snapshot E<NN>-TYPE-   historical only; move to archive        —                          not current input
+                                                               <slug>
 <stem>-files.md          what it READS and WRITES F<n>          Path · Role                         this page                       dead-file-path
 <stem>-log.md            what CHANGED             YYMMDD [HHMM] headline only; detail folded        this page; append, newest first generated-block-stale reads it
 ```

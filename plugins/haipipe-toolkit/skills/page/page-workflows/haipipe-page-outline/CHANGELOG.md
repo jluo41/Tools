@@ -1,3 +1,20 @@
+## 0.45.0 · 2026-09-14
+
+- Fuse SHAPE and SURVEY into the shared `rp-struct-01` Structure Run and
+  support multiple contributors without creating one Run per person.
+
+## 0.44.0 · 2026-09-14
+
+- Make the Outline producer and `rp00_mermaid-structure` propose one
+  context-specific Role for every Bullet during `PROPOSE`, using the whole-Page
+  logic flow rather than a fixed vocabulary; do not introduce a generic
+  `[Boundary]` role.
+
+## 0.43.0 · 2026-09-14
+
+- Use the typed `rp-struct-NN` identity for the Mermaid Structure Run and
+  typed RP references throughout Outline planning.
+
 ## 0.42.0 · 2026-09-12
 
 - Name `rp00_mermaid-structure` as the sole Run that writes and reviews the
@@ -597,3 +614,7 @@ costs one line; after the prose it costs the prose.
 
 - Make Section rehearsal bidirectional: one substantive Bullet, one sentence,
   an honest functional tag, and one mutable working Shape between review checkpoints.
+## 0.43.0 · 2026-09-14
+
+- Align Mermaid Structure and Outline Bullet ownership with the `rp00`–`rp10`
+  structure/Bullet allocation band.

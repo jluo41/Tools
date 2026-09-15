@@ -77,11 +77,12 @@ Hover the sentence and click the `＋` in its rail, or select text inside it and
 
 There is no comment box at the bottom of the page and never will be: a queue down there makes the reader rebuild the context the writer already had. `## Discussion` is a different grammar and holds only discussion pinned to no sentence.
 
-Candidate sentences in the Outline Bullet Workspace do not use this published
+Candidate sentences in the Outline Draft Space do not use this published
 sentence-comment rail or a paragraph Comments composer. Copy the saved
 `C.P.B` sentence into chat and give feedback through the active Page Run;
 `haipipe-plugin-outline/ref/content-preview.md` owns that rehearsal boundary.
-Historical signed preview lanes remain preserved but are not rendered.
+Historical signed review lanes remain embedded in the Outline Markdown but are
+not rendered.
 
 ### ✎ edit · replace one line, leave one record
 

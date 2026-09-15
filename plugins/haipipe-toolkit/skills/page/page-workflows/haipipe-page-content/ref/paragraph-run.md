@@ -53,8 +53,8 @@ worker: haipipe-writing
 - Plan: <approved version/hash; C1.P2 job and B1..Bn>
 - Evidence: <each Bullet's folded Item → full Local Run → Result path/hash>
 - Current prose: <Page version/hash and this paragraph's prior text, if any>
-- SHAPE preview: <outline/<stem>-preview.md addressed slice and frozen text/hash,
-  or absent; candidate prose, not accepted Content>
+- SHAPE Draft: <selected outline/<stem>-outline-v*.md addressed Draft field and
+  frozen text/hash, or absent; candidate prose, not accepted Content>
 - Continuity: <whole argument reference, previous accepted paragraph/version,
   next paragraph's approved job; use an explicit boundary for first/last>
 - Narrative Decision: <Page Outline decision id/scope/summary/source for this

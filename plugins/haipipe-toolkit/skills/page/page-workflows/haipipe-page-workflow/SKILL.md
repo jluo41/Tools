@@ -10,8 +10,8 @@ description: >-
   workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.54.0"
-  last_updated: "2026-09-13"
+  version: "0.57.0"
+  last_updated: "2026-09-14"
   # version history: ./CHANGELOG.md
 ---
 
@@ -27,6 +27,7 @@ haipipe-page
   → Page Face owner skill
   → phase references and narrative/style policy
   → haipipe-page/ref/page-run-families.md when naming RP, RE, or RD
+  → ref/structure-run.md when allocating or resuming the Page Structure Run
   → haipipe-run + selected workers, only when this phase commissions Runs
 ```
 
@@ -66,20 +67,41 @@ are `ref/phase-cards.md`; the executable packet/receipt law is
 
 For collaborative drafting or feedback-led revision, load
 `ref/interactive-writing-run.md` and its `ref/writing-step-template.md` before
-editing. One Page owns many sibling Page Runs. The first Run is always
-`rp00_mermaid-structure`, where human and agent iterate on the whole-Page
-Mermaid argument map and Page-global `P01..PN` paragraph index until explicit closure.
-Only then may the `N` numbered paragraphs be partitioned into `K`
-independently reviewable groups, where `1 <= K <= N`. Each selected group uses
-the short identity `rpNN_pNN[-pNN]` and one independently closable human
-question. Human feedback advances Steps inside that Run's Version. A new chat
-session or review window does not create another Run. Ordinary waiting for
-feedback is not a failure, and local edits do not invoke the complete phase
-controller. Reserve `rp00` for that structure Run, then allocate paragraph Page
-Runs as `rp01`, `rp02`, and so on. `rp` means Run of Page; its counter is
-independent from the native `rNN` sequence used by delegated Task Runs.
-No earlier spelling is accepted: a noncanonical `interactive-writing`
-identity is Held and cannot stand in for `rp00` or a paragraph Run.
+editing. One Page owns many sibling Page Runs. RP allocation states its scope
+explicitly:
+
+```text
+rp-struct-NN          Page Structure Run: SHAPE + SURVEY
+rp-sec-NN             Section-level writing
+rp-para-NN_Pxx[-Pyy]  Paragraph-level writing
+```
+
+`rp-struct-01` is the initial Structure Run. It is one shared Run for the
+Page's SHAPE and SURVEY cycles: it settles direction, coverage/non-coverage,
+high-level section flow, ordered Bullets, paragraph jobs, Point roles, typed
+Evidence Item decisions, and the Mermaid representation. It does not write
+adopted prose or execute material evidence work. Several people may contribute
+Steps to this same Run; record `participants` on the Run and `contributors` on
+each Step, and do not create a child Run per person. The full contract is
+`ref/structure-run.md`. After the Structure Run closes, Section Runs use
+`rp-sec-NN`, and fixed paragraph or paragraph-group Runs use
+`rp-para-NN_Pxx[-Pyy]`.
+`rp-struct-02` and later ids are reserved for a genuinely independent
+post-closure structural goal, not for a Survey pass or a new participant.
+Human feedback advances Steps inside the selected Run's Version. A chat turn
+or review window alone does not create another Run. A later independently
+commissioned Section drafting/revision session does create a new `rp-sec-NN`
+Run; a complete draft → review/rating → diagnose → revise cycle inside that
+session is one Step, not a new Run. For a paragraph target, reopen the same
+Run in a new Version when the target and goal remain fixed. `rp` means Run of
+Page; its typed sequences are independent from one another and from the
+native `rNN` sequence used by delegated Task Runs. New allocation uses only
+the explicit kind tokens; retired compact identities remain readable history.
+A mismatched kind or paragraph target is Held and cannot unlock later work.
+
+If the closed index has `N` paragraphs, paragraph candidates satisfy
+`1 <= K <= N`; the paragraph serial/range is recorded separately from the RP
+sequence number.
 
 When a person enters, continues, resumes, or asks to review an open Page Run
 before giving feedback, return the pre-Step review packet from
@@ -91,17 +113,18 @@ until feedback, acceptance, or an explicit close arrives.
 
 New interaction candidates are proposed through
 `../../haipipe-page/fn/runs.md`. Proposal is read-only planning, not allocation:
-it creates no `rpNN`, Ticket, Result, runtime receipt, or live Runs row. After
-human selection, resume a matching open Page Run; otherwise allocate `rpNN`
-only for a genuinely independent goal. A direct bounded feedback request is an
+it creates no typed RP identity, Ticket, Result, runtime receipt, or live Runs
+row. After human selection, resume a matching open Page Run; otherwise allocate
+the next typed RP only for a genuinely independent goal. A direct bounded feedback request is an
 implicit selection and need not be proposed back to the person first.
 
-While `rp00_mermaid-structure` is open, resume it and show no paragraph candidates. After
-it closes, show all unallocated paragraph-group candidates in frozen `P01..PN`
-reading order, but allocate only the selected next candidate. Sequential work is the default; parallel
-Page Runs require explicit selection and non-overlapping targets. If the plan
-changes, recompute unallocated candidates only and never renumber an allocated
-`rpNN`.
+While the current structure Run is open, resume it and show no Section or
+paragraph candidates. After the structure contract closes, show unallocated
+Section candidates and paragraph-group candidates in frozen `P01..PN` reading
+order, but allocate only the selected next candidate from the matching kind.
+Sequential work is the default; parallel Page Runs require explicit selection
+and non-overlapping targets. If the plan changes, recompute unallocated
+candidates only and never renumber an allocated typed RP.
 
 Code, search, Discovery, data, rendering, build, and other independently
 testable output work stays in the owner-native Task Run lane. A later human
@@ -110,7 +133,7 @@ acceptance gate does not convert the producing Task Run into a Page Run.
 Use three commit boundaries during interactive work:
 
 ```text
-Step            current candidate + dependent Bullets → live Bullet Workspace
+Step            current candidate + dependent Bullets → live Draft Space
 Page Run close  accepted paragraph group + explicit ready Evidence contract
 Page release    all RP Runs + required RE Results → Content + RD delivery + CHECK
 ```
@@ -156,8 +179,9 @@ only after every planned RP is complete and every required RE Result is bound;
 one Page-level CONTENT pass then adopts all accepted candidates and commissions
 the declared web/LaTeX/Word delivery through one or more `RD` Runs.
 
-SHAPE and SURVEY remain planning capabilities, not one Run each. They can be
-used inside this independently closable interactive Run. `haipipe-writing`
+SHAPE and SURVEY remain planning cycles inside the one `rp-struct-01`, not one
+Run each. They can be used inside this independently closable interactive Run.
+`haipipe-writing`
 owns prose revision; `haipipe-page-content` adopts agreed wording and builds
 delivery. Do not redraft accepted paragraphs at that handoff. This protocol
 uses agent-authored Markdown records; it adds no runtime service or UI controls.
@@ -185,8 +209,7 @@ CONTENT pass performs adoption and delivery.
 Every user-facing completion after a Page-changing action follows
 `../../haipipe-page/ref/user-check-packet.md`. Routine writing returns the
 exact Run/Version/Step heading, saved selected paragraphs, a brief change
-explanation, and three final Bullet Workspace, Evidence Workspace,
-and Current Run links.
+explanation, and three final Draft Space, Evidence Space, and Current Run links.
 Formal delivery also provides current evidence surfaces and the Page-level PDF. Only the new `outline/evidence/display/`,
 `outline/evidence/bibex/` and `delivery/latex/` lanes are eligible. The workflow receipt remains the audit record; it is not the primary
 user-facing answer.
@@ -197,14 +220,15 @@ CONTEXT, OUTLINE, and EVIDENCE all use `haipipe-plugin-outline`:
 
 ```text
 haipipe-plugin-outline
-├── Context Workspace    CONTEXT prepares; every later phase reads
-├── Bullet Workspace     OUTLINE shapes; EVIDENCE embeds into the plan
-└── Evidence Workspace   OUTLINE surveys; EVIDENCE lands Results
+├── Draft Space          Mermaid + Bullet/Draft table; read-only projection
+├── Evidence Space       typed Result cards; read-only projection
+└── Run Space            Page Writing + Page Evidence + Supporting Runs
 ```
 
-This is shared storage and presentation, not shared semantic authority. Never
-create `haipipe-plugin-context` or a second Evidence plugin. The phase skills
-write; the plugin reads and presents.
+This is shared storage and presentation, not shared semantic authority. Context
+records remain off-stage and are opened through Folder inspection. Never create
+`haipipe-plugin-context` or a second Evidence plugin. The phase skills write;
+the plugin reads and presents.
 
 ## 🔁 Complete flow
 
@@ -237,8 +261,8 @@ any earlier owning phase.
 | Index | Phase / cycle | Primary skill | Main L3 write | Level-4 Runs | Exit |
 |---:|---|---|---|---|---|
 | `00` | CONTEXT / PREPARE | `haipipe-page-context` | `outline/<stem>-context.md` | none | context resolved and fresh |
-| `01A` | OUTLINE / SHAPE | `haipipe-page-outline` | plan + Evidence Item specification | none | approved evidence-aware Shape |
-| `01B` | OUTLINE / SURVEY | `haipipe-page-outline` | Supporting routes + Local Input + indexed RE plan | none | complete decided Run graph |
+| `01A` | OUTLINE / SHAPE | `haipipe-page-outline` | `rp-struct-01` Step: plan + Evidence Item specification | same Structure Run; no second Run | approved evidence-aware Shape |
+| `01B` | OUTLINE / SURVEY | `haipipe-page-outline` | `rp-struct-01` Step: Supporting routes + Local Input + indexed RE plan | same Structure Run; no second Run | complete decided Run graph |
 | `02A` | EVIDENCE / LAND | `haipipe-page-evidence` | Tickets, Results, frozen input, bindings | `0..N` Supporting + `1` RE per make-item | ready typed local Results/Cards |
 | `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | next working plan bindings | none | ready Results folded; `G=0` returns to SHAPE; `G>=1` may route to CONTENT only for a pure evidence revision or an explicit CONTENT instruction after all remaining gates are named |
 | `03` | CONTENT / WRITE | `haipipe-page-content` | all agreed prose → Page Content + RD delivery + adoption trace | enters once all RP Runs and required RE Results are complete | fresh pre-check says ready |
@@ -255,16 +279,17 @@ closable Ticket → Result attempt:
 
 ```text
 CONTEXT      no Run; it resolves planning inputs
-SHAPE        no Run; it defines Bullet and Evidence Item contracts
-SURVEY       no Run; it inventories/references/reserves the graph
+SHAPE        inside shared rp-struct-01; it defines Bullet and Evidence Item contracts
+SURVEY       inside shared rp-struct-01; it inventories/references/reserves the graph
 LAND         Runs exist: Supporting Execution/Discovery/Insight, then one Page RE per item
 EMBED        no Run; it interprets ready Results into the plan
 CONTENT      after the Page release barrier, adopts all agreed Writing Results and commissions RD delivery
 CHECK        no Run; it is a version gate
 ```
 
-For interactive writing, each sibling Page Run records the human exchange for
-its independently closable Plan/map or paragraph-group goal; planning or a
+For interactive writing, `rp-struct-01` records the human exchange for the
+closable Page map through both SHAPE and SURVEY; each sibling Page Run records
+its own independently closable Section or paragraph-group goal. Planning or a
 `fn/Runs` proposal alone still does not allocate a Run. A writing Version's
 human closure is not the whole-Page CHECK/CLOSE verdict.
 
@@ -294,13 +319,14 @@ Use full real addresses for reuse and rerun:
 global Supporting Run    b01j02t03r04
 Task-local new-run plan  b01j02t03        parent until LAND allocates rNN
 Task-local allocated     b01j02t03r05
-Page Evidence lineage   re01_e03-cite-prior-work → owner-native Ticket/Result
+Page Evidence lineage   re-cite-01_prior-work → owner-native Ticket/Result
 Page Delivery lineage   rd01_web | rd02_latex | rd03_word | rd04_render
 Other local Run plan     <owner-native parent or permitted reserved address> · plan
 local Ticket filename    r05_page-evidence-item_e03-cite-prior-work
 Delegated writing Task   r06_page-writing_c02-p01
-Mermaid Structure        rp00_mermaid-structure
-Interactive paragraph    rp01_p01 or rp02_p02-p03
+Structure + Bullets      rp-struct-01 or rp-struct-02
+Section-level writing    rp-sec-01 or rp-sec-02
+Paragraph-level writing  rp-para-01_P03 or rp-para-02_P04-P05
 ```
 
 SURVEY names the real owner/parent for every new local route. The Page's RE or
@@ -309,8 +335,8 @@ Ticket/Result keeps its own naming contract. A full address may be reserved
 only when that owner contract permits it; the route remains `new-run` with no
 Ticket. LAND allocates the owner-native Run id and records it under the RE/RD
 lineage. The interactive workflow creates
-`rp00_mermaid-structure` first, then one `rpNN_pNN[-pNN]` Page Run for each selected
-paragraph group;
+the structure/Bullet Run first, then a Section-level or paragraph-level Page Run
+for each selected writing scope;
 CONTENT consumes its accepted output.
 Those allocations do not consume one another's counters: RP, RE, RD, and Task
 Run `rNN` sequences are independent. Task or Discovery identities are never

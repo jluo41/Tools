@@ -1,3 +1,24 @@
+## 0.26.0 · 2026-09-14
+
+- Use typed `re-value-NN_<slug>`, `re-display-NN_<slug>`, and
+  `re-cite-NN_<slug>` identities. Treat table/figure/diagram/illustration/
+  algorithm outputs as `DISPLAY` and bind zero-to-many `V_`, `D_`, or `C_`
+  labels to the Result/Card.
+
+## 0.25.0 · 2026-09-14
+
+- Hard-cut the retired `outline/evidence/` folder and generated
+  `outline/<stem>-evidence.md` snapshot from LAND/EMBED inputs. Move old
+  material to `_archive/legacy-outline-evidence/` before entering v4.
+
+## 0.24.0 · 2026-09-14
+
+- Align the folder contract with the lightweight Page: Outline declares the
+  Evidence Item, `runs/` owns the Page RE ticket, and `results/` owns the
+  authoritative Result and payload.
+- Retire new writes to `outline/evidence/`; retain those paths as migration-only
+  compatibility input.
+
 ## 0.23.1 · 2026-09-14
 
 - Clarify the DISPLAY payload family: table, figure, diagram, illustration, or
@@ -411,3 +432,8 @@ section renamed that morning.
 - Host-agnostic on purpose: names no venue, no markup, no checker. A family worker
   adds its artifact knowledge and obeys this file.
 - Settles `QC6 A4.1`: paper and application share a CONTRACT, not folder names.
+## 0.25.0 · 2026-09-14
+
+- Remove legacy Evidence Markdown and `outline/evidence/` from LAND/EMBED
+  inputs. Pages must move those files to `_archive/legacy-outline-evidence/`
+  before entering the v4 Evidence surface.

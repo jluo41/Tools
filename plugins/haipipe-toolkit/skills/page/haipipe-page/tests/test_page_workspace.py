@@ -13,8 +13,8 @@ from src.page_workspace import (build_page, create_page, load_page, read_source,
                                 render_page, save_source)
 from src.page_setup import run_setup, setup_markdown_page
 from src.page_setup_check import validate_setup
-from src.page_migration import migrate_global_paragraphs
-from live.outline_preview import bullet_token, read_previews
+from src.page_migration import migrate_embedded_drafts, migrate_global_paragraphs
+from live.outline_preview import bullet_token, read_drafts
 from src.plan_shape import iter_plan_bullets
 
 
@@ -35,6 +35,10 @@ def test_import_edit_build_portable(tmp_path):
     assert 'data-live="false"' in output.read_text()
     assert 'id="static-workspace"' in output.read_text()
     assert (output.parent / rel).read_text() == page.content.read_text()
+    marker = json.loads((output.parent / ".haipipe-page-export").read_text())
+    assert marker["schema"] == "haipipe-page-export/v2"
+    assert marker["source"] == page.source.relative_to(page.folder).as_posix()
+    assert marker["source_sha256"] == hashlib.sha256(page.source.read_bytes()).hexdigest()
     relocated = tmp_path / "relocated"
     shutil.copytree(page.folder, relocated)
     assert "Edited sentence." in render_page(load_page(relocated))
@@ -225,7 +229,7 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
         "title": "A Useful Argument", "divisions": 2, "paragraphs": 3,
         "bullets": 3, "source_sentences": 4,
         "plan": "outline/argument-page-outline-v0.1.md",
-        "preview": "outline/argument-page-preview.md", "run": "r01_page-setup",
+        "draft": "outline/argument-page-outline-v0.1.md", "run": "r01_page-setup",
         "delivery": "delivery/web/index.html", "mode": "create-semantic-records",
         "checks": {"pass": 11, "missing": 0, "deferred": 3, "untested": 2, "n/a": 1},
         "blocking_gate": "pass",
@@ -236,11 +240,11 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
     assert "When revisions lose context" in face
     plan = page.folder / result["plan"]
     blocks = list(iter_plan_bullets(plan.read_text(encoding="utf-8")))
-    previews = read_previews(page.source)
-    assert len(blocks) == len(previews) == 3
-    assert all(block["address"] in previews for block in blocks)
+    drafts = read_drafts(page.source)
+    assert len(blocks) == len(drafts) == 3
+    assert all(block["address"] in drafts for block in blocks)
     assert [block["paragraph"] for block in blocks] == ["C1.P1", "C1.P2", "C2.P3"]
-    assert previews["C1.P1.B1"]["text"] == (
+    assert drafts["C1.P1.B1"]["text"] == (
         "Consider a narrow sentence edit. It can unexpectedly undo settled choices."
     )
     assert "It can unexpectedly undo settled choices" in blocks[0]["head"]
@@ -269,7 +273,7 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
     assert "<h1>A Useful Argument</h1>" not in markup
     assert "<summary>When revisions lose context</summary>" in markup
     assert "Consider a narrow sentence edit" in markup
-    assert "Content preview" in (page.folder / result["preview"]).read_text(encoding="utf-8")
+    assert "Draft:" in (page.folder / result["draft"]).read_text(encoding="utf-8")
     assert "A Useful Argument" in build_page(page).read_text(encoding="utf-8")
 
 
@@ -284,18 +288,44 @@ def test_address_migration_preserves_drafts_and_makes_paragraphs_global(tmp_path
     setup_markdown_page(page)
     page = load_page(page.folder)
     plan = page.folder / "outline/page-outline-v0.1.md"
-    preview = page.folder / "outline/page-preview.md"
     plan.write_text(plan.read_text().replace("C2.P2", "C2.P1"), encoding="utf-8")
-    preview.write_text(preview.read_text().replace("C2.P2", "C2.P1"), encoding="utf-8")
 
     result = migrate_global_paragraphs(page)
 
     assert result["changed_addresses"] == 1
     assert "### C2.P2 ·" in plan.read_text()
-    assert "## C2.P2.B1" in preview.read_text()
-    assert read_previews(page.source)["C2.P2.B1"]["text"] == (
+    assert read_drafts(page.source)["C2.P2.B1"]["text"] == (
         "The second move closes the argument."
     )
+
+
+def test_migrate_legacy_preview_into_outline_is_content_preserving(tmp_path):
+    original = tmp_path / "argument.md"
+    original.write_text("# Argument\n\n## Claim\n\nA claim needs review.\n", encoding="utf-8")
+    page = create_page(original, tmp_path / "page")
+    setup_markdown_page(page)
+    page = load_page(page.folder)
+    plan = page.folder / "outline/page-outline-v0.1.md"
+    records = read_drafts(page.source)
+    plan.write_text(
+        "\n".join(line for line in plan.read_text().splitlines()
+                  if not line.startswith("  Draft:")) + "\n"
+    )
+    legacy = page.folder / "outline/page-preview.md"
+    record = records["C1.P1.B1"]
+    legacy.write_text(
+        "# page · Content preview\n\nPlanning draft for discussion.\n\n"
+        f"## C1.P1.B1\nplan: v0.1\nbullet-sha256: {record['bullet-sha256']}\n\n"
+        f"{record['text']}\n",
+        encoding="utf-8",
+    )
+
+    result = migrate_embedded_drafts(page)
+
+    assert result["migrated"] == 1
+    assert read_drafts(page.source)["C1.P1.B1"]["text"] == record["text"]
+    assert not legacy.exists()
+    assert (page.folder / "outline/_archive/legacy-outline-preview/page-preview.md").is_file()
 
 
 def test_setup_never_clips_a_long_reader_move_to_a_word_limit(tmp_path):
@@ -382,9 +412,9 @@ def test_setup_resume_preserves_recorded_source_count_after_preview_normalizatio
     page = create_page(original, tmp_path / "page")
     created = setup_markdown_page(page)
     page = load_page(page.folder)
-    preview = page.folder / "outline/page-preview.md"
-    preview.write_text(
-        preview.read_text(encoding="utf-8").replace(
+    plan = page.folder / "outline/page-outline-v0.1.md"
+    plan.write_text(
+        plan.read_text(encoding="utf-8").replace(
             "Detailed edition · Cartoon edition · Compare both series",
             "Detailed edition . Cartoon edition . Compare both series",
         ),
@@ -408,7 +438,7 @@ def test_setup_resume_rebinds_reviewed_head_without_changing_draft(tmp_path):
     setup_markdown_page(page)
     page = load_page(page.folder)
     plan = page.folder / "outline/page-outline-v0.1.md"
-    before = read_previews(page.source)["C1.P1.B1"]["text"]
+    before = read_drafts(page.source)["C1.P1.B1"]["text"]
     plan.write_text(
         plan.read_text().replace(
             "[Requirement] The next draft should preserve the answer",
@@ -419,7 +449,7 @@ def test_setup_resume_rebinds_reviewed_head_without_changing_draft(tmp_path):
 
     result = run_setup(page)
     block = iter_plan_bullets(plan.read_text())[0]
-    rebound = read_previews(page.source)["C1.P1.B1"]
+    rebound = read_drafts(page.source)["C1.P1.B1"]
 
     assert result["blocking_gate"] == "pass"
     assert rebound["text"] == before
@@ -434,7 +464,11 @@ def test_setup_resume_fails_gate_and_records_audit_when_content_draft_is_missing
     page = create_page(original, tmp_path / "page")
     setup_markdown_page(page, input_file=original)
     page = load_page(page.folder)
-    (page.folder / "outline/page-preview.md").unlink()
+    plan = page.folder / "outline/page-outline-v0.1.md"
+    plan.write_text(
+        "\n".join(line for line in plan.read_text().splitlines()
+                  if not line.startswith("  Draft:")) + "\n"
+    )
 
     with pytest.raises(ValueError, match="setup validation failed"):
         run_setup(page)

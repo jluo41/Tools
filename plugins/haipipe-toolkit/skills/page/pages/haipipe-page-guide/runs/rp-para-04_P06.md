@@ -4,13 +4,13 @@ operation: interactive-writing
 interaction: human-feedback
 target: C3.P6
 paragraphs: P06
-result: results/rp04_p06
+result: results/rp-para-04_P06
 ---
 
 - Goal: Agree how a Page bounds edits, presents planned prose, and preserves acceptance history.
 - Mermaid Structure description: `Scope and acceptance`.
 - Page and Board: `haipipe-page-guide.md`; standalone Page, no Board membership.
 - Scope: P06 at C3.P6 only; accepted P01-P02, the accepted and closed P03-P05 Run, and the closed Mermaid Structure are protected.
-- Sources: current Page source, `outline/haipipe-page-guide-outline-v0.1.md`, the closed `rp00_mermaid-structure` Version, accepted `rp01_p01/v001`, accepted `rp02_p02/v001`, and the closed `rp03_p03-p05/v001`.
+- Sources: current Page source, `outline/haipipe-page-guide-outline-v0.1.md`, the closed `rp-struct-01` Version, accepted `rp-para-01_P01/v001`, accepted `rp-para-02_P02/v001`, and the closed `rp-para-03_P03-P05/v001`.
 - Success: the person explicitly accepts or revises the complete P06 wording.
 - Review: all four current sentences in P06, read as one paragraph with its paragraph boundary visible.

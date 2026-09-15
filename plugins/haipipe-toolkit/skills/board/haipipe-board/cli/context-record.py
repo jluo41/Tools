@@ -5,7 +5,7 @@
     python3 cli/context-record.py --all <board-dir>  every page on the board
 
 `haipipe-page-context` (00 CONTEXT) owns the record; `haipipe-plugin-outline`
-presents it as the 🧭 Overview chip of the Context Workspace. The law shipped
+keeps it off-stage for Folder inspection rather than presenting a fourth Space. The law shipped
 in 0.34.0 with `ref/context-record.md` and no generator, while the other three
 Outline records each had one (`requirement.py`, `feedback.py`,
 `evidence-status.py`), so every page reported `CONTEXT: owed` and the only way

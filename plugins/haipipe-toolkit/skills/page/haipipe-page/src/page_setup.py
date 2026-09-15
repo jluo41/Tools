@@ -15,7 +15,7 @@ from pathlib import Path
 import re
 import tomllib
 
-from live.outline_preview import bullet_token, write_previews
+from live.outline_preview import bullet_token, read_drafts
 from src.plan_shape import iter_plan_bullets
 
 
@@ -325,6 +325,7 @@ def _plan(stem: str, divisions: tuple[DraftDivision, ...], date: str) -> str:
                     f"- B{bi} · [{bullet.role}] {bullet.point}",
                     f"  Note: Maps {bullet.source_sentences} source sentence{'s' if bullet.source_sentences != 1 else ''}; review the reader move before approval. 🎯 A{ci}.1",
                     "  Evidence: none · source-contained expository move; external support was not assessed during setup.",
+                    f"  Draft: {bullet.draft}",
                 ])
             out.append("")
     return "\n".join(out).rstrip() + "\n"
@@ -363,8 +364,8 @@ def _context_files(page, title: str, divisions: tuple[DraftDivision, ...], bulle
         f"- **Path:** {page.content.relative_to(page.folder).as_posix()}\n"
         "- **Role:** imported Markdown and the one content authority for the article.\n\n"
         "### F3 · Shape and Content Draft\n"
-        f"- **Path:** outline/{stem}-outline-v0.1.md and outline/{stem}-preview.md\n"
-        "- **Role:** reader moves and matching candidate prose awaiting review.\n"
+        f"- **Path:** outline/{stem}-outline-v0.1.md\n"
+        "- **Role:** reader moves and matching Draft prose awaiting review.\n"
     )
     (outline / f"{stem}-context.md").write_text(context, encoding="utf-8")
     (outline / f"{stem}-files.md").write_text(files, encoding="utf-8")
@@ -396,8 +397,8 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
     now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     content = (page.content or page.source).relative_to(page.folder).as_posix()
     plan = f"outline/{page.source.stem}-outline-v0.1.md"
-    preview = f"outline/{page.source.stem}-preview.md"
-    check = ("every Shape Bullet has a matching Content Draft and explicit evidence decision"
+    outline = f"outline/{page.source.stem}-outline-v0.1.md"
+    check = ("every Outline Bullet has embedded Draft prose and an explicit evidence decision"
              if bullets else "Page build completed; no Shape records were claimed")
     status = "complete" if audit.blocking_passed else "failed"
     action = ("Created semantic records" if mode == "create-semantic-records"
@@ -425,7 +426,7 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
         f"- Page Face: `{page.source.name}`\n"
         f"- Content source: `{content}`\n"
         f"- Shape: `{plan}` ({'present' if (page.folder / plan).is_file() else 'not initialized'}).\n"
-        f"- Content Draft: `{preview}` ({'present' if (page.folder / preview).is_file() else 'not initialized'}).\n"
+        f"- Draft authority: `{outline}` ({'present' if (page.folder / outline).is_file() else 'not initialized'}).\n"
         f"- Coverage: {divisions} sections; {bullets} reader-move Bullets; {source_sentences} source sentences.\n"
         f"- Static delivery: `{delivery}`\n"
         f"- Mechanical gate: **{'PASS' if audit.blocking_passed else 'FAIL'}**.\n"
@@ -471,9 +472,6 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
     if force:
         for old in outline.glob(f"{page.source.stem}-outline-v*.md"):
             old.unlink()
-        preview = outline / f"{page.source.stem}-preview.md"
-        if preview.exists():
-            preview.unlink()
     plan.write_text(_plan(page.source.stem, divisions, date), encoding="utf-8")
 
     blocks = list(iter_plan_bullets(plan.read_text(encoding="utf-8")))
@@ -481,11 +479,6 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
               for bullet in paragraph.bullets]
     if len(blocks) != len(drafts):
         raise ValueError("Generated Shape and Content Draft counts diverged")
-    records = {
-        block["address"]: {"plan": "v0.1", "bullet-sha256": bullet_token(block), "text": draft}
-        for block, draft in zip(blocks, drafts)
-    }
-    write_previews(page.source, records)
     page.source.write_text(_face(title, page.content.relative_to(page.folder).as_posix(), divisions),
                            encoding="utf-8")
     _replace_manifest_title(page.folder / "page.toml", title)
@@ -509,19 +502,18 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
             "paragraphs": sum(len(d.paragraphs) for d in divisions),
             "bullets": bullet_count, "source_sentences": source_sentence_count,
             "plan": plan.relative_to(page.folder).as_posix(),
-            "preview": f"outline/{page.source.stem}-preview.md", "run": run,
+            "draft": f"outline/{page.source.stem}-outline-v0.1.md", "run": run,
             "delivery": delivery, "mode": "create-semantic-records",
             "checks": audit.as_dict()["summary"], "blocking_gate": "pass"}
 
 
 def _existing_setup(page, *, input_file: Path | None = None):
     """Build an existing Page without overwriting its human-owned records."""
-    from live.outline_preview import read_previews
     from src.outline_version import latest_outline, version_tag
     from src.page_workspace import build_page
 
     plan = latest_outline(page.folder / "outline", page.source.stem)
-    previews = read_previews(page.source)
+    drafts = read_drafts(page.source)
     divisions = paragraphs = bullets = 0
     plan_text = ""
     if plan is not None:
@@ -533,12 +525,7 @@ def _existing_setup(page, *, input_file: Path | None = None):
         # A reviewed head/role correction keeps the same realization and stable
         # address. Setup rebinds that exact map; structural changes still fail
         # coverage and require explicit preview reconciliation.
-        if previews and set(previews) == {block["address"] for block in blocks}:
-            for block in blocks:
-                previews[block["address"]]["plan"] = version_tag(plan)
-                previews[block["address"]]["bullet-sha256"] = bullet_token(block)
-            write_previews(page.source, previews)
-    source_sentences = _recorded_source_sentence_count(plan_text, previews)
+    source_sentences = _recorded_source_sentence_count(plan_text, drafts)
     manifest = tomllib.loads((page.folder / "page.toml").read_text(encoding="utf-8")) \
         if (page.folder / "page.toml").is_file() else {}
     input_hash = manifest.get(
@@ -556,7 +543,7 @@ def _existing_setup(page, *, input_file: Path | None = None):
     return {"title": page.title, "divisions": divisions, "paragraphs": paragraphs,
             "bullets": bullets, "source_sentences": source_sentences,
             "plan": plan.relative_to(page.folder).as_posix() if plan else None,
-            "preview": f"outline/{page.source.stem}-preview.md" if previews else None,
+            "draft": plan.relative_to(page.folder).as_posix() if drafts else None,
             "run": run, "delivery": delivery, "mode": "resume-and-build",
             "checks": audit.as_dict()["summary"], "blocking_gate": "pass"}
 

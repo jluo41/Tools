@@ -83,6 +83,11 @@ ESTABLISHES = re.compile(r"^\W*\s*Establishes\b")
 # backticks around the word.
 CODE_SPAN = re.compile(r"`([^`]+)`")
 
+# The working Page keeps unresolved displays in the stable `/table{D_xxx}` /
+# `/figure{D_xxx}` form. That token is useful for binding later, but it is not
+# reader-facing LaTeX, so delivery renders it as a legible pending note.
+DISPLAY_PLACEHOLDER = re.compile(r"/(table|figure)\{([^}]+)\}")
+
 # Task Pages carry a small reader-facing status tail after their manuscript
 # content. It belongs on the Board Page, not in a paper export. Likewise, the
 # reading anchor is HTML apparatus rather than prose.
@@ -112,8 +117,26 @@ def escape_prose(s):
     parts = re.split(r"(`[^`]*`)", s)
     for i in range(0, len(parts), 2):
         for a, b in _PLAIN_SPECIALS:
-            parts[i] = parts[i].replace(a, b)
+            parts[i] = re.sub(
+                r"(?<!\\)" + re.escape(a),
+                lambda _match, value=b: value,
+                parts[i],
+            )
     return "".join(parts)
+
+
+def display_placeholder_tex(m):
+    noun = m.group(1).capitalize()
+    label = m.group(2).replace("_", r"\_")
+    return r"\textit{[%s pending: %s]}" % (noun, label)
+
+
+def render_prose(s):
+    """Keep unresolved display placeholders readable in delivery output."""
+    parts = re.split(r"(`[^`]*`)", s)
+    for i in range(0, len(parts), 2):
+        parts[i] = DISPLAY_PLACEHOLDER.sub(display_placeholder_tex, parts[i])
+    return escape_prose("".join(parts))
 
 # What a code span QUOTES must never EXECUTE: `\citep` inside \texttt{} ran the
 # macro and printed "[]" in QPf6's compiled PDF (JL 260815). Backslash first,
@@ -288,11 +311,11 @@ def build_section(page, displays, report, keep_fences=False):
             if m:
                 flush()
                 out.append(badge_sub(
-                    "\\textbf{%s}: %s" % (escape_prose(m.group(1)),
+                    "\\textbf{%s}: %s" % (render_prose(m.group(1)),
                                           CODE_SPAN.sub(code_span_tex,
-                                                        escape_prose(m.group(2))))) + "\n\n")
+                                                        render_prose(m.group(2))))) + "\n\n")
             continue
-        buf.append(badge_sub(CODE_SPAN.sub(code_span_tex, escape_prose(line))))
+        buf.append(badge_sub(CODE_SPAN.sub(code_span_tex, render_prose(line))))
         # A Display named in this sentence is \input right after the paragraph
         # that first mentions it, which is MISQ's stated rule: "embedded in the
         # body of the paper, following the first reference".
@@ -317,7 +340,7 @@ def build_section(page, displays, report, keep_fences=False):
     keywords = keywords_text_of(page)
     if keywords:
         rendered = badge_sub(CODE_SPAN.sub(code_span_tex,
-                                           escape_prose(keywords)))
+                                           render_prose(keywords)))
         at = body.rfind(rendered)
         if at >= 0:
             before = body[:at].rstrip()
