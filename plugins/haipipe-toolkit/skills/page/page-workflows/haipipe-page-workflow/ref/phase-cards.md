@@ -1,170 +1,137 @@
-# Page phase cards · six fields in one order
+# Page Run Spec cards
 
-The canonical detailed map is `workflow-table.md`. These cards are the compact
-operating view every phase skill and workflow surface may quote.
+The filename remains because existing controller code resolves it. The content
+is the compact Run Spec view; it does not define Phase authority.
 
-```text
-❓ ASKS     the one question the cycle answers
-📥 READS    what must exist before it starts
-📤 WRITES   the exact authority it may change
-🚪 EXITS    the testable close condition
-✋ TICK     person-reserved gate, or none
-🔀 ROUTES   the legal next authorities
-```
-
-For human-feedback writing, use `interactive-writing-run.md`: the same Run
-can use SHAPE and Writing across Steps before CONTENT adopts agreed prose.
-These cards describe phase authority, not one Run or one human Step per card.
-
-## 🔁 The Page loop
+Route is the recorded legal transition or control outcome; it is not a second
+Run identity.
 
 ```text
-00 CONTEXT              01 OUTLINE                    02 EVIDENCE
-   PREPARE ───────────▶    SHAPE ─▶ SURVEY ─────────▶    LAND ─▶ EMBED
-      ▲                     ▲                            │       │
-      │ policy drift        └────────────────────────────┴───────┘
-      │                                 next v<G>.<S>[.<E>] plan revision
-      │                                             │ approved + folded
-      │                                             ▼
-      └──────────── 04 CHECK ◀──────────── 03 CONTENT
-                         ▲                    WRITE
-                         └──── built version ───┘
+🎯 TARGET   bounded goal
+👤 ACTOR    human | automatic | agent | hybrid
+⚙ ACTION   action or interaction
+🚪 GATE     testable entry/exit condition
+🔀 ROUTE    legal next Run Spec/control outcome
+🧾 RECEIPT  durable terminal record
+🖥 SPACE    Workspace bindings
 ```
 
-`CONTEXT`, `OUTLINE`, and `EVIDENCE` use the same
-`haipipe-plugin-outline` storage and renderer. They do not share phase authority;
-Context is an off-stage record, not a fourth reader Space:
+## `Page.context`
 
 ```text
-Draft Space          OUTLINE shapes the argument and candidate prose
-Evidence Space       OUTLINE surveys; EVIDENCE lands and embeds Results
-Run Space            Page Writing + Page Evidence + Supporting Runs
+🎯 TARGET   one Page/Folder context snapshot
+👤 ACTOR    agent or hybrid
+⚙ ACTION   collect, resolve, freeze
+🚪 GATE     identity/authorities resolved; required sources fresh; conflicts explicit
+🔀 ROUTE    SELF · Page.structure · HOLD
+🧾 RECEIPT  Context record and controller/Run receipt
+🖥 SPACE    Folder inspection; Runtime only when independently commissioned
 ```
 
-## 00 · CONTEXT / PREPARE · `haipipe-page-context`
+## `Page.interactive-writing.structure` · `rp-struct-01`
 
 ```text
-❓ ASKS     what exact context may later Page phases rely on?
-📥 READS    Page/Folder identity · Folder owner · Page Face owner · policy ·
-            requirements · related information · feedback · discussion ·
-            Files/Log/Skills · current plan/evidence/run receipts
-📤 WRITES   generated outline/<stem>-context.md and one phase receipt
-🚪 EXITS    identity and authorities resolved; every required source addressed
-            and fresh; missing/conflicting inputs explicit
-✋ TICK     none
-🔀 ROUTES   OUTLINE/SHAPE · CONTEXT/PREPARE · HOLD
-🚫 RUNS     none: Collect, Resolve, Freeze are PREPARE movements
+🎯 TARGET   whole-Page map, Mermaid, ordered Bullets, paragraph jobs, evidence decisions
+👤 ACTOR    hybrid; one shared Run may have many participants/contributors
+⚙ ACTION   SHAPE and SURVEY as internal Steps
+🚪 GATE     Shape and Survey contract explicitly accepted
+🔀 ROUTE    SELF/next Step · NEW_VERSION · writing/evidence Run · NEW_RUN · HOLD
+🧾 RECEIPT  runs/rp-struct-01.md + results/rp-struct-01/runtime.yaml + Version journal
+🖥 SPACE    Draft · Evidence · Runtime
 ```
 
-## 01A · OUTLINE / SHAPE · `haipipe-page-outline`
+## `Page.interactive-writing.scratch` · `rp-scratch-NN_<target>`
 
 ```text
-❓ ASKS     what will this Page say, and what typed ready evidence does each
-            Bullet expect?
-📥 READS    frozen Context · Page Face owner outline policy · current Page · prior
-            plan · feedback and decisions
-📤 WRITES   outline/<stem>-outline-v<G>.<S>[.<E>].md; SHAPE fields in
-            <stem>-evidence-items.md; open Discussion and one Log record
-🚪 EXITS    arc/coverage/target/value/shape checks pass; each item has an
-            E<NN>-VALUE|CITE|DISPLAY-<slug> name, expectation, and acceptance
-✋ TICK     approved: is person-reserved; both modes require it for G>=1
-            Content release; checked v0 evidence work may continue while owed
-🔀 ROUTES   OUTLINE/SURVEY · CONTENT/WRITE · OUTLINE/SHAPE ·
-            CONTEXT/PREPARE · HOLD
-🚫 RUNS     none: plan and Evidence Item specifications are not Runs
+🎯 TARGET   one Section (C1), Subsection/paragraph group (C1.P1); no B/symbol target
+👤 ACTOR    human
+⚙ ACTION   capture rough thinking; Save or Finish Scratch
+🚪 GATE     Finish requires a non-empty human Summary
+🔀 ROUTE    SELF · CLOSE / owning Run Spec · NEW_RUN
+🧾 RECEIPT  selected Outline `## Scratch` registry + paired ticket/result/runtime.yaml
+🖥 SPACE    Draft · Scratch view; Run Space
 ```
 
-## 01B · OUTLINE / SURVEY · `haipipe-page-outline`
+Scratch does not edit the Outline's `Draft:` prose. The registry is a live
+index beside the plan, while the paired Result is the durable interaction
+receipt. A closed Scratch Run is immutable.
+
+## `Page.interactive-writing.section` · `rp-sec-NN`
 
 ```text
-❓ ASKS     which upstream Results support each item, and which one local Run
-            makes its focal ready evidence?
-📥 READS    approved or policy-forwarded typed item contracts ·
-            Execution/Discovery Ticket and Result inventories · allowed
-            page-local static sources
-📤 WRITES   Supporting Runs · one Local Input plan · one owner-native Local Run ·
-            Decide in outline/<stem>-evidence-items.md
-🚪 EXITS    every route is honestly classified; Local Input contents named;
-            exactly one owner-native local route per item; Decide explicitly
-            signed or supplied by a prior durable owner policy
-✋ TICK     Decide is person-reserved and branching; auto HOLDs unless an
-            explicit durable owner decision/default policy already supplies it
-🔀 ROUTES   EVIDENCE/LAND · OUTLINE/SHAPE · OUTLINE/SURVEY ·
-            CONTEXT/PREPARE · HOLD
-🚫 RUNS     none: it inventories/reserves; LAND allocates and executes
+🎯 TARGET   one named Section drafting/revision goal
+👤 ACTOR    hybrid
+⚙ ACTION   draft → review/rate → diagnose → revise as one Step cycle
+🚪 GATE     scoped human acceptance; Bullets settled; evidence obligations ready
+🔀 ROUTE    SELF · NEW_VERSION · evidence/delivery Run · NEW_RUN · HOLD
+🧾 RECEIPT  paired Version/Step journal + runtime receipt
+🖥 SPACE    Draft · Runtime
 ```
 
-## 02A · EVIDENCE / LAND · `haipipe-page-evidence`
+## `Page.interactive-writing.paragraph` · `rp-para-NN_Pxx[-Pyy]`
 
 ```text
-❓ ASKS     does every make-item have valid Supporting Results, one frozen
-            input, and one ready local typed Result?
-📥 READS    decided item table · named Tickets/receipts/Results · worker gates
-📤 WRITES   allocated Tickets and Results · frozen Local Input · full ids and
-            Result binding in <stem>-evidence-items.md · generated status
-🚪 EXITS    all Supporting Results pass; each local VALUE/CITE/DISPLAY Result
-            satisfies its item Acceptance contract; CITE has signed Verified
-✋ TICK     only worker-specific gates already declared by the selected worker
-🔀 ROUTES   EVIDENCE/EMBED · OUTLINE/SURVEY · OUTLINE/SHAPE ·
-            CONTEXT/PREPARE · EVIDENCE/LAND · HOLD
-⚙ RUNS     0..N Execution/Discovery supports, then exactly one Page Evidence
-            Item local Run per make-item
+🎯 TARGET   one fixed paragraph or contiguous paragraph group
+👤 ACTOR    hybrid
+⚙ ACTION   capture feedback, revise, validate, save one Step
+🚪 GATE     exact scoped text accepted; dependent Bullets/evidence settled
+🔀 ROUTE    SELF · NEW_VERSION · evidence/delivery Run · NEW_RUN · HOLD
+🧾 RECEIPT  paired Version/Step journal + runtime receipt
+🖥 SPACE    Draft · Evidence · Runtime
 ```
 
-## 02B · EVIDENCE / EMBED · `haipipe-page-evidence`
+Ordinary feedback is a Step. Same-target reopening is a Version. Changed goal
+or target is a new Run.
+
+## `Page.evidence-item` · `re-value|cite|display-*`
 
 ```text
-❓ ASKS     what does each ready local Result mean for its target Bullet?
-📥 READS    ready local Results · checked v0 plan or approved G>=1 plan
-📤 WRITES   outline v<G>.<S>.<E+1> with Answered:/Drawn:/Routed: appends;
-            for G=0, approved: remains ⬜ and the plan returns to SHAPE;
-            for G>=1, declares shape-base and inherits Shape approval before
-            routing CONTENT; never changes the Result
-🚪 EXITS    every ready item is folded; contradictions are explicit findings
-✋ TICK     none; v0 returns to the SHAPE approval gate, while G>=1 inherits
-            the approved Shape and routes to CONTENT
-🔀 ROUTES   OUTLINE/SHAPE for G=0 · CONTENT for G>=1
-🚫 RUNS     none: consumes and interprets existing Results
+🎯 TARGET   one focal VALUE, CITE, or DISPLAY Result for one make-item
+👤 ACTOR    agent/system/hybrid; declared human verification when needed
+⚙ ACTION   LAND Supporting Results/input, execute local work, EMBED ready meaning
+🚪 GATE     typed Acceptance passes; CITE/worker verification recorded when required
+🔀 ROUTE    SELF · writing/delivery Run · NEW_RUN · HOLD
+🧾 RECEIPT  owner-native Ticket/Result + Page RE runtime receipt
+🖥 SPACE    Evidence · Runtime
 ```
 
-## 03 · CONTENT / WRITE · `haipipe-page-content`
+## `Page.delivery` · `rdNN_<target>`
 
 ```text
-❓ ASKS     does one built Page version realize only what the approved,
-            evidence-aware plan supports?
-📥 READS    fresh Context · approved folded plan · ready Evidence Results ·
-            Page Face owner and narrative/style policy · current Page
-📤 WRITES   Page Content and authorized Opening/Aims · accepted Writing Result
-            adoption trace · current delivery artifacts · Log
-🚪 EXITS    commissioned paragraphs accepted/promoted; artifacts current; a
-            fresh pre-check says ready
-✋ TICK     no new approval; consumes explicit scoped writing acceptance
-🔀 ROUTES   CHECK · CONTENT · CONTEXT · OUTLINE · EVIDENCE · HOLD
-⚙ RUNS     consumes agreed interactive Writing Results; optional delegated
-            attempts, never a mandatory new Run per adopted paragraph
+🎯 TARGET   one web, LaTeX, Word, PDF, or render output
+👤 ACTOR    agent/system
+⚙ ACTION   adopt exact accepted inputs, build, check, snapshot
+🚪 GATE     artifact is current and build receipt passes
+🔀 ROUTE    SELF · Page.check · NEW_RUN · HOLD
+🧾 RECEIPT  delivery artifact fingerprint + runtime/build receipt
+🖥 SPACE    Delivery · Runtime
 ```
 
-## 04 · CHECK / CHECK · `haipipe-page-check`
+## `Page.check`
 
 ```text
-❓ ASKS     is this exact built Page version closable, and who acts next?
-📥 READS    immutable source/render version · Context · plan · evidence trace ·
-            Page Face owner closing rule · CONTENT trail · human-gate evidence
-📤 WRITES   check receipt and findings/comments in the declared review surface
-🚪 EXITS    CLOSE or one named backward route
-✋ TICK     accepted: and the Folder owner's declared ruling when applicable;
-            never written by the machine judge
-🔀 ROUTES   CLOSE · CONTEXT · OUTLINE · EVIDENCE · CONTENT · HOLD
-🚫 RUNS     none: CHECK is a gate, not a Level-4 Run
+🎯 TARGET   one immutable built Page version
+👤 ACTOR    fresh agent/hybrid, separate from producer/builder
+⚙ ACTION   read-only mechanical + semantic judgment
+🚪 GATE     pass or one named finding route
+🔀 ROUTE    CLOSE · owning Run Spec · HOLD
+🧾 RECEIPT  check Result and Workflow Runtime route record
+🖥 SPACE    read-only Draft · Evidence · Runtime · Delivery
 ```
 
-## Person-reserved acts
+The current automated controller may keep CHECK as its terminal Gate rather
+than an L4 Run. It becomes a Run only when given its own stable id, Ticket,
+Result, receipt, and independent close boundary.
 
-| Act | Authority path | Owning cycle |
-|---|---|---|
-| `approved:` | `outline/<stem>-outline-v<G>.<S>[.<E>].md` | SHAPE; evidence revisions inherit |
-| `Decide` | `outline/<stem>-evidence-items.md` | SURVEY |
-| worker-specific verification/acceptance | worker authority named by LAND | LAND |
-| Page/display `accepted:` and Folder ruling | Page/review authority | CHECK |
+## Human work
 
-The Context record contains pointers to these acts but owns none of them.
+Human input always points to an owning Run:
+
+| Human act | Placement |
+|---|---|
+| feedback/comment inside fixed writing goal | Step in current RP Run |
+| acceptance of fixed writing goal | exit Gate of current RP Run |
+| branching evidence decision | Gate in Structure/Evidence Run |
+| independently commissioned bounded decision | human decision Run |
+
+Never mint another Run merely because a Workspace collected a click or note.

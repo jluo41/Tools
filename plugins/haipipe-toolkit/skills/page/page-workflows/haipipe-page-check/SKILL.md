@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-check
 description: >-
-  The 04 CHECK phase contract for any Board Page: judge one rendered version
+  The 04 CHECK compatibility-gate contract for any Board Page: judge one rendered version
   against its purpose, Aims, evidence, and Page Face owner, then route to CLOSE,
   CONTEXT, OUTLINE, EVIDENCE, CONTENT, or HOLD. In pre-check mode it gates the
   WRITE cycle's inner loop and may only say another pass or ready. It judges the BUILT
@@ -9,8 +9,8 @@ description: >-
   Trigger: page check, CHECK phase, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.8.1"
-  last_updated: "2026-09-06"
+  version: "0.9.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -28,15 +28,25 @@ haipipe-page
   → family checker, when the Page belongs to paper or application
 ```
 
-What is CHECK's alone: it is the only phase that may CLOSE, and the only one forbidden to change what it judges.
-Its risk is becoming a hidden revision: curing its own finding and calling the same version checked, which is why the fix always runs under another phase and returns for a fresh look.
+What is CHECK's alone: it is the Page Workflow Runtime's independent whole-Page
+completion gate, and the only authority forbidden to change what it judges.
+The `CHECK` label is a compatibility dispatch; its risk is becoming a hidden
+revision, so any fix runs under another Run Spec and returns for a fresh look.
 The Page Face owner supplies the closing rule and whether a person must rule.
+
+## 🧭 Run Workflow placement
+
+CHECK evaluates the exit gate of the Page Run Workflow against one immutable
+source/render version. It is not a Page Run and does not create a Run for a
+finding, review turn, or route decision. The Runtime records the verdict and
+selected legal route; a finding is repaired by the owning Run Spec and the
+changed version returns to this gate.
 
 ## ⚡ Brief
 
 ```text
 Q          judge ONE concrete rendered version cold and name its next
-           authority by phase name; the only phase that may CLOSE
+           authority by Run Spec/route; the only completion gate that may CLOSE
 WRITES     findings · comments · the check record · a proposed or human
            ruling; NEVER the artifact it judges
 
@@ -101,10 +111,12 @@ writes     findings · comments · check record · proposed or human ruling
 does not   repair a substantive finding inside the same CHECK pass
 ```
 
-Mechanical checks may run during every phase.
-The CHECK phase begins when their results and semantic judgment are used to route or close a version.
+Mechanical checks may run during any Run Spec.
+The CHECK compatibility dispatch begins when their results and semantic
+judgment are used to route or close a version.
 
-If the same person or agent also fixes a finding, the work changes phase explicitly.
+If the same person or agent also fixes a finding, the work moves to the owning
+Run Spec explicitly.
 The changed version must be checked again.
 
 ## 🧩 Put each finding where it applies
@@ -208,7 +220,7 @@ makes yes the likely answer without touching the tick itself.
    otherwise the machine approves itself by timeout
 ```
 
-**Person ticks are selected by artifacts plus the Folder's owning phase.**
+**Person ticks are selected by artifacts plus the Folder's owning Run Spec/Workflow.**
 CHECK administers display acceptance and any owner RULING that exists:
 
 ```text
@@ -238,7 +250,7 @@ A further human-reserved write is an ORDER rather than a field: the row rank
 in `outline/skill/`, whose law is "the scan seeds, the person ranks" and where
 a refresh never edits, reorders, or removes a row.
 
-They live in three phases and N files. A read-only collecting surface exists at
+They live in three controller dispatches and N files. A read-only collecting surface exists at
 `haipipe-board/live/outline.py`, which shows `approved:`, `verified`, `read` and
 `accepted:` in one card and omits the RULING; it reports no `<n> of <n>` count
 and cannot write. The joined owed ledger is `cli/pagephase.py --owed`.
@@ -334,11 +346,11 @@ page-workflows/haipipe-page-check/
 ```
 
 Owns no scripts.
-The base is `haipipe-page`; a Page Face owner may be a workflow phase,
+The base is `haipipe-page`; a Page Face owner may be a Run Spec owner,
 canonical family skill, or legacy variant under `page-types/`; the
 sentence-level lane contract is `haipipe-sentence`; family checkers own their
 deterministic tools and artifact-specific gates.
-The Board engine owns execution and audit; this phase owns only its authority and receipt.
+The Board engine owns execution and audit; this gate owns only its judgment and receipt.
 
 **The Board page that argues this phase** is `QPw6-check` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open, currently whether WARNINGS may block CLOSE.
 

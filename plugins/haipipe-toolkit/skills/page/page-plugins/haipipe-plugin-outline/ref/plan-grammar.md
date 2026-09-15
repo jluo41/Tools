@@ -1,9 +1,9 @@
-# The plan file · one grammar, with phase-owned outline policy
+# The plan file · one grammar, with Run Spec-owned outline policy
 
 The plan is `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`: what the page WILL say,
 agreed before it says it. This file is the grammar every plan obeys, and the
-one `checks/outline.py`, `src/plan_shape.py` and the 🧭 tab parse. A phase
-loads THIS file, not the plugin skill. The approved example is
+one `checks/outline.py`, `src/plan_shape.py` and the 🧭 tab parse. A Run Spec
+owner loads THIS file, not the plugin skill. The approved example is
 `ref/specimen-section-plan.md`.
 
 ## 1 · The head

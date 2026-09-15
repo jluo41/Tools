@@ -1,6 +1,7 @@
-# Outline Spaces · UI ↔ Page Folder mapping
+# Outline Spaces · UI ↔ Page Folder ↔ Run Workflow mapping
 
-This is the small implementation contract for the four user-facing Spaces.
+This is the small implementation contract for the three core Spaces plus the
+read-only Delivery Workspace.
 It answers one question: when a person clicks a Space, which renderer reads
 which Markdown or Result files, and which component is allowed to write them?
 
@@ -40,7 +41,7 @@ model for these Spaces.
 │   ├── <stem>-evidence-items.md       authored Item contracts for Outline/Evidence
 │   └── <stem>-context.md, ...         durable process records; off-stage
 ├── runs/
-│   ├── rp-struct-NN.md, rp-sec-NN.md,
+│   ├── rp-struct-NN.md, rp-scratch-NN_<target>.md, rp-sec-NN.md,
 │   │   rp-para-NN_Pxx[-Pyy].md          Run P Markdown tickets
 │   ├── re-value-NN_<slug>.md,
 │   │   re-display-NN_<slug>.md,
@@ -50,13 +51,16 @@ model for these Spaces.
 │   ├── rp-*/                            Run P history / working drafts
 │   ├── re-*/                            RE result.yaml + payloads
 │   └── rdNN_*/                         RD receipt/diagnostics when stored here
-├── workflow/                           phase receipts; off-stage
+├── workflow/                           Runtime/compatibility receipts; off-stage
 ├── scripts/                            execution support; off-stage
 ├── _archive/legacy-outline-evidence/   old Evidence material; migration only
 └── delivery/                           built outputs; not Space authority
 ```
 
-The tree is a projection of ownership, not three duplicated folders. In
+The tree is a projection of ownership, not duplicated Space folders. The three
+core Spaces are projections of one Page Run Workflow Runtime: Draft reads the
+current Outline and writing Result, Evidence reads typed Result/Card bindings,
+and Run reads Run Instances plus recorded Gate/Route state. In
 particular, there is no new `draft/`, `evidence/`, or `run-space/` directory.
 Any old generated `outline/*-evidence.md` file or `outline/evidence/` tree must
 be moved to `_archive/legacy-outline-evidence/` before the Page is considered
@@ -67,23 +71,30 @@ the runtime never reads the retired archive.
 
 | UI Space | Visible projection | Backend read set | Write authority |
 |---|---|---|---|
-| Draft Space | Mermaid + read-only paragraph/Bullet/Draft table + compact Evidence routes | selected `outline/*-outline-v*.md` (including embedded Draft fields), `outline/*-logic.mmd`, and Results metadata | none in the Space; Page/Run workflow writes Markdown |
+| Draft Space | Mermaid + Table / Reading / Scratch views | selected `outline/*-outline-v*.md` (including embedded Draft fields and `## Scratch` registry), `outline/*-logic.mmd`, and Results metadata | Table/Reading: none; Scratch: only `action: scratch` writes the selected Outline registry plus its paired Run receipt |
 | Evidence Space | typed `Displays`, `Citations`, and `Values` sections; each item is a collapsed Result-first card | `results/**/result.yaml` and payload metadata | Evidence/Run workflow or producer writes Results; Space is read-only |
 | Run Space | RP, RE, RD, Supporting Runs | `runs/`, paired `results/`, delivery receipts, external Run registry and `supporting_results` references | owning workflow/CLI writes tickets and Results; Space is read-only |
 | Delivery Workspace | source-to-delivery consistency receipt by lane | current Page source, `delivery/web/`, lane `build-manifest.json` files, artifact hashes and mtimes | none in the Space; delivery builders write artifacts and manifests |
 
 ### Draft Space
 
-Draft is the planning and rehearsal view. The Markdown plan supplies the
-paragraph/Bullet rows and candidate wording; `*-logic.mmd` supplies the Mermaid
-map. Mermaid appears as a collapsed native disclosure:
+Draft is the planning, reading, and human rehearsal view. The Markdown plan
+supplies the paragraph groups and candidate wording; `*-logic.mmd` supplies
+the Mermaid map. Mermaid appears as a collapsed native disclosure:
 opening it only reveals the rendered diagram and closing it removes that
-visual weight again. Draft is read-only in the browser: the Outline endpoint
-registers the view but rejects legacy edit actions. The owning Page/Run
-workflow validates and updates the Markdown-backed source. Generated HTML is
-never the edit target. Each Bullet keeps its visible bracketed role label and,
-when evidence is bound, a compact read-only Evidence route/card tag; the full
-Evidence item remains in Evidence Space.
+visual weight again. Table and Reading are read-only for the plan in the
+browser: the Outline endpoint registers the view but rejects legacy edit
+actions. Generated HTML is never the edit target. Each Bullet keeps its visible
+bracketed role label and, when evidence is bound, a compact read-only Evidence
+route/card tag; the full Evidence item remains in Evidence Space.
+
+Scratch is explicit and quiet: entering Scratch reveals a small `+` beside
+each Section, Subsection, and whole paragraph group. B/symbol rows have no
+Scratch control. The form captures rough notes
+without changing the `Draft:` field. `Save` creates or updates
+`rp-scratch-NN_<target>` and its `## Scratch` registry record; `Finish Scratch`
+requires the person's Summary and closes the Run. There is no `💬 Notes` thread,
+old feedback badge, or `action: feedback` composer in Draft Space.
 
 ### Evidence Space
 
@@ -117,7 +128,8 @@ RD                one Page delivery target/version
 Supporting Runs   external/upstream Runs that remain inspectable in place
 ```
 
-RP reads `rp*.md` tickets and their `results/rp*/` journals. RE reads
+RP reads `rp*.md` tickets and their `results/rp*/` journals, including the
+human-first `rp-scratch-NN_<target>` records. RE reads
 Page-owned evidence tickets and their paired Result manifests. RD reads the
 delivery lane's artifacts and `build-manifest.json`. Supporting Runs are
 assembled from references in an RE Result and the owner-native registry;
@@ -156,13 +168,21 @@ Delivery, and Folder. Evidence and Run are children of Outline.
 ## 5. Read/write contract
 
 ```text
-Draft Space      GET only            ← Page/Run workflow writes Markdown
+Draft Space      GET, plus bounded Scratch POST
+                                      ← Table/Reading remain GET-only; Scratch
+                                        writes only `## Scratch` and its paired
+                                        Run receipt
 Evidence Space   GET only            ← Run/Result producers
 Run Space        GET only            ← Page workflow, Task workflow, registry
 Delivery Workspace GET only          ← delivery builders and manifest writers
 ```
 
 This separation is intentional: the front end is a projection, while the
-Markdown and Result files remain the backend authority. A future UI can replace
+Markdown and Result files remain the backend authority. Table/Reading,
+Evidence, Run, and Delivery remain read-only; Scratch is the one bounded human
+capture exception. Feedback and prose acceptance enter through the owning Run
+interaction and its recorded Steps/Versions, never through the retired browser
+composer.
+A future UI can replace
 the server-rendered HTML, but it must preserve these paths, ownership rules,
 and the no-copy rule for Supporting Runs.

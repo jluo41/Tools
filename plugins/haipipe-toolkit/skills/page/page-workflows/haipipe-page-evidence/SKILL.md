@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-evidence
 description: >-
-  The 02 EVIDENCE phase of a Board Page:
+  The 02 EVIDENCE compatibility dispatch of a Board Page:
   LAND executes each typed Evidence Item graph (zero-to-many Execution/Discovery
   Supporting Runs, freezes one Local Input, then executes exactly one Page
   Evidence Run (`RE`) lineage per item) and EMBED
@@ -10,8 +10,8 @@ description: >-
   evidence, EVIDENCE phase, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.25.0"
-  last_updated: "2026-09-14"
+  version: "0.27.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,6 +19,15 @@ metadata:
 
 EVIDENCE changes what a Page can safely know. It does not choose the outline
 shape and does not write a sentence of `## Content`.
+
+## 🧭 Run Workflow placement
+
+LAND materializes the planned Evidence Run Specs: zero-to-many owner-native
+Supporting Run Instances, one frozen Local Input, and one typed Page `RE`
+Run Instance per make-item. EMBED is an interpretation Step that consumes
+ready Results and creates no new Run by itself. Gate evaluations and route
+decisions are recorded in the Run receipts and Workflow Runtime; this skill
+does not invent a Run for a worker call, retry, or fold.
 
 ```text
 Page planning and evidence loop
@@ -93,7 +102,7 @@ An upstream Result never becomes Page evidence just because it exists. The
 local Run validates, normalizes, and packages the focal item. It still carries
 no Page argument: EMBED owns the interpretation.
 
-## 🗺 Phase × Run Map
+## 🗺 Run Spec × Run Map (compatibility view)
 
 | Cycle | Level-4 Run operations | Cardinality | Close |
 |---|---|---:|---|

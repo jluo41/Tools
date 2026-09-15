@@ -40,7 +40,7 @@ and the files or external services it will touch. Wait for an explicit yes.
 Heavy work includes:
 
 - adopting Page Content or generating Web, LaTeX, Word, PDF, or other delivery;
-- rebuilding the full Outline, Mermaid projection, Board, or phase controller;
+- rebuilding the full Outline, Mermaid projection, Board, or Page controller;
 - running the full test suite, broad browser verification, or an export audit;
 - starting Discovery, citation search, figure production, rendering, data,
   computation, or any other delegated Task Run;

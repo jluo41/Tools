@@ -439,7 +439,12 @@ class StandaloneServerTests(unittest.TestCase):
             'Example content.', 'Example content. <!-- realizes: C1.P1.B1 -->'))
         route = '/_board/outline?path=%2F&file=Q1-example.md&lens=div&focus=C1.P1.B1'
         writable = self.request(path=route)[2].decode()
-        self.assertNotIn('<form', writable)
+        # Scratch is the only bounded Draft write lane. Its forms are hidden
+        # outside Scratch Mode and write the registry/Run receipt, never prose.
+        self.assertEqual(writable.count('<form'), writable.count('data-scratch-form'))
+        self.assertNotIn('class=fb-form', writable)
+        self.assertIn('data-scratch-scope="paragraph"', writable)
+        self.assertNotIn('data-preview-write', writable)
         self.assertIn('id="bullet-C1-P1-B1"', writable)
         self.assertIn("'bullet-'+id.replace(/\\./g,'-')", writable)
         self.start(read_only=True)

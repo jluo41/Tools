@@ -1,3 +1,12 @@
+## 1.0.7 · 2026-09-15
+
+- Replace the retired `live/outline_comments.py` symlink (and the dangling
+  `outline_comments.js` / `outline_preview.js` links) with
+  `live/outline_feedback.py`, the Draft Space note composer.
+- Replace `tests/test_outline_comments.py` with `tests/test_outline_feedback.py`;
+  drop the obsolete `test_outline_preview_ui.cjs` (its script is gone); the
+  Outline tests now allow exactly one textarea, the note composer's.
+
 ## 1.0.6 · 2026-09-13
 
 - Keep candidate-sentence feedback in the active Page Run and stop mounting a

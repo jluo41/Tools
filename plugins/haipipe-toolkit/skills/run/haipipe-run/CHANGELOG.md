@@ -1,5 +1,18 @@
 # haipipe-run · CHANGELOG
 
+## 0.26.1 · 2026-09-15
+
+Replace Phase-owned Run profiles with Workflow Run Spec graphs. Gate and Route
+now belong to each Run; distinguish Run Type, Run Spec, and Run Instance; make
+human decision Runs conditional on bounded commission, durable receipt, and
+independent closure; retain RP feedback as Steps and reopenings as Versions.
+Entry gates default open, exit close semantics are mandatory, terminal routes
+default to `CLOSE`, and gate/route modes are `human | automatic | agent |
+hybrid`; phase/controller labels are adapter metadata, not ontology. Add the
+Workflow Runtime boundary: one aggregate `workflow_runtime_id` records frontier
+and control decisions while child Runs retain owner-native identities, Tickets,
+Results, and receipts.
+
 ## 0.26.0 · 2026-09-14
 
 Clarify that `rp-struct-01` is one multi-person Structure Run containing the

@@ -4,6 +4,10 @@
 - Keep the current workflow pre-1.0. Later-looking labels below are retracted
   as release assignments and retained only as development provenance.
 - Any future `1.0.0+` requires explicit user approval.
+- 260915 ontology rewrite: keep version 0.4.0 while replacing the phase map
+  with `Design.commission → N Design.generate → J Design.verify →
+  Design.adopt`; Gate/Route live inside each Run and expected count is
+  `1 + N + J + 1`. No compatibility route was added.
 
 4.0.1 · 260913
 - Forbid “read-only/readable migration history” language for unsupported

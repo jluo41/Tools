@@ -1,78 +1,51 @@
-// ─── haipipe-workflow template ───────────────────────────────────
-// Copy this file, rename, and fill in the blanks.
-// See: skills/task/haipipe-workflow/ref/workflow-api.md
-// See: skills/task/haipipe-workflow/ref/concepts.md
+// haipipe-workflow Run Spec graph template.
+// `meta.phases` and opts.phase are engine progress labels only.
 
 export const meta = {
   name: 'WORKFLOW_NAME',
   description: 'PURPOSE — one line, shown in permission dialog',
   phases: [
-    { title: 'P1_TITLE', detail: 'what this phase does' },
-    { title: 'P2_TITLE', detail: 'what this phase does' },
-    // add more phases as needed
+    { title: 'AUTHOR', detail: 'progress group for Run Spec author' },
+    { title: 'REVIEW', detail: 'progress group for Run Spec review' },
   ],
 }
 
-// ─── I: Input ───────────────────────────────────────────────────
-// args shape: array of specs, or object with fields
 const specs = Array.isArray(args) ? args : (args && args.specs || [])
-if (!specs.length) { log('no specs; nothing to do'); return { summary: [] } }
-log(`${meta.name}: ${specs.length} item(s)`)
+if (!specs.length) { log('no inputs; nothing to do'); return { runs: [] } }
 
-// ─── Schemas (contracts between phases) ─────────────────────────
-const P1_RESULT = {
+const AUTHOR_RESULT = {
   type: 'object',
-  required: ['status'],
+  required: ['status', 'result', 'receipt'],
   properties: {
-    status: { type: 'string', enum: ['ok', 'blocked', 'failed'] },
-    // add fields
+    status: { type: 'string', enum: ['complete', 'blocked', 'failed'] },
+    result: { type: ['string', 'null'] },
+    receipt: { type: 'string' },
   }
 }
 
-const P2_RESULT = {
+const REVIEW_RESULT = {
   type: 'object',
-  required: ['verdict'],
+  required: ['verdict', 'route', 'receipt'],
   properties: {
-    verdict: { type: 'string', enum: ['pass', 'warn', 'fail'] },
-    issues:  { type: 'array', items: { type: 'string' } },
+    verdict: { type: 'string', enum: ['pass', 'warn', 'fail', 'blocked'] },
+    route: { type: 'string', enum: ['CLOSE', 'author', 'HOLD'] },
+    receipt: { type: 'string' },
   }
 }
 
-// ─── P: Phases ──────────────────────────────────────────────────
-const results = await pipeline(
+const runs = await pipeline(
   specs,
-
-  // P1 — first phase (one Step per item, fan=pipeline)
   (spec, _, idx) => agent(
-    `P1 prompt for item ${idx}: ${JSON.stringify(spec)}`,
-    {
-      label: `p1:${spec.name || idx}`,
-      phase: 'P1_TITLE',
-      schema: P1_RESULT,
-      // agentType: 'my-specialist-agent',
-    }
+    `Run Spec author for ${JSON.stringify(spec)}`,
+    { label: `author:${spec.name || idx}`, phase: 'AUTHOR', schema: AUTHOR_RESULT }
   ),
-
-  // P2 — second phase (gate: skip if P1 failed)
-  (p1, spec) => {
-    if (!p1 || p1.status !== 'ok') return { ...p1, p2: { verdict: 'skipped' } }
+  (authored, spec, idx) => {
+    if (!authored || authored.status !== 'complete') return authored
     return agent(
-      `P2 prompt: review result of ${spec.name || 'item'}`,
-      {
-        label: `p2:${spec.name || 'item'}`,
-        phase: 'P2_TITLE',
-        schema: P2_RESULT,
-      }
-    ).then(v => ({ ...p1, p2: v }))
+      `Independently review ${authored.result}`,
+      { label: `review:${spec.name || idx}`, phase: 'REVIEW', schema: REVIEW_RESULT }
+    ).then(review => ({ authored, review }))
   },
 )
 
-// ─── O: Output ──────────────────────────────────────────────────
-const summary = results.filter(Boolean).map(r => ({
-  name:    r.name || null,
-  status:  r.status || 'failed',
-  verdict: r.p2 ? r.p2.verdict : null,
-}))
-
-log(`${meta.name} done: ${summary.length} result(s)`)
-return { summary }
+return { runs: runs.filter(Boolean) }

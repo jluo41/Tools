@@ -1,1 +1,0 @@
-../../../QPw6-check/QPw6-check.md

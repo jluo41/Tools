@@ -235,6 +235,24 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                         f"packet.{field} must equal run.{field}",
                     )
                 )
+        packet_runtime_id = str(packet.get("workflow_runtime_id", "")).strip()
+        run_runtime_id = str(run.get("workflow_runtime_id", "")).strip()
+        if packet_runtime_id and packet_runtime_id != str(packet.get("run_id", "")).strip():
+            findings.append(
+                _finding(
+                    "runtime-run-mismatch",
+                    "run",
+                    "packet.workflow_runtime_id must equal packet.run_id",
+                )
+            )
+        if packet_runtime_id and "workflow_runtime_id" in run and packet_runtime_id != run_runtime_id:
+            findings.append(
+                _finding(
+                    "packet-runtime-mismatch",
+                    "run",
+                    "packet.workflow_runtime_id must equal run.workflow_runtime_id",
+                )
+            )
         for field in ("sources", "constraints"):
             if field in packet and not isinstance(packet.get(field), list):
                 findings.append(

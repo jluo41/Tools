@@ -1,44 +1,116 @@
 ---
 name: haipipe-insight
 description: >-
-  InsightBoard door for the I0-I5 climb over one dataset. Meta declares the
+  Unified Insight door for Task-side topic/data instances and Application
+  InsightBoards. Routes dataset-first requests to the Task Insight Page/RI
+  contract and Application requests to the I0-I5 RunType climb. Meta declares the
   extract; Question registers ask; Data observes; Information derives;
   Knowledge claims; Wisdom counsels and exports a person-signed Design
-  Handoff. Phase skills own each Folder and both faces; this door owns the
-  one-dataset, register, climb, partition and signing laws. Ends at signed
-  handoff, never designs. Trigger: InsightBoard, question register, DIKW,
-  climb, chain, partition, pooling verdict, Design Handoff, /haipipe-insight.
+  Handoff. Ends at the correct Insight boundary, never designs. Trigger:
+  insight, InsightBoard, Insight Page, RI, question register, DIKW, climb,
+  chain, partition, pooling verdict, Design Handoff, /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.2.1"
-  last_updated: "2026-09-13"
+  version: "1.3.1"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-insight · answer as a climb, under Task-backed evidence
+# /haipipe-insight · one public door, two Insight scopes
 
-`haipipe-application` remains the Application umbrella (two-board pairing,
-signed-input crossing, ends-at-ACCEPTED); this door owns the InsightBoard's own
-laws and verbs, symmetric to `/haipipe-design` on the other board. Physically
-it lives inside `skills/application/` because an InsightBoard cannot exist
-outside an Application; the slash name is first-class regardless.
+`/haipipe-insight` is the one user-facing entry for both kinds of Insight work.
+It resolves the scope first, then loads exactly one owner:
+
+```text
+Task-side Insight       a neutral topic/data instance · item `riNN` Runs ·
+                        versioned D/I/K/W/RF Results
+Application Insight     a named InsightBoard · I0 Meta → I1 Question →
+                        I2 Data → I3 Information → I4 Knowledge → I5 Wisdom
+```
+
+This is a router, not a third data or Page owner. Task-side execution remains
+owned by `haipipe-task` + `haipipe-page-insight`; the Application route remains
+owned by this door + `haipipe-insight-workflow`. The physical skill location
+under `skills/application/` does not change the Task-only status of
+`page-type: insight`.
 
 **The name is reused; the thing is not.** The earlier top-level knowledge-base layer was retired. This Application door does not replace the evidence producers: values bind to named Supporting Run Results through local Evidence Runs, and this door states how one board turns bounded evidence into a signed handoff.
+
+For an Application execution, this door creates or resumes one
+`workflow_runtime_id` and routes within that Runtime. I0-I5 are Insight
+RunTypes, GI0-GI6 are Runtime control keys, and the `partition × DIKW target`
+Question Group remains a derived scheduling view—not a Folder, Gate, or Run.
+
+## One public door, two routes
+
+Use the explicit form when the scope is known. The bare form is a convenience
+for a topic whose board has not yet been named:
+
+```text
+/haipipe-insight task "<topic>" [<task-board>]                         Task-side
+/haipipe-insight application <application-root> <verb> [args...]        Application
+/haipipe-insight "<topic>" [<task-board-or-context>]                    auto-route
+```
+
+The Application verbs (`enter`, `status`, `meta`, `sources`, `question`,
+`ask`, `climb`, `chain`, `partition`, `verdict`, `settle`, `handoff`, `check`,
+`review`, `workflow`, `run`) keep their existing meaning. For compatibility,
+the existing verb-first form remains valid:
+
+```text
+/haipipe-insight <verb> [<application-root>] [args...]
+```
+
+Resolve the route in this order:
+
+| Signal | Route | First owner to load | Resulting unit |
+|---|---|---|---|
+| explicit `task` | Task-side | `haipipe-task` → `fn/insight.md` → `haipipe-page-insight` | one topic/data Page and its `riNN` items |
+| explicit `application` | Application | `haipipe-application` → this door → `haipipe-insight-workflow` | one InsightBoard cell through I0-I5 |
+| an existing `*-InsightBoard` or Application root | Application | same Application route | existing board status or requested verb |
+| an existing Task Board, dataset-first topic, or bare topic | Task-side | same Task route | create/resume a neutral Insight Page |
+| ambiguous path/context | stop and ask for the scope | neither | never create a duplicate or guess an audience |
+
+`/haipipe-task insight "<topic>" [<board>]` is the compatibility alias for
+`/haipipe-insight task "<topic>" [<board>]`; it must produce the same
+`scope: task`, `insight-layout: items-v2` Page and the same RI contract. Keep
+`/haipipe-discovery` separate for literature and external-evidence discovery.
+
+The `partition × DIKW target` Question Group exists on the Application route
+only: it is a derived scheduling view over one stable register question and
+its partition cell. Task-side Insight work has an item-level target and dataset
+binding, but does not mint Application Question Groups or I0-I5 Folders.
+
+After routing, the boundary is equally strict:
+
+```text
+Task-side       resolve/reuse the Page → select an item → bind `riNN` to one
+                normal `rNN` + new frozen dataset → execute only after its
+                ticket/receipt gates; never fabricate a Result
+Application     resolve the board → register/derive one Question Group cell →
+                advance one I0-I5 lap through `haipipe-insight-workflow`
+```
+
+The router does not execute a whole Task merely because a topic was named, and
+it does not create an Application board merely because a dataset was named.
 
 **Who owns what**:
 
 ```text
-haipipe-insight               this door · the one-dataset/climb/register/handoff laws · the verbs
+haipipe-insight               public Insight router + Application one-dataset/climb/register/
+                              handoff laws · Application verbs
+haipipe-task/fn/insight       Task-side route procedure (compatibility alias included)
+haipipe-page-insight          Task-side topic/data Page, item, RI, and DIKW/RF Result contract
 haipipe-insight-meta         the head: source inventory only, holds NO question
 haipipe-insight-question     the four registers MT01-MT04: asked and tracked, never concluded
 haipipe-insight-data/-information/-knowledge/-wisdom     what each rung IS
 haipipe-application           the umbrella keeps ref/partition.md (the partition grammar's single
                               source) and fn/meta.md + fn/chain.md, the page-level procedures
 haipipe-page-workflow         the loop every page here runs, like every page anywhere
-haipipe-insight-workflow      the lane's phase machine: I0-I5, GI0-GI6,
-                              the CELL frontier, dispatch, receipts, climb order
-haipipe-folder                the shared two-face Folder and phase contract
-haipipe-application-workflow  cross-board handoffs only; no duplicate Insight phases
+haipipe-insight-workflow      the lane's RunType/Runtime controller: I0-I5,
+                              GI0-GI6, the CELL frontier, dispatch, receipts, climb order
+haipipe-folder                the shared two-face Folder contract
+haipipe-application-workflow  cross-board handoffs only; no duplicate Insight RunTypes
 ```
 
 Read `ref/page-v2-adapter.md` whenever creating, reopening, or checking a rung
@@ -48,15 +120,14 @@ second defines the derived `partition × DIKW target` grouping without adding a
 Folder or second Queue.
 
 `page-type: insight` stays TASK-ONLY: a consumer-neutral topic/data instance
-with item Runs, each carrying a versioned DIKW/RF Result (`/haipipe-task
-insight`). This is where dataset-first exploration lives. Its item workflow
-and tables belong to `haipipe-page-insight/ref/`, not this Application ladder.
-This door never mints one—its Folders are Meta, Question, Data, Information,
-Knowledge, and Wisdom. A settled Wisdom-targeted Task RF may enter only as the
-workflow's pre-climbed external parent: I1 registers its exact
-instance/item/execution-version/RF reference and a
-local I5 Wisdom Folder contextualizes and signs the Application Design Handoff.
-RF never reaches Design directly.
+with item Runs, each carrying a versioned DIKW/RF Result. The unified Task
+route delegates to `/haipipe-task insight` and `haipipe-page-insight`; this
+Application route never mints a Task-side Page or RI. Its own Folders are Meta,
+Question, Data, Information, Knowledge, and Wisdom. A settled Wisdom-targeted
+Task RF may enter only as the workflow's pre-climbed external parent: I1
+registers its exact instance/item/execution-version/RF reference and a local I5
+Wisdom Folder contextualizes and signs the Application Design Handoff. RF never
+reaches Design directly.
 
 ## The Climb Law · a six-level lifting chain
 
@@ -150,7 +221,7 @@ PARTITION-MAJOR · when each subgroup must produce its OWN K claims and W counse
 
 The layout is chosen once, at scaffold; `ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page declares its typed Evidence Items in `outline/` and binds Supporting and Local Runs; Meta and the four registers own none, and no flat run bank exists. Legacy probe paths are read-only migration input and are never created by new work. `A<NN>_` is only a project-local ordering option before the subject; the canonical shape stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
 
-## The Folder phases this door owns
+## The Folder RunTypes this door owns
 
 ```text
 MT00        haipipe-insight-meta          what data EXISTS · one per board
@@ -161,13 +232,18 @@ K rung      haipipe-insight-knowledge     claimed from named I rows · never adv
 W rung      haipipe-insight-wisdom        counsel + the signed Design Handoff
 ```
 
-These are six workflow phases, not six configuration/Page-Type skills. Each
-named skill owns its Folder kind's Page Face, Task Face, plugins, gate, and
-handoff. Legacy `page-type:` keys resolve to these skills during migration.
+These are six workflow RunTypes, not six configuration/Page-Type skills. Each
+named skill owns its Folder kind's Page Face, Task Face, plugins, control
+policy, and handoff. Legacy `page-type:` keys resolve to these skills during
+migration.
 
 ## Verbs
 
 ```text
+task | topic | instance
+                    dispatch a dataset-first request to the Task Insight Page/RI route ·
+                    create/resume a neutral topic/data instance, never an Application board
+application | board  resolve an Application root, then use the Application verbs below
 enter | status      resolve the board · derive Question Groups from MT00 × the four
                     rung registers · report each group's member-cell frontier
 meta | sources      create/resume the one MT00 (the umbrella's fn/meta.md)
@@ -185,16 +261,21 @@ check | review      CHECK selected rung pages in a fresh context
 workflow | run      drive laps (§The lap): gap → climb (✋release inside) → ✋sign → settle · STOP
 ```
 
-The two Insight cross-phase ✋ gates never have an auto mode: releasing a
+The two Insight cross-RunType ✋ controls never have an auto mode: releasing a
 bounded Run and signing a handoff are a person's, and every page dispatched into
 `haipipe-page-workflow` pins `mode: copilot`. Page-local outline/read/verified
-ticks remain nested controls rather than new Insight gates. With the Design
-door's two cross-phase gates (card release, acceptance), they are the
+ticks remain nested controls rather than new Insight control identities. With
+the Design door's two cross-RunType controls (card release, acceptance), they are the
 Application's four domain authority transfers, two per door.
 
 ## The lap, step by step
 
-The `run` verb's procedure. These six are VERBS, not phases: none can name an authority page beyond the pages already on the board, which is the naming-law test (`haipipe-application-workflow` 0.4.0) — the design door's realize and judge are verbs by the same test. The lane's PHASES are the rungs themselves, named in `haipipe-insight-workflow`; a lap is how one register cell moves through them.
+The `run` verb's procedure. These six are VERBS, not RunTypes: none can name an
+authority page beyond the pages already on the board, which is the naming-law
+test (`haipipe-application-workflow` 0.4.0) — the design door's realize and
+judge are verbs by the same test. The lane's RunTypes are the rungs themselves,
+named in `haipipe-insight-workflow`; a lap is how one register cell moves
+through them.
 
 ```text
 lap entry: pick one frontier question, a register cell not yet settled
@@ -228,14 +309,15 @@ lap entry: pick one frontier question, a register cell not yet settled
 ```
 
 The pens own their steps — ① and ⑤ write STATE, ② and ③ write FINDINGS, ④
-exports — and the lap's two cross-phase ✋ are the door's two domain gates; no
+exports — and the lap's two cross-RunType ✋ controls are the door's two domain
+authority transfers; no
 third GI transfer appears. A ZERO-CARD ③ is a legal quiet pass: when every
-value the page owes already exists in the store, PROBE raises nothing, there is
-nothing to release, and the lap proceeds — a skipped phase is a phase that had
-cards and ignored them, not a phase that had none. A quiet pass is DECLARED,
-never silent: the run states "PROBE: zero cards (quiet pass)" where it would
+value the page owes already exists in the store, SURVEY raises nothing, there is
+nothing to release, and the lap proceeds — a skipped RunType is a RunType that
+had work and ignored it, not a RunType with no work. A quiet pass is DECLARED,
+never silent: the run states "SURVEY: zero cards (quiet pass)" where it would
 have presented cards, because from the operator's side an undeclared quiet pass
-and a skipped phase look identical. SIGN precedes SETTLE because a W question's
+and an absent RunType work unit look identical. SIGN precedes SETTLE because a W question's
 "what would answer it" includes the signed handoff: the cell cites a page whose
 person's tick already exists. GI5 forbids outward composition; GI6 then records
 the settlement before the cell stops.
@@ -249,17 +331,19 @@ always derived from its member cells and is never written independently.
 
 ## The journey, mapped onto existing machinery
 
-The lane has its own phase machine, `haipipe-insight-workflow`: six
-phase-owned Folder kinds — I0 Meta, I1 Question, I2 Data, I3 Information, I4
-Knowledge, I5 Wisdom — with gates GI0-GI6 and the register CELL (question ×
-partition) as the frontier unit. The division of labor with this door:
+The lane has its own Workflow Runtime controller,
+`haipipe-insight-workflow`: six RunType-owned Folder kinds — I0 Meta, I1
+Question, I2 Data, I3 Information, I4 Knowledge, I5 Wisdom — with GI0-GI6
+control keys and the register CELL (question × partition) as the frontier unit.
+The division of labor with this door:
 
 ```text
 this door        the LAW: one dataset, the Climb Law, the pens, the two ✋ · and the
                  LAP, which is HOW one cell moves
-insight-workflow the PHASES: where a cell is, which gate it faces, the climb order
-                 (template, mirrors in parallel, X, every W), receipts, stop rules
-application-wf   cross-board receipts and handoffs; it never renames these phases
+insight-workflow the RunTypes/Runtime: where a cell is, which control it faces,
+                 the climb order (template, mirrors in parallel, X, every W),
+                 receipts, stop rules
+application-wf   cross-board receipts and handoffs; it never renames these RunTypes
 page-workflow    CONTEXT…CHECK inside one bounded Page workflow pass; interactive
                  Page Runs are optional sibling records and never GI transitions
 ```

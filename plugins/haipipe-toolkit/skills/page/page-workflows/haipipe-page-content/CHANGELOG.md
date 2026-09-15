@@ -1,3 +1,8 @@
+## 0.16.0 · 2026-09-15
+
+- Define CONTENT as the release/adoption Run Spec owner and keep adoption,
+  delivery, and pre-check inside the bounded release work.
+
 ## 0.15.0 · 2026-09-14
 
 - Update the release barrier to consume typed RP identities and the unified

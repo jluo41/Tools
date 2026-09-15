@@ -13,6 +13,21 @@ WORKFLOW = SKILLS / "page/page-workflows/haipipe-page-workflow"
 
 
 class InteractiveSkillContractTest(unittest.TestCase):
+    def test_workflow_is_run_spec_graph_not_phase_authority(self):
+        workflow = (WORKFLOW / "SKILL.md").read_text()
+        table = (WORKFLOW / "ref/workflow-table.md").read_text()
+        cards = (WORKFLOW / "ref/phase-cards.md").read_text()
+        for text in (workflow, table, cards):
+            with self.subTest(source=text[:40]):
+                self.assertIn("Run Spec", text)
+                self.assertIn("Gate", text)
+                self.assertIn("Route", text)
+        self.assertIn("Step is an internal action inside\none Run", workflow)
+        self.assertIn("NEW_VERSION", workflow)
+        self.assertIn("NEW_RUN", workflow)
+        self.assertIn("not Phase authority", table)
+        self.assertIn("does not define Phase authority", cards)
+
     def test_relative_instruction_links_resolve(self):
         files = [
             WORKFLOW / "SKILL.md",

@@ -1,3 +1,8 @@
+## 0.27.0 · 2026-09-15
+
+- Place LAND/EMBED under the Run Spec graph: LAND materializes Supporting and
+  RE Runs, while EMBED remains a Result-folding Step without a new Run.
+
 ## 0.26.0 · 2026-09-14
 
 - Use typed `re-value-NN_<slug>`, `re-display-NN_<slug>`, and

@@ -1,3 +1,8 @@
+## 0.2.0 · 2026-09-15
+
+- Treat CONTEXT as a compatibility dispatch adapter that freezes planning
+  inputs for later Run Specs without minting a Level-4 Run.
+
 ## 0.1.3 · 2026-09-04
 
 - Resolve an exact Page Face owner—workflow phase, canonical family, or legacy

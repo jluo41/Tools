@@ -10,8 +10,8 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.78.0"
-  last_updated: "2026-09-14"
+  version: "0.81.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,11 +19,12 @@ metadata:
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface,
 writer, boundary. This file owns outline's delta: what the folder holds, what
-the tab shows, and who writes each file. The visible surface has exactly three
-workspaces:
+the tab shows, and who writes each file. The Outline tab has exactly three
+core workspaces; the Page shell may expose Delivery Workspace separately as a
+read-only source-to-artifact view:
 
 ```text
-Draft Space          Mermaid Structure + paragraph/Bullet table + compact Evidence routes
+Draft Space          Mermaid Structure + paragraph table + compact Evidence routes
 Evidence Space       Value + Display + Citation sections with collapsed Result cards
 Run Space            Page Writing + Page Evidence + Supporting Runs
 ```
@@ -40,7 +41,7 @@ must leave the active tree before the Page is rendered as current.
                  skill-record.md · specimen-section-plan.md ·
                  evidence-bundle.md: the exact
                  grammars a writer or parser needs
-  the phases     haipipe-page-context · haipipe-page-outline · haipipe-page-evidence
+  the Run Spec owners  haipipe-page-context · haipipe-page-outline · haipipe-page-evidence
 ```
 
 ## 🗂 The folder · product beside process
@@ -274,26 +275,27 @@ approval inherited by an evidence fold.
 
 ## 🎛 The tab · Draft + Evidence + Run, one Outline plugin
 
-The Draft Space uses two columns per paragraph: **Bullet** on the left and
-**Draft** on the right. It is a static, read-only projection: no tap-to-edit,
-editor, add button, form, comment composer, or browser write-back script is
-rendered. The plan and candidate wording remain Markdown authorities under
-`outline/`: the UI keeps the selected Outline filename under a collapsed
-`Sources` disclosure, while the Mermaid card identifies
-`outline/<stem>-logic.mmd`. Keep the two columns side by side on phones; omit
-process metadata and controls that do not help reading. The left column shows
-the authored or proposed role beside each statement, with neutral `[Point]` only as a
-compatibility fallback. When a Bullet has typed or legacy evidence, the route
-is appended inline immediately after that Bullet's statement; it is a compact,
-read-only link and the full item card remains in Evidence Space. A valid
-source-free `Evidence: none` decision remains in Markdown but has no visible
-Draft badge; an omitted decision may show only a compact `missing` warning.
-New candidate-sentence feedback belongs to the active
-Page Run in chat, where wording, rationale, and acceptance share one Step
-history. Historical signed review lanes remain embedded in the Outline
-Markdown but are
-not rendered. The Draft Space has no separate Comments disclosure or comment
-composer. Read `ref/content-preview.md` when a workflow writes or consumes
+The Draft Space has three deliberately small views: **Table** for Bullet/Draft
+alignment, **Reading** for prose without the grid, and **Scratch** for the
+person's rough thinking. Table and Reading are read-only projections. Scratch
+is the only explicit browser writing lane: a tiny `+` appears only after the
+person enters Scratch, beside a Section, Subsection, or paragraph. It opens a
+small note form; `Save` keeps the Run open, and `Finish Scratch` requires a
+human-written Summary and closes that Scratch Run. There is no old comments
+composer, feedback badge, or tap-to-edit Draft control.
+
+The plan and candidate wording remain Markdown authorities under `outline/`:
+the UI keeps the selected Outline filename under a collapsed `Sources`
+disclosure, while the Mermaid card identifies
+`outline/<stem>-logic.mmd`. Keep the reading surface quiet; omit process
+metadata and controls that do not help reading. The left column shows the
+authored or proposed role beside each statement, with neutral `[Point]` only
+as a compatibility fallback. When a Bullet has typed or legacy evidence, the
+route is appended inline immediately after that Bullet's statement; it is a
+compact, read-only link and the full item card remains in Evidence Space. A
+valid source-free `Evidence: none` decision remains in Markdown but has no
+visible Draft badge; an omitted decision may show only a compact `missing`
+warning. Read `ref/content-preview.md` when a workflow writes or consumes
 candidate prose; it owns storage and the CONTENT handoff.
 
 🧭 Outline is the FIRST and DEFAULT tab on a page (`live/shell.py` asks the
@@ -302,25 +304,35 @@ live page, 💬 Chat is the fallback). Every other tab shows one material; only
 🧭 shows the plan and, against each part of it, what that part still owes.
 
 ```text
-🧭 Draft Space            default · Mermaid + paragraph/Bullet table
+🧭 Draft Space            default · Mermaid + Table | Reading | Scratch
    Evidence Space         Value + Display + Citation · collapsed Result cards
-   Run Space              Page Writing + Page Evidence + Supporting Runs
+Run Space              Page Writing + Page Evidence + Supporting Runs
 ```
 
-These are the only visible workspaces. Durable Context, Requirement,
+These are three projections of one Page Run Workflow and its Runtime, not
+three workflow phases. Draft shows the current writing Result, Evidence shows
+typed Result/Card bindings, and Run shows concrete Run Instances plus the
+Runtime frontier and recorded Gate/Route decisions. The owning Run Workflow
+and Run Spec skills remain the only execution and closure authorities.
+
+These are the only visible core workspaces in Outline. Delivery Workspace is
+the separate read-only artifact surface. Durable Context, Requirement,
 Discussion, Feedback, Files, Log, and Skill records remain in Markdown and are
 available through Folder inspection; they do not reappear as cards, lenses, or
 summary panes. The visible surface is deliberately smaller than the process
 authority on disk.
 
-The plan card mirrors the Page's numbered four-step workflow strip exactly:
-`1 SHAPE  2 SURVEY  3 LAND  4 EMBED`; completed steps, the current step, and
-future steps remain visually distinct. The arrow notation
-`SHAPE → SURVEY → LAND → EMBED` describes flow, not literal UI separators. It
+The plan card may show the historical four-label controller strip as a compact
+status summary: `1 SHAPE  2 SURVEY  3 LAND  4 EMBED`; completed labels, the
+current dispatch, and future labels remain visually distinct. The arrow
+notation `SHAPE → SURVEY → LAND → EMBED` describes a compatibility route, not
+literal UI separators or four Run identities. The declared Run Spec graph and
+Runtime receipt remain authoritative. It
 does not compare an undrafted Page Content
 section with the approved Shape or emit a `Shape/content mismatch` warning:
-zero Content is ordinary before EMBED/CONTENT. Structural conformance remains a
-checker concern at the phase boundary, not an alarm in the planning workspace.
+zero Content is ordinary before the relevant Run Spec closes. Structural
+conformance remains a Workflow Runtime gate concern, not an alarm in the
+planning workspace.
 
 - **Two Bullet lenses over one parse**: By part is one card per Content division
   with its Aims, ticks and `Now:` facts; 🚦 What is left is the same rows with
@@ -396,11 +408,13 @@ free of a repeated `EVIDENCE` heading and empty pill.
 
 ### 🔒 Read-only boundary
 
-The Draft Space is a reader-only projection of the current plan and candidate
-wording. It renders the Mermaid map as a collapsed, native open/close
-disclosure and the Bullet/Draft table, plus navigation
-and an on-demand `Sources` disclosure for the source paths. It emits no Bullet editor, append control, Draft
-form, comment composer, or write-back script. The outer Outline POST remains a
+The Table and Reading views are reader-only projections of the current plan and
+candidate wording. They render the Mermaid map as a collapsed, native
+open/close disclosure and the Bullet/Draft or prose reading view, plus
+navigation and an on-demand `Sources` disclosure for source paths. They emit
+no Bullet editor, Draft editor, comment composer, or legacy feedback form.
+Scratch is the narrow exception described above; its server action is
+`action: scratch`, not a Draft edit. The outer Outline POST remains a
 shell-registration compatibility route; `edit-preview`, `edit-bullet`, and
 `append-bullet` are rejected server-side as read-only requests.
 
@@ -476,6 +490,22 @@ beside its VALUE and DISPLAY items.
 A Results bullet may legitimately show no CITE chip when it reports only this
 study's analysis and points to its own displays.
 
+## ✍️ Scratch is the only Draft write lane
+
+Draft prose remains read-only. Scratch is a separate human-thinking capture
+lane, not prose editing and not feedback. Its target can be a whole Section
+(`C1`), Subsection (`C1.P1`), or whole paragraph group (`C1.P1`). The B rows
+inside that group are reading material, not Scratch targets. The
+first Save creates `runs/rp-scratch-NN_<target>.md` and
+`results/rp-scratch-NN_<target>/`; later Save updates the open record. Finish
+requires a non-empty Summary and records the closed Run. The same selected
+Outline Markdown receives a `## Scratch` registry so the UI stays live and
+the rough thinking stays next to the plan. The paired receipt is
+`runs/rp-scratch-NN_<target>.md` plus
+`results/rp-scratch-NN_<target>/{runtime.yaml,v001.md,working.md}`. A closed Scratch Run is immutable;
+later thinking gets a new Run. Ordinary wording feedback and prose revision
+remain in the active Page Writing Run in Run Space.
+
 ## 🧷 Evidence Item → RE → Result → Card → Labels
 
 The Outline vocabulary has five distinct layers:
@@ -522,6 +552,7 @@ requirement V   the generator; V1 always, V2–V4 only when     cli/requirement.
 requirement W   the page author; generator preserves verbatim never (authored)
 discussion      any phase or the page chat, as D<nn> records  never (authored)
 feedback        the generator; the page writes Landed only   cli/feedback.py collect <page>.md
+Scratch registry the person; same selected Outline Markdown  Draft Scratch Mode
 evidence-items  SHAPE/SURVEY Item contract                       Outline/EVIDENCE
 evidence        retired legacy artifact                         move to archive
 files           any phase or the page chat                    never (authored)
@@ -530,8 +561,10 @@ skills          scan seed + person's rank/add/remove gestures  /_board/skill (em
 ```
 
 `POST /_board/outline` keeps the shell's `tab: {url, write}` registration
-contract but performs no Draft write. Legacy `edit-bullet`, `append-bullet`,
-and `edit-preview` actions are rejected explicitly. Candidate feedback is
+contract. It performs no Table/Reading Draft write; the only narrow write is
+`action: scratch`, which updates the selected Outline's `## Scratch` registry
+and its paired Scratch Run receipt. Legacy `edit-bullet`, `append-bullet`, and
+`edit-preview` actions are rejected explicitly. Candidate feedback is
 recorded through the active Page Run, not a second POST queue.
 
 ### Bullet permalink

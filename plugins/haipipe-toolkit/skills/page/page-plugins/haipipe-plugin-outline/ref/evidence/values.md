@@ -3,7 +3,8 @@
 Read this reference from `haipipe-plugin-outline` when an Evidence Item is
 `VALUE`, or when Evidence Space must explain a number's provenance. The
 Outline plugin owns only the workspace and presentation. The Page EVIDENCE
-phase owns LAND/EMBED; the local Run owns the Result.
+Run Specs own LAND; EMBED is a Result-folding Step. The local Run owns the
+Result.
 
 ## 🎯 Ready-evidence contract
 

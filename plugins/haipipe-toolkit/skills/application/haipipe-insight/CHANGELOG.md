@@ -1,5 +1,18 @@
 # haipipe-insight · version history
 
+1.3.1 · 260915
+- Bind the unified public door to one Application `workflow_runtime_id`.
+- Clarify that I0-I5 are RunTypes, GI0-GI6 are Runtime control keys, and the
+  `partition × DIKW target` Question Group is a derived view rather than a
+  Folder, Gate, or Run.
+
+1.3.0 · 260915
+- Make `/haipipe-insight` the single public Insight door for both Task-side
+  topic/data instances and Application InsightBoards.
+- Add explicit `task` and `application` routes, preserve the existing
+  `/haipipe-task insight` alias, and keep `partition × DIKW target` Question
+  Groups scoped to Application InsightBoards.
+
 1.2.1 · 260913
 - Consume current task-side Insight evidence by exact `riNN` execution packet,
   including its base-R and dataset binding; retain items-v1 addresses as

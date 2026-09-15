@@ -451,6 +451,17 @@ class PageLifecycleAuditTest(unittest.TestCase):
         self.assertIn("packet-run-mismatch", codes)
         self.assertIn("human-gate-contract-mismatch", codes)
 
+    def test_workflow_runtime_id_is_distinct_but_must_match_legacy_run_id(self):
+        value = run([check(1, "v1")])
+        value["workflow_runtime_id"] = "fixture"
+        value["packet"]["workflow_runtime_id"] = "fixture"
+        self.assertClean(value)
+
+        value["packet"]["workflow_runtime_id"] = "other-runtime"
+        codes = self.codes(value)
+        self.assertIn("runtime-run-mismatch", codes)
+        self.assertIn("packet-runtime-mismatch", codes)
+
     def test_missing_packet_is_rejected(self):
         value = run([check(1, "v1")])
         value.pop("packet")
@@ -693,6 +704,15 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         for r in returns:
             with self.subTest(r=r[:60]):
                 self.assertIn("mode,", r)
+
+    def test_workflow_runtime_id_is_canonical_with_run_id_compatibility_alias(self):
+        self.assertIn(
+            "const declaredWorkflowRuntimeId = parsed.workflow_runtime_id",
+            self.script,
+        )
+        self.assertIn("const workflowRuntimeId = declaredWorkflowRuntimeId || declaredRunId", self.script)
+        self.assertIn("parsed.workflow_runtime_id = workflowRuntimeId", self.script)
+        self.assertIn("workflow_runtime_id: workflowRuntimeId", self.script)
 
     def test_mechanical_error_repair_routes_are_legal_from_every_phase(self):
         match = re.search(

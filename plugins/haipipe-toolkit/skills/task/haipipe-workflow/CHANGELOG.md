@@ -4,6 +4,16 @@ haipipe-workflow — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [0.3.1] — 2026-09-15
+
+- Replace Phase/Step workflow authority with a directed Run Spec graph.
+- Distinguish Run Type, Run Spec, Run Instance, Step, and Workspace ownership.
+- Put actor, Gate, Route, close semantics, Result, and receipt on each Run;
+  keep low-level `phase` API fields as non-semantic progress metadata only.
+- Add the shared Workflow Runtime envelope and distinguish aggregate runtime
+  state from owner-native child Run identities.
+
+
 ## [0.3.0] — 2026-09-01
 
 - Require workflows with addressable execution to publish one Phase × Run Map

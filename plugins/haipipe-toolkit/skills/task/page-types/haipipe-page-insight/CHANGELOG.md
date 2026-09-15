@@ -1,3 +1,11 @@
+## 1.1.1 — 2026-09-15
+
+- Make `/haipipe-insight task "<topic>" [<board>]` the preferred public entry
+  for the task-side Insight Page while retaining `/haipipe-task insight` as a
+  behavior-identical compatibility alias.
+- Align the Task Insight scaffold reference with the current `items-v2`
+  contract.
+
 ## 1.1.0 — 2026-09-13
 
 - Make `riNN` the first-class Insight Run: each RI points to one immutable

@@ -2,10 +2,13 @@
 
 The Page-facing vocabulary has three areas: local Page Runs for human/Page
 interactions and Page-owned Evidence, plus Supporting Runs for linked work
-owned elsewhere. Supporting Runs remain inspectable references; they are never
-copied into this Page. The reader-facing projection is result-first: a closed
-card shows only what the Run is called and what it is doing, while its real
-Result appears when the card is opened.
+owned elsewhere. Page Writing includes a small human-first Scratch Run for
+rough thinking at Section, Subsection, or whole paragraph-group scope. B/symbol
+rows are not Scratch targets. Supporting
+Runs remain inspectable references; they are never copied into this Page. The
+reader-facing projection is result-first: a closed card shows only what the
+Run is called and what it is doing, while its real Result appears when the
+card is opened.
 
 Native families remain intact below this projection, so Board and standalone
 Page resolve the same records. ``new-*`` remains a plan rather than a Run.
@@ -35,6 +38,7 @@ except ImportError:
 _TICKET_SUFFIXES = {".sh", ".ps1", ".py", ".do", ".r", ".R", ".yaml", ".yml", ".md"}
 _TICKET_NAME = re.compile(
     r"(?:^rp-(?:struct|sec|para)-\d{2}(?:_P\d{2}(?:-P\d{2})?)?"
+    r"|^rp-scratch-\d{2}_[A-Za-z0-9._-]+"
     r"|^re-(?:value|display|cite)-\d{2}(?:_[a-z0-9][a-z0-9_-]*)?"
     r"|^rp\d+|^rl\d+|^ri\d+|^rd\d+|^r\d+|^run[-_]"
     r"|^b\d+[._]j\d+[._]t\d+[._]r\d+|^p[._]?j\d+[._]?t\d+[._]?r\d+)",
@@ -55,6 +59,7 @@ _EVIDENCE_TYPES = {
 }
 _EVIDENCE_TYPE_ORDER = ("Value", "Display", "Citation")
 _SECTION_RUN = re.compile(r"rp-sec-(?:0[1-9]|[1-9]\d+)", re.I)
+_SCRATCH_RUN = re.compile(r"rp-scratch-(?:0[1-9]|[1-9]\d+)_([A-Za-z0-9._-]+)", re.I)
 _PARAGRAPH_RUN = re.compile(
     r"(rp-para-(?:0[1-9]|[1-9]\d+))_P((?:0[1-9]|[1-9]\d+))"
     r"(?:-P((?:0[1-9]|[1-9]\d+)))?",
@@ -155,7 +160,7 @@ def _fields(runtime: Path | None) -> dict[str, str]:
     return {name: field(name) for name in
             ("run", "global_id", "status", "target", "result", "ticket", "family",
              "operation", "interaction", "mode", "version", "step", "outcome", "summary",
-             "participants", "coordinator", "contributors")}
+             "target_scope", "participants", "coordinator", "contributors")}
 
 
 def _writing_operation(fields: dict[str, str]) -> bool:
@@ -176,6 +181,9 @@ def _page_run_label(run_id: str) -> str:
         return f"{run_id.lower()} · Mermaid Structure"
     if _SECTION_RUN.fullmatch(run_id):
         return f"{run_id.lower()} · Section"
+    scratch = _SCRATCH_RUN.fullmatch(run_id)
+    if scratch:
+        return f"{run_id.lower()} · Scratch · {scratch.group(1)}"
     match = _PARAGRAPH_RUN.fullmatch(run_id) or _LEGACY_PARAGRAPH_RUN.fullmatch(run_id)
     if not match:
         return run_id
@@ -188,6 +196,7 @@ def _page_run_label(run_id: str) -> str:
 def _valid_page_run_id(run_id: str) -> bool:
     """Accept typed Page Run ids, while keeping old records readable."""
     return (_is_structure_run(run_id) or _SECTION_RUN.fullmatch(run_id) is not None
+            or _SCRATCH_RUN.fullmatch(run_id) is not None
             or _PARAGRAPH_RUN.fullmatch(run_id) is not None
             or _LEGACY_PARAGRAPH_RUN.fullmatch(run_id) is not None)
 
@@ -203,11 +212,16 @@ def _audit_page_run_order(rows: list[dict]) -> None:
         if not _valid_page_run_id(run_id):
             row["status"] = "Held"
             row.setdefault("audit", []).append(
-                "invalid Page Run identity; expected rp-struct-NN, rp-sec-NN, "
-                "or rp-para-NN_Pxx[-Pyy]"
+            "invalid Page Run identity; expected rp-struct-NN, rp-sec-NN, "
+                "rp-scratch-NN_<target>, or rp-para-NN_Pxx[-Pyy]"
             )
             continue
         if _is_structure_run(run_id):
+            continue
+        if row.get("mode") == "scratch":
+            # Scratch is the person's pre-writing thinking lane. It may be
+            # opened from Draft while the fused Structure Run is still being
+            # settled; Section/Paragraph writing remains gated on Structure.
             continue
         if structure_closed:
             continue
@@ -311,9 +325,11 @@ def _evidence_item_label(row: dict) -> str:
 
 
 def _page_writing_subspace(row: dict) -> str:
-    """Map one local interactive Run to Structure, Section, or Paragraph."""
+    """Map one local interactive Run to its minimal writing subspace."""
     if _is_structure_run(str(row.get("run_id", ""))):
         return "Structure"
+    if row.get("mode") == "scratch" or _SCRATCH_RUN.fullmatch(str(row.get("run_id", ""))):
+        return "Scratch"
     if _SECTION_RUN.fullmatch(str(row.get("run_id", ""))):
         return "Section"
     target = str(row.get("target", ""))
@@ -384,6 +400,10 @@ def _run_name(row: dict) -> str:
     """Return the semantic name shown on a closed Run card."""
     if row.get("lane") == "page" and row.get("operation") == "interactive-writing":
         run_id = str(row.get("run_id", ""))
+        if row.get("mode") == "scratch" or _SCRATCH_RUN.fullmatch(run_id):
+            scope = str(row.get("target_scope", "target")).capitalize()
+            target = str(row.get("target", "")).strip()
+            return "Scratch · %s%s" % (scope, (" · " + target) if target else "")
         if _is_structure_run(run_id):
             return "Structure"
         target = str(row.get("target", "")).strip()
@@ -415,6 +435,10 @@ def _run_name(row: dict) -> str:
 def _run_action(row: dict) -> str:
     """Return the one-line activity shown before a card is opened."""
     if row.get("lane") == "page" and row.get("operation") == "interactive-writing":
+        if row.get("mode") == "scratch":
+            scope = str(row.get("target_scope", "target"))
+            target = str(row.get("target", "the Page"))
+            return "Capture rough thinking for %s %s" % (scope, target)
         if _is_structure_run(str(row.get("run_id", ""))):
             return "Agree the Page structure and evidence routes"
         target = str(row.get("target", "")).strip()
@@ -882,6 +906,37 @@ def _mermaid_run_visual(page_src: Path, row: dict) -> str:
     )
 
 
+def _scratch_run_detail(row: dict, root: Path, page_src: Path) -> str:
+    """Show a Scratch Result as summary first, raw notes second."""
+    chunks = [
+        '<div class=detail-head><span class=detail-title>%s</span></div>' %
+        html.escape(_run_name(row)),
+    ]
+    summary = str(row.get("summary", "")).strip()
+    raw = ""
+    if row.get("runtime"):
+        version = row.get("version", "") or "v001"
+        journal = _version_path(row["runtime"], version)
+        text = _preview_text(journal, row["runtime"].parent) if journal else ""
+        summary = (_level_heading_body(text, 4, "Summary") or summary).strip()
+        raw = _level_heading_body(text, 4, "Raw scratch").strip()
+    result = _markdown_fragment(summary) if summary else "<p>No Summary yet.</p>"
+    chunks.append('<section class=run-result><h3>Summary</h3><div class=run-output>%s</div></section>' % result)
+    if raw:
+        chunks.append('<details class=run-context><summary>Raw Scratch</summary><div class=run-output>%s</div></details>' %
+                      _markdown_fragment(raw))
+    technical = [
+        ("Target", html.escape("%s · %s" % (
+            row.get("target_scope", "target"), row.get("target", "")))),
+        ("Run record", _linked(row.get("ticket"), label=_shown_path(row.get("ticket"), root))),
+        ("Result folder", _linked(row.get("result_path"), label=_shown_path(row.get("result_path"), root))),
+    ]
+    chunks.append('<details class=technical><summary>Technical details</summary><dl>%s</dl></details>' %
+                  "".join("<dt>%s</dt><dd>%s</dd>" % (html.escape(label), value)
+                          for label, value in technical))
+    return "<div class=detailbox>%s</div>" % "".join(chunks)
+
+
 def _page_run_detail(row: dict, root: Path, page_src: Path) -> str:
     """Reader-first Page Run detail: Result first, history and metadata later."""
     chunks = [
@@ -990,6 +1045,22 @@ def _page_run_detail(row: dict, root: Path, page_src: Path) -> str:
 
 def _interactive_findings(runtime: Path, fields: dict[str, str]) -> list[str]:
     """Check that the current Version/Step is durable in one Markdown journal."""
+    if fields.get("mode", "").lower() == "scratch" or fields.get("interaction", "").lower() == "human-scratch":
+        findings = []
+        if not _preview_text(runtime.parent / "working.md", runtime.parent).strip():
+            findings.append("working.md")
+        version, step = fields.get("version", ""), fields.get("step", "")
+        path = _version_path(runtime, version)
+        if path is None:
+            findings.append("valid version pointer")
+        if not re.fullmatch(r"s[0-9][0-9][0-9]", step):
+            findings.append("valid step pointer")
+        text = _preview_text(path, runtime.parent).strip() if path else ""
+        if path and not text:
+            findings.append(f"{version}.md")
+        if text and not _section_body(text, "Human scratch"):
+            findings.append("Step s001 · Human scratch")
+        return findings
     findings = []
     if not _preview_text(runtime.parent / "working.md", runtime.parent).strip():
         findings.append("working.md")
@@ -1051,6 +1122,11 @@ def _status(runtime: Path | None, fields: dict[str, str]) -> str:
             return "Done" if all(_preview_text(runtime.parent / name, runtime.parent).strip()
                                  for name in ("paragraph.md", "trace.md")) else "Held"
         if fields.get("operation") == "interactive-writing":
+            if fields.get("mode", "").lower() == "scratch" or fields.get("interaction", "").lower() == "human-scratch":
+                version = fields.get("version", "")
+                text = _preview_text(_version_path(runtime, version), runtime.parent) if _version_path(runtime, version) else ""
+                closed = "Human confirmed the Scratch Summary." in text
+                return "Done" if not _interactive_findings(runtime, fields) and closed else "Held"
             version = fields.get("version", "")
             return ("Done" if not _interactive_findings(runtime, fields)
                     and _version_closed(runtime, version) else "Held")
@@ -1234,6 +1310,8 @@ def local_runs(page_src: Path) -> list[dict]:
             "operation": fields.get("operation", ""),
             "version": fields.get("version", ""),
             "step": fields.get("step", ""),
+            "mode": fields.get("mode", ""),
+            "target_scope": fields.get("target_scope", ""),
             "participants": fields.get("participants", ""),
             "coordinator": fields.get("coordinator", ""),
             "contributors": fields.get("contributors", ""),
@@ -1271,6 +1349,8 @@ def local_runs(page_src: Path) -> list[dict]:
             "operation": fields.get("operation", ""),
             "version": fields.get("version", ""),
             "step": fields.get("step", ""),
+            "mode": fields.get("mode", ""),
+            "target_scope": fields.get("target_scope", ""),
             "participants": fields.get("participants", ""),
             "coordinator": fields.get("coordinator", ""),
             "contributors": fields.get("contributors", ""),
@@ -1597,6 +1677,8 @@ def run_inventory(page_src: Path) -> list[dict]:
 
 def _detail(row: dict, root: Path, page_src: Path) -> str:
     if row.get("lane") == "page" and row.get("operation") == "interactive-writing":
+        if row.get("mode") == "scratch":
+            return _scratch_run_detail(row, root, page_src)
         return _page_run_detail(row, root, page_src)
     # The first thing in every non-interactive detail is the actual Result.
     # Ownership and record metadata remain available below the fold.
@@ -1801,7 +1883,7 @@ def render(page_src: Path, _path_q: str, _file_q: str,
                   and (row.get("origin") == "Linked"
                        or row.get("family") == "Labeling")]
     root = repo_root(page_src.parent)
-    writing = {name: [] for name in ("Structure", "Section", "Paragraph")}
+    writing = {name: [] for name in ("Structure", "Scratch", "Section", "Paragraph")}
     for row in run_p:
         writing[_page_writing_subspace(row)].append(row)
     evidence = {name: [] for name in _EVIDENCE_TYPE_ORDER}
@@ -1809,7 +1891,7 @@ def render(page_src: Path, _path_q: str, _file_q: str,
         evidence[_evidence_type(row) or "Value"].append(row)
     writing_sections = "".join(
         _run_subspace(name, writing[name], "writing-%s" % name.lower(), root, page_src, selected_run)
-        for name in ("Structure", "Section", "Paragraph")
+        for name in ("Structure", "Scratch", "Section", "Paragraph")
     )
     evidence_sections = "".join(
         _run_subspace(name, evidence[name], "evidence-%s" % name.lower(), root, page_src, selected_run)
@@ -1836,6 +1918,7 @@ def render(page_src: Path, _path_q: str, _file_q: str,
         ("writing", "Paper Writing", writing_sections, _run_pills([
             ("Writing Runs", len(run_p)),
             ("Structure", len(writing["Structure"])),
+            ("Scratch", len(writing["Scratch"])),
             ("Sections", len(writing["Section"])),
             ("Paragraphs", len(writing["Paragraph"])),
         ])),

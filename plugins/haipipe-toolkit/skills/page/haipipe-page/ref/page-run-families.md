@@ -6,8 +6,8 @@ description: >-
   owner-native Supporting Runs, and defines how Evidence Items, Results,
   Cards, and Labels bind to one another.
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-09-14"
+  version: "0.3.2"
+  last_updated: "2026-09-15"
 ---
 
 # Page Run families · RP, RE, and RD
@@ -31,7 +31,7 @@ owner-native rNN / bNN.jNN.tNN.rNN  Supporting Run; never renamed to RP/RE/RD
 
 | Family | Meaning | Canonical identity | Owns | Does not own |
 |---|---|---|---|---|
-| `RP` | Page Writing Run | `rp-struct-01`, `rp-sec-01`, `rp-para-01_P03-P05` | bounded human/Page interaction, feedback Steps, candidate structure/prose; `rp-struct-01` fuses SHAPE + SURVEY | final Page Content, evidence truth, delivery acceptance |
+| `RP` | Page Writing Run | `rp-struct-01`, `rp-scratch-01_C1.P1`, `rp-sec-01`, `rp-para-01_P03-P05` | bounded human/Page interaction, Scratch capture, feedback Steps, candidate structure/prose; `rp-struct-01` fuses SHAPE + SURVEY | final Page Content, evidence truth, delivery acceptance |
 | `RE` | Page Evidence Run | `re-value-01_<slug>`, `re-display-01_<slug>`, `re-cite-01_<slug>` | one Evidence Item's frozen input, evidence work, and current Result lineage | upstream source truth, unrelated items, whole-Page acceptance |
 | `RD` | Page Delivery Run | `rd01_web`, `rd02_latex`, `rd03_word` | one delivery target/version, artifact, and build receipt | Page prose authority, Evidence truth, human CHECK close |
 
@@ -45,12 +45,13 @@ use the canonical forms above.
 
 ### RP · Page Writing Run
 
-`RP` has three explicit kind tokens. The kind is part of the identity; there
+`RP` has four explicit kind tokens. The kind is part of the identity; there
 are no hidden numeric bands:
 
 | Identity | Scope | Required output and boundary |
 |---|---|---|
 | `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, and Mermaid representation |
+| `rp-scratch-NN_<target>` | human Scratch capture | rough thinking for one Section (`C1`), Subsection (`C1.P1`), or whole paragraph group (`C1.P1`); B/symbol rows are not Scratch targets; closes only after the person confirms a Summary; does not edit `Draft:` prose |
 | `rp-sec-NN` | Section-level writing | one named Section drafting/revision session and its review loop |
 | `rp-para-NN_Pxx[-Pyy]` | paragraph-level writing | one fixed paragraph or contiguous paragraph group |
 
@@ -59,8 +60,11 @@ Structure Run and contains both SHAPE and SURVEY. It can have several human
 participants; record one shared Run and one paired Result, with contributors
 on each Step. `rp-struct-02` is a later independent structure/Bullet Run, not a
 new Survey pass or a new participant.
-After the structure contract is closed, Section Runs begin at `rp-sec-01` and
-paragraph Runs begin at `rp-para-01_P01` (or the selected exact target).
+Scratch may be commissioned at any of the three Page targets as soon as the
+selected Outline exists; it is a human thinking aid, not a replacement for
+the Structure gate. After the structure contract is closed, Section Runs begin
+at `rp-sec-01` and paragraph Runs begin at `rp-para-01_P01` (or the selected
+exact target).
 The paragraph target is mandatory and uses the Page-global `P01..PN` index.
 
 ```text

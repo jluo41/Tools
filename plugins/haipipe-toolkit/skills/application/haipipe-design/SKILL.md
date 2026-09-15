@@ -1,102 +1,142 @@
 ---
 name: haipipe-design
 description: >-
-  Canonical owner of one stable Design Folder. Keeps its Page workflow and
-  Design workflow distinct: Page Runs explain the work; released Design Runs
-  generate and independently verify candidate units; a person adopts exact
-  versions. Use for a Design Folder or DesignBoard. Ends at adopted candidates,
-  never implementation, distribution, experimentation, or measurement.
+  Canonical owner of one stable Design Folder and the Design Plugin's five
+  Workspaces: Plan, Create, Review, Run/Runtime, and Delivery. Keeps Page and
+  Design Run graphs distinct. Use for commissioning, generating, independently
+  verifying, previewing, and adopting exact Design candidates. Ends at adopted
+  candidates, never implementation, distribution, experimentation, or measurement.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-09-13"
+  last_updated: "2026-09-15"
   folder_owner: canonical
   folder_kind: design
   primary_face: page
   page_ruling: domain-gate
   outline:
     mode: grammar
-    source: "Brief + released commissions + version-bound Design Results"
-    shape: "commissioned bets → candidate differences → verification → adoption → current projection"
+    source: "Brief + Design Run Results"
+    shape: "commission decision → generation → verification → adoption decision"
 ---
 
-# /haipipe-design · one Folder, two workflows
+# /haipipe-design · one Plugin, five Workspaces, two Run graphs
 
 ## Version governance
 
-This Design family remains pre-1.0. Only explicit user approval may authorize
-`1.0.0` or any higher major version. Architecture size, clean breaks, and
-field-test repairs do not independently authorize a major-version jump.
+This Design family is exactly `v0.4.0`. Do not change that version or publish a
+`v1.x` release without explicit user permission. Architecture changes and
+field-test repairs do not authorize a version upgrade.
 
-A Design Folder is one durable work object with a Page Face and a Task Face.
-It contains two orthogonal workflows. Never collapse their identities, gates,
-or counters:
+## Plugin and Workspaces
+
+One Design Plugin solves the whole Design problem through five member
+Workspaces:
+
+| Workspace id | UI label | Purpose |
+|---|---|---|
+| `plan` | Plan | Brief, Commission, target, constraints, Run graph |
+| `create` | Create | generation action and candidate comparison |
+| `review` | Review | independent verification and findings |
+| `runtime` | Run | read-only Run Instance, Gate, Route, Result, receipt view |
+| `delivery` | Delivery | exact previews and adoption decision |
+
+Use `runtime` as the stable id; the UI may label it `Run`. A Workspace is a
+presentation/interaction surface, never another Run or execution owner.
+
+## One Folder, two independent Workflows
 
 ```text
-📖 PAGE WORKFLOW                         🎨 DESIGN WORKFLOW
-rp00 Mermaid Structure                  Commission: freeze a bounded bet
-rp01+ paragraph interactions            ✋ person releases named commission
-Page release → CONTENT                  rdNN_generate_* → DU Result
-fresh CHECK → CLOSE                     rdNN_verify_*   → review Result
-                                        delivery/render/*     → candidate preview
-                                        ✋ person adopts exact version → STOP
+PAGE RUN GRAPH                          DESIGN RUN GRAPH
+rp-struct-01                            rdNN_commission_*
+rp-sec-NN / rp-para-NN_*                       │ release
+Page evidence/delivery/check                    ▼
+                                       N × rdNN_generate_*
+                                                │ ready
+                                                ▼
+                                       J × rdNN_verify_*
+                                                │ pass
+                                                ▼
+                                       rdNN_adopt_* → CLOSE
 ```
 
-A **Page Run** changes or accepts how the Folder explains the design. A
-**Design Run** produces or judges the candidate itself. A DU is the immutable
-Result of a generation Run, never a nested phase Folder. Verification produces
-a separate Result and never edits the DU.
+Page Runs explain the work. Design Runs decide scope, generate or judge the
+candidate, and adopt exact versions. They share the Folder but never share Run
+ids, Results, gates, counters, or receipts.
 
-## Ownership and routing
+## Design Workflow
+
+The canonical Workflow is a directed Run Spec graph:
+
+| Run Type | Actor | Target | Action | Exit Gate | Normal Route |
+|---|---|---|---|---|---|
+| `Design.commission` | human | one Commission/config version | release or hold | exact version decision is durably recorded | `generate` or `HOLD` |
+| `Design.generate` | agent | one released unit/set/sequence | generate/revise | Result integrity and self-check pass | `verify` or `HOLD` |
+| `Design.verify` | fresh agent | named immutable generation Results | independent verify | complete coverage settles pass/fail | `adopt`, `generate`, or `HOLD` |
+| `Design.adopt` | human | exact verified candidate hashes | adopt/decline/revise | exact decision and preview/handoff versions recorded | `CLOSE`, `generate`, or `HOLD` |
+
+```text
+Expected actual Design Runs = 1 + N_generate + J_verify + 1
+```
+
+Commission and Adopt are human decision Runs because each has a bounded
+question, explicit Ticket, named actor, independently closable decision
+Result, and durable receipt. A click, comment, or feedback message inside one
+of them is a Step/Gate event, not another Run.
+
+## Ownership
 
 | Concern | Owner |
 |---|---|
-| stable Folder, authority boundaries, adoption, closure | `haipipe-design` |
-| Commission → Generate → Verify → Adopt | `haipipe-design-workflow` |
-| Design Ticket/Result and unit work | `haipipe-design-unit` |
-| `rp00`, paragraph Page Runs, Page release and CHECK | `haipipe-page-workflow` |
-| Run identity, pairing, immutable history and runtime | `haipipe-run` |
+| stable Folder, Workspace roster, authority boundaries, closure | `haipipe-design` |
+| graph compiled from each Design Run Spec's Routes | `haipipe-design-workflow` |
+| generic identity, Ticket/Result pairing, receipt invariants | `haipipe-run` |
+| generation/verification unit work | `haipipe-design-unit` |
+| Page RP/evidence/delivery/check graph | `haipipe-page-workflow` |
+| Workspace table and projections | `workflow-table` |
 
-Route by the object being changed. Candidate wording, arrangement, visual form,
-or behavior goes to a new Design `revise` generation Run with frozen base and
-feedback. Wording that merely describes an unchanged candidate goes to a Page
-Writing Step. Choosing an existing candidate or recording a person's release
-or adoption creates no Run.
+Candidate wording, arrangement, visual form, or behavior changes route to a
+new `Design.generate` revise Run with frozen base and feedback. Wording that
+only explains an unchanged candidate stays in a Page Writing Step. A changed
+decision target gets a new decision Run; a new comment inside the same fixed
+decision stays a Step.
 
 ## Folder shape
 
-Use `2-DS-design/DS<NN>-<audience>-<job>-<venue>/`. Audience × behavior job ×
-primary venue is stable scope. A new configuration inside that scope creates a
-new Run, not a new Folder.
+Use `2-DS-design/DS<NN>-<audience>-<job>-<venue>/`:
 
 ```text
 DS<NN>-<audience>-<job>-<venue>/
-├── <stem>.md                         📖 current Page projection
+├── <stem>.md
 ├── outline/
-│   ├── <stem>-logic.mmd              rp00 whole-Page structure
-│   ├── evidence/                     Page CITE/VALUE/DISPLAY workspace
-│   └── decisions/                    immutable release/adoption receipts
-├── workflow/                         machine lifecycle/Page receipts
-├── scripts/config/                   frozen per-Design-Run configs
+│   ├── <stem>-logic.mmd
+│   ├── evidence/
+│   └── decisions/
+├── workflow/
+├── scripts/config/
 ├── runs/
-│   ├── rp00_mermaid-structure/       Page-owned interaction
-│   ├── rpNN_pNN[-pNN]/               Page-owned interaction
-│   └── rdNN_generate|verify_*.yaml   owner-native Design Tickets
-├── results/rdNN_generate|verify_*/   DU/review Result + checks + runtime
+│   ├── rp-struct-NN.md
+│   ├── rp-sec-NN.md
+│   ├── rp-para-NN_Pxx[-Pyy].md
+│   └── rdNN_commission|generate|verify|adopt_*.yaml
+├── results/
+│   └── rdNN_commission|generate|verify|adopt_*/
+│       ├── result.yaml or decision.yaml
+│       ├── checks.yaml                # when applicable
+│       └── runtime.yaml
 └── delivery/
-    ├── render/                       recipient-view candidate previews
-    └── web|latex|word/               released Page projections
+    ├── render/
+    └── web|latex|word/
 ```
 
-Materialize optional lanes only when used. `delivery/render/` may exist before
-adoption because the person must see a candidate before choosing it. It is not
-a Page build. Page release writes Page projections and never rewrites a DU or
-candidate render.
+Every Design Run keeps the same stem across Ticket and Result. Completed
+Results/decisions are immutable. `delivery/render/` may exist before adoption
+because a person must inspect exact candidates; it never becomes a second
+Result or Run.
 
-## Commission = a bounded design bet
+## Commission = bounded design bet
 
-Before allocation, compile one already-written Commission and frozen config.
-It names target, unit shape/count, allowed sources, criteria, output scope,
-iteration budget, and `design_intent`:
+The Commission Run freezes target, unit shape/count, allowed sources, criteria,
+output scope, iteration budget, config, and one `design_intent`:
 
 ```yaml
 design_intent:
@@ -107,80 +147,41 @@ design_intent:
   failure_condition: <distinguishing condition or null>
 ```
 
-The move is a bet, not a conclusion. A human release grants permission to run
-the named Commission; it does not warrant its claim. Insight/handoff authority,
-criteria, independent verification, and eventual adoption remain distinct.
-Modes refine this honesty: compose/revise need no fake theory; brainstorm has
-no forecast; theory-driven and challenge make their anticipated effect and
-failure/distinguishing condition explicit.
+The move is a bet, not a conclusion. Release grants permission to generate; it
+does not prove the bet. The creative motion remains **diverge → bet → vary →
+converge**. A candidate set is not an experiment and has no arm, allocation,
+power, or measured winner.
 
-The creative motion is **diverge → bet → vary → converge**. Insight narrows
-what may responsibly be claimed; Design expands the candidate space inside
-that boundary. A candidate set is not an experiment. It has no arm, allocation,
-power, or measured winner; those belong downstream.
+## Evidence and Page interlock
 
-## Evidence and authority
+Keep signed handoff, factual evidence, inspiration, and design intent distinct.
+Pin the exact authority/source path and hash. A Page `rp-*` Run is never Design
+evidence or Design authority.
 
-Keep four things separate:
+The adoption Run records exact candidate hashes, independent verification
+Results, preview manifest, and handoff versions. Its terminal adoption receipt
+is the Folder's `domain-gate` consumed by Page CHECK. Page CHECK verifies the
+projection; it does not ask the same candidate decision again.
 
-```text
-signed W handoff   → domain authority for the Design Commission
-evidence           → support for an asserted factual Page claim
-inspiration        → material that may shape expression, never warrant it
-design intent      → forecast/bet, never observed evidence
-```
-
-For empirical Design authority, pin the exact contextual, signed Application W
-handoff by path/hash in the Commission and X1 crossing. A static handoff has no
-invented Supporting Run id. Raw D/I/K prose or a Task RF does not become direct
-Design authority.
-
-The Page Face obeys the current Page evidence contract independently. A factual
-Page claim binds a typed item under `outline/evidence/` through a real
-Supporting Result, or through frozen local material and a Page-local typed
-Result. The Design Ticket's `handoff` input is not itself a Page Evidence item,
-and a Page `rpNN` Run is never Design evidence. A PageX path is not a valid
-Design input or evidence address.
-
-## Human authority and Page interlock
-
-There are exactly two Design-domain human acts:
-
-1. **Release** an exact existing Commission/config.
-2. **Adopt** exact DU member hashes + independent verification + render/handoff
-   versions.
-
-The Folder declares `page_ruling: domain-gate`; therefore the adoption receipt
-is also the owner ruling consumed by Page CHECK. CHECK verifies that the Page
-and declared projections match the adopted versions. It must not ask the person
-to select or accept the same candidate again. Page display-item acceptance,
-when any Page evidence display exists, remains a separate Page evidence gate.
-
-Page work and Design work may proceed whenever their own dependencies are
-ready. `rp00` organizes the Page's argument; it does not ideate candidates or
-release a Commission. An open paragraph Page Run does not block an unrelated
-released Design Run. Page release waits for all Page Runs and required Task
-Results, including Design Results the Page promises to present.
+Page and Design Runs may proceed when their own dependencies are ready. Page
+release waits for every Page promise and bound Design Result it presents.
 
 ## Closure
 
-The Design side is terminal when commissioned Runs are truthful terminal,
-required independent reviews are complete, the person has adopted or declined
-the named candidates, and current previews match those exact versions. The Page
-side closes only after one release and fresh CHECK of the same versions. Report
-the two states separately until both are closed.
+Design closes when every commissioned Run is truthfully terminal, required
+independent verification is complete, the adoption decision Run is terminal,
+and current previews match the exact decided hashes. Page closes separately
+after release and fresh CHECK. Preserve rejected, failed, declined, and
+superseded Runs.
 
-Preserve every rejected, failed, and superseded attempt. Stop after adoption;
-implementation, sending, allocation, and measurement belong to downstream Task
-owners.
+Stop after adoption/decline. Implementation, sending, allocation, testing, and
+measurement belong to downstream owners.
 
-## Clean-break contract
+## Clean break
 
-This skill has one current grammar. It does not read, migrate, route, or validate
-Design D0–D5/GD0–GD6 folders, `design/DU*/`, PageX bindings, v1 Tickets/Results,
-or `rNN_design_*` identities. A Folder containing those shapes is not a current
-Design Folder. Stop content inspection after a decisive unsupported marker.
-Unsupported Design bytes are not readable history, migration inputs, fallback
-evidence, or compatibility surfaces. Leaving unrelated files unchanged during
-an audit is merely non-mutation; it grants no read, routing, or continuation
-semantics.
+This skill has one current grammar only: Design v0.4.0, v2 Ticket/Result
+contracts, and `rdNN_commission|generate|verify|adopt_*` ids. It does not read,
+migrate, route, validate, or continue v1 Tickets/Results, D0-D5/GD0-GD6,
+`rNN_design_*`, `design/DU*/`, PageX, or previous phase-shaped Design folders.
+A decisive unsupported marker ends inspection. There is no compatibility or
+migration path.

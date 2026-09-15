@@ -1,0 +1,6 @@
+interface:
+  display_name: "Insight"
+  short_description: "Route Task and Application Insight work"
+  default_prompt: "Use $haipipe-insight to route this request to Task-side RI work or an Application InsightBoard."
+policy:
+  allow_implicit_invocation: true

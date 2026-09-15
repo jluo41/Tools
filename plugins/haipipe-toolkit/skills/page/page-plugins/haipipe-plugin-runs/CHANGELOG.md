@@ -1,3 +1,14 @@
+## 0.31.0 · 2026-09-15
+
+- Add the human-first `Scratch` lane under Page Writing.
+- Present `rp-scratch-NN_<target>` Runs and their Summary-based close state in
+  the same read-only Run Space presenter.
+
+## 0.30.0 · 2026-09-15
+
+- Present Run Workflow Runtime, Run Spec, Gate, and Route state as read-only
+  Run Space projections without minting Runs for internal Steps or decisions.
+
 ## 0.29.0 · 2026-09-14
 
 - Present SHAPE and SURVEY as cycles of one shared Structure card and expose

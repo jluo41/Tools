@@ -47,11 +47,19 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   its resolver is `haipipe-board/live/home.py`.
 - **plan**, also **the outline file** — the SHAPE of a page, co-developed with
   candidate prose; human approval licenses later published Content. `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`
-- **Draft Space** — the reader-facing, read-only projection of the selected
-  Markdown plan: Mermaid Structure plus the paragraph/Bullet/Draft table. The
-  selected Outline Markdown contains both the plan and each `Draft:` field;
-  Page/Run workflow writers update that one file.
-  It is not a separate folder and never edits through the browser.
+- **Draft Space** — the reader-facing projection of the selected Markdown
+  plan: Mermaid Structure plus Table, Reading, and Scratch views. The selected
+  Outline Markdown contains both the plan and each `Draft:` field; Page/Run
+  workflow writers update that one file. Table and Reading never edit the plan
+  through the browser. Scratch is the separate, bounded human-thinking lane
+  that writes only the plan's `## Scratch` registry and a paired
+  `rp-scratch-NN_<target>` receipt; it never edits `Draft:` prose.
+- **Scratch Mode** — the Draft view where a person captures rough thinking at
+  Section (`C1`), Subsection (`C1.P1`), or whole paragraph-group (`C1.P1`)
+  scope. B/symbol rows are reading material only and have no Scratch control.
+  Save keeps the Run open; Finish requires a human Summary and closes it.
+  Closed Scratch Runs are immutable. Ordinary feedback remains a Step in the
+  owning Page Writing Run, not a Draft composer.
 - **bullet** — one POINT in the plan: a short capitalized HEAD, then one folded
   line (`Note:` authored, `Answered:`/`Drawn:` appended when evidence lands),
   then its mark. Addressed by POSITION, never by a name.
@@ -170,7 +178,8 @@ as pointers, because that section is the authority.
   code, never a circled number.
 - **RP / Page Writing Run** — one independently commissioned Page writing
   session/round at a fixed scope. Its explicit kinds are
-  `rp-struct-NN`, `rp-sec-NN`, and `rp-para-NN_Pxx[-Pyy]`; the sequence starts
+  `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, and
+  `rp-para-NN_Pxx[-Pyy]`; the sequence starts
   at `01` independently for each kind. It stores the typed Run record beside
   paired results and settles candidate structure or wording, not final Content
   or delivery.

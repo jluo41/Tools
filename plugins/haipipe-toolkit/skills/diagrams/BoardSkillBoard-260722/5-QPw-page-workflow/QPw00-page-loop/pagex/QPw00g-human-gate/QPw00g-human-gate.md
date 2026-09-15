@@ -1,1 +1,0 @@
-../../../QPw00g-human-gate/QPw00g-human-gate.md

@@ -152,7 +152,7 @@ made-up live link or a localhost/raw-HTML substitute.
 ```text
 1. Draft and Evidence Spaces
    return both direct links from the same verified Board route:
-     🧭 Draft Space  `<Board URL…&lens=div>` · Mermaid + read-only paragraph/Bullet/Draft table
+     🧭 Draft Space  `<Board URL…&lens=div>` · Mermaid + read-only paragraph/Draft table
      ▤ Outline table    `<Board URL…>` · the compact Page projection
    The `lens=div` link is the direct Draft Space route; do not make the
    reader open the default Page and hunt for the tab.

@@ -10,8 +10,8 @@ description: >-
   report, run, audit, insight, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-09-13"
+  version: "1.2.1"
+  last_updated: "2026-09-15"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -114,7 +114,7 @@ Each verb's detailed contract lives in its cited `fn/` file.
 /haipipe-task block <block-path|name>             scaffold a Block (`fn/block.md`)
 /haipipe-task run <task-folder-path> [run-name]    create/execute one Run (`fn/run.md`)
 /haipipe-task audit <task|job|block-path>          inspect pairing (`fn/audit.md`)
-/haipipe-task insight "<topic>" [<board>]          route an Insight item (`fn/insight.md`)
+/haipipe-task insight "<topic>" [<board>]          compatibility alias for `/haipipe-insight task` (`fn/insight.md`)
 /haipipe-task feedback <...>                       feedback operations (`fn/feedback.md`)
 /haipipe-task digest <...>                         session digest (`fn/digest.md`)
 ```

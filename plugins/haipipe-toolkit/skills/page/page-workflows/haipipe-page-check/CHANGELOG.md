@@ -1,3 +1,8 @@
+## 0.9.0 — 2026-09-15
+
+- Make CHECK the independent whole-Page completion gate of the Workflow
+  Runtime; retain CHECK as a compatibility dispatch label.
+
 ## 0.8.1 — 2026-09-06
 
 - Replace remaining live generation-only reopen language with explicit Shape

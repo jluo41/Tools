@@ -1,7 +1,7 @@
 # Context record · `outline/<stem>-context.md`
 
-This generated record is the PREPARE snapshot used by SHAPE and later Page
-phases. It is a projection over source authorities, never a replacement for
+This generated record is the context snapshot used by later Page Run Specs. It
+is a projection over source authorities, never a replacement for
 them.
 
 ```markdown
@@ -15,8 +15,8 @@ generated: YYYY-MM-DDTHH:MM:SS±HH:MM
 - **Page**: <repo-relative path>
 - **Folder kind**: <kind> · source <path or resolver step>
 - **Folder owner**: <exact workflow or canonical family skill name>
-- **Page Face owner**: <exact phase, canonical family, or legacy Page-Type skill name>
-- **Current authority**: CONTEXT
+- **Page Face owner**: <exact Run Spec owner, canonical family, or legacy Page-Type skill name>
+- **Current authority**: context-resolution Run Spec / compatibility CONTEXT
 
 ### CTX2 · Purpose and scope
 - **Status**: resolved | missing | conflicting

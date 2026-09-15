@@ -4,16 +4,16 @@ description: >-
   The neutral Level-4 Run contract shared by Execution, Discovery, Page, and Labeling
   work. Define, name, scaffold, execute, resume, count, or audit one logical Run as an
   authored Ticket paired with one generated Result and runtime receipt. Use
-  when designing a workflow's Phase × Run Map or one phase's Run Profile, deciding whether work is a
-  Run or an internal worker call, pairing runs/ with results/, resolving
+  when designing a workflow's Run Spec graph or one Run Type/Profile, deciding
+  whether work is a Run or an internal Step, pairing runs/ with results/, resolving
   Folder-local versus Job-backed storage, or routing Execution, Discovery,
   Page Evidence Item, Page Paragraph Writing, Page Display, and domain-specific Labeling operations. Trigger: Run contract,
   Level 4 Run, run profile, run ticket, run result, runtime receipt, orphaned
   result, calibration run, qualification run, production scan, final audit,
   /haipipe-run.
 metadata:
-  version: "0.25.0"
-  last_updated: "2026-09-14"
+  version: "0.26.1"
+  last_updated: "2026-09-15"
 ---
 
 # /haipipe-run · one attempt, two projections, one receipt
@@ -32,43 +32,70 @@ version`; the RI Ticket also carries the base R id/hash and dataset snapshot.
 An unqualified R names only the reusable method, never the rebound dataset
 execution. All other dialects retain their existing resolver.
 
-Load the Folder owner first: normally a workflow phase, or a declared canonical
-family skill for a stable base Folder such as Task. Then load the current phase
-that commissions the Run. The Folder owner owns kind, dialect, and cross-face
-closure; the current phase owns why this attempt is needed, which Run kinds it
-permits, and its acceptance/promotion rule. Load the selected worker/dialect
-after this contract. Load `haipipe-plugin-runs` only to present the completed
-structure inside Plugin Outline's Run Workspace; the presenter owns no Run
-semantics.
+Load the Folder owner and the Workflow that declares the Run Spec first. The
+Folder owner owns kind, dialect, and cross-face closure. The Workflow owns the
+directed graph, entry points, and terminal rules. The Run Spec owns why one
+instance is commissioned, its target, actor, gates, routes, skill bindings, and
+Workspace projections. Load the selected worker/dialect after this contract.
+Load `haipipe-plugin-runs` only to present the same Run identity inside a
+Runtime Workspace; the presenter owns no Run semantics.
+
+The ontology is explicit: a Run Type is reusable vocabulary and owns inherited
+defaults; a Run Spec is one bounded graph node; and a Run Instance is the
+materialized execution. A Run Spec records its goal/target, actor,
+action/interaction, optional inputs and dependencies, gates, optional route,
+skill and Workspace bindings, and internal Steps. Its entry gate may be omitted
+and defaults open. Its exit gate may be inherited from the Run Type or declared
+explicitly, but close semantics are mandatory. A route may be omitted only for
+a terminal node, where it defaults to `CLOSE`; nonterminal routes are explicit.
+The Run Instance owns the stable id, immutable `run_type` reference,
+state/lifecycle, Result and receipt, and append-only attempt history.
+
+Gate and Route modes are exactly `human | automatic | agent | hybrid`.
+Workflow Definition owns the complete graph, entry rules, and terminal rules;
+Workflow Execution materializes Run Instances from it. Workspace owns
+presentation and interaction, not Run execution or ontology.
 
 ## Ownership
 
-Keep the four authorities separate:
+Keep these authorities separate:
 
 ```text
-workflow phase       why to run · allowed kinds · target · acceptance · promotion
-haipipe-run          identity · pairing · receipt · lifecycle · audit invariants
-worker/dialect       how to perform the work · kind-specific Result grammar
-haipipe-plugin-runs  read-only Run Workspace inside Plugin Outline
+Workflow Definition  Run Spec graph · entry rules · terminal rules
+Workflow Execution   materialized Run Instances · lifecycle projection
+Run Type             reusable defaults · allowed action/result · close default
+Run Spec             bounded node · goal/target · actor · action/interaction
+                     · inputs/dependencies · gates/routes · Step/skill/Workspace bindings
+Run Instance         stable id · frozen run_type reference · state/lifecycle
+                     · Result/receipt · attempt history
+worker/dialect       execution method · kind-specific Result grammar
+Workspace             presentation/interaction surface for the Run Instance
 ```
 
-Do not create a horizontal `run-for-<folder-kind>` owner. Put the Run Profile
-inside the workflow phase that owns that Folder kind. Reusable Execution,
-Discovery, writing, display, or Labeling skills are workers, not Folder owners.
+Do not create a horizontal `run-for-<folder-kind>` owner. Reusable Execution,
+Discovery, writing, display, or Labeling skills are workers. A Workspace is a
+presentation/interaction surface and never becomes the execution owner.
 
 ## What earns a Run
 
-Mint a Run only when all four are true:
+Mint a Run only when all six are true:
 
-1. one bounded target can be named;
-2. an authored Ticket can commission the work;
-3. a generated Result can return a durable readout;
-4. success or truthful non-success can be tested from disk.
+1. one bounded goal or target can be named;
+2. a stable Run Type and independently addressable instance id exist;
+3. an actor and one action or interaction are commissioned by a Ticket/Spec;
+4. a close rule can settle success or truthful non-success;
+5. the terminal outcome can be preserved in a durable receipt;
+6. the Run can close independently of its caller's presentation surface.
 
-Keep planning in `outline/`. A proposed section, unresolved item row, or human
-decision alone is not a Run. A bounded human-feedback writing commission may
-satisfy all four tests through saved feedback, candidate text and explicit
-human acceptance; it follows the interactive Page dialect below. For evidence
+Keep planning in `outline/`. A proposed section or unresolved item row is not
+an allocated Run. A human decision is a decision Run only when it is bounded,
+explicitly commissioned, durable through a decision Result/receipt, and
+independently closable; it must also satisfy the six tests above. A click,
+comment, approval tick, or feedback turn that does not satisfy those conditions
+is an internal Gate or Step inside another Run.
+A bounded human-feedback writing commission satisfies the tests through saved
+feedback, candidate text, explicit human acceptance, and a close receipt; it
+follows the interactive Page dialect below. For evidence
 work, a Paper workflow may reserve a proposed P/J/T/R
 address during SURVEY so the future Run is indexable; the `new` action records
 that no Ticket exists. Open and count the Run only when LAND commissions the
@@ -126,8 +153,8 @@ ordinary local Task work may use `rNN`. New Run P records use only typed
 `rp-*` identities, meaning Run of Page.
 A human review or acceptance gate on code, search, data, build, or another Task
 Result does not reclassify the producing work as a Page Run.
-A Page workflow pass has no Level-4 Run identity merely because its
-compatibility command uses the verb `run`.
+A Page workflow pass has no Level-4 Run identity merely because its controller
+command uses the verb `run`.
 
 One Page may therefore own many sibling Page Runs. The first is always
 `rp-struct-01`; its SHAPE and SURVEY cycles share one Ticket, one paired Result,
@@ -160,47 +187,67 @@ the Task Result current. Use
 `../../task/haipipe-task/ref/task-page.md` for the Task-Folder closure equation
 and staleness rules.
 
-## Phase × Run design law
+## Workflow Definition = directed Run Spec graph
 
-Use one workflow-level table to join the semantic/control plane to the work
-plane without collapsing them:
+There is no separate Phase authority layer:
 
 ```text
-Phase    owns why · order · authority · gate · promotion · handoff
-Episode  groups related Runs inside a phase; has no extra Run identity
-Run      owns one independently closable Ticket → Result attempt
-Gate     authorizes or blocks a transition; is not a Run by itself
+Workflow Definition = bounded Run Spec nodes + graph entry/terminal rules
+                      + graph compiled from the Specs' directed Routes
+Workflow Execution  = Run Instances materialized from those Specs
+
+Run Spec = Run Type + bounded Goal/Target + actor + Action/Interaction
+           + optional Inputs/Dependencies + Gate + optional Route
+           + internal Steps + skill/Workspace bindings
+Run Instance = stable id + frozen run_type reference + lifecycle + Result/Receipt
+               + attempt history
 ```
 
-Every workflow that permits Runs must publish one **Phase × Run Map**. Use this
-minimum schema and let each phase-owning skill supply the concrete cells:
+A `phase()` or `controller` label is descriptive routing metadata only. It is
+not a semantic owner, graph node, Run Type, Run Spec, Run Instance, Gate, Route,
+or Workspace.
 
-| Phase | Folder / Episode | Phase purpose | Allowed Run operations | Cardinality | Gate / authority | Close / handoff |
-|---|---|---|---|---:|---|---|
-| `<P>` | `<kind or episode>` | `<why this phase exists>` | `<operation × multiplier>` | `<formula or none>` | `<named assertion/person>` | `<named receipt/output>` |
+## Workflow Runtime boundary
 
-Apply these rules:
+One Workflow invocation has one `workflow_runtime_id` when it executes durable
+Run Specs. The Runtime is the aggregate record for status, frontier, and an
+index of Run-owned control decisions; each child Run keeps its owner-native
+Ticket, Result, gate/route record, and receipt. `workflow_runtime_id` is not an
+`rNN`, `riNN`, `rp-*`, or
+other Level-4 Run id. Load
+`../../task/haipipe-workflow/ref/workflow-runtime.md` for the shared envelope
+and adapter aliases.
 
-1. Write one row per workflow phase; split only when one phase truly owns
-   distinct Folder kinds with different closure boundaries.
-2. List independently closable operation kinds, not steps, calls, scripts,
-   human ticks, or Result files.
-3. Write `none` when a phase has no addressable Runs and do not scaffold empty
-   Run lanes.
-4. Keep symbolic cardinality (`N`, `K`, `S`, `sum(W_r)`) until the workflow
-   freezes its actual scope. State the expected total formula below the table.
-5. Derive actual inventory only from allocated Tickets plus valid runtime
-   receipts. Never present the planned formula as work that already happened.
-6. Do not mint an umbrella Run for a Phase or Episode when independently
-   closable children are listed. Conversely, keep calls inside one Run when
-   they share one target and one Result gate.
-7. Treat a bare human approval/signature as a Gate. A bounded human-work
-   commission may be a Run when it independently satisfies the four Run tests.
+Every executable Workflow publishes one Run Spec graph:
 
-The map is an index, not a second authority. The workflow owns the complete
-table; each phase's Task Face owns the matching detailed Run Profile; this
-contract owns Run identity and counting. If those three disagree, stop with a
-contract mismatch instead of guessing.
+| Run Spec | Run Type | Goal / target | Actor | Action / interaction | Inputs / dependencies | Entry / exit gate | Optional route | Cardinality | Internal Steps | Skill / Workspace bindings |
+|---|---|---|---|---|---|---|---|---:|---|---|
+| `<spec-id>` | `<type>` | `<bounded goal/target>` | `<actor>` | `<work>` | `<optional>` | `<open/default + inherited/explicit exit>` | `<terminal only; default CLOSE>` | `<formula>` | `<internal>` | `<bindings>` |
+
+Apply these laws:
+
+1. One row is one independently closable Run Spec, never a Phase, Step, call,
+   script, Result file, or display projection.
+2. A Step is an internal action inside one Run. A Version is an immutable
+   reopen episode for the same goal/target. Neither gets a Run identity.
+3. Keep symbolic cardinality (`N`, `K`, `S`, `sum(W_r)`) in the definition.
+   Count actual work only from allocated Run Instances and valid receipts.
+4. Do not mint an umbrella Run when independently closable child Runs are the
+   Workflow. Keep calls inside one Run when they share target and close rule.
+5. Gate and Route are fields of the Run Spec/Instance. Their modes are exactly
+   `human | automatic | agent | hybrid`; no other mode label is valid.
+6. Entry gate is optional and defaults to `open`. Exit gate semantics are
+   mandatory and may be inherited from the Run Type or declared explicitly. A
+   route is optional only for a terminal node and then defaults to `CLOSE`; a
+   nonterminal route must be an explicit graph edge.
+7. Inputs, dependencies, and Result payload may be empty. Stable identity,
+   Run Type, bounded target, actor, action/interaction, lifecycle state, close
+   rule, terminal outcome, and durable receipt are not optional.
+
+The graph is the Workflow authority. Run Types are reusable vocabulary; Run
+Specs are planned nodes; Run Instances are runtime truth. If these disagree,
+stop with a contract mismatch rather than inventing a Phase or controller to
+reconcile them.
 
 ## Run family and target
 
@@ -215,7 +262,8 @@ Page · Display           one display unit candidate
 Labeling                 a domain operation declared by subjective-label/ref/ref-run.md
 Insight · Item           one `riNN` binding from a normal R to new frozen data,
                          producing its own checked DIKW/RF Result
-Design                   one generated DU or independently commissioned verification
+Design                   one commission decision, generated DU, independent
+                         verification, or adoption decision
 ```
 
 Inside EVIDENCE/LAND, a DISPLAY-typed Evidence Item is still exactly one
@@ -230,12 +278,13 @@ For Page Paragraph Writing, load
 Markdown Ticket with embedded prompt, one-paragraph Result, and promotion
 boundary. Historical `division-writing` Runs remain readable history; new
 Content commissions use paragraph targets without renaming old artifacts.
-Design's caller-owned YAML Ticket dialect and generate/verify gates are in
+Design's caller-owned YAML Ticket dialect and commission/generate/verify/adopt
+gates are in
 `../../application/haipipe-design-workflow/references/run-profile.md`;
 the worker is `haipipe-design-unit`, not another Folder owner.
-The owning phase supplies the target grammar and the worker/dialect supplies the
-kind-specific Result gate. A phase may extend the vocabulary only when the new
-family has an independently testable target and Result contract.
+The Run Spec supplies the target grammar and the worker/dialect supplies the
+kind-specific Result gate. A Workflow may extend the vocabulary only when the
+new family has an independently testable target and Result contract.
 
 Name new Task Runs with the owning family's monotonic address and a
 family-bearing stem. Name interactive Page Runs with explicit typed local
@@ -323,6 +372,18 @@ human Step           one ## Step sNNN section in vNNN.md, with feedback + result
 accepted episode     ## Version closure in vNNN.md with explicit human decision
 ```
 
+For RP, each fixed-scope Page-writing target is one persistent Run across its
+interaction; feedback is a Step, never a new Run per turn. Reopening the same
+goal/target creates a new Version inside that Run. A changed goal or target is
+`NEW_RUN`. Acceptance is the Run's exit gate. The RP route vocabulary is:
+
+```text
+SELF          next Step in the same Run
+NEW_VERSION   reopen the same goal/target in a new Version
+CLOSE         close this Run / next Run in the Workflow
+NEW_RUN       commission a new Run for a changed goal/target
+```
+
 The Folder's dialect may place that Result elsewhere; record the resolved path.
 A Version and Step are inner history, not extra L4 Runs or hierarchy levels.
 Waiting for feedback is ordinary `waiting-for-feedback`, not a failed worker.
@@ -342,8 +403,9 @@ is invalid, is not aliased, and cannot satisfy the structure prerequisite.
 
 Feedback evolves the input on purpose. One Version is one append-only Markdown
 journal containing every Step in order. Each Step freezes its reviewed source;
-ordinary edits append a Step, reopening a closed episode adds a Version file, and a
-new session resumes the same Run. New independent goals still require new Runs.
+ordinary edits append a Step, reopening the same goal/target adds a Version
+file, and a new session resumes the same Run. A changed goal or target is
+`NEW_RUN`; new independent goals still require new Runs.
 Closed records are immutable. Changes to accepted targets require explicit
 scoped reopening. Never apply this exception to Execution/Discovery retries.
 
@@ -408,7 +470,7 @@ LABELING JOB
 
 The Result folder is the generated projection of the Run, never Level 5. Do not
 copy or symlink a resolved Task Result into its Task Folder to imitate the local
-dialect. A phase may declare another Ticket extension or storage dialect only
+dialect. A Run Spec may declare another Ticket extension or storage dialect only
 when its Run Profile gives a deterministic Ticket-to-Result resolver.
 
 Supporting projections are conditional:
@@ -422,25 +484,34 @@ heavy external stores       declared artifacts represented by safe pointers
 None of them creates another Run identity. Pair by logical RUNNAME, not by
 assuming every projection exists.
 
-## Phase-owned Run Profile
+## Run Type and Run Spec profile
 
-When a phase permits addressable Runs, add `### Run Profile` inside its Task
-Face and state:
+Every Workflow node references a Run Type and materializes one or more Run
+Instances. State:
 
 ```text
-ALLOWED      permitted family/operation values
-TARGET       one target grammar and cardinality per operation
+TYPE         stable Run Type key and inherited defaults
+TARGET       bounded goal/target grammar and symbolic cardinality
+ACTOR        human | automatic | agent | hybrid; named decision/execution owner
+ACTION       one action or interaction boundary; Steps remain internal
+INPUTS       optional authoritative paths plus required versions/hashes
+DEPENDENCIES optional upstream Run Specs/Instances or governed prerequisites
+STEPS        internal ordered actions; never child Run identities
 TICKET       physical dialect and who may author it
-INPUTS       authoritative paths plus required versions/hashes
 WORKER       skill, agent, CLI, API, or script allowed to execute
-RESULT       required generated files and safe external pointers
+SKILL        bound Run skill(s) that define the execution contract
+WORKSPACE    bound presentation/interaction surface; it owns no Run semantics
+RESULT       required terminal Result record; domain payload may be empty
+GATE         optional/default-open entry; inherited or explicit exit; mandatory close semantics; mode: human | automatic | agent | hybrid
+ROUTE        optional only for terminal/default CLOSE; otherwise explicit graph edge; mode: human | automatic | agent | hybrid
 ACCEPT       kind-specific test for status=complete
 PROMOTION    how an accepted Result binds to evidence, Page, or handoff
 REOPEN       which change requires a new Run, or a declared dialect's new Version
+RECEIPT      deterministic durable terminal outcome and append-only attempt history
 ```
 
 Select `haipipe-plugin-runs` when the Folder exposes these Runs. The plugin is a
-surface, never a substitute for this phase-owned profile.
+surface, never a substitute for this Run Spec profile.
 
 ## Lifecycle
 
@@ -450,7 +521,7 @@ feedback wait/Step/Version loop instead of treating every turn as a new attempt.
 Work one delegated Run in this order:
 
 ```text
-PLAN          outline declares the owed target; Paper may reserve P/J/T/R; no Ticket or Run yet
+PLAN          Workflow declares the Run Spec; no instance exists yet
 ALLOCATE      choose the next RUNNAME; never reuse or renumber
 SCAFFOLD      create the Ticket and runtime receipt; reserve the Result address
 FREEZE        record authoritative inputs and versions before work starts
@@ -458,7 +529,7 @@ EXECUTE       invoke the declared worker only through the Ticket
 MATERIALIZE   write only the declared Result and safe external pointers
 VALIDATE      apply the worker/dialect Result gate
 TERMINATE     complete · failed · blocked · superseded
-BIND/PROMOTE  separate phase authority admits the Result into evidence/Page/handoff
+BIND/PROMOTE  a downstream Run or owning Folder authority admits the Result
 ```
 
 Create the runtime receipt at SCAFFOLD with a planned state. Write identifying
@@ -479,12 +550,24 @@ the paired Result projection. New Runs record at least:
 
 ```yaml
 run: r03_page-writing_c02-p01
+run_type: Page.paragraph-writing
 family: page
 operation: paragraph-writing
 target: C2.P1
+actor: {mode: hybrid, name: page-writer-with-human-reviewer}
+action: interactive-writing
 status: complete
 ticket: runs/r03_page-writing_c02-p01.md
 result: results/r03_page-writing_c02-p01/
+receipt: results/r03_page-writing_c02-p01/runtime.yaml
+entry_gate: {mode: automatic, status: passed, rule: inputs-frozen}
+exit_gate: {mode: human, status: passed, rule: scoped-text-accepted}
+route: {mode: automatic, destination: CLOSE}
+close_rule: scoped target accepted and every evidence obligation settled
+terminal_outcome: accepted
+attempt_history:
+  - attempt: 1
+    status: complete
 inputs:
   - path: outline/example-outline-v3.md
     sha256: <lowercase-hex>
@@ -533,7 +616,7 @@ Keep three facts distinct:
 
 ```text
 Result     what this Run generated
-Evidence   a Page/phase binding that admits a Result as support
+Evidence   a governed binding that admits a Result as support
 Promotion  an accepted candidate written into an authority or handoff
 ```
 
@@ -551,7 +634,7 @@ consumer-serving canonical Task this PHI-safe admitted unit is the narrow
 Page-authority exception to `$OUTPUT_ROOT`; `result.yaml` and `runtime.yaml`
 remain in the resolved Result store. A Labeling Result may promote
 closed policy/gold, a qualified route, a production candidate, or audited D*
-only through its owning phase gate. Record the source RUNNAME at the binding or
+only through its owning Run/Folder gate. Record the source RUNNAME at the binding or
 promotion boundary.
 
 The Run remains historical and immutable when an upstream input changes. Mark
@@ -562,7 +645,7 @@ Run. Never rewrite a completed Result to make the current Page look consistent.
 
 Audit in this order:
 
-1. Resolve the Folder kind, owning phase, and its Run Profile.
+1. Resolve the Folder kind, Workflow, Run Spec, Run Type, and Run Profile.
 2. Enumerate Tickets and Results using the declared dialect.
 3. Report orphan Tickets, orphan Results, duplicate logical addresses, and stem
    mismatches.
@@ -579,8 +662,8 @@ not present Results as separate Runs or count worker calls as Runs.
 
 ## Boundaries
 
-- Let the workflow phase decide whether to commission, retry, bind, promote,
-  reopen, or close; this skill owns none of those semantic decisions.
+- Let the Workflow graph and Run Spec decide whether to commission, route,
+  retry, bind, promote, reopen, or close; this skill owns the invariants.
 - Launch work only through the authored Ticket. Do not add a second browser or
   ad hoc execution door.
 - Let the worker/dialect own concrete output grammar. Do not centralize paper

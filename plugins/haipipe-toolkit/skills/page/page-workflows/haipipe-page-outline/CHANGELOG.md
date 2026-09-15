@@ -1,3 +1,8 @@
+## 0.46.0 · 2026-09-15
+
+- Make SHAPE and SURVEY explicit internal Steps of the shared Structure Run
+  and treat the old four-label strip as compatibility dispatch metadata.
+
 ## 0.45.0 · 2026-09-14
 
 - Fuse SHAPE and SURVEY into the shared `rp-struct-01` Structure Run and

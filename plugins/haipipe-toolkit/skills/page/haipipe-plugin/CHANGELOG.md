@@ -1,3 +1,9 @@
+## 1.10.0 · 2026-09-15
+
+- `ref/roster.md` `results/` row: the Draft Space note composer is named as the
+  one browser writer, appending pending-Step `#### Feedback` items to the owning
+  RP journal.
+
 ## 1.9.0 · 2026-09-14
 
 - Replace compact Page Run examples with typed RP/RE identities and document

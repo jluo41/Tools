@@ -1,17 +1,17 @@
 ---
 name: haipipe-page-context
 description: >-
-  The 00 CONTEXT phase of a Board Page. PREPARE collects, resolves, and
+  The 00 CONTEXT compatibility dispatch of a Board Page. PREPARE collects, resolves, and
   freezes the policy, requirements, Page ownership, related information,
-  feedback, and process records needed by later Page phases into one generated
+  feedback, and process records needed by later Run Specs into one generated
   Context record inside the shared Outline plugin. Use before SHAPE, whenever
-  the governing inputs changed, or when another phase reports missing or
+  the governing inputs changed, or when another Run Spec reports missing or
   conflicting context. Trigger: page context, CONTEXT phase, PREPARE context,
   Context record, outline context, collect page requirements,
   /haipipe-page-context.
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-09-04"
+  version: "0.2.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md
 ---
 
@@ -24,7 +24,8 @@ owner, and
 Outline plugin keeps the generated record in the off-stage Markdown process
 lane; Folder inspection opens it after authority is resolved.
 
-CONTEXT is a Page phase, not a new Plugin. Its output is presented in
+CONTEXT is a compatibility dispatch label and planning adapter, not a new
+Plugin or Level-4 Run. Its output is presented in
 `haipipe-plugin-outline` beside the Page's other process records:
 
 ```text
@@ -32,6 +33,13 @@ haipipe-page-context      owns PREPARE and the generated context record
 haipipe-plugin-outline   owns the three reader Spaces; Context stays off-stage
 source records           remain authoritative and physically separate
 ```
+
+## 🧭 Run Workflow placement
+
+This skill supplies the context-resolution Run Spec/dispatch adapter. It
+freezes inputs for the Page Run Workflow, but does not mint a Level-4 Run;
+`outline/<stem>-context.md` and its compatibility receipt are planning inputs
+for later Run Specs.
 
 ## ⚡ Brief
 
@@ -99,7 +107,7 @@ Resolve authority from broad to specific:
 base Page + template
   → Folder-owning workflow or canonical family skill
   → Page Face owner
-  → Page workflow phase
+  → Page Run Workflow / current Run Spec
   → authored W<n> Requirement records
   → division and bullet contracts
 ```
@@ -112,7 +120,7 @@ Resolve the five facts later phases need:
 
 | Fact | Required answer |
 |---|---|
-| Identity | exact Page, Folder kind, owning workflow, current Page phase |
+| Identity | exact Page, Folder kind, owning Workflow, current Run Spec |
 | Purpose | Page question, audience, scope, and non-goals |
 | Structure | required Page shape, division expectations, and outline policy |
 | Style | applicable narrative/writing rules with their authority paths |

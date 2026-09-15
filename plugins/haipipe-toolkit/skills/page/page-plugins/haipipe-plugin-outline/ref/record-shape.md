@@ -17,7 +17,7 @@ Every file opens with three lines: `# <stem> · <kind>` · `page: <stem>` ·
 file                     answers                  id            labels                              writer                         teeth
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 <stem>-outline-v<G>.<S>[.<E>].md what we AGREED    C.P.B         ref/plan-grammar.md                 OUTLINE; a person ticks Shape; evidence inherits it  plan-* (grammar §7)
-<stem>-context.md        what later phases MAY    CTX1–CTX6     Status · Sources · Next authority   CONTEXT/PREPARE; generated     context-missing · -stale ·
+<stem>-context.md        what later Run Specs MAY CTX1–CTX6     Status · Sources · Next authority   CONTEXT/PREPARE; generated     context-missing · -stale ·
                          rely on                                                                                                    -conflicting
 <stem>-requirement.md    what we MUST obey        V1 V2 V3 V4   V: Rule · Arc · Words · Citations · generator refreshes V; page     requirement-missing ·
                                                   W<n>          Displays · Source                  authors W; generator preserves   -hand-edited · -stale ·

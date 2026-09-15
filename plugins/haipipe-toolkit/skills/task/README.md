@@ -79,6 +79,9 @@ task/page-types/
 └── haipipe-page-insight/       topic/data instance with item Runs and DIKW Results
 ```
 
+The preferred public Insight entry is `/haipipe-insight task`; the older
+`/haipipe-task insight` form remains a compatibility alias.
+
 `haipipe-task` remains the canonical owner of Task Folder identity, execution,
 results, and closure. `haipipe-page-task` extends the same-stem reader Page
 with the required evidence-display inventory: substantive tables, figures, and

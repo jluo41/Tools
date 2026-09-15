@@ -1,3 +1,26 @@
+## 0.81.0 · 2026-09-15
+
+- Add Draft Space's explicit Table, Reading, and Scratch views.
+- Replace the retired Draft feedback composer with Section, Subsection, and
+  whole-paragraph Scratch controls backed by `## Scratch` plus paired Runs;
+  B/symbol rows have no Scratch control.
+- Keep Table/Reading read-only; Scratch closes only after a human Summary.
+
+## 0.80.0 · 2026-09-15
+
+- Make Draft, Evidence, and Run explicit projections of one Page Run Workflow
+  Runtime rather than workflow phases.
+- Keep Draft Space fully read-only; human feedback and revision history live in
+  Page Writing Run Steps/Versions and are presented in Run Space.
+
+## 0.79.0 · 2026-09-15
+
+- Document the paragraph note thread as Draft Space's one browser write (§💬):
+  what a note is, where it lands, which Run owns it, and what it never touches.
+- `ref/content-preview.md` and `ref/space-mapping.md` now state the narrowed
+  law: Draft Space is read-only for the plan; `action: feedback` appends to the
+  owning RP journal under `results/`.
+
 ## 0.78.0 · 2026-09-14
 
 - Remove `\\illustration{D_xxx}` and `\\diagram{D_xxx}` from Page-facing

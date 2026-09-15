@@ -1,5 +1,11 @@
 # haipipe-insight-workflow · version history
 
+1.2.2 · 260915
+- Replace phase authority language with Insight RunTypes and Workflow Runtime
+  records while preserving legacy phase labels for compatibility.
+- Make GI0-GI6 runtime control keys and keep Question Group as the derived
+  `partition × DIKW target` view.
+
 1.2.1 · 260913
 - Require the task-side external-parent bridge to carry the exact `riNN`,
   base-R pointer, frozen dataset binding, version, Result hash, and RF id.

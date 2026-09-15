@@ -1,6 +1,6 @@
 interface:
   display_name: "Workflow Table"
   short_description: "Map workflow plans and runtime display in one table"
-  default_prompt: "Use $workflow-table to design or audit a workflow's plan and display table, including skill coverage, Run profiles, and human gates."
+  default_prompt: "Use $workflow-table to design or audit a Workflow × Workspace table whose rows are Run Specs, whose columns are a plural Workspace roster, whose Cells bind skills/presentation/interaction, and whose derived views show Run Instances, Human Actions, and Skill Coverage."
 policy:
   allow_implicit_invocation: true

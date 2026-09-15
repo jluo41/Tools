@@ -1,30 +1,32 @@
 ---
 name: haipipe-insight-workflow
 description: >-
-  The InsightBoard phase machine over six phase-owned Folder kinds: I0 Meta →
+  The InsightBoard Workflow Runtime over six RunType-owned Folder kinds: I0 Meta →
   I1 Question → I2 Data → I3 Information → I4 Knowledge → I5 Wisdom. Owns
-  gates GI0-GI6, derived partition-by-DIKW Question Groups, the CELL frontier,
-  climb order, dispatch, receipts, and stops; each phase skill owns both Folder faces and
+  GI0-GI6 runtime control keys, derived partition-by-DIKW Question Groups, the
+  CELL frontier, climb order, dispatch, receipts, and stops; each RunType skill owns both Folder faces and
   its plugins. Use to run or inspect an InsightBoard. Trigger: insight
   workflow, climb ladder, next rung, frontier cell, /haipipe-insight-workflow.
 metadata:
-  version: "1.2.1"
-  last_updated: "2026-09-13"
+  version: "1.2.2"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-insight-workflow · know the cell, test the gate, mint the next rung
+# /haipipe-insight-workflow · run the cell, record control, mint the next RunType
 
 Load `haipipe-insight` and `haipipe-folder` first. This is the only authority
-for I0-I5 ordering and GI0-GI6. `haipipe-application-workflow` may delegate
-here and record a crossing, but it owns no alias phases or duplicate gates.
-This workflow never edits a Page Face itself; the selected phase delegates Page
+for I0-I5 RunType ordering and GI0-GI6 control keys. `haipipe-application-workflow` may delegate
+here and record a crossing, but it owns no alias RunTypes or duplicate controls.
+This workflow never edits a Page Face itself; the selected RunType delegates Page
 work to `haipipe-page-workflow`.
 
 Read `../haipipe-insight/ref/question-groups.md` before registration, status,
 or dispatch, and `../haipipe-insight/ref/page-v2-adapter.md` before running or
 checking a rung Page. These references own the two-dimensional group projection
 and the boundary between Page CLOSE and GI advancement.
+Read `../../task/haipipe-workflow/ref/workflow-runtime.md` when creating,
+resuming, or auditing the board's `workflow_runtime_id` and its control records.
 
 This is the Application InsightBoard workflow. Task-side topic instances use
 the item/checkpoint workflow table owned by `haipipe-page-insight/ref/`.
@@ -33,18 +35,40 @@ separate rung Folders.
 
 ## 🔤 Terminology law
 
-An **insight phase** is one digit, `I0`-`I5`. A runtime Page id carries two
-digits and may carry a partition letter (`I03`, `BI03`), so it cannot be
-confused with the phase. Scope, ask, observe, derive, claim, and hand off are
-prose aliases only.
+An **Insight RunType** is one domain rung, `I0`-`I5`: Meta, Question, Data,
+Information, Knowledge, or Wisdom. The numeric label identifies reusable
+RunType vocabulary, not a runtime instance. `GI0`-`GI6` are stable runtime
+control keys; they are assertions/evaluations, not a second Gate identity.
+`workflow_runtime_id` identifies one board execution, while concrete work
+keeps its owner-native Run identity. Scope, ask, observe, derive, claim, and
+hand off are prose aliases only.
 
-## 🗺 The six phases · the phases are the rungs
+## 🧭 Workflow Runtime
 
-Each phase is named by the Folder kind it owns. The phase skill carries both
-faces, plugin profile, gate, and handoff; the ladder is the phase spine:
+The Application Insight workflow has one aggregate Runtime per execution:
 
 ```text
-phase                     authority page              what the phase produces
+Workflow Definition = I0..I5 RunTypes + Run Specs + GI policies + Routes
+Workflow Runtime    = workflow_runtime_id
+                      + concrete owner-native Runs
+                      + GI evaluations + route decisions + CELL frontier
+Question Group      = partition × DIKW target (derived view, never a Run)
+```
+
+The Runtime opens or resumes one `workflow_runtime_id`, selects one runnable
+Question Group/CELL, materializes the owner-native Run when work is needed,
+records the GI evaluation and route, then advances or holds the frontier. A
+Page workflow pass may be nested inside a Run; it is not silently promoted to
+an Insight Run or counted as a new Gate.
+
+## 🗺 The six Insight RunTypes · legacy phase labels
+
+Each RunType is represented by the Folder kind it owns. Its RunType skill
+carries both faces, plugin profile, control policy, and handoff; the ladder is
+the domain spine. Existing `phase` fields remain compatibility/display labels.
+
+```text
+RunType                   authority page              what the RunType produces
 ──────────────────────────────────────────────────────────────────────────────
 I0 Meta (scope)           MT00-meta                   the inventory: sources, grain,
                                                       window, freshness, limits ·
@@ -63,11 +87,16 @@ I5 Wisdom (hand off)      the W page                  counsel + the SIGNED Desig
    ↺ I1→I2→I3→I4→I5→I1 is the CLIMB LOOP · exits through the register at GI6
 ```
 
-Two positions deliberately did not become phases: the pooling verdict is I4
+Two positions deliberately did not become RunTypes: the pooling verdict is I4
 Knowledge work in X and part of GI4; SETTLE is I1 register work and GI6. A
-position with no independently owned Folder kind is a gate or Task-Face act.
+position with no independently owned Folder kind is a control record or
+Task-Face act.
 
-Each phase performs one EPISTEMIC OPERATION and each gate is an AUTHORITY TRANSFER: passing GI<n> is the moment the rung below becomes citable and nothing else does — the Climb Law read as a process instead of a structure. That is why the aliases are verbs of knowing (scope, ask, observe, derive, claim, hand off), not verbs of doing.
+Each RunType performs one EPISTEMIC OPERATION and each GI control is an
+AUTHORITY TRANSFER: passing GI<n> is the moment the rung below becomes citable
+and nothing else does — the Climb Law read as a process instead of a
+structure. That is why the aliases are verbs of knowing (scope, ask, observe,
+derive, claim, hand off), not verbs of doing.
 
 ## ✚ Question Groups · partition × DIKW target
 
@@ -80,10 +109,10 @@ exists.
 
 The CELL remains the atomic transition, so `QI5` may be ✅ in `QG-F-I`, 🟡 in
 `QG-B-I`, and ⬜ in `QG-D-I` at once. A group may batch visibility but never
-advance all members together. "What phase is this board in" therefore has no
+advance all members together. "What RunType is this board in" therefore has no
 one-number answer: report the Question Groups and their member-cell frontiers.
 
-A subgroup passes through three moments, each owned by one phase:
+A subgroup passes through three moments, each owned by one RunType:
 
 ```text
 noticed   I3/I4   an I page's partition column diverges, or a K boundary names a cut
@@ -262,9 +291,12 @@ I1 row. The RF itself never satisfies X1 or any Design gate. A stale,
 below-Wisdom, incomplete, or untraceable item Result fails the bridge assertion
 and routes through the ordinary local climb.
 
-## 🚪 The gates
+## 🚦 Runtime control keys · GI0-GI6
 
-Each gate is an assertion over pages that already exist; a gate that cannot be tested by reading named files is misdesigned. Gates are per-CELL except GI0, which is per-board, and GI4's verdict clause, which is per-column-set.
+There is no standalone Gate object. Each GI key names a testable assertion;
+the Runtime records its actual evaluation, authority, evidence, and resulting
+route. Controls are per-CELL except GI0, which is per-board, and GI4's verdict
+clause, which is per-column-set.
 
 ```text
 GI0  Meta → Question      MT00 has Page CHECK/CLOSE and its sources resolve through
@@ -304,7 +336,7 @@ The DERIVED-HEADER rule (`haipipe-insight-question`) covers every on-register
 restatement of the Queue — headers, Diagrams, Openings, status words, and counts.
 Reconciling one is I1 Task-Face work citing the Queue.
 
-**The two Insight cross-phase authority gates never have an auto mode**. A new
+**The two Insight cross-RunType authority controls never have an auto mode**. A new
 Supporting computation is released through the owning Page Evidence Item's
 SURVEY `Decide`; there is no separate active Probe phase or lane. Handoff
 signing is GI5. Page Workflow may also require local Shape approval, CITE
@@ -342,8 +374,9 @@ select   the earliest RUNNABLE Question Group, then one frontier cell whose gate
          is open and whose inputs exist; prefer cells
          the register marks `⬜ calc` (computed, unauthored — I1 Question)
          before cells needing new runs, because authoring is cheaper than running
-load     the matching haipipe-insight-<folder-kind> phase skill
-run      one haipipe-page-workflow PASS over that ONE Page · mode: copilot always;
+load     the matching haipipe-insight-<folder-kind> RunType skill
+run      one haipipe-page-workflow PASS over that ONE Page inside the current
+         Workflow Runtime · mode: copilot always;
          allocate no rpNN unless a human selected an interactive Page-writing goal
 fold     move the register cell ONLY after Page CHECK emits CLOSE and the matching
          GI assertion passes; a Page Run close changes neither condition
@@ -354,9 +387,9 @@ repeat   until every cell is settled or a gate blocks
 
 A cell whose inputs do not exist is not runnable, and naming WHY is this skill's answer, never scaffolding the missing input silently.
 
-## 🧾 Phase receipts
+## 🧾 Runtime records
 
-A transition leaves one dated record in the granting Folder's canonical
+A transition leaves one dated Runtime control record in the granting Folder's canonical
 `outline/<stem>-log.md` — except a 🟡-final settle, which leaves TWO (§Marks):
 MT00 records GI0 and every partition birth; the Question register records GI1
 and GI6; the closing rung Folder records GI2-GI4; and the W Folder records GI5.
@@ -366,12 +399,14 @@ No embedded Page log section and no separate receipt store is authoritative.
 
 A gate test may be run any time; a gate may only be DECLARED passed by the human tick or CHECK verdict it names. Nothing here may be wired to a timer or a loop that advances cells on wall-clock time.
 
-## 🔀 Resolving "what phase are we in"
+## 🔀 Resolving the Runtime frontier
 
-Per cell: the highest gate whose assertion currently holds. Per Question Group:
+Per cell: report the current RunType plus the highest GI control whose
+assertion currently holds. Per Question Group:
 derive `EMPTY | RUNNABLE | BLOCKED | SETTLED` from its cells. Per board: read
-the register matrix whole. A board-level scalar is a lie this workflow refuses
-to mint; the crossing workflow reports the group/cell frontier unchanged.
+the register matrix whole and include the `workflow_runtime_id`. A board-level
+scalar RunType is a lie this workflow refuses to mint; the crossing workflow
+reports the group/cell frontier unchanged.
 
 ## 🌐 The machine is content-free
 
@@ -439,7 +474,7 @@ a mark is not an edit   🧊 and its kin annotate ADJACENT to a sentence; the se
   in this lane. The dispatcher must still perform the I1-owned GI6 register
   settlement, leave its receipt, and only then stop that cell.
 - STOP at any gate: report and end, never wait in a loop.
-- STOP on contradiction: a cell that derives to two phases at once (the register says answered, the page says 🔴) is reported as a defect, never repaired silently.
+- STOP on contradiction: a cell that derives to two RunTypes at once (the register says answered, the page says 🔴) is reported as a defect, never repaired silently.
 - **Known-stale is marked, not repaired.** A line known stale but deliberately left (a frozen handoff, a fenced page) is marked `🧊 <staling event>` where it stands, so frozen debt is distinguishable from unnoticed drift; an unmarked stale line remains a finding.
 - **Refusal is convergence.** A 🚫 with a reason is a terminal state equal in rank to ✅: the lane terminates because refusing is answering, and a board rich in refusal reasons (thin, F-only, defer, no-measure) is converging, not failing. The defect is the cell that can neither answer nor refuse.
 

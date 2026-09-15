@@ -4,15 +4,15 @@ description: >-
   Create, edit, build and serve a self-contained Page Folder from a supplied
   Markdown, text, HTML or other file, without requiring a Board. Also owns
   the Page Face contract and router of a Folder: what the readable .md is on
-  disk, how its phase-owned Folder kind or legacy Page Type is resolved, which
-  Page Phase holds authority, and PREVIEW, CREATE, WORK ON, RUNS, RUN. Trigger:
+  disk, how its Run Workflow/Run Spec owner or legacy Page Type is resolved,
+  which Run Spec holds authority, and PREVIEW, CREATE, WORK ON, RUNS, RUN. Trigger:
   file to page, HTML page, standalone page, host a page, open page code,
   create a page, update page, propose Page Runs, human-interaction runs,
-  run page lifecycle, Page Face, Folder kind, legacy Page Type, Page Phase,
+  run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.103.0"
-  last_updated: "2026-09-14"
+  version: "0.106.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -78,8 +78,8 @@ Outline's Run Space presents three semantic areas plus the owner-native
 Supporting group, in both standalone and Board-hosted mode:
 
 ```text
-Page Writing  RP · rp-struct-NN · rp-sec-NN · rp-para-NN_Pxx[-Pyy]
-              Structure · Section · Paragraph (Review & Modify)
+Page Writing  RP · rp-struct-NN · rp-scratch-NN_<target> · rp-sec-NN · rp-para-NN_Pxx[-Pyy]
+              Structure · Scratch · Section · Paragraph (Review & Modify)
 Page Evidence RE · re-value-NN_<slug> · re-display-NN_<slug> · re-cite-NN_<slug>
               Value · Display · Citation
 RD         rdNN_<target> · one web/LaTeX/Word/slide/render delivery target
@@ -97,6 +97,7 @@ renumbers or consumes another. RP uses explicit kind tokens:
 
 ```text
 rp-struct-NN          Page Structure Run: SHAPE + SURVEY
+rp-scratch-NN_<target> Human Scratch capture at C1 or C1.P1 (section/subsection/paragraph group)
 rp-sec-NN             Section-level writing
 rp-para-NN_Pxx[-Pyy]  Paragraph-level writing
 ```
@@ -285,14 +286,24 @@ then let Board supply navigation. Moving/removing Board membership must not
 move or replace the Page's source. Board Page group descriptions remain
 Board-owned and are outside this file-intake operation.
 
+Scratch is available as a small human-thinking capture once the selected
+Outline exists. Save keeps `rp-scratch-NN_<target>` open; Finish requires a
+human Summary and closes it. Scratch writes only the selected Outline's
+`## Scratch` registry plus its paired `runs/` and `results/` receipt; it never
+edits `Draft:` prose.
+
 The reader-facing completion packet is defined in
 `ref/user-check-packet.md`. The Draft Space includes a read-only Draft
 projection beside each Bullet during SHAPE. The selected
 `outline/<stem>-outline-v<G>.<S>[.<E>].md` is the sole Draft authority: each
 Bullet stores its planning fields and `Draft:` candidate in that same file.
 The candidate may exist before Shape approval and becomes exact adoption input
-for CONTENT when explicitly accepted. The Page/Run workflow is the writer; the
-four reader-facing Spaces never write through the browser. Delivery Workspace
+for CONTENT when explicitly accepted. The Page/Run Workflow is the writer of
+the plan, the Page, and every Result; the reader-facing Table and Reading
+views write none of them through the browser. Human feedback and acceptance
+enter through the owning Page Writing Run's interaction and its recorded
+Steps/Versions; Scratch is the explicitly bounded exception for rough human
+notes. Draft Space has no legacy note thread or feedback composer. Delivery Workspace
 is the read-only source-to-artifact consistency projection; it does not replace
 the human Page CHECK gate.
 See `haipipe-plugin-outline/ref/content-preview.md` for the write boundary.
@@ -330,11 +341,11 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 ├── page.toml     optional standalone registration: source + imported content
 ├── <page>.md      Opening · Outline · Content · Aims           THIS contract
 ├── outline/       HUMAN process: plan and durable process records
-│   ├── <stem>-context.md  generated PREPARE projection for all Page phases
+│   ├── <stem>-context.md  generated context projection for all Page Run Specs
 │   ├── <stem>-logic.mmd    derived Mermaid Structure reviewed by rp-struct-NN
 │   ├── <stem>-evidence-items.md  authored Evidence Item contracts
 │   └── _archive/legacy-outline-evidence/  retired folder material only
-├── workflow/      MACHINE process: one receipt per phase pass
+├── workflow/      MACHINE process: Workflow Runtime/compatibility receipts
 │              ─── the LOWER, TASK-side part ───
 ├── scripts/       optional owned implementation, any language; shared Task
 │   └── config/    Job code stays one level up in `src/`
@@ -353,8 +364,8 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 **The Folder symmetry**: every Folder has a Page Face and Task Face; a
 `primary_face` says which is the usual entry, not which face exists.
 `outline/` is the human planning/decision record and `workflow/` is the
-machine-readable phase/run record. Page-heavy work commonly stores phase
-receipts under `workflow/receipts/`; executable work commonly stores
+machine-readable Workflow/Run record. Page-heavy work commonly stores
+compatibility receipts under `workflow/receipts/`; executable work commonly stores
 `plan.yaml` and `report.yaml`. Run Space is an Outline projection over this
 shared Task Face. It presents Page Writing, Page Evidence, and Supporting Runs.
 A native Run pairs its ticket with either a Folder-local Result or the Task
@@ -403,8 +414,8 @@ numeric result belongs in the linked executable Folder and its Run Result
 binding. The
 the `outline/` process files, their ids, labels and writers are
 `haipipe-plugin-outline/ref/record-shape.md`; the plan's grammar is
-`ref/plan-grammar.md` beside it. A phase loads the exact Outline-plugin refs it
-needs as schema/material contracts. The Page surface installs
+`ref/plan-grammar.md` beside it. A Run Spec owner loads the exact
+Outline-plugin refs it needs as schema/material contracts. The Page surface installs
 `haipipe-plugin-outline` once as the presenter; the presenter skill is not
 appended to each phase's execution dependency chain.
 
@@ -412,8 +423,8 @@ appended to each phase's execution dependency chain.
 
 A property every Page carries cannot tell one Folder kind from another. A Page
 shows something, cites something, states a number; so display, literature and
-value are plugins. A workflow phase or declared family skill owns the Folder
-kind and its Page Face. A fixed Page Type may own a Page directly. No
+value are plugins. A Run Workflow/Run Spec owner or declared family skill owns
+the Folder kind and its Page Face. A fixed Page Type may own a Page directly. No
 `folder-kind:` or `page-type:` key is the flexible base.
 
 Resolve ① to ⑥ in order and stop at the first key that matches. Exactly one
@@ -426,17 +437,17 @@ state and Markdown disagree, fix the Folder, never the resolver.
 ```text
 step  machine-readable key                    Page Face owner    contract
 ──────────────────────────────────────────────────────────────────────────
-①     workflow/phase.yaml current kind        workflow phase     phase skill
-②     frontmatter `folder-kind: <key>`        phase or family    phase/family skill
-③     frontmatter `page-type: <key>`          Page Type          phase/family/for-<key>
+①     workflow/phase.yaml current kind        Run Workflow       Run Spec owner
+②     frontmatter `folder-kind: <key>`        Run Spec/family     Run Spec/family skill
+③     frontmatter `page-type: <key>`          Page Type           Page Type owner
 ④     filename QBv<n>-                        venue              for-venue
 ⑤     filename S-<Family>-<unit>-<slug>       stage              for-stage
 ⑥     filename Q<group><n>[<face>]-<slug>     Q decision         base only
 ```
 
 A Discovery Folder resolves `folder-kind: discovery` to its Discovery workflow
-phase. Its Task Face does not select the Task Folder technical-report grammar:
-the Discovery phase owns that Page Face, while `haipipe-task` owns only
+Run Spec owner. Its Task Face does not select the Task Folder technical-report
+grammar: the Discovery Run Spec owner owns that Page Face, while `haipipe-task` owns only
 `folder-kind: task`.
 
 ### Page Types are self-owned
@@ -461,11 +472,12 @@ the reader-facing companion `haipipe-page-task` adds the Task Page's
 display-rich table, figure, and diagram contract. The companion refines the
 Task Page surface and never creates a second Page frame or execution owner.
 
-## 🎭 Page phases, independent of Folder kind
+## 🎭 Page Run Workflow, independent of Folder kind
 
-A Page Face persists while its Page-workflow authority changes. The page
-workflow (`page-workflows/haipipe-page-workflow`) has five numbered phases,
-independent of the domain workflow phase that owns the Folder kind:
+A Page Face persists while its Page Run Workflow authority changes. The page
+workflow (`page-workflows/haipipe-page-workflow`) has a directed Run Spec graph;
+the five labels below are only the compatibility dispatch projection, independent
+of the domain workflow that owns the Folder kind:
 
 ```text
 index     phase/cycle     skill                                  gate
@@ -537,9 +549,9 @@ route back to OUTLINE.
 The HAI-side adapter and three-pass realization rules are
 [`haipipe-writing/ref/writing-dna-adapter.md`](../../writing/haipipe-writing/ref/writing-dna-adapter.md).
 
-Resolve one invocation as: Folder → base Page Face → phase-owned Folder kind
-or declared Page Type → current cycle →
-phase-selected and page-local plugins.
+Resolve one invocation as: Folder → base Page Face → Run Workflow/Run Spec-owned
+Folder kind or declared Page Type → current Run Spec → Run Spec-selected and
+page-local plugins.
 The cycles form a routing grammar, not a conveyor belt: each may repeat,
 SURVEY and LAND are skipped when the page promises nothing it cannot already
 support, and CHECK may route to any earlier cycle. When the visible operation

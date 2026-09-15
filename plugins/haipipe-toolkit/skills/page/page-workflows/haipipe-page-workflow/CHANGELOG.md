@@ -1,3 +1,28 @@
+## 0.59.0 · 2026-09-15
+
+- Add `Page.interactive-writing.scratch` and `rp-scratch-NN_<target>` to the
+  Run Spec × Workspace graph.
+- Define Save as an open capture and Finish Scratch as the human Summary gate;
+  Scratch never edits `Draft:` prose.
+
+## 0.58.1 · 2026-09-15
+
+- Replace Page Phase authority with a directed Run Spec graph while retaining
+  `phase/cycle` only as low-level controller adapter fields.
+- Define one `workflow_runtime_id` for an automated Page workflow pass; retain
+  `run_id` as its auditor-facing alias and keep RP/RE/RD identities native.
+- Keep RP feedback as Steps, same-target reopenings as Versions, and changed
+  goals/targets as new Runs; Gate and Route belong to the owning Run.
+- Preserve the Draft Space pending-Step note-composer contract added in 0.58.0.
+
+## 0.58.0 · 2026-09-15
+
+- `ref/interactive-writing-run.md`: the Draft Space note composer is a capture
+  surface that appends a pending Step (`### Human feedback` with `#### Feedback`
+  items, no `### Saved result`) and sets `Open feedback` in `working.md`; the
+  agent completes it under the fast foreground rule. An `accept` note is the
+  person's words, never a tick.
+
 ## 0.57.0 · 2026-09-14
 
 - Define one shared `rp-struct-01` Structure Run for both SHAPE and SURVEY;

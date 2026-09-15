@@ -3,31 +3,37 @@ name: haipipe-application-workflow
 description: >-
   Crossing orchestrator for an Application's InsightBoard and DesignBoard.
   Preserves the Insight workflow, native Design workflow, and Design Folder's
-  Page workflow as separate authorities; validates X0-X3 crossings and delegates
-  one runnable unit. Use for whole-Application status or cross-board routing.
+  Page workflow as separate authorities; validates X0-X3 crossings, creates the
+  shared Workflow Runtime view, and delegates one runnable unit. Use for
+  whole-Application status or cross-board routing.
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-09-13"
+  version: "3.0.1"
+  last_updated: "2026-09-15"
 ---
 
 # /haipipe-application-workflow · cross without flattening
 
 Load `haipipe-application`, `haipipe-folder`, `haipipe-insight-workflow`, and
 `haipipe-design-workflow`. Load `haipipe-page-workflow` only for a Page-facing
-action. Sibling workflows retain their own phases, gates, identities, and
-receipts.
+action. Sibling workflows retain their own RunTypes, control policies,
+owner-native Run identities, and receipts. The Application layer owns the
+cross-board Workflow Runtime view; it does not mint a duplicate Gate or Run.
+Read `../../task/haipipe-workflow/ref/workflow-runtime.md` when creating or
+auditing that cross-board Runtime view.
 
 ## Ownership graph
 
 ```text
-haipipe-insight-workflow    I0–I5 · one derived Question Group + one register cell
-haipipe-design-workflow     Commission/Generate/Verify/Adopt · one design target
-haipipe-page-workflow       rp00/rpNN/release/CHECK · one readable Page
+haipipe-insight-workflow    I0–I5 RunTypes · one derived Question Group + one register cell
+haipipe-design-workflow     Commission/Generate/Verify/Adopt RunTypes · one design target
+haipipe-page-workflow       Page RunTypes · rp00/rpNN/release/CHECK · one readable Page
 haipipe-application-workflow
                             X0–X3 crossing assertions + delegation only
 ```
 
 There is no Application P0–P4 and no combined Design/Page phase scalar.
+The Application Runtime is an aggregate frontier/receipt over these native
+workflows; it is not a new Level-4 Run.
 
 ## Crossing graph
 
@@ -138,6 +144,7 @@ insight:     <board> · <QG-partition-rung> · <cell> · I0..I5 · gate · next
 design:      <board> · <commission/Run/result> · verify/adoption · next
 design-page: <rp00/rpNN/release/CHECK> · projection freshness · next
 crossing:    none | X0 | X1 | X2 | X3 · assertion/hold
+runtime:     <workflow_runtime_id> · running | held | complete | failed
 ```
 
 Dispatch:
@@ -174,7 +181,7 @@ Design   ✋ release exact Design Commission · ✋ adopt exact candidate
 Page     adoption is reused as domain-gate; CHECK never repeats selection
 ```
 
-These are cross-phase authority gates. Shape approval, evidence verification,
+These are cross-RunType authority controls. Shape approval, evidence verification,
 and acceptance remain nested Page-Face controls. A Page Run `rpNN` closing is
 neither Page `CLOSE` nor a GI/X transition.
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Task and Insights"
   short_description: "Run task work and settle reusable DIKW Insight pages"
-  default_prompt: "Use $haipipe-task to run this task or create a reusable Insight page from its results."
+  default_prompt: "Use $haipipe-task for executable Task work. For the public Insight entry, prefer $haipipe-insight task; /haipipe-task insight remains the compatibility alias."

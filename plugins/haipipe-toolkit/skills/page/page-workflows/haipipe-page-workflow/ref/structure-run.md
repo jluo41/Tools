@@ -17,14 +17,27 @@ whole-Page Mermaid, Outline Bullets, paragraph jobs, Point roles, and the
 evidence decisions that make those Points truthful. There is no separate
 Outline Run, Survey Run, or Mermaid Run hiding behind it.
 
-The Page workflow still calls the two planning cycles **SHAPE** and **SURVEY**.
-Those are cycle labels inside the same Run, not additional Level-4 Runs:
+The Structure Run calls its two planning actions **SHAPE** and **SURVEY**.
+Those are Step/cycle labels inside the same Run, not Workflow rows or
+additional Level-4 Runs:
 
 ```text
 rp-struct-01
   ├─ SHAPE  → Page map, Mermaid, C/P/B Bullets, Point roles, Evidence Item specs
   ├─ SURVEY → evidence decisions, local/supporting route plans, acceptance needs
   └─ CLOSE  → one frozen Structure result; unlock rp-sec / rp-para candidates
+```
+
+Its Run control is explicit:
+
+```text
+Run Type    Page.interactive-writing.structure
+Actor       hybrid; participants on Run, contributor on each Step
+Entry Gate  open when Page/Folder identity and current Context resolve
+Exit Gate   declared owner/group accepts the Shape + Survey Result
+Routes      SELF/next Step · NEW_VERSION · selected writing/evidence Run ·
+            NEW_RUN for changed goal/target · HOLD
+Receipt     paired runtime.yaml + immutable Version/Step journal
 ```
 
 ## What the Run produces
@@ -105,9 +118,8 @@ CLOSE → Evidence/LAND → Section or Paragraph writing candidates
 `Run Space` presents this result-first and read-only. The workflow owns
 allocation and execution; the card does not expose a second “run” button.
 
-## Naming and migration
+## Naming
 
-New and active Page folders use the typed id `rp-struct-01`. The old compact
-name `rp00_mermaid-structure` is compatibility input only while a Page is being
-migrated; it is not a valid new allocation and must not be used in new packets,
-links, or folder names.
+New and active Page folders use the typed id `rp-struct-01`. A stored compact
+name such as `rp00_mermaid-structure` is historical input only; it is not a
+valid allocation and must not be used in new packets, links, or folder names.

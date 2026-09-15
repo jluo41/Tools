@@ -49,6 +49,8 @@ from src.item_table import (
 )
 from src.plan_shape import iter_plan_bullets, presentation_point
 from live.outline_preview import draft_path, read_drafts, bullet_token, reader_prose, read_opening_draft
+from live.outline_scratch import (read_scratch, save_scratch,
+                                  scratch_assets_html, scratch_control_html)
 from src.evidence_labels import collect_result_labels, resolve_inline_labels
 
 # Aim state emoji (haipipe-page): current set + the older ones still parsed.
@@ -556,6 +558,7 @@ code{{font:12px ui-monospace,Menlo,monospace}}
   <span class=draft-mode-label>View</span>
   <button type=button class="draft-mode-tab on" data-draft-mode=table>Table</button>
   <button type=button class=draft-mode-tab data-draft-mode=reading>Reading</button>
+  <button type=button class=draft-mode-tab data-draft-mode=scratch>Scratch</button>
  </div>
  {by_div}
 </div>
@@ -570,7 +573,7 @@ var SPACE_FOR={{div:'bullet',evidence:'evidence',run:'run',delivery:'delivery',w
 var params=new URLSearchParams(location.search), requested=params.get('lens')||'',
     requestedSeg=params.get('seg')||'',
     requestedFocus=params.get('focus')||'', requestedRun=params.get('run')||'',
-    requestedDraftMode=params.get('view')==='reading'?'reading':'table';
+    requestedDraftMode=params.get('view')==='scratch'?'scratch':(params.get('view')==='reading'?'reading':'table');
 /* v4 keeps old workspace URLs readable while exposing four plain spaces. */
 if(requested==='prog')requested='div';
 if(requested==='workspace')requested=(requestedSeg==='runs'||requestedRun)?'run':'evidence';
@@ -629,18 +632,21 @@ document.querySelectorAll('.space').forEach(function(c){{
   c.addEventListener('click',function(){{activateLens(c.dataset.default);}});
 }});
 function activateDraftMode(mode,writeUrl){{
-  mode=mode==='reading'?'reading':'table';
+  mode=mode==='scratch'?'scratch':(mode==='reading'?'reading':'table');
   var lens=document.getElementById('lens-div');
   if(lens)lens.setAttribute('data-draft-mode',mode);
   document.querySelectorAll('.draft-mode-tab').forEach(function(x){{
     x.classList.toggle('on',x.dataset.draftMode===mode);
+  }});
+  if(mode==='scratch')document.querySelectorAll('#lens-div details.paragraph-group').forEach(function(x){{
+    x.open=false;
   }});
   if(mode==='reading')document.querySelectorAll('#lens-div details.paragraph-group').forEach(function(x){{
     x.open=true;
   }});
   if(writeUrl!==false)try{{
     var u=new URL(location.href);
-    if(mode==='reading')u.searchParams.set('view','reading');
+    if(mode!=='table')u.searchParams.set('view',mode);
     else u.searchParams.delete('view');
     history.replaceState(null,'',u.href);
   }}catch(e){{}}
@@ -2298,6 +2304,10 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
     page_text = page_src.read_text(encoding="utf-8", errors="replace")
     typed = _typed_item_review(page_src, f, txt, approved)
     preview_item_by_id = {item["id"]: item for item in typed["items"]}
+    try:
+        scratch_latest = read_scratch(page_src)["latest"]
+    except (OSError, ValueError):
+        scratch_latest = {}
     # The page is the Aims' home (JL 260831, QPf12 row 2: "In the Page as well,
     # and should map to the content"); a plan that still carries Aim rows only
     # fills ids the page does not have.
@@ -2370,6 +2380,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
     paragraph_reading = []
     current_paragraph = ""
     current_paragraph_title = ""
+    current_section = ""
 
     def _flush_paragraph():
         """Close one paragraph group, keeping all its Bullets inside it."""
@@ -2388,13 +2399,21 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             '<details class="paragraph-group" open data-paragraph="%s">'
             '<summary class="prow"><span class=addr>%s</span>'
             '<span class=mut>%s</span></summary>'
+            '<div class=paragraph-scratch>%s%s</div>'
             '<div class=paragraph-bullets><div class=preview-columns>'
             '<span>Bullet</span><span>Draft</span></div>%s</div>'
-            '<div class=paragraph-reading>%s</div>'
+            '<div class=paragraph-reading>%s</div>%s'
             '</details>'
             % (_e(current_paragraph), _e(display_paragraph),
                _e(re.sub(r"\s*·\s*S\d+\s+to\s+S\d+\s*$", "", current_paragraph_title)),
-               "".join(paragraph_bullets), reading_body)
+               scratch_control_html("subsection", current_paragraph,
+                                    scratch_latest.get(("subsection", current_paragraph)),
+                                    read_only=read_only),
+               scratch_control_html("paragraph", current_paragraph,
+                                    scratch_latest.get(("paragraph", current_paragraph)),
+                                    read_only=read_only),
+               "".join(paragraph_bullets), reading_body,
+               "")
         )
         paragraph_bullets = []
         paragraph_reading = []
@@ -2418,10 +2437,14 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         if division_match:
             _flush_paragraph()
             cn = int(division_match.group(1)); pn = 0
+            current_section = "C%d" % cn
             division_title = re.sub(r"^C\d+\s*·\s*", "", line[3:].strip())
             rows.append('<div class="row division-title" title="%s">'
-                        '<span class="addr sec">C%d</span><b>%s</b></div>'
-                        % (_e(division_title), cn, _e(division_title.split(" · ")[0])))
+                        '<span class="addr sec">C%d</span><b>%s</b>%s</div>'
+                        % (_e(division_title), cn, _e(division_title.split(" · ")[0]),
+                           scratch_control_html("section", current_section,
+                                                scratch_latest.get(("section", current_section)),
+                                                read_only=read_only)))
             continue
         if line.startswith("### "):
             _flush_paragraph()
@@ -2727,6 +2750,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         )
 
     _flush_paragraph()
+    rows.append(scratch_assets_html()) if not read_only else None
 
     # ── the join runs BOTH ways ────────────────────────────────────────
     # Bullet → disk catches "we promised a display and built none". Disk →
@@ -3224,16 +3248,24 @@ class OutlineMixin:
 
     # ---- POST /_board/outline — the shell's write() twin ---------------
     def plug_outline(self, p):
-        """Register the live tab; Draft Space itself never writes.
+        """Register the live tab; Scratch is its only Draft write.
 
         The normal plugin write remains a no-op URL registration for the shell.
-        Legacy editor actions are rejected at the server boundary. Markdown and
-        Result changes belong to their owning Page/Run workflow.
+        `action: scratch` writes the human Scratch registry into the selected
+        Outline Markdown and creates its paired Page Run. Feedback remains a
+        historical Run-space record, but Draft no longer exposes a comment
+        composer.
         """
         got = self.target(p)
         if got[0] is None:
             return None, got[1]
         action = p.get("action")
+        if action == "scratch":
+            f, board = got
+            read_only = getattr(getattr(self, "server", None), "read_only", False)
+            return save_scratch(Path(board) / f, p, read_only=read_only)
+        if action == "feedback":
+            return None, "Draft comments are removed; use Scratch Mode"
         if action in {"edit-preview", "edit-bullet", "append-bullet"}:
             return None, "Draft Space is read-only; edit Markdown through the owning Page workflow"
         paragraph = p.get("paragraph")

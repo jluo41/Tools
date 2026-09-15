@@ -1,8 +1,8 @@
 # Page Run · interactive writing
 
-This is the canonical **Page Run**: the human-feedback execution profile of
+This is the canonical **Page Run**: the human-interaction execution profile of
 `haipipe-page-workflow`, not a
-new Page phase, plugin, or background service. Use it when a person is shaping,
+controller label, plugin, or background service. Use it when a person is shaping,
 drafting, or revising a Page with the agent. It may start before Shape approval
 and before evidence is ready. Published Content still has its existing gates.
 For the fused Structure Run, also load `structure-run.md`: SHAPE and SURVEY
@@ -34,6 +34,7 @@ imported with a draft Shape. RP allocation is Page-local and type-explicit:
 | IDs | Scope | What the Run settles |
 |---|---|---|
 | `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, Mermaid map, and the frozen `P01..PN` index; no adopted prose or material evidence execution |
+| `rp-scratch-NN_<target>` | Human Scratch capture | rough thinking for one Section (`C1`), Subsection/paragraph group (`C1.P1`); B/symbol rows are not targets; one open capture closes only after a human Summary |
 | `rp-sec-NN` | Section-level | One named Section drafting/revision round and its candidate, review/rating, diagnosis, revision, and report |
 | `rp-para-NN_Pxx[-Pyy]` | Paragraph-level | One fixed paragraph or contiguous paragraph group, such as `P03–P05` |
 
@@ -42,8 +43,10 @@ It may contain many Steps while the map, Bullets, roles, and evidence routes
 are being settled. Several people share this Run: record `participants` on the
 Run and `contributors` on each Step; joining the review does not allocate a
 new RP. `rp-struct-02` and later ids are optional independent post-closure
-structural goals, not separate Survey or Mermaid Runs. Only after the
-Structure contract is closed may the workflow propose Section Runs in
+structural goals, not separate Survey or Mermaid Runs. Scratch is available as
+a small human planning capture once the selected Outline exists; it does not
+write `Draft:` prose or bypass later Structure or evidence gates. Only after
+the Structure contract is closed may the workflow propose Section Runs in
 `rp-sec-NN` or paragraph Runs in `rp-para-NN_Pxx[-Pyy]`.
 
 For Section-level writing, one complete draft → review/rating → diagnose →
@@ -53,8 +56,8 @@ self-acceptance. A later independently commissioned Section drafting/revision
 session—such as after a substantial structure change—gets a new `rp-sec-NN`
 Run. Within the same commissioned round, later feedback appends another Step.
 
-The three RP kinds are sibling Page Runs; structure, Section, and paragraph
-Runs are not children of one another. For paragraph-level writing, keep the
+The four RP kinds are sibling Page Runs; structure, Scratch, Section, and
+paragraph Runs are not children of one another. For paragraph-level writing, keep the
 paragraph or contiguous range fixed. A
 later revisit of that same target normally reopens the same Run in a new
 Version; a materially different target or goal gets a new `rp-para-NN` Run.
@@ -73,7 +76,9 @@ only unallocated candidates. Never renumber or silently redefine an allocated
 Run.
 
 Use `family: page`, `operation: interactive-writing`, and
-`interaction: human-feedback`. Allocate `rp-struct-01` first, then use the
+`interaction: human-feedback` for prose review/writing. A Scratch ticket also
+uses `mode: scratch`, `target_scope: section|subsection|paragraph`, and
+`interaction: human-scratch`. Allocate `rp-struct-01` first for structure, then use the
 next free identity whose kind matches the selected scope. Semantic names belong
 in Goal, not in the identity. Never rename a Task/Discovery Run to an RP, and
 never consume its `rNN` counter when allocating a Page Run. Reject an identity
@@ -118,6 +123,7 @@ independently commissioned. A routine build need not become a ceremonial Run.
 │   └── <stem>-evidence-items.md     requirements and Supporting/Local graph
 ├── runs/rp-struct-01.md             initial Structure Run: SHAPE + SURVEY
 ├── runs/rp-struct-NN.md             structure/Bullet refinement Run
+├── runs/rp-scratch-NN_<target>.md   human Scratch capture Run
 ├── runs/rp-sec-NN.md                Section Run
 ├── runs/rp-para-NN_Pxx[-Pyy].md     paragraph Run
 └── results/<same-run>/
@@ -132,6 +138,17 @@ Markdown records written by the skill's agent, **not a newly implemented CLI,
 automatic chat recorder, or UI approval control**. Existing source writers and
 their concurrency checks remain in force. Never claim automatic capture of an
 unread chat or of feedback from a disconnected session.
+
+One browser surface can capture human thinking: Draft Space's Scratch Mode
+(`haipipe-plugin-outline` §✍️). A small `+` targets a Section, Subsection, or
+whole paragraph group; B/symbol rows have no Scratch control. It writes the rough note to the selected Outline's `##
+Scratch` registry while creating/updating the paired Scratch Run. `Save`
+leaves the Run open. `Finish Scratch` is the human exit Gate: it requires a
+non-empty Summary, writes `Human confirmed the Scratch Summary.` to the Result,
+and closes the Run. A closed Scratch Run is immutable; later thinking starts a
+new Scratch Run. This capture never edits `Draft:` prose. Ordinary feedback
+still enters a Page Writing Run as a pending `### Human feedback` Step, but it
+is not a Draft-space composer.
 
 ## ⚡ Fast foreground rule
 
@@ -264,6 +281,11 @@ the whole Run, Shape or Page. An explicit “P01 is settled; revise P02” accep
 only. Keep accepted P01 byte-for-byte unchanged while revising P02. Reopen P01
 only on an explicit scoped request; record the prior accepted snapshot and the
 reopening quote. Do not silently clear its acceptance because evidence changed.
+
+Acceptance is the Run's human exit Gate, not a separate Run. The route is
+`SELF` for another Step, `NEW_VERSION` for same-target reopening after closure,
+`CLOSE`/the next Run for accepted completion, or `NEW_RUN` when goal/target
+changes.
 
 A Version closes after the current writing episode is recorded as an immutable
 journal. A Section-level Step may therefore complete its full

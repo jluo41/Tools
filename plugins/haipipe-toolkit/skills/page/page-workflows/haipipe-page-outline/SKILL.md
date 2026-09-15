@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-outline
 description: >-
-  The 01 OUTLINE phase of a Board Page. Treats the addressed Bullet as the
+  The 01 OUTLINE compatibility dispatch of a Board Page. Treats the addressed Bullet as the
   primary plan-evidence-content unit:
   two planning cycles, SHAPE (brief → propose → react → revise; name every typed
   Evidence Item, compact Label, and expected ready payload) and SURVEY (inventory zero-to-many
@@ -14,8 +14,8 @@ description: >-
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.45.0"
-  last_updated: "2026-09-14"
+  version: "0.46.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -54,6 +54,13 @@ use only the approved arcs and decisions of declared sibling Pages and the
 Story's Section Narrative row, resolved through Context; it does not import
 sibling prose.
 
+## 🧭 Run Workflow placement
+
+OUTLINE is a Run Workflow dispatch adapter, not a Level-4 Run family. SHAPE
+and SURVEY are internal planning Steps/cycles of the single `rp-struct-01`
+Run Spec/Run Instance. They define the graph and Result contracts; only the
+EVIDENCE Run Specs materialize Supporting or RE Runs later.
+
 The Page workflow gives OUTLINE two planning cycles inside one Structure Run.
 `rp-struct-01` is allocated once and shared by every contributor; a new person
 or a new cycle does not create another planning Run. Its sibling
@@ -69,12 +76,14 @@ Files, Log, and Skills remain separate records on disk and stay off-stage;
 Folder inspection is the only way to open them. None is copied back into
 `page.md`.
 
-Both the main Page and the Outline plan card expose the same compact numbered
-workflow strip: `1 SHAPE  2 SURVEY  3 LAND  4 EMBED`, with the current cycle
-highlighted. Arrow notation describes phase flow, not literal UI separators.
+Both the main Page and the Outline plan card may expose the same compact
+compatibility strip: `1 SHAPE  2 SURVEY  3 LAND  4 EMBED`, with the current
+dispatch highlighted. Arrow notation describes a compatibility route, not
+literal UI separators or separate Run identities.
 The planning surface does not show a Shape-versus-Content mismatch alarm;
 Content may correctly be empty before EMBED/CONTENT. Any structural mismatch
-that matters is evaluated by the owning phase's checker at its boundary.
+that matters is evaluated by the owning Run Spec's exit gate or Workflow
+Runtime checker at its boundary.
 
 ```text
 OUTLINE part
@@ -215,7 +224,7 @@ Q        what will this page say, division by division, bullet by bullet;
          come from?
 READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
          (open rows) · outline/<stem>-evidence-items.md (the authored Item
-         contract) · the owning workflow phase's outline policy · the page · the current plan ·
+         contract) · the owning Run Workflow/Run Spec outline policy · the page · the current plan ·
          the project's Execution/Discovery Run inventories (SURVEY only) ·
          outline/<stem>-context.md · declared sibling Pages' approved arcs and
          decisions + the Story Section Narrative row through Context · outline/skill/<stem>.md when present
@@ -242,13 +251,13 @@ RECEIPT  §🧾, one block per pass, `cycle: SHAPE | SURVEY`; field law:
 
 ## ⓪ Boot · load little, trust the plan
 
-- **Load**: this brief, the owning workflow phase's outline policy (`fixed` lists the
+- **Load**: this brief, the owning Run Workflow/Run Spec outline policy (`fixed` lists the
   divisions · `grammar` fixes a first-word set and an order rule · `resolved`
   points at a source outside the type · no key means the base section order),
   `ref/plan-grammar.md`, the page, the generated Context record, and the other
   process records under `outline/`. A missing, stale, or conflicting required
   Context row routes to CONTEXT before SHAPE or SURVEY continues. The
-  policy sits in the phase skill's contract, which the Skill
+  policy sits in the Run Spec owner's contract, which the Skill
   tool strips: read the file's first 20 lines with the Read tool. Read the
   page once, with the Read tool; a page piped through `cat` into a persisted
   output is read twice.
@@ -270,7 +279,7 @@ BOTH sides do; it ends when the shape is agreed, never earlier.
 1 BRIEF     the person states the page's argument in a few lines: what this page must argue
 2 PROPOSE   the AI writes plan v0.1 from the brief + routed advisor feedback +
             declared sibling Pages' approved arcs/decisions + Story Section row + owning
-            phase policy + venue; the log is history, never a Shape authority;
+            Run Spec policy + venue; the log is history, never a Shape authority;
             every owed thing is a named typed Evidence Item with Label + Expected + Accept;
             the Outline producer writes the complete `P01..PN` Mermaid Structure and Outline Bullets into the shared `rp-struct-01` Structure Run, including one contextual Role tag on every proposed Bullet
 3 REACT     the person reads the rendered plan on the 🧭 tab: ticks, comments, redirects
@@ -313,7 +322,11 @@ on the 🧭 tab. "Draft" and "Brief" are not cycle names: candidate drafting may
 SHAPE inside the interactive Writing Run; Brief supplies its input. Published
 Content remains a later adoption authority.
 
-The live Draft Space is read-only. Page/Run workflow writers provide the
+The live Draft Space's Table and Reading views are read-only. Scratch Mode is
+the one bounded human-thinking capture surface: a small `+` at Section,
+Subsection, or whole paragraph-group scope writes only the selected Outline's
+`## Scratch` registry and its paired `rp-scratch-NN_<target>` receipt. It does
+not edit `Draft:` prose. Page/Run workflow writers provide the
 bounded SHAPE hand-edit path: they may revise one Bullet; additions are made
 through Markdown or chat, not a `+ Bullet` UI control. The first write
 against an approved plan creates the next unapproved Shape version and leaves
@@ -360,9 +373,9 @@ targets. A Paper Section uses the tools selected by `haipipe-paper-section`;
 other Pages use their own owner's policy. A target without a declared or
 measured authority is `not specified`, never recalled from memory.
 
-### ② Plan · the owning phase gives the words, this pass gives the argument
+### ② Plan · the owning Run Spec gives the words, this pass gives the argument
 
-- **Read the phase policy first.** `fixed`: fill the listed divisions, add none, drop
+- **Read the Run Spec policy first.** `fixed`: fill the listed divisions, add none, drop
   none. `grammar`: choose how many of each first word, write the free title
   after it. `resolved`: resolve the source the type names; a missing source
   is a hole, never a licence to invent a shape or copy a sibling's.
@@ -648,7 +661,7 @@ contract permits it. Record that authority and keep the route labelled
   `registered`. Changed target/input/acceptance needs a new designed route.
   Supporting `new-run`, `new-task`, `new-job`, and `new-block` routes remain
   inventory findings and do not invent an external `rNN`. An owner-permitted
-  reservation remains a plan; LAND is the first phase allowed to create its Ticket.
+  reservation remains a plan; LAND is the first Run Spec allowed to create its Ticket.
   There is no `found`, `person`, or `none` action.
 - **Citations use the same graph.** A `CITE` item may reuse or commission a
   Discovery Run, then its local Page Evidence Item Run produces the focal,
@@ -704,7 +717,7 @@ SURVEY route ambiguous                         OUTLINE / SURVEY
 SURVEY Decide open without durable policy      HOLD at OUTLINE / SURVEY
 SURVEY every make graph classified + allowed  EVIDENCE / LAND
 SURVEY item cannot be specified truthfully    SHAPE, naming item and target bullet
-owning phase policy refuses the shape         fix the plan, unless the mismatch is a real
+owning Run Spec policy refuses the shape       fix the plan, unless the mismatch is a real
                                               finding against that policy
 ```
 

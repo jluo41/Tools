@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1 — 2026-09-15
+
+- Mark `/haipipe-task insight` as the behavior-identical compatibility alias
+  for the unified `/haipipe-insight task` entry.
+
 ## 1.2.0 — 2026-09-13
 
 - Establish `haipipe-task` and `haipipe-page` as peer top-level doors over one

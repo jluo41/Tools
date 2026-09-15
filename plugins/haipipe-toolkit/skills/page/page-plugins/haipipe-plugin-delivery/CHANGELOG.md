@@ -1,5 +1,9 @@
 # Changelog · haipipe-plugin-delivery
 
+## 0.6.0 — 2026-09-15
+- Bind each RD to a delivery Run Spec/Run Instance while leaving cross-Run
+  routing and Page completion with the Workflow Runtime.
+
 ## 0.5.0 — 2026-09-13
 - Bind each delivery target/version to a Page `RD` Delivery Run while keeping
   the single Delivery tab and Page CHECK close gate.

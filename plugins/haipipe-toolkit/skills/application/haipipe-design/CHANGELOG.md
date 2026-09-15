@@ -2,11 +2,15 @@
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
-- 0.4.0 current (260913, user ruling): the current clean-break architecture and
+- 0.4.0 current (260915, user ruling): version remains exactly 0.4.0. Replace
+  Design phases with a directed four-Run graph (`commission → generate → verify
+  → adopt`), declare Plan/Create/Review/Runtime/Delivery Workspaces, and count
+  human decision Runs when they have bounded Tickets, Results, receipts, and
+  independent closure. The current clean-break architecture and
   field-test repair remain pre-1.0. The later-looking labels recorded below
   were never user-approved releases and are retracted as version assignments;
   their notes remain only as development provenance. Future `1.0.0+` requires
-  explicit user approval.
+  explicit user approval. No compatibility path was added.
 
 - 4.0.1 (260913): field-test repair. Unsupported Design bytes are never called
   read-only/readable/migration history; stop content inspection at a decisive

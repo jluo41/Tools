@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-content
 description: >-
-  The 03 CONTENT phase of a Board Page. After all planned Page Runs and required
+  The 03 CONTENT compatibility dispatch of a Board Page. After all planned Page Runs and required
   evidence Task Results complete, WRITE adopts human-agreed prose in one Page-level pass,
   integrates authorized evidence, builds declared delivery projections, and
   pre-checks one exact version before independent CHECK. Interactive drafting
@@ -10,8 +10,8 @@ description: >-
   single-paragraph compatibility path. Trigger: page content, adopt agreed text,
   CONTENT phase, WRITE cycle, publish page, build page, /haipipe-page-content.
 metadata:
-  version: "0.15.0"
-  last_updated: "2026-09-14"
+  version: "0.16.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md
 ---
 
@@ -23,6 +23,15 @@ Folder-owning workflow or canonical family skill, exact Page Face owner,
 selected integration/delivery workers. Load an owner only once when it fills
 both roles. For `folder-kind: task`, load the reader-facing
 `haipipe-page-task` companion for its display/form contract.
+
+## 🧭 Run Workflow placement
+
+CONTENT is the Page release/adoption Run Spec owner. It consumes closed
+writing Results and ready Evidence Results, then materializes the declared RD
+delivery Run Specs. Adoption, build, and pre-check are internal Steps of this
+bounded release work; they do not mint a replacement Run for each paragraph.
+The Workflow Runtime and the independent CHECK completion gate decide whether
+the Page release can close.
 
 ## Which request is this?
 
@@ -63,7 +72,7 @@ and required Evidence Result is complete. Do not send the person back to OUTLINE
 solely because a historical `approved:` field still shows `⬜`; record the exact
 instruction in the CONTENT receipt and suggest the next step after this pass.
 
-## WRITE · four movements, not four phases
+## WRITE · four movements, not four Run identities
 
 ```text
 Adopt       accepted Writing Run/Version/Step → exact Page prose

@@ -1,85 +1,136 @@
-# Design Run Profile · v4
+# Design Run Profile · v0.4.0
 
-ALLOWED: family `design`; operations `generate` and `verify`. `compose`,
-`brainstorm`, `theory-driven`, `challenge`, and
-`revise` are generation modes; revise pins frozen base + feedback.
+## Allowed Run Types
 
-TARGET: one independently closable unit (single, sequence, or candidate set),
-or one independently closable verification over named DUs. Count N generation
-+ J verification Runs. Do not count an umbrella, signature, render, Page Run,
-workflow pass, model call, or internal draft.
+| Run Type | Operation | Actor mode | Target |
+|---|---|---|---|
+| `Design.commission` | `commission` | human | one exact Commission/config version |
+| `Design.generate` | `generate` or `revise` | agent | one released unit/set/sequence |
+| `Design.verify` | `verify` | agent | named immutable generation Result(s) |
+| `Design.adopt` | `adopt` | human | exact verified candidate hashes |
 
-TICKET: caller-authored
-`<DS>/runs/<rdNN_generate|verify_slug>.yaml`, conforming to the unit worker's
-`references/unit-contract.md`. `haipipe.design-ticket/v2` is the only accepted
-schema. A YAML Ticket is a declared agent dialect, never a shell script.
+Expected actual Design Runs are `1 + N_generate + J_verify + 1`. Count only
+allocated Tickets with runtime receipts. Do not count Workflow, Workspace,
+Steps, calls, drafts, renders, Results, projections, or retry attempts.
 
-INPUTS: the Ticket pins config, immutable release receipt, and exact file
-references/hashes. Defaults are compiled before freeze. New v2 configs include
-one `design_intent` bet. A source role does not elevate authority. A static
-Brief, signed W handoff, or template has no invented Supporting Run id.
-A real upstream Run retains its complete native identity. An `rpNN` Page Run is
-never Design evidence or authority; preserved candidate feedback from it may be
-pinned only with role `feedback` to a new revise Run.
+## Identity
 
-WORKER: `haipipe-design-unit`, loaded by path
-`../../haipipe-design-unit/SKILL.md` from this reference's
-directory. The existing designer agent is a thin dispatcher into that worker.
+```text
+<DS>/runs/rdNN_commission_<slug>.yaml
+<DS>/runs/rdNN_generate_<slug>.yaml
+<DS>/runs/rdNN_verify_<slug>.yaml
+<DS>/runs/rdNN_adopt_<slug>.yaml
 
-RESULT: `<DS>/results/<Ticket-stem>/result.yaml`, `checks.yaml`, operation
-payload, and caller-owned `runtime.yaml`. v2 Tickets produce v2 Results.
-An allocated Ticket immediately owes planned runtime. New Result paths are
-otherwise empty unless truthfully resuming one incomplete attempt. Completed
-Results are immutable.
+<DS>/results/<same-stem>/
+```
 
-ACCEPT: Ticket gate + Result integrity + substantive commissioned checks.
-Generate requires pass. Verify requires complete coverage; pass or fail may be
-an honest completed judgment, unresolved is not. Self-check is never
-independent verification.
+`haipipe.design-ticket/v2` and its paired v2 Result/receipt are the only
+accepted Design schemas. Ticket and Result stem are one Run identity.
 
-PROMOTION: the caller records human adoption of exact DU/member hashes,
-independent verification Results, preview manifest, and handoff versions. The
-Design Page's owner gate consumes this same receipt; Page CHECK verifies the
-projection and never duplicates the candidate decision. Selection, adoption,
-Page release, and ordinary rendering mint no Design Run.
-
-REOPEN: changed config, source, criteria, candidate content, target, or feedback
-gets a new Run and may name `supersedes`. Preserve the old Result and decision.
-An unchanged failed attempt may resume with an append-only attempt trail.
-
-## Caller runtime receipt
+## Common required fields
 
 ```yaml
-run: rd01_generate_sms
-family: design
+schema: haipipe.design-ticket/v2
+run: rdNN_<operation>_<slug>
+run_type: Design.<operation>
+operation: commission | generate | verify | adopt
+target: <bounded target>
+actor: {mode: human | agent, owner: <literal owner>}
+action: <decision or execution action>
+inputs: [<immutable path/hash entries>]
+entry_gate: <open or testable condition>
+exit_gate: {mode: human | automatic | agent | hybrid, assertion: <close rule>}
+routes: {<outcome>: <next Run Spec | CLOSE | HOLD>}
+result: results/<same-stem>/
+receipt: results/<same-stem>/runtime.yaml
+```
+
+Inputs may be empty only for a new Commission whose exact target/config is
+fully inside the Ticket. Exit Gate, route outcomes, and receipt are required.
+
+## Commission decision Run
+
+The human actor decides `release` or `hold` for one exact Commission/config
+fingerprint. The Result is `decision.yaml` with actor, exact words, decision,
+target, input hashes, and timestamp. `release` routes to Generate; `hold`
+routes to HOLD. The decision itself is independently closable, so this is a
+Run. Each comment/click leading to it is a Step, not another Run.
+
+## Generate Run
+
+Modes include `compose`, `brainstorm`, `theory-driven`, `challenge`, and
+`revise`; revise pins frozen base + feedback. The worker is
+`haipipe-design-unit` through the existing designer dispatcher.
+
+The Ticket pins config, Commission decision receipt, exact file references and
+hashes, defaults, and one `design_intent` bet. The Result folder contains
+`result.yaml`, `checks.yaml`, operation payload, and caller-owned
+`runtime.yaml`. Completion requires integrity and substantive self-checks.
+
+## Verify Run
+
+The Ticket pins exact generation Results/hashes, criteria, and an independent
+reviewer context. The Result contains complete coverage and a pass/fail/
+unresolved verdict. Pass and fail can be honest terminal judgments; unresolved
+is a HOLD. Verification never edits the candidate.
+
+## Adopt decision Run
+
+The Ticket pins exact candidate hashes, verification Results, preview manifest,
+and handoff versions. The named human records `adopt`, `decline`, `revise`, or
+`hold` in `decision.yaml`. Adopt/decline route to CLOSE, revise to a new
+Generate Run, hold to HOLD. The exact adoption receipt is reused by the Design
+Page owner gate; Page CHECK verifies and never duplicates the decision.
+
+## Runtime receipt
+
+```yaml
+run: rd03_generate_sms
+run_type: Design.generate
 operation: generate
 target: One SMS
+actor: {mode: agent, owner: designer-context-01}
+action: generate
 status: complete
-ticket: runs/rd01_generate_sms.yaml
-result: results/rd01_generate_sms/
+ticket: runs/rd03_generate_sms.yaml
+result: results/rd03_generate_sms/
 inputs:
-  - {path: scripts/config/rd01_generate_sms.yaml, sha256: <config-hash>}
-  - {path: outline/decisions/release-01.yaml, sha256: <release-hash>}
-ticket_sha256: <hash-of-ticket>
+  - {path: scripts/config/rd03_generate_sms.yaml, sha256: <hash>}
+  - {path: results/rd01_commission_sms/decision.yaml, sha256: <hash>}
+entry_gate: {status: passed, assertion: Commission released}
+exit_gate: {status: passed, assertion: integrity and self-check pass}
+route: verify
+terminal_outcome: pass
 worker: {kind: skill, name: haipipe-design-unit, actor: designer-context-01}
-started_at: <ISO timestamp>
-finished_at: <ISO timestamp>
+started_at: <RFC3339 timestamp>
+finished_at: <RFC3339 timestamp>
 failure: null
 supersedes: null
 ```
 
-`inputs` covers config, release, all declared inputs, and target manifests.
-Actor/context provenance must be honest. Pin an immutable decision receipt,
-not a growing log. The worker cannot advance runtime or human authority.
+Actor/context provenance must be honest. The worker may write only its paired
+Result; the caller owns runtime and human authority.
 
-Audit a native Folder with:
+## Reopen and retry
+
+A changed target, config, source, criteria, candidate content, decision set, or
+post-closure feedback creates a new Run and may name `supersedes`. Preserve the
+old Result and decision. An unchanged failed attempt may append an attempt
+trail under the same identity.
+
+## Audit
 
 ```bash
 python3 <haipipe-design-unit>/scripts/check_unit.py --folder <DS>
 ```
 
-The Runs presenter projects Design identities under the Task Run lane. It does
-not rename them Paper Runs or consume the Page's `rpNN` sequence.
+Also verify that every Design Run resolves to one Workflow Run Spec, legal
+Gate/Route outcomes, paired v2 Result, and runtime receipt; Runtime Workspace
+cards must preserve the same ids.
 
-The profile rejects v1 Ticket/Result schemas, `rNN_design_*`, D0–D5 folders,
-`design/DU*/`, and PageX. There is no compatibility or migration route.
+## Clean break
+
+Reject v1 Ticket/Result schemas, `rNN_design_*`, D0-D5/GD0-GD6,
+`design/DU*/`, PageX, and previous phase-shaped Design folders. Stop at the
+first decisive unsupported marker. There is no read, compatibility, or
+migration route.

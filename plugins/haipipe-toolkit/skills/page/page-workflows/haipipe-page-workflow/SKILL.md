@@ -1,45 +1,99 @@
 ---
 name: haipipe-page-workflow
 description: >-
-  The Page workflow router: 00 CONTEXT/PREPARE, 01 OUTLINE/SHAPE+SURVEY,
-  02 EVIDENCE/LAND+EMBED, 03 CONTENT/WRITE, and 04 CHECK. Owns persistent
-  human-feedback Writing Runs across planning and prose iteration. It selects the
-  exact phase skill, Page Face owner, policy, Outline workspace, Level-4 Run graph,
-  legal backward route, and auditable receipt for one persistent Page. Use to
+  The Page workflow controller: 00 CONTEXT/PREPARE, 01 OUTLINE/SHAPE+SURVEY,
+  02 EVIDENCE/LAND+EMBED, 03 CONTENT/WRITE, and 04 CHECK are dispatch labels
+  over a Run Spec × Workspace graph. It owns persistent fixed-scope
+  human-interaction Writing Runs, including Scratch capture, across planning and prose iteration. It selects the
+  exact Run Workflow/Run Spec owner skill, Page Face owner, policy, Outline workspace, Level-4 Run
+  Specs, legal routes, and auditable receipts for one persistent Page. Use to
   design, run, resume, or audit the complete Page lifecycle. Trigger: Page
-  workflow, workflow table, run a page, page phase, SHAPE SURVEY LAND EMBED,
+  workflow, workflow table, run a page, Run Spec, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.57.0"
-  last_updated: "2026-09-14"
+  version: "0.59.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-page-workflow · route one persistent Page by authority
 
-Load every Page phase through one canonical order:
+## 🧬 Canonical ontology
+
+The Page workflow uses the neutral Run ontology. A **Workflow** owns the
+directed graph compiled from Run Spec Routes, entry rules, and legal terminal
+rules; it is not a second Route authority. A **Run Type** supplies reusable defaults and the allowed
+action/result grammar. A **Run Spec** owns the bounded goal/target, actor,
+gates, routes, skill bindings, and Workspace bindings. A **Run Instance** owns
+the stable id, status, result, receipt, and attempt history. A **Workspace**
+owns presentation and interaction only. A Step is an internal action inside
+one Run and is never a workflow row.
+
+Fixed-scope Page writing is one persistent Run. Human feedback is an internal
+Step. Reopening the same target and goal creates a new Version in that Run;
+changing the goal or target is `NEW_RUN`. Acceptance is the Run exit gate,
+subject to the declared dependency and mechanical close semantics.
+
+The four interactive routes are:
+
+```text
+SELF / next Step     same Run and current Version
+NEW_VERSION          same Run, same target and goal, new Version
+CLOSE / next Run     close this Run, then select the next bounded scope
+NEW_RUN              new commissioned Run for a changed goal or target
+```
+
+These transitions do not create extra Workflow Table rows. The fixed-scope
+writing behavior remains one parameterized Run Spec row: feedback appends
+Steps, reopen appends a Version to the same Instance, and `NEW_RUN` allocates a
+second Instance under that row unless the Workflow definition truly changes.
+
+Human, automatic, agent, and hybrid are valid gate and route modes.
+Inputs and dependencies may be empty or omitted. Entry defaults to `open`;
+exit may inherit a Run Type default, but its close semantics are required.
+Even when a Result payload is optional, a terminal outcome and durable receipt
+are required.
+
+The formal controller/API serialization still carries `phase`, `cycle`, and
+`next_cycle` fields. They are controller dispatch/progress labels only, never
+semantic workflow authority, Run Specs, or Steps. The `route`, `reason`,
+artifacts, evidence, findings, and human-gate pointer in each receipt remain
+the truthful audit of the controller action.
+
+## 🧭 Workflow Runtime boundary
+
+One automated Page workflow pass is one Workflow Runtime execution, not a
+Page Run. The canonical aggregate identity is `workflow_runtime_id`; the
+existing `run_id` packet/result field remains a low-level adapter alias and
+must equal it for new packets. `rp-*` identities remain reserved for
+independently commissioned interactive Page Runs. Gate and route evaluations
+are Runtime control records; RP/RE/RD children keep their owner-native ids.
+
+Load every Page controller label through one canonical order:
 
 ```text
 haipipe-page
   → haipipe-page-workflow
-  → current phase skill
+  → current Run Workflow / Run Spec owner skill
   → Folder-owning workflow or canonical family skill
   → Page Face owner skill
-  → phase references and narrative/style policy
+  → Run Spec references and narrative/style policy
   → haipipe-page/ref/page-run-families.md when naming RP, RE, or RD
   → ref/structure-run.md when allocating or resuming the Page Structure Run
-  → haipipe-run + selected workers, only when this phase commissions Runs
+  → haipipe-run + selected workers, only when this controller label
+    materializes Run Instances
 ```
 
 Resolve the Folder owner and Page Face owner before acting. A Page Face owner
-is the exact workflow-phase skill, canonical family skill, or unmigrated Page
+is the exact Run Workflow/Run Spec owner skill, canonical family skill, or unmigrated Page
 Type skill that owns this Folder's readable contract; load it only once when it
 is also the Folder owner. Load
-only the current phase references and the workers for Runs it actually
+only the current Run Spec references and the workers for Run Instances it actually
 commissions. For CONTEXT, OUTLINE, and EVIDENCE those references live under
 `haipipe-plugin-outline`; the Page surface has already installed that plugin
-as the shared presenter. A phase skill may abbreviate this chain, but it may
-not reorder authority or omit the Page Face owner.
+as the shared presenter. A low-level adapter label may abbreviate this chain, but it may
+not reorder authority or omit the Page Face owner. The label does not become a
+second semantic authority beside the Workflow and its Run Specs.
 
 ## ⚡ Fast feedback Step is the default
 
@@ -54,13 +108,15 @@ analysis belongs in this path. A wording-only Step never edits the Page source,
 delivery, or plan metadata. If a required input is absent, return one blocker
 and stop instead of searching the whole repository.
 
-For an in-place Folder, the authoritative `workflow/phase.yaml` resolves the
-owning workflow and Folder kind before Page frontmatter or legacy names. The
-current evidence graph never creates a new `probe/` lane; an old lane is
-read-only migration input. Legacy outbound-card history is read-only.
+For an in-place Folder, the physical controller record `workflow/phase.yaml`
+resolves the owning workflow and Folder kind before Page frontmatter or legacy
+names; its filename does not create Phase authority. The
+current evidence graph never creates a new `probe/` lane; a stored old lane and
+outbound-card history are historical read-only input.
 
-The full canonical table is `ref/workflow-table.md`; the compact phase cards
-are `ref/phase-cards.md`; the executable packet/receipt law is
+The Run Spec × Workspace map is summarized in the middle of this file;
+`ref/workflow-table.md` and the physically named `ref/phase-cards.md` are
+current Run Spec projections. The executable packet/receipt law is
 `ref/page-run-contract.md`.
 
 ## 🤝 Interactive writing first
@@ -72,6 +128,7 @@ explicitly:
 
 ```text
 rp-struct-NN          Page Structure Run: SHAPE + SURVEY
+rp-scratch-NN_<target> Human Scratch capture: Section/Subsection/paragraph
 rp-sec-NN             Section-level writing
 rp-para-NN_Pxx[-Pyy]  Paragraph-level writing
 ```
@@ -88,6 +145,11 @@ each Step, and do not create a child Run per person. The full contract is
 `rp-para-NN_Pxx[-Pyy]`.
 `rp-struct-02` and later ids are reserved for a genuinely independent
 post-closure structural goal, not for a Survey pass or a new participant.
+Scratch is available once a selected Outline exists. It records a person's
+rough thinking at Section (`C1`), Subsection/paragraph group (`C1.P1`); the B
+rows are reading material only. Save keeps the Scratch Run open,
+and a human-confirmed Summary closes it. Scratch does not edit `Draft:` prose
+and does not replace the later Structure, Section, or Paragraph Run.
 Human feedback advances Steps inside the selected Run's Version. A chat turn
 or review window alone does not create another Run. A later independently
 commissioned Section drafting/revision session does create a new `rp-sec-NN`
@@ -188,8 +250,11 @@ uses agent-authored Markdown records; it adds no runtime service or UI controls.
 
 ## ⚡ The result
 
-One Page has five numbered phases. The three middle phases make the Page; the
-front phase prepares their context and the last phase judges their result:
+One Page Run Workflow is a directed graph of bounded Run Specs. The five labels
+below are retained as a compact controller/API adapter projection; they
+dispatch Run Specs and Workspaces, but they are not five Level-4 Run kinds or a
+second semantic authority. A concrete Page may add, omit, branch, or repeat
+Run Specs according to its declared Workflow Definition:
 
 ```text
 00 CONTEXT     haipipe-page-context     PREPARE · Collect, Resolve, Freeze
@@ -199,12 +264,13 @@ front phase prepares their context and the last phase judges their result:
 04 CHECK       haipipe-page-check       CHECK · whole-Page close gate
 ```
 
-`Outline` and `Content` align with the Page's two substantive structures:
+`Outline` and `Content` align with the Page's two substantive Workspace
+projections:
 Outline holds the plan and the frequently revised candidate prose; Content is
 the adopted Page text. Draft and Revise are writing movements, not separate
-phases. Interactive Steps and Page Run closures remain in Outline; after all
-planned Page Runs and their required evidence are complete, one Page-level
-CONTENT pass performs adoption and delivery.
+Run Specs. Interactive Steps and Page Run closures remain in Outline; after all
+planned Page Run Instances and their required evidence are complete, one
+Page-level CONTENT controller pass performs adoption and delivery.
 
 Every user-facing completion after a Page-changing action follows
 `../../haipipe-page/ref/user-check-packet.md`. Routine writing returns the
@@ -214,7 +280,7 @@ Formal delivery also provides current evidence surfaces and the Page-level PDF. 
 `outline/evidence/bibex/` and `delivery/latex/` lanes are eligible. The workflow receipt remains the audit record; it is not the primary
 user-facing answer.
 
-## 🧭 One Outline plugin serves three phases
+## 🧭 One Outline plugin serves three Workspaces
 
 CONTEXT, OUTLINE, and EVIDENCE all use `haipipe-plugin-outline`:
 
@@ -227,10 +293,10 @@ haipipe-plugin-outline
 
 This is shared storage and presentation, not shared semantic authority. Context
 records remain off-stage and are opened through Folder inspection. Never create
-`haipipe-plugin-context` or a second Evidence plugin. The phase skills write;
+`haipipe-plugin-context` or a second Evidence plugin. The Run Spec owner skills write;
 the plugin reads and presents.
 
-## 🔁 Complete flow
+## 🔁 Controller-label flow
 
 ```text
 CONTEXT/PREPARE
@@ -250,35 +316,44 @@ OUTLINE/SHAPE ── evidence owed ──▶ OUTLINE/SURVEY
                                       └─ route to the authority that owns a finding
 ```
 
-The flow is a routing grammar, not a conveyor belt. CONTEXT reopens when its
-authorities change; SHAPE and SURVEY may repeat; LAND works item graphs in
-parallel; EMBED returns a `v0.*` fold to SHAPE and a `G>=1` evidence fold to
-CONTENT; CONTENT may loop; CHECK may route to
-any earlier owning phase.
+The flow is a controller routing grammar, not a conveyor belt. CONTEXT reopens
+when its authorities change; SHAPE and SURVEY may repeat inside the Structure
+Run; LAND works item graphs in parallel; EMBED returns a `v0.*` fold to SHAPE
+and a `G>=1` evidence fold to CONTENT; CONTENT may loop; CHECK may route to
+any earlier authority. The labels shown in this diagram are dispatch/progress
+coordinates only. The Run Spec graph and actual Run Instance receipts decide
+what work exists and whether it can close.
 
-## 📊 Canonical workflow table
+## 📊 Run Spec × Workspace projections
 
-| Index | Phase / cycle | Primary skill | Main L3 write | Level-4 Runs | Exit |
-|---:|---|---|---|---|---|
-| `00` | CONTEXT / PREPARE | `haipipe-page-context` | `outline/<stem>-context.md` | none | context resolved and fresh |
-| `01A` | OUTLINE / SHAPE | `haipipe-page-outline` | `rp-struct-01` Step: plan + Evidence Item specification | same Structure Run; no second Run | approved evidence-aware Shape |
-| `01B` | OUTLINE / SURVEY | `haipipe-page-outline` | `rp-struct-01` Step: Supporting routes + Local Input + indexed RE plan | same Structure Run; no second Run | complete decided Run graph |
-| `02A` | EVIDENCE / LAND | `haipipe-page-evidence` | Tickets, Results, frozen input, bindings | `0..N` Supporting + `1` RE per make-item | ready typed local Results/Cards |
-| `02B` | EVIDENCE / EMBED | `haipipe-page-evidence` | next working plan bindings | none | ready Results folded; `G=0` returns to SHAPE; `G>=1` may route to CONTENT only for a pure evidence revision or an explicit CONTENT instruction after all remaining gates are named |
-| `03` | CONTENT / WRITE | `haipipe-page-content` | all agreed prose → Page Content + RD delivery + adoption trace | enters once all RP Runs and required RE Results are complete | fresh pre-check says ready |
-| `04` | CHECK / CHECK | `haipipe-page-check` | check receipt/findings only | none | CLOSE or a named backward route |
+The detailed map is `ref/workflow-table.md`. It is a Run Spec × Workspace
+projection, not a controller-owned Run inventory. A controller-only row records
+dispatch work without minting a Level-4 Run Instance.
 
-Do not use this compact table for design decisions. Use
-`ref/workflow-table.md`, which also records required inputs, exact skill chain,
-Outline workspace, L3 mutations, L4 cardinality, outputs, and handoffs.
+| Run Spec or controller projection | Run Type | Bounded target / action | Actor | Entry / exit gate | Legal routes | Cardinality | Workspace projection | Controller labels |
+|---|---|---|---|---|---|---:|---|---|
+| controller/context | controller dispatch | resolve Page/Folder identity, policy, requirements, and fresh context | agent / hybrid | entry open; exit requires a resolved Context record or truthful HOLD | SELF / next dispatch, OUTLINE, HOLD | no Run Instance | Folder inspection and off-stage Context record | 00 CONTEXT / PREPARE |
+| rp-struct-01 | page.interactive-writing.structure | whole-Page map, Mermaid, ordered Bullets, paragraph jobs, Point roles, typed Evidence Item decisions | human / agent / hybrid | entry open; exit requires accepted Shape + Survey contract | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | exactly 1 initial Structure Run per Page | Draft, Evidence, and Run Spaces | 01 OUTLINE / SHAPE+SURVEY |
+| rp-scratch-NN_<target> | page.interactive-writing.scratch | rough human thinking for Section, Subsection, or whole paragraph group; no B/symbol target | human | entry open; exit requires a non-empty human Summary | SELF / Save, CLOSE / Finish Scratch, NEW_RUN | 0..N per target | Draft Space Scratch view and Run Space | 01 OUTLINE / SCRATCH |
+| rp-sec-NN | page.interactive-writing.section | one named Section's bounded candidate and review cycle | human / agent / hybrid | entry open; exit requires scoped acceptance and declared dependencies ready | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..S selected Section Runs | Draft Space and Run Space | 01 OUTLINE / SHAPE and 03 CONTENT / WRITE |
+| rp-para-NN_Pxx[-Pyy] | page.interactive-writing.paragraph | one fixed paragraph or contiguous paragraph group | human / agent / hybrid | entry open; exit requires acceptance, settled Bullets, and ready evidence obligations | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..K, 1 <= K <= N | paragraph Draft Space, Evidence Space, Run Space | 01 OUTLINE / SHAPE and 03 CONTENT / WRITE |
+| re-value-NN_<slug>, re-cite-NN_<slug>, re-display-NN_<slug> | page.evidence-item | one focal VALUE, CITE, or DISPLAY Result for one make-item | agent / automatic / hybrid | entry open; exit requires typed Result acceptance and any declared verification | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | exactly 1 Page RE per make-item, plus 0..N Supporting Runs | Evidence Space and paired Run/Result records | 02 EVIDENCE / LAND+EMBED |
+| rdNN_<target> | page.delivery | one declared web, LaTeX, Word, or render delivery target | agent / automatic | entry open; exit requires build receipt and current artifact | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | one per declared delivery target | delivery projection and build receipt | 03 CONTENT / WRITE |
+| controller/check | controller gate | judge one immutable built Page version and route the next authority | fresh agent / hybrid | entry open; exit is CLOSE or a named finding route | CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT, HOLD | no Run Instance | read-only Draft/Evidence/Run views plus check receipt | 04 CHECK / CHECK |
 
-## 🧱 Planning and Runs stay different
+The formal API may serialize the controller labels as phase, cycle, and
+next_cycle. Those names do not change the Run Type, Run Spec, Run Instance, or
+Workspace semantics above.
 
-The Page workflow phase is Level 3 authority. A Level-4 Run is one independently
-closable Ticket → Result attempt:
+## 🧱 Workflow orchestration and Run identity
+
+The Page Run Workflow Definition/Runtime is the orchestration authority. A
+Level-4 Run is one independently closable Ticket → Result attempt. A Run Spec
+is the planned node that gives that Run its bounded target, actor, gates, routes,
+skill binding, and Result contract:
 
 ```text
-CONTEXT      no Run; it resolves planning inputs
+CONTEXT      adapter dispatch; Run Specs resolve planning inputs
 SHAPE        inside shared rp-struct-01; it defines Bullet and Evidence Item contracts
 SURVEY       inside shared rp-struct-01; it inventories/references/reserves the graph
 LAND         Runs exist: Supporting Execution/Discovery/Insight, then one Page RE per item
@@ -345,19 +420,19 @@ The single-paragraph delegated profile remains available when explicitly selecte
 
 ## 🧠 Exact skill routing
 
-For every phase, record exact names rather than generic labels:
+For every Run Workflow dispatch, record exact owner names rather than generic labels:
 
 ```text
 haipipe-page-workflow
-  → current phase skill
+  → current Run Workflow / Run Spec owner skill
   → Folder-owning workflow or canonical family skill
   → exact Page Face owner skill
   → exact narrative/style/outline policy skill, when applicable
-  → haipipe-run + worker skills, only when the phase commissions Runs
+  → haipipe-run + worker skills, only when the Run Spec commissions Runs
 ```
 
-For the first three phases, append the exact
-`haipipe-plugin-outline/ref/...` material contracts needed by the phase; do
+For the first three planning dispatches, append the exact
+`haipipe-plugin-outline/ref/...` material contracts needed by the Run Spec; do
 not append the presenter skill as an execution dependency.
 
 Example for a paper Section Shape:
@@ -391,7 +466,7 @@ and prose requirements; this companion adds no execution or closure authority.
 | all closing rules and human gates pass | CLOSE, from CHECK only |
 | required authority/input cannot safely resolve | HOLD |
 
-Legal current-phase routes:
+Legal adapter routes:
 
 ```text
 CONTEXT  → CONTEXT | OUTLINE | HOLD
@@ -402,8 +477,8 @@ CHECK    → CLOSE | CONTEXT | OUTLINE | EVIDENCE | CONTENT | HOLD
 ```
 
 The EVIDENCE → CONTENT edge is only for a pure EMBED under an approved G>=1
-Shape. Stored retired-phase receipts are read-only input under
-`ref/page-run-contract.md#legacy-compatibility-only`.
+Shape. Stored controller receipts are read-only input under
+`ref/page-run-contract.md#historical-adapter-receipts`.
 
 ## 👷 Actors
 
@@ -448,12 +523,12 @@ Folder-owning workflow. Do not invent a duplicate Page gate.
 
 ## 🔁 Execute one automated Page workflow pass
 
-This bounded controller is for phase dispatch and formal completion, not the
+This bounded controller is for Run Workflow dispatch and formal completion, not the
 human-feedback journal. Its `step`, limits, `HOLD` and `CLOSE` do not count or
 terminate interactive writing Steps/Versions. Finish a chat turn while waiting;
 resume from the Writing Run files when new feedback arrives.
 
-The `/run` spelling is a compatibility command verb. The durable controller
+The `/run` spelling is a controller command verb. The durable controller
 bundle is a **Page workflow pass**, not a Page Run. Reserve the Page Run noun
 for `family: page`, `operation: interactive-writing`, whose Version/Step history
 is owned by the Page and shown in the Page Runs lane.
@@ -461,6 +536,7 @@ is owned by the Page and shown in the Page Runs lane.
 The packet minimally names:
 
 ```yaml
+workflow_runtime_id: <durable aggregate id>
 run_id: <durable id>
 board: <absolute board path>
 page: <board-relative Page path>
@@ -481,7 +557,7 @@ limits:
 Entry rules:
 
 - a new Page begins at CONTEXT;
-- an existing Page with a known stale authority begins at that phase;
+- an existing Page with a known stale authority begins at that dispatch label;
 - an existing Page with unknown next need begins at CHECK, whose judge routes
   it without editing;
 - a Page may skip evidence work only when SHAPE owes no make-item.
@@ -492,9 +568,10 @@ auditor is `../../../board/haipipe-board/src/page_lifecycle.py`.
 
 ## 🧾 Receipts and terminal states
 
-Every attempted phase appends one receipt with phase, cycle, actor, role,
+Every controller dispatch appends one receipt with the serialized `phase`
+RunType label, cycle, actor, role,
 source/render versions, route, reason, artifacts, evidence, findings, and
-human-gate pointer. Phase receipts are workflow audit records; they are not
+human-gate pointer. Dispatch receipts are workflow audit records; they are not
 Level-4 Runs or Results.
 
 Only CHECK may emit `CLOSE`. `HOLD` preserves a named missing input, conflict,
@@ -517,9 +594,9 @@ haipipe-page-workflow/
     ├── interactive-writing-run.md  persistent human-feedback Run protocol
     ├── writing-step-template.md    original input, full output, scoped decisions
     ├── workflow-table.md       canonical design/adoption table
-    ├── phase-cards.md          compact six-field operating cards
+    ├── phase-cards.md          physically named compact Run Spec cards
     ├── ../../haipipe-page/ref/page-run-families.md  RP/RE/RD and evidence bindings
-    ├── page-run-contract.md    packet, receipts, legal routes, compatibility
-    ├── producer-contract.md    shared phase-agent packet and return
+    ├── page-run-contract.md    packet, receipts, legal routes, adapter mapping
+    ├── producer-contract.md    shared Run worker packet and return
     └── measured-cost.md        prior measured dispatch costs
 ```

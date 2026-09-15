@@ -1,6 +1,7 @@
 # `insight` · enter the Task/Insights Board
 
-Use this procedure for `/haipipe-task insight "<topic>" [<board>]`.
+Use this procedure for `/haipipe-insight task "<topic>" [<board>]`.
+`/haipipe-task insight "<topic>" [<board>]` is the compatibility alias.
 
 ## Contract
 
@@ -29,7 +30,7 @@ task execution / discovery work
 3. If one exists, open that Page through `haipipe-page`; never create a near-duplicate because its wording differs.
 4. If none exists, create one `I<NN>-<slug>/` Folder through `haipipe-page`;
    its readable face is `I<NN>-<slug>.md` with `page-type: insight`,
-   `scope: task`, `insight-layout: items-v1`, and `insight-instance:`. Declare
+   `scope: task`, `insight-layout: items-v2`, and `insight-instance:`. Declare
    snapshot inputs and item intent in `workflow/insight.yaml`. Each item has
    its own target and acceptance, not a new Page. Never write `application:`
    or `serves:` here; those fields would commission work, while this Board's

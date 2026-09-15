@@ -1,3 +1,34 @@
+## 0.106.0 · 2026-09-15
+
+- Wire Draft Scratch Mode to Section, Subsection, and whole paragraph-group
+  targets; B/symbol rows remain read-only reading material.
+- Keep the selected Outline Markdown authoritative while storing the Scratch
+  registry beside the plan and the durable receipt under `runs/`/`results/`.
+
+## 0.105.0 · 2026-09-15
+
+- Align the Page entry contract with Run Workflow/Run Spec ownership and keep
+  Draft Space fully read-only; feedback remains inside Page Writing Run Steps.
+
+## 0.104.0 · 2026-09-15
+
+- Add the Draft Space paragraph note thread (JL 260915): a (+) on every `C.P`
+  row opens a folded `💬 Notes` list and composer (`live/outline_feedback.py`).
+  A saved note is appended as a pending-Step `#### Feedback F<nn>` item
+  (Id · Target · Kind explore|wording|accept · By · Human comment · Agent
+  interpretation: pending) to the owning Page Writing Run's
+  `results/<run>/v<NNN>.md`, with `runtime.yaml` and `working.md` updated;
+  `outline/` and the Page source are never written.
+- Choose the owning Run as open paragraph Run → open Structure Run → open
+  Section Run → reopen the finished paragraph Run in a new Version (prior
+  hash recorded) → allocate `rp-para-NN_Pxx`; a second note before the agent
+  answers joins the same pending Step; a retried `feedback_id` writes nothing.
+- `plug_outline` accepts `action: feedback` on Board and standalone hosts;
+  legacy editor actions stay rejected; a read-only host shows the thread
+  without the composer.
+- Remove the retired `live/outline_comments.py`, `outline_comments.js`, and
+  `outline_preview.js`; add `tests/test_outline_feedback.py`.
+
 ## 0.103.0 · 2026-09-14
 
 - Keep Page-facing DISPLAY labels aligned with LaTeX semantics: table, figure,

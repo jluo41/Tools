@@ -36,7 +36,7 @@ are new Design revise Runs. Explanatory Page edits are Page Writing Steps.
 |---|---|---|
 | `haipipe-application` | two-board umbrella, routes, accepted boundary | interior I/Design/Page phases |
 | `haipipe-application-workflow` | X0–X3 crossing assertions and receipts | a third phase machine |
-| `haipipe-insight[-workflow]` | one-dataset climb, I0–I5, signed W handoff | Design candidates |
+| `haipipe-insight[-workflow]` | unified Insight entry; Task RI route plus Application one-dataset climb, I0–I5, signed W handoff | Design candidates |
 | `haipipe-design` | stable DS Folder, authority, adoption, two-workflow interlock | implementation/experiment |
 | `haipipe-design-workflow` | Commission → Generate → Verify → Adopt | Page Runs/Page release |
 | `haipipe-design-unit` | one frozen Ticket → DU or review Result | Folder/adoption/runtime |

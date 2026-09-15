@@ -3,6 +3,12 @@ haipipe-application — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [3.0.1] — 2026-09-15
+
+- Point dataset-first Task Insight examples to the unified
+  `/haipipe-insight task` entry and document `/haipipe-task insight` as its
+  compatibility alias.
+
 ## [3.0.0] — 2026-09-13
 
 - Make Design a clean break: `rdNN_*` identities, no v1, D0-D5, PageX,

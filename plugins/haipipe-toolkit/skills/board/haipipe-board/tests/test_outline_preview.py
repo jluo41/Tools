@@ -74,7 +74,7 @@ class OutlinePreviewTest(unittest.TestCase):
         self.save('', result['record_token'])
         self.assertNotIn('C1.P1.B1', read_previews(self.page))
         card = plan_card(self.page)
-        self.assertNotIn('<textarea', card)
+        self.assertEqual(card.count('<textarea'), card.count('<textarea name=comment'))  # only the note composer
         self.assertIn('Not drafted', card)
 
     def test_shared_realization_is_seeded_once_with_explicit_cross_reference(self):
@@ -86,7 +86,7 @@ class OutlinePreviewTest(unittest.TestCase):
         # Table and immersive reader are two projections of the same embedded
         # Draft value; one is hidden at a time by the view switch.
         self.assertEqual(card.count('Existing prose.'), 2)
-        self.assertNotIn('<textarea', card)
+        self.assertEqual(card.count('<textarea'), card.count('<textarea name=comment'))  # only the note composer
         self.assertNotIn('Read paragraph', card)
 
     def test_script_like_prose_is_escaped_in_read_only_projection(self):
@@ -137,7 +137,9 @@ class OutlinePreviewTest(unittest.TestCase):
 
     def test_sentence_span_is_not_a_repeated_paragraph_heading(self):
         self.plan.write_text(PLAN.replace('C1.P1 · Variation', 'C1.P1 · Variation · S1 to S6'))
-        self.assertIn('<span class=mut>Variation</span></summary>', plan_card(self.page))
+        card = plan_card(self.page)
+        self.assertIn('<span class=mut>Variation</span>', card)
+        self.assertNotIn('S1 to S6</span>', card)
         self.assertIn('S1 to S6', self.plan.read_text())
 
     def test_renderer_preserves_page_global_paragraph_numbers(self):

@@ -1,7 +1,7 @@
-# Historical measurements · legacy compatibility only
+# Historical measurements · read-only
 
 > Read-only measurements from 260819-20. Retired phase names below are not
-> current dispatch options. Use `workflow-table.md` for today's phase grammar;
+> current dispatch options. Use `workflow-table.md` for today's Run Spec grammar;
 > these past observations are neither a current benchmark nor an upper bound.
 
 Born 260820 when JL asked "could you document for each of them, how long it

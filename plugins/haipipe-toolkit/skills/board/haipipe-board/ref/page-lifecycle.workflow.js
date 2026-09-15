@@ -28,7 +28,20 @@ const pageAbs = page && board && !page.startsWith('/') ? `${String(board).replac
 // input while the top-level `page` was normalized, so every audit failed on its own
 // receipt (found 260818 auditing run 260818-1510-QPw00).
 parsed.page = page
-const runId = parsed.run_id
+const declaredWorkflowRuntimeId = parsed.workflow_runtime_id
+const declaredRunId = parsed.run_id
+if (declaredWorkflowRuntimeId && declaredRunId &&
+    String(declaredWorkflowRuntimeId) !== String(declaredRunId)) {
+  return {
+    status: 'blocked',
+    reason: 'workflow_runtime_id must equal the legacy run_id alias',
+    receipts: [],
+  }
+}
+const workflowRuntimeId = declaredWorkflowRuntimeId || declaredRunId
+const runId = workflowRuntimeId
+parsed.workflow_runtime_id = workflowRuntimeId
+parsed.run_id = workflowRuntimeId
 const intent = parsed.intent
 let startPhase = String(parsed.start_phase || '').toUpperCase()
 const limits = parsed.limits || {}
@@ -241,6 +254,7 @@ if (!currentVersion || currentVersion.status !== 'ok') {
   return {
     status: 'failed',
     run_id: runId,
+    workflow_runtime_id: workflowRuntimeId,
     board,
     page,
     packet: parsed,
@@ -322,7 +336,7 @@ for (let step = 1; step <= maxSteps; step++) {
         human_gate: gateShape(null),
       }
       receipts.push(receipt)
-      return { status: 'blocked', run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
+      return { status: 'blocked', run_id: runId, workflow_runtime_id: workflowRuntimeId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
     }
 
     let route = review.route
@@ -413,7 +427,7 @@ for (let step = 1; step <= maxSteps; step++) {
     receipts.push(receipt)
 
     if (route === 'CLOSE' || route === 'HOLD') {
-      return { status: terminalStatus(route, reviewStatus === 'blocked' ? 'blocked' : 'hold'), run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
+      return { status: terminalStatus(route, reviewStatus === 'blocked' ? 'blocked' : 'hold'), run_id: runId, workflow_runtime_id: workflowRuntimeId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
     }
     parsed.cycle = review.next_cycle
     current = route
@@ -478,7 +492,7 @@ for (let step = 1; step <= maxSteps; step++) {
       human_gate: gateShape(null),
     }
     receipts.push(receipt)
-    return { status: 'blocked', run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
+    return { status: 'blocked', run_id: runId, workflow_runtime_id: workflowRuntimeId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
   }
 
   const before = currentVersion.version_id
@@ -562,10 +576,10 @@ for (let step = 1; step <= maxSteps; step++) {
   }
 
   if (route === 'HOLD') {
-    return { status: status === 'blocked' ? 'blocked' : status === 'failed' ? 'failed' : 'hold', run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
+    return { status: status === 'blocked' ? 'blocked' : status === 'failed' ? 'failed' : 'hold', run_id: runId, workflow_runtime_id: workflowRuntimeId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts }
   }
   parsed.cycle = producer.next_cycle
   current = route
 }
 
-return { status: 'hold', run_id: runId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts, reason: 'loop exhausted without terminal route' }
+return { status: 'hold', run_id: runId, workflow_runtime_id: workflowRuntimeId, board, page, mode, packet: parsed, limits: { max_steps: maxSteps, max_rounds: maxRounds }, final_version: currentVersion.version_id, receipts, reason: 'loop exhausted without terminal route' }

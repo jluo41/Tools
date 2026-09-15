@@ -1,0 +1,189 @@
+schema: haipipe.workflow-definition/v1
+workflow_id: wf-subjective-label-v1
+workflow_version: 1
+purpose: >-
+  Coordinate one corpus-snapshot × target-construct × human-authority Labeling
+  job. This field test deliberately covers the P0-to-P1 entry slice only.
+owner: subjective-label-workflow
+input:
+  page_folder: S-Label-1-labeling-lab
+  job_lane: labeling/
+  authority: labeling/config.yaml
+  corpus: labeling/corpus/manifest.json
+run_type_catalog: ../../ref/ref-run.md
+
+run_specs:
+  - id: contract.corpus
+    run_type: labeling.corpus-contract
+    purpose: establish one fenced job contract and bind its P0 artifacts
+    target: one job contract
+    actor: {mode: hybrid, owner: JL + contract-worker}
+    action: establish-contract
+    depends_on: []
+    entry_gate:
+      mode: automatic
+      assertion: source fence and destination Page Folder resolve
+    exit_gate:
+      mode: automatic
+      assertion: P0 contract receipt exists and all authority checksums rehash
+    routes:
+      pass: building.round.prepare
+      fail: HOLD
+    result:
+      payload: labeling/gates/p0-contract/receipt.json
+      receipt: labeling/results/<RUNNAME>/runtime.yaml
+    cardinality: 1
+    skill_bindings: [label-building]
+    workspace_bindings: [labeling.workflow, labeling.data]
+    domain_view: {journey_label: P0, gate_label: G0}
+
+  - id: building.round.prepare
+    run_type: labeling.round-prepare
+    purpose: freeze one human-released round card and its bounded batch
+    target: one released round card
+    actor: {mode: human, owner: JL}
+    action: release-round-card
+    depends_on: [contract.corpus]
+    entry_gate:
+      mode: human
+      assertion: G0 meaning confirmation and Card release are recorded
+    exit_gate:
+      mode: automatic
+      assertion: round manifest, batch, prospect, and evidence pointers validate
+    routes:
+      pass: building.human.calibration
+      hold: HOLD
+    result:
+      payload: labeling/rounds/round_<t>/manifest.yaml
+      receipt: labeling/results/<RUNNAME>/runtime.yaml
+    cardinality: 1..N
+    skill_bindings: [label-building-workflow]
+    workspace_bindings: [labeling.workflow, labeling.human]
+    domain_view: {journey_label: P1, gate_label: G0_to_G1}
+
+  - id: building.human.calibration
+    run_type: labeling.human-calibration
+    purpose: record one bounded human calibration batch
+    target: one frozen round batch
+    actor: {mode: human, owner: JL}
+    action: human-calibration
+    depends_on: [building.round.prepare]
+    entry_gate:
+      mode: automatic
+      assertion: round package is frozen and any weak predictions are sealed
+    exit_gate:
+      mode: human
+      assertion: complete human-final record and append-only Session events exist
+    routes:
+      pass: building.guideline.learn
+      hold: HOLD
+    result:
+      payload: labeling/rounds/round_<t>/human_final.jsonl
+      receipt: labeling/results/<RUNNAME>/runtime.yaml
+    cardinality: 1..N
+    skill_bindings: [label-building-workflow]
+    workspace_bindings: [labeling.human, labeling.guideline]
+    domain_view: {journey_label: P1, gate_label: G1}
+
+  - id: building.guideline.learn
+    run_type: labeling.guideline-learn
+    purpose: accept bounded policy changes supported by the round evidence
+    target: one round policy update
+    actor: {mode: hybrid, owner: JL + guideline-worker}
+    action: learn-guideline
+    depends_on: [building.human.calibration]
+    entry_gate:
+      mode: automatic
+      assertion: human calibration Result is complete
+    exit_gate:
+      mode: human
+      assertion: policy draft and regression record are accepted or held
+    routes:
+      pass: building.round.measure
+      hold: HOLD
+    result:
+      payload: labeling/rounds/round_<t>/policy_draft/
+      receipt: labeling/results/<RUNNAME>/runtime.yaml
+    cardinality: 1..N
+    skill_bindings: [label-building-workflow]
+    workspace_bindings: [labeling.guideline, labeling.workflow]
+    domain_view: {journey_label: P1, gate_label: G1}
+
+  - id: building.round.measure
+    run_type: labeling.round-measure
+    purpose: measure one closed judgment set against its forecast
+    target: one measured round
+    actor: {mode: automatic, owner: round-measurer}
+    action: measure-round
+    depends_on: [building.guideline.learn]
+    entry_gate:
+      mode: automatic
+      assertion: human-final and accepted policy evidence are complete
+    exit_gate:
+      mode: automatic
+      assertion: metrics, coverage, and risk ledger validate
+    routes:
+      pass: building.round.close
+      fail: HOLD
+    result:
+      payload: labeling/rounds/round_<t>/metrics.json
+      receipt: labeling/results/<RUNNAME>/runtime.yaml
+    cardinality: 1..N
+    skill_bindings: [label-building-workflow]
+    workspace_bindings: [labeling.quality, labeling.workflow]
+    domain_view: {journey_label: P1, gate_label: G1}
+
+  - id: building.round.close
+    run_type: labeling.round-close
+    purpose: close one measured round and choose its declared next route
+    target: one measured round checkpoint
+    actor: {mode: hybrid, owner: JL + checkpoint-keeper}
+    action: close-round
+    depends_on: [building.round.measure]
+    entry_gate:
+      mode: automatic
+      assertion: all round checks pass and no required receipt is missing
+    exit_gate:
+      mode: human
+      assertion: checkpoint is closed and STOP or another-round decision is recorded
+    routes:
+      another_round: building.round.prepare
+      freeze: freeze.handoff
+      hold: HOLD
+    result:
+      payload: labeling/rounds/round_<t>/checkpoint.json
+      receipt: labeling/results/<RUNNAME>/runtime.yaml
+    cardinality: 1..N
+    skill_bindings: [label-building-workflow]
+    workspace_bindings: [labeling.workflow, labeling.human, labeling.quality]
+    domain_view: {journey_label: P1, gate_label: G2}
+
+  - id: freeze.handoff
+    run_type: labeling.handoff-freeze
+    purpose: package the stopped Building lineage into one signed handoff
+    target: one stopped Building lineage
+    actor: {mode: human, owner: JL}
+    action: sign-handoff
+    depends_on: [building.round.close]
+    entry_gate:
+      mode: human
+      assertion: G2 passes and the exact human STOP decision exists
+    exit_gate:
+      mode: human
+      assertion: handoff checksum and FREEZE signature validate
+    routes:
+      pass: CLOSE
+      fail: HOLD
+    result:
+      payload: labeling/handoff/label-v1.yaml
+      receipt: labeling/results/<RUNNAME>/runtime.yaml
+    cardinality: 1
+    skill_bindings: [label-building-workflow]
+    workspace_bindings: [labeling.workflow, labeling.guideline, labeling.quality]
+    domain_view: {journey_label: P2, gate_label: G3}
+
+entry: [contract.corpus]
+terminal: [CLOSE, HOLD]
+output:
+  returns: [workflow_runtime_id, frontier, gate_decisions, route_history, run_results]
+  final_acceptance: handoff signed or explicit HOLD

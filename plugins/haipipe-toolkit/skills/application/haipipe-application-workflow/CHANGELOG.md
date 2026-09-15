@@ -1,5 +1,9 @@
 # haipipe-application-workflow · version history
 
+3.0.1 · 260915
+- Bind cross-board dispatch to one Application Workflow Runtime view and
+  preserve native RunTypes, Run identities, controls, and receipts.
+
 3.0.0 · 260913
 - Route only current Design Commission/Generate/Verify/Adopt and `rdNN_*` Runs.
 - Reject PageX, D0-D5, old Division/PageDown receipts, and v1 X2 packets.

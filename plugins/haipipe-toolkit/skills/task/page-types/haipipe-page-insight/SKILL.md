@@ -8,8 +8,8 @@ description: >-
   checkpoints, shared Task analysis calls, and exact RI/result citations. Application
   InsightBoard rung pages remain owned by haipipe-insight-workflow.
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-09-13"
+  version: "1.1.1"
+  last_updated: "2026-09-15"
   outline:
     mode: fixed
     source: "this SKILL.md"
@@ -35,10 +35,12 @@ single-question Page is described in `ref/migration.md`.
 
 ## Scope and ownership
 
-`/haipipe-task insight "<topic>" [<board>]` creates or resumes this Folder.
+The preferred public entry is `/haipipe-insight task "<topic>" [<board>]`.
+It delegates here through the Task Insight route. `/haipipe-task insight
+"<topic>" [<board>]` remains a compatibility alias with identical behavior.
 Keep the public skill and installed path; no second Insight skill or parallel
-Page frame is required. This remains the task-only Page Type during the
-shared Folder-kind migration:
+Page frame is required. This remains the task-only Page Type during the shared
+Folder-kind migration:
 
 ```yaml
 page-type: insight

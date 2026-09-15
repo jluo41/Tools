@@ -62,7 +62,7 @@ class OutlineBulletEditingTest(unittest.TestCase):
             self.assertNotIn("data-bullet-edit", card)
             self.assertNotIn("data-bullet-write", card)
             self.assertNotIn("data-preview-write", card)
-            self.assertNotIn("<textarea", card)
+            self.assertEqual(card.count("<textarea"), card.count("<textarea name=comment"))  # only the note composer
             self.assertNotIn("Save Bullet", card)
             self.assertNotIn("Read paragraph", card)
             self.assertNotIn("Planned move", card)

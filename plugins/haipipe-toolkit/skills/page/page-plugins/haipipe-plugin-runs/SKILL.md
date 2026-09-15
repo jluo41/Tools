@@ -2,7 +2,9 @@
 name: haipipe-plugin-runs
 description: >-
   The internal, read-only Run Space presenter of Plugin Outline: result-first
-  cards for Page Writing, Page Evidence, and Supporting Runs grouped by Task.
+  cards for Page Writing, Page Evidence, and Supporting Runs grouped by Task,
+  projected from a Run Workflow Runtime and its Run Specs, including human
+  Scratch Runs.
   External or upstream Results remain inspectable references and are never
   copied.
   Use for Discovery Paper Runs, Task Page
@@ -11,8 +13,8 @@ description: >-
   Execute and closure. Trigger: Run Space, run overview, run status, run
   results, show the runs, or the compatibility route /haipipe-plugin-runs.
 metadata:
-  version: "0.29.0"
-  last_updated: "2026-09-14"
+  version: "0.31.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,6 +29,7 @@ compatibility/internal route, not a separate Page tab.
 Run Space
 ├── Page Writing
 │   ├── Structure
+│   ├── Scratch
 │   ├── Section
 │   └── Paragraph (Review & Modify)
 ├── Page Evidence
@@ -43,6 +46,21 @@ identity families remain RP (Page Writing), RE (Page Evidence), and owner-
 native supporting Run ids. The UI does not expose those family codes as extra
 lanes or hierarchy.
 
+## 🧭 Run Workflow projection
+
+Run Space is a read-only projection of one Workflow Runtime and its concrete
+Run Instances. A card represents one Run Instance; the Workflow's Run Specs,
+entry/exit gates, legal routes, and completion rule remain the authority behind
+the projection. It may show the Runtime frontier and route history, but it does
+not create a Run for a Step, gate decision, route decision, model call, or
+phase compatibility label.
+
+When a card opens, the reader may inspect the RunType, bounded target, current
+Step, local gate evaluation, selected route, Result, and receipt. Human,
+automatic/system, agent, and hybrid gate/route decisions are displayed as
+recorded facts. Run Space never executes, edits, approves, closes, or invents
+transitions; the owning Workflow/Run Spec skill does that.
+
 ## 🏷 Runs, not Execution
 
 Keep **Execute** as a workflow action. Name this plugin **Runs** because it
@@ -53,7 +71,7 @@ identity with an authored ticket and a generated Result:
 Run address  = ticket identity = Result identity
 ```
 
-The Folder kind and workflow decide whether and when to Execute. Runs presents
+The Folder kind and Run Workflow decide whether and when to Execute. Runs presents
 either the Page-owned feedback history or the delegated Result that came back.
 A non-Board integration may
 omit the category entirely, and the internal Run presenter may exist without reusable local
@@ -145,13 +163,16 @@ Run points to paired `working.md`, root `runtime.yaml` and one append-only
 same Markdown file.
 The workflow, not this presenter, owns the human acceptance and close state.
 
-Current Page Runs use three explicit RP kinds: `rp-struct-NN` for the fused
+Current Page Runs use four explicit RP kinds: `rp-struct-NN` for the fused
 SHAPE + SURVEY Structure Run (Mermaid, Outline Bullets, Point roles, and
-evidence route decisions), `rp-sec-NN` for Section-level writing, and
-`rp-para-NN_Pxx[-Pyy]` for fixed paragraph or paragraph-group writing. The
-initial Structure Run is `rp-struct-01`; examples of later valid identities
-are `rp-struct-02`, `rp-sec-01`, and `rp-para-01_P03-P05`. SHAPE and SURVEY
-are Steps/cycles of `rp-struct-01`, never separate planning cards.
+evidence route decisions), `rp-scratch-NN_<target>` for human rough-thinking
+capture, `rp-sec-NN` for Section-level writing, and
+`rp-para-NN_Pxx[-Pyy]` for fixed paragraph or paragraph-group writing. A
+Scratch target is a Section (`C1`), Subsection (`C1.P1`), or whole paragraph
+group (`C1.P1`). B/symbol rows are not Scratch targets. The initial Structure Run is `rp-struct-01`; examples of later
+valid identities are `rp-scratch-01_C1.P1`, `rp-struct-02`, `rp-sec-01`, and
+`rp-para-01_P03-P05`. SHAPE and SURVEY are Steps/cycles of `rp-struct-01`,
+never separate planning cards.
 
 Several people may participate in one Structure card. The presenter keeps one
 Run and one paired Result, while the opened detail may show `participants` and
@@ -160,8 +181,10 @@ mint another RP identity; `rp-struct-02` requires a genuinely independent
 post-closure structural goal.
 
 The presenter shows the exact RP kind and preserves the distinction that a
-complete Section draft → review/rating → diagnose → revise cycle is one Step
-inside the Section Run, not a new Run. A later independently commissioned
+Scratch Run is a small human capture interaction: Save keeps it open and a
+human-confirmed Summary closes it. It does not edit Draft prose or require a
+review cycle. A complete Section draft → review/rating → diagnose → revise
+cycle is one Step inside the Section Run, not a new Run. A later independently commissioned
 Section session receives another `rp-sec-NN` identity; a same-target
 paragraph revisit normally reopens its existing Run in a new Version. The
 Page-local RP sequences are independent from Task `rNN`, so both
@@ -216,6 +239,7 @@ all earlier Steps collapsed.
 Run Space
 ├── Page Writing
 │   ├── Structure
+│   ├── Scratch
 │   ├── Section
 │   └── Paragraph (Review & Modify)
 ├── Page Evidence
@@ -236,9 +260,10 @@ paths, metadata, or a Result preview until the card is opened. One card is one
 logical Run, and its Result is the returned content of that same card—not a
 separate Results section.
 
-Page Writing is split into Structure, Section, and Paragraph. Structure is the
-single SHAPE+SURVEY Mermaid/argument card; Section is the section-writing card; Paragraph is the
-paragraph-writing card. Review is input to the Paragraph Run, expressed as
+Page Writing is split into Structure, Scratch, Section, and Paragraph.
+Structure is the single SHAPE+SURVEY Mermaid/argument card; Scratch is the
+human's rough-thinking capture card; Section is the section-writing card;
+Paragraph is the paragraph-writing card. Review is input to the Paragraph Run, expressed as
 `Paragraph (Review & Modify)` in the contract if needed, never as a separate
 Review Run or subspace. A Run may contain many review Steps/Versions, but the
 card remains one Run.
@@ -324,7 +349,7 @@ Their existence must not add a fourth area, subspace, or extra summary block.
 STORAGE   none of its own; resolve authored/generated Run projections
 SURFACE   Outline → Run Space: Page Writing · Page Evidence · Supporting Runs
 WRITER    person/chat authors tickets; the ticket writes its paired Result
-BOUNDARY  read-only presenter; no lifecycle, evidence, or closure authority
+  BOUNDARY  read-only presenter; no Run Workflow, lifecycle, evidence, or closure authority
 ```
 
 ## 🔒 Boundaries

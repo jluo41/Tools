@@ -9,8 +9,8 @@ description: >-
   show the pdf docx deck together,
   /haipipe-plugin-delivery.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-13"
+  version: "0.6.0"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -70,6 +70,10 @@ materially different source version gets a different RD. The build receipt is
 machine-readable delivery evidence, not a whole-Page acceptance decision.
 Evidence truth remains in the RE Result, Page prose remains in the Page
 source, and `haipipe-page-check` remains the only human whole-Page close gate.
+In the Run Workflow model, each RD is a Page Delivery Run Spec/Run Instance
+whose bounded target is one delivery lane. Its build/inspect result is the
+lane-local exit-gate input; the Workflow Runtime still owns cross-Run routing
+and whole-Page completion.
 
 ## 🗺 Status · 🟢 built 260831
 
@@ -90,7 +94,7 @@ path that needs attention.
 The route is `/_board/delivery?path=…&file=…&workspace=1` in both standalone
 and Board-hosted mode. It reads `delivery/build-manifest.json`, any lane
 manifest, `delivery/web/.haipipe-page-export`, and saved artifacts; it never
-rebuilds or edits them. The Page CHECK phase remains the human whole-Page close
+rebuilds or edits them. The Page CHECK compatibility label remains the human whole-Page close
 gate, while this workspace prevents a delivery from being presented as current
 when it no longer matches the正文 source.
 The Page workflow's `haipipe-page-check` owns the human whole-Page close gate;

@@ -9,8 +9,8 @@ description: >-
   design, review, accept, retarget, signed Insight crossing, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-09-13"
+  version: "3.0.1"
+  last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -232,13 +232,13 @@ Brief and Meta are both head pages and may be written in either order. Meta may 
 
 ## Dataset-first: where exploration goes before a Brief exists
 
-An InsightBoard chain page must serve a question registered on MT01-MT04 — raised by a Brief need or by a reader's curiosity, the two births `/haipipe-insight` rules. What no chain page may serve is no question at all: exploration with no register row belongs on the **Task/Insights Board**, as a `scope: task` Page opened through `/haipipe-task insight`.
+An InsightBoard chain page must serve a question registered on MT01-MT04 — raised by a Brief need or by a reader's curiosity, the two births `/haipipe-insight` rules. What no chain page may serve is no question at all: exploration with no register row belongs on the **Task/Insights Board**, as a `scope: task` Page opened through `/haipipe-insight task` (`/haipipe-task insight` remains the compatibility alias).
 
 ```text
 a dataset lands, no Brief yet
         │
         ▼
-🧪 /haipipe-task insight          scope: task · consumer-neutral · no serves:
+🧪 /haipipe-insight task           scope: task · consumer-neutral · no serves:
    topic instance → item Runs → versioned D/I/K/W/RF Results
         │
         │  ... later, a Brief raises a need this already answers
