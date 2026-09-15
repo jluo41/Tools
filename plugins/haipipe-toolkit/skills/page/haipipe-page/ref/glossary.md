@@ -58,7 +58,9 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   Section (`C1`) or whole paragraph-group (`C1.P1`) scope. The current Outline
   grammar has no separate subsection node, so it renders one plus per visible
   target. B/symbol rows are reading material only and have no Scratch control.
-  Save keeps the Run open; Finish requires a human Summary and closes it.
+  Save keeps the Run open; the person manually clicks Finish Scratch, which
+  asks the AI to summarize the raw notes and closes the Run when a non-empty
+  Summary is returned.
   Closed Scratch Runs are immutable. Ordinary feedback remains a Step in the
   owning Page Writing Run, not a Draft composer.
 - **bullet** — one POINT in the plan: a short capitalized HEAD, then one folded

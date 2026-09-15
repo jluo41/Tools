@@ -1126,7 +1126,7 @@ def _status(runtime: Path | None, fields: dict[str, str]) -> str:
             if fields.get("mode", "").lower() == "scratch" or fields.get("interaction", "").lower() == "human-scratch":
                 version = fields.get("version", "")
                 text = _preview_text(_version_path(runtime, version), runtime.parent) if _version_path(runtime, version) else ""
-                closed = "Human confirmed the Scratch Summary." in text
+                closed = "AI generated the Scratch Summary and the person closed the Run." in text
                 return "Done" if not _interactive_findings(runtime, fields) and closed else "Held"
             version = fields.get("version", "")
             return ("Done" if not _interactive_findings(runtime, fields)

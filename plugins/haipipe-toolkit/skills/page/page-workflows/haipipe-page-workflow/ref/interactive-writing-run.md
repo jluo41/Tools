@@ -34,7 +34,7 @@ imported with a draft Shape. RP allocation is Page-local and type-explicit:
 | IDs | Scope | What the Run settles |
 |---|---|---|
 | `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, Mermaid map, and the frozen `P01..PN` index; no adopted prose or material evidence execution |
-| `rp-scratch-NN_<target>` | Human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; B/symbol rows are not targets; one open capture closes only after a human Summary |
+| `rp-scratch-NN_<target>` | Human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; B/symbol rows are not targets; the person manually triggers Finish Scratch and the AI generates the closing Summary |
 | `rp-sec-NN` | Section-level | One named Section drafting/revision round and its candidate, review/rating, diagnosis, revision, and report |
 | `rp-para-NN_Pxx[-Pyy]` | Paragraph-level | One fixed paragraph or contiguous paragraph group, such as `P03–P05` |
 
@@ -145,8 +145,9 @@ paragraph group; B/symbol rows have no Scratch control. The current
 grammar has no separate subsection node, so there is one plus per visible
 target. It writes the rough note to the selected Outline's `##
 Scratch` registry while creating/updating the paired Scratch Run. `Save`
-leaves the Run open. `Finish Scratch` is the human exit Gate: it requires a
-non-empty Summary, writes `Human confirmed the Scratch Summary.` to the Result,
+leaves the Run open. The person manually clicks `Finish Scratch`, which asks
+the AI to generate a concise non-empty Summary from the raw notes, writes
+`AI generated the Scratch Summary and the person closed the Run.` to the Result,
 and closes the Run. A closed Scratch Run is immutable; later thinking starts a
 new Scratch Run. This capture never edits `Draft:` prose. Ordinary feedback
 still enters a Page Writing Run as a pending `### Human feedback` Step, but it

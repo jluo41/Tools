@@ -1,3 +1,8 @@
+## 0.61.0 · 2026-09-15
+
+- Define `Finish Scratch` as the manual trigger for an AI-generated closing
+  Summary; remove the human Summary input while keeping the Scratch Run gate.
+
 ## 0.60.0 · 2026-09-15
 
 - Add `Page.interactive-writing.scratch` and `rp-scratch-NN_<target>` to the

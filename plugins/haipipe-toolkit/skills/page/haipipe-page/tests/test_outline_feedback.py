@@ -12,6 +12,7 @@ import tempfile
 import threading
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 PAGE_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PAGE_ROOT))
@@ -167,6 +168,12 @@ class FeedbackFixture(unittest.TestCase):
         (self.results / "runtime.yaml").write_text(RUNTIME, encoding="utf-8")
         (self.results / "v001.md").write_text(CLOSED_V001, encoding="utf-8")
         (self.results / "working.md").write_text(WORKING, encoding="utf-8")
+        self.ai_summary = patch(
+            "live.outline_scratch.ai_summarize_scratch",
+            return_value="AI-generated Scratch summary.",
+        )
+        self.ai_summary.start()
+        self.addCleanup(self.ai_summary.stop)
 
     def payload(self, **over):
         base = dict(action="feedback", paragraph="C1.P2", kind="explore", author="JL",
@@ -333,11 +340,12 @@ class WriteSideTest(FeedbackFixture):
         result, err = handler.plug_outline({
             "action": "scratch", "phase": "finish", "scope": "paragraph",
             "target": "C1.P2", "notes": "Explain the design move.",
-            "summary": "The paragraph should connect design to the visit.",
+            "summary": "This legacy field is ignored.",
         })
         self.assertIsNone(err, err)
         self.assertEqual(result["run"], "rp-scratch-01_C1.P2")
         self.assertEqual(result["version"], "v001")
+        self.assertEqual(result["summary"], "AI-generated Scratch summary.")
         self.assertRegex(self.plan.read_text(encoding="utf-8"),
                          r"(?m)^- Status: closed$")
 
@@ -376,7 +384,6 @@ class StandaloneWireTest(FeedbackFixture):
         scratch = {
             "action": "scratch", "phase": "finish", "scope": "paragraph",
             "target": "C1.P2", "notes": "Start with the visit.",
-            "summary": "The paragraph should foreground the visit.",
             "file": self.page.name, "path": "",
         }
         code, body = self.request("POST", "/_board/outline", scratch)
@@ -386,7 +393,7 @@ class StandaloneWireTest(FeedbackFixture):
         self.assertEqual(result["run"], "rp-scratch-01_C1.P2")
         scratch_result = self.folder / "results" / "rp-scratch-01_C1.P2"
         self.assertTrue((scratch_result / "v001.md").is_file())
-        self.assertIn("Human confirmed the Scratch Summary.",
+        self.assertIn("AI generated the Scratch Summary and the person closed the Run.",
                       (scratch_result / "v001.md").read_text(encoding="utf-8"))
         code, body = self.request("GET", "/_board/outline?path=&file=%s&lens=div" % self.page.name)
         self.assertIn("Scratch ✓", body)

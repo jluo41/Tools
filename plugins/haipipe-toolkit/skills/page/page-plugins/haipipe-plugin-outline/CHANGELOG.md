@@ -1,3 +1,9 @@
+## 0.83.0 · 2026-09-15
+
+- Make Scratch notes larger and let the manually triggered `Finish Scratch`
+  action ask the AI to generate the closing Summary; remove the manual Summary
+  form.
+
 ## 0.82.0 · 2026-09-15
 
 - Add Draft Space's explicit Table, Reading, and Scratch views.

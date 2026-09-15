@@ -37,8 +37,9 @@ stored under `## Opening Draft` in that same Outline.
   The current Outline grammar has no separate subsection node, so it does not
   render a duplicate Subsection plus. Explicit subsection-scope records remain
   accepted for future Page schemas. B/symbol rows have no Scratch control. `Save` creates or updates an open
-  `rp-scratch-NN_<target>` Run; `Finish Scratch` requires a human Summary and
-  closes it. The browser writes the registry under `## Scratch` in this same
+  `rp-scratch-NN_<target>` Run; the person manually clicks `Finish Scratch` to
+  ask the AI for a concise Summary from the notes and close it. The browser
+  writes the registry under `## Scratch` in this same
   selected Outline and the paired ticket/result under `runs/` and `results/`.
   It does not edit `Draft:` prose. A closed Scratch Run is immutable.
 - The owning Structure/Content Run writes the next Markdown revision.

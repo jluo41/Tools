@@ -11,7 +11,7 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.107.0"
+  version: "0.108.0"
   last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -287,10 +287,11 @@ move or replace the Page's source. Board Page group descriptions remain
 Board-owned and are outside this file-intake operation.
 
 Scratch is available as a small human-thinking capture once the selected
-Outline exists. Save keeps `rp-scratch-NN_<target>` open; Finish requires a
-human Summary and closes it. Scratch writes only the selected Outline's
-`## Scratch` registry plus its paired `runs/` and `results/` receipt; it never
-edits `Draft:` prose.
+Outline exists. Save keeps `rp-scratch-NN_<target>` open; the person manually
+clicks Finish Scratch, which asks the AI to generate a concise Summary from
+the raw notes and closes the Run only after a non-empty Summary is returned.
+Scratch writes only the selected Outline's `## Scratch` registry plus its
+paired `runs/` and `results/` receipt; it never edits `Draft:` prose.
 
 The reader-facing completion packet is defined in
 `ref/user-check-packet.md`. The Draft Space includes a read-only Draft

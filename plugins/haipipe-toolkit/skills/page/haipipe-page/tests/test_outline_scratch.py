@@ -1,16 +1,19 @@
-"""Scratch Mode contract: inline targets, one human-owned close gate."""
+"""Scratch Mode contract: inline targets and an AI-assisted close gate."""
 from __future__ import annotations
 
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 PAGE_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PAGE_ROOT))
 
 from live.outline import _PAGE, plan_card  # noqa: E402
-from live.outline_scratch import read_scratch, save_scratch  # noqa: E402
+from live.outline_scratch import (ai_summarize_scratch, read_scratch,  # noqa: E402
+                                  save_scratch)
 from live.runs import run_inventory  # noqa: E402
 
 
@@ -44,12 +47,18 @@ class ScratchTest(unittest.TestCase):
         self.plan = self.folder / "outline" / "S-scratch-outline-v1.1.md"
         self.plan.write_text(PLAN, encoding="utf-8")
 
+    def ai_summary(self, *_args):
+        return "AI summary of the rough plan."
+
+    def failing_summary(self, *_args):
+        raise ValueError("AI summary unavailable")
+
     def save(self, scope, target, phase="save", run_id="", summary=""):
         return save_scratch(self.page, {
             "scope": scope, "target": target, "phase": phase,
             "run_id": run_id, "notes": "First thought\nSecond thought",
             "summary": summary,
-        })
+        }, summarizer=self.ai_summary)
 
     def test_each_scope_accepts_its_canonical_target(self):
         for scope, target in (("section", "C1"), ("subsection", "C1.P1"),
@@ -66,23 +75,27 @@ class ScratchTest(unittest.TestCase):
         self.assertIsNone(result)
         self.assertIn("target does not exist", err)
 
-    def test_summary_is_required_to_close_and_closed_run_is_immutable(self):
+    def test_ai_summary_closes_and_closed_run_is_immutable(self):
         result, err = self.save("paragraph", "C1.P1")
         self.assertIsNone(err, err)
         run_id = result["run"]
         result, err = self.save("paragraph", "C1.P1", "finish", run_id,
-                                "Define the difference, then connect it to patients.")
+                                "Manual text is ignored; Finish asks the AI.")
         self.assertIsNone(err, err)
         self.assertEqual(result["status"], "closed")
+        self.assertEqual(result["summary"], "AI summary of the rough plan.")
         runtime = self.folder / "results" / run_id / "runtime.yaml"
         self.assertIn("status: complete", runtime.read_text(encoding="utf-8"))
         _, err = self.save("paragraph", "C1.P1", "finish", run_id, "A new summary")
         self.assertIn("immutable", err)
 
-    def test_finish_without_summary_is_rejected(self):
-        result, err = self.save("section", "C1", "finish", summary="")
+    def test_ai_summary_failure_keeps_finish_open(self):
+        result, err = save_scratch(self.page, {
+            "scope": "section", "target": "C1", "phase": "finish",
+            "notes": "Keep the section focused.",
+        }, summarizer=self.failing_summary)
         self.assertIsNone(result)
-        self.assertIn("summary is required", err)
+        self.assertIn("AI summary unavailable", err)
 
     def test_save_updates_one_open_run_and_later_restarts_after_close(self):
         result, err = self.save("paragraph", "C1.P1")
@@ -91,7 +104,7 @@ class ScratchTest(unittest.TestCase):
         result, err = save_scratch(self.page, {
             "scope": "paragraph", "target": "C1.P1", "phase": "save",
             "run_id": first, "notes": "Refine the causal hinge.", "summary": "",
-        })
+        }, summarizer=self.ai_summary)
         self.assertIsNone(err, err)
         self.assertEqual(result["run"], first)
         self.assertIn("Refine the causal hinge.", self.plan.read_text(encoding="utf-8"))
@@ -114,6 +127,10 @@ class ScratchTest(unittest.TestCase):
         self.assertIn('position:static', card)
         self.assertIn('box-shadow:none', card)
         self.assertIn("Finish Scratch", card)
+        self.assertIn('rows="12"', card)
+        self.assertIn('textarea[name="notes"]{min-height:clamp(240px,32vh,420px)}', card)
+        self.assertNotIn('name="summary"', card)
+        self.assertNotIn("Summarize when you are done", card)
         readonly = plan_card(self.page, read_only=True)
         self.assertNotIn("data-scratch-form", readonly)
         self.assertNotIn("Finish Scratch", readonly)
@@ -127,6 +144,21 @@ class ScratchTest(unittest.TestCase):
         self.assertEqual(row["status"], "Done")
         self.assertEqual(row["mode"], "scratch")
         self.assertEqual(row["target_scope"], "subsection")
+
+    def test_ai_summary_uses_the_local_cli_without_tools(self):
+        completed = SimpleNamespace(
+            returncode=0,
+            stdout="One concise summary.",
+            stderr="",
+        )
+        with patch("live.outline_scratch.subprocess.run", return_value=completed) as run:
+            summary = ai_summarize_scratch(
+                self.page, "paragraph", "C1.P1", "Keep the causal hinge visible."
+            )
+        self.assertEqual(summary, "One concise summary.")
+        argv = run.call_args.args[0]
+        self.assertIn("--no-session-persistence", argv)
+        self.assertIn("--tools", argv)
 
 
 if __name__ == "__main__":

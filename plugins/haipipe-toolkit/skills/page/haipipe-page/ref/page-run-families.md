@@ -51,7 +51,7 @@ are no hidden numeric bands:
 | Identity | Scope | Required output and boundary |
 |---|---|---|
 | `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, and Mermaid representation |
-| `rp-scratch-NN_<target>` | human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; there is no separate subsection node and B/symbol rows are not Scratch targets; closes only after the person confirms a Summary; does not edit `Draft:` prose |
+| `rp-scratch-NN_<target>` | human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; there is no separate subsection node and B/symbol rows are not Scratch targets; the person manually triggers Finish Scratch, which asks the AI for a Summary before closing; does not edit `Draft:` prose |
 | `rp-sec-NN` | Section-level writing | one named Section drafting/revision session and its review loop |
 | `rp-para-NN_Pxx[-Pyy]` | paragraph-level writing | one fixed paragraph or contiguous paragraph group |
 

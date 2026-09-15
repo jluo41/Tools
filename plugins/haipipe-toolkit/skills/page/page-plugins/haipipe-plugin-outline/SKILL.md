@@ -10,7 +10,7 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.82.0"
+  version: "0.83.0"
   last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -280,8 +280,9 @@ alignment, **Reading** for prose without the grid, and **Scratch** for the
 person's rough thinking. Table and Reading are read-only projections. Scratch
 is the only explicit browser writing lane: a tiny `+` appears only after the
 person enters Scratch, below a Section or paragraph heading. It opens an
-small note form; `Save` keeps the Run open, and `Finish Scratch` requires a
-human-written Summary and closes that Scratch Run. There is no old comments
+inline note form; `Save` keeps the Run open, and the person manually clicks
+`Finish Scratch` to ask the AI for a concise Summary from the notes and close
+that Scratch Run. There is no old comments
 composer, feedback badge, or tap-to-edit Draft control.
 
 The plan and candidate wording remain Markdown authorities under `outline/`:

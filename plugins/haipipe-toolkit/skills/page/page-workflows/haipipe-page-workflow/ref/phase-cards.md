@@ -46,7 +46,7 @@ Run identity.
 🎯 TARGET   one Section (C1) or whole paragraph group (C1.P1); no B/symbol target
 👤 ACTOR    human
 ⚙ ACTION   capture rough thinking; Save or Finish Scratch
-🚪 GATE     Finish requires a non-empty human Summary
+🚪 GATE     Person clicks Finish; AI returns a non-empty Summary
 🔀 ROUTE    SELF · CLOSE / owning Run Spec · NEW_RUN
 🧾 RECEIPT  selected Outline `## Scratch` registry + paired ticket/result/runtime.yaml
 🖥 SPACE    Draft · Scratch view; Run Space

@@ -1,3 +1,9 @@
+## 0.108.0 · 2026-09-15
+
+- Make the Scratch notes area substantially larger and remove the manual
+  Summary field; the person-triggered `Finish Scratch` action asks the AI to
+  generate the closing Summary from the raw notes.
+
 ## 0.107.0 · 2026-09-15
 
 - Wire Draft Scratch Mode to one inline Section or whole paragraph-group
