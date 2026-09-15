@@ -7,6 +7,11 @@ name: build-lbp-data-pipeline
 purpose: build, validate, and review one bounded data artifact
 owner: haipipe-task-for-data
 
+plugin:
+  id: data-workbench
+  workspace_roster_ref: plugins/data-workbench.yaml#workspace_roster
+  workspace_ids: [create, review, runtime]
+
 input:
   args: {name: run_lbp, group: A01_pretraining}
   files_in: [ref/source_fn_template.py]
@@ -27,8 +32,10 @@ run_specs:
       payload: {status: ok, file_path: tasks/A01_pretraining/build_lbp.py}
       receipt: results/author/runtime.yaml
     cardinality: 1
-    skill_bindings: [haipipe-task-for-data]
-    workspace_bindings: [create, runtime]
+    cells:
+      - {workspace_id: create, mode: action, owner_skill: haipipe-task-for-data, worker_skill_chain: [haipipe-task-for-data], interaction: author file, authority_change: create, source_projection: authoritative Result}
+      - {workspace_id: review, mode: empty, owner_skill: none, worker_skill_chain: [], interaction: none, authority_change: none, source_projection: none}
+      - {workspace_id: runtime, mode: read-only, owner_skill: haipipe-plugin-runs, worker_skill_chain: [], interaction: inspect status, authority_change: none, source_projection: same Run/receipt}
 
   - id: review
     run_type: evaluation.validate
@@ -44,8 +51,10 @@ run_specs:
       payload: {verdict: pass, issues: []}
       receipt: results/review/runtime.yaml
     cardinality: 1
-    skill_bindings: [haipipe-task-reviewer-agent]
-    workspace_bindings: [review, runtime]
+    cells:
+      - {workspace_id: create, mode: read-only, owner_skill: haipipe-task-for-data, worker_skill_chain: [], interaction: inspect candidate, authority_change: none, source_projection: author Result}
+      - {workspace_id: review, mode: review, owner_skill: haipipe-task-reviewer-agent, worker_skill_chain: [haipipe-task-reviewer-agent], interaction: independent review, authority_change: bind, source_projection: authoritative verdict}
+      - {workspace_id: runtime, mode: read-only, owner_skill: haipipe-plugin-runs, worker_skill_chain: [], interaction: inspect status, authority_change: none, source_projection: same Run/receipt}
 
 entry: [author]
 terminal: [CLOSE, HOLD]
@@ -112,7 +121,9 @@ summary:
 | `result.payload` | no | payload may be none |
 | `result.receipt` | yes | durable runtime/terminal record |
 | `cardinality` | yes | planned demand, never actual count |
-| skill/workspace bindings | yes | execution and presentation bindings |
+| `cells` | yes | one Cell per Plugin Workspace; Skills and surface behavior bind here |
 
 `run_specs` is the only workflow row roster. Do not add `phases:` or treat a
-Step as a row. Low-level engine progress groups may be generated separately.
+Step, Version, or actual Run Instance as a row. Low-level engine progress
+groups may be generated separately. The Workflow references the Plugin-owned
+Workspace roster; it does not create or rename Workspaces.

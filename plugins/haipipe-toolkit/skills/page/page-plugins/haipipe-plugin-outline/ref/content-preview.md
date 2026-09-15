@@ -41,6 +41,8 @@ stored under `## Opening Draft` in that same Outline.
   ask the AI for a concise Summary from the notes and close it. The browser
   writes the registry under `## Scratch` in this same
   selected Outline and the paired ticket/result under `runs/` and `results/`.
+  In Scratch Mode, saved raw Scratch remains visible by default while the
+  underlying body may stay hidden.
   It does not edit `Draft:` prose. A closed Scratch Run is immutable.
 - The owning Structure/Content Run writes the next Markdown revision.
 - A promoted Page Content Markdown is a later output; it is not a second Draft

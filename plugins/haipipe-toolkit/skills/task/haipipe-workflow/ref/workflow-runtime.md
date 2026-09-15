@@ -8,7 +8,7 @@ to executable HAI workflows.
 
 ```text
 Workflow Definition
-  = Run Specs + RunTypes + gate policies + route policies + completion policy
+  = Run Specs + graph compiled from Spec-owned Routes + completion policy
 
 Workflow Runtime
   = one execution identity
@@ -19,11 +19,13 @@ Workflow Runtime
   + runtime receipt
 
 Run
-  = RunType + Ticket + Input/Target + Execution + Result + Receipt
+  = Run Spec + Ticket + Input/Target + Execution + Result + Receipt
 ```
 
-`Workflow Runtime` is an aggregate controller/ledger. It is not an additional
-Level-4 Run and must never be counted as one of its child Runs.
+`Workflow Runtime` is an optional aggregate controller/ledger. Use it for
+multiple active Runs, branching, resume, human HOLD, or cross-Run audit. A
+single straightforward Run may rely on its own receipt. The Runtime is not an
+additional Level-4 Run and must never be counted as one of its child Runs.
 
 `Gate` and `Route` are not top-level entities in this contract:
 
@@ -47,17 +49,18 @@ workflow_runtime_id: <one-execution-id>
 status: planned | running | held | complete | failed
 
 definition:
-  run_types: [<run-type-id>, ...]
+  run_specs: [<run-spec-id>, ...]
   transitions:
-    - from: <run-type-id>
+    - from: <run-spec-id>
       when: <declared-condition>
-      to: <run-type-id | HOLD | CLOSE>
+      to: <run-spec-id | HOLD | CLOSE>
   completion:
     required_terminal_runs: <declared rule>
     final_acceptance: <declared rule>
 
 runs:
   - run_id: <owner-native-run-id>
+    run_spec_id: <run-spec-id>
     run_type: <run-type-id>
     status: planned | running | held | complete | failed
     ticket: <resolved Ticket path>
@@ -75,14 +78,14 @@ control:
       run_receipt: <resolved Run receipt path>
   routes:
     - from_run_id: <owner-native-run-id>
-      decision: <next-run-type | HOLD | CLOSE>
+      decision: <next-run-spec | HOLD | CLOSE>
       mode: automatic | human | agent | hybrid
       reason: <why this route was selected>
       evidence: [<path@hash>, ...]
       run_receipt: <resolved Run receipt path>
 
 frontier:
-  - run_type: <next-runnable-run-type>
+  - run_spec_id: <next-runnable-run-spec>
     target: <bounded target>
     state: runnable | held | waiting
 
@@ -91,26 +94,27 @@ output:
   acceptance: pending | passed | failed
 ```
 
-The envelope is a contract, not a demand that every dialect use these exact
-field names. Existing dialect fields may remain as adapter aliases when
-the new `workflow_runtime_id`, `run_type`, `control`, and `frontier` meanings
-are unambiguous.
+The envelope is a contract for Workflows that need an aggregate Runtime, not a
+demand that every Workflow create one or use these exact field names. Existing
+dialect fields may remain as adapter aliases when `workflow_runtime_id`,
+`run_spec_id`, `control`, and `frontier` remain unambiguous.
 
 ## Execution law
 
-1. Freeze the Workflow Definition before creating a Runtime.
-2. Create one new `workflow_runtime_id` for one execution attempt of that
-   definition.
-3. Materialize only the initial Runs justified by the input and RunType rules.
+1. Freeze the Workflow Definition before execution.
+2. Decide whether aggregate coordination is needed. If so, create one new
+   `workflow_runtime_id`; otherwise use the Run receipts directly.
+3. Materialize only the initial Runs justified by the input and Run Spec/Run
+   Type rules.
 4. Execute each Run through its authored Ticket and pair its Result/receipt.
-5. Record the gate evaluation on the Run receipt after its Result exists; index
-   that record in the Runtime.
+5. Record the gate evaluation on the Run receipt after its Result exists; when
+   a Runtime exists, index that record there.
 6. Select only a route declared by the Definition; record the reason and mode
-   on the Run receipt and project it into the Runtime frontier.
+   on the Run receipt and, when present, project it into the Runtime frontier.
 7. Materialize the next Run(s), or record `HOLD`/`CLOSE`.
-8. Close the Runtime only when all required Runs are terminal, no required
-   control decision is unresolved, the frontier is empty, and final acceptance
-   passes.
+8. Close the Workflow execution only when all required Runs are terminal, no
+   required control decision is unresolved, and final acceptance passes. When
+   a Runtime exists, its frontier must also be empty before it closes.
 
 All control uses the same record shape. `human` names a person,
 `automatic` evaluates only a declared predicate, `agent` names a delegated
@@ -122,7 +126,7 @@ or Route decision mode.
 
 ```text
 workflow_id          reusable definition
-workflow_runtime_id  one execution of that definition
+workflow_runtime_id  one optional aggregate execution ledger
 run_type_id          reusable behavior contract
 run_id               one concrete bounded execution
 ```

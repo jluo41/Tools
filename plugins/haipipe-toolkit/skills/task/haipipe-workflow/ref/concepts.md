@@ -23,13 +23,25 @@ Workflow Execution
 └── Run Instances, each joined to one Run Spec and one receipt
 ```
 
+The Workflow is projected through a Plugin-owned Workspace roster:
+
+```text
+Run Spec × member Workspace = Cell
+Cell = Skill + interaction + authority/projection binding
+```
+
+Skill and actual Run Instance are not additional axes.
+
 ## Ownership
 
 | Layer | Stable responsibility |
 |---|---|
+| Plugin | member Workspace roster and stable ids |
 | Run Type | reusable defaults and close semantics |
-| Run Spec | one planned graph node: target, actor, action, gates, routes, bindings |
+| Run Spec | one planned graph node: target, actor, action, gates, routes, cardinality |
+| Cell | one Run Spec × Workspace binding for Skill, interaction, authority, and projection |
 | Run Instance | one actual attempt: id, state, frozen input, Result, receipt |
+| Workflow Runtime | optional frontier/index for aggregate coordination; never another Run |
 | Step | internal work within a Run |
 | Version | immutable reopen episode for the same target |
 | Workspace | where a person or worker sees/acts on the Run |
@@ -58,6 +70,10 @@ The plan may say `cardinality: N`; it does not prove N Runs exist. An actual Run
 exists only when an instance id/Ticket and receipt are allocated. A Result file,
 retry, script, model call, progress group, or Runtime Workspace card never adds
 another Run identity.
+
+Create a Workflow Runtime only when multiple Runs, branching, resume, human
+HOLD, or cross-Run audit needs aggregate state. One simple Run may use only its
+own receipt.
 
 ## Steps and sub-workflows
 

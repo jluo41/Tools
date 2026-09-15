@@ -216,9 +216,12 @@ class InteractiveSkillContractTest(unittest.TestCase):
                 self.assertIn("rp-struct-01", text)
                 self.assertRegex(text, r"rp-sec-(?:NN|\d{2})")
                 self.assertRegex(text, r"rp-para-\d{2}_P\d{2}")
+        for text in (contract, presenter):
+            with self.subTest(scratch_source=text[:40]):
+                self.assertRegex(text, r"rp-scratch-(?:NN|\d{2})")
         self.assertIn("r01", run_contract + presenter)
         self.assertIn("Delegated Paragraph Writing remains a Task Run", presenter)
-        self.assertIn("The three RP kinds are sibling Page Runs", contract)
+        self.assertIn("The four RP kinds are sibling Page Runs", contract)
 
     def test_runs_function_proposes_only_human_interaction(self):
         runs_fn = (SKILLS / "page/haipipe-page/fn/runs.md").read_text()

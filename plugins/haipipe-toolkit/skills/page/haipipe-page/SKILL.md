@@ -291,7 +291,9 @@ Outline exists. Save keeps `rp-scratch-NN_<target>` open; the person manually
 clicks Finish Scratch, which asks the AI to generate a concise Summary from
 the raw notes and closes the Run only after a non-empty Summary is returned.
 Scratch writes only the selected Outline's `## Scratch` registry plus its
-paired `runs/` and `results/` receipt; it never edits `Draft:` prose.
+paired `runs/` and `results/` receipt; it never edits `Draft:` prose. In
+Scratch Mode, saved raw Scratch remains visible by default even when the
+underlying body is hidden; `+` reopens its editor.
 
 The reader-facing completion packet is defined in
 `ref/user-check-packet.md`. The Draft Space includes a read-only Draft

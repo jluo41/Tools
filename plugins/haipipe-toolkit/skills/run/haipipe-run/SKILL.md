@@ -35,8 +35,9 @@ execution. All other dialects retain their existing resolver.
 Load the Folder owner and the Workflow that declares the Run Spec first. The
 Folder owner owns kind, dialect, and cross-face closure. The Workflow owns the
 directed graph, entry points, and terminal rules. The Run Spec owns why one
-instance is commissioned, its target, actor, gates, routes, skill bindings, and
-Workspace projections. Load the selected worker/dialect after this contract.
+instance is commissioned, its target, actor, gates, routes, and cardinality.
+Each Run Spec × Workspace Cell binds Skills, interaction, authority, and
+projection behavior. Load the selected worker/dialect after this contract.
 Load `haipipe-plugin-runs` only to present the same Run identity inside a
 Runtime Workspace; the presenter owns no Run semantics.
 
@@ -44,7 +45,7 @@ The ontology is explicit: a Run Type is reusable vocabulary and owns inherited
 defaults; a Run Spec is one bounded graph node; and a Run Instance is the
 materialized execution. A Run Spec records its goal/target, actor,
 action/interaction, optional inputs and dependencies, gates, optional route,
-skill and Workspace bindings, and internal Steps. Its entry gate may be omitted
+cardinality, Cell references, and internal Steps. Its entry gate may be omitted
 and defaults open. Its exit gate may be inherited from the Run Type or declared
 explicitly, but close semantics are mandatory. A route may be omitted only for
 a terminal node, where it defaults to `CLOSE`; nonterminal routes are explicit.
@@ -63,9 +64,11 @@ Keep these authorities separate:
 ```text
 Workflow Definition  Run Spec graph · entry rules · terminal rules
 Workflow Execution   materialized Run Instances · lifecycle projection
+Plugin               member Workspace roster · stable Workspace ids
 Run Type             reusable defaults · allowed action/result · close default
 Run Spec             bounded node · goal/target · actor · action/interaction
-                     · inputs/dependencies · gates/routes · Step/skill/Workspace bindings
+                     · inputs/dependencies · gates/routes · cardinality · Steps
+Cell                 Run Spec × Workspace · Skill/interaction/authority/projection
 Run Instance         stable id · frozen run_type reference · state/lifecycle
                      · Result/receipt · attempt history
 worker/dialect       execution method · kind-specific Result grammar
@@ -198,7 +201,7 @@ Workflow Execution  = Run Instances materialized from those Specs
 
 Run Spec = Run Type + bounded Goal/Target + actor + Action/Interaction
            + optional Inputs/Dependencies + Gate + optional Route
-           + internal Steps + skill/Workspace bindings
+           + internal Steps + Cell references
 Run Instance = stable id + frozen run_type reference + lifecycle + Result/Receipt
                + attempt history
 ```
@@ -209,9 +212,11 @@ or Workspace.
 
 ## Workflow Runtime boundary
 
-One Workflow invocation has one `workflow_runtime_id` when it executes durable
-Run Specs. The Runtime is the aggregate record for status, frontier, and an
-index of Run-owned control decisions; each child Run keeps its owner-native
+One Workflow invocation may have one `workflow_runtime_id` when multiple Runs,
+branching, resume, human HOLD, or aggregate audit needs a shared frontier. One
+straightforward Run may rely on its own receipt. When present, the Runtime is
+the aggregate record for status, frontier, and an index of Run-owned control
+decisions; each child Run keeps its owner-native
 Ticket, Result, gate/route record, and receipt. `workflow_runtime_id` is not an
 `rNN`, `riNN`, `rp-*`, or
 other Level-4 Run id. Load
@@ -220,7 +225,7 @@ and adapter aliases.
 
 Every executable Workflow publishes one Run Spec graph:
 
-| Run Spec | Run Type | Goal / target | Actor | Action / interaction | Inputs / dependencies | Entry / exit gate | Optional route | Cardinality | Internal Steps | Skill / Workspace bindings |
+| Run Spec | Run Type | Goal / target | Actor | Action / interaction | Inputs / dependencies | Entry / exit gate | Optional route | Cardinality | Internal Steps | Cells |
 |---|---|---|---|---|---|---|---|---:|---|---|
 | `<spec-id>` | `<type>` | `<bounded goal/target>` | `<actor>` | `<work>` | `<optional>` | `<open/default + inherited/explicit exit>` | `<terminal only; default CLOSE>` | `<formula>` | `<internal>` | `<bindings>` |
 
@@ -499,8 +504,8 @@ DEPENDENCIES optional upstream Run Specs/Instances or governed prerequisites
 STEPS        internal ordered actions; never child Run identities
 TICKET       physical dialect and who may author it
 WORKER       skill, agent, CLI, API, or script allowed to execute
-SKILL        bound Run skill(s) that define the execution contract
-WORKSPACE    bound presentation/interaction surface; it owns no Run semantics
+CELLS        one coordinate per Plugin Workspace; each Cell binds Skill,
+             interaction, authority, and projection behavior
 RESULT       required terminal Result record; domain payload may be empty
 GATE         optional/default-open entry; inherited or explicit exit; mandatory close semantics; mode: human | automatic | agent | hybrid
 ROUTE        optional only for terminal/default CLOSE; otherwise explicit graph edge; mode: human | automatic | agent | hybrid

@@ -282,7 +282,8 @@ is the only explicit browser writing lane: a tiny `+` appears only after the
 person enters Scratch, below a Section or paragraph heading. It opens an
 inline note form; `Save` keeps the Run open, and the person manually clicks
 `Finish Scratch` to ask the AI for a concise Summary from the notes and close
-that Scratch Run. There is no old comments
+that Scratch Run. Once saved, the raw Scratch is shown by default in Scratch
+Mode even if the underlying body is hidden. There is no old comments
 composer, feedback badge, or tap-to-edit Draft control.
 
 The plan and candidate wording remain Markdown authorities under `outline/`:

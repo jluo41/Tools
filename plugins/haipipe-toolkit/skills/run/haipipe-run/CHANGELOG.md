@@ -10,8 +10,11 @@ Entry gates default open, exit close semantics are mandatory, terminal routes
 default to `CLOSE`, and gate/route modes are `human | automatic | agent |
 hybrid`; phase/controller labels are adapter metadata, not ontology. Add the
 Workflow Runtime boundary: one aggregate `workflow_runtime_id` records frontier
-and control decisions while child Runs retain owner-native identities, Tickets,
-Results, and receipts.
+and indexes Run-owned control decisions while child Runs retain owner-native
+identities, Tickets, Results, and receipts.
+Clarify that Workflow Runtime is optional aggregate infrastructure and that
+Skill/interaction/projection behavior belongs to Run Spec × Workspace Cells,
+not directly to the Run Spec or Workspace.
 
 ## 0.26.0 · 2026-09-14
 

@@ -97,7 +97,9 @@ without changing the `Draft:` field. `Save` creates or updates
 `rp-scratch-NN_<target>` and its `## Scratch` registry record; the person
 manually clicks `Finish Scratch` to ask the AI for a concise Summary from the
 notes and close the Run. There is no `💬 Notes` thread,
-old feedback badge, or `action: feedback` composer in Draft Space.
+old feedback badge, or `action: feedback` composer in Draft Space. In Scratch
+Mode, saved raw Scratch is displayed by default even when the body is hidden;
+the `+` reopens the editor.
 
 ### Evidence Space
 

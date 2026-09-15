@@ -30,17 +30,21 @@ definition. They are not domain Phases and do not receive runtime authority.
 
 Load `haipipe-run` whenever the Workflow has executable work. Load
 `workflow-table` when the user needs the Run Spec × Workspace projection.
-Load [`ref/workflow-runtime.md`](ref/workflow-runtime.md) whenever the
-Workflow creates, executes, resumes, or audits durable Runs.
+Load [`ref/workflow-runtime.md`](ref/workflow-runtime.md) when multiple Runs,
+branching, resume, human HOLD, or aggregate audit state justify a Workflow
+Runtime. One straightforward Run may rely on its own receipt.
 
 ## Core objects
 
 | Object | Owns | Does not own |
 |---|---|---|
+| Plugin | member Workspace roster and stable ids | Run execution or Workflow order |
 | Workflow | graph compiled from Spec-owned Routes, entry specs, terminal rules, Workflow I/O | concrete runtime truth or a second Route authority |
 | Run Type | reusable defaults, allowed action/result, default close rule | one target or instance id |
-| Run Spec | target/goal, actor, action/interaction, gates, routes, cardinality, skill/Workspace bindings | current execution state |
+| Run Spec | target/goal, actor, action/interaction, gates, routes, cardinality | current execution state or surface behavior |
+| Cell | one Run Spec × member Workspace binding: skills, interaction, authority, projection | a second Gate/Route or copied Run |
 | Run Instance | id, state, attempts, frozen inputs, Result, terminal outcome, receipt | Workflow graph definition |
+| Workflow Runtime | optional frontier and aggregate index of Run-owned decisions | another Run identity |
 | Step | one internal action or interaction inside a Run | independent Workflow row or Run id |
 | Workspace | presentation and interaction surface | execution authority |
 
@@ -73,15 +77,22 @@ result:
   payload: <schema/pointer or none>
   receipt: <required durable receipt schema/path>
 cardinality: <1 | 0..N | symbolic formula>
-skill_bindings: [<literal skills>]
-workspace_bindings: [<member Workspace ids>]
+cells:
+  - workspace_id: <member Workspace id>
+    mode: <own | action | review | decision | read-only | empty>
+    owner_skill: <literal owner Skill or none>
+    worker_skill_chain: [<ordered literal Skills>]
+    interaction: <allowed interaction or none>
+    authority_change: <create | revise | bind | promote | release | none>
+    source_projection: <source/read-write rule or none>
 ```
 
 Required semantic fields are stable Spec and instance identity, Run Type,
 bounded target/goal, actor, action/interaction, lifecycle state, close rule,
 terminal outcome, and durable receipt. Inputs, dependencies, entry gate, and
-Result payload are conditional. A terminal Run may omit an explicit route only
-when `CLOSE` is its declared default.
+Result payload are conditional. Cell bindings are required, with one Cell per
+member Workspace. A terminal Run may omit an explicit route only when `CLOSE`
+is its declared default.
 
 ## Human decisions and interactions
 
@@ -107,13 +118,16 @@ model call when they share one target and close rule.
 `/haipipe-workflow plan` creates or revises `plan.yaml`.
 
 1. Name Workflow purpose, Input, and Output.
-2. List independently closable Run Specs; reject pseudo-Runs that are only
+2. Resolve the Plugin-owned Workspace roster.
+3. List independently closable Run Specs; reject pseudo-Runs that are only
    Steps, files, tools, or projections.
-3. Resolve each Run Type, target, actor, action/interaction, exit gate, routes,
-   cardinality, skills, and Workspace bindings.
-4. Draw every forward, backward, SELF, HOLD, and terminal route.
-5. State entry Run Specs and Workflow terminal rules.
-6. Freeze the graph only after every destination and close rule resolves.
+4. Resolve each Run Type, target, actor, action/interaction, exit gate, routes,
+   and cardinality.
+5. Materialize one Cell per Run Spec × member Workspace; bind Skills and
+   interaction/projection behavior in those Cells.
+6. Draw every forward, backward, SELF, HOLD, and terminal route.
+7. State entry Run Specs and Workflow terminal rules.
+8. Freeze only after every destination, close rule, and Cell resolves.
 
 Use [`ref/plan-schema.md`](ref/plan-schema.md) for the complete shape.
 
@@ -146,6 +160,10 @@ allocated instance ids and valid receipts. Record deviations; do not mutate the
 frozen graph during execution. A materially changed target or close rule
 requires a new Run Instance or a newly frozen Workflow definition according to
 the owning dialect.
+
+Create a Workflow Runtime only when aggregate coordination is useful. It may
+index Run-owned Gate/Route records and preserve the frontier, but it is not a
+Run and cannot replace any Run receipt.
 
 ## REPORT · echo definition with runtime truth
 
@@ -180,6 +198,8 @@ Before freezing or reporting, require:
 - human decision Runs pass the independent-close test;
 - feedback Steps and Versions are not counted as Runs;
 - planned cardinality is separate from actual allocated instances;
+- every Run Spec has one Cell per Plugin Workspace;
+- Cell Skill/interaction/projection bindings do not redefine Run Gate/Route;
 - Workspace bindings are presentation/interaction only;
 - low-level progress groups are not treated as semantic Phases;
 - the report mirrors the graph and names actual route outcomes.

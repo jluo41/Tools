@@ -149,7 +149,9 @@ leaves the Run open. The person manually clicks `Finish Scratch`, which asks
 the AI to generate a concise non-empty Summary from the raw notes, writes
 `AI generated the Scratch Summary and the person closed the Run.` to the Result,
 and closes the Run. A closed Scratch Run is immutable; later thinking starts a
-new Scratch Run. This capture never edits `Draft:` prose. Ordinary feedback
+new Scratch Run. Scratch Mode keeps saved raw Scratch visible by default even
+when the underlying body is hidden. This capture never edits `Draft:` prose.
+Ordinary feedback
 still enters a Page Writing Run as a pending `### Human feedback` Step, but it
 is not a Draft-space composer.
 

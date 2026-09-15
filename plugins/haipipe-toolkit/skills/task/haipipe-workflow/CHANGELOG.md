@@ -12,6 +12,9 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
   keep low-level `phase` API fields as non-semantic progress metadata only.
 - Add the shared Workflow Runtime envelope and distinguish aggregate runtime
   state from owner-native child Run identities.
+- Make Workflow Runtime an optional aggregate ledger rather than a required
+  domain layer, and put Skill/interaction/projection bindings in explicit
+  Run Spec × Workspace Cells owned by the Plugin roster.
 
 
 ## [0.3.0] — 2026-09-01

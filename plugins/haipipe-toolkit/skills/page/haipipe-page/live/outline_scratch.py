@@ -129,8 +129,8 @@ def _record_spans(body: str) -> list[tuple[int, int, dict[str, str]]]:
 def _block_value(body: str, label: str) -> str:
     """Read an indented multiline field written by ``_format_record``."""
     hit = re.search(
-        rf"^-\s+{re.escape(label)}:\s*\|?\s*$\n"
-        rf"((?:^[ \t]{2}.*(?:\n|$))*)",
+        rf"^-\s+{re.escape(label)}:[ \t]*\|?[ \t]*\n"
+        rf"((?:^[ \t]{{2}}.*(?:\n|$))*)",
         body, re.M,
     )
     if not hit:
@@ -370,6 +370,25 @@ def scratch_control_html(scope: str, target: str, record: dict | None = None,
     closed = record.get("status", "").lower() == "closed"
     run_id = record.get("run", "") if not closed else ""
     notes = record.get("notes", "") if not closed else ""
+    raw_notes = record.get("notes", "")
+    summary = record.get("summary", "")
+    saved_parts = []
+    if raw_notes:
+        saved_parts.append(
+            '<div class="scratch-saved-block"><span class="scratch-saved-label">'
+            'Scratch</span><div class="scratch-saved-text">%s</div></div>'
+            % _e(raw_notes)
+        )
+    if summary:
+        saved_parts.append(
+            '<div class="scratch-saved-block"><span class="scratch-saved-label">'
+            'Summary</span><div class="scratch-saved-text">%s</div></div>'
+            % _e(summary)
+        )
+    saved_class = " has-saved" if saved_parts else ""
+    saved = '<div class="scratch-saved%s">%s</div>' % (
+        saved_class, "".join(saved_parts)
+    )
     mode_class = " reading-only" if reading else " table-only"
     return (
         '<div class="scratch-slot%s" data-scratch-scope="%s" '
@@ -390,8 +409,7 @@ def scratch_control_html(scope: str, target: str, record: dict | None = None,
     ) % (
         mode_class, _e(scope), _e(target), _e(scope), _e(scope),
         '<span class="scratch-done" title="Scratch closed">Scratch ✓</span>' if closed else "",
-        ('<span class="scratch-closed-summary">%s</span>' % _e(record.get("summary", ""))
-         if closed and record.get("summary") else ""),
+        saved,
         _e(scope), _e(target), _e(run_id), _e(notes),
     )
 
@@ -410,8 +428,8 @@ def scratch_assets_html() -> str:
 .scratch-editor textarea{resize:vertical;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:6px;text-transform:none;letter-spacing:normal}
 .scratch-editor textarea[name="notes"]{min-height:clamp(240px,32vh,420px)}
 .scratch-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.scratch-actions button{border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);padding:4px 7px;cursor:pointer;font:600 11px system-ui,sans-serif}.scratch-actions button[data-scratch-finish]{border-color:var(--acc);color:var(--acc)}
-.scratch-status{color:var(--mut);font:11px/1.4 system-ui,sans-serif}.scratch-done{display:none;color:var(--ok);font:600 11px/1.4 system-ui,sans-serif}.scratch-closed-summary{display:none;color:var(--mut);font:12px/1.45 system-ui,sans-serif;font-weight:400}
-.draft-lens[data-draft-mode="scratch"] .scratch-slot{display:block}.draft-lens[data-draft-mode="scratch"] .scratch-done,.draft-lens[data-draft-mode="scratch"] .scratch-closed-summary{display:inline}
+.scratch-status{color:var(--mut);font:11px/1.4 system-ui,sans-serif}.scratch-done{display:none;color:var(--ok);font:600 11px/1.4 system-ui,sans-serif}.scratch-saved{display:none;margin:7px 0 0;padding:8px 10px;border-left:2px solid var(--acc);background:var(--card);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.scratch-saved-block+.scratch-saved-block{margin-top:8px}.scratch-saved-label{display:block;margin-bottom:2px;color:var(--mut);font:600 10px/1.3 system-ui,sans-serif;letter-spacing:.05em;text-transform:uppercase}.scratch-saved-text{white-space:pre-wrap}
+.draft-lens[data-draft-mode="scratch"] .scratch-slot{display:block}.draft-lens[data-draft-mode="scratch"] .scratch-done{display:inline}.draft-lens[data-draft-mode="scratch"] .scratch-saved.has-saved{display:block}
 .draft-lens[data-draft-mode="scratch"] .paragraph-bullets{display:none}.draft-lens[data-draft-mode="scratch"] .paragraph-reading{display:block}.draft-lens[data-draft-mode="scratch"] .paragraph-group{margin-bottom:24px}.draft-lens[data-draft-mode="scratch"] details.paragraph-group>summary{cursor:pointer}
 .draft-lens[data-draft-mode="scratch"] .reading-line{position:relative}.draft-lens[data-draft-mode="scratch"] .reading-copy{max-width:70ch}
 .section-scratch{margin:0 0 6px}
@@ -422,7 +440,7 @@ def scratch_assets_html() -> str:
 (function(){
   function closeEditors(except){document.querySelectorAll('.scratch-editor.open').forEach(function(x){if(x!==except)x.classList.remove('open');});}
   document.querySelectorAll('.scratch-plus').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();var slot=button.closest('.scratch-slot'),editor=slot&&slot.querySelector('.scratch-editor');if(!editor)return;var was=editor.classList.contains('open');closeEditors(editor);editor.classList.toggle('open',!was);if(!was){var note=editor.querySelector('[name=notes]');if(note)note.focus();}});});
-  document.querySelectorAll('[data-scratch-save],[data-scratch-finish]').forEach(function(button){button.addEventListener('click',async function(){var form=button.closest('form'),slot=form.closest('.scratch-slot'),status=form.querySelector('.scratch-status'),finish=button.hasAttribute('data-scratch-finish');var payload={action:'scratch',phase:finish?'finish':'save'};new FormData(form).forEach(function(value,key){payload[key]=value;});status.textContent=finish?'Summarizing with AI…':'Saving…';try{var response=await fetch('/_board/outline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),result=await response.json();if(!response.ok||!result.ok)throw new Error(result.err||'Unable to save Scratch');status.textContent=finish?'Closed ✓':'Saved';if(result.run&&!payload.run_id){form.querySelector('[name=run_id]').value=result.run;}if(finish){slot.querySelector('.scratch-editor').classList.remove('open');setTimeout(function(){location.reload();},180);}}catch(error){status.textContent=error.message;}});});
+  document.querySelectorAll('[data-scratch-save],[data-scratch-finish]').forEach(function(button){button.addEventListener('click',async function(){var form=button.closest('form'),slot=form.closest('.scratch-slot'),status=form.querySelector('.scratch-status'),finish=button.hasAttribute('data-scratch-finish');var payload={action:'scratch',phase:finish?'finish':'save'};new FormData(form).forEach(function(value,key){payload[key]=value;});status.textContent=finish?'Summarizing with AI…':'Saving…';try{var response=await fetch('/_board/outline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),result=await response.json();if(!response.ok||!result.ok)throw new Error(result.err||'Unable to save Scratch');status.textContent=finish?'Closed ✓':'Saved';if(result.run&&!payload.run_id){form.querySelector('[name=run_id]').value=result.run;}if(finish)slot.querySelector('.scratch-editor').classList.remove('open');setTimeout(function(){location.reload();},180);}catch(error){status.textContent=error.message;}});});
   document.addEventListener('click',function(event){if(!event.target.closest('.scratch-slot'))closeEditors(null);});
 })();
 </script>"""

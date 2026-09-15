@@ -131,19 +131,32 @@ class ScratchTest(unittest.TestCase):
         self.assertIn('textarea[name="notes"]{min-height:clamp(240px,32vh,420px)}', card)
         self.assertNotIn('name="summary"', card)
         self.assertNotIn("Summarize when you are done", card)
+        self.assertIn("setTimeout(function(){location.reload();},180)", card)
         readonly = plan_card(self.page, read_only=True)
         self.assertNotIn("data-scratch-form", readonly)
         self.assertNotIn("Finish Scratch", readonly)
 
+    def test_saved_scratch_is_visible_by_default_in_scratch_mode(self):
+        result, err = self.save("paragraph", "C1.P1")
+        self.assertIsNone(err, err)
+        card = plan_card(self.page)
+        self.assertIn('class="scratch-saved has-saved"', card)
+        self.assertIn("First thought", card)
+        self.assertIn("Second thought", card)
+        self.assertNotIn("scratch-saved-summary", card)
+
     def test_closed_scratch_appears_in_run_inventory_as_done(self):
-        result, err = self.save("subsection", "C1.P1", "finish",
+        result, err = self.save("paragraph", "C1.P1", "finish",
                                summary="Set the opening move before the mechanism.")
         self.assertIsNone(err, err)
         rows = run_inventory(self.page)
         row = next(item for item in rows if item["run_id"] == result["run"])
         self.assertEqual(row["status"], "Done")
         self.assertEqual(row["mode"], "scratch")
-        self.assertEqual(row["target_scope"], "subsection")
+        self.assertEqual(row["target_scope"], "paragraph")
+        card = plan_card(self.page)
+        self.assertIn("First thought", card)
+        self.assertIn("AI summary of the rough plan.", card)
 
     def test_ai_summary_uses_the_local_cli_without_tools(self):
         completed = SimpleNamespace(
