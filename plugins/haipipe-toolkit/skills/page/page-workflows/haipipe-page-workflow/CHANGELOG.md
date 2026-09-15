@@ -1,4 +1,4 @@
-## 0.59.0 · 2026-09-15
+## 0.60.0 · 2026-09-15
 
 - Add `Page.interactive-writing.scratch` and `rp-scratch-NN_<target>` to the
   Run Spec × Workspace graph.

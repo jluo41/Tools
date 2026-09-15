@@ -33,8 +33,10 @@ stored under `## Opening Draft` in that same Outline.
 - Table and Reading are strictly read-only. They never edit the Outline, the
   Page, or a Result, and they show no Draft editor or comment composer.
 - Scratch is the one explicit human-writing lane. In Scratch view, a small `+`
-  is available at Section (`C1`), Subsection (`C1.P1`), and whole paragraph
-  (`C1.P1`) scope. B/symbol rows have no Scratch control. `Save` creates or updates an open
+  is available at Section (`C1`) and whole paragraph group (`C1.P1`) scope.
+  The current Outline grammar has no separate subsection node, so it does not
+  render a duplicate Subsection plus. Explicit subsection-scope records remain
+  accepted for future Page schemas. B/symbol rows have no Scratch control. `Save` creates or updates an open
   `rp-scratch-NN_<target>` Run; `Finish Scratch` requires a human Summary and
   closes it. The browser writes the registry under `## Scratch` in this same
   selected Outline and the paired ticket/result under `runs/` and `results/`.

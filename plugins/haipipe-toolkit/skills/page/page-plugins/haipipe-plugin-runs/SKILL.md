@@ -13,7 +13,7 @@ description: >-
   Execute and closure. Trigger: Run Space, run overview, run status, run
   results, show the runs, or the compatibility route /haipipe-plugin-runs.
 metadata:
-  version: "0.31.0"
+  version: "0.32.0"
   last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -168,8 +168,9 @@ SHAPE + SURVEY Structure Run (Mermaid, Outline Bullets, Point roles, and
 evidence route decisions), `rp-scratch-NN_<target>` for human rough-thinking
 capture, `rp-sec-NN` for Section-level writing, and
 `rp-para-NN_Pxx[-Pyy]` for fixed paragraph or paragraph-group writing. A
-Scratch target is a Section (`C1`), Subsection (`C1.P1`), or whole paragraph
-group (`C1.P1`). B/symbol rows are not Scratch targets. The initial Structure Run is `rp-struct-01`; examples of later
+Scratch target is a Section (`C1`) or whole paragraph group (`C1.P1`) in the
+current Outline grammar. There is no separate subsection node, and B/symbol
+rows are not Scratch targets. The initial Structure Run is `rp-struct-01`; examples of later
 valid identities are `rp-scratch-01_C1.P1`, `rp-struct-02`, `rp-sec-01`, and
 `rp-para-01_P03-P05`. SHAPE and SURVEY are Steps/cycles of `rp-struct-01`,
 never separate planning cards.

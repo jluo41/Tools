@@ -1,16 +1,18 @@
 """Human-first Scratch Runs for Draft Space.
 
 Scratch is deliberately smaller than writing or feedback.  It records a
-person's rough plan for one Page target, then closes only after that person
-confirms a short summary.  The current Scratch registry lives in the selected
-Outline Markdown; the paired Run ticket and Result journal keep the durable
-execution receipt in ``runs/`` and ``results/``.
+person's rough plan for one Page target, then asks the AI to produce a short
+summary when the person closes it.  The current Scratch registry lives in the
+selected Outline Markdown; the paired Run ticket and Result journal keep the
+durable execution receipt in ``runs/`` and ``results/``.
 """
 from __future__ import annotations
 
 import datetime as dt
 import html
+import os
 import re
+import subprocess
 import tempfile
 from pathlib import Path
 
@@ -40,6 +42,45 @@ def _clean(value: object, label: str, *, required: bool = True) -> str:
     if len(value) > 12000:
         raise ValueError("%s is too long" % label)
     return value
+
+
+def ai_summarize_scratch(page_src: Path, scope: str, target: str, notes: str) -> str:
+    """Ask the local Claude CLI for the close-summary; never write on failure."""
+    prompt = (
+        "Summarize one person's rough Scratch notes for a Page writing workflow.\n"
+        f"Target: {scope} {target}\n\n"
+        "Raw Scratch notes:\n---\n"
+        f"{notes}\n"
+        "---\n\n"
+        "Return only one concise paragraph of 2–4 sentences. State the intended "
+        "purpose and sequence of the target, preserve unresolved decisions, and "
+        "do not invent facts. Do not use a heading, bullets, quotation marks, or "
+        "a preamble."
+    )
+    env = dict(os.environ)
+    env.pop("CLAUDECODE", None)
+    try:
+        run = subprocess.run(
+            ["claude", "-p", prompt, "--output-format", "text",
+             "--model", "haiku", "--effort", "low",
+             "--no-session-persistence", "--permission-prompt", "none",
+             "--tools", ""],
+            capture_output=True, text=True, timeout=120,
+            cwd=page_src.parent, env=env,
+        )
+    except FileNotFoundError as exc:
+        raise ValueError("AI summary unavailable: claude CLI not found") from exc
+    except subprocess.TimeoutExpired as exc:
+        raise ValueError("AI summary timed out; Scratch remains open") from exc
+    except OSError as exc:
+        raise ValueError("AI summary unavailable: %s" % exc) from exc
+    if run.returncode != 0:
+        detail = (run.stderr or run.stdout or "unknown AI error").strip()
+        raise ValueError("AI summary failed: %s" % detail[:300])
+    summary = re.sub(r"^```(?:text|markdown)?\s*|\s*```$", "",
+                     (run.stdout or "").strip(), flags=re.I)
+    summary = _clean(" ".join(summary.split()), "AI summary")
+    return summary
 
 
 def _plan(page_src: Path) -> Path:
@@ -213,7 +254,7 @@ def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
         "---\n\n"
         "# {run}\n\n"
         "- Purpose: capture the person's rough thinking for {scope} {target}.\n"
-        "- Close rule: the person confirms a Summary.\n"
+        "- Close rule: Finish asks the AI for a concise Summary.\n"
     ).format(**record)
     (runs / (record["run"] + ".md")).write_text(ticket, encoding="utf-8")
     version = "v001"
@@ -230,8 +271,8 @@ def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
             state="closed" if closed else "open", scope=record["scope"],
             target=record["target"], notes=record["notes"],
             summary=record.get("summary", "") or "Not closed yet.",
-            closure=("Human confirmed the Scratch Summary."
-                     if closed else "Waiting for the person to confirm a Summary."),
+            closure=("AI generated the Scratch Summary and the person closed the Run."
+                     if closed else "Waiting for the person to Finish Scratch."),
         ), encoding="utf-8",
     )
     (result / "working.md").write_text(
@@ -265,8 +306,9 @@ def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
     }
 
 
-def save_scratch(page_src: Path, payload: dict, *, read_only: bool = False) -> tuple[dict | None, str | None]:
-    """Save an open Scratch or close it after Summary confirmation."""
+def save_scratch(page_src: Path, payload: dict, *, read_only: bool = False,
+                 summarizer=None) -> tuple[dict | None, str | None]:
+    """Save an open Scratch or close it after an AI-generated Summary."""
     if read_only:
         return None, "This Page is read-only"
     try:
@@ -280,9 +322,12 @@ def save_scratch(page_src: Path, payload: dict, *, read_only: bool = False) -> t
         phase = _clean(payload.get("phase", "save"), "phase").lower()
         if phase not in {"save", "finish"}:
             raise ValueError("phase must be save or finish")
-        summary = _clean(payload.get("summary", ""), "summary", required=False)
-        if phase == "finish" and not summary:
-            raise ValueError("summary is required before closing Scratch")
+        summary = ""
+        if phase == "finish":
+            make_summary = summarizer or ai_summarize_scratch
+            summary = _clean(make_summary(page_src, scope, target, notes),
+                             "AI summary")
+            summary = " ".join(summary.split())
         inventory = read_scratch(page_src)
         key = (scope, target)
         requested_run = _clean(payload.get("run_id", ""), "run_id", required=False)
@@ -318,19 +363,18 @@ def _e(value: object) -> str:
 
 def scratch_control_html(scope: str, target: str, record: dict | None = None,
                          *, read_only: bool = False, reading: bool = False) -> str:
-    """Compact control rendered beside a section, subsection, or paragraph."""
+    """Inline control rendered below its Section or paragraph heading."""
     if read_only:
         return ""
     record = record or {}
     closed = record.get("status", "").lower() == "closed"
     run_id = record.get("run", "") if not closed else ""
     notes = record.get("notes", "") if not closed else ""
-    summary = record.get("summary", "") if not closed else ""
     mode_class = " reading-only" if reading else " table-only"
     return (
         '<div class="scratch-slot%s" data-scratch-scope="%s" '
         'data-scratch-target="%s">'
-        '<button type="button" class="scratch-plus" title="Add Scratch" '
+        '<button type="button" class="scratch-plus" title="Add %s Scratch" '
         'aria-label="Add %s Scratch">+</button>'
         '%s%s'
         '<div class="scratch-editor">'
@@ -338,47 +382,47 @@ def scratch_control_html(scope: str, target: str, record: dict | None = None,
         '<input type="hidden" name="scope" value="%s">'
         '<input type="hidden" name="target" value="%s">'
         '<input type="hidden" name="run_id" value="%s">'
-        '<label>Scratch<textarea name="notes" rows="3" placeholder="What should this part do?">%s</textarea></label>'
-        '<label>Summary<textarea name="summary" rows="2" placeholder="Summarize when you are done">%s</textarea></label>'
+        '<label>Scratch<textarea name="notes" rows="12" placeholder="What should this part do?">%s</textarea></label>'
         '<div class="scratch-actions"><button type="button" data-scratch-save>Save</button>'
         '<button type="button" data-scratch-finish>Finish Scratch</button>'
         '<span class="scratch-status" role="status"></span></div>'
         '</form></div></div>'
     ) % (
-        mode_class, _e(scope), _e(target), _e(scope),
+        mode_class, _e(scope), _e(target), _e(scope), _e(scope),
         '<span class="scratch-done" title="Scratch closed">Scratch ✓</span>' if closed else "",
         ('<span class="scratch-closed-summary">%s</span>' % _e(record.get("summary", ""))
          if closed and record.get("summary") else ""),
-        _e(scope), _e(target), _e(run_id), _e(notes), _e(summary),
+        _e(scope), _e(target), _e(run_id), _e(notes),
     )
 
 
 def scratch_assets_html() -> str:
     """CSS and the tiny same-origin controller emitted once per Draft."""
     return r"""<style>
-.scratch-slot{display:none;align-items:baseline;gap:4px;margin-left:7px;vertical-align:baseline}
+.scratch-slot{display:none;margin:6px 0 12px}
 .scratch-plus{appearance:none;border:0;background:none;color:var(--acc);font:600 16px/1 system-ui,sans-serif;padding:0 3px;cursor:pointer;opacity:.72}
 .scratch-plus:hover,.scratch-plus:focus-visible{opacity:1;outline:1px solid var(--acc);border-radius:3px}
-.scratch-editor{display:none;position:absolute;z-index:3;width:min(360px,calc(100vw - 34px));margin:5px 0 0;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,.12);text-transform:none;letter-spacing:normal}
+.scratch-editor{display:none;position:static;width:auto;margin:7px 0 0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);box-shadow:none;text-transform:none;letter-spacing:normal}
 .scratch-editor.open{display:block}
 .scratch-editor>summary{display:none}
 .scratch-editor form{display:grid;gap:7px}
 .scratch-editor label{display:grid;gap:3px;color:var(--mut);font:600 11px/1.4 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em}
-.scratch-editor textarea{resize:vertical;min-height:42px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:6px;text-transform:none;letter-spacing:normal}
+.scratch-editor textarea{resize:vertical;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:6px;text-transform:none;letter-spacing:normal}
+.scratch-editor textarea[name="notes"]{min-height:clamp(240px,32vh,420px)}
 .scratch-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.scratch-actions button{border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);padding:4px 7px;cursor:pointer;font:600 11px system-ui,sans-serif}.scratch-actions button[data-scratch-finish]{border-color:var(--acc);color:var(--acc)}
 .scratch-status{color:var(--mut);font:11px/1.4 system-ui,sans-serif}.scratch-done{display:none;color:var(--ok);font:600 11px/1.4 system-ui,sans-serif}.scratch-closed-summary{display:none;color:var(--mut);font:12px/1.45 system-ui,sans-serif;font-weight:400}
-.draft-lens[data-draft-mode="scratch"] .scratch-slot{display:inline-flex}.draft-lens[data-draft-mode="scratch"] .scratch-slot.table-only{display:inline-flex}.draft-lens[data-draft-mode="scratch"] .scratch-slot.reading-only{display:inline-flex}.draft-lens[data-draft-mode="scratch"] .scratch-done,.draft-lens[data-draft-mode="scratch"] .scratch-closed-summary{display:inline}
+.draft-lens[data-draft-mode="scratch"] .scratch-slot{display:block}.draft-lens[data-draft-mode="scratch"] .scratch-done,.draft-lens[data-draft-mode="scratch"] .scratch-closed-summary{display:inline}
 .draft-lens[data-draft-mode="scratch"] .paragraph-bullets{display:none}.draft-lens[data-draft-mode="scratch"] .paragraph-reading{display:block}.draft-lens[data-draft-mode="scratch"] .paragraph-group{margin-bottom:24px}.draft-lens[data-draft-mode="scratch"] details.paragraph-group>summary{cursor:pointer}
 .draft-lens[data-draft-mode="scratch"] .reading-line{position:relative}.draft-lens[data-draft-mode="scratch"] .reading-copy{max-width:70ch}
-.draft-lens[data-draft-mode="scratch"] .scratch-slot.reading-only{margin-left:3px}
+.section-scratch{margin:0 0 6px}
+.paragraph-scratch{margin:0}
 .scratch-slot.reading-only{display:none}
 .scratch-slot.table-only{display:none}
-.scratch-slot .scratch-editor textarea[name="summary"]{min-height:34px}
 </style><script>
 (function(){
   function closeEditors(except){document.querySelectorAll('.scratch-editor.open').forEach(function(x){if(x!==except)x.classList.remove('open');});}
   document.querySelectorAll('.scratch-plus').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();var slot=button.closest('.scratch-slot'),editor=slot&&slot.querySelector('.scratch-editor');if(!editor)return;var was=editor.classList.contains('open');closeEditors(editor);editor.classList.toggle('open',!was);if(!was){var note=editor.querySelector('[name=notes]');if(note)note.focus();}});});
-  document.querySelectorAll('[data-scratch-save],[data-scratch-finish]').forEach(function(button){button.addEventListener('click',async function(){var form=button.closest('form'),slot=form.closest('.scratch-slot'),status=form.querySelector('.scratch-status'),finish=button.hasAttribute('data-scratch-finish');var payload={action:'scratch',phase:finish?'finish':'save'};new FormData(form).forEach(function(value,key){payload[key]=value;});status.textContent='Saving…';try{var response=await fetch('/_board/outline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),result=await response.json();if(!response.ok||!result.ok)throw new Error(result.err||'Unable to save Scratch');status.textContent=finish?'Closed ✓':'Saved';if(result.run&&!payload.run_id){form.querySelector('[name=run_id]').value=result.run;}if(finish){slot.querySelector('.scratch-editor').classList.remove('open');setTimeout(function(){location.reload();},180);}}catch(error){status.textContent=error.message;}});});
+  document.querySelectorAll('[data-scratch-save],[data-scratch-finish]').forEach(function(button){button.addEventListener('click',async function(){var form=button.closest('form'),slot=form.closest('.scratch-slot'),status=form.querySelector('.scratch-status'),finish=button.hasAttribute('data-scratch-finish');var payload={action:'scratch',phase:finish?'finish':'save'};new FormData(form).forEach(function(value,key){payload[key]=value;});status.textContent=finish?'Summarizing with AI…':'Saving…';try{var response=await fetch('/_board/outline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),result=await response.json();if(!response.ok||!result.ok)throw new Error(result.err||'Unable to save Scratch');status.textContent=finish?'Closed ✓':'Saved';if(result.run&&!payload.run_id){form.querySelector('[name=run_id]').value=result.run;}if(finish){slot.querySelector('.scratch-editor').classList.remove('open');setTimeout(function(){location.reload();},180);}}catch(error){status.textContent=error.message;}});});
   document.addEventListener('click',function(event){if(!event.target.closest('.scratch-slot'))closeEditors(null);});
 })();
 </script>"""

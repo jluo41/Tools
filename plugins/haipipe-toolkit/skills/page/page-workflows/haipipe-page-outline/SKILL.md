@@ -324,7 +324,7 @@ Content remains a later adoption authority.
 
 The live Draft Space's Table and Reading views are read-only. Scratch Mode is
 the one bounded human-thinking capture surface: a small `+` at Section,
-Subsection, or whole paragraph-group scope writes only the selected Outline's
+whole paragraph-group scope writes only the selected Outline's
 `## Scratch` registry and its paired `rp-scratch-NN_<target>` receipt. It does
 not edit `Draft:` prose. Page/Run workflow writers provide the
 bounded SHAPE hand-edit path: they may revise one Bullet; additions are made

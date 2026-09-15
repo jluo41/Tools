@@ -3,8 +3,9 @@
 The Page-facing vocabulary has three areas: local Page Runs for human/Page
 interactions and Page-owned Evidence, plus Supporting Runs for linked work
 owned elsewhere. Page Writing includes a small human-first Scratch Run for
-rough thinking at Section, Subsection, or whole paragraph-group scope. B/symbol
-rows are not Scratch targets. Supporting
+rough thinking at Section or whole paragraph-group scope in the current
+Outline grammar. There is no separate subsection node, and B/symbol rows are
+not Scratch targets. Supporting
 Runs remain inspectable references; they are never copied into this Page. The
 reader-facing projection is result-first: a closed card shows only what the
 Run is called and what it is doing, while its real Result appears when the

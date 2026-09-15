@@ -55,8 +55,9 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   that writes only the plan's `## Scratch` registry and a paired
   `rp-scratch-NN_<target>` receipt; it never edits `Draft:` prose.
 - **Scratch Mode** — the Draft view where a person captures rough thinking at
-  Section (`C1`), Subsection (`C1.P1`), or whole paragraph-group (`C1.P1`)
-  scope. B/symbol rows are reading material only and have no Scratch control.
+  Section (`C1`) or whole paragraph-group (`C1.P1`) scope. The current Outline
+  grammar has no separate subsection node, so it renders one plus per visible
+  target. B/symbol rows are reading material only and have no Scratch control.
   Save keeps the Run open; Finish requires a human Summary and closes it.
   Closed Scratch Runs are immutable. Ordinary feedback remains a Step in the
   owning Page Writing Run, not a Draft composer.

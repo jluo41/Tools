@@ -1,7 +1,7 @@
-## 0.106.0 · 2026-09-15
+## 0.107.0 · 2026-09-15
 
-- Wire Draft Scratch Mode to Section, Subsection, and whole paragraph-group
-  targets; B/symbol rows remain read-only reading material.
+- Wire Draft Scratch Mode to one inline Section or whole paragraph-group
+  control; B/symbol rows remain read-only reading material.
 - Keep the selected Outline Markdown authoritative while storing the Scratch
   registry beside the plan and the durable receipt under `runs/`/`results/`.
 

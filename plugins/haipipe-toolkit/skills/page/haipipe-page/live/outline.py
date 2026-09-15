@@ -2399,21 +2399,17 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             '<details class="paragraph-group" open data-paragraph="%s">'
             '<summary class="prow"><span class=addr>%s</span>'
             '<span class=mut>%s</span></summary>'
-            '<div class=paragraph-scratch>%s%s</div>'
+            '<div class=paragraph-scratch>%s</div>'
             '<div class=paragraph-bullets><div class=preview-columns>'
             '<span>Bullet</span><span>Draft</span></div>%s</div>'
-            '<div class=paragraph-reading>%s</div>%s'
+            '<div class=paragraph-reading>%s</div>'
             '</details>'
             % (_e(current_paragraph), _e(display_paragraph),
                _e(re.sub(r"\s*·\s*S\d+\s+to\s+S\d+\s*$", "", current_paragraph_title)),
-               scratch_control_html("subsection", current_paragraph,
-                                    scratch_latest.get(("subsection", current_paragraph)),
-                                    read_only=read_only),
                scratch_control_html("paragraph", current_paragraph,
                                     scratch_latest.get(("paragraph", current_paragraph)),
                                     read_only=read_only),
-               "".join(paragraph_bullets), reading_body,
-               "")
+               "".join(paragraph_bullets), reading_body)
         )
         paragraph_bullets = []
         paragraph_reading = []
@@ -2440,7 +2436,8 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             current_section = "C%d" % cn
             division_title = re.sub(r"^C\d+\s*·\s*", "", line[3:].strip())
             rows.append('<div class="row division-title" title="%s">'
-                        '<span class="addr sec">C%d</span><b>%s</b>%s</div>'
+                        '<span class="addr sec">C%d</span><b>%s</b></div>'
+                        '<div class=section-scratch>%s</div>'
                         % (_e(division_title), cn, _e(division_title.split(" · ")[0]),
                            scratch_control_html("section", current_section,
                                                 scratch_latest.get(("section", current_section)),

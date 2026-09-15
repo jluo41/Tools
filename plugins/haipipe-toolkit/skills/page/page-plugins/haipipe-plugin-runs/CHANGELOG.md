@@ -1,4 +1,4 @@
-## 0.31.0 · 2026-09-15
+## 0.32.0 · 2026-09-15
 
 - Add the human-first `Scratch` lane under Page Writing.
 - Present `rp-scratch-NN_<target>` Runs and their Summary-based close state in

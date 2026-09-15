@@ -361,7 +361,9 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
             return rf"\includegraphics{m.group(1) or ''}{{displays/{p['id']}/{unit}/figure.pdf}}"
         return m.group(0)
     t = re.sub(r"\\includegraphics(\[[^\]]*\])?\{([^}]+)\}", fix_graphic, t)
-    if is_abstract(p) and not JAMA:
+    # JL 260915: an Abstract page that already opens its own abstract environment is kept as written,
+    # so a block the desk prints right after the abstract (Diabetes Care's Article Highlights) can share the page
+    if is_abstract(p) and not JAMA and "\\begin{abstract}" not in t:
         # the generic Word engine wants a real abstract environment; the JAMA renderer instead
         # parses the page's own \section*{Key Points} and \section*{Abstract} headings (0.6.1)
         body = re.sub(r"^%.*\n", "", t, flags=re.M)                       # generator comments

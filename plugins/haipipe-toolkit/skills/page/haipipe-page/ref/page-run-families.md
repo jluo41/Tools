@@ -51,7 +51,7 @@ are no hidden numeric bands:
 | Identity | Scope | Required output and boundary |
 |---|---|---|
 | `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, and Mermaid representation |
-| `rp-scratch-NN_<target>` | human Scratch capture | rough thinking for one Section (`C1`), Subsection (`C1.P1`), or whole paragraph group (`C1.P1`); B/symbol rows are not Scratch targets; closes only after the person confirms a Summary; does not edit `Draft:` prose |
+| `rp-scratch-NN_<target>` | human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; there is no separate subsection node and B/symbol rows are not Scratch targets; closes only after the person confirms a Summary; does not edit `Draft:` prose |
 | `rp-sec-NN` | Section-level writing | one named Section drafting/revision session and its review loop |
 | `rp-para-NN_Pxx[-Pyy]` | paragraph-level writing | one fixed paragraph or contiguous paragraph group |
 
@@ -60,8 +60,8 @@ Structure Run and contains both SHAPE and SURVEY. It can have several human
 participants; record one shared Run and one paired Result, with contributors
 on each Step. `rp-struct-02` is a later independent structure/Bullet Run, not a
 new Survey pass or a new participant.
-Scratch may be commissioned at any of the three Page targets as soon as the
-selected Outline exists; it is a human thinking aid, not a replacement for
+Scratch may be commissioned at a Section or whole paragraph-group target as
+soon as the selected Outline exists; it is a human thinking aid, not a replacement for
 the Structure gate. After the structure contract is closed, Section Runs begin
 at `rp-sec-01` and paragraph Runs begin at `rp-para-01_P01` (or the selected
 exact target).

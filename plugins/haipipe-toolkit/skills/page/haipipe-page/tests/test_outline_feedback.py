@@ -195,8 +195,8 @@ class ReadSideTest(FeedbackFixture):
     def test_draft_space_renders_scratch_controls_not_feedback(self):
         card = plan_card(self.page)
         self.assertIn('data-scratch-scope="section"', card)
-        self.assertIn('data-scratch-scope="subsection"', card)
         self.assertIn('data-scratch-scope="paragraph"', card)
+        self.assertNotIn('data-scratch-scope="subsection"', card)
         self.assertIn('data-scratch-target="C1.P2"', card)
         self.assertIn("Finish Scratch", card)
         self.assertNotIn("paragraph-feedback", card)

@@ -11,7 +11,7 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.106.0"
+  version: "0.107.0"
   last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -97,7 +97,7 @@ renumbers or consumes another. RP uses explicit kind tokens:
 
 ```text
 rp-struct-NN          Page Structure Run: SHAPE + SURVEY
-rp-scratch-NN_<target> Human Scratch capture at C1 or C1.P1 (section/subsection/paragraph group)
+rp-scratch-NN_<target> Human Scratch capture at C1 or C1.P1 (Section/paragraph group)
 rp-sec-NN             Section-level writing
 rp-para-NN_Pxx[-Pyy]  Paragraph-level writing
 ```

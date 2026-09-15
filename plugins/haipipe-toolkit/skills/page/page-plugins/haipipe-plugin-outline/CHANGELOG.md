@@ -1,8 +1,8 @@
-## 0.81.0 · 2026-09-15
+## 0.82.0 · 2026-09-15
 
 - Add Draft Space's explicit Table, Reading, and Scratch views.
-- Replace the retired Draft feedback composer with Section, Subsection, and
-  whole-paragraph Scratch controls backed by `## Scratch` plus paired Runs;
+- Replace the retired Draft feedback composer with one inline Scratch control
+  per Section or whole paragraph, backed by `## Scratch` plus paired Runs;
   B/symbol rows have no Scratch control.
 - Keep Table/Reading read-only; Scratch closes only after a human Summary.
 

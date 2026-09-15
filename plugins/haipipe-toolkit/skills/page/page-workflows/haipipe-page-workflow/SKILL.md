@@ -11,7 +11,7 @@ description: >-
   workflow, workflow table, run a page, Run Spec, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.59.0"
+  version: "0.60.0"
   last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md
 ---
@@ -128,7 +128,7 @@ explicitly:
 
 ```text
 rp-struct-NN          Page Structure Run: SHAPE + SURVEY
-rp-scratch-NN_<target> Human Scratch capture: Section/Subsection/paragraph
+rp-scratch-NN_<target> Human Scratch capture: Section or paragraph group
 rp-sec-NN             Section-level writing
 rp-para-NN_Pxx[-Pyy]  Paragraph-level writing
 ```
@@ -146,8 +146,9 @@ each Step, and do not create a child Run per person. The full contract is
 `rp-struct-02` and later ids are reserved for a genuinely independent
 post-closure structural goal, not for a Survey pass or a new participant.
 Scratch is available once a selected Outline exists. It records a person's
-rough thinking at Section (`C1`), Subsection/paragraph group (`C1.P1`); the B
-rows are reading material only. Save keeps the Scratch Run open,
+rough thinking at Section (`C1`) or whole paragraph group (`C1.P1`) in the
+current Outline grammar; there is no separate subsection node, and the B rows
+are reading material only. Save keeps the Scratch Run open,
 and a human-confirmed Summary closes it. Scratch does not edit `Draft:` prose
 and does not replace the later Structure, Section, or Paragraph Run.
 Human feedback advances Steps inside the selected Run's Version. A chat turn
@@ -334,7 +335,7 @@ dispatch work without minting a Level-4 Run Instance.
 |---|---|---|---|---|---|---:|---|---|
 | controller/context | controller dispatch | resolve Page/Folder identity, policy, requirements, and fresh context | agent / hybrid | entry open; exit requires a resolved Context record or truthful HOLD | SELF / next dispatch, OUTLINE, HOLD | no Run Instance | Folder inspection and off-stage Context record | 00 CONTEXT / PREPARE |
 | rp-struct-01 | page.interactive-writing.structure | whole-Page map, Mermaid, ordered Bullets, paragraph jobs, Point roles, typed Evidence Item decisions | human / agent / hybrid | entry open; exit requires accepted Shape + Survey contract | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | exactly 1 initial Structure Run per Page | Draft, Evidence, and Run Spaces | 01 OUTLINE / SHAPE+SURVEY |
-| rp-scratch-NN_<target> | page.interactive-writing.scratch | rough human thinking for Section, Subsection, or whole paragraph group; no B/symbol target | human | entry open; exit requires a non-empty human Summary | SELF / Save, CLOSE / Finish Scratch, NEW_RUN | 0..N per target | Draft Space Scratch view and Run Space | 01 OUTLINE / SCRATCH |
+| rp-scratch-NN_<target> | page.interactive-writing.scratch | rough human thinking for Section or whole paragraph group in the current Outline grammar; no B/symbol target | human | entry open; exit requires a non-empty human Summary | SELF / Save, CLOSE / Finish Scratch, NEW_RUN | 0..N per target | Draft Space Scratch view and Run Space | 01 OUTLINE / SCRATCH |
 | rp-sec-NN | page.interactive-writing.section | one named Section's bounded candidate and review cycle | human / agent / hybrid | entry open; exit requires scoped acceptance and declared dependencies ready | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..S selected Section Runs | Draft Space and Run Space | 01 OUTLINE / SHAPE and 03 CONTENT / WRITE |
 | rp-para-NN_Pxx[-Pyy] | page.interactive-writing.paragraph | one fixed paragraph or contiguous paragraph group | human / agent / hybrid | entry open; exit requires acceptance, settled Bullets, and ready evidence obligations | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..K, 1 <= K <= N | paragraph Draft Space, Evidence Space, Run Space | 01 OUTLINE / SHAPE and 03 CONTENT / WRITE |
 | re-value-NN_<slug>, re-cite-NN_<slug>, re-display-NN_<slug> | page.evidence-item | one focal VALUE, CITE, or DISPLAY Result for one make-item | agent / automatic / hybrid | entry open; exit requires typed Result acceptance and any declared verification | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | exactly 1 Page RE per make-item, plus 0..N Supporting Runs | Evidence Space and paired Run/Result records | 02 EVIDENCE / LAND+EMBED |

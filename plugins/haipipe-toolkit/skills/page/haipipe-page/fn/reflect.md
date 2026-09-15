@@ -76,6 +76,10 @@ Rules for the intake:
 - The person's inputs are never trimmed. `--compact` trims only the
   assistant's replies and drops tool lines; when a turn needs the full reply,
   open the full dump.
+- Two intakes can carry the same message. When two turns hold identical text
+  at the same timestamp, that is one message captured twice, not the person
+  repeating themselves. Record both, and say which one is the duplicate.
+  Repetition is the record's main signal, so a phantom repeat is a real error.
 
 ## 2 · Read every turn on both sides
 
@@ -100,6 +104,13 @@ Then tag the turn with exactly one primary tag:
 A compound turn is the norm: one message often carries a task, a preference,
 and a complaint. Split it; a turn may yield two tags or none beyond
 `INSTRUCTION`. Tag by the SUBJECT of the sentence, not by the skill it names.
+
+**A long session is written in slices.** A dump of a hundred turns does not fit
+in one context. Read the inputs section first, then walk the timeline in slices
+of fifteen to twenty turns, appending each slice's entries to the record before
+reading the next. Write section 1 last, when the whole session is known. A
+record that stops early because the reader ran out of room is worse than no
+record, because it looks complete.
 
 ## 3 · Write the record
 

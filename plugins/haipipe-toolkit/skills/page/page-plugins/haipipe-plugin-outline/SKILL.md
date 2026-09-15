@@ -10,7 +10,7 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.81.0"
+  version: "0.82.0"
   last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -279,7 +279,7 @@ The Draft Space has three deliberately small views: **Table** for Bullet/Draft
 alignment, **Reading** for prose without the grid, and **Scratch** for the
 person's rough thinking. Table and Reading are read-only projections. Scratch
 is the only explicit browser writing lane: a tiny `+` appears only after the
-person enters Scratch, beside a Section, Subsection, or paragraph. It opens a
+person enters Scratch, below a Section or paragraph heading. It opens an
 small note form; `Save` keeps the Run open, and `Finish Scratch` requires a
 human-written Summary and closes that Scratch Run. There is no old comments
 composer, feedback badge, or tap-to-edit Draft control.
@@ -494,8 +494,11 @@ study's analysis and points to its own displays.
 
 Draft prose remains read-only. Scratch is a separate human-thinking capture
 lane, not prose editing and not feedback. Its target can be a whole Section
-(`C1`), Subsection (`C1.P1`), or whole paragraph group (`C1.P1`). The B rows
-inside that group are reading material, not Scratch targets. The
+(`C1`) or whole paragraph group (`C1.P1`). The current Outline grammar has no
+separate subsection node, so the UI shows one plus per visible target rather
+than duplicate Subsection/Paragraph buttons. Explicit subsection-scope records
+remain accepted for future Page schemas. The B rows inside that group are
+reading material, not Scratch targets. The
 first Save creates `runs/rp-scratch-NN_<target>.md` and
 `results/rp-scratch-NN_<target>/`; later Save updates the open record. Finish
 requires a non-empty Summary and records the closed Run. The same selected

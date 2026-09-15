@@ -43,7 +43,7 @@ Run identity.
 ## `Page.interactive-writing.scratch` · `rp-scratch-NN_<target>`
 
 ```text
-🎯 TARGET   one Section (C1), Subsection/paragraph group (C1.P1); no B/symbol target
+🎯 TARGET   one Section (C1) or whole paragraph group (C1.P1); no B/symbol target
 👤 ACTOR    human
 ⚙ ACTION   capture rough thinking; Save or Finish Scratch
 🚪 GATE     Finish requires a non-empty human Summary

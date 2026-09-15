@@ -1,4 +1,4 @@
-"""Scratch Mode contract: three targets, one human-owned close gate."""
+"""Scratch Mode contract: inline targets, one human-owned close gate."""
 from __future__ import annotations
 
 import sys
@@ -103,14 +103,16 @@ class ScratchTest(unittest.TestCase):
         self.assertIsNone(err, err)
         self.assertEqual(result["run"], "rp-scratch-02_C1.P1")
 
-    def test_draft_renders_three_controls_but_read_only_has_none(self):
+    def test_draft_renders_one_control_per_current_target_but_read_only_has_none(self):
         card = plan_card(self.page)
         self.assertIn('data-scratch-scope="section"', card)
-        self.assertIn('data-scratch-scope="subsection"', card)
         self.assertIn('data-scratch-scope="paragraph"', card)
+        self.assertNotIn('data-scratch-scope="subsection"', card)
         self.assertNotRegex(card, r'data-scratch-target="[^"]+\.B\d+"')
         self.assertIn("if(mode==='scratch')", _PAGE)
         self.assertIn("x.open=false", _PAGE)
+        self.assertIn('position:static', card)
+        self.assertIn('box-shadow:none', card)
         self.assertIn("Finish Scratch", card)
         readonly = plan_card(self.page, read_only=True)
         self.assertNotIn("data-scratch-form", readonly)
