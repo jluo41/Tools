@@ -1,3 +1,14 @@
+## 0.4.0 — 2026-09-07
+
+- Reversed the universal reply-format rule after JL explicitly retired it.
+  Ordinary replies now lead with the outcome in natural prose; diagrams appear
+  only when they materially clarify the answer.
+- The former ANSWER/YOURS/MINE layout is now an optional operational pattern,
+  not a required opening. `MINE`, emoji density, and time estimates are never
+  mandatory reply furniture.
+- Updated `ref/09-reply-boxes.txt` to preserve the pattern as optional history
+  without letting it override a user's requested format.
+
 ## 0.3.0 — 2026-08-19
 
 - **The two reply boxes are RULES ONLY**: a line above, a line below, no left or

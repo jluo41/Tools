@@ -68,7 +68,7 @@
 #   the consumer's claim labels (i) contaminates the reusable bank -- the evidence comes back
 #   consumer-SHAPED and is then effectively single-use -- and (ii) proves a consumer session
 #   wrote it, which is LAW 1 broken. This is what would have caught
-#   tasks/A03_welldoc_cycle_check/result.md, whose "C6"/"C7" arrived with no probe file
+#   tasks/_legacy/v0-task-groups/A03_welldoc_cycle_check/result.md, whose "C6"/"C7" arrived with no probe file
 #   involved anywhere.
 #   (b) THE CLAIM'S OWN VALIDITY (R19): NO `- state:` line at all = the field is MANDATORY and
 #   its absence exempts the file from every check below (qa-no-state); `state: working` with no

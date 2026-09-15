@@ -2,14 +2,12 @@
 name: diagram-ascii
 description: >-
   Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and
-  progress tracking, AND the two-box shape every substantive chat reply opens
-  with (✅ ANSWER, then 🧑 YOURS, then a 🤖 MINE list). Use to sketch an idea,
-  map a codebase, visualize a flow inline, or when a reply must lead with its
-  answer.
-version: "0.3.0"
+  progress tracking. Use to sketch an idea, map a codebase, visualize a flow
+  inline, or make a complex relationship easier to scan. Ordinary replies stay
+  natural and concise; reply blocks are optional, never the default.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-08-19"
+  version: "0.4.0"
+  last_updated: "2026-09-07"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -30,11 +28,23 @@ metadata:
 | `ref/05-progress-tracker.txt` | experiment dashboard, multi-run grid, burn-down |
 | `ref/06-numbered-series.txt` | multi-diagram answers with `[N/TOTAL]` headers |
 | `ref/08-paper-section.txt` | argument-style diagram for a paper method section (progression + contrast + synthesis combined) |
-| `ref/09-reply-boxes.txt` | the two-box reply opening: ✅ ANSWER, then 🧑 YOURS, then 🤖 MINE |
+| `ref/09-reply-boxes.txt` | optional answer/action blocks for unusually operational replies |
 
-## Reply format — open with TWO boxes
+## Reply format — natural by default
 
-**Every substantive chat reply opens with two boxes and then a numbered list.** Ruled 260818, in two corrections one after the other: *"I want the style like this, highlight your answer, highlight what I need to do"*, then *"I think you should also highlight your quick answer."* A bold sentence on line 1 is not enough, because bold still disappears in a scroll.
+Lead with the outcome in ordinary prose. Do not add mandatory boxes, a `YOURS`
+block, a `MINE` list, time estimates, or dense emoji scaffolding to every reply.
+The user's requested format always wins.
+
+Use an ASCII diagram only when it materially clarifies a relationship, flow,
+hierarchy, state change, or folder structure. A short factual answer, status
+update, or handoff normally needs no diagram.
+
+The former two-box reply is retained only as an OPTIONAL operational pattern.
+Use it when the user explicitly asks for a card-style summary, or when a reply
+contains a consequential action they must take and the block makes that action
+substantially easier to find. In that case, use only the blocks that earn their
+space; there is no required `MINE` section.
 
 ```
 ══════════════════════════════════════════════════════════════════════════════
@@ -48,22 +58,12 @@ metadata:
 <what happens if it is skipped>
 ══════════════════════════════════════════════════════════════════════════════
 
-── 🤖 MINE · <n> items, no input needed ─────────────────────────────────────
-  1️⃣ <what the assistant does>        <how long>
+<ordinary prose continues here if needed>
 ```
 
-Four rules make it work, and `ref/09-reply-boxes.txt` carries the worked example:
-
-- **Never omit the YOURS box.** With nothing to do it still appears and says `nothing`, so it is never scanned for.
-- **YOURS holds the LITERAL thing**: the exact command, the exact line, the exact path. Never a description of it.
-- **MINE is a numbered list with time estimates.** It is what makes `nothing` in the YOURS box credible instead of evasive.
-- **RULES ONLY, top and bottom, no left or right edge** (JL 260819: “你这个 box 能不能只保留上下，不要左右，然后把它变得越宽越好？”). Side pipes force every line to be padded to one width, which caps the text at ~58 columns and wraps sentences that would otherwise fit. Rules alone let a line run the full terminal.
-- **78 columns, both rules the same width.** Two widths read as two unrelated things.
-- **No padding inside.** Text starts at column 1, directly under the rule.
-
-Skip both boxes for a one-word factual answer, a pure "sketch this" request where the diagram IS the answer, and mid-work progress notes.
-
-State, findings and evidence diagrams come AFTER the boxes and still obey the ≤3 diagram budget.
+When an optional block is used, keep the old visual mechanics: rules only at
+top and bottom, no side edges, no padding, and matching rule widths. The
+worked pattern and its history remain in `ref/09-reply-boxes.txt`.
 
 ## When to Use
 - Mid-discussion idea plotting — "sketch how this works"

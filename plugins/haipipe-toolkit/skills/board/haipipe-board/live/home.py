@@ -273,7 +273,8 @@ def resolve_short(root: Path, slug: str, anchor: str = "") -> str | None:
     anchor = (anchor or "").strip().strip("/")
     if anchor:
         for page in sorted(site.glob("*/*.html")):
-            if page.stem.split("-")[0].lower() == anchor.lower():
+            aliases = {page.stem.lower(), page.stem.split("-")[0].lower()}
+            if anchor.lower() in aliases:
                 return "/" + quote(f"{rel}/board/{page.parent.name}/{page.name}",
                                    safe="/")
         group = site / f"{anchor}.html"

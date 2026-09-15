@@ -72,14 +72,14 @@ from datetime import datetime
 from pathlib import Path
 
 IDX = re.compile(r"^([bjtr])(\d\d)_(.+)$")
-NOT_A_TASK = {"src", "sbatch", "results", "notebooks", "workflow",
+NOT_A_TASK = {"src", "sbatch", "results", "notebooks", "workflow", "QA",
               "outline", "diagram", "__pycache__", "_tools", "dist", "chat"}
 # A Block's own surfaces are not Jobs (JL 260909): `diagram/` is the Block
 # narrative that task-structure.md admits beside board.md, and `board/` is the
 # site haipipe-board's build.py generates inside the Block. Read as Jobs they
 # each minted a phantom `bNNj??` table whose "tasks" were the generated
 # per-group folders, and eight N1/S5 findings with them.
-NOT_A_JOB = NOT_A_TASK | {"board"}
+NOT_A_JOB = NOT_A_TASK | {"board", "tests"}
 TICKET_EXT = {".sh", ".ps1"}
 CODE_EXT = {".py", ".do", ".R", ".sh", ".ipynb"}
 GEN_LINE = re.compile(r"^(<!-- generated .*-->|generated: .*)$")

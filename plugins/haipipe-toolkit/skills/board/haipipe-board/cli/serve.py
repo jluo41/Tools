@@ -5,8 +5,9 @@
 
 When --host, --port, --space-name, --public-url, or --auth-file is omitted,
 the matching non-secret setting in <root>/.server_config/settings.env is used.
-The explicit --no-auth flag disables HTTP Basic Auth for a trusted private
-network such as a Tailscale tailnet.
+The explicit --public-read flag allows anonymous generated Board pages while
+keeping interactive tools authenticated. --no-auth disables HTTP Basic Auth
+for a trusted private network such as a Tailscale tailnet.
 
 Why this exists (JL, 260723): the first design had the browser write the .md
 itself via the File System Access API. That cannot work here — the browser runs
@@ -51,12 +52,14 @@ That venv is uv-managed and has no pip — install into it with:
 it isn't already looking at.
 
 Deliberately narrow, because this is a write endpoint:
+  · --public-read exposes only generated Board pages and assets anonymously;
+    writes, chat, terminals, Home, and other workspace paths stay authenticated.
   · binds 127.0.0.1 unless --host says otherwise. With --no-auth, /_term/ is a
     real shell available to every device that can reach the selected address.
     A tailnet address (100.x) keeps that inside the tailnet; 0.0.0.0 hands it
     to the whole local network.
   · the target must sit inside --root, in a folder containing board.md
-    · the filename must match Q*.md or S*.md
+    · the filename must match a recognized native or mounted Board Page
   · writes are limited to sentence-adjacent comments, one-sentence edits,
     bounded Outline Bullet edits, and the pre-existing narrowly scoped page
     actions below
@@ -211,7 +214,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         SimpleHTTPRequestHandler.end_headers(self)
 
     def do_GET(self):
-        if not self.require_auth():
+        if not self.require_request_auth():
             return
         if self.is_home_request():
             return self.serve_home()
@@ -315,7 +318,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return ctype + "; charset=utf-8"
         return ctype
     def do_HEAD(self):
-        if not self.require_auth():
+        if not self.require_request_auth():
             return
         if self.is_home_request():
             return self.serve_home()
@@ -344,7 +347,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.proxy_term()
         return SimpleHTTPRequestHandler.do_HEAD(self)
     def do_POST(self):
-        if not self.require_auth():
+        if not self.require_request_auth():
             return
         if self.path.startswith("/_term/"):
             if self._term_route():
@@ -667,6 +670,8 @@ if __name__ == "__main__":
                     help="optional username:password file; required for a non-loopback host")
     ap.add_argument("--no-auth", action="store_true",
                     help="disable HTTP Basic Auth; only use on a trusted private network")
+    ap.add_argument("--public-read", action="store_true",
+                    help="allow anonymous generated Board pages while keeping interactive tools authenticated")
     ap.add_argument("--space-name", default="",
                     help="display name for the SPACE Home, e.g. Physician-SPACE")
     ap.add_argument("--public-url", default="",
@@ -683,6 +688,8 @@ if __name__ == "__main__":
             port = int(raw_port) if raw_port else 5599
         except ValueError:
             ap.error(f"invalid port in {config_dir / 'settings.env'}: {raw_port!r}")
+    if a.no_auth and a.public_read:
+        ap.error("--no-auth and --public-read are mutually exclusive")
     if a.no_auth:
         auth_file = None
     else:
@@ -699,6 +706,8 @@ if __name__ == "__main__":
                   config.get("JJLUO_TAILSCALE_URL") or "").strip()
     if not host_is_loopback(host) and auth_file is None and not a.no_auth:
         ap.error("--auth-file is required when --host is not loopback")
+    if a.public_read and auth_file is None:
+        ap.error("--public-read requires --auth-file for interactive Board tools")
     try:
         Handler.configure_auth(auth_file)
     except AuthConfigError as exc:
@@ -720,6 +729,7 @@ if __name__ == "__main__":
     if a.daemon:
         daemonize(str(Path(a.daemon).resolve()))
     Handler.root = Path(a.root).resolve()
+    Handler.public_read = a.public_read
     Handler.space_name = space_name
     Handler.public_url = public_url
     base.BIND_HOST = host
@@ -750,9 +760,13 @@ if __name__ == "__main__":
           + ("" if not loop else
              f"   ＋ http://127.0.0.1:{port} 也在听（VS Code / ssh -L 走的是这个）\n")
           + ("" if host_is_loopback(host) else
-             f"   ⚠️ 绑的不是 loopback：{host} 能到的设备都能用 /_term/ 开 shell\n")
+             (f"   ⚠️ 绑的不是 loopback：{host} 能到的设备都能用 /_term/ 开 shell\n"
+              if a.no_auth else
+              (f"   ℹ️ {host} 能到的设备可匿名读 Board；/_term/ 和写入仍需认证\n"
+               if a.public_read else
+               f"   ℹ️ {host} 能到的设备必须先认证\n")))
           + f"   评论 / 状态：直接写在这台机器上\n"
-          f"   认证：{('off (--no-auth; Tailscale boundary only)' if a.no_auth else ('on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)'))}\n"
+          f"   认证：{('off (--no-auth; Tailscale boundary only)' if a.no_auth else ('public Board read; interactive tools protected (' + str(len(Handler.auth_users)) + ' accounts)' if a.public_read else ('on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)')))}\n"
           f"   聊天：{sdk} · 默认 {MODELS[DEFAULT_MODEL]} / effort={DEFAULT_EFFORT}\n"
           f"   OAuth 来源：{src}"
           + ("（长期 token）" if tok else "（沿用 claude 已登录的身份）")

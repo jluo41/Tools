@@ -12,7 +12,7 @@ topic -- update, don't duplicate).
 
 ## Preferences
 
-- **DEFAULT REPLY MODE = /diagram-ascii (JL 2026-07-09: "please set this as the default mode for the skills").** Every skill reply renders its substance as emoji-rich ASCII diagrams per the diagram-ascii skill conventions: dense emoji (every box/row/status), boxes + arrows, `── [N/TOTAL] Title ──` headers when a reply carries 3+ diagrams, compact status strips. Prose shrinks to one-line asks and connective sentences — if it can be a diagram, it IS one. Applies to plans, options, findings, state reports, release menus, and "my thinking". (also in auto-memory: feedback_diagram_ascii_default_mode)
+- **DEFAULT REPLY MODE = natural, outcome-first prose (JL 2026-09-07).** Do not wrap every answer in ANSWER/YOURS/MINE blocks and do not force a diagram into ordinary discussion, status, or handoff replies. Use `/diagram-ascii` only when a flow, hierarchy, comparison, or changing state is materially clearer as a diagram, or when JL explicitly requests one. Card-style reply blocks are optional and must never override the user's requested format. This supersedes the 2026-07-09 diagram-first preference.
 
 - **Design never commissions upstream evidence; the phase-owned Insight Folder does.** Brief and
   Design Folders consume exact signed W handoffs as frozen inputs. When a design

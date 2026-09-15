@@ -129,7 +129,29 @@ def _basis(mode) -> str:
 
 def _lookup(name):
     """(pk key, confidence, source) for one drug string."""
-    c = canon(name)
+    raw = str(name or "").strip()
+    # `describe-insulin` consumes the medication resolver's DrugKey, not the
+    # source row's JSON payload.  Treating a JSON blob as free text can find a
+    # regimen word such as "Basal Insulin" and return a confident, wrong PK
+    # curve for a different product named in the same record.
+    if ((raw.startswith("{") and raw.endswith("}")) or
+            (raw.startswith("[") and raw.endswith("]"))):
+        return None, MISS, "not_resolvable:json_payload"
+
+    # In clinical phrases the product is often inside parentheses while the
+    # words outside describe the regimen (for example, "basal" or "bolus").
+    # Resolve an explicit parenthesized product first; fall back to the whole
+    # phrase for ordinary decorated product strings such as "Humalog (Lispro)".
+    for part in re.findall(r"\(([^)]*)\)", raw):
+        key, conf, src = _lookup_canon(canon(part))
+        if key is not None:
+            return key, conf, f"parenthesized:{src}"
+
+    return _lookup_canon(canon(raw))
+
+
+def _lookup_canon(c):
+    """Resolve an already-canonical string."""
     if not c:
         return None, MISS, "not_resolvable:empty"
     if c in COMBINATIONS:

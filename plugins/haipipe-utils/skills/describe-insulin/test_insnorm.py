@@ -79,6 +79,37 @@ def t_device_words_are_stripped():
     return "pen / U-100 / INSULN ignored"
 
 
+def t_json_payload_is_not_a_drug_key():
+    """A source payload must be unwrapped by the medication dialect first.
+
+    Matching a regimen word inside the blob would produce a confident curve
+    for the wrong product, which is worse than a clean miss at this door.
+    """
+    payload = ('{"Dose": 0.9, "MedicationType": "Basal Insulin", '
+               '"insulin_type": "Novalog", "DeliveryMode": "pump_basal"}')
+    r = normalize([payload])[0]
+    assert r["PKConf"] == "MISS" and r["InsulinResolved"] is None, r
+    assert r["PKSource"] == "not_resolvable:json_payload", r
+    return "JSON is upstream dialect input, not a DrugKey"
+
+
+def t_parenthesized_product_beats_regimen():
+    """Shanghai phrases name the regimen outside and product inside brackets."""
+    for s in ("CSII - basal insulin (Novolin R, IU / H)",
+              "CSII - bolus insulin (Novolin R, IU)"):
+        r = normalize([s])[0]
+        assert r["InsulinResolved"] == "insulin human regular", (s, r)
+        assert r["DurationMin"] == 480, (s, r)
+    return "the bracketed product outranks basal/bolus"
+
+
+def t_regular_insulin_alias_resolves():
+    r = normalize(["Regular insulin"])[0]
+    assert r["InsulinResolved"] == "insulin human regular", r
+    assert r["PKConf"] == "OK", r
+    return "common free-text alias is covered"
+
+
 def t_class_only_inputs_resolve():
     """OhioT1DM logs a CLASS and 5,026 rows depend on this working."""
     for s, cls in (("basal insulin", "long"), ("bolus insulin", "rapid")):
@@ -180,6 +211,9 @@ if __name__ == "__main__":
         ("peakless drugs carry NULL", t_peakless_is_null_not_a_number),
         ("the longest alias wins", t_longest_alias_wins),
         ("device and strength words stripped", t_device_words_are_stripped),
+        ("JSON payload is not a DrugKey", t_json_payload_is_not_a_drug_key),
+        ("parenthesized product beats regimen", t_parenthesized_product_beats_regimen),
+        ("regular insulin alias resolves", t_regular_insulin_alias_resolves),
         ("class-only inputs resolve", t_class_only_inputs_resolve),
         ("a combination is ALIAS, not OK", t_combination_is_alias_not_ok),
         ("a premix is flagged biphasic", t_premix_is_flagged_biphasic),

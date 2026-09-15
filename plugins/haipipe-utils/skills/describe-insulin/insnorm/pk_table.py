@@ -115,6 +115,7 @@ ALIASES = {
     "tresiba": "insulin degludec",
     "insulin human": "insulin human regular",
     "human insulin": "insulin human regular",
+    "regular insulin": "insulin human regular",
     "novolin r": "insulin human regular",
     "humulin r": "insulin human regular",
     "gansulin r": "insulin human regular",

@@ -77,16 +77,16 @@ fi
 export OUTPUT_ROOT
 
 RUN_REL="$TASK_SEG/$RUN_NAME"
-RESULTS_DIR="$OUTPUT_ROOT/results/$RUN_REL"
+RESULTS_DIR="$OUTPUT_ROOT/$TASK_SEG/results/$RUN_NAME"
 RUNTIME_YAML="$RESULTS_DIR/runtime.yaml"
-NOTEBOOK_TEMPLATE="$OUTPUT_ROOT/notebooks/$TASK_SEG/_source.ipynb"
-NOTEBOOK_OUT="$OUTPUT_ROOT/notebooks/$RUN_REL.ipynb"
+NOTEBOOK_TEMPLATE="$OUTPUT_ROOT/$TASK_SEG/notebooks/_source.ipynb"
+NOTEBOOK_OUT="$OUTPUT_ROOT/$TASK_SEG/notebooks/$RUN_NAME.ipynb"
 export RESULT_DIR="$RESULTS_DIR"
 
 NOTEBOOK_MODE="$(grep -E '^\s*notebook:\s*(full|thin|off)\b' "$CONFIG" 2>/dev/null | awk '{print $2}' | head -1)"
 NOTEBOOK_MODE="${NOTEBOOK_MODE:-full}"
 NOTEBOOK_RECORD=$([ "$NOTEBOOK_MODE" = "off" ] && echo "(off)" || echo "${NOTEBOOK_OUT#"$OUTPUT_ROOT"/}")
-mkdir -p "$RESULTS_DIR" "$OUTPUT_ROOT/notebooks/$TASK_SEG"
+mkdir -p "$RESULTS_DIR" "$OUTPUT_ROOT/$TASK_SEG/notebooks"
 
 BP="${BLOCK_SEG%%_*}"
 JP="${JOB_SEG%%_*}"
@@ -200,7 +200,7 @@ EOF
 write_receipt running null null null null null
 
 if [ "$NOTEBOOK_MODE" = off ]; then
-  NB_TARGET="$OUTPUT_ROOT/notebooks/$TASK_SEG/.$RUN_NAME.tmp.ipynb"
+  NB_TARGET="$OUTPUT_ROOT/$TASK_SEG/notebooks/.$RUN_NAME.tmp.ipynb"
 else
   NB_TARGET="$NOTEBOOK_OUT"
 fi

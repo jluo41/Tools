@@ -1,14 +1,16 @@
-REPLY BOXES — the shape every chat reply to JL opens with
-=========================================================
+OPTIONAL REPLY BLOCKS — for unusually operational handoffs
+==========================================================
 Ruled 260818, in two corrections one after the other:
   "I want the style like this, highlight your answer, highlight
    what I need to do."
   "I think you should also highlight your quick answer."
-So: TWO boxes, not one. A bold sentence on line 1 is not enough,
-because bold still disappears in a scroll.
+This was the default through v0.3.0. JL retired that universal format on
+260907. Natural prose is now the default; these blocks remain available only
+when explicitly requested or when a consequential user action would otherwise
+be hard to find.
 
 
---S The shape, in order ---------------------------------------------
+--S Optional shape --------------------------------------------------
 
 RULES ONLY: a line above and a line below. NO left or right edge.
 Ruled 260819: "你这个 box 能不能只保留上下，不要左右，然后把它变得越宽越好？"
@@ -26,32 +28,25 @@ text at about 58 columns and wraps sentences that would otherwise fit.
 <what happens if it is skipped>
 ══════════════════════════════════════════════════════════════════════════════
 
-── 🤖 MINE · <n> items, no input needed ─────────────────────────────────────
-  1️⃣ <what the assistant does>        <how long>
-  2️⃣ ...
-
-<then, and only then, the state / findings / evidence diagrams,
- still inside the ≤3 diagram budget>
+<continue in ordinary prose; add a diagram only when it clarifies the answer>
 
 
---S The five rules ---------------------------------------------------
+--S Current rules ----------------------------------------------------
 
-1. Never omit the YOURS box. With nothing to do it still appears and
-   says `nothing`, so it is never scanned for.
-2. YOURS holds the LITERAL thing: the exact command, the exact line,
-   the exact path. Never a description of it.
-3. MINE is a numbered list with time estimates. It is what makes
-   `nothing` in the YOURS box credible instead of evasive.
-4. Both rules are 78 columns. Two widths read as two unrelated things.
-5. No padding inside. Text starts at column 1, under the rule.
+1. Do not use these blocks by default.
+2. If the user explicitly rejects the format, do not use it.
+3. When a YOURS block is useful, it holds the literal decision, command, or
+   path—not a vague description.
+4. Use only the blocks that add value; MINE and time estimates are optional.
+5. Rules are 78 columns, with no side edges or padding.
 
 
---S Worked example ---------------------------------------------------
+--S Worked optional example -----------------------------------------
 
 ══════════════════════════════════════════════════════════════════════════════
 ✅ ANSWER · Yes. Rules only from now on, 78 columns, no side pipes.
 The old box capped a line at 58 columns and wrapped sentences that fit.
-diagram-ascii 0.3.0 · ref/09-reply-boxes.txt
+diagram-ascii 0.4.0 · ref/09-reply-boxes.txt
 ══════════════════════════════════════════════════════════════════════════════
 
 ══════════════════════════════════════════════════════════════════════════════
@@ -59,13 +54,10 @@ diagram-ascii 0.3.0 · ref/09-reply-boxes.txt
 The change is in the skill file, so it holds in the next session too.
 ══════════════════════════════════════════════════════════════════════════════
 
-── 🤖 MINE · 2 items, no input needed ───────────────────────────────────────
-  1️⃣ redraw the two boxes as rules            done
-  2️⃣ update the memory pointer                done
+--S Default: skip the blocks -----------------------------------------
 
-
---S When to skip both boxes ------------------------------------------
-
-- a one-word factual answer
-- a pure "sketch this" request, where the diagram IS the answer
-- mid-work progress notes
+- ordinary factual answers
+- discussion and brainstorming
+- status updates and handoffs with no consequential user action
+- a pure "sketch this" request, where the diagram itself is the answer
+- whenever the user asks for another format

@@ -78,7 +78,8 @@ material: no worker, ticket, config or Result lives there.
 - `scripts/config/` holds shared Task settings plus one config per Run.
 - `runs/` holds one Ticket per Run.
 - Task `sbatch/` may coordinate only this Task's Tickets.
-- Must not contain `src/`, generated `results/`, or root `config/`.
+- Must not contain `src/` or root `config/`. Generated `results/` and
+  `notebooks/` DO live here, one level under the Task (JL 260909).
 
 ## Run spine
 

@@ -340,12 +340,17 @@ class ShortRouteTest(unittest.TestCase):
 
     def test_resolves_index_page_and_group(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root, _ = self.fixture(tmp)
+            root, board = self.fixture(tmp)
             base = "/unit/diagram/01-topic-260722/board"
             self.assertEqual(resolve_short(root, "topic"), f"{base}/index.html")
             self.assertEqual(resolve_short(root, "topic", "QA1"),
                              f"{base}/QA/QA1-question.html")
             self.assertEqual(resolve_short(root, "topic", "QA"), f"{base}/QA.html")
+            mounted = board / "board" / "J01" / "D-b01j01t01.html"
+            mounted.parent.mkdir()
+            mounted.write_text("mounted page")
+            self.assertEqual(resolve_short(root, "topic", "D-b01j01t01"),
+                             f"{base}/J01/D-b01j01t01.html")
 
     def test_the_full_folder_name_still_resolves(self):
         with tempfile.TemporaryDirectory() as tmp:

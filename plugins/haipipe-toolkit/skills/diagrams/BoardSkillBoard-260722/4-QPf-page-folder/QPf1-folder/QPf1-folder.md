@@ -7,7 +7,7 @@ session: 62ed99a0-fe6c-4a9b-8ad7-a3a97425adb2
 ## Opening
 Can a page sit in the same folder as the files it is about?
 At first every page had to sit at the top of the board, so a folder tree needed a second flat copy, kept in step by hand.
-The rule now is short: a page file counts as a page however deep it sits, unless a plugin folder holds it.
+The rule now is short: a native Board Page counts however deep it sits, unless a plugin folder holds it; a same-stem Task or Discovery Folder Page can be mounted into the same Board without copying it.
 The folder around a page is its home, and saving from the browser is still safe.
 Boards with no folders work just as before.
 
@@ -118,7 +118,7 @@ The same walk that counts the folder also lists it, so what you click is exactly
       The first tab on the rail reads this page's folder fresh and says how current each part is.
       A folder rebuilt for you holding files older than the .md is flagged, and the first run caught a real one, QPf6's stale latex/.
 - [x] 🔍 A page is found however deep it sits
-      `page_files()` in `src/common.py` finds Q, S, Agent, Meeting, and Design pages at any depth.
+      `page_files()` in `src/common.py` finds Q, S, Agent, Meeting, and Design pages at any depth, plus same-stem Task and Discovery Folder Pages.
       It skips `_`, `.` and `fig/` folder names, and every path `_in_plugin()` puts inside a plugin folder.
       `q_files()` is the Q-only twin and skips the same things.
 - [x] 💬 A comment saves back to the right file
@@ -142,9 +142,10 @@ The same walk that counts the folder also lists it, so what you click is exactly
 §1 latex, word, chat, display, and meeting have no folder here, so the tab lists them as not present.
 §2 Every plugin row opens in place as a tree: a level's own files first, then one 📁 branch per folder under it with its file count.
 §2 Each file is a link to the real file, and each symlink is marked 🔗.
-Pages are found by `page_files()` in `src/common.py`: Q, S, Agent, Meeting, and Design pages at any depth.
+Pages are found by `page_files()` in `src/common.py`: native Q, S, Agent, Meeting, and Design pages at any depth, plus same-stem Task and Discovery Folder Pages.
 It skips `_`, `.` and `fig/` folder names, and every path `_in_plugin()` puts inside a plugin folder.
 So this page's own `skill/QPf1-folder.md` does not count as a second page.
+Task and Discovery Pages remain owned by their domain workflows: Board reads their title, BJTR address, status, and sections, and contributes only navigation and display.
 Flat boards are untouched, and nested pages work all the way through, comment write-back included.
 The write-back smoke test was run on 260724 on the MISQ paper's 0-lifecycle board, on the page at 4-display/QD2-d01-iv-reporting.md.
 That board is not in this checkout, so neither that test nor the 22-question count can be re-run from here.
@@ -169,7 +170,7 @@ It falls back to the board root only when the group's pages disagree, and an emp
 ## Law
 - 🔍 A page is a page file at ANY depth, unless a plugin folder holds it
       A page belongs to the board by its path, and the walk is `page_files()` in `src/common.py`.
-      It looks for `Q`, `S`, `Agent`, `Meeting`, and `Design` files under the board folder and keeps every name `PAGENAME` matches.
+      It looks for native `Q`, `S`, `Agent`, `Meeting`, and `Design` files under the board folder and also keeps a same-stem `tNN_<slug>/tNN_<slug>.md` whose kind is Task or Discovery.
       So a page may sit inside the folder it is about, instead of at the root.
       `q_files()` is the Q-only twin, kept for the routes about questions alone, and it skips the same things.
 - 🚫 `_` and `.` names, `fig/`, and every plugin folder sit outside the board
@@ -179,10 +180,13 @@ It falls back to the board root only when the group's pages disagree, and an emp
       It also drops a page file lying right beside the page's own `.md`.
       This page proves it.
       `skill/QPf1-folder.md` matches the page name pattern exactly, yet it shows up inside the ⚙️ skill tab and not as a second page.
-- 📇 The Pages listing keeps bare filenames
-      A repeated file name anywhere in the tree warns and keeps the first (`src/parse.py`).
-      So the file name is a page's identity no matter how deep its folder sits.
-      And `board.md` never has to be rewritten when a page moves.
+- 📇 The Pages listing accepts identity or path
+      A unique native Board Page may keep its bare filename in `## Pages`.
+      A mounted Task or Discovery Page uses its Board-relative path, because the same `t01_...` name can recur under another Job.
+      An ambiguous bare filename is rejected instead of silently choosing the first (`src/parse.py` and `cli/check.py`).
+- 🪟 Task and Discovery borrow the Board surface, not the Q contract
+      Their domain Page remains the source of truth and keeps its own status and prose grammar.
+      Board derives `T-<address_compact>` or `D-<address_compact>`, renders a kind badge and distinct URL, and never counts domain completion as a settled question.
 - 🛂 The page sends a path counted from the board, and the server checks it
       `target()` in `live/base.py` runs the payload through `vet_pagepath()`.
       That check turns away an absolute path or any `..`, and it needs the file name to look like a page name.
@@ -195,6 +199,10 @@ It falls back to the board root only when the group's pages disagree, and an emp
       The board root is only the fallback when the group's pages disagree, and an empty group opens its own `Q<letter>-<slug>` folder.
 
 ## Log
+- 🚢 260904 · [RULE-JL, shipped] Task Boards and Discovery Boards became views over the same Folder Pages the workflows already own.
+      `page_files()` now mounts same-stem `tNN_<slug>.md` Pages identified by `folder-kind` or a legacy `tasks/` / `discoveries/` path; `parse.py` adapts current frontmatter and legacy setext Pages, derives collision-safe BJTR ids, and accepts Board-relative roster entries so repeated Task filenames cannot collide.
+      Page rendering carries TASK/DISCOVERY badges and domain completion wording; `check.py` checks the same-stem/address seam without demanding Q state, owner, or section grammar.
+      A two-page fixture deliberately repeats `t01_shared.md` across Task and Discovery, builds distinct HTML outputs, and passes the checker.
 - 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL evening round 5] the last flat holdouts fell: chat → studio/chat, pagex → evidence/pagex (inner borrow links re-aimed +1; live/pagex.py now mints relpath from the REAL dir via resolve(), so stub-era re-mints keep depth), task/ folders REMOVED outright (JL: "we will not have the task/ folder anymore", roster row ⚰️), the studio pair pre-created with stubs on all 19 MISQ pages. Also: the 🧭 lens strip wraps as compact rects (the tall-circle collapse in a 500px pane was the "hard and ugly"), GUI/TUI left the strip for the composer's ⌨ (header ← returns), chat text size = the reader's Aa setting in ⚙ (--chatfs, 11/12.5/14/16). SM00 folder tab now reads evidence/bibex · evidence/pagex · studio/chat · studio/draw · outline, 6 stubs, no task. board 0.157.0.
 - 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL evening round 4] the SWEEP reached its first board: 14 MISQ pages migrated to evidence/+delivery/+studio/ with flat-name stubs (pagex deferred: its borrow symlinks are depth-sensitive until pagex.py adopts the lane resolver); QPf1 finished its own pilot (draw→studio). The shell drawbar RETIRED into the composer's 🖌 menu (__studioDrawIt: composer text = the ask, empty = ## Diagram); evidence records carry the plan's WORDS in their heads (record-shape 0.18.1 — the bare-ref head was the ugly); 📂 rows carry real paths (evidence/bibex/ …) with stubs counted. board 0.156.0.
 - 🚢 260831 · [HAIPIPE-PAGE-SKILL, JL evening round 2] the chat pane took the Claude Code COMPOSER shape (one rounded card: textarea + row ＋ new chat · 🗂 ✨ ⚙ as POPUP menus, closed by default, reversing the 260815 "list first" boot · 🖌 draw fold remote · ➤ send; plugin-chat 0.4.0); GUI text 14/15px → 12.5/13px (the narrow docked pane was living in the MOBILE media query — the real "too big"); the studio draw half FOLDS (⌄/⌃ + composer 🖌, per reader; plugin-studio 0.1.1); 🗂 Task and 🗣 Meeting menu rows REMOVED (JL; storage stays, task read owed to pagex); 📂 Folder speaks the two-part grammar (category chips + grammar gaps line + pre-migration flat-lane callout, plugin-folder 0.2.1). All Chrome-verified on SM05/SM00; board 0.155.0. The page-folder DISK migration itself is still the sweep.
