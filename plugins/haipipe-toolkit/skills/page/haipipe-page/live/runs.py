@@ -93,7 +93,7 @@ code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.route{font-weight:65
 .state.ready{color:var(--acc)}.state.running,.state.waiting{color:var(--warn)}.state.done{color:var(--ok)}.state.failed,.state.held{color:var(--bad)}
 .repo-path{white-space:normal;overflow-wrap:anywhere;word-break:break-word;user-select:text}
 .run-space-switcher{display:flex;gap:6px;overflow-x:auto;padding:0 0 9px;margin:0 0 11px;border-bottom:1px solid var(--line);scrollbar-width:none}.run-space-switcher::-webkit-scrollbar{display:none}.run-space-tab{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:7px;padding:5px 10px;font-size:13px;line-height:1.35;cursor:pointer;white-space:nowrap;flex:none}.run-space-tab:hover{border-color:var(--acc)}.run-space-tab.on{border-color:var(--acc);color:var(--acc);font-weight:650;background:var(--bg)}.run-space-panels{min-width:0}.run-space-panel[hidden]{display:none}.run-space-overview{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.run-space-overview span{border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--mut);font-size:11.5px;line-height:1.4;white-space:nowrap}.run-space-overview .total{color:var(--fg);font-weight:650}.run-subspace{margin:13px 0 18px}.run-subspace>h3{font-size:13px;margin:0 0 6px;color:var(--mut);font-weight:700;letter-spacing:.02em}
-.run-cards{display:grid;gap:7px}.run-card{border:1px solid var(--line);border-radius:9px;background:var(--bg);overflow:hidden}.run-card-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 12px;cursor:pointer}.run-card-summary:hover{background:var(--card)}
+.run-cards{display:grid;gap:7px}.run-card{border:1px solid var(--line);border-radius:9px;background:var(--bg);overflow:hidden}.run-card-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 12px;cursor:pointer}.run-card-summary:hover{background:var(--card)}.run-card-summary.bound-focus{outline:2px solid var(--acc);outline-offset:3px}
 .run-card-summary::after{content:'›';grid-column:2;grid-row:1 / span 2;align-self:center;color:var(--mut);font:bold 18px/1 sans-serif;transition:transform .15s}.run-card-summary[aria-expanded=true]::after{transform:rotate(90deg)}
 .run-card-name{font-weight:700;min-width:0;overflow-wrap:anywhere}.run-card-action{grid-column:1;color:var(--mut);font-size:13px;overflow-wrap:anywhere}.run-state-dot{grid-column:2;grid-row:1;align-self:start;margin-right:18px;font-size:11px;line-height:1;color:var(--mut)}.run-state-dot.done{color:var(--ok)}.run-state-dot.running,.run-state-dot.waiting{color:var(--warn)}.run-state-dot.failed,.run-state-dot.held{color:var(--bad)}.run-state-dot.ready{color:var(--acc)}
 .run-card-detail[hidden]{display:none}.run-card-detail{border-top:1px solid var(--line);padding:12px;background:var(--card)}.detailbox{font-size:14px}
@@ -325,6 +325,34 @@ def _evidence_item_label(row: dict) -> str:
     return "Evidence"
 
 
+def _evidence_records(page_src: Path) -> dict[str, dict]:
+    """Load the same Result-backed Evidence records used by Evidence Space."""
+    try:
+        from live.evidence import _result_records
+        records = _result_records(page_src.parent)
+    except (ImportError, OSError, ValueError, TypeError, AttributeError):
+        return {}
+    return {str(record.get("id", "")).strip(): record for record in records
+            if str(record.get("id", "")).strip()}
+
+
+def _attach_evidence_bindings(page_src: Path, rows: list[dict]) -> None:
+    """Attach readable Evidence Item records to every bound Run."""
+    records = _evidence_records(page_src)
+    if not records:
+        return
+    for row in rows:
+        bindings = [records[ref] for ref in row.get("refs", []) if ref in records]
+        if not bindings:
+            continue
+        row["evidence_bindings"] = bindings
+        primary = bindings[0]
+        item_id = str(primary.get("id", "")).strip()
+        match = re.match(r"(E\d+)-", item_id, re.I)
+        row["evidence_item_id"] = match.group(1).upper() if match else item_id
+        row["evidence_title"] = str(primary.get("title", "")).strip()
+
+
 def _page_writing_subspace(row: dict) -> str:
     """Map one local interactive Run to its minimal writing subspace."""
     if _is_structure_run(str(row.get("run_id", ""))):
@@ -420,7 +448,13 @@ def _run_name(row: dict) -> str:
         return "Paragraph · " + (target or "Writing")
     evidence_type = _evidence_type(row)
     if evidence_type:
-        return f"{evidence_type} · {_evidence_item_label(row)}"
+        item_id = str(row.get("evidence_item_id", "")).strip() or _evidence_item_label(row)
+        title = str(row.get("evidence_title", "")).strip()
+        label = " · ".join(part for part in (item_id, title) if part)
+        bindings = row.get("evidence_bindings", [])
+        if isinstance(bindings, list) and len(bindings) > 1:
+            label += " · +%d more" % (len(bindings) - 1)
+        return f"{evidence_type} · {label}"
     # Insight and other task dialects already provide the useful semantic
     # name in ``kind``. Keep that name on the closed card; the full address
     # remains available inside the opened Run details.
@@ -446,7 +480,12 @@ def _run_action(row: dict) -> str:
         return "Review and modify " + (target or "the Page")
     evidence_type = _evidence_type(row)
     if evidence_type:
-        return f"Produce {evidence_type.lower()} evidence"
+        run_id = str(row.get("global_id") or row.get("run_id", "")).strip()
+        if run_id.startswith("P "):
+            run_id = run_id[2:]
+        bindings = row.get("evidence_bindings", [])
+        suffix = " · %d Evidence Items" % len(bindings) if isinstance(bindings, list) and len(bindings) > 1 else ""
+        return "Run %s → Result%s" % (run_id or "not allocated", suffix)
     return _short_text(row.get("outcome") or row.get("target") or _what_happened(row))
 
 
@@ -1673,6 +1712,7 @@ def run_inventory(page_src: Path) -> list[dict]:
             continue
         rows.append(row)
         by_id[key] = row
+    _attach_evidence_bindings(page_src, rows)
     return sorted(rows, key=lambda row: (row.get("lane") != "page",) + _sort_key(row))
 
 
@@ -1951,11 +1991,12 @@ def render(page_src: Path, _path_q: str, _file_q: str,
 (function () {{
  function remember(r,open){{var u=new URL(window.location.href);if(open)u.searchParams.set('run',r.dataset.run);else u.searchParams.delete('run');history.replaceState(null,'',u);}}
  function selectSpace(key,rememberUrl){{var tabs=document.querySelectorAll('.run-space-tab');var panels=document.querySelectorAll('.run-space-panel');for(var i=0;i<tabs.length;i++){{var on=tabs[i].dataset.space===key;tabs[i].classList.toggle('on',on);tabs[i].setAttribute('aria-selected',String(on));}}for(var j=0;j<panels.length;j++){{var show=panels[j].dataset.spacePanel===key;panels[j].hidden=!show;panels[j].classList.toggle('on',show);}}if(rememberUrl){{var u=new URL(window.location.href);u.searchParams.set('space',key);history.replaceState(null,'',u);}}}}
+ function normalizeRun(value){{return String(value || "").replace(/^P /, "");}}
  function toggle(r){{var key=r.dataset.key;var d=document.querySelector('.run-card-detail[data-key="'+key+'"]');if(d){{d.hidden=!d.hidden;r.setAttribute('aria-expanded',String(!d.hidden));remember(r,!d.hidden);}}}}
  document.addEventListener('click',function(e){{var tab=e.target.closest('.run-space-tab');if(tab)selectSpace(tab.dataset.space,true);}});
  document.addEventListener('click',function(e){{var r=e.target.closest('.run-card-summary');if(r)toggle(r);}});
  document.addEventListener('keydown',function(e){{var r=e.target.closest('.run-card-summary');if(r&&(e.key==='Enter'||e.key===' ')){{e.preventDefault();toggle(r);}}}});
- var initial=new URLSearchParams(window.location.search).get('space');var active=document.querySelector('.run-space-tab.on');selectSpace(initial||((active&&active.dataset.space)||'writing'),false);var wanted=new URLSearchParams(window.location.search).get('run');if(wanted){{var rows=document.querySelectorAll('.run-card-summary');for(var i=0;i<rows.length;i++){{if(rows[i].dataset.run===wanted){{var panel=rows[i].closest('.run-space-panel');if(panel)selectSpace(panel.dataset.spacePanel,false);rows[i].scrollIntoView({{block:'start'}});break;}}}}}} }})();
+ var initial=new URLSearchParams(window.location.search).get('space');var active=document.querySelector('.run-space-tab.on');selectSpace(initial||((active&&active.dataset.space)||'writing'),false);var wanted=new URLSearchParams(window.location.search).get('run');if(wanted){{var rows=document.querySelectorAll('.run-card-summary');for(var i=0;i<rows.length;i++){{if(normalizeRun(rows[i].dataset.run)===normalizeRun(wanted)){{var panel=rows[i].closest('.run-space-panel');if(panel)selectSpace(panel.dataset.spacePanel,false);rows[i].classList.add("bound-focus");rows[i].scrollIntoView({{block:'start'}});break;}}}}}} }})();
 </script>"""
 
 

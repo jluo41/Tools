@@ -7,7 +7,8 @@ When --host, --port, --space-name, --public-url, or --auth-file is omitted,
 the matching non-secret setting in <root>/.server_config/settings.env is used.
 The explicit --public-read flag allows anonymous generated Board pages while
 keeping interactive tools authenticated. --no-auth disables HTTP Basic Auth
-for a trusted private network such as a Tailscale tailnet.
+for a trusted private network such as a Tailscale tailnet. --no-terminal can
+be combined with --no-auth when only the Page surfaces are needed.
 
 Why this exists (JL, 260723): the first design had the browser write the .md
 itself via the File System Access API. That cannot work here — the browser runs
@@ -55,7 +56,8 @@ Deliberately narrow, because this is a write endpoint:
   · --public-read exposes only generated Board pages and assets anonymously;
     writes, chat, terminals, Home, and other workspace paths stay authenticated.
   · binds 127.0.0.1 unless --host says otherwise. With --no-auth, /_term/ is a
-    real shell available to every device that can reach the selected address.
+    real shell available to every device that can reach the selected address;
+    --no-terminal disables that route and its PTY control endpoints.
     A tailnet address (100.x) keeps that inside the tailnet; 0.0.0.0 hands it
     to the whole local network.
   · the target must sit inside --root, in a folder containing board.md
@@ -149,6 +151,12 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
     root = Path(".")
     space_name = ""
     public_url = ""
+    terminal_enabled = True
+    TERMINAL_BOARD_PATHS = frozenset({
+        "/_board/terms", "/_board/killall", "/_board/term-type",
+        "/_board/local-cmd", "/_board/term-probe", "/_board/term",
+        "/_board/release",
+    })
     # Current log records are ``### YYMMDD HHMM · ...`` under ``outline/``.
     # The optional list-marker form keeps historical Page-level logs readable.
     LOG_LINE = re.compile(r"^(?:#{3,4}\s+|[-*]?\s*)(\d{6})(?:\s+\d{3,4})?\s*·")
@@ -172,6 +180,18 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
     # editor still receives the dataURL it expects and never knows.
     XMIME = {"image/png": ".png", "image/jpeg": ".jpg", "image/jpg": ".jpg",
              "image/svg+xml": ".svg", "image/gif": ".gif", "image/webp": ".webp"}
+
+    def is_terminal_request(self):
+        path = self.path.split("?", 1)[0]
+        return (path == "/_term" or path.startswith("/_term/") or
+                path in self.TERMINAL_BOARD_PATHS)
+
+    def reject_disabled_terminal(self):
+        if not self.terminal_enabled and self.is_terminal_request():
+            self.send_error(404, "terminal disabled")
+            return True
+        return False
+
     def _term_route(self):
         """/_term/ 的分流：自有 PTY 在这里终结（/ws 走 ws_term，其余给个健康页），
         ttyd 后备照旧反代。返回 True 表示已经处理完。"""
@@ -215,6 +235,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
 
     def do_GET(self):
         if not self.require_request_auth():
+            return
+        if self.reject_disabled_terminal():
             return
         if self.is_home_request():
             return self.serve_home()
@@ -320,6 +342,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
     def do_HEAD(self):
         if not self.require_request_auth():
             return
+        if self.reject_disabled_terminal():
+            return
         if self.is_home_request():
             return self.serve_home()
         short = self.short_request()
@@ -348,6 +372,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         return SimpleHTTPRequestHandler.do_HEAD(self)
     def do_POST(self):
         if not self.require_request_auth():
+            return
+        if self.reject_disabled_terminal():
             return
         if self.path.startswith("/_term/"):
             if self._term_route():
@@ -670,6 +696,8 @@ if __name__ == "__main__":
                     help="optional username:password file; required for a non-loopback host")
     ap.add_argument("--no-auth", action="store_true",
                     help="disable HTTP Basic Auth; only use on a trusted private network")
+    ap.add_argument("--no-terminal", action="store_true",
+                    help="disable /_term/ and PTY control endpoints")
     ap.add_argument("--public-read", action="store_true",
                     help="allow anonymous generated Board pages while keeping interactive tools authenticated")
     ap.add_argument("--space-name", default="",
@@ -730,6 +758,7 @@ if __name__ == "__main__":
         daemonize(str(Path(a.daemon).resolve()))
     Handler.root = Path(a.root).resolve()
     Handler.public_read = a.public_read
+    Handler.terminal_enabled = not a.no_terminal
     Handler.space_name = space_name
     Handler.public_url = public_url
     base.BIND_HOST = host
@@ -761,10 +790,13 @@ if __name__ == "__main__":
              f"   ＋ http://127.0.0.1:{port} 也在听（VS Code / ssh -L 走的是这个）\n")
           + ("" if host_is_loopback(host) else
              (f"   ⚠️ 绑的不是 loopback：{host} 能到的设备都能用 /_term/ 开 shell\n"
-              if a.no_auth else
+              if a.no_auth and not a.no_terminal else
+              (f"   ℹ️ 绑的不是 loopback：{host} 的终端入口已关闭\n"
+               if a.no_auth else
               (f"   ℹ️ {host} 能到的设备可匿名读 Board；/_term/ 和写入仍需认证\n"
                if a.public_read else
-               f"   ℹ️ {host} 能到的设备必须先认证\n")))
+               f"   ℹ️ {host} 能到的设备必须先认证\n"))))
+          + ("   终端：disabled (--no-terminal)\n" if a.no_terminal else "")
           + f"   评论 / 状态：直接写在这台机器上\n"
           f"   认证：{('off (--no-auth; Tailscale boundary only)' if a.no_auth else ('public Board read; interactive tools protected (' + str(len(Handler.auth_users)) + ' accounts)' if a.public_read else ('on (' + str(len(Handler.auth_users)) + ' accounts)' if Handler.auth_users else 'off (local only)')))}\n"
           f"   聊天：{sdk} · 默认 {MODELS[DEFAULT_MODEL]} / effort={DEFAULT_EFFORT}\n"

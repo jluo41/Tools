@@ -17,6 +17,8 @@ import json
 import mimetypes
 import pathlib
 import re
+import sys
+from urllib.parse import quote
 
 from src.common import evidence_run_dirs
 from src.evidence_labels import parse_result_labels
@@ -85,8 +87,11 @@ html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fall
 #seg{display:none;border:0;width:100%;height:calc(100vh - 92px)}
 .evidence-list{padding:10px 16px 22px;max-width:980px;margin:0 auto}
 .evidence-overview{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 11px}
-.evidence-overview span{border:1px solid var(--line);border-radius:999px;padding:2px 8px;
- color:var(--mut);font-size:11.5px}.evidence-overview .total{color:var(--fg);font-weight:650}
+.evidence-overview span,.evidence-overview a{border:1px solid var(--line);border-radius:999px;padding:2px 8px;
+ color:var(--mut);font-size:11.5px}.evidence-overview a{display:inline-block;text-decoration:none}
+.evidence-overview a:hover,.evidence-overview a:focus-visible{border-color:var(--acc);color:var(--acc);outline:none}
+.evidence-overview a.active{border-color:var(--acc);color:var(--acc);font-weight:650}
+.evidence-overview .total{color:var(--fg);font-weight:650}
 .source-details{margin:0 0 14px;color:var(--mut);font-size:11.5px}
 .source-details summary{display:inline-block;cursor:pointer}.source-details summary:hover{color:var(--fg)}
 .source-details .source-body{margin-top:5px;padding:6px 8px;border:1px solid var(--line);
@@ -101,15 +106,19 @@ html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fall
  border-left:3px solid var(--warn);border-radius:7px;color:var(--warn);font-size:12px}
 .evidence-migration-blocker code{color:inherit}
 .evidence-card>summary{list-style:none;cursor:pointer}.evidence-card>summary::-webkit-details-marker{display:none}
-.evidence-summary{display:grid;grid-template-columns:1.1em minmax(7em,auto) auto minmax(8em,1fr) auto auto;
- align-items:center;gap:7px;padding:9px 10px;min-width:0}.evidence-chevron{color:var(--mut);font-size:18px;
+.evidence-summary{display:flex;align-items:flex-start;gap:7px;padding:9px 10px;min-width:0;
+ box-sizing:border-box}.evidence-summary-main{flex:1;min-width:0;display:grid;gap:3px}
+.evidence-summary-line{display:flex;align-items:baseline;gap:7px;min-width:0;flex-wrap:wrap}
+.evidence-chevron{flex:none;color:var(--mut);font-size:18px;
  line-height:1;transition:transform .12s ease}.evidence-card[open] .evidence-chevron{transform:rotate(90deg)}
 .evidence-card[open]{border-color:var(--acc)}.evidence-label{font-weight:650;overflow-wrap:anywhere}
 .evidence-kind{color:var(--acc);font:650 9.5px -apple-system,sans-serif;text-transform:uppercase;
  letter-spacing:.035em;border:1px solid var(--acc);border-radius:999px;padding:0 6px;white-space:nowrap}
 .evidence-title{color:var(--mut);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.evidence-bullet{color:var(--mut);font-size:11px;white-space:nowrap}.evidence-summary code{background:none;padding:0}
-.evidence-status{font-weight:650}.evidence-status.complete,.evidence-status.ready,
+.evidence-bullet{display:block;color:var(--mut);font-size:11px;white-space:nowrap;padding-left:2px}
+.evidence-summary code{background:none;padding:0}
+.evidence-status{flex:none;margin-left:auto;align-self:center;font-weight:650;font-size:13px}
+.evidence-status.complete,.evidence-status.ready,
 .evidence-status.folded,.evidence-status.accepted{color:var(--ok)}
 .evidence-status.specified,.evidence-status.planned{color:var(--warn)}
 .evidence-detail{border-top:1px solid var(--line);padding:7px 11px 9px}.evidence-detail-row{display:grid;
@@ -119,11 +128,13 @@ html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fall
 .evidence-detail-value code{font-size:11.5px;background:none;padding:0;overflow-wrap:anywhere;word-break:break-word}
 .evidence-preview{margin:0 0 8px;padding:8px;border:1px solid var(--line);border-radius:7px;background:var(--card)}
 .evidence-preview-label{margin:0 0 5px;color:var(--mut);font:650 9.5px -apple-system,sans-serif;
+ text-transform:uppercase;letter-spacing:.05em}.evidence-preview-subhead{margin:8px 0 4px;color:var(--mut);font:650 9.5px -apple-system,sans-serif;
  text-transform:uppercase;letter-spacing:.05em}.evidence-preview-copy{margin:4px 0 0;font-size:12.5px;line-height:1.48}
-.evidence-preview-copy p{margin:4px 0}.evidence-preview-image{display:block;width:100%;max-height:420px;object-fit:contain;
+.evidence-preview-copy p{margin:4px 0}.evidence-preview-media{min-width:0}.evidence-preview-image{display:block;width:100%;max-height:250px;object-fit:contain;
  border:1px solid var(--line);border-radius:5px;background:var(--bg)}
-.evidence-preview-pdf{display:block;width:100%;height:min(55vh,460px);min-height:260px;border:1px solid var(--line);
+.evidence-preview-pdf{display:block;width:100%;height:min(34vh,260px);min-height:180px;border:1px solid var(--line);
  border-radius:5px;background:var(--bg)}.evidence-preview-link{font-size:11.5px;color:var(--acc)}
+.evidence-preview-link{display:inline-block;margin-top:5px;text-decoration:none}.evidence-preview-link:hover{text-decoration:underline}
 .evidence-preview-empty{color:var(--mut);font-size:12.5px}.evidence-preview-hero{font-size:24px;line-height:1.15;
  font-weight:700;color:var(--fg);letter-spacing:-.02em}.evidence-preview-hero small{font-size:12px;font-weight:500;
  color:var(--mut);letter-spacing:0}.evidence-preview-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(8em,1fr));
@@ -139,6 +150,14 @@ html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fall
 .evidence-preview-source-head b{font-weight:650}.evidence-preview-source-head code{color:var(--mut);font-size:10.5px;background:none;padding:0}
 .evidence-preview-source p{margin:3px 0 0;font-size:12.5px;line-height:1.45}
 .evidence-card.run-focus{outline:2px solid var(--acc);outline-offset:3px}
+.evidence-actions{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 7px}
+.evidence-action{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 8px;
+ color:var(--mut);font-size:11px;text-decoration:none;background:var(--bg)}
+.evidence-action:hover,.evidence-action:focus-visible{border-color:var(--acc);color:var(--acc);outline:none}
+.evidence-trace{margin-top:7px;border-top:1px solid var(--line);padding-top:5px;color:var(--mut);font-size:12px}
+.evidence-trace>summary{cursor:pointer;list-style:none;font-size:11px}.evidence-trace>summary::-webkit-details-marker{display:none}
+.evidence-trace>summary:before{content:'+';display:inline-block;width:1em;color:var(--acc);font-weight:700}
+.evidence-trace[open]>summary:before{content:'-'} .evidence-trace-body{margin-top:4px}
 .evidence-label-list{display:grid;gap:5px}.evidence-label-binding{border:1px solid var(--line);
  border-radius:6px;padding:4px 7px;background:var(--card)}.evidence-label-binding>summary{cursor:pointer;
  list-style:none;display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}.evidence-label-binding>summary::-webkit-details-marker{display:none}
@@ -1267,11 +1286,29 @@ def _result_document(text: str) -> dict[str, object]:
     except (TypeError, ValueError):
         try:
             import yaml
-            try:
-                value = yaml.safe_load(text)
-            except yaml.YAMLError:
-                return {}
         except ImportError:
+            # The Board supervisor may launch system Python while the
+            # workspace's .venv owns the optional YAML dependency.
+            yaml = None
+            anchors = [pathlib.Path.cwd(), *pathlib.Path(__file__).resolve().parents]
+            for anchor in anchors:
+                venv_lib = anchor / ".venv" / "lib"
+                for site in sorted(venv_lib.glob("python*/site-packages")):
+                    if not site.is_dir():
+                        continue
+                    sys.path.insert(0, str(site))
+                    try:
+                        import yaml
+                        break
+                    except ImportError:
+                        sys.path.pop(0)
+                if yaml is not None:
+                    break
+            if yaml is None:
+                return {}
+        try:
+            value = yaml.safe_load(text)
+        except yaml.YAMLError:
             return {}
     return value if isinstance(value, dict) else {}
 
@@ -1468,8 +1505,12 @@ def _payload(document: dict[str, object]) -> object:
 def _preview_scalar(value: object) -> str:
     if isinstance(value, bool):
         return "true" if value else "false"
-    if isinstance(value, (str, int, float)):
+    if isinstance(value, int):
+        return f"{value:,}"
+    if isinstance(value, float):
         return str(value)
+    if isinstance(value, str):
+        return value
     if isinstance(value, list) and all(
         isinstance(item, (str, int, float, bool)) for item in value
     ):
@@ -1547,7 +1588,9 @@ def _preview_table(rows: object, *, limit: int = 8) -> str:
     columns = columns[:8]
     if not columns:
         return ""
-    head = "".join("<th>%s</th>" % html.escape(key) for key in columns)
+    head = "".join(
+        "<th>%s</th>" % html.escape(_preview_label(key)) for key in columns
+    )
     body = []
     for row in selected:
         cells = []
@@ -1716,13 +1759,16 @@ def _render_preview_artifact(path: pathlib.Path, data_url: str) -> str:
     suffix = path.suffix.lower()
     if not data_url and suffix not in {".csv", ".tsv", ".md"}:
         return ""
+    open_link = ('<a class=evidence-preview-link href="%s" target="_blank" rel="noopener">'
+                 'Open full preview</a>' % html.escape(data_url, quote=True)) if data_url else ""
     if suffix in _PREVIEW_IMAGE_SUFFIXES:
-        return '<img class=evidence-preview-image src="%s" alt="Evidence display preview" loading="lazy">' % html.escape(data_url, quote=True)
+        return ('<div class=evidence-preview-media><img class=evidence-preview-image '
+                'src="%s" alt="Evidence display preview" loading="lazy">%s</div>' %
+                (html.escape(data_url, quote=True), open_link))
     if suffix == ".pdf":
-        return ('<object class=evidence-preview-pdf data="%s" type="application/pdf">'
-                '<a class=evidence-preview-link href="%s" target="_blank" rel="noopener">'
-                'Open PDF preview</a></object>' %
-                (html.escape(data_url, quote=True), html.escape(data_url, quote=True)))
+        return ('<div class=evidence-preview-media><object class=evidence-preview-pdf '
+                'data="%s" type="application/pdf">%s</object>%s</div>' %
+                (html.escape(data_url, quote=True), open_link, open_link))
     if suffix in {".csv", ".tsv"}:
         return _render_delimited(path)
     if suffix == ".md":
@@ -1761,9 +1807,18 @@ def _result_preview(record: dict[str, object], page_home: pathlib.Path,
             caption = _preview_label(hero_path) if hero_path else "Value"
             content.append('<div class=evidence-preview-hero>%s<small>%s%s</small></div>' %
                            (html.escape(hero), html.escape(caption), html.escape(suffix)))
-        table = _payload_table(payload)
+        table = ""
+        table_label = ""
+        if isinstance(payload, dict):
+            for key in ("values", "cohorts", "rows", "table", "data",
+                        "ladder", "comparisons"):
+                table = _preview_table(payload.get(key))
+                if table:
+                    table_label = _preview_label(key)
+                    break
         if table:
-            content.append(table)
+            content.append("<div class=evidence-preview-subhead>%s</div>%s" %
+                           (html.escape(table_label), table))
         hero_key = hero_path.rsplit(" · ", 1)[-1] if hero_path else ""
         facts = _preview_facts(
             payload, skip={hero_key, "unit"} | _PREVIEW_COPY_KEYS, limit=5
@@ -1822,9 +1877,26 @@ def _result_preview(record: dict[str, object], page_home: pathlib.Path,
     return '<section class=evidence-preview><div class=evidence-preview-label>Preview</div>%s</section>' % "".join(content)
 
 
+def _workspace_actions(path_q: str, file_q: str, run_id: str = "") -> str:
+    if not path_q and not file_q:
+        return ""
+    path = quote(path_q or "", safe="")
+    file = quote(file_q or "", safe="")
+    runs_href = "/_board/runs?path=%s&file=%s" % (path, file)
+    if run_id:
+        runs_href += "&space=evidence&run=%s" % quote(run_id, safe="")
+    folder_href = "/_board/folderstat?path=%s&file=%s" % (path, file)
+    return ('<div class=evidence-actions aria-label="Evidence navigation">'
+            '<a class=evidence-action href="%s" target="_blank" rel="noopener">Run Space</a>'
+            '<a class=evidence-action href="%s" target="_blank" rel="noopener">'
+            'Browse Run + Result folders</a></div>' %
+            (html.escape(runs_href, quote=True), html.escape(folder_href, quote=True)))
+
+
 def _evidence_sections(records: list[dict[str, object]],
                        page_home: pathlib.Path | None = None,
-                       root: pathlib.Path | None = None) -> str:
+                       root: pathlib.Path | None = None,
+                       path_q: str = "", file_q: str = "") -> str:
     """Render compact typed sections with collapsed, progressive-disclosure cards."""
     if not records:
         return '<div class=ghost>No Evidence Result yet.</div>'
@@ -1875,8 +1947,7 @@ def _evidence_sections(records: list[dict[str, object]],
             safe_item = html.escape(item_id, quote=True)
             display_title = title_text if title_text and title_text.lower() != label.lower() else ""
             label_html = _label_details(fields.get("labels", []))
-            detail = "".join((
-                _result_preview(record, page_home, root),
+            trace = "".join((
                 ('<div class=evidence-detail-row><span class=evidence-detail-label>'
                  'Evidence Labels</span><span class=evidence-detail-value>%s</span></div>'
                  % label_html) if label_html else "",
@@ -1892,11 +1963,19 @@ def _evidence_sections(records: list[dict[str, object]],
                 _detail_row("Expected", str(fields.get("expected", "")).strip()),
                 _detail_row("Acceptance", str(fields.get("acceptance", "")).strip()),
             ))
+            detail = "".join((
+                _result_preview(record, page_home, root),
+                _workspace_actions(path_q, file_q, run_id),
+                '<details class=evidence-trace><summary>Traceability</summary>'
+                '<div class=evidence-trace-body>%s</div></details>' % trace,
+            ))
             cards.append(
                 '<details class=evidence-card id="%s" data-evidence-id="%s" data-evidence-type="%s">'
                 '<summary class=evidence-summary><span class=evidence-chevron aria-hidden=true>›</span>'
+                '<span class=evidence-summary-main><span class=evidence-summary-line>'
                 '<span class=evidence-kind>%s</span><span class=evidence-label>%s</span>'
-                '<span class=evidence-title>%s</span><code class=evidence-bullet>%s</code>'
+                '<span class=evidence-title>%s</span></span>'
+                '<code class=evidence-bullet>%s</code></span>'
                 '<span class="evidence-status %s">%s</span></summary>'
                 '<div class=evidence-detail>%s</div></details>' % (
                     html.escape(focus, quote=True), safe_item, safe_kind,
@@ -1906,11 +1985,12 @@ def _evidence_sections(records: list[dict[str, object]],
                 )
             )
         sections.append(
-            '<section class=evidence-type-section data-evidence-type="%s">'
+            '<section id="evidence-%s" class=evidence-type-section data-evidence-type="%s">'
             '<header class=evidence-type-head><h2 class=evidence-type-title>%s</h2>'
             '<span class=evidence-type-count>%d</span><span class=evidence-type-hint>%s</span></header>'
             '<div class=evidence-cards>%s</div></section>' % (
-                html.escape(kind, quote=True), html.escape(title), len(items),
+                html.escape(kind, quote=True), html.escape(kind, quote=True),
+                html.escape(title), len(items),
                 html.escape(hint), "".join(cards)
             )
         )
@@ -1957,22 +2037,34 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str,
     """Render the v4 Evidence Space as typed, Result-first disclosure cards."""
     page_home = page_src.parent
     records = _result_records(page_home)
-    body = _evidence_sections(records, page_home=page_home, root=root or page_home)
+    body = _evidence_sections(records, page_home=page_home, root=root or page_home,
+                               path_q=path_q, file_q=file_q)
     migration_notice = _migration_notice(page_home)
     counts = {kind: sum(1 for record in records if _evidence_type(record) == kind)
               for kind in ("DISPLAY", "CITE", "VALUE")}
-    overview = ("<span class=total>%d Evidence Items</span>" % len(records) +
-                "<span>%d Displays</span>" % counts["DISPLAY"] +
-                "<span>%d Citations</span>" % counts["CITE"] +
-                "<span>%d Values</span>" % counts["VALUE"])
+    overview = (
+        '<a class=total href="#evidence-items">%d Evidence Items</a>' % len(records) +
+        '<a href="#evidence-DISPLAY">%d Displays</a>' % counts["DISPLAY"] +
+        '<a href="#evidence-CITE">%d Citations</a>' % counts["CITE"] +
+        '<a href="#evidence-VALUE">%d Values</a>' % counts["VALUE"]
+    )
     return f"""<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Evidence Space · {html.escape(page_src.stem)}</title><style>{_CSS}</style>
 <body class=embedded><header><h1>Evidence Space</h1></header>
-<div class=evidence-list><div class=evidence-overview>{overview}</div>{migration_notice}
+<div id=evidence-items class=evidence-list><div class=evidence-overview>{overview}</div>{migration_notice}
 <details class=source-details><summary>Sources</summary><div class=source-body>Result <code>results/**/result.yaml</code>.</div></details>
 {body}</div>
-<script>(function(){{var q=new URLSearchParams(location.search),id=q.get('focus');if(!id)return;
-var row=document.getElementById(id);if(row){{row.open=true;row.classList.add('run-focus');row.scrollIntoView({{block:'center'}});}}}})();</script>
+<script>
+(function(){{var links=document.querySelectorAll('.evidence-overview a'),sections=document.querySelectorAll('.evidence-type-section'),source=document.querySelector('.source-details');
+function applyFilter(){{var match=location.hash.match(/^#evidence-(DISPLAY|CITE|VALUE)$/),kind=match?match[1]:"";
+sections.forEach(function(section){{section.hidden=!!kind && section.dataset.evidenceType!==kind;}});
+if(source)source.hidden=!!kind;
+links.forEach(function(link){{var active=!!kind && link.getAttribute('href')==="#evidence-"+kind;link.classList.toggle('active',active);}});
+}}
+window.addEventListener('hashchange',applyFilter);applyFilter();}})();
+(function(){{var q=new URLSearchParams(location.search),id=q.get('focus');if(!id)return;
+var row=document.getElementById(id);if(row){{row.open=true;row.classList.add('run-focus');row.scrollIntoView({{block:'center'}});}}}})();
+</script>
 </body>"""
 
 

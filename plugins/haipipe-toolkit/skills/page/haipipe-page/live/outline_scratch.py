@@ -361,56 +361,94 @@ def _e(value: object) -> str:
     return html.escape(str(value), quote=True)
 
 
+def _scratch_dom_id(scope: str, target: str) -> str:
+    return "scratch-%s-%s" % (re.sub(r"[^A-Za-z0-9_-]+", "-", scope),
+                               _target_suffix(target))
+
+
+def scratch_heading_attr(scope: str, target: str, *, read_only: bool = False) -> str:
+    """Return the target hook used by a Scratch-mode heading."""
+    if read_only:
+        return ""
+    return ' data-scratch-heading="%s"' % _e(_scratch_dom_id(scope, target))
+
+
+def scratch_flag_html(scope: str, target: str, record: dict | None = None,
+                      *, read_only: bool = False) -> str:
+    """Return the minimal heading mark for a target with saved Scratch notes."""
+    if read_only or not record or not str(record.get("notes", "")).strip():
+        return ""
+    label = "Scratch available for %s %s" % (scope, target)
+    return '<span class="scratch-flag" title="%s" aria-label="%s"></span>' % (
+        _e(label), _e(label)
+    )
+
+
+def scratch_draft_trigger_html(scope: str, target: str, *, read_only: bool = False) -> str:
+    """Return the compact heading action that reveals clean current prose."""
+    if read_only:
+        return ""
+    slot_id = _scratch_dom_id(scope, target)
+    preview_id = slot_id + "-draft"
+    return (
+        '<button type="button" class="scratch-draft-toggle" '
+        'data-scratch-slot="%s" aria-controls="%s" aria-expanded="false" '
+        'title="Show current draft without Bullet labels" '
+        'aria-label="Show current draft">Show draft</button>'
+    ) % (_e(slot_id), _e(preview_id))
+
+
 def scratch_control_html(scope: str, target: str, record: dict | None = None,
-                         *, read_only: bool = False, reading: bool = False) -> str:
-    """Inline control rendered below its Section or paragraph heading."""
+                         *, read_only: bool = False, reading: bool = False,
+                         path_q: str = "", file_q: str = "") -> str:
+    """One Scratch box and a clean full-draft preview rendered below a heading.
+
+    ``path`` and ``file`` stay in the form because POST /_board/outline needs
+    the same Board target that produced this view.
+    """
     if read_only:
         return ""
     record = record or {}
     closed = record.get("status", "").lower() == "closed"
     run_id = record.get("run", "") if not closed else ""
-    notes = record.get("notes", "") if not closed else ""
-    raw_notes = record.get("notes", "")
-    summary = record.get("summary", "")
-    saved_parts = []
-    if raw_notes:
-        saved_parts.append(
-            '<div class="scratch-saved-block"><span class="scratch-saved-label">'
-            'Scratch</span><div class="scratch-saved-text">%s</div></div>'
-            % _e(raw_notes)
-        )
-    if summary:
-        saved_parts.append(
-            '<div class="scratch-saved-block"><span class="scratch-saved-label">'
-            'Summary</span><div class="scratch-saved-text">%s</div></div>'
-            % _e(summary)
-        )
-    saved_class = " has-saved" if saved_parts else ""
-    saved = '<div class="scratch-saved%s">%s</div>' % (
-        saved_class, "".join(saved_parts)
-    )
+    notes = record.get("notes", "")
+    editor_class = "scratch-editor open" if notes else "scratch-editor"
+    locked = " readonly" if closed else ""
     mode_class = " reading-only" if reading else " table-only"
+    preview_id = _scratch_dom_id(scope, target) + "-draft"
+    draft_button = scratch_draft_trigger_html(scope, target)
+    source_label = "Insert text"
+    source_title = "Insert current %s text into Scratch" % scope
+    if closed:
+        actions = draft_button + '<span class="scratch-status">Closed</span>'
+    else:
+        actions = (
+            draft_button
+            + '<button type="button" data-scratch-source title="%s">%s</button>'
+            '<button type="button" data-scratch-finish>Finish Scratch</button>'
+            % (_e(source_title), _e(source_label))
+        )
     return (
-        '<div class="scratch-slot%s" data-scratch-scope="%s" '
+        '<div id="%s" class="scratch-slot%s" data-scratch-scope="%s" '
         'data-scratch-target="%s">'
-        '<button type="button" class="scratch-plus" title="Add %s Scratch" '
-        'aria-label="Add %s Scratch">+</button>'
-        '%s%s'
-        '<div class="scratch-editor">'
-        '<form data-scratch-form autocomplete="off">'
+        '<div class="%s">'
+        '<form data-scratch-form data-scratch-autosave autocomplete="off">'
         '<input type="hidden" name="scope" value="%s">'
         '<input type="hidden" name="target" value="%s">'
+        '<input type="hidden" name="path" value="%s">'
+        '<input type="hidden" name="file" value="%s">'
         '<input type="hidden" name="run_id" value="%s">'
-        '<label>Scratch<textarea name="notes" rows="12" placeholder="What should this part do?">%s</textarea></label>'
-        '<div class="scratch-actions"><button type="button" data-scratch-save>Save</button>'
-        '<button type="button" data-scratch-finish>Finish Scratch</button>'
+        '<textarea name="notes" aria-label="Scratch notes" rows="4" '
+        'placeholder="What should this part do?"%s>%s</textarea>'
+        '<div class="scratch-actions">%s'
         '<span class="scratch-status" role="status"></span></div>'
-        '</form></div></div>'
+        '</form></div>'
+        '<div id="%s" class="scratch-current-draft" '
+        'data-scratch-draft-preview></div></div>'
     ) % (
-        mode_class, _e(scope), _e(target), _e(scope), _e(scope),
-        '<span class="scratch-done" title="Scratch closed">Scratch ✓</span>' if closed else "",
-        saved,
-        _e(scope), _e(target), _e(run_id), _e(notes),
+        _e(_scratch_dom_id(scope, target)), mode_class, _e(scope), _e(target),
+        editor_class, _e(scope), _e(target), _e(path_q), _e(file_q), _e(run_id),
+        locked, _e(notes), actions, _e(preview_id),
     )
 
 
@@ -418,19 +456,22 @@ def scratch_assets_html() -> str:
     """CSS and the tiny same-origin controller emitted once per Draft."""
     return r"""<style>
 .scratch-slot{display:none;margin:6px 0 12px}
-.scratch-plus{appearance:none;border:0;background:none;color:var(--acc);font:600 16px/1 system-ui,sans-serif;padding:0 3px;cursor:pointer;opacity:.72}
-.scratch-plus:hover,.scratch-plus:focus-visible{opacity:1;outline:1px solid var(--acc);border-radius:3px}
-.scratch-editor{display:none;position:static;width:auto;margin:7px 0 0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);box-shadow:none;text-transform:none;letter-spacing:normal}
+.scratch-flag{display:inline-block;width:6px;height:6px;margin:0 2px 1px 1px;border-radius:50%;background:var(--acc);vertical-align:middle}
+.scratch-draft-toggle{appearance:none;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--mut);padding:3px 7px;cursor:pointer;font:600 11px/1 system-ui,sans-serif;vertical-align:middle;flex:none}
+.scratch-draft-toggle:hover,.scratch-draft-toggle:focus-visible{border-color:var(--acc);color:var(--acc);outline:none}
+.scratch-editor{display:none;position:static;width:auto;margin:7px 0 0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;text-transform:none;letter-spacing:normal}
 .scratch-editor.open{display:block}
 .scratch-editor>summary{display:none}
 .scratch-editor form{display:grid;gap:7px}
-.scratch-editor label{display:grid;gap:3px;color:var(--mut);font:600 11px/1.4 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em}
 .scratch-editor textarea{resize:vertical;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:6px;text-transform:none;letter-spacing:normal}
-.scratch-editor textarea[name="notes"]{min-height:clamp(240px,32vh,420px)}
-.scratch-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.scratch-actions button{border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);padding:4px 7px;cursor:pointer;font:600 11px system-ui,sans-serif}.scratch-actions button[data-scratch-finish]{border-color:var(--acc);color:var(--acc)}
-.scratch-status{color:var(--mut);font:11px/1.4 system-ui,sans-serif}.scratch-done{display:none;color:var(--ok);font:600 11px/1.4 system-ui,sans-serif}.scratch-saved{display:none;margin:7px 0 0;padding:8px 10px;border-left:2px solid var(--acc);background:var(--card);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.scratch-saved-block+.scratch-saved-block{margin-top:8px}.scratch-saved-label{display:block;margin-bottom:2px;color:var(--mut);font:600 10px/1.3 system-ui,sans-serif;letter-spacing:.05em;text-transform:uppercase}.scratch-saved-text{white-space:pre-wrap}
-.draft-lens[data-draft-mode="scratch"] .scratch-slot{display:block}.draft-lens[data-draft-mode="scratch"] .scratch-done{display:inline}.draft-lens[data-draft-mode="scratch"] .scratch-saved.has-saved{display:block}
-.draft-lens[data-draft-mode="scratch"] .paragraph-bullets{display:none}.draft-lens[data-draft-mode="scratch"] .paragraph-reading{display:block}.draft-lens[data-draft-mode="scratch"] .paragraph-group{margin-bottom:24px}.draft-lens[data-draft-mode="scratch"] details.paragraph-group>summary{cursor:pointer}
+.scratch-editor textarea[name="notes"]{height:6.4em;min-height:0;max-height:280px;overflow-y:hidden;box-sizing:border-box}
+.scratch-editor textarea[readonly]{cursor:default;opacity:.8}
+.scratch-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.scratch-actions button{border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);padding:4px 7px;cursor:pointer;font:600 11px system-ui,sans-serif}.scratch-actions button[data-scratch-source]{border-color:transparent;color:var(--acc)}.scratch-actions button[data-scratch-finish]{border-color:var(--acc);color:var(--acc)}
+.scratch-status{color:var(--mut);font:11px/1.4 system-ui,sans-serif}
+.scratch-current-draft{display:none;margin:7px 0 0;padding:10px 12px;border-left:2px solid var(--acc);background:var(--card);color:var(--fg);font:16px/1.65 Georgia,serif;white-space:pre-wrap;user-select:text;cursor:text}
+.scratch-current-draft.open{display:block}
+.draft-lens[data-draft-mode="scratch"] .scratch-slot{display:block}.draft-lens[data-draft-mode="scratch"] .paragraph-bullets{display:none}.draft-lens[data-draft-mode="scratch"] .paragraph-reading{display:none}.draft-lens[data-draft-mode="scratch"] .paragraph-group{margin-bottom:24px}.draft-lens[data-draft-mode="scratch"] details.paragraph-group>summary{cursor:pointer}
+.draft-lens[data-draft-mode="scratch"] details.paragraph-group.scratch-editor-open .paragraph-reading,.draft-lens[data-draft-mode="scratch"] details.paragraph-group.scratch-draft-open .paragraph-reading{display:none}
 .draft-lens[data-draft-mode="scratch"] .reading-line{position:relative}.draft-lens[data-draft-mode="scratch"] .reading-copy{max-width:70ch}
 .section-scratch{margin:0 0 6px}
 .paragraph-scratch{margin:0}
@@ -438,9 +479,40 @@ def scratch_assets_html() -> str:
 .scratch-slot.table-only{display:none}
 </style><script>
 (function(){
-  function closeEditors(except){document.querySelectorAll('.scratch-editor.open').forEach(function(x){if(x!==except)x.classList.remove('open');});}
-  document.querySelectorAll('.scratch-plus').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();var slot=button.closest('.scratch-slot'),editor=slot&&slot.querySelector('.scratch-editor');if(!editor)return;var was=editor.classList.contains('open');closeEditors(editor);editor.classList.toggle('open',!was);if(!was){var note=editor.querySelector('[name=notes]');if(note)note.focus();}});});
-  document.querySelectorAll('[data-scratch-save],[data-scratch-finish]').forEach(function(button){button.addEventListener('click',async function(){var form=button.closest('form'),slot=form.closest('.scratch-slot'),status=form.querySelector('.scratch-status'),finish=button.hasAttribute('data-scratch-finish');var payload={action:'scratch',phase:finish?'finish':'save'};new FormData(form).forEach(function(value,key){payload[key]=value;});status.textContent=finish?'Summarizing with AI…':'Saving…';try{var response=await fetch('/_board/outline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),result=await response.json();if(!response.ok||!result.ok)throw new Error(result.err||'Unable to save Scratch');status.textContent=finish?'Closed ✓':'Saved';if(result.run&&!payload.run_id){form.querySelector('[name=run_id]').value=result.run;}if(finish)slot.querySelector('.scratch-editor').classList.remove('open');setTimeout(function(){location.reload();},180);}catch(error){status.textContent=error.message;}});});
-  document.addEventListener('click',function(event){if(!event.target.closest('.scratch-slot'))closeEditors(null);});
+  function closeEditors(except){document.querySelectorAll('.scratch-editor.open').forEach(function(x){if(x!==except){x.classList.remove('open');var slot=x.closest('.scratch-slot');if(slot)slot.classList.remove('scratch-editing');var owner=x.closest('details.paragraph-group');if(owner)owner.classList.remove('scratch-editor-open');}});}
+  function closeDrafts(except){document.querySelectorAll('.scratch-current-draft.open').forEach(function(x){if(x!==except){x.classList.remove('open');var button=document.querySelector('.scratch-draft-toggle[aria-controls="'+x.id+'"]');if(button)button.setAttribute('aria-expanded','false');var owner=x.closest('details.paragraph-group');if(owner)owner.classList.remove('scratch-draft-open');}});}
+  function slotFor(button){var id=button.getAttribute('aria-controls');return id?document.getElementById(id):null;}
+  function openScratch(slot,owner){var editor=slot&&slot.querySelector('.scratch-editor');if(!editor)return;var wasOpen=editor.classList.contains('open');closeEditors(editor);closeDrafts(null);if(wasOpen){editor.classList.remove('open');if(slot)slot.classList.remove('scratch-editing');if(owner){owner.classList.remove('scratch-editor-open');owner.open=false;}return;}editor.classList.add('open');if(slot)slot.classList.add('scratch-editing');if(owner){owner.open=true;owner.classList.add('scratch-editor-open');}var note=editor.querySelector('[name=notes]');if(note)note.focus();}
+  function readingText(node){return Array.from(node.querySelectorAll('.paragraph-reading .reading-copy')).map(function(x){return (x.innerText||x.textContent||'').trim();}).filter(Boolean).join('\n\n');}
+  function sourceTextFor(slot){var group=slot.closest('.paragraph-group');if(group)return readingText(group);var section=slot.closest('.section-scratch'),out=[],node=section&&section.nextElementSibling;while(node&&!node.classList.contains('division-title')){if(node.matches&&node.matches('details.paragraph-group')){var text=readingText(node);if(text)out.push(text);}node=node.nextElementSibling;}return out.join('\n\n');}
+  function resizeScratch(note){if(!note)return;note.style.height='auto';var cs=getComputedStyle(note),line=parseFloat(cs.lineHeight)||20,pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0),min=line*4+pad,max=parseFloat(cs.maxHeight)||280,needed=Math.max(min,note.scrollHeight);note.style.height=Math.min(needed,max)+'px';note.style.overflowY=needed>max?'auto':'hidden';}
+  var scratchSelectionPending=false;
+  document.querySelectorAll('.scratch-editor textarea[name="notes"]').forEach(function(note){resizeScratch(note);note.addEventListener('input',function(){resizeScratch(note);});note.addEventListener('select',function(){if(note.selectionStart!==note.selectionEnd)scratchSelectionPending=true;});});
+  var scratchPointerDown=false,scratchPointerMoved=false,scratchSuppressClick=false,scratchPointerField=null,scratchPointerX=0,scratchPointerY=0,scratchSuppressTimer=0;
+  function scratchPointerStart(event){var field=event.target.closest&&event.target.closest('.scratch-editor textarea,.scratch-editor input');scratchPointerDown=!!field;scratchPointerField=field||null;scratchPointerMoved=false;scratchPointerX=event.clientX;scratchPointerY=event.clientY;}
+  function scratchPointerMove(event){if(scratchPointerDown&&(Math.abs(event.clientX-scratchPointerX)>4||Math.abs(event.clientY-scratchPointerY)>4))scratchPointerMoved=true;}
+  function scratchPointerEnd(event){var releasedOutside=!!scratchPointerField&&!(event.target.closest&&event.target.closest('.scratch-editor'));if(scratchPointerDown&&(scratchPointerMoved||releasedOutside)){scratchSuppressClick=true;clearTimeout(scratchSuppressTimer);scratchSuppressTimer=window.setTimeout(function(){scratchSuppressClick=false;},500);}scratchPointerDown=false;scratchPointerField=null;}
+  ['mousedown','pointerdown'].forEach(function(type){document.addEventListener(type,scratchPointerStart);});
+  ['mousemove','pointermove'].forEach(function(type){document.addEventListener(type,scratchPointerMove);});
+  ['mouseup','pointerup'].forEach(function(type){document.addEventListener(type,scratchPointerEnd);});
+  function scratchTextSelected(){var field=document.activeElement;return !!(field&&field.matches&&field.matches('.scratch-editor textarea,.scratch-editor input')&&typeof field.selectionStart==='number'&&field.selectionStart!==field.selectionEnd);}
+  document.addEventListener('selectionchange',function(){if(scratchTextSelected())scratchSelectionPending=true;});
+  document.addEventListener('click',function(event){var outsideEditor=!(event.target.closest&&event.target.closest('.scratch-editor'));var clickDuringScratchDrag=scratchPointerDown&&scratchPointerField&&outsideEditor;var clickAfterScratchSelection=(scratchTextSelected()||scratchSelectionPending)&&outsideEditor;if(scratchSuppressClick||clickDuringScratchDrag||clickAfterScratchSelection){scratchSuppressClick=false;scratchSelectionPending=false;clearTimeout(scratchSuppressTimer);event.preventDefault();event.stopImmediatePropagation();}},true);
+  /* Scratch owns keyboard focus.  Keep editing shortcuts from reaching the
+     surrounding <details>/<summary> controls, so cut/paste never changes the
+     paragraph's open state.  The browser still performs the native shortcut
+     inside the textarea (on macOS that is Command+X). */
+  document.querySelectorAll('.scratch-editor').forEach(function(editor){
+    editor.addEventListener('keydown',function(event){
+      if(event.target.closest&&event.target.closest('textarea,input,button'))event.stopPropagation();
+    });
+  });
+  document.querySelectorAll('[data-scratch-heading]').forEach(function(heading){function open(event){if(event.type==='keydown'&&event.key!=='Enter'&&event.key!==' ')return;if(event.type==='click'){if(scratchSuppressClick){scratchSuppressClick=false;event.preventDefault();event.stopPropagation();return;}var selection=window.getSelection&&window.getSelection();if(selection&&!selection.isCollapsed&&selection.containsNode&&selection.containsNode(heading,true)){event.preventDefault();event.stopPropagation();return;}}if(event.target.closest&&event.target.closest('.scratch-draft-toggle'))return;event.preventDefault();event.stopPropagation();var slot=document.getElementById(heading.getAttribute('data-scratch-heading'));openScratch(slot,heading.closest('details.paragraph-group'));}heading.addEventListener('click',open);heading.addEventListener('keydown',open);});
+  document.querySelectorAll('.scratch-draft-toggle').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();var slot=document.getElementById(button.getAttribute('data-scratch-slot')),preview=slot&&slot.querySelector('[data-scratch-draft-preview]'),editor=slot&&slot.querySelector('.scratch-editor'),owner=button.closest('details.paragraph-group');if(!preview)return;var opening=!preview.classList.contains('open');closeEditors(editor);if(opening){closeDrafts(null);if(editor)editor.classList.add('open');if(owner){owner.open=true;owner.classList.add('scratch-editor-open');owner.classList.add('scratch-draft-open');}preview.textContent=sourceTextFor(slot)||'No draft yet';preview.classList.add('open');button.setAttribute('aria-expanded','true');}else{preview.classList.remove('open');button.setAttribute('aria-expanded','false');if(owner)owner.classList.remove('scratch-draft-open');}});});
+  document.querySelectorAll('[data-scratch-source]').forEach(function(button){button.addEventListener('click',function(){var form=button.closest('form'),slot=form.closest('.scratch-slot'),note=form.querySelector('[name=notes]'),status=form.querySelector('.scratch-status'),text=sourceTextFor(slot);if(!text){status.textContent='No text to insert';return;}var existing=note.value.trimEnd();note.value=existing?(existing+'\n\n'+text):text;note.dispatchEvent(new Event('input',{bubbles:true}));note.focus();status.textContent='Text inserted';});});
+  function scratchPayload(form,phase){var payload={action:'scratch',phase:phase};new FormData(form).forEach(function(value,key){payload[key]=value;});var params=new URLSearchParams(location.search);if(!payload.path)payload.path=params.get('path')||'';if(!payload.file)payload.file=params.get('file')||'';return payload;}
+  function requestScratch(form,phase){return fetch('/_board/outline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(scratchPayload(form,phase))}).then(function(response){return response.json().then(function(result){if(!response.ok||!result.ok)throw new Error(result.err||'Unable to save Scratch');return result;});});}
+  document.querySelectorAll('[data-scratch-form]').forEach(function(form){var note=form.querySelector('[name=notes]'),status=form.querySelector('.scratch-status'),runInput=form.querySelector('[name=run_id]'),finish=form.querySelector('[data-scratch-finish]');if(!note||note.readOnly)return;var timer=null,queued=false,inFlight=null,finishing=false;function schedule(delay){clearTimeout(timer);queued=true;timer=setTimeout(flush,delay);}function flush(){if(!queued||finishing||inFlight)return;queued=false;if(!note.value.trim()){status.textContent='';return;}var snapshot=note.value;status.textContent='Saving…';var request=requestScratch(form,'save');inFlight=request;request.then(function(result){if(result.run&&runInput)runInput.value=result.run;if(note.value===snapshot)status.textContent='Saved';if(note.value!==snapshot&&note.value.trim())schedule(650);},function(error){status.textContent=error.message;}).then(function(){if(inFlight===request)inFlight=null;if(queued&&!finishing)schedule(0);});}note.addEventListener('input',function(){status.textContent=note.value.trim()?'Unsaved':'';schedule(650);});note.addEventListener('blur',function(){if(note.value.trim())schedule(0);});if(finish)finish.addEventListener('click',async function(event){event.preventDefault();if(finishing)return;finishing=true;clearTimeout(timer);queued=false;status.textContent='Summarizing with AI…';try{if(inFlight)await inFlight;if(!note.value.trim())throw new Error('Notes are required');var result=await requestScratch(form,'finish');if(result.run&&runInput)runInput.value=result.run;status.textContent='Closed ✓';var slot=form.closest('.scratch-slot'),editor=form.closest('.scratch-editor'),owner=form.closest('details.paragraph-group');if(editor)editor.classList.remove('open');if(slot)slot.classList.remove('scratch-editing');if(owner){owner.classList.remove('scratch-editor-open');owner.open=false;}setTimeout(function(){location.reload();},180);}catch(error){finishing=false;status.textContent=error.message;}});});
+  document.addEventListener('click',function(event){if(scratchSuppressClick){scratchSuppressClick=false;event.preventDefault();event.stopPropagation();return;}if(!event.target.closest('.scratch-slot,.scratch-draft-toggle,[data-scratch-heading]')){closeEditors(null);closeDrafts(null);}});
 })();
 </script>"""

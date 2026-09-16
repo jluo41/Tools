@@ -4,6 +4,7 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
+import re
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -13,7 +14,8 @@ sys.path.insert(0, str(PAGE_ROOT))
 
 from live.outline import _PAGE, plan_card  # noqa: E402
 from live.outline_scratch import (ai_summarize_scratch, read_scratch,  # noqa: E402
-                                  save_scratch)
+                                  save_scratch, scratch_assets_html,
+                                  scratch_flag_html)
 from live.runs import run_inventory  # noqa: E402
 
 
@@ -75,6 +77,14 @@ class ScratchTest(unittest.TestCase):
         self.assertIsNone(result)
         self.assertIn("target does not exist", err)
 
+    def test_saved_scratch_has_a_minimal_heading_flag(self):
+        self.assertIn('class="scratch-flag"', scratch_flag_html(
+            "paragraph", "C1.P1", {"notes": "A human thought."}))
+        self.assertEqual("", scratch_flag_html(
+            "paragraph", "C1.P1", {"notes": ""}))
+        self.assertEqual("", scratch_flag_html(
+            "paragraph", "C1.P1", {"notes": "A human thought."}, read_only=True))
+
     def test_ai_summary_closes_and_closed_run_is_immutable(self):
         result, err = self.save("paragraph", "C1.P1")
         self.assertIsNone(err, err)
@@ -122,28 +132,63 @@ class ScratchTest(unittest.TestCase):
         self.assertIn('data-scratch-scope="paragraph"', card)
         self.assertNotIn('data-scratch-scope="subsection"', card)
         self.assertNotRegex(card, r'data-scratch-target="[^"]+\.B\d+"')
+        self.assertIn('data-scratch-slot="scratch-paragraph-C1.P1"', card)
+        self.assertIn('aria-controls="scratch-paragraph-C1.P1-draft"', card)
+        self.assertIn('name="path"', card)
+        self.assertIn('name="file"', card)
+        self.assertIn('data-scratch-heading="scratch-paragraph-C1.P1"', card)
+        self.assertIn('data-scratch-heading="scratch-section-C1"', card)
+        self.assertIn('class="scratch-draft-toggle"', card)
+        self.assertIn('data-scratch-draft-preview', card)
+        self.assertIn('data-scratch-autosave', card)
+        summaries = re.findall(r'(?s)<summary class="prow".*?</summary>', card)
+        self.assertTrue(summaries)
+        self.assertTrue(all('scratch-draft-toggle' not in summary for summary in summaries))
+        self.assertRegex(card, r'(?s)<div class="scratch-actions">.*?class="scratch-draft-toggle".*?data-scratch-source.*?data-scratch-finish')
+        self.assertNotIn('scratch-plus', card)
         self.assertIn("if(mode==='scratch')", _PAGE)
-        self.assertIn("x.open=false", _PAGE)
+        self.assertIn("x.open=true", _PAGE)
         self.assertIn('position:static', card)
         self.assertIn('box-shadow:none', card)
         self.assertIn("Finish Scratch", card)
-        self.assertIn('rows="12"', card)
-        self.assertIn('textarea[name="notes"]{min-height:clamp(240px,32vh,420px)}', card)
+        self.assertIn('data-scratch-source', card)
+        self.assertIn("Insert text", card)
+        self.assertIn('rows="4"', card)
+        self.assertIn('textarea[name="notes"]{height:6.4em;min-height:0;max-height:280px;overflow-y:hidden;box-sizing:border-box}', card)
+        self.assertIn('padding:0;border:0;border-radius:0;background:transparent', card)
+        self.assertIn('aria-label="Scratch notes"', card)
+        self.assertNotIn('<label>Scratch', card)
+        self.assertNotIn('scratch-saved', card)
+        self.assertNotIn('data-scratch-save', card)
         self.assertNotIn('name="summary"', card)
         self.assertNotIn("Summarize when you are done", card)
         self.assertIn("setTimeout(function(){location.reload();},180)", card)
+        self.assertIn("openScratch", scratch_assets_html())
+        self.assertIn("sourceTextFor", scratch_assets_html())
+        self.assertIn("requestScratch", scratch_assets_html())
+        self.assertIn("setTimeout(flush,delay)", scratch_assets_html())
+        self.assertIn("resizeScratch", scratch_assets_html())
+        self.assertIn("Scratch owns keyboard focus", scratch_assets_html())
+        self.assertIn("event.stopPropagation()", scratch_assets_html())
+        self.assertIn("selection.containsNode(heading,true)", scratch_assets_html())
+        self.assertIn("scratchSuppressClick", scratch_assets_html())
+        self.assertIn("scratchTextSelected", scratch_assets_html())
+        self.assertIn("scratchSelectionPending", scratch_assets_html())
+        routed = plan_card(self.page, path_q="/board.md", file_q="Ba/S-scratch/S-scratch.md")
+        self.assertIn('name="path" value="/board.md"', routed)
+        self.assertIn('name="file" value="Ba/S-scratch/S-scratch.md"', routed)
         readonly = plan_card(self.page, read_only=True)
         self.assertNotIn("data-scratch-form", readonly)
         self.assertNotIn("Finish Scratch", readonly)
 
-    def test_saved_scratch_is_visible_by_default_in_scratch_mode(self):
+    def test_saved_scratch_is_an_editable_box_by_default_in_scratch_mode(self):
         result, err = self.save("paragraph", "C1.P1")
         self.assertIsNone(err, err)
         card = plan_card(self.page)
-        self.assertIn('class="scratch-saved has-saved"', card)
+        self.assertIn('class="scratch-editor open"', card)
         self.assertIn("First thought", card)
         self.assertIn("Second thought", card)
-        self.assertNotIn("scratch-saved-summary", card)
+        self.assertNotIn("scratch-saved", card)
 
     def test_closed_scratch_appears_in_run_inventory_as_done(self):
         result, err = self.save("paragraph", "C1.P1", "finish",
@@ -156,7 +201,9 @@ class ScratchTest(unittest.TestCase):
         self.assertEqual(row["target_scope"], "paragraph")
         card = plan_card(self.page)
         self.assertIn("First thought", card)
-        self.assertIn("AI summary of the rough plan.", card)
+        self.assertIn('class="scratch-editor open"', card)
+        self.assertIn('readonly>', card)
+        self.assertNotIn("AI summary of the rough plan.", card)
 
     def test_ai_summary_uses_the_local_cli_without_tools(self):
         completed = SimpleNamespace(

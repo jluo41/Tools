@@ -50,7 +50,8 @@ from src.item_table import (
 from src.plan_shape import iter_plan_bullets, presentation_point
 from live.outline_preview import draft_path, read_drafts, bullet_token, reader_prose, read_opening_draft
 from live.outline_scratch import (read_scratch, save_scratch,
-                                  scratch_assets_html, scratch_control_html)
+                                  scratch_assets_html, scratch_control_html,
+                                  scratch_flag_html, scratch_heading_attr)
 from src.evidence_labels import collect_result_labels, resolve_inline_labels
 
 # Aim state emoji (haipipe-page): current set + the older ones still parsed.
@@ -553,12 +554,12 @@ code{{font:12px ui-monospace,Menlo,monospace}}
  <button class=space data-space=run data-default=run>Run Space</button>
  <button class=space data-space=delivery data-default=delivery>Delivery Workspace</button>
 </div>
-<div class="lens show draft-lens" id=lens-div data-draft-mode=table>
+<div class="lens show draft-lens" id=lens-div data-draft-mode={draft_mode}>
  <div class=draft-mode-switcher role=group aria-label="Draft view">
   <span class=draft-mode-label>View</span>
-  <button type=button class="draft-mode-tab on" data-draft-mode=table>Table</button>
-  <button type=button class=draft-mode-tab data-draft-mode=reading>Reading</button>
-  <button type=button class=draft-mode-tab data-draft-mode=scratch>Scratch</button>
+  <button type=button class="draft-mode-tab{table_on}" data-draft-mode=table>Table</button>
+  <button type=button class="draft-mode-tab{reading_on}" data-draft-mode=reading>Reading</button>
+  <button type=button class="draft-mode-tab{scratch_on}" data-draft-mode=scratch>Scratch</button>
  </div>
  {by_div}
 </div>
@@ -639,7 +640,7 @@ function activateDraftMode(mode,writeUrl){{
     x.classList.toggle('on',x.dataset.draftMode===mode);
   }});
   if(mode==='scratch')document.querySelectorAll('#lens-div details.paragraph-group').forEach(function(x){{
-    x.open=false;
+    x.open=true;
   }});
   if(mode==='reading')document.querySelectorAll('#lens-div details.paragraph-group').forEach(function(x){{
     x.open=true;
@@ -664,11 +665,14 @@ document.querySelectorAll('a.badge').forEach(function(a){{
 }});
 function focusRecord(id){{
   /* A bullet permalink is a table address. Switch back before focusing so the
-     target is visible even when the reader arrived in immersive mode. */
-  activateDraftMode('table',false);
+     target is visible even when the reader arrived in immersive mode. Section
+     and paragraph focus belong to the current Draft mode and must not switch
+     it back to Table. */
+  var isBullet=/^C\\d+\\.P\\d+\\.B\\d+$/.test(id);
+  if(isBullet)activateDraftMode('table',false);
   /* Bullet URLs keep the authored C.P.B address readable.  The DOM id uses a
      prefixed, CSS-safe form so it cannot collide with another record kind. */
-  var domId=/^C\\d+\\.P\\d+\\.B\\d+$/.test(id)?'bullet-'+id.replace(/\\./g,'-'):id;
+  var domId=isBullet?'bullet-'+id.replace(/\\./g,'-'):id;
   var target=document.getElementById(domId);
   if(!target){{
     var points=document.querySelectorAll('[data-display-point]');
@@ -2397,18 +2401,25 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             )
         rows.append(
             '<details class="paragraph-group" open data-paragraph="%s">'
-            '<summary class="prow"><span class=addr>%s</span>'
-            '<span class=mut>%s</span></summary>'
+            '<summary class="prow"%s><span class=addr>%s</span>'
+            '<span class=mut>%s</span>%s</summary>'
             '<div class=paragraph-scratch>%s</div>'
             '<div class=paragraph-bullets><div class=preview-columns>'
             '<span>Bullet</span><span>Draft</span></div>%s</div>'
             '<div class=paragraph-reading>%s</div>'
             '</details>'
-            % (_e(current_paragraph), _e(display_paragraph),
+            % (_e(current_paragraph),
+               scratch_heading_attr("paragraph", current_paragraph,
+                                    read_only=read_only),
+               _e(display_paragraph),
                _e(re.sub(r"\s*·\s*S\d+\s+to\s+S\d+\s*$", "", current_paragraph_title)),
+               scratch_flag_html("paragraph", current_paragraph,
+                                 scratch_latest.get(("paragraph", current_paragraph)),
+                                 read_only=read_only),
                scratch_control_html("paragraph", current_paragraph,
                                     scratch_latest.get(("paragraph", current_paragraph)),
-                                    read_only=read_only),
+                                    read_only=read_only, path_q=path_q,
+                                    file_q=file_q),
                "".join(paragraph_bullets), reading_body)
         )
         paragraph_bullets = []
@@ -2435,13 +2446,20 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             cn = int(division_match.group(1)); pn = 0
             current_section = "C%d" % cn
             division_title = re.sub(r"^C\d+\s*·\s*", "", line[3:].strip())
-            rows.append('<div class="row division-title" title="%s">'
-                        '<span class="addr sec">C%d</span><b>%s</b></div>'
+            rows.append('<div class="row division-title"%s title="%s">'
+                        '<span class="addr sec">C%d</span><b>%s</b>%s</div>'
                         '<div class=section-scratch>%s</div>'
-                        % (_e(division_title), cn, _e(division_title.split(" · ")[0]),
+                        % (scratch_heading_attr("section", current_section,
+                                                read_only=read_only),
+                           _e(division_title), cn,
+                           _e(division_title.split(" · ")[0]),
+                           scratch_flag_html("section", current_section,
+                                             scratch_latest.get(("section", current_section)),
+                                             read_only=read_only),
                            scratch_control_html("section", current_section,
                                                 scratch_latest.get(("section", current_section)),
-                                                read_only=read_only)))
+                                                read_only=read_only, path_q=path_q,
+                                                file_q=file_q)))
             continue
         if line.startswith("### "):
             _flush_paragraph()
@@ -3132,8 +3150,14 @@ def _lenses(page_src, root=None):
     """
     return "", "", "", "", ""
 
-def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=False):
+def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=False,
+           draft_mode="table"):
     """-> the full html page: both lenses rendered, chips toggle."""
+    if draft_mode not in {"table", "reading", "scratch"}:
+        draft_mode = "table"
+    table_on = " on" if draft_mode == "table" else ""
+    reading_on = " on" if draft_mode == "reading" else ""
+    scratch_on = " on" if draft_mode == "scratch" else ""
     # Say it in words a tired reader can take in the first time (JL 260816).
     # "3 loose lines" and "aligned" are this plugin's own shorthand, and a
     # reader meeting the tab for the first time has no reason to know either.
@@ -3200,6 +3224,10 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
         delivery_url = "/_board/delivery?path=%s&file=%s&workspace=1" % encoded
     return _PAGE.format(title=_e(title), lead=lead, tally=_tally(o),
                         chip=chip, by_div=by_div, by_prog="".join(prog),
+                        draft_mode=draft_mode,
+                        table_on=table_on,
+                        reading_on=reading_on,
+                        scratch_on=scratch_on,
                         evidence_url=html.escape(evidence_url, quote=True),
                         run_url=html.escape(run_url, quote=True),
                         delivery_url=html.escape(delivery_url, quote=True))
@@ -3230,8 +3258,12 @@ class OutlineMixin:
                 po = parse_outline(plan.read_text(encoding="utf-8", errors="replace"))
                 if po.get("aims"):
                     o["aims"] = po["aims"]
+        draft_mode = (q.get("view") or ["table"])[0]
+        if draft_mode not in {"table", "reading", "scratch"}:
+            draft_mode = "table"
         page = render(page_src.stem, o, page_src, self.root, p["path"], p["file"],
-                      read_only=getattr(self.server, "read_only", False))
+                      read_only=getattr(self.server, "read_only", False),
+                      draft_mode=draft_mode)
         return self._outline_send(page.encode("utf-8"), 200, head_only)
 
     def _outline_send(self, body, code, head_only):
