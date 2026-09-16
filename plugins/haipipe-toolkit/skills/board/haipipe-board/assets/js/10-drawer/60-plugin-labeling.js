@@ -3,8 +3,9 @@
  * The retired version of this file was a bottom workflow inferred from
  * `## States` and offered /label-* commands.  The 0.6 family made canonical
  * receipts authoritative and retired those commands, so this file now owns
- * only the registry row.  live/labeling.py owns five receipt-first Workspaces
- * in the upper stage and keeps the page's existing Studio Chat below them.
+ * only the registry row.  live/labeling.py owns one full-page Labeling Space
+ * with six receipt-first Workspaces; Studio Chat opens separately from its
+ * header and is never a permanent bottom panel.
  */
 (function () {
   'use strict';
@@ -54,7 +55,7 @@
     window.boardPlugins.register({
       id: 'labeling',
       label: '🏷 Labeling',
-      hint: 'five artifact workspaces above · Studio Chat always below',
+      hint: 'one Labeling Space · six workspaces · Studio Chat opens separately',
       menu: 'plugin',
       order: 70,
       applies: isSurfacePage,

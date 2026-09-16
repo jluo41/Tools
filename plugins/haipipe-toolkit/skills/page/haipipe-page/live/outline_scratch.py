@@ -438,7 +438,7 @@ def scratch_control_html(scope: str, target: str, record: dict | None = None,
         '<input type="hidden" name="path" value="%s">'
         '<input type="hidden" name="file" value="%s">'
         '<input type="hidden" name="run_id" value="%s">'
-        '<textarea name="notes" aria-label="Scratch notes" rows="4" '
+        '<textarea name="notes" aria-label="Scratch notes" rows="1" '
         'placeholder="What should this part do?"%s>%s</textarea>'
         '<div class="scratch-actions">%s'
         '<span class="scratch-status" role="status"></span></div>'
@@ -464,7 +464,7 @@ def scratch_assets_html() -> str:
 .scratch-editor>summary{display:none}
 .scratch-editor form{display:grid;gap:7px}
 .scratch-editor textarea{resize:vertical;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:6px;text-transform:none;letter-spacing:normal}
-.scratch-editor textarea[name="notes"]{height:6.4em;min-height:0;max-height:280px;overflow-y:hidden;box-sizing:border-box}
+.scratch-editor textarea[name="notes"]{height:1.45em;min-height:0;max-height:280px;overflow-y:hidden;box-sizing:border-box}
 .scratch-editor textarea[readonly]{cursor:default;opacity:.8}
 .scratch-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.scratch-actions button{border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);padding:4px 7px;cursor:pointer;font:600 11px system-ui,sans-serif}.scratch-actions button[data-scratch-source]{border-color:transparent;color:var(--acc)}.scratch-actions button[data-scratch-finish]{border-color:var(--acc);color:var(--acc)}
 .scratch-status{color:var(--mut);font:11px/1.4 system-ui,sans-serif}
@@ -485,7 +485,7 @@ def scratch_assets_html() -> str:
   function openScratch(slot,owner){var editor=slot&&slot.querySelector('.scratch-editor');if(!editor)return;var wasOpen=editor.classList.contains('open');closeEditors(editor);closeDrafts(null);if(wasOpen){editor.classList.remove('open');if(slot)slot.classList.remove('scratch-editing');if(owner){owner.classList.remove('scratch-editor-open');owner.open=false;}return;}editor.classList.add('open');if(slot)slot.classList.add('scratch-editing');if(owner){owner.open=true;owner.classList.add('scratch-editor-open');}var note=editor.querySelector('[name=notes]');if(note)note.focus();}
   function readingText(node){return Array.from(node.querySelectorAll('.paragraph-reading .reading-copy')).map(function(x){return (x.innerText||x.textContent||'').trim();}).filter(Boolean).join('\n\n');}
   function sourceTextFor(slot){var group=slot.closest('.paragraph-group');if(group)return readingText(group);var section=slot.closest('.section-scratch'),out=[],node=section&&section.nextElementSibling;while(node&&!node.classList.contains('division-title')){if(node.matches&&node.matches('details.paragraph-group')){var text=readingText(node);if(text)out.push(text);}node=node.nextElementSibling;}return out.join('\n\n');}
-  function resizeScratch(note){if(!note)return;note.style.height='auto';var cs=getComputedStyle(note),line=parseFloat(cs.lineHeight)||20,pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0),min=line*4+pad,max=parseFloat(cs.maxHeight)||280,needed=Math.max(min,note.scrollHeight);note.style.height=Math.min(needed,max)+'px';note.style.overflowY=needed>max?'auto':'hidden';}
+  function resizeScratch(note){if(!note)return;note.style.height='auto';var cs=getComputedStyle(note),line=parseFloat(cs.lineHeight)||20,pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0),min=line+pad+2,max=parseFloat(cs.maxHeight)||280,needed=Math.max(min,note.scrollHeight);note.style.height=Math.min(needed,max)+'px';note.style.overflowY=needed>max?'auto':'hidden';}
   var scratchSelectionPending=false;
   document.querySelectorAll('.scratch-editor textarea[name="notes"]').forEach(function(note){resizeScratch(note);note.addEventListener('input',function(){resizeScratch(note);});note.addEventListener('select',function(){if(note.selectionStart!==note.selectionEnd)scratchSelectionPending=true;});});
   var scratchPointerDown=false,scratchPointerMoved=false,scratchSuppressClick=false,scratchPointerField=null,scratchPointerX=0,scratchPointerY=0,scratchSuppressTimer=0;

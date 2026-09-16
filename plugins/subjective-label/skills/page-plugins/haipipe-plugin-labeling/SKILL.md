@@ -1,16 +1,16 @@
 ---
 name: haipipe-plugin-labeling
 description: >-
-  The 🏷 Labeling lane and right-pane surface available beside any real Page,
+  The 🏷 Labeling lane and full Page-level surface available beside any real Page,
   including a standalone Page Folder: an optional page-local labeling/ holds the canonical subjective-label
-  job, the upper half offers receipt-first Workflow, Data, Guideline, Human,
-  and Quality workspaces; Board reuses Studio Chat while standalone uses the
-  current Codex task as transport. Use
+  job, the full Labeling Space offers receipt-first Workflow, Data, Guideline,
+  Human, Quality, and Runs workspaces; Studio Chat remains a sibling transport
+  surface. Use
   when designing, opening, diagnosing, or implementing the labeling
   plugin/tab/folder, or /haipipe-plugin-labeling.
 metadata:
-  version: "0.10.0"
-  last_updated: "2026-09-13"
+  version: "0.11.0"
+  last_updated: "2026-09-16"
 ---
 
 # /haipipe-plugin-labeling · one job, one folder, one operated surface
@@ -30,14 +30,16 @@ one page folder
     ├── runs/ · results/            Level-4 `rlNN` operation envelopes
     └── REPORT.md · .state.json  rendered/cache only; receipts win
 
-🏷 Labeling tab
-├── upper Workspace stage
-│   ├── Workflow                 P0-P5 · G0-G6 · Runs · next action
-│   ├── Data                     corpus · embeddings · batches · D*
-│   ├── Guideline                meaning · regions · policy versions · handoff
-│   ├── Human                    authority · rounds · bounded human work · gold
-│   └── Quality                  sealed Test · executors · Scan · Audit
-└── persistent host transport    Board: Studio Chat · standalone: Codex task
+🏷 Labeling Space · one full Page-level plugin surface
+├── Workflow                 P0-P5 · G0-G6 · next action
+├── Data                     corpus · embeddings · batches · D*
+├── Guideline                meaning · regions · policy versions · handoff
+├── Human                    authority · rounds · bounded human work · gold
+├── Quality                  sealed Test · executors · Scan · Audit
+└── Runs                     rlNN Tickets · safe Results · read-only
+
+Studio remains a sibling Page plugin and opens on demand; it is not rendered
+inside Labeling as a permanent bottom panel.
 ```
 
 ## 🧩 The four-part plugin contract
@@ -45,7 +47,7 @@ one page folder
 | part | contract |
 |---|---|
 | STORAGE | `<page>/labeling/`, exactly the job layout in `subjective-label/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
-| SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; existing receipts drive five switchable Workspaces, with Board Studio Chat or the current Codex task as host transport |
+| SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; it fills the plugin pane as one Labeling Space with six switchable Workspaces, while Studio Chat remains a sibling transport surface |
 | WRITER | `subjective-label-workflow` dispatches the Building/Scanning ORDER machines; their Keeper, human event writer, runner, reconciler, and auditor own named artifacts |
 | BOUNDARY | Board discovery never enters `labeling/`; the surface never renders protected item text or sealed ids and never treats an observed file as a validated gate |
 
@@ -59,13 +61,14 @@ tab.
 
 ## 🖼 Surface law
 
-The upper stage follows Outline's category pattern: one Plugin owns several
-stable, noun-named Workspaces. Phases are state, never navigation. Switching a
-Workspace hides but does not destroy the others, and the last selected
-Workspace is remembered per Board source plus Page file. The five Workspaces answer:
+The surface follows Outline's category pattern: one Plugin owns one coherent
+Labeling Space containing stable, noun-named Workspaces. Phases are state,
+never navigation. Switching a Workspace hides but does not destroy the others,
+and the last selected Workspace is remembered per Board source plus Page file.
+The six Workspaces answer:
 
 1. **Workflow** — which P0-P5 authority artifact is the frontier, which G0-G6
-   assertion fails first, which Runs exist, and what is the one next action?
+   assertion fails first, and what is the one next action?
 2. **Data** — which corpus, embedding, calibration/production batches, and
    audited D* artifacts exist?
 3. **Guideline** — what frozen or draft meaning, regions, policy components,
@@ -75,8 +78,10 @@ Workspace is remembered per Board source plus Page file. The five Workspaces ans
 5. **Quality** — what sealed-Test, executor, production-Scan, and final-Audit
    evidence exists? It names the active destination reservation custodian and
    labels any imported source custody as provenance only.
+6. **Runs** — which `rlNN_<operation>_<target>` Tickets and safe Results exist,
+   with their availability and next action, without creating or executing one.
 
-These are projections over the one canonical `labeling/` tree, not five new
+These are projections over the one canonical `labeling/` tree, not six new
 `*-space/` storage folders. They render safe metadata and artifact state only.
 
 `GET /_board/labeling` re-reads disk on every open. For a v2 lane with a
@@ -87,16 +92,15 @@ and receipt validation. A historical lane with no canonical receipt may say
 `REPORT.md`, `.state.json`, and the Page's prose are useful views, never the
 source of the frontier.
 
-On a Board host, the lower half is persistent while every upper Workspace changes. It frames the
-exact same generated-Page `?pane=chat` document that Studio uses, including its
+On a Board host, Labeling fills its own plugin pane. A header action may open the
+exact generated-Page `?pane=chat` document that Studio owns, including its
 composer, sessions, quick actions, settings, GUI/TUI handoff, and optional Draw
-controls. Labeling does not put a second header,
-prefill bar, or Chat implementation around it. The Board-source `board.md` is
-only the source resolver and must never receive `?pane=chat`; the current
-generated `<page>.html` URL is carried separately and validated server-side.
-Chat may prepare or dispatch work, but a semantic decision becomes real only
-when the owning workflow writer lands its canonical event immediately under
-`labeling/`.
+controls; Labeling never embeds that document as a permanent lower panel and
+never implements a second Chat. The Board-source `board.md` is only the source
+resolver and must never receive `?pane=chat`; the current generated
+`<page>.html` URL is carried separately and validated server-side. Chat may
+prepare or dispatch work, but a semantic decision becomes real only when the
+owning workflow writer lands its canonical event immediately under `labeling/`.
 
 On a standalone host, the domain-owned presenter does not imitate Studio or
 invent an HTTP chat backend. It names the current Codex task as transport and
@@ -105,10 +109,10 @@ rule holds: conversation is transport; only the workflow writer may land a
 semantic event. The Page host keeps `labeling/` private from Source editing and
 static downloads.
 
-The upper/lower boundary has one keyboard- and pointer-accessible splitter. Its
-selected height is a UI preference keyed by the Board source plus Page file,
-never by the Page stem alone; this prevents same-named Pages in different
-Boards from sharing a misleading Workspace or Chat layout.
+The Labeling Space has no persistent upper/lower boundary or splitter. Studio's
+own surface owns its layout. Labeling only remembers its selected Workspace,
+keyed by Board source plus Page file; this prevents same-named Pages in
+different Boards from sharing a misleading view.
 
 At `HOLD`, this is a hard boundary: the server re-derives HOLD from canonical
 artifacts and forces that Page's Chat into read-only scoped mode, independently

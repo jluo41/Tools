@@ -151,13 +151,14 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertIn("Protected item text", body)
         self.assertIn('/demo/board/SL/S-Label-1-demo.html?pane=chat', body)
         self.assertNotIn("board.md?pane=chat", body)
-        self.assertIn('title="Studio Page Chat"', body)
-        self.assertIn('id=splitter', body)
-        self.assertIn('Resize Labeling workspaces and Studio Chat', body)
+        self.assertIn("Open Studio Chat", body)
+        self.assertNotIn('title="Studio Page Chat"', body)
+        self.assertNotIn('id=splitter', body)
+        self.assertNotIn('id=studio-chat', body)
+        self.assertNotIn('labeling-split:/demo/board.md|S-Label-1-demo/S-Label-1-demo.md', body)
         self.assertIn('labeling-workspace:/demo/board.md|S-Label-1-demo/S-Label-1-demo.md', body)
-        self.assertIn('labeling-split:/demo/board.md|S-Label-1-demo/S-Label-1-demo.md', body)
         self.assertNotIn("Prefill safe status ask", body)
-        for workspace in ("Workflow", "Data", "Guideline", "Human", "Quality"):
+        for workspace in ("Workflow", "Data", "Guideline", "Human", "Quality", "Run"):
             self.assertIn(workspace, body)
         self.assertIn('aria-label="Labeling workspaces"', body)
         self.assertIn('data-workspace=workflow', body)
@@ -165,8 +166,8 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertIn('data-workspace=guideline', body)
         self.assertIn('data-workspace=human', body)
         self.assertIn('data-workspace=quality', body)
-        self.assertLess(body.index('id=spaces'), body.index('id=studio-chat'))
-        self.assertEqual(body.count('title="Studio Page Chat"'), 1)
+        self.assertIn('data-workspace=run', body)
+        self.assertNotIn('<iframe', body)
 
     def test_artifact_chain_moves_observed_frontier_without_certifying_g6(self):
         self.make_contract("authority:\n  human_id: JL\n  mode: real-human\n  creates_human_gold: true\n")
@@ -348,7 +349,7 @@ class LabelingRegistrationTest(unittest.TestCase):
         self.assertIn("S-Label-Dash", script)
         self.assertIn("pageURL()", script)
         self.assertIn("page: pageURL()", script)
-        self.assertIn("Studio Chat always below", script)
+        self.assertIn("Studio Chat opens separately", script)
         for retired in ("/label-init", "/label-round", "/label-evaluate", "/label-complete"):
             self.assertNotIn(retired, script)
 

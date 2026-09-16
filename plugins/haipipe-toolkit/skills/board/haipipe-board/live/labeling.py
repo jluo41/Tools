@@ -563,14 +563,19 @@ _CSS = """
  --ok:#72c796;--hold:#ee956f}}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);
  font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100vh;
- display:grid;grid-template-rows:minmax(0,58fr) 8px minmax(120px,42fr);overflow:hidden}
-#work{min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ display:flex;flex-direction:column;overflow:hidden}
+#work{min-height:0;display:flex;flex:1;flex-direction:column;overflow:hidden}
 header{display:flex;justify-content:space-between;gap:12px;align-items:start;
  padding:12px 16px 9px;border-bottom:1px solid var(--line)}
 h1{font-size:17px;margin:0}.mut{color:var(--mut);font-size:12px}.path{font:12px ui-monospace,Menlo,monospace}
 .statusline{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;align-items:center}
 .tag{border:1px solid var(--line);border-radius:5px;padding:2px 6px;background:var(--card);
  font:11px ui-monospace,Menlo,monospace}.tag.now{border-color:var(--accent);color:var(--accent)}
+.header-side{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.header-actions{display:flex;gap:7px;align-items:center}
+.action{border:1px solid var(--accent);border-radius:7px;padding:6px 9px;color:var(--accent);
+ background:var(--accent-soft);font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap}
+.action:hover{background:var(--accent);color:#fff}
 .spacebar{display:flex;gap:3px;overflow:auto;padding:7px 10px 0;border-bottom:1px solid var(--line)}
 .space{appearance:none;border:0;border-bottom:2px solid transparent;background:transparent;
  color:var(--mut);padding:7px 10px 8px;white-space:nowrap;font:600 12px -apple-system,sans-serif;
@@ -595,16 +600,11 @@ h1{font-size:17px;margin:0}.mut{color:var(--mut);font-size:12px}.path{font:12px 
 .round{display:grid;grid-template-columns:minmax(100px,1fr) auto;gap:10px;padding:6px 0;
  border-top:1px solid var(--line)}.round:first-of-type{border-top:0}
 .guard{margin-top:10px;border:1px dashed var(--line);border-radius:8px;padding:10px;color:var(--mut)}
-#splitter{background:var(--line);cursor:row-resize;touch-action:none;position:relative;z-index:2}
-#splitter:after{content:"";position:absolute;left:calc(50% - 22px);top:2px;width:44px;height:3px;border-radius:4px;background:var(--mut);opacity:.55}
-#studio-chat{min-height:0;overflow:hidden;border-top:2px solid var(--line)}
-#chat{border:0;width:100%;height:100%;display:block}
 @media(max-width:900px){.grid.four{grid-template-columns:repeat(2,minmax(155px,1fr))}}
-@media(max-width:700px){body{grid-template-rows:minmax(0,55fr) 8px minmax(120px,45fr)}
+@media(max-width:700px){
  .grid,.grid.four,.decision{grid-template-columns:1fr}.phase{overflow:auto;grid-template-columns:repeat(6,96px)}
- header{padding-right:10px}.path{display:none}}
-@media(max-height:420px){body{grid-template-rows:minmax(0,52fr) 8px minmax(110px,48fr)}
- #spaces{padding-bottom:8px}header{padding-top:7px;padding-bottom:5px}}
+ header{padding-right:10px}.path{display:none}.header-actions{margin-top:8px}}
+@media(max-height:420px){#spaces{padding-bottom:8px}header{padding-top:7px;padding-bottom:5px}}
 """
 
 
@@ -647,7 +647,7 @@ def render(
 
     # Include the Board source and Page file in client preferences.  A stem is
     # not globally unique: two Boards can legitimately contain the same Page
-    # name, and their selected Workspace/split must not bleed into each other.
+    # name, and their selected Workspace must not bleed into each other.
     identity = f"{path_q}|{file_q}"
     def js_string(value: str) -> str:
         # JSON handles quotes/backslashes; escaping HTML-significant characters
@@ -658,7 +658,6 @@ def render(
                 .replace("&", "\\u0026"))
 
     workspace_key = js_string("labeling-workspace:" + identity)
-    split_key = js_string("labeling-split:" + identity)
 
     root = state["root"]
     imported_summary = _read_json(root / "corpus" / "imported_label_summary.json")
@@ -778,14 +777,17 @@ def render(
 <div class=statusline><span class="tag now">{active_phase[0]} · {active_phase[1]}</span>
 <span class=tag>👤 {html.escape(authority)}</span>
 <span class=tag>⚙ {len(run_tickets)} Runs</span>
-<span class="tag {'hold' if hard_hold else ''}">{'HOLD' if hard_hold else 'receipt-first'}</span></div></div>
-<div class="path mut">{html.escape(root_display)}/<br>{html.escape(state['location_note'])}</div></header>
+ <span class="tag {'hold' if hard_hold else ''}">{'HOLD' if hard_hold else 'receipt-first'}</span></div></div>
+<div class=header-side><div class=header-actions>
+ <a class=action href="{html.escape(chat_url, quote=True)}" target=_blank rel=noopener>💬 Open Studio Chat</a>
+ </div><div class="path mut">{html.escape(root_display)}/<br>{html.escape(state['location_note'])}</div></div></header>
 <nav class=spacebar role=tablist aria-label="Labeling workspaces">
  <button class="space on" role=tab aria-selected=true data-space=workflow>🧭 Workflow</button>
  <button class=space role=tab aria-selected=false data-space=data>🗃 Data</button>
  <button class=space role=tab aria-selected=false data-space=guideline>📘 Guideline</button>
  <button class=space role=tab aria-selected=false data-space=human>🧑 Human</button>
  <button class=space role=tab aria-selected=false data-space=quality>🧪 Quality</button>
+ <button class=space role=tab aria-selected=false data-space=run>⚙ Runs</button>
 </nav>
 <div id=spaces>
  <section class="workspace on" data-workspace=workflow>
@@ -803,9 +805,8 @@ def render(
     <p><b>Run envelopes:</b> {len(run_tickets)} Ticket(s) · {len(run_results)} Result folder(s)</p>
    </div>
   </div>
-  <div class=box style="margin-top:10px"><h3>Run envelopes · read-only</h3>
-   <p class=mut>One row per authored Ticket; a round, phase, Chat turn, or retry is not an extra Run.</p>
-   {run_rows}
+  <div class=box style="margin-top:10px"><h3>Run Space</h3>
+   <p class=mut>{len(run_tickets)} authored Ticket(s) · {len(run_results)} Result folder(s) · open the Runs tab for the read-only inventory.</p>
   </div>
  </section>
 
@@ -912,15 +913,25 @@ def render(
   </div>
   <div class=box style="margin-top:10px"><h3>Scanning gates</h3>{quality_gates}</div>
  </section>
+ <section class=workspace data-workspace=run>
+  <div class=workspace-head><h2>⚙ Run Workspace</h2><span>rlNN operation envelopes · read-only projection</span></div>
+  <div class=grid>
+   <div class=box><h3>Labeling Runs</h3>
+    {metric('authored Tickets', html.escape(str(len(run_tickets))))}
+    {metric('Result folders', html.escape(str(len(run_results))))}
+    <p class=mut>One row per authored Ticket. A phase, round, Chat turn, retry, or gate is not an extra Run.</p>
+   </div>
+   <div class=box><h3>Run identity</h3>
+    <p><b>Namespace:</b> <code>rlNN_&lt;operation&gt;_&lt;target&gt;</code></p>
+    <p class=mut>Run Space presents Tickets and safe Results; the owning workflow remains the only execution and closure authority.</p>
+   </div>
+  </div>
+  <div class=box style="margin-top:10px"><h3>Run envelopes</h3>{run_rows}</div>
+  <div class=guard>Run Space never creates, approves, freezes, reveals, or completes a Run.</div>
+ </section>
 </div></section>
-<div id=splitter role=separator aria-label="Resize Labeling workspaces and Studio Chat"
- aria-controls="spaces studio-chat" aria-valuemin="20" aria-valuemax="80" tabindex=0></div>
-<section id=studio-chat><iframe id=chat src="{html.escape(chat_url, quote=True)}"
- title="Studio Page Chat"></iframe></section>
 <script>(function(){{'use strict';
  var key={workspace_key};
- var splitKey={split_key};
- var shell=document.body, splitter=document.getElementById('splitter');
  var buttons=Array.prototype.slice.call(document.querySelectorAll('.space'));
  var workspaces=Array.prototype.slice.call(document.querySelectorAll('.workspace'));
  function showSpace(name){{
@@ -931,52 +942,6 @@ def render(
  }}
  buttons.forEach(function(b){{b.addEventListener('click',function(){{showSpace(b.dataset.space);}});}});
  try{{showSpace(localStorage.getItem(key)||'workflow');}}catch(e){{showSpace('workflow');}}
- function clampTop(value){{
-   var h=window.innerHeight, gap=8, minChat=Math.min(120, Math.max(72, h*.25));
-   var maxTop=Math.max(0, h-gap-minChat), minTop=Math.min(160, Math.max(72, h*.35));
-   return Math.max(Math.min(minTop,maxTop), Math.min(maxTop, value));
- }}
- function applySplit(value, persist){{
-   var top=clampTop(value), chat=Math.max(0, window.innerHeight-top-8);
-   shell.style.gridTemplateRows=top+'px 8px '+chat+'px';
-   splitter.setAttribute('aria-valuenow', String(Math.round(top/window.innerHeight*100)));
-   if(persist){{try{{localStorage.setItem(splitKey,String(Math.round(top)));}}catch(e){{}}}}
- }}
- var savedSplit=0;
- try{{savedSplit=parseInt(localStorage.getItem(splitKey)||'',10)||0;}}catch(e){{}}
- if(savedSplit>0) applySplit(savedSplit,false);
- var dragging=false;
- splitter.addEventListener('pointerdown',function(ev){{
-   dragging=true; splitter.setPointerCapture(ev.pointerId); ev.preventDefault();
- }});
- splitter.addEventListener('pointermove',function(ev){{
-   if(dragging) applySplit(ev.clientY,true);
- }});
- splitter.addEventListener('pointerup',function(ev){{
-   dragging=false; try{{splitter.releasePointerCapture(ev.pointerId);}}catch(e){{}}
- }});
- splitter.addEventListener('pointercancel',function(){{dragging=false;}});
- splitter.addEventListener('keydown',function(ev){{
-   var rows=getComputedStyle(shell).gridTemplateRows.split(/\x5cs+/), top=parseFloat(rows[0])||window.innerHeight*.58;
-   if(ev.key==='ArrowUp'){{applySplit(top-24,true);ev.preventDefault();}}
-   if(ev.key==='ArrowDown'){{applySplit(top+24,true);ev.preventDefault();}}
-   if(ev.key==='Home'){{applySplit(window.innerHeight*.35,true);ev.preventDefault();}}
-   if(ev.key==='End'){{applySplit(window.innerHeight*.75,true);ev.preventDefault();}}
- }});
- window.addEventListener('resize',function(){{
-   if(!dragging){{var rows=getComputedStyle(shell).gridTemplateRows.split(/\x5cs+/), top=parseFloat(rows[0])||0;
-     if(top) applySplit(top,false);}}
- }});
- /* The framed document is Studio's exact Page Chat.  Its composer asks its
-    parent for the optional Draw controls, so relay those calls to the outer
-    split shell when Labeling itself is the registry frame. */
- ['__studioDrawIt','__studioToggleDraw','__studioDrawShown'].forEach(function(n){{
-   window[n]=function(){{
-     try{{if(parent!==window&&typeof parent[n]==='function')
-       return parent[n].apply(parent,arguments);}}catch(e){{}}
-     return false;
-   }};
- }});
 }})();</script>"""
 
 

@@ -19,6 +19,7 @@ _DISPLAY = re.compile(
     r"\{(D_[A-Za-z][A-Za-z0-9_-]*)\}$"
 )
 _CITE = re.compile(r"^\\cite\{(C_[A-Za-z][A-Za-z0-9_-]*)\}$")
+_LABEL_KEY = re.compile(r"^(V|C|D)_[A-Za-z][A-Za-z0-9_-]*$")
 
 
 def classify_token(token: str) -> tuple[str, str]:
@@ -34,6 +35,59 @@ def classify_token(token: str) -> tuple[str, str]:
     if match:
         return "CITE", match.group(1)
     return "", ""
+
+def classify_reference(token: str) -> tuple[str, str]:
+    r"""Classify either an authored token or its bare V/C/D reference key.
+
+    Bare keys are accepted in Result metadata and tables, but not searched for
+    in prose: a prose reference must use the unambiguous $V_...$,
+    \cite{C_...}, or display-command form.
+    """
+    kind, key = classify_token(token)
+    if kind:
+        return kind, key
+    token = (token or "").strip()
+    match = _LABEL_KEY.fullmatch(token)
+    if match:
+        return {
+            "V": "VALUE",
+            "C": "CITE",
+            "D": "DISPLAY",
+        }[match.group(1)], token
+    return "", ""
+
+
+def canonical_label_token(kind: str, key: str, display_kind: str = "") -> str:
+    """Return the one Page-facing token for a V/C/D reference key."""
+    kind = (kind or "").strip().upper()
+    key = (key or "").strip()
+    if not key:
+        return ""
+    if kind == "VALUE" and key.startswith("V_"):
+        return "$%s$" % key
+    if kind == "CITE" and key.startswith("C_"):
+        return r"\cite{%s}" % key
+    if kind == "DISPLAY" and key.startswith("D_"):
+        command = {
+            "table": "table",
+            "algorithm": "algorithm",
+        }.get((display_kind or "").strip().lower(), "figure")
+        return r"\%s{%s}" % (command, key)
+    return ""
+
+
+def label_aliases(label: dict[str, str]) -> list[str]:
+    """Return metadata and authored aliases for one normalized label."""
+    token = str(label.get("token", "")).strip()
+    reference = str(label.get("reference", "")).strip()
+    key = str(label.get("key", "")).strip()
+    aliases = []
+    for value in (token, reference, key):
+        if value and value not in aliases:
+            aliases.append(value)
+    return aliases
+
+
 
 
 def _scalar(raw: str) -> str:
@@ -131,11 +185,22 @@ def parse_result_labels(text: str) -> list[dict[str, str]]:
 
 def _normalize(raw: dict[str, str]) -> dict[str, str]:
     token = raw.get("token") or raw.get("label") or raw.get("placeholder") or ""
-    kind, key = classify_token(token)
+    kind, key = classify_reference(token)
     normalized = dict(raw)
     normalized["token"] = token
     normalized["kind"] = (raw.get("kind") or kind).upper()
     normalized["key"] = raw.get("key") or key
+    normalized["reference"] = raw.get("reference") or key
+    if normalized["kind"] and not normalized["reference"] and normalized["key"]:
+        normalized["reference"] = normalized["key"]
+    if normalized["kind"] and not classify_token(token)[0]:
+        canonical = canonical_label_token(
+            normalized["kind"],
+            normalized["reference"],
+            raw.get("display_kind", ""),
+        )
+        if canonical:
+            normalized["token"] = canonical
     display = (raw.get("display") or raw.get("resolved_value") or
                raw.get("resolved") or raw.get("value") or "")
     if display.lower() in {"true", "false"} and not raw.get("display"):
@@ -181,9 +246,10 @@ def collect_result_labels(page_home: Path) -> dict[str, dict[str, str]]:
                 "provenance": top.get("provenance", ""),
                 "input": top.get("input", ""),
             })
-            # A duplicated token is a contract problem; keep the first sorted
-            # authority deterministic rather than silently changing a draft.
-            bindings.setdefault(token, label)
+            for alias in label_aliases(label):
+                # A duplicated token is a contract problem; keep the first
+                # sorted authority deterministic rather than changing a draft.
+                bindings.setdefault(alias, label)
     return bindings
 
 

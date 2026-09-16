@@ -1,5 +1,11 @@
 # haipipe-plugin-labeling · CHANGELOG
 
+## 0.11.0 · 2026-09-16
+
+Make Labeling one full Page-level Space with six internal Workspaces, promote
+Runs to a first-class read-only Workspace, and open Studio Chat separately
+instead of embedding it as a permanent lower panel.
+
 ## 0.10.0 · 2026-09-13
 
 Require Quality to show the active destination custodian and visibly classify
