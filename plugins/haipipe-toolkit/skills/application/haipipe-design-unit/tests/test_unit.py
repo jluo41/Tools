@@ -152,7 +152,7 @@ class DesignUnitGateTest(unittest.TestCase):
     def test_growing_log_does_not_stale_individual_release(self):
         ticket = self.ticket()
         self.result(ticket)
-        log = self.owner / "outline" / "DS01-log.md"
+        log = self.owner / "outline" / "Design-01-log.md"
         self.write(log, "Release: release.md\n")
         self.assertEqual(gate.audit_folder(self.owner), [])
         self.write(log, "Release: release.md\nLater adoption: decision-02.yaml\n")
@@ -353,6 +353,24 @@ class DesignUnitGateTest(unittest.TestCase):
         runtime["inputs"] = []
         self.dump(runtime_path, runtime)
         self.assertIn("input manifest", " ".join(gate.audit_folder(self.owner)))
+
+    def test_decision_runs_are_paired_not_rejected(self):
+        # Commission/Adopt are caller-owned human decision Runs (run-profile):
+        # the folder audit checks their pairing, never worker semantics.
+        run = "rd05_commission_sms"
+        self.dump(self.owner / "runs" / f"{run}.yaml", {
+            "schema": gate.TICKET_SCHEMA, "run": run, "operation": "commission",
+            "target": "One SMS", "actor": {"mode": "human", "owner": "JL"}})
+        self.dump(self.owner / "results" / run / "runtime.yaml",
+                  {"run": run, "status": "complete", "finished_at": "later"})
+        self.assertIn("decision", " ".join(gate.audit_folder(self.owner)))
+        self.dump(self.owner / "results" / run / "decision.yaml",
+                  {"run": run, "decision": "release", "actor": "JL"})
+        self.assertEqual(gate.audit_folder(self.owner), [])
+        bad = self.owner / "runs" / "rd06_adopt_sms.yaml"
+        self.dump(bad, {"schema": gate.TICKET_SCHEMA, "run": "rd06_adopt_other",
+                        "operation": "adopt"})
+        self.assertIn("identity mismatch", " ".join(gate.audit_folder(self.owner)))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,34 @@
+goal: Send the tested winner, verbatim
+kind: sms
+mode: compose
+basis: evidence-informed
+item: ITEM01
+design_intent:
+  move: Field the salience template exactly as round 1 sent it
+  basis: evidence-informed
+  stance: follow
+  expected_effect: salience stays the best arm on click and authentication when re-fielded
+    against any concurrent arm
+  failure_condition: a concurrently fielded round-2 arm beats it on click outside
+    overlapping intervals
+unit:
+  shape: single
+  count: 1
+max_iterations: 2
+review_mode: independent
+criteria:
+- id: length
+  kind: max_chars
+  value: 160
+- id: optout
+  kind: contains
+  value: Reply STOP to opt-out
+- id: nolift
+  kind: excludes
+  value: '%'
+- id: tone
+  kind: semantic
+  description: plain, non-coercive, prescription-review framing only
+- id: provider
+  kind: contains
+  value: '{NAME}'

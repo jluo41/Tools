@@ -1,0 +1,17 @@
+schema: haipipe.design-ticket/v2
+run: rd02_generate_refill-card
+operation: generate
+worker: haipipe-design-unit
+actor: designer-context-01
+item: ITEM01
+target: Refill approaching card
+config:
+  path: scripts/config/rd02_generate_refill-card.yaml
+  sha256: 44c211534e01491da89f1a32c0e37f5d9e5390b2050a64cd0d063321ee88734f
+approval:
+  actor: JL
+  record:
+    path: results/rd01_commission_refill-card/decision.yaml
+    sha256: 5e95667b079083f6d2328e0e152c008c42eab73aecc723309d84d44d0609bfef
+inputs: []
+targets: []

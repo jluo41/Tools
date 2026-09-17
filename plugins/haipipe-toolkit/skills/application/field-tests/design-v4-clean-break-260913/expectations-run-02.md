@@ -2,7 +2,7 @@
 
 Baseline frozen: Design v4.0.1, 2026-09-13.
 Different real slice: the DrFirst Board-level entry and Design directory shape,
-not the DS01 candidate/status content inspected in run 01.
+not the Design-01 candidate/status content inspected in run 01.
 The field desk must not see this file.
 
 | Step | Law exercised | Expected behavior | Expected artifacts |

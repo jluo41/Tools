@@ -1,0 +1,29 @@
+checks:
+- target: results/rd21_generate_item07/result.yaml::content/sms.txt
+  criterion: r01
+  status: pass
+  evidence: '88 Unicode code points (88 UTF-8 bytes, all ASCII, no trailing newline); configured maximum is 90'
+- target: results/rd21_generate_item07/result.yaml::content/sms.txt
+  criterion: r02
+  status: pass
+  evidence: '''{NAME}'' present verbatim at byte offsets 4-9 of 88, as the sender name in ''Dr. {NAME}''s office''; the only brace bytes (0x7B/0x7D) in the artifact'
+- target: results/rd21_generate_item07/result.yaml::content/sms.txt
+  criterion: r03
+  status: pass
+  evidence: '88 Unicode code points; configured maximum is 160'
+- target: results/rd21_generate_item07/result.yaml::content/sms.txt
+  criterion: r04
+  status: pass
+  evidence: '''Reply STOP to opt-out'' present verbatim as the final clause (byte offsets 67-87 of 88); nothing follows it'
+- target: results/rd21_generate_item07/result.yaml::content/sms.txt
+  criterion: r05
+  status: pass
+  evidence: 'Read every word (14 words). No digits, no ''%'', no effect or comparative wording (lift, increase, improve, boost, more, better, proven, likely, best), and no arm, test, winner, click, rate, salience or interval reference. The forecast lives only in the frozen design_intent, not in the artifact · pass'
+- target: results/rd21_generate_item07/result.yaml::content/sms.txt
+  criterion: r06
+  status: pass
+  evidence: 'One fixed string with a single placeholder, {NAME}, which stands for the prescriber (sender) and not for any recipient attribute. No age, gender, weekday, weekend, date, region, state, city or zip token, no salutation that implies gender, and no conditional branch. The same bytes go to every recipient · pass'
+- target: results/rd21_generate_item07/result.yaml::content/sms.txt
+  criterion: r07
+  status: pass
+  evidence: 'Two plain clauses: a sender line (''Dr. {NAME}''s office:'') and one review statement (''new prescription details require your review.''), then the opt-out. ''require'' states what is needed without a deadline, threat, consequence, urgency word (now, immediately, urgent, must) or penalty. No topic other than prescription review. Sender naming matches the frozen move (name the sender, the action, the opt-out) · pass'

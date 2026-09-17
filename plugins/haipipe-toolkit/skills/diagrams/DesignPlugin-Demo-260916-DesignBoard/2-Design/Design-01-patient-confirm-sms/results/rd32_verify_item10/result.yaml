@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd32_verify_item10
+operation: verify
+target: Help line close
+producer: reviewer-context-36
+ticket_sha256: 41db322ef6ba7f9732a76034e7eae40b7d3394c4b18189ce10f14b9fa64568dc
+config_sha256: a237f28e2bbed5bcce7fbede05537929949d7a197d75092d4bfc7aa9e7a2fa9e
+artifacts: []
+checks:
+  path: checks.yaml
+  sha256: 7602f4775fe1ced979e8492e6f1a0aad79004a88b6f69122f2bd521a26d3e48e
+targets:
+- path: results/rd24_generate_item10/result.yaml
+  sha256: 53fc9959138a7c5f2ea95241c7dd0ca6b5c05ebaa77cd39595aa6c1c3c767322
+verdict: pass

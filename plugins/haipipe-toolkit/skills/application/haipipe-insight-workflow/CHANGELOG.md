@@ -1,5 +1,8 @@
 # haipipe-insight-workflow · version history
 
+1.2.3 · 260916
+- Fix four bare `ref/partition.md` references to the umbrella's real path.
+
 1.2.2 · 260915
 - Replace phase authority language with Insight RunTypes and Workflow Runtime
   records while preserving legacy phase labels for compatibility.

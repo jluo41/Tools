@@ -1,0 +1,18 @@
+checks:
+- target: content/sms.txt
+  criterion: length
+  status: fail
+  evidence: 149 characters; configured maximum is 120
+- target: content/sms.txt
+  criterion: optout
+  status: pass
+  evidence: '''Reply STOP to opt-out'' found in the artifact'
+- target: content/sms.txt
+  criterion: nolift
+  status: pass
+  evidence: '''%'' absent in the artifact'
+- target: content/sms.txt
+  criterion: tone
+  status: pass
+  evidence: 'read against: plain, non-coercive, prescription-review framing only ·
+    pass'

@@ -5,7 +5,7 @@ partition scope and one requested DIKW target. It is derived from MT00 and the
 four I1 registers; it is never another Folder, queue, or authority ledger.
 
 ```text
-Question Group = partition scope × target rung
+Question Group = partition scope × target Insight Level
 
 QG-F-D   full/template × Data
 QG-B-I   partition B × Information
@@ -31,7 +31,7 @@ K  Knowledge     claim
 W  Wisdom        counsel / hand off
 ```
 
-The canonical handle is `QG-<partition>-<rung>`. It is computed, not stored.
+The canonical handle is `QG-<partition>-<level>`. It is computed, not stored.
 Changing a question's target moves its membership; changing MT00 partitions
 recomputes the affected groups and reopens X where required.
 

@@ -1,0 +1,25 @@
+run: rd06_generate_item02
+family: design
+operation: generate
+item: ITEM02
+target: Attribution removed
+status: failed
+ticket: runs/rd06_generate_item02.yaml
+result: results/rd06_generate_item02/
+ticket_sha256: cfeb433f88362ec1a1194f76be9d8bb7d8b28b26b7bc1084f5a6de7a4598f9e2
+inputs:
+- path: scripts/config/rd06_generate_item02.yaml
+  sha256: 9d58f2b2547f6fe6668df2cf1328f4e33787db85a6ef7ddfe8d74246a1f8f5f0
+- path: results/rd05_commission_item02/decision.yaml
+  sha256: 15eb983c847016640b23e2d45ded97942d4004774a7bf06170cfb6d7447ec47b
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+worker:
+  kind: skill
+  name: haipipe-design-unit
+  actor: designer-context-01
+started_at: '2026-09-16T13:03:00Z'
+finished_at: '2026-09-16T13:04:00Z'
+failure: 'length: 149 characters; configured maximum is 120 · route revise'
+route: generate

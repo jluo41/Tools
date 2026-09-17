@@ -1,11 +1,10 @@
 ---
 name: haipipe-data-aidata
 description: "Stage 4 (AIData) specialist: builds/runs/reviews TfmFn / SplitFn, inspects 4-AIDataStore, loads AIData-layer assets + tensors, merges multi-partition CaseSets via streaming HF Dataset. Called by /haipipe-data; direct invocation works stage-scoped."
-argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.4"
-  last_updated: "2026-07-08"
+  version: "0.1.5"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -75,7 +74,7 @@ Stage Scope
 ------------
 
 Owns:
-  - TfmFn / SplitFn builders in the project's `NN_aidata_fn_develop_<cohort>/` task folder (legacy workspaces: `code-dev/1-PIPELINE/4-AIData-WorkSpace/`)
+  - TfmFn / SplitFn builders in canonical `tasks/bNN_*/jNN_*/tNN_*/scripts/` Task Folders (legacy workspaces: `code-dev/1-PIPELINE/4-AIData-WorkSpace/`)
   - Generated `code/haifn/fn_aidata/`
   - `_WorkSpace/4-AIDataStore/` tensors and split definitions
   - `templates/config.yaml` for AIData_Pipeline runs
@@ -83,6 +82,11 @@ Owns:
 Upstream dependency (Stage 3):
   Reads `_WorkSpace/3-CaseStore/`. Tensorization issues usually trace back to
   inconsistent CaseFn output schemas — escalate to `/haipipe-data-case review`.
+
+Vector boundary:
+  AIData assembles CaseFn `--tid`/`--wgt` outputs into the final model-ready
+  vector. A list/vector stored earlier in Source is an input data
+  representation and must not be confused with this global model vector.
 
 Hand-off contract (Stage 4 -> 5):
   AIData_Set is the input contract for `/haipipe-nn`. Splits, tensor shapes,

@@ -1,7 +1,7 @@
 # Outline Spaces · UI ↔ Page Folder ↔ Run Workflow mapping
 
 This is the small implementation contract for the three core Spaces plus the
-read-only Delivery Workspace.
+read-only Delivery Space.
 It answers one question: when a person clicks a Space, which renderer reads
 which Markdown or Result files, and which component is allowed to write them?
 
@@ -10,7 +10,7 @@ which Markdown or Result files, and which component is allowed to write them?
 The interface uses plain names:
 
 ```text
-Draft Space       Evidence Space       Run Space       Delivery Workspace
+Draft Space       Evidence Space       Run Space       Delivery Space
 ```
 
 The implementation keeps stable internal names for compatibility:
@@ -74,7 +74,7 @@ the runtime never reads the retired archive.
 | Draft Space | Mermaid + Table / Reading / Scratch views | selected `outline/*-outline-v*.md` (including embedded Draft fields and `## Scratch` registry), `outline/*-logic.mmd`, and Results metadata | Table/Reading: none; Scratch: only `action: scratch` writes the selected Outline registry plus its paired Run receipt |
 | Evidence Space | typed `Displays`, `Citations`, and `Values` sections; each item is a collapsed Result-first card | `results/**/result.yaml` and payload metadata | Evidence/Run workflow or producer writes Results; Space is read-only |
 | Run Space | RP, RE, RD, Supporting Runs | `runs/`, paired `results/`, delivery receipts, external Run registry and `supporting_results` references | owning workflow/CLI writes tickets and Results; Space is read-only |
-| Delivery Workspace | source-to-delivery consistency receipt by lane | current Page source, `delivery/web/`, lane `build-manifest.json` files, artifact hashes and mtimes | none in the Space; delivery builders write artifacts and manifests |
+| Delivery Space | source-to-delivery consistency receipt by lane | current Page source, `delivery/web/`, lane `build-manifest.json` files, artifact hashes and mtimes | none in the Space; delivery builders write artifacts and manifests |
 
 ### Draft Space
 
@@ -145,13 +145,13 @@ symlink the external ticket, Result, or protected payload.
 
 ```text
 Browser
-  │ click Draft / Evidence / Run / Delivery Workspace
+  │ click Draft / Evidence / Run / Delivery Space
   ▼
 Outline outer page: live/outline.py
   │ Draft: render in place
   │ Evidence: lazy iframe → /_board/evidence
   │ Run:      lazy iframe → /_board/runs
-  │ Delivery Workspace: lazy iframe → /_board/delivery?workspace=1
+  │ Delivery Space: lazy iframe → /_board/delivery?workspace=1
   ▼
 Page server adapter: src/standalone_server.py
   │ resolves the Page source and dispatches the route
@@ -179,7 +179,7 @@ Draft Space      GET, plus bounded Scratch POST
                                         Run receipt
 Evidence Space   GET only            ← Run/Result producers
 Run Space        GET only            ← Page workflow, Task workflow, registry
-Delivery Workspace GET only          ← delivery builders and manifest writers
+Delivery Space GET only              ← delivery builders and manifest writers
 ```
 
 This separation is intentional: the front end is a projection, while the

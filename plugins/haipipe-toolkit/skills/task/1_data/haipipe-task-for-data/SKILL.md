@@ -1,11 +1,10 @@
 ---
 name: haipipe-task-for-data
-description: "data-pipeline job specialist: scaffolds AND executes {NN}_<name>/ jobs that run Stage 1-4 builders (Source/Record/Case/AIData) with multi-partition support. Called by /haipipe-task when task-type=data. Cross-references /haipipe-data for Fn authoring."
-argument-hint: "[project_id] [group] [job-name]"
+description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.3"
-  last_updated: "2026-07-08"
+  version: "0.3.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,16 +23,19 @@ What this scaffolds
 -------------------
 
 ```
-tasks/{G}{NN}_<block_name>/                 ← group (letter is project-specific)
-└── {NN}_<job_name>/                       ← job
-    ├── {NN}_<job_name>.py                 source (instantiation of haistepnb template)
-    ├── configs/
-    │   └── run_<task_name>.yaml            seeded from ref/config-seed.yaml
-    ├── runs/
-    │   └── run_<task_name>.sh              from haipipe-task/ref/run-sh-template.sh
-    ├── results/                            runtime.yaml per run
-    ├── notebooks/                          papermill output per run
-    └── workflow/                           plan.yaml + report.yaml
+tasks/bNN_<block>/
+└── jNN_<job>/
+    ├── src/                               shared by two or more Tasks
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/
+        ├── scripts/
+        │   ├── <worker>.py
+        │   └── config/rNN_<run>.yaml
+        ├── runs/rNN_<run>.sh
+        ├── results/rNN_<run>/runtime.yaml
+        └── notebooks/rNN_<run>.ipynb
 ```
 
 Heavy outputs land in: `_WorkSpace/{1..4}-*Store/`.
@@ -102,19 +104,31 @@ Stage    Partitions     CLI flags                                    Notebook pa
 - Partition naming: `@i{i}n{n}` (1-based). Discovery: glob `@i*n*`.
 
 
-The 00_develop pattern
------------------------
+SourceFn Job pattern
+--------------------
 
-Each pipeline stage has a paired develop task: `NN_<stage>_fn_develop_mimic/` builds the Fns, `NN_<stage>_mimiciv/` runs the pipeline.
-Same number = same stage.
+One Job represents one version/family of shared SourceFn logic. Every raw name
+that owns a distinct ProcessDF output contract gets one plainly named Task.
+Reserve the final Tasks for integration:
 
 ```
-A01_data_pipeline_mimic/
-  01_source_fn_develop_mimic/  + 01_source_mimiciv/
-  02_record_fn_develop_mimic/  + 02_record_mimiciv/
-  03_case_fn_develop_mimic/    + 03_case_mimiciv_mortality/
-  04_aidata_fn_develop_mimic/  + 04_aidata_mimiciv_mortality/
+j01_source_contract_<family>/
+├── t01_<raw_name_one>_processdf/
+├── t02_<raw_name_two>_processdf/
+├── t03_<raw_name_three>_processdf/
+├── ...
+├── t51_sourcefn_<family>/          build the generated SourceFn
+└── t52_source_pipeline_<family>/   run and validate the HAI pipeline
 ```
+
+If later Raw Data has a different structure or needs a different shared
+transformation, create `j02_*`; do not hide a new SourceFn version inside a Run.
+Within each Task, cohorts/parameters become `rNN_*` Runs.
+
+Source Tasks may attach pinned ExternalStore data and emit list/vector-valued
+data. Their contract records dtype, ordering, missing mask, external release,
+and snapshot metadata. Record/Case tasks consume that contract rather than
+rebuilding the external representation.
 
 - Builder reference templates at `code/scripts/haibuilder/{1-source,2-record,3-case,4-aidata}/`.
 - D-prefix dictionary tables (`DRGCode`, `DIcdDiagnoses`, `DLabItems`,
@@ -157,10 +171,10 @@ Scaffold flow
 See `fn/scaffold.md` for the detailed step-by-step.
 Summary:
 
-  1. Identify project + block.
-  2. Collect metadata (NN, name, stage, _meta block).
+  1. Identify project + canonical `bNN_*` Block and `jNN_*` Job.
+  2. Collect Task metadata (`tNN_*`, stage, Page Face, `_meta` block).
   3. Copy notebook template from `haistepnb/{N}_{stage}_nb.py`, set CONFIG default.
-  4. Seed config from `ref/config-seed.yaml` (with partition fields for Stage 2+).
+  4. Seed `scripts/config/rNN_<run>.yaml` from `ref/config-seed.yaml`.
   5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh`.
   6. Suggest next via cross-skill link.
   7. Emit return contract.
@@ -175,7 +189,7 @@ Summary:
   1. Detect stage from script imports (SourceSet/RecordSet/CaseSet/AIData).
   2. Read config for partition_number and stage-specific args.
   3. Execute via notebook (run.sh) or CLI (python -m scripts.haistepcli.{stage}).
-  4. Write results/<RUN>/runtime.yaml.
+  4. Write `results/rNN_<run>/runtime.yaml` inside the Task Folder.
   5. Emit return contract.
 
 

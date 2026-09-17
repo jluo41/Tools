@@ -47,7 +47,7 @@ If the path does not match any pattern, go to Step R1-B and ask the user to clar
   */04_aidata_fn_develop_*/c*.py             TfmFn builder
   */04_aidata_fn_develop_*/s*.py             SplitFn builder
   code-dev/1-PIPELINE/**/*.py                any builder (legacy home)
-  **/configs/**/*.yaml                        YAML config in a task folder (stage auto-detected)
+  **/scripts/config/**/*.yaml                 YAML config in a Task Folder (stage auto-detected)
 
   For YAML configs: inspect the top-level keys to determine stage:
     Has SourceArgs        -> Source config
@@ -81,10 +81,10 @@ Present this message:
     SplitFn        code/haifn/fn_aidata/split/<SplitFnName>.py
 
   Builder scripts (project fn_develop task folders; legacy: code-dev/1-PIPELINE/)
-    Any builder:   examples/<Project>/tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/<builder>.py
+    Any builder:   examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<task>/scripts/<builder>.py
 
   Pipeline configs (job configs/)
-    Any config:    <task>/configs/<name>.yaml
+    Any config:    <task>/scripts/config/<name>.yaml
   ---------------------------------------------------------------
 
 Wait for the user to provide a path, then go to Step R2.
@@ -203,6 +203,14 @@ ___________________________________________________________________________ CHEC
           MedicationID, Dose, medication, external_metadata)
   SF-9   CGM domain: Exercise columns = 13               schema consistency
   SF-10  CGM domain: Diet columns = 15                   schema consistency
+  SF-11  Every raw name maps to one declared ProcName    raw-to-process coverage
+  SF-12  External release is pinned and recorded         reproducibility
+  SF-13  List/vector fields declare dtype, stable        Source data contract
+         ordering, missing behavior/mask, and version
+  SF-14  Time-varying external fields carry              point-in-time safety
+         snapshot_as_of and applicable window bounds
+  SF-15  No uncontrolled live API call occurs inside     reproducible ingestion
+         SourceFn
 
   NOTE SF-8/9/10: Only check if the SourceFn handles CGM/diabetes data.
   For other domains, check that ProcName_to_columns is consistent within the domain.
@@ -244,6 +252,12 @@ ___________________________________________________________________________ CHEC
          explicit offset -> user_tz -> default 0
   RF-13  timezone filter present (abs < threshold)       processing invariant 1
   RF-14  value range filter present for numeric col      processing invariant 3
+  RF-15  Source vector values/order/version are          stage ownership
+         preserved through alignment
+  RF-16  snapshot_as_of <= observation time for          no temporal leakage
+         time-varying external data
+  RF-17  RecordFn does not independently rebuild or      stage ownership
+         rejoin an ExternalStore representation
 
 ___________________________________________________________________________ CHECKLIST: TriggerFn (code/haifn/fn_case/fn_trigger/*.py) ___________________________________________________________________________
 
@@ -284,6 +298,10 @@ ___________________________________________________________________________ CHEC
   CF-11  fn_CaseFn returns dict with SUFFIX-ONLY keys    CRITICAL: prefixed
          (--tid, --wgt, --val, --str, or no suffix)       keys break pipeline
          Does NOT return keys containing CaseFnName
+  CF-12  Source vector ordering/version is validated     reproducible encoding
+         before CaseFn emits --tid/--wgt
+  CF-13  CaseFn does not reload a conflicting external   training/serving parity
+         release
 
 ___________________________________________________________________________ CHECKLIST: InputTfmFn (code/haifn/fn_aidata/entryinput/*.py) ___________________________________________________________________________
 
@@ -336,7 +354,7 @@ ___________________________________________________________________________ CHEC
   BS-6   Builder does NOT hardcode production paths      safety: generated code
          (no _WorkSpace/ absolute paths)                  should be portable
 
-___________________________________________________________________________ CHECKLIST: Source YAML config (**/configs/**/*.yaml with SourceArgs) ___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: Source YAML config (**/scripts/config/**/*.yaml with SourceArgs) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -344,7 +362,7 @@ ___________________________________________________________________________ CHEC
   YS-2   SourceArgs.raw_data_name present and non-empty  required key
   YS-3   SourceArgs.SourceFnName present and non-empty   required key
 
-___________________________________________________________________________ CHECKLIST: Record YAML config (**/configs/**/*.yaml with HumanRecords) ___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: Record YAML config (**/scripts/config/**/*.yaml with HumanRecords) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -355,7 +373,7 @@ ___________________________________________________________________________ CHEC
          under RecordArgs)
   YR-4   HumanRecords values are lists                   format requirement
 
-___________________________________________________________________________ CHECKLIST: Case YAML config (**/configs/**/*.yaml with CaseArgs) ___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: Case YAML config (**/scripts/config/**/*.yaml with CaseArgs) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -365,7 +383,7 @@ ___________________________________________________________________________ CHEC
   YC-4   Each Case_Args entry has TriggerName            required key
   YC-5   Each Case_Args entry has CaseFnList (a list)    required key
 
-___________________________________________________________________________ CHECKLIST: AIData YAML config (**/configs/**/*.yaml with InputArgs) ___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: AIData YAML config (**/scripts/config/**/*.yaml with InputArgs) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------

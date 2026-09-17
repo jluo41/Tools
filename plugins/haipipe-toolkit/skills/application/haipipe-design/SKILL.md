@@ -1,8 +1,8 @@
 ---
 name: haipipe-design
 description: >-
-  Canonical owner of one stable Design Folder and the Design Plugin's five
-  Workspaces: Plan, Create, Review, Run/Runtime, and Delivery. Keeps Page and
+  Canonical owner of one stable Design Folder, its Design Item register, and
+  the Design Plugin's five Spaces: Goal, Design, Insight, Run, and Delivery. Keeps Page and
   Design Run graphs distinct. Use for commissioning, generating, independently
   verifying, previewing, and adopting exact Design candidates. Ends at adopted
   candidates, never implementation, distribution, experimentation, or measurement.
@@ -19,31 +19,76 @@ metadata:
     shape: "commission decision → generation → verification → adoption decision"
 ---
 
-# /haipipe-design · one Plugin, five Workspaces, two Run graphs
+# /haipipe-design · one Plugin, five Spaces, two Run graphs
 
 ## Version governance
+
+Only explicit user approval may authorize `1.0.0`; until then the family stays at `0.4.0`.
 
 This Design family is exactly `v0.4.0`. Do not change that version or publish a
 `v1.x` release without explicit user permission. Architecture changes and
 field-test repairs do not authorize a version upgrade.
 
-## Plugin and Workspaces
+## Design Items
 
-One Design Plugin solves the whole Design problem through five member
-Workspaces:
+A **Design Item** is one design target with its own acceptance rules: one
+message, one UI card, one candidate pool. It is what a person asks for,
+judges, and adopts; a Design Folder holds one or many. Items are registered,
+goal and rules only, in `outline/<stem>-design-items.md`:
 
-| Workspace id | UI label | Purpose |
-|---|---|---|
-| `plan` | Plan | Brief, Commission, target, constraints, Run graph |
-| `create` | Create | generation action and candidate comparison |
-| `review` | Review | independent verification and findings |
-| `runtime` | Run | read-only Run Instance, Gate, Route, Result, receipt view |
-| `delivery` | Delivery | exact previews and adoption decision |
+```text
+## ITEM01 · Send the tested winner, verbatim
+type: sms
+audience: full SMSR2 population, unconditioned
+job: prescription review
+goal: Field the salience template exactly as round 1 sent it
+stance: follow                     # follow · challenge · explore · generate
+basis: evidence-informed           # brief-only · evidence-informed
+mode: compose
+expected: salience stays the best arm on click and authentication when re-fielded
+falsified: a concurrently fielded round-2 arm beats it on click outside overlapping intervals
+evidence:
+- handoff · ../../../A00_InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+acceptance:
+- ≤ 160 characters including the opt-out suffix
+- ends with 'Reply STOP to opt-out' verbatim
+```
 
-Use `runtime` as the stable id; the UI may label it `Run`. A Workspace is a
-presentation/interaction surface, never another Run or execution owner.
+`goal`, `stance`, `basis`, `expected`, and `falsified` are the register's
+copy of the v2 `design_intent`; a Commission freezes them into its config and
+compiles the `acceptance` lines into criteria. `evidence` lines carry the
+Ticket input roles. The register carries no state. Every Design Run Ticket names the item it
+serves (`item: ITEM01`); the item's state is derived by walking those Runs in
+order (`not commissioned → commissioned → generated → verified → adopted`,
+with `generate failed`, `verify failed`, `declined`, and `hold` as truthful
+stops). A Commission may release one item or a set; a Generate produces
+candidates for exactly one item; an Adopt decides exactly one item. An item
+is never a Page division, a Run, or a Result: the Page explains it, the Runs
+produce and judge it, the Result is its candidate.
+
+## Plugin and Spaces
+
+`Space` is the only reader-facing word for a plugin surface (JL 260916). One
+Design Plugin presents the Folder through five Spaces, in time order:
+
+| Space | Shows |
+|---|---|
+| Goal Space | the ask, from the Brief line that names the folder: venue, who, their job, how many designs (wanted · registered · adopted), which Insight board |
+| Design Space | one card per Design Item: goal, why in plain words, insight pointer, expected/falsified, rules, state, who is waited on, buttons |
+| Insight Space | per item, the supporting insights: page, signed by whom, what it says, pinned or not; "needs an insight" when none is named; the board's signed pages no item uses |
+| Run Space | each item's Commission → Generate → Verify → Adopt timeline: who, when, outcome, next |
+| Delivery Space | the adopted draft per item: exact text, hash, verifier, the person's words |
+
+`Run Space` and `Delivery Space` are fixed platform names; `Goal`, `Design`,
+and `Insight Space` are Design's own. Every word on the surface is a plain
+word (the Brief and its lines, signed insight, draft, run record, records
+check); contract words stay in the files. Steps are always named by their Run words. A Space is a
+presentation/interaction surface, never another Run or execution owner; the
+presenter is `haipipe-plugin-design`.
 
 ## One Folder, two independent Workflows
+
+The rule is one Folder, two workflows: the Page workflow explains and delivers the Folder, the Design workflow commissions, generates, verifies, and adopts drafts; neither mints the other's Runs (the Page workflow's `rp00_mermaid-structure` Run and the Design workflow's `rdNN_*` Runs never share an id).
 
 ```text
 PAGE RUN GRAPH                          DESIGN RUN GRAPH
@@ -87,12 +132,12 @@ of them is a Step/Gate event, not another Run.
 
 | Concern | Owner |
 |---|---|
-| stable Folder, Workspace roster, authority boundaries, closure | `haipipe-design` |
+| stable Folder, Design Item register, the list of Spaces, authority boundaries, closure | `haipipe-design` |
 | graph compiled from each Design Run Spec's Routes | `haipipe-design-workflow` |
 | generic identity, Ticket/Result pairing, receipt invariants | `haipipe-run` |
 | generation/verification unit work | `haipipe-design-unit` |
 | Page RP/evidence/delivery/check graph | `haipipe-page-workflow` |
-| Workspace table and projections | `workflow-table` |
+| Space table and projections | `workflow-table` |
 
 Candidate wording, arrangement, visual form, or behavior changes route to a
 new `Design.generate` revise Run with frozen base and feedback. Wording that
@@ -102,12 +147,13 @@ decision stays a Step.
 
 ## Folder shape
 
-Use `2-DS-design/DS<NN>-<audience>-<job>-<venue>/`:
+Use `2-Design/Design-<NN>-<audience>-<job>-<venue>/`:
 
 ```text
-DS<NN>-<audience>-<job>-<venue>/
+Design-<NN>-<audience>-<job>-<venue>/
 ├── <stem>.md
 ├── outline/
+│   ├── <stem>-design-items.md      # Design Item register · goal and rules only
 │   ├── <stem>-logic.mmd
 │   ├── evidence/
 │   └── decisions/
@@ -135,8 +181,9 @@ Result or Run.
 
 ## Commission = bounded design bet
 
-The Commission Run freezes target, unit shape/count, allowed sources, criteria,
-output scope, iteration budget, config, and one `design_intent`:
+The Commission Run freezes the Design Item it serves (`item: ITEM<NN>`), target,
+unit shape/count, allowed sources, criteria, output scope, iteration budget,
+config, and one `design_intent`:
 
 ```yaml
 design_intent:
@@ -168,6 +215,8 @@ release waits for every Page promise and bound Design Result it presents.
 
 ## Closure
 
+A Result never becomes the adoption authority by itself: a named person adopts exact version hashes in a decision Run, and only that decision closes the item.
+
 Design closes when every commissioned Run is truthfully terminal, required
 independent verification is complete, the adoption decision Run is terminal,
 and current previews match the exact decided hashes. Page closes separately
@@ -177,7 +226,9 @@ superseded Runs.
 Stop after adoption/decline. Implementation, sending, allocation, testing, and
 measurement belong to downstream owners.
 
-## Clean break
+## Clean-break contract
+
+Unsupported Design bytes are not readable history: legacy shapes are refused, never reinterpreted.
 
 This skill has one current grammar only: Design v0.4.0, v2 Ticket/Result
 contracts, and `rdNN_commission|generate|verify|adopt_*` ids. It does not read,

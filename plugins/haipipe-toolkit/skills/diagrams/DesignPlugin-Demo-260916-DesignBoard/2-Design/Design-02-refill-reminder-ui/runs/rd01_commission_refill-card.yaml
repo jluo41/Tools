@@ -1,0 +1,22 @@
+schema: haipipe.design-ticket/v2
+run: rd01_commission_refill-card
+run_type: Design.commission
+operation: commission
+item: ITEM01
+target: Refill approaching card
+actor:
+  mode: human
+  owner: JL
+action: release or hold the frozen commission
+inputs:
+- path: scripts/config/commission_refill-card.yaml
+  sha256: 44c211534e01491da89f1a32c0e37f5d9e5390b2050a64cd0d063321ee88734f
+entry_gate: the Design Item is registered
+exit_gate:
+  mode: human
+  assertion: decision names the exact config hash
+routes:
+  release: generate
+  hold: HOLD
+result: results/rd01_commission_refill-card/
+receipt: results/rd01_commission_refill-card/runtime.yaml

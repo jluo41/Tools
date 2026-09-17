@@ -362,7 +362,7 @@ SNAME = re.compile(r"^S[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
 # families' boards keep parsing.
 # 260820, Application runtime boards. A ONE-OR-TWO letter family followed by a
 # DIGIT: MT00-meta, D01-<slug>, I01, K01, W01 on an InsightBoard; BR00-brief,
-# P01, DS01 on a DesignBoard. Generalised from a hardcoded [MIAD] set the same
+# P01 on a DesignBoard (its Design-01 pages match the `Design-` branch). Generalised from a hardcoded [MIAD] set the same
 # day, so a new family needs no engine edit. The required digit is what keeps
 # AGENTS.md, DESIGN.md and MEMORY.md out; SKILL.md and STATUS.md do match, but
 # through the pre-existing [QS] branch, which is long-standing behaviour.

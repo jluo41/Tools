@@ -1,0 +1,33 @@
+run: rd29_verify_item07
+family: design
+operation: verify
+item: ITEM07
+target: Under 90 characters
+status: complete
+ticket: runs/rd29_verify_item07.yaml
+result: results/rd29_verify_item07/
+ticket_sha256: 67cb01f2d87dcb1b3c4033b7dbee1668aa125182e510778887d29f8b5b7e98ab
+inputs:
+- path: scripts/config/rd29_verify_item07.yaml
+  sha256: 7c82c23abb8d454a927a6528910347395eddebce1c24aaa5cbe3b5f6ef135b42
+- path: results/rd13_commission_item07/decision.yaml
+  sha256: d9c1165cb2014ac059d18a3bcffd03740c9770a80d8aedaf0f675c679cdc6017
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+- path: results/rd21_generate_item07/result.yaml
+  sha256: 1aebd182cc419c5fc84f0a018e8926a4c5c439c4504f97230fa388b0412c10a4
+worker:
+  kind: skill
+  name: haipipe-design-unit
+  actor: reviewer-context-33
+queued_at: '2026-09-17T04:11:37Z'
+lost_workers:
+- actor: reviewer-context-23
+  at: '2026-09-17T04:55:11Z'
+  why: left no result
+started_at: '2026-09-17T04:11:37Z'
+finished_at: '2026-09-17T04:58:44Z'
+failure: null
+route: adopt
+terminal_outcome: pass

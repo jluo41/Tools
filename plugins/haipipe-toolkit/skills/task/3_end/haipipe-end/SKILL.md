@@ -1,11 +1,10 @@
 ---
 name: haipipe-end
 description: "Run any Stage 6 endpoint work: routes intent to the right specialist across Fn-type, artifact-verb, develop-target, and deploy-target axes. Use for designing inference Fns, packaging Endpoint_Sets, training a build, local inference tests, or deploying anywhere. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
-argument-hint: "[target_or_fn_or_verb] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-08"
+  version: "0.2.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -300,6 +299,12 @@ FN-4   VERIFY WITH A ROUND-TRIP GATE, and prove the gate bites first.
        known-broken build BEFORE the fixed one; if it passes the broken build, the
        gate is what is broken. See haipipe-task GATE-1 and the reference impls in
        `-src2input`'s roundtrip section.
+
+FN-5   SERVING MUST REPRODUCE THE TRAINING SOURCE CONTRACT.
+       Input2SrcFn uses the endpoint's pinned ExternalStore snapshot and emits
+       the same ProcessNames, dtypes, list/vector ordering, masks, and versions
+       as SourceFn. It never calls an uncontrolled live API or follows an
+       unpinned "latest" release.
 ```
 
 ---

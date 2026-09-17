@@ -1,0 +1,26 @@
+run: rd03_verify_item01
+family: design
+operation: verify
+item: ITEM01
+target: Refill approaching card
+status: complete
+ticket: runs/rd03_verify_item01.yaml
+result: results/rd03_verify_item01/
+ticket_sha256: f52b49fa3239bc4facf88f728b185e024704942e3af06150cd9f9f1a8046e969
+inputs:
+- path: scripts/config/rd03_verify_item01.yaml
+  sha256: 6a1eaf2ae79261de76ab7052a1c14afceda37de17353a87171adb7d66223441c
+- path: results/rd01_commission_refill-card/decision.yaml
+  sha256: 5e95667b079083f6d2328e0e152c008c42eab73aecc723309d84d44d0609bfef
+- path: results/rd02_generate_refill-card/result.yaml
+  sha256: ed31bc291c167b56f59fe4ae14e62325b2cbffd2638b6f687d5f2910de627318
+worker:
+  kind: skill
+  name: haipipe-design-unit
+  actor: reviewer-context-04
+queued_at: '2026-09-16T17:23:22Z'
+started_at: '2026-09-16T17:23:22Z'
+finished_at: '2026-09-16T17:27:03Z'
+failure: null
+route: adopt
+terminal_outcome: pass

@@ -213,9 +213,21 @@ def Input2SrcFn(payload_input_json, SPACE):
     ...
 ```
 
-This is valid.
-Input2SrcFn may need external data to enrich the payload.
-External data is available at SPACE['LOCAL_EXTERNAL_STORE'] inside the endpoint.
+This is valid only when it reproduces the training SourceFn's pinned enrichment
+contract. The endpoint package must contain the exact approved ExternalStore
+release and record its identity in `manifest.json`. Input2SrcFn must not call a
+live API or silently use a newer local release.
+
+Input2SrcFn may emit the same scalar or list/vector-valued data fields as
+SourceFn. Those values are still Source data representations, not final model
+features. Match the training path on ProcessName, column order, dtype, element
+ordering, missing mask, representation version, and temporal metadata.
+
+Prefer a shared pure helper used by both training SourceFn and serving
+Input2SrcFn. Keep platform wrappers limited to decoding the SageMaker or
+Databricks envelope. Add a parity fixture that feeds equivalent logical input
+through both paths and compares the complete ProcessDF contract before Record,
+Case, or AIData runs.
 
 ---
 

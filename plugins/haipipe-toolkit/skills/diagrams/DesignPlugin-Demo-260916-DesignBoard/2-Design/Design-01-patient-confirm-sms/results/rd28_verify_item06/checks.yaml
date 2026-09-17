@@ -1,0 +1,29 @@
+checks:
+- target: results/rd20_generate_item06/result.yaml::content/sms.txt
+  criterion: r01
+  status: pass
+  evidence: '''{NAME}'' present exactly once, at code points 13-18 inside the opening clause (Dr. {NAME}''s office); the artifact holds exactly one 0x7B and one 0x7D byte, both belonging to this token'
+- target: results/rd20_generate_item06/result.yaml::content/sms.txt
+  criterion: r02
+  status: pass
+  evidence: 'Read every clause. Four parts: a greeting with prescriber attribution (Hi, it''s Dr. {NAME}''s office), the action (New prescription details require your review), one subordinate purpose clause (so your pharmacy has the right information), and the opt-out. Exactly one clause states why the review helps, and its reason is administrative (correct pharmacy information). No medical, health, safety, dosage, interaction, adherence, or treatment-outcome wording anywhere'
+- target: results/rd20_generate_item06/result.yaml::content/sms.txt
+  criterion: r03
+  status: pass
+  evidence: '140 Unicode code points (140 UTF-8 bytes, all ASCII, no trailing newline); configured maximum is 160'
+- target: results/rd20_generate_item06/result.yaml::content/sms.txt
+  criterion: r04
+  status: pass
+  evidence: '''Reply STOP to opt-out'' present verbatim exactly once as the final clause (code points 119-139 of 140); no bytes follow it'
+- target: results/rd20_generate_item06/result.yaml::content/sms.txt
+  criterion: r05
+  status: pass
+  evidence: 'No digits, no ''%'', no interval or rate figures; no effect or comparative wording (lift, increase, improve, boost, more, better, higher, proven, likely, expected); no arm, test, winner, or click reference. The frozen expected_effect interval [65.56, 66.56] does not leak into the text'
+- target: results/rd20_generate_item06/result.yaml::content/sms.txt
+  criterion: r06
+  status: pass
+  evidence: 'One artifact with no conditional branches or alternates. The only placeholder is {NAME} (the prescriber), which is not a recipient attribute. No age words, no gendered address (the recipient is addressed only as your), no weekday, date, or time-of-day words, no state, city, or region names. The same bytes go to every recipient'
+- target: results/rd20_generate_item06/result.yaml::content/sms.txt
+  criterion: r07
+  status: pass
+  evidence: 'Plain vocabulary, one short action sentence framed as prescription review. Require your review is directive but not coercive: no deadline, no urgency words (urgent, now, immediately, today, last chance), no consequence for inaction, no exclamation marks, no incentive. No topic other than prescription review and opt-out'

@@ -1,8 +1,8 @@
 External Join Contract
 =======================
 
-Defines how an external asset is joined into a cohort layer (Source, Record, Case, AIData).
-The `join` verb in this skill **previews** the operation; the actual join happens in the consuming layer.
+Defines how an external asset is attached to a cohort SourceSet.
+The `join` verb in this skill **previews** the operation; the actual join happens in SourceFn.
 
 ---
 
@@ -61,24 +61,29 @@ The preview should sample 5 matched + 5 unmatched keys side-by-side so the user 
 Recommended Config Snippet (output of `join`)
 ==============================================
 
-The skill emits a YAML block to paste into the consuming layer's config:
+The skill emits a YAML block to paste into the Source recipe:
 
 ```yaml
-externals:
-  npi:
-    version: "@260104R4"          # pin or omit to follow EXTERNAL_VERSION
-    asset_path: ExternalStore/@260104R4/npi
-    join:
-      cohort_table:    Rx          # which table in the SourceSet/RecordSet
-      cohort_column:   prescriber_npi
-      external_key:    NPI_original
-    columns:                       # optional; defaults to all non-key cols
-      - Specialty
-      - Credential
-      - Openness_score
-      - Conscientiousness_score
-      - final_MIPS_score
-    on_unmatched:    keep_null     # keep_null | use_unknown_token | drop_row
+external_version: "@260104R4"
+SourceArgs:
+  external_inputs:
+    npi:
+      asset_path: ExternalStore/@260104R4/npi
+      join:
+        process_name:    Rx
+        process_column:  prescriber_npi
+        external_key:    NPI_original
+      columns:
+        - Specialty
+        - Credential
+        - Openness_score
+        - Conscientiousness_score
+        - final_MIPS_score
+      on_unmatched: keep_null
+      representation:
+        ordering: external_vocabulary
+        dtype: int32
+        emit_missing_mask: true
 ```
 
 Field semantics:
@@ -87,9 +92,9 @@ Field semantics:
                    Omit to inherit EXTERNAL_VERSION from env.sh.
   asset_path       Relative to _WorkSpace/. Mirrors the resolved
                    release.
-  cohort_table     Which ProcName in the cohort set the join applies
+  process_name     Which ProcName in the SourceSet the join applies
                    to. Required when the cohort is multi-table.
-  cohort_column    The left-side join column name.
+  process_column   The left-side join column name.
   external_key     Always {PRIMARY_KEY}_original for that asset.
   columns          Whitelist of external columns to add. Without this,
                    all non-key columns are joined.
@@ -132,10 +137,10 @@ What `join` Does NOT Do
 
   - Does NOT mutate any file.
   - Does NOT write to _WorkSpace/.
-  - Does NOT update RecordFn / CaseFn config files.
+  - Does NOT update SourceFn config or builder files.
   - Does NOT cast or normalize keys silently -- it reports the match
     rate as-is and flags suspected format mismatches for the user to
     decide.
 
 The only output is the textual preview (numbers + samples + YAML snippet).
-The user copies the snippet into the appropriate cohort layer's config and runs the actual cook there.
+The user copies the snippet into the Source recipe/builder and runs the Source cook there.

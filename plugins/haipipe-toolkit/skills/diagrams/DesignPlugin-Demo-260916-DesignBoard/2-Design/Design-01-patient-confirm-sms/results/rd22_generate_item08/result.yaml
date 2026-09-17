@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd22_generate_item08
+operation: generate
+target: Two steps
+producer: designer-context-14
+ticket_sha256: ea86d1095b47435f077b09159ec5426802a3040561821167a523be4831979d6c
+config_sha256: 281387dcbe5958f228119f61c09535c54b8d5ea8347a1d62f6375343bc264e81
+verdict: pass
+artifacts:
+- path: content/sms.txt
+  sha256: 43be2f9f54d09cbd5dcc4171b704f3dc91bdae3f9586eb061193a2c870ac8a3a
+checks:
+  path: checks.yaml
+  sha256: 5285bc9fb30a057cd086e20dfde21de6e672107999559f45f6039cc86d099b7b
+targets: []

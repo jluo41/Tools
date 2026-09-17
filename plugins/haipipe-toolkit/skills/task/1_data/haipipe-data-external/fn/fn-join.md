@@ -134,8 +134,8 @@ config_snippet:  |
   externals:
     {asset}:
       ...
-next:            "Paste the snippet into your RecordFn/CaseFn config and
-                  run /haipipe-data-record cook (or the appropriate stage)."
+next:            "Paste the snippet into the SourceFn recipe/builder and
+                  run /haipipe-data-source cook."
 ```
 
 ---
@@ -148,5 +148,5 @@ MUST NOT
 - Do NOT cast or normalize the join key without flagging it -- a low
   match rate is data the user needs to see, not a problem to silently
   fix.
-- Do NOT update RecordFn / CaseFn config files automatically -- the
+- Do NOT update SourceFn config or builder files automatically -- the
   user pastes the snippet themselves.

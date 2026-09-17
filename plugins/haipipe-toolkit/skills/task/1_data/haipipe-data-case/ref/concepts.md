@@ -14,9 +14,9 @@ Cooking Metaphor
 ```
 Kitchen  = Case_Pipeline class        (code/haipipe/case_base/)
 Chef     = TriggerFn + CaseFn         (code/haifn/fn_case/)  GENERATED
-Recipe   = YAML config file           (the pipeline task's configs/)
+Recipe   = YAML config file           (the Task's scripts/config/)
 Dish     = CaseSet asset              (_WorkSpace/3-CaseStore/)
-Academy  = Builder scripts            (tasks/<pipe-group>/03_case_fn_develop_<cohort>/ in the project)
+Academy  = Builder scripts            (tasks/bNN_*/jNN_*/tNN_<casefn>/scripts/)
 ```
 
 
@@ -88,6 +88,12 @@ Trigger vs CaseFn Separation
 **CaseFn** -- extracts WHAT features at trigger point.
   Main function: `fn_CaseFn()` with 6 params.
   Returns: dict with SUFFIX-ONLY keys (pipeline adds CaseFnName prefix automatically)
+
+CaseFn currently fulfills the conceptual FeatFn role. Source may already carry
+model-independent ZIP/NPI/NDC/NCPDP or engagement vectors. CaseFn consumes
+those values through Record, applies observation windows/selection/aggregation,
+and emits model-facing feature tokens and weights. It must not reload a
+different ExternalStore release or silently change the Source vector ordering.
 
 
 Concrete Code
@@ -222,8 +228,8 @@ Discovering Available Fns
 ```bash
 ls code/haifn/fn_case/fn_trigger/
 ls code/haifn/fn_case/case_casefn/
-ls examples/*/tasks/*/03_case_fn_develop_*/a*.py    # TriggerFn builders
-ls examples/*/tasks/*/03_case_fn_develop_*/c*.py    # CaseFn builders
+find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*trigger*.py'
+find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*case*.py'
 ```
 
 
@@ -245,6 +251,7 @@ Always chain: `source .venv/bin/activate && source env.sh && python <script>` Or
 10. Present plan and get approval before code changes
 11. Use `tid2tkn` / `tkn2tid` for COVocab keys (NEVER `idx2tkn` / `tkn2idx`)
 12. Return real numeric values in `--wgt` for numeric CaseFns (not just 1.0)
+13. Preserve and validate Source vector ordering/version before encoding it
 
 
 CaseFn → AIData → Model Format Chain
@@ -336,7 +343,7 @@ Fn loaders:           code/haipipe/case_base/builder/triggerfn.py
                       code/haipipe/case_base/builder/rotools.py
 Generated TriggerFns: code/haifn/fn_case/fn_trigger/      (discover with ls)
 Generated CaseFns:    code/haifn/fn_case/case_casefn/     (discover with ls)
-Builders (edit here): examples/<Project>/tasks/<pipe-group>/03_case_fn_develop_<cohort>/
+Builders (edit here): examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<casefn>/scripts/
                       (legacy workspaces: code-dev/1-PIPELINE/3-Case-WorkSpace/)
 Store path:           _WorkSpace/3-CaseStore/
 Config template:      ../templates/config.yaml (this skill's own template)

@@ -78,16 +78,24 @@ class AuthMixin:
     auth_users: dict[str, str] | None = None
     public_read = False
     auth_realm = "JJ-LUO SPACE"
+    # Domain presenters that are explicitly read-only may opt into the same
+    # anonymous-read boundary as generated Board pages.  Keep this allowlist
+    # narrow: POST twins, chat, writes, and every other workspace route remain
+    # authenticated when --public-read is enabled.
+    public_read_live_routes = {"/_board/design", "/_board/design-board", "/_board/design-bundle",
+                               "/_board/insight-board", "/_board/insight"}
 
     @classmethod
     def configure_auth(cls, path: Path | None) -> None:
         cls.auth_users = load_users(path) if path else None
 
     def is_public_board_read_request(self) -> bool:
-        """Allow anonymous GET/HEAD only for generated Board pages and assets."""
+        """Allow anonymous GET/HEAD for generated pages and safe projections."""
         if not self.public_read or self.command not in {"GET", "HEAD"}:
             return False
         clean = unquote(urlsplit(self.path).path)
+        if clean in self.public_read_live_routes:
+            return True
         if clean.startswith("/b/"):
             return True
         try:

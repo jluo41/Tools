@@ -9,9 +9,8 @@ All production functions are generated.
 Edit builders in the BUILDER HOME, run them, and the output lands in `code/haifn/`.
 
 **BUILDER HOME** — where builder scripts live; resolve once, then substitute for the `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` paths in the examples below:
-  - Project-local (current convention): the project's paired fn_develop task
-    folder, `examples/<Project>/tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/`
-    (e.g. `Project-REACH-ADHD/tasks/A01_data_pipeline_reachadhd/01_source_fn_develop_reachadhd/`).
+  - Project-local (current convention): a canonical Task Folder,
+    `examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<fn-task>/scripts/`.
   - Legacy central (e.g. WellDoc-SPACE): `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/`.
   Seed library (copy sources, all workspaces): `code/scripts/haibuilder/<N>-<stage>/`
   — real builders (MIMIC, Ohio, CGM...) to copy as starting points.
@@ -156,8 +155,8 @@ Do not skip this — the pipeline will not pick up unregistered Fns.
 **Step 8: Test End-to-End with the Matching Pipeline**
 
 ```bash
-python -m scripts.haistepcli.case   --config <task>/configs/<run>.yaml
-python -m scripts.haistepcli.aidata --config <task>/configs/<run>.yaml
+python -m scripts.haistepcli.case   --config <task>/scripts/config/<run>.yaml
+python -m scripts.haistepcli.aidata --config <task>/scripts/config/<run>.yaml
 ```
 
 Use the matching scripts.haistepcli.<stage> module for your stage; configs live in the pipeline task's configs/ folder.
@@ -167,7 +166,9 @@ Use the matching scripts.haistepcli.<stage> module for your stage; configs live 
 Stage Reference: 1-source
 ===========================
 
-**What You Build**: SourceFn — loads raw files from disk and produces standardized DataFrames per table type (CGM, Diet, Medication, Exercise, ...).
+**What You Build**: SourceFn — maps every raw name to a stable ProcessDF and
+may attach pinned, model-independent ExternalStore data (ZIP, NPI, NDC, NCPDP,
+engagement snapshots).
 
 **Builder Location**:
 ```
@@ -209,6 +210,7 @@ def process_Source_to_Processed(
 
 **Register in Config**:
 ```yaml
+external_version: "@<release>"   # required when the SourceFn uses ExternalStore
 SourceArgs:
   SourceFnName: OhioT1DMxmlv250302
 ```
@@ -217,6 +219,22 @@ SourceArgs:
 
 All SourceFns for the same domain MUST output identical column schemas for shared table types.
 Schema consistency is mandatory across all source versions of the same domain.
+
+Before building, inventory every raw name. Give each raw name its own analysis
+Task when it owns a distinct ProcessDF output contract. Then build the shared
+SourceFn and run the complete HAI pipeline in separate Tasks.
+
+For each external scalar/list/vector field, lock:
+
+```
+join key + ProcessName | dtype | element ordering | missing behavior/mask
+ExternalStore release | vector/schema version | snapshot_as_of/window bounds
+```
+
+Source vectors are reusable data representations. CaseFn (the current FeatFn
+role) applies feature semantics, and AIData assembles the final model vector.
+API/vendor acquisition must be upstream and versioned; never call an
+uncontrolled live API from generated SourceFn code.
 
 Standard column counts to check before designing:
 

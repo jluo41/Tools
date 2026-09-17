@@ -1,7 +1,7 @@
 # design · create or resume one stable Design Folder
 
-1. Resolve the Brief and one audience × behavior job × primary venue roster row.
-2. Reuse or create `<DesignTopic>-DesignBoard/2-DS-design/DS<NN>-<audience>-<job>-<venue>/<stem>.md`
+1. Resolve the Brief and one line of the Brief (audience × behavior job × primary venue).
+2. Reuse or create `<DesignTopic>-DesignBoard/2-Design/Design-<NN>-<audience>-<job>-<venue>/<stem>.md`
    with `folder-kind: design`. Load `haipipe-design` as its canonical owner.
    Reject D0–D5/GD0–GD6, `design/DU*/`, PageX, v1, or `rNN_design_*` shapes;
    there is no Design migration path.

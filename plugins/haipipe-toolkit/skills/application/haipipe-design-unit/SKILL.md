@@ -12,6 +12,8 @@ metadata:
 
 # /haipipe-design-unit · one commission, one inspectable result
 
+Version governance: this Design skill stays at `0.4.0`. Only explicit user approval may authorize `1.0.0`.
+
 ## Version governance
 
 This Design family remains pre-1.0. Only explicit user approval may authorize

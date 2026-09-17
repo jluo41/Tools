@@ -2,8 +2,7 @@ fn-scaffold: Scaffold a raw extraction job
 ===================================================
 
 Extracts source tables from a Databricks catalog as wide parquet files.
-Group letter default: **R**.
-Output: `tasks/R{NN}_<cohort>/{NN}_stage{S}_<desc>/`.
+Output: `tasks/bNN_<raw_block>/jNN_<extraction_job>/tNN_<task>/`.
 
 
 Step 0 — Pick the pattern (governance gate)
@@ -26,8 +25,7 @@ Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd (look for `examples/Proj*/`).
-- ASK block if not given. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **R**;
-  scaffold a new `R{NN}_<cohort_name>/` if needed
+- ASK block if not given; scaffold canonical `bNN_<cohort_raw>/` if needed
   (see `../../../haipipe-task/fn/block.md`).
 - ⚡ P2: embedded rawstore groups are conventionally named
   `A00_rawstore_<cohort>/` (project-specific either way).
@@ -52,15 +50,18 @@ Step 3 — Create skeleton
 -------------------------
 
 ```
-R{NN}_<cohort>/
-└── {NN}_stage{S}_{desc}/
-    ├── {NN}_stage{S}_{desc}.py              SQL strings in Python; # %% cells
-    ├── configs/
-    │   └── <run_name>.yaml                  from ref/config-seed.yaml
-    ├── runs/
-    │   └── <run_name>.sh                    from ref/run-databricks-sh-template.sh
-    ├── results/                              runtime.yaml only
-    └── notebooks/                            convert-only .ipynb
+bNN_<raw_block>/
+└── jNN_<extraction_job>/
+    ├── src/
+    └── tNN_<raw_table_or_step>/
+        ├── tNN_<raw_table_or_step>.md
+        ├── scripts/<worker>.py
+        ├── scripts/config/r01_base.yaml
+        ├── runs/r01_base.sh
+        ├── results/
+        ├── notebooks/
+        ├── outline/
+        └── workflow/
 ```
 
 ⚡ P2 additionally, at GROUP root (once per group, not per task):
@@ -77,7 +78,7 @@ A00_rawstore_<cohort>/
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/<run_name>.yaml`.
+Copy `ref/config-seed.yaml` to `scripts/config/rNN_<run>.yaml`.
 Fill in:
 - `_meta:` (purpose / input / output).
 - `stage:` (1, 2, 3, ...).
@@ -93,8 +94,8 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `ref/run-databricks-sh-template.sh` to `runs/<run_name>.sh`.
-Set `TASK_NAME="{NN}_stage{S}_{desc}"`.
+Copy `ref/run-databricks-sh-template.sh` to `runs/rNN_<run>.sh`.
+Set `WORKER="<worker>.py"`.
 
 This template converts `.py` → `.ipynb` only — no papermill execute.
 The notebook is meant for Databricks upload. ⚡ P2: place the converted .ipynb in the group's `_databricks/` as well; ignore the template's "sync to local" hint (Pattern 1 only).
@@ -115,7 +116,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded raw extraction task <NN>_stage<S>_<desc> under R{NN}_<cohort>.
+summary:   Scaffolded raw extraction Task tNN_<task> under bNN_<block>/jNN_<job>.
 artifacts: [paths created]
 next:      Upload notebook to Databricks  OR  /haipipe-data-raw understand <cohort>
 ```
@@ -134,4 +135,4 @@ MUST NOT
 - ⚡ P2: sync PHI raw data to a laptop / local `_WorkSpace` — server-only;
   only aggregated outputs move.
 - Skip the `_meta:` block.
-- Create `README.md` in task folders (⚡ P2 exception: group-root README).
+- Create `README.md` in Block/Job/Task roots; use the canonical Board/Page surfaces.

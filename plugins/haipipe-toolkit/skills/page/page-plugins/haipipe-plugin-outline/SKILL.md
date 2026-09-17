@@ -15,12 +15,16 @@ metadata:
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-plugin-outline · three minimal workspaces
+# /haipipe-plugin-outline · three minimal Spaces
+
+Within plugin-facing language, `Space` is the canonical name for a user-facing
+workspace surface. `Workspace` remains only as a compatibility term for old
+routes, internal identifiers, or historical records; new labels use `Space`.
 
 **LOAD `haipipe-plugin` FIRST.** It owns what any plugin is: storage, surface,
 writer, boundary. This file owns outline's delta: what the folder holds, what
 the tab shows, and who writes each file. The Outline tab has exactly three
-core workspaces; the Page shell may expose Delivery Workspace separately as a
+core Spaces; the Page shell may expose Delivery Space separately as a
 read-only source-to-artifact view:
 
 ```text
@@ -317,7 +321,7 @@ typed Result/Card bindings, and Run shows concrete Run Instances plus the
 Runtime frontier and recorded Gate/Route decisions. The owning Run Workflow
 and Run Spec skills remain the only execution and closure authorities.
 
-These are the only visible core workspaces in Outline. Delivery Workspace is
+These are the only visible core Spaces in Outline. Delivery Space is
 the separate read-only artifact surface. Durable Context, Requirement,
 Discussion, Feedback, Files, Log, and Skill records remain in Markdown and are
 available through Folder inspection; they do not reappear as cards, lenses, or

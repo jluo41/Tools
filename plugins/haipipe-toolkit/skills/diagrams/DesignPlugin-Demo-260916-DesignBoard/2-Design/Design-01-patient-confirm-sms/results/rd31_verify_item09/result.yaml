@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd31_verify_item09
+operation: verify
+target: Patient greeting
+producer: reviewer-context-35
+ticket_sha256: 49582c16bbebca2f44418c525dbaa5b982260043659ea1612fd6447fcbd62aa8
+config_sha256: d7f31d13813e6c9b592b5eeae5b9e1955481894264db1d64f1b95ab44fd64e01
+artifacts: []
+checks:
+  path: checks.yaml
+  sha256: 5bcecfec696d5d5f782dd2c31585bcc21d631f17ba1bd1c4a8c12c156a961326
+targets:
+- path: results/rd23_generate_item09/result.yaml
+  sha256: dce9d5c085a7eb45408fd7ed9395a5821cf7060ce8695a7b1b5591fbe1220353
+verdict: pass

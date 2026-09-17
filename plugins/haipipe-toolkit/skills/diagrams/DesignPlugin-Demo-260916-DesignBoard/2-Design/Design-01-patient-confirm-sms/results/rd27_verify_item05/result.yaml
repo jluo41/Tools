@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd27_verify_item05
+operation: verify
+target: Action first
+producer: reviewer-context-21
+ticket_sha256: ba84bfaae6ef4004197df368d7c5a65e6215b4d6e482e338dfad979d697a6d0c
+config_sha256: 5fa90836ad7c432c552aee41521d5dc82048763ddc9e66181f2d5c7c2c3be324
+artifacts: []
+checks:
+  path: checks.yaml
+  sha256: cd27965b074b831e497483a45e6f5e48155b53fedbebc12f013a6615a130cfa0
+targets:
+- path: results/rd19_generate_item05/result.yaml
+  sha256: b4500bbe13a9195bd5e006200e2ef6bd3a3201e5e2b2470b9844837774e5ba17
+verdict: pass

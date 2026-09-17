@@ -1,0 +1,25 @@
+run: rd02_generate_item01
+family: design
+operation: generate
+item: ITEM01
+target: Send the tested winner, verbatim
+status: complete
+ticket: runs/rd02_generate_item01.yaml
+result: results/rd02_generate_item01/
+ticket_sha256: fab152cdb25b56d5a908e677617641f9f0d3030740b00a15c6ec7bf99ae18f7e
+inputs:
+- path: scripts/config/rd02_generate_item01.yaml
+  sha256: 6c467211f08db422a8820ea3e1981728bc32a86f6800e41cd9da12f3bad1dc0c
+- path: results/rd01_commission_item01/decision.yaml
+  sha256: 200c6ee3c19fce06449b39bfd09756ba5a5e513acbcdbe106104450613ae946f
+- role: handoff
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+worker:
+  kind: skill
+  name: haipipe-design-unit
+  actor: designer-context-01
+started_at: '2026-09-16T13:03:00Z'
+finished_at: '2026-09-16T13:04:00Z'
+failure: null
+route: verify

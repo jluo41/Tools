@@ -1,0 +1,40 @@
+goal: Patient greeting
+kind: sms
+mode: compose
+basis: evidence-informed
+item: ITEM09
+design_intent:
+  move: Greet the patient by first name before the review ask
+  basis: evidence-informed
+  stance: explore
+  expected_effect: click stays inside the salience interval [65.56, 66.56] when fielded
+    as a concurrent arm
+  failure_condition: click falls below 65.56 in the concurrent arm, outside overlapping
+    intervals
+unit:
+  shape: single
+  count: 1
+max_iterations: 2
+review_mode: self
+criteria:
+- id: r01
+  kind: contains
+  value: '{NAME}'
+- id: r02
+  kind: contains
+  value: '{FIRST_NAME}'
+- id: r03
+  kind: max_chars
+  value: 160
+- id: r04
+  kind: contains
+  value: Reply STOP to opt-out
+- id: r05
+  kind: semantic
+  description: no predicted-lift text
+- id: r06
+  kind: semantic
+  description: does not vary the message by age, gender, send day or region
+- id: r07
+  kind: semantic
+  description: plain, non-coercive prescription-review framing only

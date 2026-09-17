@@ -5,8 +5,9 @@
 
 When --host, --port, --space-name, --public-url, or --auth-file is omitted,
 the matching non-secret setting in <root>/.server_config/settings.env is used.
-The explicit --public-read flag allows anonymous generated Board pages while
-keeping interactive tools authenticated. --no-auth disables HTTP Basic Auth
+The explicit --public-read flag allows anonymous generated Board pages and
+the read-only Page Design and InsightBoard projections while keeping interactive tools
+authenticated. --no-auth disables HTTP Basic Auth
 for a trusted private network such as a Tailscale tailnet. --no-terminal can
 be combined with --no-auth when only the Page surfaces are needed.
 
@@ -32,6 +33,17 @@ regenerates board/ so a plain reload shows the rendered comment.
     POST /_board/outline   {path, file}                -> live Outline URL;
                             action=edit-bullet|append-bullet edits Markdown
                             through the bounded Shape editor
+    POST /_board/design    {path, file}                -> live Design Folder URL;
+    POST /_board/design-act {path, file, action, item, actor, words, ...}
+                                                       -> one Design register row, human decision Run
+                                                          (commission/adopt), or planned agent Ticket;
+                            read-only Plan/Create/Review/Run/Delivery overview
+    POST /_board/design-board {path}                   -> live Board-level Design URL (design tasks × folders × items);
+    POST /_board/design-board-act {path, action: new-folder | add-tasks, ...}
+    GET  /_board/design-bundle?path=<board.md>           -> csv of every adopted draft (the send-system hand-off)
+                                                       -> open a Design Folder for one roster row
+    POST /_board/insight-board {path}                  -> live Board-level Insight URL;
+                            read-only Meta/Questions/Partitions/DIKW overview
     POST /_board/structure {path, op, ...}             -> add/archive groups and questions
                             op: add_group {title, letter?, hook?, body?}
                                 add_question {group, title}
@@ -53,8 +65,9 @@ That venv is uv-managed and has no pip — install into it with:
 it isn't already looking at.
 
 Deliberately narrow, because this is a write endpoint:
-  · --public-read exposes only generated Board pages and assets anonymously;
-    writes, chat, terminals, Home, and other workspace paths stay authenticated.
+  · --public-read exposes generated Board pages/assets and the read-only
+    `/_board/design` Page Design and `/_board/insight-board` InsightBoard projections anonymously; writes, chat, terminals,
+    Home, and other workspace paths stay authenticated.
   · binds 127.0.0.1 unless --host says otherwise. With --no-auth, /_term/ is a
     real shell available to every device that can reach the selected address;
     --no-terminal disables that route and its PTY control endpoints.
@@ -119,6 +132,9 @@ from live.skillmap import SkillmapMixin
 from legacy.pagex import LegacyPagexViewMixin
 from live.plugview import PlugViewMixin
 from live.folderstat import FolderStatMixin
+from live.design import DesignMixin
+from live.designboard import DesignBoardMixin
+from live.insightboard import InsightBoardMixin
 from live.outline import OutlineMixin
 from live.value import ValueMixin
 from live.pageruns import PageRunsMixin
@@ -147,7 +163,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, LegacyPagexViewMixin, PlugViewMixin, FolderStatMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, LegacyPagexViewMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -264,6 +280,21 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/outline":
             # 🧭 the page re-read per division (QPf12), same live contract
             return self.outline_view()
+        if self.path.split("?", 1)[0] == "/_board/design":
+            # 🎨 one live projection over the selected Design Page-Folder
+            return self.design_view()
+        if self.path.split("?", 1)[0] == "/_board/design-board":
+            # 🎨 the same plugin one grain up: the Brief's design tasks × folders × items
+            return self.design_board_view()
+        if self.path.split("?", 1)[0] == "/_board/design-bundle":
+            # 🎨 every adopted draft on the board, as one csv for the send system
+            return self.design_bundle_view()
+        if self.path.split("?", 1)[0] == "/_board/insight-board":
+            # 🔎 one live projection over the whole InsightBoard
+            return self.insight_board_view()
+        if self.path.split("?", 1)[0] == "/_board/insight":
+            # 🔎 one page of an InsightBoard, seen from its register cell
+            return self.insight_page_view()
         if self.path.split("?", 1)[0] == "/_board/value":
             # 🔢 every number the page owes or uses, joined both ways (QPw4v)
             return self.value_view()
@@ -355,6 +386,16 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.folderstat_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/outline":
             return self.outline_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/design":
+            return self.design_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/design-board":
+            return self.design_board_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/design-bundle":
+            return self.design_bundle_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/insight-board":
+            return self.insight_board_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/insight":
+            return self.insight_page_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/value":
             return self.value_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/evidence":
@@ -461,6 +502,16 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                 return self.reply(400, {"ok": False, "err": err})
             return self.reply(200, {"ok": True, "build": self.rebuild(board),
                                     **(res or {})})
+        # 🎨 Board-level Design routes take {path} only (no Page file), so they
+        # are answered before the Page-target check below.
+        if self.path == "/_board/design-board":      # the live URL, for the plugin menu
+            res, err = self.plug_design_board(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/design-board-act":  # add design tasks · open a Design Folder for a line
+            res, err = self.design_board_act(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
         if p.get("group"):
             # 组级会话（JL 260731）：身份是组的文件夹，不是哪个页面文件。
             # chat/term/sessions/session-name/release/stop 都吃这个 f。
@@ -554,6 +605,22 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
                 # A Bullet write changed the Markdown Shape: rebuild so the
                 # Page's compact Outline table shows the working version too.
                 res["build"] = self.rebuild(board)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/design":     # 🎨 read-only Design Folder surface
+            res, err = self.plug_design(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/design-act":  # 🎨 the two human gates + the agent queue
+            res, err = self.design_act(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/insight-board":  # 🔎 read-only InsightBoard surface
+            res, err = self.plug_insight_board(p)
+            return self.reply(200 if not err else 400,
+                              {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/insight":       # 🔎 page-level Insight surface
+            res, err = self.plug_insight_page(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
         if self.path == "/_board/value":       # 🔢 the same live twin (QPw4v)

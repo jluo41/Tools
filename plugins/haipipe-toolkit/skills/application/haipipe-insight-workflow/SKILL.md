@@ -8,8 +8,8 @@ description: >-
   its plugins. Use to run or inspect an InsightBoard. Trigger: insight
   workflow, climb ladder, next rung, frontier cell, /haipipe-insight-workflow.
 metadata:
-  version: "1.2.2"
-  last_updated: "2026-09-15"
+  version: "1.2.3"
+  last_updated: "2026-09-16"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -121,7 +121,7 @@ born      I0      one MT00 partition-register row (letter · filter · config) +
                   one group folder beside X · the door's `partition` verb
 ```
 
-The ladder notices, the register asks, Meta births — a partition is born at I0 and nowhere else, and it is a CONFIG, never a code change (`ref/partition.md`).
+The ladder notices, the register asks, Meta births — a partition is born at I0 and nowhere else, and it is a CONFIG, never a code change (`../haipipe-application/ref/partition.md`).
 
 **The partition test, at I0.** A partition is an AUDIENCE stratum: a grouping of the unit the counsel is FOR — in an SMS application, the humans receiving it. Not every cut of the data qualifies; birth requires three yeses, each mechanically checkable:
 
@@ -154,7 +154,7 @@ The second named case is the COVARIATE, and it fails ① rather than ②:
 
 ```text
 a covariate            a ZIP attribute, an income     fails ① → an I COLUMN, never a
-                       band, a drug class, an         group · `ref/partition.md` names
+                       band, a drug class, an         group · `../haipipe-application/ref/partition.md` names
                        exposure history               the failure: a board past a
                                                       handful of audiences is almost
                                                       always misreading covariates as
@@ -237,7 +237,7 @@ L2  a child InsightBoard                   the verdict page is its birth certifi
 ④ every OTHER partition's D/I/K pages are untouched
 ```
 
-A partition may become its own board only by citing a SPLIT verdict; `ref/partition.md` stays the grammar's single source.
+A partition may become its own board only by citing a SPLIT verdict; `../haipipe-application/ref/partition.md` stays the grammar's single source.
 
 ## 🔁 The climb, and its one cross-chain order
 
@@ -428,7 +428,7 @@ The counsel UNIT is whatever MT00's unit-and-grain declares — a patient for SM
 A version bump edits no page, yet it can move the frontier: a new closing check un-closes every page that fails it, and the register then contradicts its own pages with nobody having touched either. Two rules make that safe:
 
 ```text
-① every bump SHIPS ITS MIGRATION NOTE, the way ref/partition.md grandfathers
+① every bump SHIPS ITS MIGRATION NOTE, the way ../haipipe-application/ref/partition.md grandfathers
   9-X-cross/ by name: what happens to artifacts settled under the older version.
   The default is OWE-ON-NEXT-TOUCH — settled cells stay settled, the page owes the
   new check when next opened. The exception is a bump that ADDS A HUMAN GATE

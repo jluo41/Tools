@@ -122,8 +122,10 @@ Note cold vs warm separately if cold matters (serverless scale-from-zero).
 KNOWN ANTI-PATTERN #3 — per-request data transform when it could be cached
 --------------------------------------------------------------------------
 
-`prefn_pipeline` (Record→Case→AIData) does NDC/NPI/ZIP index lookups.
-If those indexes are rebuilt per request, warm them once at load (see `_warmup_external_data_indexes`).
+Input2SrcFn performs the same pinned NDC/NPI/ZIP Source enrichment used during
+training; Record→Case→AIData consumes the resulting fields. Load and warm the
+packaged external indexes once, then reuse them. Never rebuild an index or
+resolve an unpinned release per request (see `_warmup_external_data_indexes`).
 On the SMS endpoint this was already cheap (~46 ms) — but on heavier feature sets it can dominate; profile before assuming.
 
 

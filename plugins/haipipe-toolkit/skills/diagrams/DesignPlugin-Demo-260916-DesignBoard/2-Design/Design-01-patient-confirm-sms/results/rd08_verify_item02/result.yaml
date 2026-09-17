@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd08_verify_item02
+operation: verify
+target: Attribution removed
+producer: reviewer-context-05
+ticket_sha256: ffd280296e5b360924cf4552e694599453d437e70140f4b032648ba9d293f846
+config_sha256: 432cab61147a1bd0b29c761e803ca7ab7b0878478a54679a9f891e414026e0dd
+artifacts: []
+checks:
+  path: checks.yaml
+  sha256: f18d46fdfaed833a22884233fa75e6d048bccefb1b0885c09b494af26660df84
+targets:
+- path: results/rd07_generate_item02/result.yaml
+  sha256: 526e91aa22c0360b6800ad3f3834863315dca5afcc1895031ee6074ee4710a23
+verdict: pass

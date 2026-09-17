@@ -9,8 +9,8 @@ description: >-
   design, review, accept, retarget, signed Insight crossing, /haipipe-application.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.0.1"
-  last_updated: "2026-09-15"
+  version: "3.1.0"
+  last_updated: "2026-09-16"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -70,9 +70,9 @@ Board.
 ```text
 enter | status | board         open or scaffold the Application through fn/enter.md
 meta | data | sources          create/resume the one Meta Page through fn/meta.md
-question | ask | queue         register one stable question on the rung register it
-                               faces; derive Question Groups as partition × DIKW
-                               target · MT01-MT04 · haipipe-insight-question
+question | ask | queue         register one question from plain words through
+                               fn/question.md: level, partitions and lineage are
+                               decided there · MT01-MT04 · haipipe-insight-question
 chain | understand | DIKW      open or extend one D→I→K→W chain through fn/chain.md
 brief | opportunity | venue    create/resume the one Brief Page through fn/brief.md
 design | intervention | message
@@ -154,7 +154,7 @@ A project whose executable Task folders use a stage-letter grammar such as `task
 └── <Program>-DesignBoard/                e.g. RefillFraming-DesignBoard
     ├── board.md                          reads: · the evidence whitelist
     ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set
-    └── 2-DS-design/DS<NN>-<audience>-<job>-<venue>/  one stable Design Folder
+    └── 2-Design/Design-<NN>-<audience>-<job>-<venue>/  one stable Design Folder
         ├── runs/                         caller-authored YAML Run Tickets
         ├── results/                      generation DUs and verification Results
         ├── scripts/config/               frozen per-Run configuration
@@ -359,6 +359,8 @@ and Page Run frontiers separately, and adopted member/render versions.
 fn/enter.md             open an Application, or scaffold both boards from nothing
 fn/meta.md              Meta Page create/resume and the Source Inventory
 fn/chain.md             open or extend one D→I→K→W chain for one question
+fn/question.md          register one question from plain words: level, partitions, lineage
+fn/verdict.md           drive the X group XI → XK → the POOL/SPLIT verdict
 fn/brief.md             Brief create/resume and the needs it raises
 fn/design.md            one audience/job/venue Design Folder, units as Results
 fn/render.md            render a unit through the page's delivery/render/ plugin

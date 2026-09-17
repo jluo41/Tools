@@ -1,0 +1,27 @@
+run: rd21_generate_item07
+family: design
+operation: generate
+item: ITEM07
+target: Under 90 characters
+status: complete
+ticket: runs/rd21_generate_item07.yaml
+result: results/rd21_generate_item07/
+ticket_sha256: 6e3af308a90c80d184f0285e0eb2f29e6f54037f2355748439f256839600633b
+inputs:
+- path: scripts/config/rd21_generate_item07.yaml
+  sha256: 779894cd2a40b3f8b4ebd03699a01e597a2411a99d1a88807b97f41bb829b1c5
+- path: results/rd13_commission_item07/decision.yaml
+  sha256: d9c1165cb2014ac059d18a3bcffd03740c9770a80d8aedaf0f675c679cdc6017
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+worker:
+  kind: skill
+  name: haipipe-design-unit
+  actor: designer-context-13
+queued_at: '2026-09-17T04:03:57Z'
+started_at: '2026-09-17T04:03:57Z'
+finished_at: '2026-09-17T04:09:17Z'
+failure: null
+route: verify
+terminal_outcome: pass

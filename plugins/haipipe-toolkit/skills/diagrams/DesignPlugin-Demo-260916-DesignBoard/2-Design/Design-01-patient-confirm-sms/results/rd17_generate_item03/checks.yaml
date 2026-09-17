@@ -1,0 +1,29 @@
+checks:
+  - target: content/sms.txt
+    criterion: r01
+    status: pass
+    evidence: "substring '{NAME}' found once at code points 14-19 of 137, inside \"Dr. {NAME}'s office\"; it is the provider-name placeholder the fielded salience template also carries"
+  - target: content/sms.txt
+    criterion: r02
+    status: pass
+    evidence: "third sentence reads 'Please review them by tomorrow evening.' (code points 78-116); 'by tomorrow evening' is the review-by time, in everyday words with no clock time, date code, weekday, or placeholder"
+  - target: content/sms.txt
+    criterion: r03
+    status: pass
+    evidence: "137 Unicode code points (137 UTF-8 bytes, ASCII only, no trailing newline) including the opt-out suffix; configured maximum is 160"
+  - target: content/sms.txt
+    criterion: r04
+    status: pass
+    evidence: "artifact ends with the exact substring 'Reply STOP to opt-out' (code points 117-137 of 137)"
+  - target: content/sms.txt
+    criterion: r05
+    status: pass
+    evidence: "read every word: no percent sign, no digit, no click/lift/rate/more-likely/works-better wording, no comparison with any other message or arm; the only time phrase is the review-by time itself"
+  - target: content/sms.txt
+    criterion: r06
+    status: pass
+    evidence: "one fixed string for every recipient; the only variable is the provider placeholder {NAME}; the review-by time is relative to receipt ('tomorrow evening'), so the rendered text is identical on every send day; no date, weekday, age, gender, or region token"
+  - target: content/sms.txt
+    criterion: r07
+    status: pass
+    evidence: "read every word: four plain sentences (sender's office, prescription details require review, a 'Please' request with a review-by time, opt-out); no consequence or threat, no urgency word (must/now/urgent/immediately/last chance), no medical or outcome claim, no jargon"

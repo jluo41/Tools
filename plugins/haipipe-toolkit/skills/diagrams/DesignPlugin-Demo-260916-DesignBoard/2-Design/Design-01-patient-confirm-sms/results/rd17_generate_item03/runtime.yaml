@@ -1,0 +1,27 @@
+run: rd17_generate_item03
+family: design
+operation: generate
+item: ITEM03
+target: Deadline stated
+status: complete
+ticket: runs/rd17_generate_item03.yaml
+result: results/rd17_generate_item03/
+ticket_sha256: 1b4d38b61af72d1762523c0f19204a2ee656703d64374ce2e2ef89cb0249e5b6
+inputs:
+- path: scripts/config/rd17_generate_item03.yaml
+  sha256: c0bfbaaf402c70e436145f4d7cc80269381862ad5547c12848dcc6f8d94fceaf
+- path: results/rd09_commission_item03/decision.yaml
+  sha256: a4deb36a6a42d6bc4a016b24ceed984d3e730e04a2269aa1ab5131977712476e
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+worker:
+  kind: skill
+  name: haipipe-design-unit
+  actor: designer-cli-01
+queued_at: '2026-09-17T04:03:57Z'
+started_at: '2026-09-17T04:03:57Z'
+finished_at: '2026-09-17T04:09:45Z'
+failure: null
+route: verify
+terminal_outcome: pass

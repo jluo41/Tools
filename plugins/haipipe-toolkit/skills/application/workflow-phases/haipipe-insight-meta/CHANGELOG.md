@@ -1,5 +1,9 @@
 # haipipe-insight-meta · version history
 
+## 1.1.1 — 2026-09-16
+
+- Fix the bare `ref/partition.md` reference to the umbrella's real path.
+
 ## 1.1.0 — 2026-09-13
 
 - Rebase I0 on Page v2 Context/Evidence/CHECK: cross-Folder sources enter as

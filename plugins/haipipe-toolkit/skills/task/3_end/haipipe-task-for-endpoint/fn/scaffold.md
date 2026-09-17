@@ -2,9 +2,7 @@ fn-scaffold: Scaffold an endpoint-packaging job
 ========================================================
 
 Package a trained ModelInstance_Set (Stage 5) into a deployable Endpoint_Set (Stage 6) via `Endpoint_Pipeline`.
-Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme); the default ABC convention uses **C** for endpoint groups.
-
-Output: `tasks/C{NN}_<group>/{NN}_<job_name>/` (or the project's letter).
+Output: `tasks/bNN_<endpoint_block>/jNN_<endpoint_job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block
@@ -12,8 +10,7 @@ Step 1 — Identify project + block
 
 - Auto-detect project from cwd.
 - AUTO_MODE: infer group from cwd or return `status: blocked`.
-  Interactive: ASK block. Scaffold `C{NN}_<block_name>/` if needed
-  (or the project's endpoint letter).
+  Interactive: ASK block. Scaffold canonical `bNN_<block_name>/` if needed.
 
 
 Step 2 — Collect metadata
@@ -44,8 +41,9 @@ bNN_<group>/
     │   │   └── config/r01_base.yaml    from ref/config-seed.yaml
     │   ├── runs/r01_base.sh            papermill runner
     │   └── workflow/                   plan/report + inbox/application/
-    ├── results/t01_<task_name>/r01_base/
-    └── notebooks/t01_<task_name>/r01_base.ipynb
+    │   ├── results/r01_base/
+    │   └── notebooks/r01_base.ipynb
+    └── src/
 ```
 
 The Task Page declares `folder-kind: task`, `task-type: endpoint`, and `task: .`.
@@ -65,6 +63,8 @@ Fill:
 - Target endpoint block (`endpoint_name`, `endpoint_version`).
 - The 5 Fn names.
 - `deployment_config` (platform: local | databricks | sagemaker).
+- `external_contract` when enrichment is used: release, checksum, Source
+  schema version, and vector order versions.
 
 
 Step 5 — Run-script
@@ -83,6 +83,8 @@ Step 6 — Execute + verify (per SKILL.md pipeline flow)
 ModelInstance_Set → Endpoint_Pipeline.run() → save to 6-EndpointStore/ → verify
 every example has payload.json → test inference on sample payloads → package
 .tar.gz.
+The verification compares training SourceFn and serving Input2SrcFn ProcessDF
+schemas/values, including vector fields and external release metadata.
 See SKILL.md "Pipeline flow" for the step list and `../../haipipe-end/ref/0-overview.md` for the Endpoint_Set layout contract.
 
 
@@ -95,7 +97,7 @@ After a successful package, suggest:
 
 ```
 status:    ok
-summary:   Scaffolded endpoint-packaging task <NN>_<name> under <G>{NN}_<group>.
+summary:   Scaffolded endpoint Task tNN_<task> under bNN_<block>/jNN_<job>.
 artifacts: [paths created]
 next:      bash t01_<task_name>/runs/r01_base.sh, then /haipipe-end deploy <target>
 ```

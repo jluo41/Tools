@@ -1,11 +1,10 @@
 ---
 name: haipipe-data-record
 description: "Stage 2 (Record) specialist: builds/runs/reviews HumanFn / RecordFn, inspects 2-RecStore, loads record-layer assets, supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data; direct invocation works stage-scoped."
-argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-07-08"
+  version: "0.2.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -76,7 +75,7 @@ Stage Scope
 ------------
 
 Owns:
-  - HumanFn / RecordFn builders in the project's `NN_record_fn_develop_<cohort>/` task folder (legacy workspaces: `code-dev/1-PIPELINE/2-Record-WorkSpace/`)
+  - HumanFn / RecordFn builders in canonical `tasks/bNN_*/jNN_*/tNN_*/scripts/` Task Folders (legacy workspaces: `code-dev/1-PIPELINE/2-Record-WorkSpace/`)
   - Generated `code/haifn/fn_record/`
   - `_WorkSpace/2-RecStore/` records
   - `templates/config.yaml` for Record_Pipeline runs
@@ -84,6 +83,12 @@ Owns:
 Upstream dependency (Stage 1):
   Reads `_WorkSpace/1-SourceStore/`. If a RecordFn is empty/wrong, root cause
   is often a Source-layer issue — escalate to `/haipipe-data-source review`.
+
+External-data boundary:
+  RecordFn consumes and preserves external scalar/list/vector fields already
+  attached by SourceFn. It does not independently reopen ExternalStore or
+  rebuild those representations. For time-varying engagement data, align using
+  `snapshot_as_of`/window bounds and reject future information.
 
 Hand-off contract (Stage 2 -> 3):
   Each Record's columns and time grid must match the keys CaseFn samples on.

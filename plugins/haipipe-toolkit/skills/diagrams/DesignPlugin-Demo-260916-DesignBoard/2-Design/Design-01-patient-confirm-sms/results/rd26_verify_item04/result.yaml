@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd26_verify_item04
+operation: verify
+target: Question opener
+producer: reviewer-context-31
+ticket_sha256: e5d1daa49a0deead50f6077312d95cf1a3b52be36fc1a24c79b4c0897215f2fb
+config_sha256: 2481f37a4446c8b53795e5082fa1dc2ce9b45b2f6df90fc06b62b1d827e6261f
+artifacts: []
+checks:
+  path: checks.yaml
+  sha256: 34b3ad20b310239e9437e1df0b5bf5cc99b8bb91c167c77d3b859d4b43b08b12
+targets:
+- path: results/rd18_generate_item04/result.yaml
+  sha256: f0f56a749e57c36cfa58b33c72646c54dc3cf41f97eb877b1990630888bf751d
+verdict: pass

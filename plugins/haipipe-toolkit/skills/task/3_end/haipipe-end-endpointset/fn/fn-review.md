@@ -46,6 +46,10 @@ Extract the `inference_functions` block:
 }
 ```
 
+When external enrichment is used, also require an immutable external release
+identifier, checksums, and Source vector schema/order versions in the manifest.
+Confirm that the packaged `external/` directory matches those values exactly.
+
 Then read each file listed.
 
 ---
@@ -196,10 +200,15 @@ print("Endpoint config:", manifest.get('deployment_config'))
 
 ---
 
-Step 4: Round-Trip Test
-=========================
+Step 4: Source-Parity and Round-Trip Test
+=========================================
 
 Validate that Src2InputFn and Input2SrcFn are true inverses:
+
+Before comparing features or predictions, compare the original training
+ProcessDFs with reconstructed serving ProcessDFs: ProcessNames, columns, dtypes,
+list/vector values and order, missing masks, representation versions, and
+snapshot metadata must match. Any mismatch is a blocking failure.
 
 ```python
 import os, json

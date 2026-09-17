@@ -8,11 +8,12 @@ description: >-
   Knowledge claims; Wisdom counsels and exports a person-signed Design
   Handoff. Ends at the correct Insight boundary, never designs. Trigger:
   insight, InsightBoard, Insight Page, RI, question register, DIKW, climb,
-  chain, partition, pooling verdict, Design Handoff, /haipipe-insight.
+  chain, partition, pooling verdict, Design Handoff, InsightBoard grooming,
+  /haipipe-insight.
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.3.1"
-  last_updated: "2026-09-15"
+  version: "1.5.0"
+  last_updated: "2026-09-16"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -126,8 +127,8 @@ Application route never mints a Task-side Page or RI. Its own Folders are Meta,
 Question, Data, Information, Knowledge, and Wisdom. A settled Wisdom-targeted
 Task RF may enter only as the workflow's pre-climbed external parent: I1
 registers its exact instance/item/execution-version/RF reference and a local I5
-Wisdom Folder contextualizes and signs the Application Design Handoff. RF never
-reaches Design directly.
+Wisdom Folder contextualizes and signs the Application Design Handoff.
+RF never reaches Design directly.
 
 ## The Climb Law · a six-level lifting chain
 
@@ -162,7 +163,7 @@ a new question              ──▶ a new chain INSIDE the board
 a subgroup of the extract   ──▶ a PARTITION inside the board, never a board
 a subgroup + SPLIT verdict  ──▶ MAY become a child board · the verdict is its birth
                                 certificate, necessary and not sufficient: the child
-                                still needs its own consumer (ref/partition.md)
+                                still needs its own consumer (../haipipe-application/ref/partition.md)
 ```
 
 Re-extracting a subgroup's rows into their own parquet does not make them "a new source extract": a new extract is new SCOPE — rows or fields the old one did not carry — never the same rows re-cut. The child-board path always runs through the SPLIT verdict, and a re-extract cannot launder around it.
@@ -191,7 +192,7 @@ The workflow drives the lap; this door states the pens, and they never cross:
 ```text
 register     writes STATE, never a finding         MT01-MT04 cells, including the
                                                    ⬜ annotations (`⬜ calc`) — notes
-                                                   about work ARE state · for-question's
+                                                   about work ARE state · haipipe-insight-question's
                                                    vocabulary · ✅/🚫/🟡-final settle
 chain page   writes FINDINGS, never its own cell   the rung pages
 handoff      EXPORTS, never re-derives             the W page's signed division
@@ -219,7 +220,7 @@ PARTITION-MAJOR · when each subgroup must produce its OWN K claims and W counse
                                            letters sort last (legacy: 9-X-cross/)
 ```
 
-The layout is chosen once, at scaffold; `ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page declares its typed Evidence Items in `outline/` and binds Supporting and Local Runs; Meta and the four registers own none, and no flat run bank exists. Legacy probe paths are read-only migration input and are never created by new work. `A<NN>_` is only a project-local ordering option before the subject; the canonical shape stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
+The layout is chosen once, at scaffold; `../haipipe-application/ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page declares its typed Evidence Items in `outline/` and binds Supporting and Local Runs; Meta and the four registers own none, and no flat run bank exists. Legacy probe paths are read-only migration input and are never created by new work. `A<NN>_` is only a project-local ordering option before the subject; the canonical shape stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
 
 ## The Folder RunTypes this door owns
 
@@ -247,17 +248,21 @@ application | board  resolve an Application root, then use the Application verbs
 enter | status      resolve the board · derive Question Groups from MT00 × the four
                     rung registers · report each group's member-cell frontier
 meta | sources      create/resume the one MT00 (the umbrella's fn/meta.md)
-question | ask      register one question on the rung register it faces · NEVER answer it there
+question | ask      register one question from plain words: the verb decides level, partitions
+                    and lineage, then writes the row (the umbrella's fn/question.md) ·
+                    NEVER answer it there
 climb | chain       open or extend the frontier rung for one question (the umbrella's fn/chain.md) ·
                     Evidence Items planned · ✋ a person releases each Run before dispatch
-partition           register a partition on MT00 and insert its group before X (ref/partition.md)
-verdict             drive the X group to its pooling K page · POOL or SPLIT
+partition           register a partition on MT00 and insert its group before X
+                    (the umbrella's ref/partition.md)
+verdict             drive the X group XI → XK → the POOL/SPLIT verdict page
+                    (the umbrella's fn/verdict.md) · every W waits for it
 settle              flip the register cell ✅, 🚫 with a reason, or 🟡 <page> final
-                    (for-question's exit), citing the closing page
+                    (haipipe-insight-question's exit), citing the closing page
 handoff             draft the W page's Design Handoff division · ✋ a person signs its
                     `signed:` row — `signed: ✅ <initials> <YYMMDD>`, never a machine ·
                     the door RECORDS a signature the person states, never decides one
-check | review      CHECK selected rung pages in a fresh context
+check | review      CHECK selected rung pages in a fresh context through haipipe-page-check
 workflow | run      drive laps (§The lap): gap → climb (✋release inside) → ✋sign → settle · STOP
 ```
 
@@ -361,6 +366,23 @@ never charterable  handoff signatures · releasing a Run that starts NEW
 ```
 
 A charter names the run, the classes, and the expiry (the run's close); its receipt quotes it; anything outside its classes stops at the gate exactly as before. Batching, not bypassing: the person's remaining appearances are the charter's signature and the run-close review.
+
+## Board grooming is an audit, not a hidden writer
+
+When a user asks to groom an InsightBoard, first identify the real board path
+and read its `board.md`, MT01–MT04 registers, current D/I/K/W pages, and the
+mechanical Insight checks. Report the current frontier, partial or open
+register cells, dead or malformed references, and the Wisdom Handoffs that
+are actually bindable. Keep the report linked to the exact source paths so a
+demo is evidence-backed rather than generated from an empty fixture.
+
+The board-level Insight plugin presents this as the read-only Check Space.
+It may propose the next Question Group or identify a safe repair, but it does
+not rewrite a finding, promote a register cell, overwrite evidence, or write a
+person's `signed:` row. Those are explicit owner actions in the Insight
+workflow. The Page-level Design plugin reads only the DesignBoard's declared
+`reads:` InsightBoard and accepts only a person-signed Wisdom Handoff; it never
+binds directly to D, I, or K.
 
 ## Ends at a signed handoff
 

@@ -2,8 +2,8 @@ haipipe Stage 0: External
 ==========================
 
 Stage reference for the External pantry.
-Externals are reference assets that any cohort-scoped Stage 1-4 chef can pull from.
-They are NOT a layer in series with Source -> Record -> Case -> AIData -- they sit sideways.
+Externals are versioned reference assets that SourceFn may attach to cohort data.
+They are NOT a layer in series with Source -> Record -> Case -> AIData -- they are a governed input to Source.
 
 **Scope:** Framework patterns and the current implementation reality.
 Does not catalog which specific assets exist (that lives in ref/asset-catalog.md, discovered at runtime from _WorkSpace/ExternalStore/).
@@ -20,17 +20,18 @@ Architecture Position
                   ^
             Layer 4: AIData
                   ^
-            Layer 3: Case  <----+
-                  ^             |
-            Layer 2: Record  <--+----  External (pantry)
-                  ^             |        - dimension assets
-            Layer 1: Source     |        - engagement assets
-                  ^             |
-                Raw  <----------+
+            Layer 3: Case
+                  ^
+            Layer 2: Record
+                  ^
+            Layer 1: Source  <------- ExternalStore
+                  ^                    - dimension assets
+                  |                    - engagement snapshots
+                Raw
 ```
 
-Externals are loaded and joined inside Record / Case / AIData chefs by primary key (NPI, NDC, NCPDP, zip3, zip5, patient_id).
-They are NOT chained behind Source.
+External assets are loaded by SourceFn and attached by primary key (NPI, NDC, NCPDP, zip3, zip5, patient_id).
+RecordFn aligns the attached values to entity and time, including point-in-time selection for engagement snapshots; CaseFn selects, windows, aggregates, and encodes them.
 A cohort can be processed end-to-end with no externals at all -- they are an enrichment pantry, not a prerequisite.
 
 ---
@@ -140,8 +141,8 @@ _WorkSpace/ExternalStore/
   - The `EXTERNAL_VERSION` env var (env.sh) names the active default
     release. The skill defaults to that release; pin a different one
     with `--version @{tag}`.
-  - Old releases are kept for reproducibility (RecordFn / CaseFn configs
-    can pin a specific release). Never overwrite an existing release
+  - Old releases are kept for reproducibility (SourceFn configs and endpoint
+    manifests pin the release). Never overwrite an existing release
     folder without explicit user confirmation.
   - WellDoc used `@{YYMMDD}R{N}` tags (e.g. @260104R4). Not enforced —
     discover the active tag via `echo $EXTERNAL_VERSION` (e.g. `@v1215`).
@@ -186,14 +187,22 @@ Each builder is self-contained: it reads its raw inputs, writes the asset triple
 How Externals Get Used Downstream
 ==================================
 
-Externals are not consumed by Source.
-Source is cohort-scoped and deidentified -- it produces the typed Ptt/invitation/Rx tables.
-The join into externals happens in Record or Case.
+SourceFn is the attachment boundary. It combines Raw Data with a pinned
+ExternalStore release and emits stable ProcessDF fields. Those fields may be
+scalars, structured lists, or fixed-order vectors. They remain data
+representations: they are not the final model vector.
+
+RecordFn does not independently rebuild or rejoin the external representation.
+It preserves the Source fields while aligning entity and time. For engagement
+assets, SourceFn must carry `snapshot_as_of` (and any window bounds) so RecordFn
+can select only the snapshot valid at the observation time. CaseFn then applies
+feature semantics such as windows, aggregation, and encoding.
 
 A typical join (illustrative):
 
 ```
-RecordFn / CaseFn config:
+SourceFn config:
+  external_version: '@260104R4'
   externals:
     npi:
       version: '@260104R4'
@@ -208,7 +217,14 @@ RecordFn / CaseFn config:
   - `columns` selects which external columns to add. Defaults to all
     if omitted.
 
-The skill's `join` verb does NOT execute this -- it only previews: match rate, top unmatched keys, columns that would be added, and the config snippet to paste into the consuming layer.
+The skill's `join` verb does NOT execute this -- it only previews: match rate,
+top unmatched keys, columns that would be added, vector metadata that must be
+preserved, and the config snippet to paste into the SourceFn recipe/builder.
+
+External vectors must declare stable ordering, dtype, missing-value behavior,
+and release identity. Recommended companion fields are
+`<name>_vector_version`, `<name>_missing_mask`, and `snapshot_as_of` when the
+asset changes over time.
 
 ---
 
@@ -264,8 +280,8 @@ MUST NOT
    directly -- they are builder outputs
 2. **NEVER edit** `code/haifn/fn_external/` (does not exist in Phase 1;
    if Phase 2 promotion happens, it becomes generated and read-only)
-3. **NEVER materialize** a join inside this skill -- joins belong in
-   RecordFn / CaseFn. The `join` verb is preview-only.
+3. **NEVER materialize** a cohort join inside this skill -- the `join` verb is
+   preview-only. Put the real attachment in a SourceFn builder.
 4. **NEVER assume** an asset's primary key from its folder name --
    read the README or the builder script.
 5. **NEVER mix** vocabularies across releases -- the integer IDs in

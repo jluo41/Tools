@@ -1,0 +1,29 @@
+checks:
+- target: results/rd19_generate_item05/result.yaml::content/sms.txt
+  criterion: r01
+  status: pass
+  evidence: '''{NAME}'' present exactly once at byte offsets 42-47 of 120, inside ''from Dr. {NAME}''''s office''; the only brace bytes (0x7B/0x7D) in the artifact'
+- target: results/rd19_generate_item05/result.yaml::content/sms.txt
+  criterion: r02
+  status: pass
+  evidence: 'First three whitespace-separated words are ''Review your prescription'': word 1 is the imperative verb ''Review'', words 2-3 open its object ''your prescription (details)''. The review action is named before the sender ''Dr. {NAME}''''s office'', which appears second, as the frozen move requires'
+- target: results/rd19_generate_item05/result.yaml::content/sms.txt
+  criterion: r03
+  status: pass
+  evidence: 120 Unicode code points (120 UTF-8 bytes, all ASCII, no trailing newline); configured maximum is 160
+- target: results/rd19_generate_item05/result.yaml::content/sms.txt
+  criterion: r04
+  status: pass
+  evidence: '''Reply STOP to opt-out'' present verbatim as the final clause (byte offsets 99-119 of 120); the artifact ends on the last byte of the clause'
+- target: results/rd19_generate_item05/result.yaml::content/sms.txt
+  criterion: r05
+  status: pass
+  evidence: Read every word. No digits, no '%', no click, rate, lift, increase, improve, boost, more, better, higher, proven, likely, expected or predicted wording, and no arm, winner, test or interval reference. The config's expected_effect interval stays in the config and never enters the message
+- target: results/rd19_generate_item05/result.yaml::content/sms.txt
+  criterion: r06
+  status: pass
+  evidence: Single artifact (unit.shape single, count 1) with no conditional branches. No age, gender, pronoun, weekday, date, or region token. The sole variable slot '{NAME}' fills the prescriber's name after 'Dr.', a sender attribute required by r01, not a recipient age, gender, send-day or region segment
+- target: results/rd19_generate_item05/result.yaml::content/sms.txt
+  criterion: r07
+  status: pass
+  evidence: 'Three plain sentences: ''Review your prescription details from Dr. {NAME}''''s office.'' (imperative, names the object), ''New details are ready for you to check.'' (informational), plus the opt-out clause. No must, now, immediately, urgent, deadline, expire, risk, penalty, or exclamation; no reward or marketing wording. Every sentence is about reviewing prescription details and nothing else'

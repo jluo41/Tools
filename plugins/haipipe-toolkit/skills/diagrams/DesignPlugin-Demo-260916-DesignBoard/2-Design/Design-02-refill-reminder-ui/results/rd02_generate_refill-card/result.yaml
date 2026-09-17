@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd02_generate_refill-card
+operation: generate
+target: Refill approaching card
+producer: designer-context-01
+ticket_sha256: 387cbc0ddca82ce20d86ecd28395a0aa98c232f9bf771dd30b9a3a4804ba467c
+config_sha256: 44c211534e01491da89f1a32c0e37f5d9e5390b2050a64cd0d063321ee88734f
+artifacts:
+- path: content/ui-card.txt
+  sha256: 09daf34df6a010ba2d529772f830b707f86f6a6c5d824f395e271111489b0c43
+checks:
+  path: checks.yaml
+  sha256: 59783d0ad9d967f2a7f546d80cc1b1fd7ada03eab7a14711d995e95f2e524453
+targets: []
+verdict: pass

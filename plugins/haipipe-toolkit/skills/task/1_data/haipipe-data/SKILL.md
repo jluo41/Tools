@@ -1,11 +1,10 @@
 ---
 name: haipipe-data
 description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and dispatches to the right specialist (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, runs, dashboards, reviews, or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
-argument-hint: "[stage] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-07-08"
+  version: "0.2.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -37,7 +36,7 @@ haipipe-data-source     Stage 1: SourceFn, 1-SourceStore
 haipipe-data-record     Stage 2: HumanFn, RecordFn, 2-RecStore
 haipipe-data-case       Stage 3: TriggerFn, CaseFn, 3-CaseStore
 haipipe-data-aidata     Stage 4: TfmFn, SplitFn, 4-AIDataStore
-haipipe-data-external   External reference data (NDC, NPI, ...): load/cook/join, ExternalStore
+haipipe-data-external   Versioned external data (ZIP/NPI/NDC/NCPDP/engagement): acquire/build/preview, ExternalStore
 haipipe-data-remote     Remote storage sync (rclone/GDrive): status/pull/push, all stores
 ```
 
@@ -69,10 +68,10 @@ NUM_WORKERS    = 1      # >1 = parallel (Stage 3 Case only)
 Recipe — create a job instance:
 
 ```
-1. cp code/scripts/haistepnb/<N>_<stage>_nb.py  <task>/{NN}_{task_name}.py
-2. set the CONFIG default to the task's config (repo-root-relative)
+1. cp code/scripts/haistepnb/<N>_<stage>_nb.py  <task>/scripts/<worker>.py
+2. set the CONFIG default to <task>/scripts/config/rNN_<run>.yaml
 3. update the docstring with project-specific info
-4. bash runs/<RUN>.sh   # auto-converts .py → .ipynb, runs papermill
+4. bash <task>/runs/rNN_<run>.sh
 ```
 
 The `.py` is source of truth.
@@ -85,7 +84,8 @@ python code/scripts/haistepcli/case.py   --config <config> --num-partitions 0 --
 python code/scripts/haistepcli/aidata.py --config <config>
 ```
 
-Worked example: `examples/Project-EHR-Mimic/tasks/A01_data_pipeline_mimic/`
+Legacy examples may use pre-BJTR paths; new work uses
+`tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
   - `02_record_mimiciv/2_record_mimiciv31.py` (from `a2_record_nb.py`, 80 partitions)
   - `03_case_mimiciv_mortality/3_case_mimiciv31_mortality.py` (from `a3_case_nb.py`, auto-discover)
 
@@ -198,6 +198,21 @@ Explain Mode (inline)
   2. If the question references a specific stage, also Read that
      specialist's `ref/concepts.md` for context.
   3. Answer the question. Cite which ref docs informed the answer.
+
+Cross-stage ownership boundary:
+
+```
+ExternalStore  acquires, snapshots, versions, and documents reusable data
+SourceFn       Raw + pinned ExternalStore -> stable ProcessName-to-ProcessDF
+RecordFn       aligns entity/time and enforces point-in-time validity
+CaseFn         applies feature selection/window/aggregation/encoding
+AIData         assembles the final model-ready vector and splits
+```
+
+Source list/vector fields are allowed when they are stable data representations;
+they are not the final model vector. Training SourceFn and serving Input2SrcFn
+must reproduce the same Source contract for the same raw input and external
+release.
 
 ---
 

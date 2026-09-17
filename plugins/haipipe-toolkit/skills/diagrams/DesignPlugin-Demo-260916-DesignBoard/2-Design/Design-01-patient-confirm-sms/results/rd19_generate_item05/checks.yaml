@@ -1,0 +1,29 @@
+checks:
+  - target: content/sms.txt
+    criterion: r01
+    status: pass
+    evidence: "substring '{NAME}' present at code points 43-48 of 120, inside the sender phrase \"from Dr. {NAME}'s office\""
+  - target: content/sms.txt
+    criterion: r02
+    status: pass
+    evidence: "first three whitespace-separated words are 'Review your prescription': 'Review' is the action verb and 'your prescription' its object; the sender phrase \"from Dr. {NAME}'s office\" follows as words 5-8"
+  - target: content/sms.txt
+    criterion: r03
+    status: pass
+    evidence: "120 Unicode code points (120 UTF-8 bytes) including the opt-out suffix; configured maximum is 160"
+  - target: content/sms.txt
+    criterion: r04
+    status: pass
+    evidence: "artifact ends with the exact substring 'Reply STOP to opt-out' (code points 100-120 of 120); no trailing newline"
+  - target: content/sms.txt
+    criterion: r05
+    status: pass
+    evidence: "read every word: no percent sign, no click/lift/rate/improve/better/more-likely wording, no comparison to another message or arm, no number of any kind"
+  - target: content/sms.txt
+    criterion: r06
+    status: pass
+    evidence: "one fixed text whose only placeholder is {NAME} (provider name); no age, gender, weekday, date, or place word; whole-word scan for age/gender/day/region terms returned no hit"
+  - target: content/sms.txt
+    criterion: r07
+    status: pass
+    evidence: "two short sentences plus the opt-out: 'Review your prescription details' and 'ready for you to check' name the prescription-review job; no must/now/urgent/immediately/required/deadline wording and no stated consequence"

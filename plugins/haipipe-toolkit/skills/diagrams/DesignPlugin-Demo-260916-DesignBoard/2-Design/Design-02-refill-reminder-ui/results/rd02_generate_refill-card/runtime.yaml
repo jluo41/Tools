@@ -1,0 +1,22 @@
+run: rd02_generate_refill-card
+family: design
+operation: generate
+item: ITEM01
+target: Refill approaching card
+status: complete
+ticket: runs/rd02_generate_refill-card.yaml
+result: results/rd02_generate_refill-card/
+ticket_sha256: 387cbc0ddca82ce20d86ecd28395a0aa98c232f9bf771dd30b9a3a4804ba467c
+inputs:
+- path: scripts/config/rd02_generate_refill-card.yaml
+  sha256: 44c211534e01491da89f1a32c0e37f5d9e5390b2050a64cd0d063321ee88734f
+- path: results/rd01_commission_refill-card/decision.yaml
+  sha256: 5e95667b079083f6d2328e0e152c008c42eab73aecc723309d84d44d0609bfef
+worker:
+  kind: skill
+  name: haipipe-design-unit
+  actor: designer-context-01
+started_at: '2026-09-16T13:03:00Z'
+finished_at: '2026-09-16T13:04:00Z'
+failure: null
+route: verify

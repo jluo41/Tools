@@ -1,0 +1,27 @@
+schema: haipipe.design-ticket/v2
+run: rd07_generate_item02
+operation: generate
+worker: haipipe-design-unit
+actor: designer-context-03
+item: ITEM02
+target: Attribution removed
+config:
+  path: scripts/config/rd07_generate_item02.yaml
+  sha256: dbae5d3ebad72f6a0d936d947ea48bd0a694771a17779622c7507421077a255d
+approval:
+  actor: JL
+  record:
+    path: results/rd05_commission_item02/decision.yaml
+    sha256: 15eb983c847016640b23e2d45ded97942d4004774a7bf06170cfb6d7447ec47b
+inputs:
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+- role: base
+  run_id: rd06_generate_item02
+  path: results/rd06_generate_item02/content/sms.txt
+  sha256: 7db1113788e32d201248c3e5cfd83d498f9f0078b3c1e53bcd2bd0d517cf3e2c
+- role: feedback
+  path: outline/feedback/rd07_generate_item02.md
+  sha256: a20ce5bcd47f258480a5e17d9ff9806da6a53bb7a0ba6499ff1e20812abc3a8a
+targets: []

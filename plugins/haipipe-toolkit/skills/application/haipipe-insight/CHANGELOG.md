@@ -1,5 +1,20 @@
 # haipipe-insight · version history
 
+1.5.0 · 260916
+- `question|ask` and `verdict` now point at real procedures
+  (`haipipe-application/fn/question.md`, `fn/verdict.md`): a person asks in
+  plain words, the verb decides level, partitions and lineage, then writes the
+  row through `python3 -m live.insightboard ask`.
+- `check|review` names `haipipe-page-check`; `for-question` is
+  `haipipe-insight-question`; the plugin's audit view is the Check Space.
+- Fix the bare `ref/partition.md` path: the file lives under haipipe-application.
+
+1.4.0 · 260916
+- Add a read-only board grooming projection: mechanical checks, partial
+  register frontier, and the signed Wisdom Handoff gate.
+- Make the Design boundary explicit: only a person-signed W handoff named by
+  a DesignBoard `reads:` line is bindable; D/I/K pages never cross directly.
+
 1.3.1 · 260915
 - Bind the unified public door to one Application `workflow_runtime_id`.
 - Clarify that I0-I5 are RunTypes, GI0-GI6 are Runtime control keys, and the

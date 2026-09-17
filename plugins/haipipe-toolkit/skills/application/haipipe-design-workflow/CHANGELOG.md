@@ -8,6 +8,9 @@
   with `Design.commission → N Design.generate → J Design.verify →
   Design.adopt`; Gate/Route live inside each Run and expected count is
   `1 + N + J + 1`. No compatibility route was added.
+- 260916: every Run Ticket names its Design Item (`item: DI<NN>`); the
+  Workspace bindings table becomes Space bindings over Intent / Run /
+  Delivery (`Space` is the only reader-facing word). Version unchanged.
 
 4.0.1 · 260913
 - Forbid “read-only/readable migration history” language for unsupported
@@ -89,3 +92,6 @@
 - 0.7.2 (JL 260828, "what I mean is: D5 PageDown"): the phase NAME is PageDown, one word — JL overruled 0.7.1's Page-plus-alias split. The naming law gains its recorded exception: PageDown fuses the authority artifact (the Page) with its act (setting the round down onto it), and the artifact-class test still holds because the page is what D5 owns. "page down" stays the prose verb.
 - 0.7.1 (JL 260828, "page down 相当于是把东西写下来"): D5's verb alias renamed reconcile → page down, JL's own word and the plainer one — the round's record finally set down on the page, whole and readable. The phase NAME stays Page (the artifact-naming law wants an artifact class, and "PageDown" is a verb wearing one word). One boundary kept sharp: page down is the round-end SEAL, not the per-round sync duty — the write-back-in-the-same-round law is untouched and D5 catches what accumulation broke, it never licenses deferring write-back to the end.
 - 0.7.0 (JL 260828, "这个 phase 是不是专门为了更新我们的 page？…这个 phase 不然就叫 page 呢"): the lane gains D5 Page (reconcile) and GD6, the round seal. Root cause it cures, found the hard way the same day: every round APPENDS its own rows back (the sync law is append-shaped), but no phase owned the pages' GLOBAL claims — title, Opening, Diagram, scope, Law, board.md's Topic and close — so six rounds in, B00's pages still described round 1 and a colleague JL showed the board could not tell what it was about. D5 rereads the grown pages as documents and repairs staleness, PROSE only, decisions untouched; GD6 closes the round only when no era-frozen claim survives and stated counts match the rows on disk, with a fresh zero-background cold read (haipipe-board-reviewer-agent, judge-class, not a fifth human gate) mandatory at milestone rounds and before any outside showing. Rider: D1 renamed Direction → Card, retiring the last live use of the word deleted with haipipe-plugin-direction earlier the same day.
+- 260916 (version unchanged at 0.4.0): Space bindings now name five Spaces,
+  Goal · Design · Insight · Run · Delivery; Commission's pinned inputs show in
+  Insight Space.

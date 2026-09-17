@@ -1,0 +1,29 @@
+checks:
+- target: results/rd17_generate_item03/result.yaml::content/sms.txt
+  criterion: r01
+  status: pass
+  evidence: '''{NAME}'' present verbatim once at byte offsets 13-18 of 137 (inside "Dr. {NAME}''s office"); the only brace bytes (0x7B/0x7D) in the artifact'
+- target: results/rd17_generate_item03/result.yaml::content/sms.txt
+  criterion: r02
+  status: pass
+  evidence: 'Read every word. Sentence 3 reads "Please review them by tomorrow evening." The review-by time is "by tomorrow evening": plain words tied directly to the review verb, no digits, no clock time, no date format · pass'
+- target: results/rd17_generate_item03/result.yaml::content/sms.txt
+  criterion: r03
+  status: pass
+  evidence: '137 Unicode code points (137 UTF-8 bytes, all ASCII, no trailing newline); configured maximum is 160'
+- target: results/rd17_generate_item03/result.yaml::content/sms.txt
+  criterion: r04
+  status: pass
+  evidence: '''Reply STOP to opt-out'' present verbatim as the final clause (byte offsets 116-136 of 137; the artifact ends on the last byte of opt-out with nothing after it)'
+- target: results/rd17_generate_item03/result.yaml::content/sms.txt
+  criterion: r05
+  status: pass
+  evidence: 'No digits, no ''%'', no effect or comparative wording (lift, increase, improve, boost, more, better, likely, proven, expected), no arm, winner, interval or test reference; the [65.56, 66.56] forecast from the frozen design_intent stays out of the text · pass'
+- target: results/rd17_generate_item03/result.yaml::content/sms.txt
+  criterion: r06
+  status: pass
+  evidence: 'Single artifact, one fixed text with no conditional branches; the only placeholder is the sender''s {NAME}, not a recipient attribute. No age, gender, weekday, date, region, state or city term; "tomorrow evening" is the same bytes whichever day it is sent · pass'
+- target: results/rd17_generate_item03/result.yaml::content/sms.txt
+  criterion: r07
+  status: pass
+  evidence: 'Three plain sentences (sender identification; new prescription details require your review; please review them by tomorrow evening) plus the opt-out clause. The request is worded with "Please"; no consequence, penalty, threat, urgency word (urgent, immediately, now, last chance), exclamation mark, or ALL-CAPS beyond STOP; topic is prescription review only · pass'

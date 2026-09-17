@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd07_generate_item02
+operation: generate
+target: Attribution removed
+producer: designer-context-03
+ticket_sha256: c7837f96783fc54c610c80df56e5cabc29797ad2747075b012e10361d009e4ed
+config_sha256: dbae5d3ebad72f6a0d936d947ea48bd0a694771a17779622c7507421077a255d
+verdict: pass
+artifacts:
+- path: content/sms.txt
+  sha256: 41039759f289eade1a42c36a3556e8c96ac608cea8df84f46848fa0efb702c27
+checks:
+  path: checks.yaml
+  sha256: d3ec92f0b50cfeff85f0e861b3947641f60364fc8427ef685a2f58dda1ebcc6e
+targets: []

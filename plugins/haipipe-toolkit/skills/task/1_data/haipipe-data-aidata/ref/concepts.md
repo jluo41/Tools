@@ -32,9 +32,9 @@ Cooking Metaphor
 ```
 Kitchen  = AIData_Pipeline class        (code/haipipe/aidata_base/)
 Chef     = TfmFn + SplitFn             (code/haifn/fn_aidata/)  GENERATED
-Recipe   = YAML config file            (the pipeline task's configs/)
+Recipe   = YAML config file            (the Task's scripts/config/)
 Dish     = AIDataSet asset             (_WorkSpace/4-AIDataStore/)
-Academy  = Builder scripts             (tasks/<pipe-group>/04_aidata_fn_develop_<cohort>/ in the project)
+Academy  = Builder scripts             (tasks/bNN_*/jNN_*/tNN_<aidata>/scripts/)
 ```
 
 ---
@@ -255,7 +255,7 @@ Discovering Available Fns
 ls code/haifn/fn_aidata/entryinput/
 ls code/haifn/fn_aidata/entryoutput/
 ls code/haifn/fn_aidata/split/
-ls examples/*/tasks/*/04_aidata_fn_develop_*/
+ls examples/*/tasks/b*/j*/t*/scripts/
 ```
 
 ---
@@ -312,7 +312,7 @@ Generated Input Transforms:   code/haifn/fn_aidata/entryinput/  (discover with l
 Generated Output Transforms:  code/haifn/fn_aidata/entryoutput/ (discover with ls)
 Generated SplitFns:           code/haifn/fn_aidata/split/       (discover with ls)
 
-Builders (edit here):         examples/<Project>/tasks/<pipe-group>/04_aidata_fn_develop_<cohort>/
+Builders (edit here):         examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<aidata>/scripts/
                               (legacy workspaces: code-dev/1-PIPELINE/4-AIData-WorkSpace/)
 
 Store path:                   _WorkSpace/4-AIDataStore/

@@ -1,5 +1,5 @@
 # =============================================================================
-# Template for configs/<NAME>.yaml — raw extraction task
+# Template for tNN_<task>/scripts/config/rNN_<run>.yaml
 # =============================================================================
 # Inherits the _meta: block convention from
 # ../../../haipipe-task/ref/config-meta-template.yaml.
@@ -16,6 +16,9 @@ _meta:
     <e.g., _WorkSpace/0-RawDataStore/prediabetes/ — one parquet per table>
   skip_review: true
   notebook: full
+
+input_kind: operational_database       # vendor/API reference data routes to ExternalStore/@raw
+raw_data_version: "<version-or-snapshot>"
 
 
 # =============================================================================

@@ -1,0 +1,17 @@
+checks:
+  - target: content/sms.txt
+    criterion: r01
+    status: pass
+    evidence: "118 Unicode code points including the opt-out suffix; configured maximum is 120"
+  - target: content/sms.txt
+    criterion: r02
+    status: pass
+    evidence: "artifact ends with the exact substring 'Reply STOP to opt-out' (code points 98-118 of 118)"
+  - target: content/sms.txt
+    criterion: r03
+    status: pass
+    evidence: "substring '{NAME}' absent; artifact also names no provider, doctor, clinic, or care team"
+  - target: content/sms.txt
+    criterion: r04
+    status: pass
+    evidence: "read every word: two plain prescription-review sentences plus the opt-out suffix; no percent sign, no click/lift/rate/improve/more-likely wording, no comparison to another message"

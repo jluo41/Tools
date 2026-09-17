@@ -28,7 +28,7 @@ haifn      Production functions (GENERATED -- NEVER edit directly)
 The builder pattern bridges haipipe and haifn:
 
 ```
-tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/   <-- edit these (Academy; per-project task folders)
+tasks/bNN_<block>/jNN_<job>/tNN_<fn-task>/scripts/   <-- edit these (Academy)
     |  run builder scripts
     v
 code/haifn/                    <-- auto-generated (DO NOT EDIT)
@@ -52,9 +52,9 @@ Cooking metaphor -- consistent across all 6 layers**
 ```
 Kitchen  = Pipeline class         (code/haipipe/<layer>_base/)
 Chef     = Domain function (Fn)   (code/haifn/<fn_layer>/)     GENERATED
-Recipe   = YAML config file       (the pipeline task's configs/)
+Recipe   = YAML config file       (the Task's scripts/config/)
 Dish     = Set asset              (_WorkSpace/<N>-<Layer>Store/)
-Academy  = Builder scripts        (tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/ in the project)
+Academy  = Builder scripts        (tasks/bNN_*/jNN_*/tNN_*/scripts/)
 ```
 
 The metaphor makes the roles unambiguous: you write the Recipe (config) and choose which Chefs (Fns) to use.
@@ -96,16 +96,22 @@ All code changes require:
 Never edit code/haifn/ directly.
 Never commit without explicit request.
 
+**7. External data is versioned input to Source**
+
+ExternalStore is a sideways governed store, not another sequential layer.
+SourceFn may attach pinned ZIP/NPI/NDC/NCPDP and engagement snapshots to
+ProcessDFs. RecordFn aligns those fields in entity/time; CaseFn gives them
+feature semantics; AIData assembles the final model vector.
+
 ---
 
 The 6-Layer Pipeline
 ====================
 
 ```
-Raw Data
-    |
-    v
-Layer 1: Source  ------  Raw files -> standardized SourceSet tables
+Raw Data ----------------+
+                         v
+ExternalStore ------> Layer 1: Source  -- Raw + pinned external -> SourceSet tables
     |                    (code/haipipe/source_base/)
     |                    Chefs: code/haifn/fn_source/
     v
@@ -140,7 +146,7 @@ Discover at runtime (always prefer ls over relying on this snapshot):
 ls code/haipipe/          # core pipeline base classes
 ls code/hainn/            # ML models and predictors
 ls code/haifn/            # generated production functions
-ls examples/*/tasks/*/*_fn_develop_*/   # builder task folders (per project)
+ls examples/*/tasks/b*/j*/t*/scripts/   # builder Task scripts (per project)
 ```
 
 Snapshot (as of 2026-02-21):
@@ -192,13 +198,17 @@ code/
 Current Builder Structure
 =========================
 
-Builders live INSIDE each project as `*_fn_develop_*` task folders, paired with the pipeline stage they generate for:
+New builders live inside canonical BJTR Task Folders:
 
 ```bash
-ls examples/*/tasks/*/*_fn_develop_*/    # all builder task folders
+ls examples/*/tasks/b*/j*/t*/scripts/    # all canonical Task script lanes
 ```
 
-Example (Project-REACH-ADHD, as of 2026-07):
+```text
+tasks/bNN_<data_block>/jNN_<logic_version>/tNN_<fn_task>/scripts/<builder>.py
+```
+
+The following pre-BJTR tree is a legacy snapshot and remains readable only:
 
 ```
 examples/Project-REACH-ADHD/tasks/
@@ -221,7 +231,9 @@ examples/Project-REACH-ADHD/tasks/
                                                b<N>_build_trigfn_*.py ...
 ```
 
-Each fn_develop folder is a standard task folder (configs/ runs/ results/ notebooks/) whose .py builders regenerate the corresponding `code/haifn/` files.
+Do not scaffold that legacy shape. Canonical Tasks keep builders in `scripts/`,
+Run configs in `scripts/config/`, Tickets in `runs/`, and receipts in
+`results/rNN_<run>/`.
 Legacy workspaces (e.g.
 WellDoc-SPACE) may still keep builders in a central `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` — same builder pattern, different home.
 
@@ -239,6 +251,8 @@ Snapshot (as of 2026-02-21):
 ```
 _WorkSpace/
 +-- 0-RawDataStore/         Raw input files (CSV, XML, Parquet)
++-- ExternalStore/          Versioned reusable data inputs to SourceFn
++       @raw/ vendor/API landings; @{version}/ immutable built assets
 +-- 1-SourceStore/          Layer 1 output: SourceSets
 |       {CohortName}/@{SourceFnName}/
 +-- 2-RecStore/             Layer 2 output: RecordSets
@@ -271,7 +285,7 @@ Current Config Structure
 Pipeline configs live INSIDE each pipeline task folder — there is no repo-root config/ directory:
 
 ```bash
-ls examples/*/tasks/*/*/configs/          # all pipeline run configs
+ls examples/*/tasks/b*/j*/t*/scripts/config/  # all pipeline Run configs
 ls code/scripts/haistepconfig/            # framework reference templates ONLY
                                           # (never put real project configs here)
 ```
@@ -297,7 +311,8 @@ MUST DO
 =======
 
 1. **Read this file** when starting any haipipe task to orient yourself
-2. **Check the layer order** -- always work sequentially (1->2->3->4)
+2. **Check the layer order** -- always work sequentially (1->2->3->4), with
+   ExternalStore entering through SourceFn
 3. **Discover Fns with ls** -- never assume what is registered
 4. **Use the layer-specific ref file** after reading this overview
 5. **Present plan to user and get approval** before any code changes

@@ -28,6 +28,7 @@ how child work objects become Groups and Pages. Markdown is authoritative;
 | Page workflow | `haipipe-page-workflow` | `RUN` verb, workflow-pass routing, packet, receipt, stop conditions |
 | Sentence | `haipipe-sentence` | comment, edit, card |
 | Page lane | the matching plugin | Outline, Studio, Runs, Delivery, Folder, or domain lane |
+| Board Insight lane | `haipipe-plugin-insight-board` | whole `*-InsightBoard` control tower; read-only aggregate over Meta, Question registers, partitions, and I0–I5 |
 
 One-Page work always routes through `haipipe-page`, even when invoked from the
 Board. `haipipe-page` exposes the `RUN` verb; `haipipe-page-workflow` owns its
@@ -79,6 +80,7 @@ creating or changing Board structure.
 │       └── delivery/              rendered deliverables
 ├── diagram/                       Board-owned design context when applicable
 └── board/                         generated site; never hand-edit
+    └── insight.html               generated Board-level Insight plugin page, InsightBoards only
 ```
 
 Boards created for a task, project, or paper normally live under that owner's
@@ -134,6 +136,11 @@ the Board-relative `jNN_<job>/tNN_<task>/tNN_<task>.md` path.
 | “draw” | route to `haipipe-plugin-studio` |
 | “compile/export” | route to `haipipe-plugin-delivery` |
 | “close” | verify every Page and the Board `close:` condition |
+
+For an InsightBoard, the full build also emits `board/insight.html`, and the
+server exposes the live aggregate at `/_board/insight-board`. This is the
+Board-level DIKW control tower; the Page-level Outline remains the exact
+surface for one page's Draft, Evidence, and Run work.
 
 Read `ref/operations.md` only for the selected operation. Do not load every
 command recipe for an ordinary Board discussion.
@@ -267,7 +274,7 @@ standalone Page modes.
   Outline-plugin Space links derived from the same verified public Board URL:
   `&lens=div` for **Draft Space**, `&lens=evidence` for **Evidence Space**, and
   `&lens=run&run=<id>` for **Run Space**. A formal delivery response also
-  returns `&lens=delivery` for **Delivery Workspace**, which is the read-only
+  returns `&lens=delivery` for **Delivery Space**, which is the read-only
   source-to-artifact consistency receipt. The compact Page URL and an embedded
   `/_board/evidence?...&embed=1` iframe URL may be included as secondary
   projections, but never replace these direct links.
@@ -288,6 +295,7 @@ standalone Page modes.
 | `ref/writing-rules.md` | writing or reviewing Page prose |
 | `ref/board-example.md` | a minimal current source-tree example is useful |
 | `ref/page-lifecycle.workflow.js` | maintaining the Board-hosted workflow-pass adapter; workflow law remains in `haipipe-page-workflow` |
+| `ref/insight-space-mapping.md` | defining the Insight plugin's four Spaces and Run Space views |
 | `fn/serve.md` | serving one Board or a root containing multiple Boards |
 
 Compatibility-only readers and schemas live under `ref/legacy/`. They are not

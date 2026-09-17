@@ -3,7 +3,8 @@ haipipe Layer 1: Source
 
 Stage reference for Layer 1 of the 6-layer data pipeline.
 
-Converts raw data files (CSV, XML, Parquet, JSON) into a standardized SourceSet -- a dictionary of DataFrames keyed by table name.
+Converts Raw Data plus optional pinned ExternalStore assets into a standardized
+SourceSet -- a dictionary of DataFrames keyed by ProcessName.
 
 **Scope:** Framework patterns only.
 Does not catalog project-specific state (which SourceFns are registered, column names, cohort names).
@@ -26,7 +27,7 @@ Layer 3: Case             Event-triggered feature extraction
     |
 Layer 2: Record           Temporally-aligned patient records
     |
-Layer 1: Source  <---     Raw files -> standardized tables
+Layer 1: Source  <---     Raw Data + versioned External Data -> standardized tables
 ```
 
 ---
@@ -39,14 +40,15 @@ Concept    Pipeline Term              Location
 ---------  -------------------------  ------------------------------------------
 Kitchen    Source_Pipeline class       code/haipipe/source_base/
 Chef       SourceFn functions         code/haifn/fn_source/           (GENERATED)
-Recipe     YAML config file           the pipeline task's configs/
+Recipe     YAML config file           the Task's scripts/config/
 Dish       SourceSet asset            _WorkSpace/1-SourceStore/
-Academy    Builder scripts            tasks/<pipe-group>/01_source_fn_develop_<cohort>/  (in the project)
+Academy    Builder scripts            tasks/bNN_*/jNN_*/tNN_<sourcefn>/scripts/
 ```
 
 The Kitchen (Source_Pipeline) orchestrates execution.
 The Chef (SourceFn) does the actual data transformation.
-The Recipe (YAML config) tells the Kitchen which Chef to use and where to find raw data.
+The Recipe (YAML config) tells the Kitchen which Chef to use, where to find Raw
+Data, and which ExternalStore release is pinned.
 The Dish (SourceSet) is the output.
 The Academy (builder scripts) is where you train new Chefs.
 
@@ -139,6 +141,36 @@ Diet (15 columns):
 - Extended fields: Only in JSON (e.g., MedicationType, bwz_carb_input, HeartRate)
 - Dataset-specific metadata: Only in the `external_metadata` JSON column
 
+External Data and Vector-Valued Fields
+======================================
+
+SourceFn is where model-independent external data becomes part of the stable
+ProcessDF contract. Typical keys include ZIP, NPI, NDC, NCPDP, and patient or
+dimension engagement snapshots.
+
+A Source field may be a scalar or a list/vector. A vector-valued Source field
+is still data, not the final model feature vector. For every such field define:
+
+```
+values              list with a stable element order
+dtype               e.g. float32, int32, uint8
+ordering            named vocabulary/schema version
+missing behavior    explicit null/unknown values and optional missing mask
+external version    immutable ExternalStore release
+snapshot_as_of      required when the data changes over time
+window_start/end    required when an aggregate covers a bounded interval
+```
+
+Example companion columns are `zip_num_vector`, `zip_missing_mask`,
+`zip_vector_version`, and `zip_snapshot_as_of`. RecordFn preserves these fields
+while aligning entity/time; CaseFn applies feature semantics; AIData assembles
+the final model vector.
+
+SourceFn must not make an uncontrolled live API request. API/vendor acquisition
+lands in `ExternalStore/@raw/`, is built into an immutable release, and only
+then becomes a SourceFn dependency. Training and serving pin the same release
+and Source schema.
+
 ---
 
 Concrete Code
@@ -182,6 +214,10 @@ source_set = pipeline.run(
     save_cache=True                   # save results to cache
 )
 ```
+
+The config should pin `external_version` whenever SourceFn reads ExternalStore.
+The SourceSet manifest must record the resolved release and representation
+versions so the same contract can be reproduced at serving time.
 
 **SourceFn module structure** (code/haifn/fn_source/<SourceFnName>.py):
 
@@ -243,7 +279,7 @@ Do not rely on a hardcoded list -- always discover at runtime:
 ls code/haifn/fn_source/
 
 # Corresponding builder scripts (per-project fn_develop task folders)
-ls examples/*/tasks/*/01_source_fn_develop_*/
+ls examples/*/tasks/b*/j*/t*/scripts/
 
 # Inspect a SourceFn's ProcName_List
 head -20 code/haifn/fn_source/<SourceFnName>.py
@@ -306,7 +342,9 @@ MUST DO
    must produce identical column sets for shared table types
 4. **Keep core fields as columns AND in JSON** metadata columns
 5. **Store extended fields ONLY in JSON** metadata columns
-6. **Present plan to user and get approval** before any code changes
+6. **Pin and record ExternalStore release identity** when enrichment is used
+7. **Declare vector dtype, ordering, missing behavior, and temporal metadata**
+8. **Present plan to user and get approval** before any code changes
 
 ---
 
@@ -319,6 +357,8 @@ MUST NOT
 4. **NEVER break** cross-dataset schema consistency within a domain
 5. **NEVER invent** column names outside the domain's standard schema
 6. **NEVER skip** RUN_TEST = True in builders
+7. **NEVER call an uncontrolled live API** from SourceFn
+8. **NEVER describe a Source vector as the final model feature vector**
 
 ---
 
@@ -332,12 +372,11 @@ Pipeline framework:   code/haipipe/source_base/source_pipeline.py
 Fn loader:            code/haipipe/source_base/builder/sourcefn.py
 
 Generated SourceFns:  code/haifn/fn_source/                        <- discover with ls
-Builders (edit here): examples/<Project>/tasks/<pipe-group>/01_source_fn_develop_<cohort>/
-                      (per-project task folder, e.g. Project-REACH-ADHD/tasks/
-                      A01_data_pipeline_reachadhd/01_source_fn_develop_reachadhd/;
+Builders (edit here): examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<sourcefn>/scripts/
+                      (per-project canonical Task Folder;
                       legacy workspaces may still carry code-dev/1-PIPELINE/1-Source-WorkSpace/)
 
-Test configs:         <pipeline task>/configs/  (reference templates: code/scripts/haistepconfig/)
+Test configs:         <pipeline task>/scripts/config/  (reference templates: code/scripts/haistepconfig/)
 Store path:           _WorkSpace/1-SourceStore/
 Config template:      ../templates/config.yaml (this skill's own template)
 ```

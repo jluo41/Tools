@@ -998,6 +998,10 @@ def tree_reroot(html, up, src_dir=None, board_root=None):
         # happen to end in generated filenames.
         if bare.startswith("board/"):
             return f'{m.group("attr")}="{up}{url}"'
+        # The Board-level Insight and Design plugins are sibling projections of
+        # the generated index, not source-relative Markdown links.
+        if bare in ("insight.html", "design.html"):
+            return m.group(0)
         if bare.endswith(".html"):
             # Two kinds of url end in .html and only one of them is sited. A
             # GENERATED page link (`QA/QA0-x.html` on a group index,
@@ -1274,6 +1278,14 @@ def render_tree(meta, qs, out_dir, only=None):
     (assets / "board.css").write_text(_assets.CSS_CHARSET + CSS, encoding="utf-8")
     (assets / "board.js").write_text(_assets.js(), encoding="utf-8")
 
+    from live.insightboard import (board_snapshot as insight_snapshot,
+                                   is_insight_board,
+                                   render_insight_board)
+    from live.designboard import (design_board_snapshot, is_design_board,
+                                  render_design_board)
+    insight_board = is_insight_board(Path(meta.get("dir") or out_dir.parent))
+    design_board = is_design_board(Path(meta.get("dir") or out_dir.parent))
+
     written = []
     groups = {}
     for q in qs:
@@ -1429,15 +1441,25 @@ def render_tree(meta, qs, out_dir, only=None):
         f'{"discovery tasks" if block_kind == "discovery-block" else "tasks"} closed</p>'
         if task_board else ""
     )
+    insight_link = (
+        '<p class="gpurpose"><a href="insight.html">🔎 Open Board-level Insight plugin</a>'
+        ' <span class="mut">whole-board Meta · Questions · DIKW workflow view</span></p>'
+        if insight_board else ""
+    )
+    if design_board:
+        insight_link += (
+            '<p class="gpurpose"><a href="design.html">🎨 Open Board-level Design plugin</a>'
+            ' <span class="mut">lines of the Brief · every Design Item · who is waited on · adopted</span></p>'
+        )
     quiet_index = pages_only_index(meta) or task_board
-    body = (heading + pages if quiet_index else
+    body = (heading + insight_link + pages if quiet_index else
             heading + f'<div class="spine"><p><b>🦴 Spine</b> {inline(meta["spine"])}</p>'
             f'<p><b>🏁 Close when</b> {inline(meta["close"])}</p></div>'
             + task_progress
             + tree_relink(board_map(meta), hrefs)
             + tree_relink(related_folders(meta), hrefs)
             + tree_relink(board_status(qs), hrefs)
-            + pages + ACTIVITY_HTML)
+            + insight_link + pages + ACTIVITY_HTML)
     # `index_rows()` also renders each group's authored intro and ASCII map, so
     # relink the complete body rather than only the three Board-level panels.
     body = tree_relink(body, hrefs)
@@ -1446,6 +1468,22 @@ def render_tree(meta, qs, out_dir, only=None):
                                      tree_sidebar(meta, qs, ""))),
                  encoding="utf-8")
     written.append(f)
+
+    # One generated Board-level Insight page. It is the sibling projection for
+    # an InsightBoard and keeps the same source-first/static-versus-live split
+    # as the DesignBoard page above.
+    insight_page = out_dir / "insight.html"
+    if insight_board and not only:
+        snap = insight_snapshot(Path(meta["dir"]), Path(meta["dir"]), static=True)
+        insight_page.write_text(render_insight_board(snap), encoding="utf-8")
+        written.append(insight_page)
+    # Its Design twin: the Board-level grain of the Design plugin (Brief lines ×
+    # folders × items). Static, so the New-Folder button is omitted here.
+    design_page = out_dir / "design.html"
+    if design_board and not only:
+        snap = design_board_snapshot(Path(meta["dir"]), Path(meta["dir"]), static=True)
+        design_page.write_text(render_design_board(snap), encoding="utf-8")
+        written.append(design_page)
 
     # Compatibility page only. The live Evidence and Run Spaces own the
     # normal surfaces; this keeps bookmarks from becoming a 404.
@@ -1465,6 +1503,10 @@ def render_tree(meta, qs, out_dir, only=None):
     # The expected set is computed from EVERY page, not from `written`, so this
     # is correct under --only too.
     expected = {out_dir / "index.html", out_dir / "runs.html"}
+    if insight_board:
+        expected.add(out_dir / "insight.html")
+    if design_board:
+        expected.add(out_dir / "design.html")
     for q in qs:
         gt = bd.group_token(q.get("group") or "") or "_ungrouped"
         expected.add(out_dir / gt / tree_page_name(q))

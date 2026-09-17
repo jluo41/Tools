@@ -72,7 +72,7 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
             "S-Test", parse_outline(self.page.read_text(encoding="utf-8")),
             self.page, self.folder, "/board.md", "S-Test/S-Test.md",
         )
-        for name in ("Draft Space", "Evidence Space", "Run Space", "Delivery Workspace"):
+        for name in ("Draft Space", "Evidence Space", "Run Space", "Delivery Space"):
             self.assertEqual(body.count(">" + name + "</button>"), 1)
         self.assertIn("lens-delivery", body)
         self.assertIn("workspace=1", body)

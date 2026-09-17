@@ -1,0 +1,27 @@
+run: rd23_generate_item09
+family: design
+operation: generate
+item: ITEM09
+target: Patient greeting
+status: complete
+ticket: runs/rd23_generate_item09.yaml
+result: results/rd23_generate_item09/
+ticket_sha256: 68e22d065e083d825dddc0f758eaaf4036dda96d35e1ffbd718e8f0746bdad6a
+inputs:
+- path: scripts/config/rd23_generate_item09.yaml
+  sha256: 3128b7eb2e48048a9c4730ddfa3af611cbbb858f3ef277b750557195e1a91de2
+- path: results/rd15_commission_item09/decision.yaml
+  sha256: 618379e828f2c0327d5c7a01d9ee9a5b76c4778f89528cce267daa74b606012b
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+worker:
+  kind: skill
+  name: haipipe-design-unit
+  actor: designer-context-15
+queued_at: '2026-09-17T04:03:57Z'
+started_at: '2026-09-17T04:03:57Z'
+finished_at: '2026-09-17T04:10:00Z'
+failure: null
+route: verify
+terminal_outcome: pass

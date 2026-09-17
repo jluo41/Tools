@@ -1,0 +1,32 @@
+run: rd04_adopt_item01
+run_type: Design.adopt
+operation: adopt
+item: ITEM01
+family: design
+target: Send the tested winner, verbatim · exact verified candidate
+actor:
+  mode: human
+  owner: JL
+action: adopt
+status: complete
+ticket: runs/rd04_adopt_item01.yaml
+result: results/rd04_adopt_item01/
+ticket_sha256: bcc3ac97fe74eece71b884a9d0adf898e185d38494a8992f5e221fa080f51499
+inputs:
+- path: results/rd02_generate_item01/result.yaml
+  sha256: 5a3ae2d55d9e8fd79acb6aeec41e07b650155c37a14c3573ce777e50fa9a4606
+- path: results/rd03_verify_item01/result.yaml
+  sha256: d31366de35dcfa7ad0f27a7ba22c0adc73bdc2ad0fd5aff057aa45ca0aa35f77
+- path: delivery/render/Design-01-patient-confirm-sms-ITEM01-v1.txt
+  sha256: c93d51714b4e21779627f256d8805eaf64403a359e57bf694f2560b30350c8af
+entry_gate:
+  status: passed
+  assertion: independent verify passed
+exit_gate:
+  status: passed
+  assertion: decision recorded
+route: CLOSE
+terminal_outcome: adopt
+started_at: '2026-09-16T13:08:00Z'
+finished_at: '2026-09-16T13:09:00Z'
+failure: null

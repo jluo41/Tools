@@ -14,9 +14,9 @@ Cooking Metaphor
 ```
 Kitchen  = Record_Pipeline class      (code/haipipe/record_base/)
 Chef     = HumanFn + RecordFn         (code/haifn/fn_record/)  GENERATED
-Recipe   = YAML config file           (the pipeline task's configs/)
+Recipe   = YAML config file           (the Task's scripts/config/)
 Dish     = RecordSet asset            (_WorkSpace/2-RecStore/)
-Academy  = Builder scripts            (tasks/<pipe-group>/02_record_fn_develop_<cohort>/ in the project)
+Academy  = Builder scripts            (tasks/bNN_*/jNN_*/tNN_<recordfn>/scripts/)
 ```
 
 
@@ -48,6 +48,12 @@ _WorkSpace/2-RecStore/{RecordSetName}/
 
 **5-Minute Alignment (CGM domain):** `DT_s` column with 5-min intervals.
 Domain-specific.
+
+Record is the alignment layer, not the external acquisition or feature-vector
+construction layer. External fields arrive in Source ProcessDFs. Preserve their
+dtype/order/version metadata, align them to the human and observation time, and
+for changing snapshots enforce `snapshot_as_of <= observation_time`. Never use
+a future engagement snapshot to construct a historical record.
 
 
 Concrete Code
@@ -171,8 +177,8 @@ Discovering Available Fns
 ```bash
 ls code/haifn/fn_record/human/
 ls code/haifn/fn_record/record/
-ls examples/*/tasks/*/02_record_fn_develop_*/h*.py    # HumanFn builders
-ls examples/*/tasks/*/02_record_fn_develop_*/r*.py    # RecordFn builders
+find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*human*.py
+find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*record*.py
 ```
 
 
@@ -197,6 +203,8 @@ MUST DO
 5. Access data via `Name_to_HRF` with string (Human) and tuple (Record) keys
 6. Present plan and get approval before code changes
 7. Remember: output of Layer 2 = input of Layer 3 (Case)
+8. Preserve Source vector values, ordering, masks, and release metadata
+9. Enforce point-in-time validity for time-varying Source fields
 
 
 MUST NOT
@@ -210,6 +218,7 @@ MUST NOT
 6. NEVER pass `cohort_name` to `pipeline.run()` (does not exist as parameter)
 7. NEVER use `load_from_disk(set_name=..., store_key=...)` (does not exist)
 8. NEVER change `attr_cols` without updating all downstream CaseFn references
+9. NEVER rebuild a Source external representation inside RecordFn
 
 
 Key File Locations
@@ -223,7 +232,7 @@ Fn loaders:           code/haipipe/record_base/builder/human.py
                       code/haipipe/record_base/builder/record.py
 Generated HumanFns:   code/haifn/fn_record/human/     (discover with ls)
 Generated RecordFns:  code/haifn/fn_record/record/    (discover with ls)
-Builders (edit here): examples/<Project>/tasks/<pipe-group>/02_record_fn_develop_<cohort>/
+Builders (edit here): examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<recordfn>/scripts/
                       (legacy workspaces: code-dev/1-PIPELINE/2-Record-WorkSpace/)
 Store path:           _WorkSpace/2-RecStore/
 Config template:      ../templates/config.yaml (this skill's own template)

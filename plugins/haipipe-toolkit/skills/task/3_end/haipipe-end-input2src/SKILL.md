@@ -1,11 +1,10 @@
 ---
 name: haipipe-end-input2src
-description: "Input2SrcFn specialist -- designs/reviews the wire-payload->record function in an Endpoint_Set (deserializes a JSON request into a ProcessedDF row). Platform-specific: one impl per deploy platform (SageMaker flat JSON vs Databricks dataframe_records); --platform picks (default sagemaker). Called by /haipipe-end when intent references Input2SrcFn, payload-to-record deserialization, or `input2src`."
-argument-hint: "[verb] [use_case] [--platform sagemaker|databricks] [args...]"
+description: "Input2SrcFn specialist -- designs/reviews the wire-payload-to-record function in an Endpoint_Set (deserializes a JSON request into a ProcessedDF row). Platform-specific: one impl per deploy platform (SageMaker flat JSON vs Databricks dataframe_records); --platform picks (default sagemaker). Called by /haipipe-end when intent references Input2SrcFn, payload-to-record deserialization, or input2src."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-07-08"
+  version: "0.3.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -110,6 +109,14 @@ Pair invariant
 For any record R and platform P: `Input2SrcFn_P(Src2InputFn_P(R)) == R` (the SAME-platform pair must roundtrip).
 Changes here typically require a paired update in `-src2input` for the same platform.
 
+Source parity invariant
+-----------------------
+Input2SrcFn is the serving mirror of the training SourceFn contract. For the
+same logical raw values and pinned ExternalStore release, both paths must emit
+the same ProcessNames, columns, dtypes, list/vector ordering, missing masks,
+and representation versions. Share pure transformation helpers where possible;
+platform-specific wrappers should own only wire-envelope decoding.
+
 Roundtrip test (REQUIRED for design and review)
 -------------------------------------------------
 
@@ -118,8 +125,9 @@ See the paired skill `haipipe-end-src2input` for the full test protocol.
 
 The test verifies:
 1. All non-empty source tables survive the roundtrip
-2. Features produced from original vs reconstructed data are identical
-3. Model predictions match within tolerance (< 0.001)
+2. Source scalar/list/vector fields, dtypes, masks, and versions are identical
+3. Features produced from original vs reconstructed data are identical
+4. Model predictions match within tolerance (< 0.001)
 
 **Why this matters:** Input2SrcFn must reconstruct ALL tables that CaseFns read — not just the ones that seem important.
 If Src2InputFn serializes only 4 of 19 tables and Input2SrcFn creates empty stubs for the rest, CaseFns that read the missing tables produce zero features → different predictions.

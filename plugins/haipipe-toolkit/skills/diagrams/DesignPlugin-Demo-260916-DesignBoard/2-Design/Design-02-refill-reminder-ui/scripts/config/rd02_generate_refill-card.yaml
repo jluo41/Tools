@@ -1,0 +1,29 @@
+goal: Refill approaching card
+kind: ui-card
+mode: compose
+basis: brief-only
+item: ITEM01
+design_intent:
+  move: Make the refill date and the one next action visible at a glance
+  basis: brief-only
+  stance: generate
+  expected_effect: null
+  failure_condition: null
+unit:
+  shape: single
+  count: 1
+max_iterations: 2
+review_mode: self
+criteria:
+- id: date
+  kind: contains
+  value: '{REFILL_DATE}'
+- id: cta
+  kind: contains
+  value: Review options
+- id: length
+  kind: max_chars
+  value: 200
+- id: layout
+  kind: visual
+  description: one heading, one action, one date; fits a 320px card

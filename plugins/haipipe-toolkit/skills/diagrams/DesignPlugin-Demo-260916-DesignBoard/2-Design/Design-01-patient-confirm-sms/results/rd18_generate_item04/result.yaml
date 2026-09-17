@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd18_generate_item04
+operation: generate
+target: Question opener
+producer: designer-context-10
+ticket_sha256: ec9aa0a4f92ac43efca9764f910d4febb051c2218c6467f1d66bc5e432165c50
+config_sha256: 3e850f363606378da56b5206e5f7e723a04d840121f07e265d050651b06a43e0
+verdict: pass
+artifacts:
+- path: content/sms.txt
+  sha256: c70505fdcaf305bfd665c5f12c69cc6a5296847115fdc38b8ac87aa2cd268a7f
+checks:
+  path: checks.yaml
+  sha256: ded43b08f23532c21c88e74368afa642def95a2a830626c14b9e7cd792cb8b9f
+targets: []

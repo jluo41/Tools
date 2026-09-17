@@ -1,0 +1,14 @@
+run: rd13_commission_item07
+item: ITEM07
+decision: release
+actor: JL
+words: 'Release the 8 explore bets for the 10-message task: JL''s go-ahead in chat,
+  260917'
+target: Under 90 characters
+inputs:
+- path: scripts/config/rd13_commission_item07.yaml
+  sha256: 779894cd2a40b3f8b4ebd03699a01e597a2411a99d1a88807b97f41bb829b1c5
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+at: '2026-09-17T04:03:57Z'

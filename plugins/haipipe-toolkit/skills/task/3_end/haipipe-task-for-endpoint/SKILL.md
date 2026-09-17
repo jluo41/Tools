@@ -3,16 +3,16 @@ name: haipipe-task-for-endpoint
 description: "Endpoint task specialist: scaffolds and executes one nested task that packages a trained ModelInstance_Set into a deployable Stage 6 Endpoint_Set via c_endpoint_nb.py. Called by /haipipe-task when task-type is endpoint; cross-references /haipipe-end for Fn authoring and deploy targets."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.5"
-  last_updated: "2026-09-04"
+  version: "0.3.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-endpoint
 =================================
 
-Scaffolds an **endpoint job with one nested Task Folder** (default C-series;
-letters are project-specific). The Task is the Page: it takes a trained
+Scaffolds an **endpoint Job with one nested Task Folder** under canonical BJTR.
+The Task is the Page: it takes a trained
 ModelInstance_Set (Stage 5, with examples) and packages it into a
 self-contained Endpoint_Set (Stage 6) using `Endpoint_Pipeline`.
 
@@ -25,13 +25,11 @@ flat endpoint jobs remain readable; every new scaffold uses the nested
 `jNN_*/tNN_*/` Task shape owned by `haipipe-task`.
 
 
-Position in the ABC pipeline
-------------------------------
+Position in the pipeline
+------------------------
 
 ```
-A-series  →  B-series  →  C-series  →  Deploy
-data         model         endpoint     (local / databricks / sagemaker)
-(aa/ab/ac/ad)  (b_model_nb)  (c_endpoint_nb)
+Data (Stages 1-4) → Model (Stage 5) → Endpoint (Stage 6) → Deploy
 
 haipipe-task-for-data   haipipe-task-for-fit   haipipe-task-for-endpoint
                                                        ↓
@@ -55,8 +53,9 @@ tasks/bNN_<endpoint-block>/
     │   │   └── r01_base.sh          ← papermill runner
     │   └── workflow/                ← Task Face: plan/report + inbox/
     │       └── inbox/application/   ← immutable X2 candidates, when present
-    ├── results/t01_<task_name>/r01_base/      ← created at runtime
-    └── notebooks/t01_<task_name>/r01_base.ipynb
+    │   ├── results/r01_base/          ← created at runtime
+    │   └── notebooks/r01_base.ipynb
+    └── src/                           ← only if shared by multiple Tasks
 ```
 
 The Page Face declares `folder-kind: task`, `task-type: endpoint`, and
@@ -90,6 +89,13 @@ Input2SrcFn: "<Input2SrcFnName>"
 deployment_config:
   environment: "dev"
   platform: "local"     # local | databricks | sagemaker
+
+# Required when SourceFn/Input2SrcFn uses external data
+external_contract:
+  release: "@<release>"
+  checksum: "<release-checksum>"
+  source_schema_version: "<version>"
+  vector_order_versions: {}
 ```
 
 
@@ -108,12 +114,17 @@ Pipeline flow (c_endpoint_nb.py steps)
 [6] Package for deployment (.tar.gz)
 ```
 
+Packaging also verifies the training SourceFn versus serving Input2SrcFn
+ProcessDF parity and records the external release/checksum plus Source vector
+schema/order versions in `manifest.json`.
+
 Output structure:
 
 ```
 6-EndpointStore/{endpoint_name}/   (canonical layout: ../../haipipe-end/ref/0-overview.md)
 ├── model/                    ← copied from ModelInstance_Set
 ├── code/                     ← codebase snapshot (haipipe, hainn, haifn)
+├── external/                 ← pinned release used by SourceFn/Input2SrcFn
 ├── examples/                 ← from ModelInstance_Set + payload.json
 │   ├── example_000/
 │   │   ├── ProcName_to_ProcDf/   real source data (parquet)
@@ -192,7 +203,7 @@ Cross-references
 Scaffold flow
 -------------
 
-  1. Identify project + block (letter C).
+  1. Identify project + canonical `bNN_*` Block and `jNN_*` Job.
   2. Collect metadata (NN, name, model ref, 5 Fn names, _meta).
   3. Create `t01_<task_name>/t01_<task_name>.md` and `workflow/`.
   4. Copy `c_endpoint_nb.py` to `t01_<task_name>/scripts/<task_name>.py`
@@ -211,6 +222,8 @@ MUST NOT
 - Create `README.md`.
 - Put Task-owned code/config/runs at the job root; new work uses the nested
   Task Folder.
+- Follow an unpinned host-level ExternalStore release or call a live API from
+  Input2SrcFn.
 
 
 Return contract

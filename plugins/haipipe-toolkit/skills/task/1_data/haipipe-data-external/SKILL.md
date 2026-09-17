@@ -6,11 +6,10 @@ description: >-
   Source/Record sets. Called by /haipipe-data. Trigger: external, ExternalFn,
   dimension, lookup, NPPES, ADI, MHI, NPI lookup, NDC lookup, NCPDP, zip5,
   zip3, engagement features, vendor data.
-argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-08"
+  version: "0.2.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -20,9 +19,9 @@ Skill: haipipe-data-external
 External-reference specialist.
 Owns all ExternalFn work and the ExternalStore layer.
 
-Externals are reference assets (dimension lookups + engagement aggregates) that any cohort-scoped Stage 1-4 chef can pull from.
-They are NOT a layer in series with Stages 1-4 -- they are a sideways pantry.
-RecordFn and CaseFn declare external dependencies by primary key (NPI, NDC, NCPDP, zip3, zip5, patient_id).
+Externals are versioned reference assets (dimension lookups + engagement snapshots) that feed SourceFn.
+They are NOT a sequential rung between Raw and Source: ExternalStore owns acquisition, snapshotting, vocabulary, and release identity; SourceFn owns cohort-scoped attachment into stable ProcessDFs.
+RecordFn and CaseFn consume the resulting Source fields rather than reopening ExternalStore independently.
 
 Two asset families live under ExternalStore:
 
@@ -150,7 +149,9 @@ MUST DO / MUST NOT
 - For `cook` and `refresh`: prerequisite
   `source .venv/bin/activate && source env.sh`.
 - For `join`: NEVER actually merge data -- only preview match rates and
-  suggest a config snippet. Real joins materialize in RecordFn / CaseFn.
+  suggest a SourceFn config/contract snippet. Real joins materialize in
+  SourceFn; RecordFn performs entity/time/as-of alignment on the resulting
+  fields and CaseFn derives model-facing features.
 - NEVER edit `code/haifn/fn_external/` (does not yet exist in Phase 1;
   if Phase 2 promotion happens, it becomes generated and read-only).
 - NEVER overwrite an existing `@{version}` release without explicit user

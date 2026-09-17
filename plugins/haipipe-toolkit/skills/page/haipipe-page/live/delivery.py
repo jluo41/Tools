@@ -327,7 +327,7 @@ def render_workspace(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
                       lane["state"], manifest, rows or "<li>no delivery files</li>"))
     source = receipt["source"]
     return f"""<!doctype html><meta charset=utf-8>
-<title>📤 Delivery Workspace · {html.escape(page_src.stem)}</title>
+<title>📤 Delivery Space · {html.escape(page_src.stem)}</title>
 <style>
 :root{{--bg:#fff;--fg:#1c1d1f;--mut:#71727a;--line:#e4e4e7;--card:#f7f7f8;--acc:#3b6ea5;--bad:#a43d35;--warn:#996b00;--ok:#24733d}}
 @media(prefers-color-scheme:dark){{--bg:#161719;--fg:#e8e8e6;--mut:#9a9a97;--line:#2c2e33;--card:#1d1f23;--acc:#7aa7d8;--bad:#f08b80;--warn:#e4bd62;--ok:#8bd49a}}
@@ -344,7 +344,7 @@ h1{{font-size:18px;margin:0 0 3px}} h2{{font-size:14px;margin:0 0 4px}}
 .state-pass,.state-stale,.state-unverified,.state-not-built{{font-size:12px;font-weight:600}}
 </style>
 <header><button class=toolbar onclick="location.reload()">Refresh check</button>
-<h1>📤 Delivery Workspace · {html.escape(page_src.stem)}</h1>
+<h1>📤 Delivery Space · {html.escape(page_src.stem)}</h1>
 <div class=mut>Read-only consistency projection · Page source is authoritative · this view never rebuilds or edits delivery files</div></header>
 <div class=source><div><b>Authority</b> <code>{html.escape(source["path"])}</code></div>
 <div><b>SHA-256</b> <code>{source["sha256"]}</code></div><div><b>Result</b> {html.escape(summary)}</div></div>

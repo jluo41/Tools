@@ -36,6 +36,7 @@ A question spans four pages on the InsightBoard. This verb opens the next level,
    - I settled, no K → `3-K-knowledge/K<NN>-<slug>/` with `folder-kind: knowledge`
    - K settled, no W → `4-W-wisdom/W<NN>-<slug>/` with `folder-kind: wisdom`
    On a partition-major board (`ref/partition.md`) the rungs live inside partition groups: resolve the owning group from the question's Queue CELL (its column names the partition; a dot cell routes to the X group), then open `<group>/<L><rung letter><NN>-<slug>/` with the partition letter prefixed to the page id. The phase-owned Folder contracts are the same four.
+   On such a board "K settled, no W" is NOT enough to open a W page: the X group's verdict page must have settled first (`fn/verdict.md`). Under POOL a non-template W page defers by id to F's W page and exports no handoff; under SPLIT the differing partition's W page may counsel. Check the verdict before opening any W.
 4. Load `haipipe-folder`, `haipipe-page`, `haipipe-insight-workflow`, then the matching phase contract. For missing or reused evidence load `haipipe-page-outline`, `haipipe-page-evidence`, and `haipipe-plugin-outline/ref/item-table.md`; external evidence enters through Supporting Run Results, while Related Page links remain Context.
 5. Cite parent rows through the exact `PARENTS` grammar in
    `haipipe-insight/ref/page-v2-adapter.md`: Page path, Page version, content

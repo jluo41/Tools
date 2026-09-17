@@ -14,6 +14,7 @@ class PluginMenuTest(unittest.TestCase):
         slides = (ROOT / "70-plugin-slides.js").read_text(encoding="utf-8")
         draw = (ROOT / "80-plugin-draw.js").read_text(encoding="utf-8")
         delivery = (ROOT / "82-plugin-delivery.js").read_text(encoding="utf-8")
+        design = (ROOT / "30-plugin-design.js").read_text(encoding="utf-8")
 
         self.assertIn("var MENUS = ['plugin'];", registry)
         self.assertIn("pick.innerHTML = group('\\u{1F50C} Plugin', 'plugin');", picker)
@@ -24,6 +25,9 @@ class PluginMenuTest(unittest.TestCase):
         self.assertNotIn("window.boardPlugins.register({", slides)
         self.assertNotIn("window.boardPlugins.register({", draw)
         self.assertIn("id: 'delivery'", delivery)
+        self.assertIn("id: 'design'", design)
+        self.assertIn("data-folder-kind", design)
+        self.assertIn("Design Items across Goal, Design, Insight, Run, and Delivery Space", design)
 
     def test_page_pane_hides_its_duplicate_picker(self):
         shell = (ROOT.parents[2] / "live" / "shell.py").read_text(encoding="utf-8")
@@ -58,6 +62,7 @@ class PluginMenuTest(unittest.TestCase):
         sources = {
             "outline": ROOT / "07-plugin-outline.js",
             "studio": ROOT / "50-structure.js",
+            "design": ROOT / "30-plugin-design.js",
             "delivery": ROOT / "82-plugin-delivery.js",
             "folder": ROOT / "06-plugin-folder.js",
             "labeling": ROOT / "60-plugin-labeling.js",
@@ -65,6 +70,7 @@ class PluginMenuTest(unittest.TestCase):
         expected = {
             "outline": 10,
             "studio": 20,
+            "design": 30,
             "runs": 30,
             "delivery": 40,
             "folder": 50,

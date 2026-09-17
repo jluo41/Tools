@@ -11,7 +11,7 @@
 #   python -m scripts.haistepcli.source --config <this_file>.yaml
 # ==============================================================================
 
-# External data version (reference data like NDC, NPI codes)
+# External data release used by SourceFn (ZIP/NPI/NDC/NCPDP/engagement)
 external_version: "@v1215"
 
 SourceArgs:
@@ -35,6 +35,18 @@ SourceArgs:
   #     ls code/haifn/fn_source/
   # -------------------------------------------------------------------
   SourceFnName: "<SourceFnName>"
+
+  # Optional, resolved by the SourceFn/builder contract. Each dependency must
+  # pin a ProcessName/key mapping and preserve release/vector metadata.
+  external_inputs:
+    # zip5:
+    #   process_name: Ptt
+    #   process_column: zipcode5
+    #   external_key: zip5_original
+    #   representation:
+    #     dtype: float32
+    #     ordering: "zip5-v1"
+    #     emit_missing_mask: true
 
   # -------------------------------------------------------------------
   # raw_data_path  (OPTIONAL)

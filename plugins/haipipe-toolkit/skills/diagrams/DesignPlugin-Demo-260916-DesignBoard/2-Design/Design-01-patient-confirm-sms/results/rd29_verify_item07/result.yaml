@@ -1,0 +1,15 @@
+schema: haipipe.design-result/v2
+run: rd29_verify_item07
+operation: verify
+target: Under 90 characters
+producer: reviewer-context-33
+ticket_sha256: 67cb01f2d87dcb1b3c4033b7dbee1668aa125182e510778887d29f8b5b7e98ab
+config_sha256: 7c82c23abb8d454a927a6528910347395eddebce1c24aaa5cbe3b5f6ef135b42
+artifacts: []
+checks:
+  path: checks.yaml
+  sha256: 024f73d9bf76efb9af0bfb45850b869c2cb0a8777a0f6739e23e3b71c3542208
+targets:
+- path: results/rd21_generate_item07/result.yaml
+  sha256: 1aebd182cc419c5fc84f0a018e8926a4c5c439c4504f97230fa388b0412c10a4
+verdict: pass

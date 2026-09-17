@@ -1,0 +1,18 @@
+checks:
+- target: content/ui-card.txt
+  criterion: date
+  status: pass
+  evidence: '''{REFILL_DATE}'' found in the artifact'
+- target: content/ui-card.txt
+  criterion: cta
+  status: pass
+  evidence: '''Review options'' found in the artifact'
+- target: content/ui-card.txt
+  criterion: length
+  status: pass
+  evidence: 71 characters; configured maximum is 200
+- target: content/ui-card.txt
+  criterion: layout
+  status: pass
+  evidence: 'read against: one heading, one action, one date; fits a 320px card ·
+    pass'

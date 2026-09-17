@@ -1,0 +1,20 @@
+schema: haipipe.design-ticket/v2
+run: rd22_generate_item08
+operation: generate
+worker: haipipe-design-unit
+actor: designer-context-14
+item: ITEM08
+target: Two steps
+config:
+  path: scripts/config/rd22_generate_item08.yaml
+  sha256: 281387dcbe5958f228119f61c09535c54b8d5ea8347a1d62f6375343bc264e81
+approval:
+  actor: JL
+  record:
+    path: results/rd14_commission_item08/decision.yaml
+    sha256: 57ac3c1f107c2c39b9a3760d72fa848af2a86dbc0206de3bc3f533324b6b759c
+inputs:
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+targets: []

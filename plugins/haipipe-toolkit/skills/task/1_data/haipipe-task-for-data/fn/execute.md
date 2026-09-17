@@ -8,7 +8,7 @@ Detects the pipeline stage from the script, reads partition config, and runs via
 Step 1 — Detect stage from script
 -----------------------------------
 
-Read the task `.py` and infer stage from imports:
+Read the Task's `scripts/<worker>.py` and infer stage from imports:
 
 ```
 from haipipe.source_base import Source_Pipeline   → Stage 1 (Source)
@@ -47,7 +47,7 @@ bash runs/<RUN>.sh
 ```
 
 This:
-1. Converts `{TASK_NAME}.py` → `{TASK_NAME}.ipynb` (template)
+1. Converts `scripts/<worker>.py` → `notebooks/_source.ipynb`
 2. Runs `papermill {template} notebooks/<RUN>.ipynb -p CONFIG {config}`
 3. Writes `results/<RUN>/runtime.yaml`
 
@@ -83,6 +83,8 @@ Step 4 — Per-stage notes
 ### Stage 1 (Source)
 - No partitions. Single run.
 - Output: `_WorkSpace/1-SourceStore/{raw_data_name}/@{SourceFnName}/`
+- If external enrichment is used, verify the pinned release and scalar/list/vector
+  schema metadata in the SourceSet manifest.
 
 ### Stage 2 (Record)
 - Partitions by patients. Each partition loads only its patient slice

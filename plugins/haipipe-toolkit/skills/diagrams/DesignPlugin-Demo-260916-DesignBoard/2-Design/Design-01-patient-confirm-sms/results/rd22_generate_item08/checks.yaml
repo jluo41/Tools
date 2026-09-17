@@ -1,0 +1,29 @@
+checks:
+  - target: content/sms.txt
+    criterion: r01
+    status: pass
+    evidence: "substring '{NAME}' present at code points 5-10 of 149, inside the provider attribution \"Dr. {NAME}'s office\""
+  - target: content/sms.txt
+    criterion: r02
+    status: pass
+    evidence: "exactly two numbered steps in the body: '1. Check the new details.' and '2. Confirm they are correct.'; digit-period step markers found: 1, 2; no other digit appears in the artifact"
+  - target: content/sms.txt
+    criterion: r03
+    status: pass
+    evidence: "149 Unicode code points (149 UTF-8 bytes) including the opt-out suffix; configured maximum is 160"
+  - target: content/sms.txt
+    criterion: r04
+    status: pass
+    evidence: "artifact ends with the exact substring 'Reply STOP to opt-out' (code points 129-149 of 149); no trailing punctuation or newline after it"
+  - target: content/sms.txt
+    criterion: r05
+    status: pass
+    evidence: "read every word: no percent sign, no click/lift/rate/improve/more-likely/better wording, no interval or number other than the step markers, no comparison to another message or arm"
+  - target: content/sms.txt
+    criterion: r06
+    status: pass
+    evidence: "one fixed message for the whole population: no age, gender, weekday, date, state, city or region token; the only variable is the sender placeholder {NAME}, which is provider attribution, not recipient segmentation"
+  - target: content/sms.txt
+    criterion: r07
+    status: pass
+    evidence: "one attribution clause plus two short steps about checking and confirming prescription details; no deadline, urgency word (must/urgent/immediately/now), threat, consequence, or reward; wording stays on prescription review only"

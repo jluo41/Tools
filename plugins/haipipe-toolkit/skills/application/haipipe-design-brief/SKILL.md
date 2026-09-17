@@ -3,7 +3,7 @@ name: haipipe-design-brief
 description: >-
   Canonical owner of the DesignBoard's one Brief Folder: why the Application
   exists, for whom, the behavior/outcome and venue boundary, the insight needs
-  it raises, and the Design roster it authorizes. Trigger: design brief,
+  it raises, and the list of designs it authorizes. Trigger: design brief,
   application brief, folder-kind brief, /haipipe-design-brief.
 metadata:
   version: "0.4.0"
@@ -15,10 +15,12 @@ metadata:
   outline:
     mode: fixed
     source: "this SKILL.md"
-    shape: "Opportunity → Audience Set and Behavior → Outcome and Kill Criteria → Venue Scope → Promise → Insight Needs Raised → Frozen Signed-W Inputs → Design Roster and Handoff"
+    shape: "Opportunity → Audience Set and Behavior → Outcome and Kill Criteria → Venue Scope → Promise → Insight Needs Raised → Frozen Signed-W Inputs → What to design and handoff"
 ---
 
 # /haipipe-design-brief · frame the Application
+
+Version governance: this Design skill stays at `0.4.0`. Only explicit user approval may authorize `1.0.0`.
 
 ## Version governance
 
@@ -32,7 +34,7 @@ uses `folder-kind: brief` and its own Page workflow.
 ## Position
 
 The Brief lives at `0-BR-brief/BR00-brief/` and is the board's only authority
-for scope, promise, needs raised, and Design roster. It is a precondition for
+for scope, promise, needs raised, and the list of designs. It is a precondition for
 Design Commissions, not a Design workflow phase.
 
 ## Folder Kind
@@ -52,14 +54,14 @@ to a person's edit.
 
 Use the eight fixed divisions declared in metadata. Every insight need has a
 stable QD/QI/QK/QW id, neutral wording, affected partition/audience, target
-rung, derived Question Group, and blocked Aim. The Design roster is one row per
+rung, derived Question Group, and blocked Aim. The list of designs is one line per
 audience × behavior job × primary venue.
 
 ## Task Face
 
 Resolve `born-of:` and `reads:`; reconcile opportunity, audience, behavior,
 outcome/kill, venue, and promise; raise unanswered needs; bind already accepted
-core inputs; and release a Design roster. Do not answer a need locally.
+core inputs; and release the list of designs. Do not answer a need locally.
 
 ## Plugins
 
@@ -73,12 +75,12 @@ core inputs; and release a Design roster. Do not answer a need locally.
 
 The Brief is releasable when birth resolves, scope and kill criteria are
 explicit, every load-bearing premise is a bound input or neutral need, and
-every roster row has one audience/job/venue. The Page workflow releases that
+every line has one audience/job/venue. The Page workflow releases that
 exact version. No source inventory or preferred answer remains.
 
 ## Handoff
 
-Each Commission pins the released Brief version, board `reads:`, Design roster,
+Each Commission pins the released Brief version, board `reads:`, the list of designs,
 venue packs, and current need/register state.
 
 ## Clean break

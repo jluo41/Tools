@@ -14,7 +14,7 @@ The verb every session starts with. It reports state and never changes a Page.
 board                           head page        pages    open
 ──────────────────────────────────────────────────────────────────────────
 SmsClickR4-InsightBoard         MT00-meta ✅     I01 ✅ I02 🔨   QI3 unanswered
-YoungMaleRefill-DesignBoard     BR00-brief ✅    DS01 🔨         R3 unaccepted
+YoungMaleRefill-DesignBoard     BR00-brief ✅    Design-01 🔨         R3 unaccepted
 ```
 
 For each board report, in this order:

@@ -2,8 +2,7 @@ fn-scaffold: Scaffold a data-pipeline job
 ==================================================
 
 Invokes one of the Stage 1-4 builders (Source / Record / Case / AIData) to produce data artifacts under `_WorkSpace/{1..4}-*Store/`.
-Group letter default: **D**.
-Output: `tasks/D{NN}_<group>/{NN}_<job_name>/`.
+Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block
@@ -16,7 +15,7 @@ Step 1 — Identify project + block
 Step 2 — Collect metadata
 --------------------------
 
-- 2-digit NN: next free in this group (no gaps).
+- `jNN_*`: one shared logic/version family; `tNN_*`: next free Task index.
 - snake_case task_name: descriptive
   (e.g., `build_source_wellreadi`, `build_record_cgm5min`, `build_aidata_eventglucose`).
 - Stage (1..4): which builder stage.
@@ -32,27 +31,29 @@ The `.py` is an instantiation of a generic template.
 Copy the right template from `code/scripts/haistepnb/`, then change only the CONFIG default and docstring:
 
 ```
-Stage A1 → cp code/scripts/haistepnb/a1_source_nb.py → {task}/{NN}_{job_name}.py
-Stage A2 → cp code/scripts/haistepnb/a2_record_nb.py → {task}/{NN}_{job_name}.py
-Stage A3 → cp code/scripts/haistepnb/a3_case_nb.py   → {task}/{NN}_{job_name}.py
-Stage A4 → cp code/scripts/haistepnb/a4_aidata_nb.py → {task}/{NN}_{job_name}.py
+Stage A1 → copy code/scripts/haistepnb/a1_source_nb.py into tNN_<task>/scripts/<worker>.py
+Stage A2 → copy code/scripts/haistepnb/a2_record_nb.py into tNN_<task>/scripts/<worker>.py
+Stage A3 → copy code/scripts/haistepnb/a3_case_nb.py into tNN_<task>/scripts/<worker>.py
+Stage A4 → copy code/scripts/haistepnb/a4_aidata_nb.py into tNN_<task>/scripts/<worker>.py
 ```
 
 After copy:
-- Set CONFIG default to `examples/<project>/tasks/<group>/<task>/configs/run_<name>.yaml`
+- Set CONFIG default to `examples/<project>/tasks/bNN_<block>/jNN_<job>/tNN_<task>/scripts/config/rNN_<run>.yaml`
 - Update the docstring (first line + Input/Output) with project-specific info
 
 Result:
 ```
-{G}{NN}_<group>/
-└── {NN}_<job_name>/
-    ├── {NN}_<job_name>.py                  instantiation of haistepnb template
-    ├── configs/
-    │   └── run_<task_name>.yaml             from ref/config-seed.yaml
-    ├── runs/
-    │   └── run_<task_name>.sh               from haipipe-task/ref/run-sh-template.sh
-    ├── results/                              empty (heavy data → _WorkSpace/)
-    └── notebooks/
+bNN_<block>/
+└── jNN_<job>/
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── scripts/<worker>.py
+        ├── scripts/config/r01_base.yaml
+        ├── runs/r01_base.sh
+        ├── results/
+        ├── notebooks/
+        ├── outline/
+        └── workflow/
 ```
 
 The `.ipynb` is NOT created at scaffold time — `run.sh` auto-generates it via `convert_to_notebooks.py` at execution time.
@@ -62,7 +63,7 @@ It is an intermediate output, not source.
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/run_<task_name>.yaml` (matches the Step 3 tree and SKILL.md).
+Copy `ref/config-seed.yaml` to `scripts/config/r01_base.yaml`.
 Fill in:
 - `_meta:` (purpose / input / output).
 - `stage:` (1..4).
@@ -73,8 +74,8 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/run_<task_name>.sh`.
-Set `TASK_NAME="{NN}_{job_name}"`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/r01_base.sh`.
+Set `TASK_NAME="tNN_<task>"`.
 
 
 Step 6 — Cross-skill link
@@ -94,7 +95,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded data-pipeline task <NN>_<name> under D{NN}_<group>; stage <S>.
+summary:   Scaffolded data-pipeline Task tNN_<task> under bNN_<block>/jNN_<job>; stage <S>.
 artifacts: [paths created]
 next:      /haipipe-data-{source|record|case|aidata}  OR run the builder
 ```
@@ -124,7 +125,7 @@ For the first run after this scaffold, do ONE of:
      `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`
      (skips the gate for one run; logs a warning to stderr.)
 
-  3. **Permanent skip for this config** — add to `configs/<RUN>.yaml`:
+  3. **Permanent skip for this config** — add to `scripts/config/<RUN>.yaml`:
      ```yaml
      _meta:
        skip_review: true

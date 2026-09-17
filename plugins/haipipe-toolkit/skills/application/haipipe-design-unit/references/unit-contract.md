@@ -15,6 +15,7 @@ regular file plus lowercase SHA-256. Never dispatch YAML through bash.
 schema: haipipe.design-ticket/v2
 run: rd01_generate_sms
 operation: generate
+item: ITEM01            # the Design Item this Run serves (register id)
 worker: haipipe-design-unit
 actor: designer-context-01
 target: One supportive prescription-confirmation SMS
@@ -25,6 +26,10 @@ approval:
 inputs: []  # role + path + sha256; optional real upstream run_id
 targets: [] # verify only: exact generation result.yaml refs
 ```
+
+`item` names the Design Item register row (`outline/<stem>-design-items.md`)
+this Run serves. The checker does not interpret it; the Design plugin groups
+Runs by it. Commission and Adopt Tickets carry it too.
 
 Roles: `evidence | inspiration | reference | avoid | base | feedback | handoff`.
 Role never promotes authority. `run_id` normally names a real Supporting/native

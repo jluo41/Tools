@@ -1,0 +1,22 @@
+schema: haipipe.design-ticket/v2
+run: rd26_verify_item04
+operation: verify
+worker: haipipe-design-unit
+actor: reviewer-context-31
+item: ITEM04
+target: Question opener
+config:
+  path: scripts/config/rd26_verify_item04.yaml
+  sha256: 2481f37a4446c8b53795e5082fa1dc2ce9b45b2f6df90fc06b62b1d827e6261f
+approval:
+  actor: JL
+  record:
+    path: results/rd10_commission_item04/decision.yaml
+    sha256: 70afc696a5662bd60fd5e9fcc9a405467bee31cc4229c4ac18385affb371fd68
+inputs:
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+targets:
+- path: results/rd18_generate_item04/result.yaml
+  sha256: f0f56a749e57c36cfa58b33c72646c54dc3cf41f97eb877b1990630888bf751d

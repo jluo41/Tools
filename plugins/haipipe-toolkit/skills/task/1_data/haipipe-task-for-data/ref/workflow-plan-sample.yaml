@@ -13,12 +13,12 @@ skill: haipipe-task-for-data
 # ─── I: Input ────────────────────────────────────────────────────
 input:
   args:
-    config: configs/<RUN>.yaml
+    config: scripts/config/rNN_<RUN>.yaml
     stage: <1|2|3|4>
     fn_type: <SourceFn|RecordFn|CaseFn|TfmFn|SplitFn>
   files_in:
-    - <NN>_<TASK>.py
-    - configs/<RUN>.yaml
+    - scripts/<worker>.py
+    - scripts/config/rNN_<RUN>.yaml
     - _WorkSpace/<UPSTREAM_STORE>/<UPSTREAM_ASSET>
 
 # ─── P: Phases ───────────────────────────────────────────────────
@@ -41,7 +41,7 @@ phases:
       - label: "build:transform"
         type: agent
         required: true
-        prompt: "Apply <FnType> transformations (filter, join, feature engineering)"
+        prompt: "Apply the stage-owned <FnType> transformation; SourceFn may attach pinned external data, Record aligns, Case derives features"
         files_in: []
         files_out: []
 

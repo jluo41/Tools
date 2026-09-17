@@ -1,5 +1,5 @@
 # =============================================================================
-# Template for configs/<NAME>.yaml — data-pipeline task
+# Template for tNN_<task>/scripts/config/rNN_<run>.yaml
 # =============================================================================
 # Inherits the _meta: block convention from
 # ../../../haipipe-task/ref/config-meta-template.yaml.
@@ -25,6 +25,9 @@ _meta:
 #   raw_data_path: "_WorkSpace/0-RawDataStore/<cohort>/"
 #   use_cache: true
 #   save_cache: true
+# external_version: "@<release>"          # required when SourceFn uses ExternalStore
+# Source external vector fields must declare dtype/order/mask/schema version;
+# time-varying assets also carry snapshot_as_of and window bounds.
 
 # =============================================================================
 # Stage 2 (Record) — partition by patients

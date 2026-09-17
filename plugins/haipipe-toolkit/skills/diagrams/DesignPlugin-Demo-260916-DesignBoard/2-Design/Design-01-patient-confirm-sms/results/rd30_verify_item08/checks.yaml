@@ -1,0 +1,29 @@
+checks:
+- target: results/rd22_generate_item08/result.yaml::content/sms.txt
+  criterion: r01
+  status: pass
+  evidence: '''{NAME}'' present verbatim exactly once at byte offsets 4-9 of 149, inside the sender prefix ''Dr. {NAME}''''s office:''; the artifact holds exactly one ''{'' and one ''}'''
+- target: results/rd22_generate_item08/result.yaml::content/sms.txt
+  criterion: r02
+  status: pass
+  evidence: 'Read every word. Exactly two numbered steps, inline on one line: ''1. Check the new details.'' (offsets 73-97) and ''2. Confirm they are correct.'' (offsets 99-126). The only digits in the artifact are the step markers 1 and 2; no third marker, no bullet, no unnumbered instruction'
+- target: results/rd22_generate_item08/result.yaml::content/sms.txt
+  criterion: r03
+  status: pass
+  evidence: '149 Unicode code points (149 UTF-8 bytes, all ASCII, single line, no trailing newline); configured maximum is 160'
+- target: results/rd22_generate_item08/result.yaml::content/sms.txt
+  criterion: r04
+  status: pass
+  evidence: '''Reply STOP to opt-out'' present verbatim exactly once as the final clause (byte offsets 128-148 of 149); nothing follows it'
+- target: results/rd22_generate_item08/result.yaml::content/sms.txt
+  criterion: r05
+  status: pass
+  evidence: 'No ''%'', no number other than the two step markers, no effect or comparative wording (lift, increase, improve, boost, more, better, proven, likely, higher), and no arm, winner, test, or click reference. The [65.56, 66.56] forecast frozen in design_intent does not appear in the text'
+- target: results/rd22_generate_item08/result.yaml::content/sms.txt
+  criterion: r06
+  status: pass
+  evidence: 'One artifact with no conditional or variant text. No mention of age, gender, weekday, weekend, date, region, state, or city. The only placeholder is the sender-name token ''{NAME}'', which identifies the prescriber''s office and does not segment recipients on any axis named by FW01 W2'
+- target: results/rd22_generate_item08/result.yaml::content/sms.txt
+  criterion: r07
+  status: pass
+  evidence: 'Plain prescription-review framing only: sender prefix, ''new prescription details are ready for your review'', two review actions (check, confirm), opt-out. No urgency or pressure words (must, now, immediately, urgent, deadline, warning, expire), no threat, reward, or stated consequence, and no request beyond reviewing and confirming the prescription details'

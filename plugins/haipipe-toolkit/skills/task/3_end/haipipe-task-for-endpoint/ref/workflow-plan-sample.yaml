@@ -13,11 +13,11 @@ skill: haipipe-task-for-endpoint
 # ─── I: Input ────────────────────────────────────────────────────
 input:
   args:
-    config: configs/run_<TASK>.yaml
+    config: scripts/config/rNN_<RUN>.yaml
     modelinstance: <_WorkSpace path to ModelInstance_Set (with examples)>
   files_in:
-    - <NN>_<TASK>.py
-    - configs/run_<TASK>.yaml
+    - scripts/<worker>.py
+    - scripts/config/rNN_<RUN>.yaml
     - _WorkSpace/5-ModelInstanceStore/<MODELINSTANCE>
 
 # ─── P: Phases ───────────────────────────────────────────────────
@@ -38,7 +38,7 @@ phases:
         required: true
         prompt: "Resolve MetaFn/TrigFn/PostFn/Src2InputFn/Input2SrcFn in code/haifn/fn_endpoint/"
         files_in:
-          - configs/run_<TASK>.yaml
+          - scripts/config/rNN_<RUN>.yaml
         files_out: []
 
   - title: Package

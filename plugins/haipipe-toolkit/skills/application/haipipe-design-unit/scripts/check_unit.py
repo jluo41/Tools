@@ -9,6 +9,10 @@ import sys
 import yaml
 
 RUN = re.compile(r"rd[0-9]{2,}_(generate|verify)_[a-z0-9][a-z0-9_-]*")
+# Commission and Adopt are caller-owned human decision Runs (run-profile.md).
+# The worker never produces them, so the folder audit checks only their
+# Ticket/Result pairing and a recorded decision, never worker semantics.
+DECISION_RUN = re.compile(r"rd[0-9]{2,}_(commission|adopt)_[a-z0-9][a-z0-9_-]*")
 HASH = re.compile(r"[0-9a-f]{64}")
 ROLES = {"evidence", "inspiration", "reference", "avoid", "base", "feedback", "handoff"}
 KINDS = {"max_chars", "contains", "excludes", "semantic", "visual"}
@@ -300,6 +304,31 @@ def validate(ticket, result=None):
         return [str(exc)]
 
 
+def decision_run(folder, ticket):
+    """Pairing gate for a Commission or Adopt Ticket: identity, receipt, decision."""
+    try:
+        data = document(ticket)
+        need(data.get("schema") == TICKET_SCHEMA, "unsupported Ticket schema")
+        need(data.get("run") == ticket.stem, "Ticket identity mismatch")
+        op = DECISION_RUN.fullmatch(ticket.stem).group(1)
+        need(data.get("operation") == op, "operation does not match Ticket stem")
+        output = folder / "results" / ticket.stem
+        runtime = document(output / "runtime.yaml")
+        need(runtime.get("run") == ticket.stem, "runtime run mismatch")
+        status = runtime.get("status")
+        need(status in {"planned", "running", "complete", "failed", "blocked", "superseded"},
+             "unknown runtime status")
+        if status == "complete":
+            decision = document(output / "decision.yaml")
+            need(decision.get("run") == ticket.stem, "decision run mismatch")
+            string(decision.get("decision"), "decision.decision")
+            string(decision.get("actor"), "decision.actor")
+            need(bool(runtime.get("finished_at")), "runtime missing finished_at")
+        return []
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, yaml.YAMLError) as exc:
+        return [str(exc)]
+
+
 def audit_folder(folder):
     """Audit only allocated native Design YAML Tickets and their runtime pairs."""
     folder = Path(folder)
@@ -309,6 +338,9 @@ def audit_folder(folder):
         issues.append(f"{ticket}: retired Design Run identity is unsupported")
     tickets = sorted((folder / "runs").glob("rd*_*.yaml"))
     for ticket in tickets:
+        if DECISION_RUN.fullmatch(ticket.stem):
+            issues.extend(f"{ticket}: {p}" for p in decision_run(folder, ticket))
+            continue
         for problem in validate(ticket):
             issues.append(f"{ticket}: {problem}")
         output = folder / "results" / ticket.stem

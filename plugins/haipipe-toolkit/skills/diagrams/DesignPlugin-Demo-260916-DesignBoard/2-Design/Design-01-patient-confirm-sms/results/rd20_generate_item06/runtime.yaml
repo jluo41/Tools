@@ -1,0 +1,27 @@
+run: rd20_generate_item06
+family: design
+operation: generate
+item: ITEM06
+target: Why it matters
+status: complete
+ticket: runs/rd20_generate_item06.yaml
+result: results/rd20_generate_item06/
+ticket_sha256: 3ec411ae61b888f81bb2910af8b0005534ba24e35958c99e5c8547979bffe58d
+inputs:
+- path: scripts/config/rd20_generate_item06.yaml
+  sha256: 2bc62f411e49c59e050840029d1ec049d0e5c9b5bbda0453c67bd21e142d7bea
+- path: results/rd12_commission_item06/decision.yaml
+  sha256: 0ee1cb746b1ce1565a8dcac65eaadff8950c1277175f4a4535d3fdb9deb10d44
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+worker:
+  kind: skill
+  name: haipipe-design-unit
+  actor: designer-context-12
+queued_at: '2026-09-17T04:03:57Z'
+started_at: '2026-09-17T04:03:57Z'
+finished_at: '2026-09-17T04:09:17Z'
+failure: null
+route: verify
+terminal_outcome: pass

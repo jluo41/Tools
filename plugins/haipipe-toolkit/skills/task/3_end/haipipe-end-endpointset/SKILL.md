@@ -1,11 +1,10 @@
 ---
 name: haipipe-end-endpointset
-description: "Endpoint_Set artifact-as-whole specialist: target-agnostic operations on the deployable artifact -- package (Stage 5 -> 6), local inference() smoke test, structural review, dashboard. Per-Fn-type design/review lives in haipipe-end-{meta,trig,post,src2input,input2src}; deployment in haipipe-end-deploy-*. Called by /haipipe-end when the request is about the artifact itself."
-argument-hint: "[verb] [args...]"
+description: "Endpoint_Set artifact-as-whole specialist: target-agnostic operations on the deployable artifact -- package from Stage 5 to 6, local inference smoke test, structural review, and dashboard. Per-Fn-type design/review lives in haipipe-end specialists; deployment lives in haipipe-end-deploy specialists."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-07-08"
+  version: "0.2.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -139,6 +138,11 @@ _WorkSpace/6-EndpointStore/{endpoint_name}/
 ├── meta.json                  MetaFn output (name mappings + metadata)
 └── manifest.json              config + lineage — everything a deploy specialist needs
 ```
+
+When SourceFn/Input2SrcFn uses external data, the artifact also contains an
+immutable `external/` snapshot. `manifest.json` records its release, checksums,
+and Source vector schema/order versions. Packaging fails when those identities
+are absent or a parity fixture cannot reproduce the training ProcessDF contract.
 (Canonical layout: `../haipipe-end/ref/0-overview.md` "Stage 6 (output)" — do not restate elsewhere.)
 
 Deploy specialists (`-deploy-*`) READ this artifact and never modify it.
@@ -146,38 +150,32 @@ If a deploy fails because of a missing/malformed field here, the fix lives in th
 
 ---
 
-Job lifecycle (00_develop → 01_package)
--------------------------------------------------
+Job lifecycle (develop → package)
+---------------------------------
 
-In the /haipipe-task convention, endpoint work lives in the project's endpoint block (default C-series):
+New endpoint work uses canonical BJTR. A development Job owns one Task per Fn
+or gate; a packaging Job owns the Endpoint_Set task:
 
 ```
-examples/<project>/tasks/C01_endpoint_*/
-├── 00_endpoint_set_fn_develop/         ← DEVELOP job: build + test all Fns
-│   │                                     (7 builders in one flat job = the legacy
-│   │                                      multi-pipeline layout; the 260829 canonical
-│   │                                      form is one tNN_<task>/ per builder, directly
-│   │                                      under the job since 260830)
-│   ├── a1_build_metafn.py              ← each builder is its own TASK
-│   ├── b1_build_trigfn.py
-│   ├── c1_build_postfn.py
-│   ├── d1_build_src2inputfn.py         ← roundtrip test with real data
-│   ├── e1_build_input2srcfn.py         ← roundtrip test with real data
-│   ├── e4_build_examplefn.py           ← tests with real model + AIData
-│   ├── f1_roundtrip_test.py            ← prediction-level verification
-│   ├── configs/run_*.yaml              ← one config per builder
-│   ├── runs/run_*.sh                   ← one run script per builder
-│   └── results/run_*/runtime.yaml      ← per-builder pass/fail
-│
-└── 01_endpoint_<name>/                 ← PACKAGE: Endpoint_Set + validate + .tar.gz
-    ├── 01_endpoint_<name>.py           ← exact copy of c_endpoint_nb.py
-    ├── configs/run_endpoint_<name>.yaml
-    └── runs/run_endpoint_<name>.sh
+tasks/bNN_<endpoint_block>/
+├── j01_endpoint_functions_<qualifier>/
+│   ├── t01_metafn_<qualifier>/
+│   ├── t02_trigfn_<qualifier>/
+│   ├── t03_postfn_<qualifier>/
+│   ├── t04_src2inputfn_<qualifier>/
+│   ├── t05_input2srcfn_<qualifier>/
+│   └── t06_source_roundtrip_<qualifier>/
+└── j02_endpoint_package_<qualifier>/
+    └── t01_endpoint_set_<qualifier>/
+        ├── scripts/<worker>.py
+        ├── scripts/config/r01_base.yaml
+        ├── runs/r01_base.sh
+        ├── results/r01_base/runtime.yaml
+        └── notebooks/r01_base.ipynb
 ```
 
-**Flow:** develop (00_) → package (01_) → deploy.
-
-The `00_develop` task must pass all 7 runs before the `01_package` task is executed.
+**Flow:** every required development Task passes → package Task → deploy.
+Legacy flat/C-series trees remain readable but are never scaffolded.
 Step 5b in `c_endpoint_nb.py` (reproducibility check) is the runtime safety net that catches any remaining roundtrip issues.
 
 Start new builders from templates in `code/scripts/haibuilder/6-endpoint/`.

@@ -1,0 +1,29 @@
+checks:
+  - target: content/sms.txt
+    criterion: r01
+    status: pass
+    evidence: "substring '{NAME}' present exactly once (code points 14-19 of 140) as the provider-name placeholder after 'Dr.'"
+  - target: content/sms.txt
+    criterion: r02
+    status: pass
+    evidence: "exactly one purpose clause, 'so your pharmacy has the right information', follows the review sentence; it speaks only to record accuracy; no word about health, safety, dosage, side effects, treatment, or any result for the recipient"
+  - target: content/sms.txt
+    criterion: r03
+    status: pass
+    evidence: "140 Unicode code points (140 UTF-8 bytes, ASCII only, no trailing newline) including the opt-out suffix; configured maximum is 160"
+  - target: content/sms.txt
+    criterion: r04
+    status: pass
+    evidence: "artifact ends with the exact substring 'Reply STOP to opt-out' (code points 120-140 of 140); nothing follows it"
+  - target: content/sms.txt
+    criterion: r05
+    status: pass
+    evidence: "read every word: no percent sign, no click/lift/rate/improve/more-likely/better wording, no mention of salience, round 1, an arm, an interval, or any comparison to another message"
+  - target: content/sms.txt
+    criterion: r06
+    status: pass
+    evidence: "one fixed message for the whole population; the only placeholder is the provider name {NAME}; no field, branch, or wording keyed to age, gender, send day, or region"
+  - target: content/sms.txt
+    criterion: r07
+    status: pass
+    evidence: "three plain sentences plus the opt-out suffix: sender, then new prescription details require review and why, then the opt-out; no deadline, urgency word, exclamation mark, threat, or stated consequence for not acting"

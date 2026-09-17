@@ -75,13 +75,13 @@ If a test fails, fix the regression before proceeding.
 **Step 5: Test End-to-End with Real Data**
 
 ```bash
-python -m scripts.haistepcli.source --config <task>/configs/<run>.yaml
-python -m scripts.haistepcli.record --config <task>/configs/<run>.yaml
-python -m scripts.haistepcli.case   --config <task>/configs/<run>.yaml
-python -m scripts.haistepcli.aidata --config <task>/configs/<run>.yaml
+python -m scripts.haistepcli.source --config <task>/scripts/config/<run>.yaml
+python -m scripts.haistepcli.record --config <task>/scripts/config/<run>.yaml
+python -m scripts.haistepcli.case   --config <task>/scripts/config/<run>.yaml
+python -m scripts.haistepcli.aidata --config <task>/scripts/config/<run>.yaml
 ```
 
-Use an existing pipeline task's configs/ as the end-to-end validation path (e.g. examples/Project-EHR-Mimic/tasks/A01_data_pipeline_mimic/*/configs/).
+Use an existing Task's `scripts/config/` as the end-to-end validation path.
 
 ---
 

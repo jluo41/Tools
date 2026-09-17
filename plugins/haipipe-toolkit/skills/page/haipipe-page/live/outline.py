@@ -552,7 +552,7 @@ code{{font:12px ui-monospace,Menlo,monospace}}
  <button class="space on" data-space=bullet data-default=div>Draft Space</button>
  <button class=space data-space=evidence data-default=evidence>Evidence Space</button>
  <button class=space data-space=run data-default=run>Run Space</button>
- <button class=space data-space=delivery data-default=delivery>Delivery Workspace</button>
+ <button class=space data-space=delivery data-default=delivery>Delivery Space</button>
 </div>
 <div class="lens show draft-lens" id=lens-div data-draft-mode={draft_mode}>
  <div class=draft-mode-switcher role=group aria-label="Draft view">
@@ -568,7 +568,7 @@ code{{font:12px ui-monospace,Menlo,monospace}}
 <div class=lens id=lens-run><iframe class=workspace-frame
  title="Run Space" data-src="{run_url}"></iframe></div>
 <div class=lens id=lens-delivery><iframe class=workspace-frame
- title="Delivery Workspace" data-src="{delivery_url}"></iframe></div>
+ title="Delivery Space" data-src="{delivery_url}"></iframe></div>
 <script>
 var SPACE_FOR={{div:'bullet',evidence:'evidence',run:'run',delivery:'delivery',workspace:'evidence'}};
 var params=new URLSearchParams(location.search), requested=params.get('lens')||'',

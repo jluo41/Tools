@@ -1,0 +1,1 @@
+Dr. {NAME}'s office: new prescription details are ready for your review. 1. Check the new details. 2. Confirm they are correct. Reply STOP to opt-out

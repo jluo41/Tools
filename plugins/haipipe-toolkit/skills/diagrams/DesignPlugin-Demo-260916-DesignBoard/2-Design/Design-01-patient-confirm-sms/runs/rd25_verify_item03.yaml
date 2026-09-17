@@ -1,0 +1,22 @@
+schema: haipipe.design-ticket/v2
+run: rd25_verify_item03
+operation: verify
+worker: haipipe-design-unit
+actor: reviewer-context-30
+item: ITEM03
+target: Deadline stated
+config:
+  path: scripts/config/rd25_verify_item03.yaml
+  sha256: cb09a032a254b63494ff577664b5a29b3bcabed30b7f72c97093408ae21c28ba
+approval:
+  actor: JL
+  record:
+    path: results/rd09_commission_item03/decision.yaml
+    sha256: a4deb36a6a42d6bc4a016b24ceed984d3e730e04a2269aa1ab5131977712476e
+inputs:
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+targets:
+- path: results/rd17_generate_item03/result.yaml
+  sha256: 3470b569b091e068b00e563ab917368fd3184a4e8a883801ef1f26fdb03cd4ef

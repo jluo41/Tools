@@ -69,7 +69,7 @@ has no D0–D5 phase skills, compatibility readers, or Design thread plugin.
 └── <Topic>-DesignBoard/
     ├── board.md
     ├── 0-BR-brief/BR00-brief/
-    └── 2-DS-design/DS<NN>-<audience>-<job>-<venue>/
+    └── 2-Design/Design-<NN>-<audience>-<job>-<venue>/
         ├── <stem>.md
         ├── outline/
         │   ├── <stem>-logic.mmd

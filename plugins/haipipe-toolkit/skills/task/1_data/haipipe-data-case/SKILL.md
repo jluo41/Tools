@@ -1,11 +1,10 @@
 ---
 name: haipipe-data-case
 description: "Stage 3 (Case) specialist: builds/runs/reviews TriggerFn / CaseFn, inspects 3-CaseStore, loads case-layer assets, runs multi-partition in parallel (embarrassingly parallel). Called by /haipipe-data; direct invocation works stage-scoped."
-argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-07-08"
+  version: "0.2.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -74,7 +73,7 @@ Stage Scope
 ------------
 
 Owns:
-  - CaseFn builders in the project's `NN_case_fn_develop_<cohort>/` task folder (legacy workspaces: `code-dev/1-PIPELINE/3-Case-WorkSpace/`)
+  - CaseFn builders in canonical `tasks/bNN_*/jNN_*/tNN_*/scripts/` Task Folders (legacy workspaces: `code-dev/1-PIPELINE/3-Case-WorkSpace/`)
   - Generated `code/haifn/fn_case/`
   - `_WorkSpace/3-CaseStore/` cases (cohort sampling)
   - `templates/config.yaml` for Case_Pipeline runs
@@ -86,6 +85,12 @@ Upstream dependency (Stage 2):
 Hand-off contract (Stage 3 -> 4):
   Each Case must expose the fields TfmFn will tensorize. Verify against
   `../haipipe-data-aidata/ref/concepts.md`.
+
+Feature boundary:
+  In the current implementation CaseFn fulfills the conceptual FeatFn role.
+  It may consume scalar or list/vector data preserved from Source through
+  Record, then select/window/aggregate/encode it into `--tid`, `--wgt`, and
+  `--val`. Do not rename CaseFn without an explicit migration plan.
 
 
 Partition Support

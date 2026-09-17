@@ -179,7 +179,13 @@ ls _WorkSpace/6-EndpointStore/{endpoint_name}/examples/example_000_{uuid}/
 
 cat _WorkSpace/6-EndpointStore/{endpoint_name}/manifest.json | python -m json.tool
 # Check: endpoint_name, endpoint_version, inference_functions, created_at
+# If external enrichment is used, also check external release/checksum and
+# Source vector schema/order versions; verify external/ is the same release.
 ```
+
+Packaging is not complete until the training SourceFn versus serving
+Input2SrcFn parity fixture passes on a real example, including ProcessNames,
+columns, dtypes, list/vector values, masks, versions, and snapshot metadata.
 
 Check that payload.json files were generated:
 

@@ -7,7 +7,7 @@ description: >-
   or refreshing an InsightBoard. Trigger: insight meta, data inventory, I0,
   folder-kind meta, legacy page-type meta, /haipipe-insight-meta.
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
   last_updated: "2026-09-13"
   workflow: haipipe-insight-workflow
   phase: I0
@@ -47,7 +47,7 @@ Folders owned by I1, not divisions of Meta.
 - accepted Task/Discovery Run Results, bound through full Supporting Run ids,
   or governed page-local static sources frozen in Local Input;
 - source versions, unit/grain, population, time window, and refresh clocks;
-- the optional partition proposal and shared thresholds from `ref/partition.md`.
+- the optional partition proposal and shared thresholds from `../../haipipe-application/ref/partition.md`.
 
 ## Page Face
 

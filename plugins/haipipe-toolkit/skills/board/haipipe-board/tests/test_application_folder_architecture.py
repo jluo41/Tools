@@ -217,7 +217,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         render_fn = (
             self.application / "haipipe-application" / "fn" / "render.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("DS<NN>-<audience>-<job>-<venue>", design)
+        self.assertIn("Design-<NN>-<audience>-<job>-<venue>", design)
         self.assertIn("delivery/render/", design)
         self.assertIn("<page>/delivery/render/", render_fn)
         self.assertNotIn("<page>/render/", render_fn)
@@ -626,14 +626,14 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn('base / "delivery" / "render"', live_delivery)
         self.assertNotIn("route pending", live_delivery)
 
-    def test_generic_page_plugins_are_exactly_the_five_public_categories(self):
+    def test_generic_page_plugins_keep_five_categories_and_allow_domain_extensions(self):
         root = self.skills / "board" / "page-plugins"
         found = {
             path.parent.name
             for path in root.glob("*/SKILL.md")
         }
         self.assertEqual(
-            found,
+            found - {"haipipe-plugin-design"},
             {
                 "haipipe-plugin-outline",
                 "haipipe-plugin-studio",
@@ -642,6 +642,8 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
                 "haipipe-plugin-folder",
             },
         )
+        self.assertIn("haipipe-plugin-design", found)
+        self.assertTrue((root / "haipipe-plugin-design" / "SKILL.md").is_file())
         self.assertTrue((root / "haipipe-plugin-studio" / "ref" / "chat.md").is_file())
         self.assertTrue((root / "haipipe-plugin-studio" / "ref" / "draw.md").is_file())
         self.assertTrue((root / "haipipe-plugin-outline" / "ref" / "skill-record.md").is_file())

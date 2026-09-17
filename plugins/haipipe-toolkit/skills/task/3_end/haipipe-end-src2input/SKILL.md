@@ -1,11 +1,10 @@
 ---
 name: haipipe-end-src2input
-description: "Src2InputFn specialist -- designs/reviews the record->wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest). Platform-specific: one impl per deploy platform (SageMaker flat JSON vs Databricks dataframe_records); --platform picks (default sagemaker). Called by /haipipe-end when intent references Src2InputFn, record-to-payload serialization, or `src2input`."
-argument-hint: "[verb] [use_case] [--platform sagemaker|databricks] [args...]"
+description: "Src2InputFn specialist -- designs/reviews the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest). Platform-specific: one impl per deploy platform (SageMaker flat JSON vs Databricks dataframe_records); --platform picks (default sagemaker). Called by /haipipe-end when intent references Src2InputFn, record-to-payload serialization, or src2input."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-07-08"
+  version: "0.3.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -187,6 +186,11 @@ Real data catches: tables dropped by Src2InputFn (only 4 of 19 serialized), date
 
 The builder script (d1_build_* in the endpoint fn_develop task folder) must include this test.
 If the roundtrip fails, the Fn is not production-ready.
+
+The roundtrip comparison includes Source scalar/list/vector fields and their
+dtypes, ordering/version columns, missing masks, and snapshot metadata. The
+payload carries the raw keys needed for Input2SrcFn to reproduce those fields;
+it does not serialize the packaged lookup table itself.
 
 **⚠️ Comparing scores is NOT sufficient — also compare the SERVED arm.** The response
 carries every arm in `predictions[]` and separately names one in `action.name`. A PostFn

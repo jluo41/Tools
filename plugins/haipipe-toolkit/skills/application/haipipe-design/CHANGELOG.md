@@ -11,6 +11,10 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
   were never user-approved releases and are retracted as version assignments;
   their notes remain only as development provenance. Future `1.0.0+` requires
   explicit user approval. No compatibility path was added.
+  260916 (JL ruling, Space = Workspace): add the Design Item register
+  (`outline/<stem>-design-items.md`, intent only) and `item:` on every Design
+  Run Ticket; replace the five-Workspace roster with three Spaces (Intent,
+  Run, Delivery) presented by `haipipe-plugin-design`. Version unchanged.
 
 - 4.0.1 (260913): field-test repair. Unsupported Design bytes are never called
   read-only/readable/migration history; stop content inspection at a decisive
@@ -54,3 +58,8 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 - 0.2.0 (JL 260824): the Reads Law now says a grant NAMES InsightBoard pages without breaching the principle layer's warrant monopoly, and covers a board that declares no reads: at all — `mode: record`, for pre-contract artifacts. 0.1.0: the door, two plugins, one agent, three declarations.
 
 - 0.3.0 (260828, JL's creativity critique): the creative half built — ① DIVERGE, an ideation slate before any card (evidence-fed AND theory-fed modes: a move from named theory or declared intuition is legal, the card carries the honesty via stance + falsification), mirroring the paper family's Ideation the design family never had; ② BET unchanged; ③ VARY, the realization law — one thesis may land a VARIANT SET (same wager, different verbalization), because wording effects are real and the design space is mostly there; variant difference is itself a testable hypothesis, the EMIT edge's natural cargo. Verb `diverge | ideate` added. Root observation: a designer who may only cite cannot surprise; the family had insight discipline applied to the wrong lane.
+- 260916 (version unchanged at 0.4.0): the Design Plugin reads the Folder in
+  five Spaces, Goal · Design · Insight · Run · Delivery, in plain words; the
+  Brief table carries a `designs` count; ids are `ITEM<NN>`; register field
+  `goal:`.
+- 260916 (version unchanged at 0.4.0): folder shape is `2-Design/Design-<NN>-…`, never `DS`.

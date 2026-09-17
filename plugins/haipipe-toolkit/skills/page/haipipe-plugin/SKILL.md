@@ -95,8 +95,14 @@ Folder. Internal lanes live as references under their owning category skill;
 they never mint duplicate callable skills. Outline owns Citation/Bib, Value,
 Display, and the ranked Skill record; Studio owns Chat and Draw; Delivery owns
 LaTeX, Word, Slide, and Render. PageX is legacy migration input only.
-Domain extensions live with their domain owner (for example
-`application/haipipe-design-unit`), not in this generic directory.
+Domain category extensions may add a page-folder skill beside these five when
+the domain needs one cross-lane Page surface; they are not generic categories
+and remain governed by their domain owner. For example,
+`page-plugins/haipipe-plugin-design` presents the Design Folder, while
+`application/haipipe-design-unit` still owns the Design Unit Result and its
+writer. `subjective-label/haipipe-plugin-labeling` follows the same extension
+pattern. A domain extension never promotes its internal lanes to duplicate
+top-level plugins.
 One of them inverts the shape: `haipipe-plugin-folder` is the 📂 meta-surface over the roster itself — no subfolder, no storage, no roster row (JL 260816).
 This contract stays the base every one of them loads on top of; the board pages (`QPf2`-`QPf8`) stay the design records; the engine keeps only routes and machinery.
 
@@ -171,6 +177,8 @@ Delivery and Studio remain category surfaces:
 ```text
 🧭 Outline   haipipe-plugin-outline    Draft + Evidence + Run over the
                                        outline/ process; FIRST/default tab
+🎨 Design    haipipe-plugin-design     Plan + Create + Review + Run + Delivery
+                                       over one current Design Page-Folder
 📤 Delivery  haipipe-plugin-delivery   latex · word · slide · render — the
                                        🎞 segment carries the deck's ✨ pen
 🎨 Studio    haipipe-plugin-studio     chat + draw AS ONE PAGE: the drawing
@@ -181,8 +189,9 @@ Delivery and Studio remain category surfaces:
 📂 Folder    haipipe-plugin-folder     the roster itself, the meta-surface
 ```
 
-The reader-facing Plugin picker follows one fixed sequence:
-🧭 Outline · 🎨 Studio · 📤 Delivery · 📂 Folder · 🏷 Labeling.
+The reader-facing Plugin picker follows one fixed sequence for applicable
+entries:
+🧭 Outline · 🎨 Studio · 🎨 Design · 📤 Delivery · 📂 Folder · 🏷 Labeling.
 Optional entries still keep their assigned place when applicable;
 an unassigned third-party entry follows these in stable registration order.
 On every source-backed Board Page, Run Space remains visible inside Outline

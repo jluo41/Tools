@@ -58,7 +58,10 @@ Use when not every incoming request should invoke the model (e.g., only 5-min CG
 
 **Steps 2-5 — the preprocessing chain:** These run the same PreFnPipeline that was attached to the model during training.
 The pipeline lives inside the Endpoint_Set's model/ directory and is loaded once at warmup().
-It converts raw source tables → feature vector the model expects.
+Input2SrcFn is the serving mirror of training SourceFn: it reconstructs the
+same ProcessDF contract using the packaged, pinned external release. Record and
+Case then perform the same alignment and feature logic before AIData produces
+the model vector.
 
 **Step 6 — Model Inference:** Calls model_instance.infer(model_input_data, InferenceArgs).
 Returns a DataFrame with columns: score__{action}, best_action, [uplift__{action}].
@@ -79,15 +82,13 @@ NEVER edit files in code/haifn/fn_endpoint/ directly — use builders.
 Layer 1: TEMPLATES     code/scripts/haibuilder/6-endpoint/   ← copy-and-customize starting points
                        code/scripts/haibuilder/5-instance/   ← ExampleFn templates
 
-Layer 2: PROJECT       examples/<project>/tasks/C01_*/        ← project-specific builders
-                       00_endpoint_set_fn_develop/            ← each Fn is its own run
-                         ├── a1_build_metafn.py + configs/run_a1_metafn.yaml + runs/run_a1_metafn.sh
-                         ├── b1_build_trigfn.py + ...
-                         ├── c1_build_postfn.py + ...
-                         ├── d1_build_src2inputfn.py + ...   ← includes roundtrip test
-                         ├── e1_build_input2srcfn.py + ...   ← includes roundtrip test
-                         ├── e4_build_examplefn.py + ...     ← tests with real model + AIData
-                         └── f1_roundtrip_test.py + ...      ← prediction-level verification
+Layer 2: PROJECT       examples/<project>/tasks/bNN_*/jNN_endpoint_functions_*/
+                         ├── t01_metafn_*/scripts/<builder>.py
+                         ├── t02_trigfn_*/scripts/<builder>.py
+                         ├── t03_postfn_*/scripts/<builder>.py
+                         ├── t04_src2inputfn_*/scripts/<builder>.py
+                         ├── t05_input2srcfn_*/scripts/<builder>.py
+                         └── t06_source_roundtrip_*/scripts/<gate>.py
 
 Layer 3: PRODUCTION    code/haifn/fn_endpoint/fn_*/*.py       ← generated output (do not edit)
 ```
@@ -173,6 +174,11 @@ _WorkSpace/6-EndpointStore/{endpoint_name}/
 ├── meta.json                  <- Output of MetaFn (name mappings + metadata_response)
 └── manifest.json              <- Config + lineage chain
 ```
+
+`manifest.json` records the external release/checksum plus every Source vector
+schema/order version required by Input2SrcFn. `external/` is an immutable copy
+of that approved release; serving never falls through to a host-level latest
+release or a live API.
 
 ---
 
@@ -501,7 +507,7 @@ Fn loaders (builder/):    code/haipipe/endpoint_base/builder/
   Input2SrcFn loader:       builder/input2srcfn.py
 Generated Fns:            code/haifn/fn_endpoint/    <- NEVER edit directly
 Builder scripts:          tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/  (legacy: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
-YAML configs:             <endpoint task>/configs/run_*.yaml  (platform configs: platforms/platform-*/config/)
+YAML configs:             <endpoint task>/scripts/config/rNN_*.yaml  (platform configs: platforms/platform-*/config/)
 Databricks platform:      platforms/platform-databrick-inference/
   MLflow wrapper:           code/mlflow_model.py
   Package script:           scripts/package.py

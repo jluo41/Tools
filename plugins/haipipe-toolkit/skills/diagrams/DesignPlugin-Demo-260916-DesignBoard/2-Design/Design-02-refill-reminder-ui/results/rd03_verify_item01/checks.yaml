@@ -1,0 +1,13 @@
+checks:
+- target: results/rd02_generate_refill-card/result.yaml::content/ui-card.txt
+  criterion: r01
+  status: pass
+  evidence: "'{REFILL_DATE}' found once, on line 3 of 3 ('Refill due: {REFILL_DATE}'); artifact is 71 UTF-8 bytes / 71 code points, sha256 09daf34d...9b0c43 matches the pinned target manifest"
+- target: results/rd02_generate_refill-card/result.yaml::content/ui-card.txt
+  criterion: r02
+  status: pass
+  evidence: "'Review options' found once, on line 2 of 3, as a standalone line (exact case, no extra words), so it reads as the single action label"
+- target: results/rd02_generate_refill-card/result.yaml::content/ui-card.txt
+  criterion: r03
+  status: pass
+  evidence: "Read as a 320px card (about 288px content width after 16px padding): 3 short lines, longest 30 characters ('Your refill is coming up soon.'), so at 16-18px body/heading sizes each line fits on one line or wraps to two at most; line 1 is the only heading-like sentence, line 2 is one action, line 3 is one date; exactly one heading, no overflow. Finding: the artifact is plain text, so heading vs body is implied by line order only, not by markup; a renderer must style line 1 as the heading."

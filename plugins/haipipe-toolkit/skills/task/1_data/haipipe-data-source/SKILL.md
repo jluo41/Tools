@@ -1,11 +1,10 @@
 ---
 name: haipipe-data-source
-description: "Stage 1 (Source) specialist: builds/runs/reviews SourceFn, inspects 1-SourceStore, loads source-layer typed frames. Called by /haipipe-data (recommended entry); direct invocation works stage-scoped."
-argument-hint: "[function] [args...]"
+description: "Stage 1 (Source) specialist: builds/runs/reviews SourceFn, maps Raw Data plus pinned ExternalStore assets into stable ProcessName-to-ProcessDF tables, and inspects 1-SourceStore. Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-08"
+  version: "0.2.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -113,7 +112,7 @@ Stage Scope
 ------------
 
 Owns:
-  - SourceFn builders in the project's `NN_source_fn_develop_<cohort>/` task folder (HumanFn builders live in Stage 2's fn_develop task; legacy workspaces: `code-dev/1-PIPELINE/1-Source-WorkSpace/`)
+  - SourceFn builders in canonical `tasks/bNN_*/jNN_*/tNN_*/scripts/` Task Folders (legacy workspaces: `code-dev/1-PIPELINE/1-Source-WorkSpace/`)
   - Generated `code/haifn/fn_source/`
   - `_WorkSpace/1-SourceStore/` typed frames
   - `templates/config.yaml` for Source_Pipeline runs
@@ -126,3 +125,11 @@ Hand-off contract (Stage 1 -> 2):
   Each Source frame must carry the keys RecordFn needs to bucket rows into
   records. Confirm by reading `../haipipe-data-record/ref/concepts.md` before
   finalizing any SourceFn.
+
+External-data contract:
+  SourceFn is the cohort attachment boundary for pinned ZIP, NPI, NDC, NCPDP,
+  and engagement assets. It may emit scalar, list, or fixed-order vector fields
+  when they are stable data representations. Declare dtype, ordering, missing
+  mask/behavior, release identity, and `snapshot_as_of` for time-varying data.
+  Do not perform uncontrolled live API calls inside SourceFn; ingestion must
+  first create a versioned ExternalStore snapshot.

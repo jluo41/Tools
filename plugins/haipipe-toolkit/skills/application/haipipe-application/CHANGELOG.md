@@ -3,6 +3,13 @@ haipipe-application — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [3.1.0] — 2026-09-16
+- Add `fn/question.md`: register one question from plain words; the verb
+  decides level, partitions and lineage, then writes the register row with the
+  board tool. Add `fn/verdict.md`: XI → XK → the POOL/SPLIT verdict.
+- `fn/chain.md` step 3: on a partition-major board a W page waits for the
+  verdict; "K settled, no W" alone no longer opens it.
+
 ## [3.0.1] — 2026-09-15
 
 - Point dataset-first Task Insight examples to the unified
@@ -521,7 +528,7 @@ Parked at user request before the bench run; NO ruling yet on either. Both decis
 - Contracts unlocked: information 0.2.0 (the X contrast page derives from MIRRORED I rows, the one legal same-rung citation); knowledge 0.2.0 (the pooling-verdict page cites the heterogeneity K row, one step and no further, and its verdict is a claim about exchangeability, never a recommendation); wisdom 0.2.0 (the DEFERRAL close: under POOL a non-template W page defers to the template W by id and exports no handoff); meta 0.3.0 (Partition Register + Shared Thresholds divisions, required on partition-major, with closing checks); data 0.2.0 (partition home path; a re-run reopens partition mirrors together); question 0.2.1 (X is a column only where routed, not a partition; the three cell rules joined the closing checks; ⬜ may name the planned page).
 - Door fixes: dead pointers cleared (fn/artifact.md → fn/render.md; fn/insight.md and fn/missing-insight.md removed — the search lives in fn/chain.md step 2); the cohort rule qualified (a subgroup is a partition, a child board needs a SPLIT verdict); the probe-authority line corrected (Task-backed authority via haipipe-page-for-task; page-type: insight is task-only).
 - Grammar hardened (ref/partition.md): X pinned at 9; reserved partition letters F/X/Q/S/M; one threshold file per task GROUP, PENDING until written; the template needs full.yaml; adopt pre-existing config names and check their store: key; the template W never defers.
-- Family id sweep: M00-meta/A00-brief → MT00-meta/BR00-brief everywhere live (meta and brief contracts, fn/enter.md, fn/brief.md); brief 0.3.x rekeyed needs from the retired Insight Roster to the question registers; design contract's runtime shape, PageX example and handoff ids corrected to DS<NN>/W-parents.
+- Family id sweep: M00-meta/A00-brief → MT00-meta/BR00-brief everywhere live (meta and brief contracts, fn/enter.md, fn/brief.md); brief 0.3.x rekeyed needs from the retired Insight Roster to the question registers; design contract's runtime shape, PageX example and handoff ids corrected to Design-<NN>/W-parents.
 - Verbs made layout-aware: fn/chain.md resolves the partition group from the register cell; fn/meta.md step 8 points MT00 at the partition divisions.
 
 ## [0.16.0] — 2026-08-24
@@ -538,3 +545,5 @@ Parked at user request before the bench run; NO ruling yet on either. Both decis
 - The door assembles what was already law: the one-dataset rule, the Climb Law (each rung cites only named rows of the rung below, two X-group exceptions), the three pens (register/chain/handoff), and the two ✋ gates on that board (probe release, handoff signing). Nothing new is legislated; the split gives the InsightBoard the same one-place law home the DesignBoard got in haipipe-design 0.1.0.
 - The reused name is disclaimed in the door itself: the `/haipipe-insight` retired in 6.6.0 (260717) was a KB evidence layer; the new door holds board law and no evidence.
 - Cold-read audit fixes (260827, fresh-context tester): §Dataset-first reworded — a chain page must serve a question REGISTERED on MT01-MT04, need-first or curiosity-first, so the sentence no longer refuses the curiosity birth the door legalizes; the loose "Insight Page" alias for rung/chain pages removed from all live prose (`page-type: insight` is task-only); the insight-side forwards gain `check`.
+- 260916 (version unchanged): full names for Design Folders, `2-Design/Design-<NN>-<audience>-<job>-<venue>/`
+  (was `2-DS-design/DS<NN>-…`); the Brief's list gained `designs` and `insight` columns.

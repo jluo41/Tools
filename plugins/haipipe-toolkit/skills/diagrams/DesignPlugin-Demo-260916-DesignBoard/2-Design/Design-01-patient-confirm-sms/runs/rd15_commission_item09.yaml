@@ -1,0 +1,25 @@
+schema: haipipe.design-ticket/v2
+run: rd15_commission_item09
+run_type: Design.commission
+operation: commission
+item: ITEM09
+target: Patient greeting
+actor:
+  mode: human
+  owner: JL
+action: release or hold the frozen commission
+inputs:
+- path: scripts/config/rd15_commission_item09.yaml
+  sha256: 3128b7eb2e48048a9c4730ddfa3af611cbbb858f3ef277b750557195e1a91de2
+- role: evidence
+  path: ../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md
+  sha256: 1bac92d3111371efd6c6adcc2e309db1c1966c04929df7e246d2178672c3b0a2
+entry_gate: the Design Item is registered
+exit_gate:
+  mode: human
+  assertion: decision names the exact config hash
+routes:
+  release: generate
+  hold: HOLD
+result: results/rd15_commission_item09/
+receipt: results/rd15_commission_item09/runtime.yaml

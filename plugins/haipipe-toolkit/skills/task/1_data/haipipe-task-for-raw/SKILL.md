@@ -1,16 +1,15 @@
 ---
 name: haipipe-task-for-raw
 description: >-
-  Raw extraction job specialist: scaffolds {NN}_<name>/ folders in the
-  raw-extraction block (default R-series). Two patterns:
+  Raw extraction Job specialist: scaffolds canonical BJTR Tasks that move
+  cohort data from an operational database into RawStore. Two patterns:
   extract-wide-process-local (non-PHI) and server-resident all-Spark (PHI
   cohorts). Called by /haipipe-task when task-type=raw. Cross-references
   /haipipe-data-raw.
-argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.4"
-  last_updated: "2026-07-08"
+  version: "0.2.0"
+  last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,6 +23,19 @@ The job keeps scripts, configs, and convert-only notebooks either way.
 **Invocation modes (see `../../haipipe-task/ref/invocation-modes.md`):** interactive (a human steers; missing fields get ASKed) OR headless (a full spec → run silently, no ASK).
 `haipipe-task-creator-agent` calls this skill headless during fan-out, then authors the `<TASK>.py` body.
 Always end with the structured return block (status / task_folder / run_name / files).
+
+Store boundary
+--------------
+
+```
+Operational Database -- cohort extraction code --> 0-RawDataStore/<raw-data>/
+Vendor/API source ---- ingestion/build code -----> ExternalStore/@raw/ -> @{release}/
+```
+
+Use this skill for the first line. Use `haipipe-data-external` for the second.
+“Extract”, “landing”, and “ingestion” describe code/actions, not additional
+stores between the database and RawStore. One delivered extraction is a Raw
+Data version/snapshot; reserve “cohort” for the selected population.
 
 
 Position in the series
@@ -46,15 +58,16 @@ What this scaffolds
 -------------------
 
 ```
-tasks/R{NN}_<cohort_name>/                   ← group (R-series)
-└── {NN}_stage{S}_{description}/             ← job this scaffold creates
-    ├── {NN}_stage{S}_{description}.py       source + # %% cells (SQL strings in Python)
-    ├── configs/
-    │   └── <run_name>.yaml                  seeded from ref/config-seed.yaml
-    ├── runs/
-    │   └── <run_name>.sh                    from ref/run-databricks-sh-template.sh
-    ├── results/                             runtime.yaml + light artifacts
-    └── notebooks/                           .ipynb for Databricks upload (convert-only)
+tasks/bNN_<raw_block>/
+└── jNN_<extraction_job>/
+    ├── src/                                 shared extraction helpers
+    └── tNN_<raw_table_or_step>/
+        ├── tNN_<raw_table_or_step>.md
+        ├── scripts/<worker>.py              SQL strings in Python; # %% cells
+        ├── scripts/config/rNN_<run>.yaml
+        ├── runs/rNN_<run>.sh
+        ├── results/rNN_<run>/runtime.yaml
+        └── notebooks/rNN_<run>.ipynb
 ```
 
 Group letter default: **R** (raw extraction).
@@ -100,9 +113,9 @@ Pattern 2: Server-resident rawstore (PHI cohorts)
 
 When the cohort is PHI, step 3 above is FORBIDDEN — raw data never leaves the server.
 The whole extraction pipeline runs on Databricks and writes to the catalog volume.
-Live example: Project-REACH-ADHD `tasks/A00_rawstore_reachadhd/`.
+Legacy example: Project-REACH-ADHD `tasks/A00_rawstore_reachadhd/`.
 
-Shape:
+Legacy shape (readable, never scaffolded for new work):
 
 ```
 tasks/A00_rawstore_<cohort>/
@@ -112,7 +125,7 @@ tasks/A00_rawstore_<cohort>/
 ├── 03_stage3_features/                     ← feature tables
 ├── _databricks/                            ← .ipynb copies of every stage (what the
 │                                             workspace import executes)
-└── README.md                               ← allowed here (Databricks-native group)
+└── README.md                               ← legacy documentation only
 ```
 
 Rules:
@@ -150,16 +163,17 @@ Workflow:
 The run-script template is `ref/run-databricks-sh-template.sh` — convert-only, no papermill execute.
 
 
-Stage naming within a cohort group
------------------------------------
+Task naming within a cohort extraction Job
+-------------------------------------------
 
 Each cohort's extraction pipeline is organized as numbered stages:
 
 ```
-R01_prediabetes/
-├── 01_stage1_extract_tables/     ← SQL extraction (runs on Databricks)
-├── 02_stage2_process/            ← Python processing (runs locally)
-└── sbatch/
+b01_prediabetes_raw/
+└── j01_operational_extract/
+    ├── t01_encounters_extract/
+    ├── t02_medications_extract/
+    └── t03_raw_snapshot_validate/
 ```
 
 Convention (Pattern 1):
@@ -199,7 +213,8 @@ Summary:
 
   1. Identify project + block.
   2. Collect metadata (NN, name, stage number, _meta block).
-  3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
+  3. Create canonical Task skeleton (`scripts/`, `scripts/config/`, `runs/`,
+     `results/`, `notebooks/`, `outline/`, `workflow/`).
   4. Seed config from `ref/config-seed.yaml`.
   5. Copy run-script from `ref/run-databricks-sh-template.sh`.
   6. Suggest next via cross-skill link.
@@ -229,8 +244,8 @@ MUST NOT
 - Sync PHI raw data to a laptop / local `_WorkSpace` (Pattern 2 cohorts are
   server-only; only aggregated outputs move).
 - Skip the `_meta:` block.
-- Create `README.md` in task folders. (Pattern 2 exception: a group-root
-  README is allowed for Databricks-native groups.)
+- Create `README.md` at Block, Job, or Task root. Use `board.md`, the Task Page,
+  and `diagram/`; legacy Databricks-native READMEs remain readable.
 
 
 First-run gate
