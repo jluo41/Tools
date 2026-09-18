@@ -136,6 +136,7 @@ from live.design import DesignMixin
 from live.designboard import DesignBoardMixin
 from live.insightboard import InsightBoardMixin
 from live.outline import OutlineMixin
+from live.paper import PaperPluginMixin
 from live.value import ValueMixin
 from live.pageruns import PageRunsMixin
 from live.runs import RunsTabMixin
@@ -163,7 +164,7 @@ _UTF8_TYPES = {"application/javascript", "application/json", "application/xml",
                "image/svg+xml"}
 
 
-class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, LegacyPagexViewMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, OutlineMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
+class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMixin, TermMixin, XcalMixin, ShellMixin, ExportMixin, SkillmapMixin, LegacyPagexViewMixin, PlugViewMixin, FolderStatMixin, InsightBoardMixin, DesignMixin, DesignBoardMixin, OutlineMixin, PaperPluginMixin, ValueMixin, EvidenceTabMixin, DeliveryTabMixin, LabelingMixin, PageRunsMixin, RunsTabMixin, SimpleHTTPRequestHandler):
     root = Path(".")
     space_name = ""
     public_url = ""
@@ -280,6 +281,9 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/outline":
             # 🧭 the page re-read per division (QPf12), same live contract
             return self.outline_view()
+        if self.path.split("?", 1)[0] == "/_board/paper":
+            # 📄 Board-level Paper Plugin, rendered live from the paper board
+            return self.paper_view()
         if self.path.split("?", 1)[0] == "/_board/design":
             # 🎨 one live projection over the selected Design Page-Folder
             return self.design_view()
@@ -386,6 +390,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.folderstat_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/outline":
             return self.outline_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/paper":
+            return self.paper_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design":
             return self.design_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design-board":

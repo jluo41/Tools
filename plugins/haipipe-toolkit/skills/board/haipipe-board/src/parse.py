@@ -58,7 +58,13 @@ def parse_board(board):
                 # `## Related Folders` (QB2/QA0, JL 260731): the folders this
                 # board touches, embedded file-by-file into the RELATED FOLDERS
                 # index fold at build time.
-                related=sec(bs, "Related Folders"), dir="")
+                related=sec(bs, "Related Folders"),
+                # A Board-level Plugin is opt-in through the Board Links
+                # section. The generated page exposes only this capability
+                # flag; the Plugin surface owns its own read-only projection.
+                # Paper Plugin is the canonical Board-level entry. Keep the
+                # old key as a compatibility alias for older Boards.
+                board_paper=LINKS.get("paper-plugin", LINKS.get("board-console", "")), dir="")
 
 
 def parse_doc(d, paths):

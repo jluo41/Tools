@@ -179,3 +179,33 @@ supersedes: null
 `item`, `story`, `section_kind`, frozen inputs/hashes, worker, status, and
 acceptance remain required by the owning Page/Evidence contract. This file
 defines naming and scope only; it does not replace those gates.
+
+## 8. Paper judgment Runs (JL 260916)
+
+Ideation and Story are judged, not written. Each card the Paper Plugin shows
+on those Spaces may keep its discussion in one Page-owned Run, in the same
+`runs/` + `results/` pair every Page has, with human feedback Steps in the
+journal exactly as `rp-para` keeps them:
+
+```text
+JUDGE_RUN_ID := ridea-NN_<slug>            one candidate idea       lives on Story00-ideation
+             |  rclaim-NN_<slug>           one C5 proposition        lives on the Story page
+             |  rtask-NN_<slug>            one C7 evidence obligation lives on the Story page
+             |  rnarra-NN_<section-id>     one C8 Section row         lives on the Story page
+```
+
+The ticket's frontmatter names the row it discusses, which is how the card
+finds it; nothing is matched by name:
+
+```yaml
+family: paper
+operation: judgment
+interaction: human-feedback
+target: E5              # i01 · E5 · T1 (or B1) · S-<desk>-Main-1-<Title>
+run: rclaim-01_beyond-rating
+result: results/rclaim-01_beyond-rating
+```
+
+A judgment Run never selects an idea (the I3 receipt does), never releases a
+Section (G3 does), and never allocates a Task (the Task owner does). A
+Section's own `rp-struct-01` starts from its `rnarra` card, not instead of it.

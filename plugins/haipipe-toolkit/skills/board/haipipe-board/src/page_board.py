@@ -775,6 +775,8 @@ def render(meta, qs):
                       # is free, and out here they are never inside a <summary>
                       popcards="\n".join(bd.CARDS),
                       boarddir=esc(meta.get("dir", "")),
+                      board_paper=esc(meta.get("board_paper", "")),
+                      board_dialect=esc(meta.get("dialect", "")),
                       bsession=esc(meta.get("session", "")))
 
 
@@ -827,7 +829,7 @@ TPL = """<!DOCTYPE html>
 <link rel="icon" type="image/svg+xml" href="{favicon}">
 <style>
 {css}
-</style></head><body class="single" data-board="{boarddir}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
+</style></head><body class="single" data-board="{boarddir}" data-board-paper="{board_paper}" data-board-dialect="{board_dialect}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
 
 {overview}
 
@@ -914,7 +916,7 @@ TREE_TPL = """<!DOCTYPE html>
 <title>{title}</title>
 <link rel="icon" type="image/svg+xml" href="{favicon}">
 <link rel="stylesheet" href="{root}_assets/board.css?v={css_stamp}">
-</head><body class="single split" data-board="{boarddir}" data-board-root="{root}" data-xcal="{xcal}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
+</head><body class="single split" data-board="{boarddir}" data-board-root="{root}" data-xcal="{xcal}" data-board-paper="{board_paper}" data-board-dialect="{board_dialect}">{sidebar}<div class="wrap" id="top" data-bsession="{bsession}">
 <nav class="sitebar" aria-label="Breadcrumb"><a href="/boards">🏠 Boards</a><span class="sb-sep">›</span><a href="{root}index.html">🗂 Index</a>{crumb}</nav>
 {body}
 </div><div id="popcards">{popcards}</div>
@@ -1309,7 +1311,10 @@ def render_tree(meta, qs, out_dir, only=None):
             # Board that declares no `excalidraw:`, which is how 🖌 Draw stays
             # out of the menu rather than offering a surface that cannot open.
             xcal=esc((meta.get("excalidraw") or "").strip().rstrip("/")),
-            boarddir=esc(meta.get("dir", "")), bsession=esc(meta.get("session", "")))
+            boarddir=esc(meta.get("dir", "")),
+            board_paper=esc(meta.get("board_paper", "")),
+                      board_dialect=esc(meta.get("dialect", "")),
+            bsession=esc(meta.get("session", "")))
 
     # one file per page, inside its group's folder.
     # `only` limits the rewrite to the pages whose .md actually changed, so a

@@ -87,6 +87,9 @@ Paper-<Slug>/                        no 0-paperboard/ wrapper · board.md at the
 paper/
 ├── haipipe-paper/
 │   └── SKILL.md              one public Paper door and routing contract
+├── haipipe-plugin-paper/
+│   ├── SKILL.md              the Paper Board-level work console contract
+│   └── ref/                   Space mapping and presentation references
 ├── haipipe-paper-workflow/
 │   └── SKILL.md              the journey gate machine (Ideation → Story →
 │                             Evidence/Execution → Section → Compile → Round)

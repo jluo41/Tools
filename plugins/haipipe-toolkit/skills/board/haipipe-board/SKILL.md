@@ -7,8 +7,8 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "1.0.7"
-  last_updated: "2026-09-15"
+  version: "1.0.8"
+  last_updated: "2026-09-18"
   # version history: ./CHANGELOG.md
 ---
 

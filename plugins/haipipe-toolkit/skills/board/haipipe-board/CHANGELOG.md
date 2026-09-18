@@ -1,3 +1,17 @@
+## 1.0.8 · 2026-09-18
+
+- Add the Board-level Paper Plugin route: `GET /_board/paper` (`live/paper.py`,
+  `PaperPluginMixin`) renders Setup · Ideation · Story · Run · Delivery live from
+  the paper board's Markdown on every request and stores nothing. It reads the
+  project's task home (`tasks/` or `task/`) and `discoveries/` as Block › Job ›
+  Task › Run trees, joins each Evidence Item to its Local Run and Supporting
+  Runs, and reads `delivery/` receipts. Contract: `paper/haipipe-plugin-paper`.
+- Register the 📄 Paper drawer tab (`assets/js/10-drawer/09-plugin-paper.js`) on
+  any board whose `board.md` says `dialect: paper`; `page_board.py` exposes it
+  as `data-board-dialect`, and `parse.py` keeps the older `paper-plugin` /
+  `board-console` Links key readable.
+- `tests/test_paper_plugin.py`: five tests over a synthetic paper board.
+
 ## 1.0.7 · 2026-09-15
 
 - Replace the retired `live/outline_comments.py` symlink (and the dangling
