@@ -10,6 +10,11 @@ SAFER is the Research Virtual Desktop tier of the Secure Analytic Framework Envi
 ## Storage
 SAFESTOR is the large research data storage that mounts as the `R:` drive on both SAFE and SAFER desktops: up to 100 TB, first 10 TB free for 3 years. (Source: researchit.jhu.edu)
 
+⚠️ **The drive letter is not universal.** `R:` is what the public page describes; on a
+REACH SAFER desktop observed 2026-09-04 SAFESTOR was mounted as `P:` and no `R:` existed,
+with no separate personal drive either. Always confirm with `Get-PSDrive` on the actual
+box before writing a path into a script or a README.
+
 ## How to request
 - SAFER and SAFE Desktop overview: https://researchit.jhu.edu/safer/
 - SAFER request form: [TODO: JL paste the exact form URL]

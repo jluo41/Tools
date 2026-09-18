@@ -163,6 +163,10 @@ def _parser() -> argparse.ArgumentParser:
         help="Resume the provider session registered under this pair name in the current workspace",
     )
     parser.add_argument(
+        "--session-name",
+        help="Native session name; registered pair metadata is used when omitted",
+    )
+    parser.add_argument(
         "--sync-pair",
         action="store_true",
         help="Legacy opt-in: append this turn to the pair mailbox after success",
@@ -224,11 +228,13 @@ def _record_pair_turn(args: argparse.Namespace, prompt: str, result: dict[str, A
 
 def _command(args: argparse.Namespace) -> list[str]:
     if args.provider == "claude":
+        if any(value == "--name" or value.startswith("--name=") for value in args.cli_arg):
+            raise ValueError("Use --session-name for the Claude native name; do not override it through --cli-arg")
         command = ["claude", "-p", "--output-format", "json"]
         if args.session_id:
             command += ["--resume", args.session_id]
-        if args.pair_name:
-            command += ["--name", args.pair_name]
+        if args.session_name:
+            command += ["--name", args.session_name]
         if args.model:
             command += ["--model", args.model]
         command += args.cli_arg
@@ -270,6 +276,7 @@ def _base_receipt(
         "command": _display_command(command),
         "requested_model": args.model,
         "session_id": args.session_id,
+        "session_name": args.session_name,
         "pair_name": args.pair_name,
         "sync_pair": args.sync_pair,
         "config_dir": str(config_dir) if config_dir else None,
@@ -436,6 +443,13 @@ def main() -> int:
                 provider=args.provider,
                 cwd=cwd,
             )
+            if not args.session_name:
+                provider_record = (pair_manifest.get("providers") or {}).get(args.provider) or {}
+                registered_name = provider_record.get("session_name")
+                if isinstance(registered_name, str) and registered_name.strip():
+                    args.session_name = registered_name.strip()
+                else:
+                    args.session_name = f"{args.pair_name}-{args.provider.capitalize()}"
         except Exception as error:
             raise ValueError(f"Could not resolve --pair-name {args.pair_name!r}: {error}") from error
     provider_prompt = prompt

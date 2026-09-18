@@ -4,8 +4,12 @@ from __future__ import annotations
 
 import base64
 import binascii
+import hashlib
 import hmac
 import ipaddress
+import time
+from email.utils import formatdate
+from http.cookies import SimpleCookie
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -84,10 +88,80 @@ class AuthMixin:
     # authenticated when --public-read is enabled.
     public_read_live_routes = {"/_board/design", "/_board/design-board", "/_board/design-bundle",
                                "/_board/insight-board", "/_board/insight"}
+    auth_cookie_name = "jjluo_board_session"
+    auth_cookie_days = 0
+    auth_cookie_key: bytes | None = None
 
     @classmethod
-    def configure_auth(cls, path: Path | None) -> None:
+    def configure_auth(cls, path: Path | None, remember_days: int = 0) -> None:
+        if remember_days < 0 or remember_days > 365:
+            raise AuthConfigError("auth remember days must be between 0 and 365")
         cls.auth_users = load_users(path) if path else None
+        cls.auth_cookie_days = remember_days if cls.auth_users else 0
+        if cls.auth_users and cls.auth_cookie_days:
+            material = "\n".join(
+                f"{username}:{password}"
+                for username, password in sorted(cls.auth_users.items())
+            ).encode("utf-8")
+            cls.auth_cookie_key = hashlib.sha256(
+                b"jjluo-board-cookie-v1\0" + material
+            ).digest()
+        else:
+            cls.auth_cookie_key = None
+
+    def _cookie_token(self, username: str, expires: int) -> str:
+        payload = f"{username}\n{expires}".encode("utf-8")
+        encoded = base64.urlsafe_b64encode(payload).decode("ascii").rstrip("=")
+        signature = hmac.new(
+            self.auth_cookie_key, encoded.encode("ascii"), hashlib.sha256
+        ).hexdigest()
+        return f"{encoded}.{signature}"
+
+    def _cookie_user(self) -> str | None:
+        if not self.auth_cookie_key or not self.auth_users:
+            return None
+        try:
+            cookie = SimpleCookie(self.headers.get("Cookie", ""))
+            morsel = cookie.get(self.auth_cookie_name)
+            if morsel is None:
+                return None
+            encoded, signature = morsel.value.rsplit(".", 1)
+            expected = hmac.new(
+                self.auth_cookie_key, encoded.encode("ascii"), hashlib.sha256
+            ).hexdigest()
+            if not hmac.compare_digest(expected, signature):
+                return None
+            padded = encoded + "=" * (-len(encoded) % 4)
+            username, expires_text = base64.urlsafe_b64decode(padded).decode("utf-8").split("\n", 1)
+            if int(expires_text) <= int(time.time()):
+                return None
+            return username if username in self.auth_users else None
+        except (ValueError, UnicodeDecodeError, binascii.Error):
+            return None
+
+    def send_auth_cookie_if_pending(self) -> None:
+        username = getattr(self, "_auth_cookie_user", None)
+        expires = getattr(self, "_auth_cookie_expires", None)
+        if not username or not expires:
+            return
+        max_age = max(0, expires - int(time.time()))
+        secure = (
+            self.headers.get("X-Forwarded-Proto", "").lower() == "https"
+            or getattr(self, "public_url", "").startswith("https://")
+        )
+        parts = [
+            f"{self.auth_cookie_name}={self._cookie_token(username, expires)}",
+            "Path=/",
+            f"Max-Age={max_age}",
+            f"Expires={formatdate(expires, usegmt=True)}",
+            "HttpOnly",
+            "SameSite=Lax",
+        ]
+        if secure:
+            parts.append("Secure")
+        self.send_header("Set-Cookie", "; ".join(parts))
+        self._auth_cookie_user = None
+        self._auth_cookie_expires = None
 
     def is_public_board_read_request(self) -> bool:
         """Allow anonymous GET/HEAD for generated pages and safe projections."""
@@ -117,7 +191,14 @@ class AuthMixin:
         return self.require_auth(challenge=not self.public_read)
 
     def require_auth(self, *, challenge: bool = True) -> bool:
-        if credentials_match(self.headers.get("Authorization"), self.auth_users):
+        if self.auth_users is None or self._cookie_user() is not None:
+            return True
+        header = self.headers.get("Authorization")
+        if credentials_match(header, self.auth_users):
+            if self.auth_cookie_days:
+                username, _password = parse_basic_header(header)
+                self._auth_cookie_user = username
+                self._auth_cookie_expires = int(time.time()) + self.auth_cookie_days * 86400
             return True
         body = b"Authentication required for interactive Board tools.\n"
         if self.command == "POST":

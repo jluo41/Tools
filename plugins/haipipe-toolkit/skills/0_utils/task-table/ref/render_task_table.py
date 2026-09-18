@@ -40,7 +40,7 @@ WHAT ELSE IT READS, and only this:
     scripts/ scripts/config/   the task's code and configs (legacy config/,
                                configs/ read and flagged S10); each config is
                                one Config Catalog row
-    runs/*.sh|*.ps1            tickets = planned Runs; the script a ticket
+    runs/*.sh|*.ps1|*.cmd      tickets = planned Runs; the script a ticket
                                names is the task's main script
     <job>/results/<task>/<run>/runtime.yaml   the receipt = an actual Run
     <job>/src/config-defaults.yaml `store:`   the job's mode (② consumer-
@@ -80,7 +80,7 @@ NOT_A_TASK = {"src", "sbatch", "results", "notebooks", "workflow", "QA",
 # each minted a phantom `bNNj??` table whose "tasks" were the generated
 # per-group folders, and eight N1/S5 findings with them.
 NOT_A_JOB = NOT_A_TASK | {"board", "tests"}
-TICKET_EXT = {".sh", ".ps1"}
+TICKET_EXT = {".sh", ".ps1", ".cmd"}
 CODE_EXT = {".py", ".do", ".R", ".sh", ".ipynb"}
 GEN_LINE = re.compile(r"^(<!-- generated .*-->|generated: .*)$")
 # "05_stage_phy_store: ..." / "11_npi2photo — ..." / "fetch_photos — ..." → the words after the dash

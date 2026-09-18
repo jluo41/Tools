@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -39,11 +40,47 @@ from pair_sync import (  # noqa: E402
 )
 
 
+def _name_key(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.strip().lower()).strip("-")
+
+
+def _default_callee_session_name(pair_name: str, provider: str) -> str:
+    """Give the partner a visible name distinct from the shared pair name."""
+    return f"{pair_name}-{provider.capitalize()}"
+
+
+def _validate_names(args: argparse.Namespace) -> None:
+    if not args.callee_session_name:
+        args.callee_session_name = _default_callee_session_name(
+            args.pair_name,
+            args.callee_provider,
+        )
+    args.callee_session_name = args.callee_session_name.strip()
+    if not args.callee_session_name:
+        raise ValueError("--callee-session-name must not be empty")
+    if _name_key(args.callee_session_name) == _name_key(args.pair_name):
+        raise ValueError(
+            "The callee session must have a different name from the pair/caller session; "
+            "omit --callee-session-name to use the automatic provider suffix"
+        )
+    if args.callee_provider == "claude":
+        for value in args.cli_arg:
+            if value == "--name" or value.startswith("--name="):
+                raise ValueError(
+                    "Use --callee-session-name for the Claude native name; "
+                    "do not override it through --cli-arg"
+                )
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Create or resume the other provider's native CLI session as a named pair."
     )
-    parser.add_argument("--pair-name", required=True, help="Shared human-readable pair name")
+    parser.add_argument(
+        "--pair-name",
+        required=True,
+        help="Shared name; use the verified current caller session name",
+    )
     parser.add_argument("--caller-provider", choices=("claude", "codex"), required=True)
     parser.add_argument("--caller-session-id", help="Current caller session id, when available")
     parser.add_argument("--callee-provider", choices=("claude", "codex"), required=True)
@@ -57,6 +94,10 @@ def _parser() -> argparse.ArgumentParser:
         "--new-session",
         action="store_true",
         help="Force a new partner session even when this pair name already has one",
+    )
+    parser.add_argument(
+        "--callee-session-name",
+        help="Partner's native session name; defaults to '<pair-name>-<callee-provider>'",
     )
     prompt = parser.add_mutually_exclusive_group()
     prompt.add_argument("--prompt")
@@ -89,8 +130,14 @@ def _handshake(
         "pair_name": args.pair_name,
         "cwd": str(cwd),
         "providers": {
-            args.caller_provider: {"session_id": args.caller_session_id or ""},
-            args.callee_provider: {"session_id": args.callee_session_id or ""},
+            args.caller_provider: {
+                "session_name": args.pair_name,
+                "session_id": args.caller_session_id or "",
+            },
+            args.callee_provider: {
+                "session_name": args.callee_session_name,
+                "session_id": args.callee_session_id or "",
+            },
         },
     }
     return paired_session_context(
@@ -131,7 +178,14 @@ def _command(args: argparse.Namespace) -> list[str]:
         raise ValueError("caller and callee providers must be different")
 
     if args.callee_provider == "claude":
-        command = ["claude", "-p", "--output-format", "json", "--name", args.pair_name]
+        command = [
+            "claude",
+            "-p",
+            "--output-format",
+            "json",
+            "--name",
+            args.callee_session_name,
+        ]
         if args.callee_session_id:
             command += ["--resume", args.callee_session_id]
         if args.model:
@@ -170,6 +224,8 @@ def main() -> int:
     args.pair_name = pair_name
     if args.caller_provider == args.callee_provider:
         raise ValueError("caller and callee providers must be different")
+    explicit_callee_name = bool(args.callee_session_name)
+    _validate_names(args)
     args.caller_session_id = _infer_caller_session_id(args)
     if args.callee_session_id and args.callee_session_id in _caller_identity_ids(args):
         raise ValueError(
@@ -194,6 +250,12 @@ def main() -> int:
                 registered_caller_id = caller_record.get("session_id")
                 if isinstance(registered_caller_id, str) and registered_caller_id:
                     args.caller_session_id = registered_caller_id
+            if not explicit_callee_name:
+                registered_callee = (pair_manifest.get("providers") or {}).get(args.callee_provider) or {}
+                registered_name = registered_callee.get("session_name")
+                if isinstance(registered_name, str) and registered_name.strip():
+                    if _name_key(registered_name) != _name_key(args.pair_name):
+                        args.callee_session_name = registered_name.strip()
         except FileNotFoundError:
             # First use of this pair name: create the partner below.
             pass
@@ -212,6 +274,7 @@ def main() -> int:
                     "caller_session_id": args.caller_session_id,
                     "callee_provider": args.callee_provider,
                     "callee_session_id": args.callee_session_id,
+                    "callee_session_name": args.callee_session_name,
                     "command": command,
                     "display_command": shlex.join(command),
                     "cwd": str(cwd),
@@ -279,8 +342,10 @@ def main() -> int:
             cwd=cwd,
             caller_provider=args.caller_provider,
             caller_session_id=args.caller_session_id,
+            caller_session_name=args.pair_name,
             callee_provider=args.callee_provider,
             callee_session_id=result["session_id"],
+            callee_session_name=args.callee_session_name,
             caller_delivery=delivery_by_provider[args.caller_provider],
             callee_delivery=delivery_by_provider[args.callee_provider],
         )
@@ -292,6 +357,7 @@ def main() -> int:
     print(f"CALLER_SESSION_ID={args.caller_session_id or 'not supplied'}")
     print(f"CALLEE_PROVIDER={args.callee_provider}")
     print(f"CALLEE_SESSION_ID={result['session_id']}")
+    print(f"CALLEE_SESSION_NAME={args.callee_session_name}")
     print(f"CALLEE_MODEL={result.get('resolved_model') or 'not reported'}")
     if registered_path:
         print(f"PAIR_FILE={registered_path}")

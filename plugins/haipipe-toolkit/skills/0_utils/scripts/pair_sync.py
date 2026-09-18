@@ -63,6 +63,10 @@ def pair_slug(pair_name: str) -> str:
     return slug or "pair"
 
 
+def _name_key(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.strip().lower()).strip("-")
+
+
 def _resolved_cwd(cwd: Path | str | None) -> Path:
     return Path(cwd or ROOT).expanduser().resolve()
 
@@ -185,6 +189,8 @@ def register_pair(
     caller_session_id: str,
     callee_provider: str,
     callee_session_id: str,
+    caller_session_name: str | None = None,
+    callee_session_name: str | None = None,
     caller_transport: str = "native_cli",
     callee_transport: str = "native_cli",
     caller_delivery: str = "mailbox",
@@ -195,6 +201,8 @@ def register_pair(
         raise ValueError("pair providers must be different")
     if not caller_session_id or not callee_session_id:
         raise ValueError("both provider session ids are required")
+    if caller_session_name and callee_session_name and _name_key(caller_session_name) == _name_key(callee_session_name):
+        raise ValueError("caller and callee session names must be different")
     path = (manifest_path or pair_file_for_name(pair_name, cwd)).expanduser().resolve()
     with _locked(path):
         existing = _read_json(path, {})
@@ -210,18 +218,32 @@ def register_pair(
         )
         manifest.setdefault("created_at", _now())
         providers = manifest.setdefault("providers", {})
-        providers[caller_provider] = {
+        existing_caller = providers.get(caller_provider)
+        if not isinstance(existing_caller, dict):
+            existing_caller = {}
+        caller_record = {
             "session_id": caller_session_id,
             "transport": caller_transport,
             "delivery": caller_delivery,
             "home": "~/.claude" if caller_provider == "claude" else "~/.codex",
         }
-        providers[callee_provider] = {
+        resolved_caller_name = caller_session_name or existing_caller.get("session_name")
+        if resolved_caller_name:
+            caller_record["session_name"] = resolved_caller_name
+        providers[caller_provider] = caller_record
+        existing_callee = providers.get(callee_provider)
+        if not isinstance(existing_callee, dict):
+            existing_callee = {}
+        callee_record = {
             "session_id": callee_session_id,
             "transport": callee_transport,
             "delivery": callee_delivery,
             "home": "~/.claude" if callee_provider == "claude" else "~/.codex",
         }
+        resolved_callee_name = callee_session_name or existing_callee.get("session_name")
+        if resolved_callee_name:
+            callee_record["session_name"] = resolved_callee_name
+        providers[callee_provider] = callee_record
         sync = manifest.setdefault("sync", {})
         # Pair registration is identity-only by default. Mailbox delivery is
         # legacy compatibility and must be enabled deliberately.
@@ -465,9 +487,14 @@ def _make_event(
         "pair_name": manifest["pair_name"],
         "cwd": manifest.get("cwd"),
         "turn_id": turn_id,
-        "from": {"provider": source_provider, "session_id": source_session_id},
+        "from": {
+            "provider": source_provider,
+            "session_name": (providers.get(source_provider) or {}).get("session_name"),
+            "session_id": source_session_id,
+        },
         "to": {
             "provider": target_provider,
+            "session_name": (providers.get(target_provider) or {}).get("session_name"),
             "session_id": (providers.get(target_provider) or {}).get("session_id"),
         },
         "user_summary": _compact(user_text),
@@ -636,8 +663,10 @@ def paired_session_context(
             f"pair_name: {manifest.get('pair_name', '(unnamed)')}",
             f"working_directory: {manifest.get('cwd', '(unknown)')}",
             f"self_provider: {self_provider}",
+            f"self_session_name: {self_record.get('session_name', '(unknown)')}",
             f"self_session_id: {self_session_id or self_record.get('session_id', '(unknown)')}",
             f"partner_provider: {partner_provider}",
+            f"partner_session_name: {partner_record.get('session_name', '(unknown)')}",
             f"partner_session_id: {partner_record.get('session_id', '(not registered)')}",
             "Do not call the partner or copy its transcript unless the user explicitly asks.",
         ]
@@ -665,6 +694,7 @@ def _status_payload(manifest_path: Path) -> dict[str, Any]:
         if not isinstance(record, dict):
             continue
         providers[provider] = {
+            "session_name": record.get("session_name"),
             "session_id": record.get("session_id"),
             "delivery": record.get("delivery"),
             "transport": record.get("transport"),
@@ -721,7 +751,12 @@ def _sync_prompt(event: dict[str, Any]) -> str:
     )
 
 
-def _target_command(provider: str, session_id: str, pair_name: str) -> list[str]:
+def _target_command(
+    provider: str,
+    session_id: str,
+    pair_name: str,
+    session_name: str | None = None,
+) -> list[str]:
     if provider == "claude":
         return [
             "claude",
@@ -731,7 +766,7 @@ def _target_command(provider: str, session_id: str, pair_name: str) -> list[str]
             "--resume",
             session_id,
             "--name",
-            pair_name,
+            session_name or f"{pair_name}-{provider.capitalize()}",
         ]
     return ["codex", "exec", "--json", "resume", session_id, "-"]
 
@@ -750,7 +785,13 @@ def _deliver(manifest_path: Path, event_id: str, timeout: float = 300) -> int:
         _finish_delivery(manifest_path, event_id, result)
         print(result["error"], file=sys.stderr)
         return 2
-    command = _target_command(target_provider, target_session_id, event["pair_name"])
+    target_session_name = (event.get("to") or {}).get("session_name")
+    command = _target_command(
+        target_provider,
+        target_session_id,
+        event["pair_name"],
+        target_session_name,
+    )
     env = dict(os.environ)
     env.update(
         {
@@ -1035,8 +1076,10 @@ def _parser() -> argparse.ArgumentParser:
     register.add_argument("--cwd", type=Path, default=ROOT)
     register.add_argument("--caller-provider", choices=("claude", "codex"), required=True)
     register.add_argument("--caller-session-id", required=True)
+    register.add_argument("--caller-session-name")
     register.add_argument("--callee-provider", choices=("claude", "codex"), required=True)
     register.add_argument("--callee-session-id", required=True)
+    register.add_argument("--callee-session-name")
     register.add_argument("--caller-transport", default="native_cli")
     register.add_argument("--callee-transport", default="native_cli")
     register.add_argument("--caller-delivery", choices=("call", "mailbox"), default="mailbox")
@@ -1091,8 +1134,10 @@ def main() -> int:
             cwd=args.cwd,
             caller_provider=args.caller_provider,
             caller_session_id=args.caller_session_id,
+            caller_session_name=args.caller_session_name,
             callee_provider=args.callee_provider,
             callee_session_id=args.callee_session_id,
+            callee_session_name=args.callee_session_name,
             caller_transport=args.caller_transport,
             callee_transport=args.callee_transport,
             caller_delivery=args.caller_delivery,
