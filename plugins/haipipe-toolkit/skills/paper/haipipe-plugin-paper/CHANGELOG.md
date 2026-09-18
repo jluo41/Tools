@@ -1,5 +1,28 @@
 # CHANGELOG · haipipe-plugin-paper
 
+## 0.2.2 · 2026-09-18
+
+- Reading polish from a full audit (all twenty Space views of both papers,
+  driven in real Chrome over CDP at 1360px and 2000px: no page overflow, no
+  leaking view, nothing past the right edge): no type under 12px (the `⧉ chat`
+  control, kind pills, sub labels, gate ids and bullet ids were 10 to 11px); a
+  closed card shows its whole headline instead of clipping a claim or an idea
+  with an ellipsis; a card subline that repeats the `where` label (the RQ on a
+  claim card) is dropped; a long name clipped deep in the folder tree carries
+  its full name as a tooltip. The audit is kept as a tool:
+  `board/haipipe-board/tests/audit_paper_views.py --base … --paper …`.
+- Cold-read fixes (a fresh agent was handed a pasted `⧉ copy to chat` snippet
+  and asked to act on it, dry run; its friction log): the C7 card resolved
+  only the FIRST address on a row while the claim counted them all, so
+  `task_home()` now resolves every address and the card shows each; SKILL.md
+  gains the address grammar and the `Task: bNN.jNN.` suffix convention, the
+  two words CLAIMED and ADDRESSED, the writer rule (a traceability edit is
+  made directly in the `source:` file; an edit that changes what the paper
+  says routes to its owning skill), the `#<space>/<view>` route table, where
+  the reader-facing origin comes from, and what to take from `haipipe-plugin`;
+  stale `four Spaces` wording swept from SKILL.md, `live/paper.py` and the
+  test; the Task-home brief no longer says nothing is typed (the claim is).
+
 ## 0.2.1 · 2026-09-18
 
 - Workflow map × Folder tree (JL): `ref/space-mapping.md` gains a second table,

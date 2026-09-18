@@ -1,3 +1,9 @@
+## 1.0.10 · 2026-09-18
+
+- `live/paper.py`: reading polish after a twenty-view Chrome audit of the Paper
+  Plugin (12px type floor, unclipped card headlines, deduplicated card
+  subline, tree name tooltips). See haipipe-plugin-paper 0.2.2.
+
 ## 1.0.9 · 2026-09-18
 
 - `live/paper.py`: Run Space › Workflow map joins the Run-Type map to the

@@ -7,7 +7,7 @@ description: >-
   than one Page's outline. Trigger: Paper Plugin, paper plugin, paper console,
   paper work console, paper spaces, /haipipe-plugin-paper.
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
   last_updated: "2026-09-18"
 ---
 
@@ -17,12 +17,16 @@ metadata:
 SURFACE, WRITER, and BOUNDARY. This skill defines the Paper-level delta. It is
 the Paper counterpart to `haipipe-plugin-outline`:
 
+That skill is written for Page-level plugins. For this Board-level plugin read
+it for the four obligations only, then return here: the route, the Spaces, the
+claim rules and the writer rule are all in this file.
+
 ```text
 haipipe-plugin-outline    Page-level planning surface
                            Draft + Evidence + Run
 
 haipipe-plugin-paper      Paper-level coordination surface
-                           Setup + Ideation + Story + Run
+                           Setup + Ideation + Story + Run + Delivery
 ```
 
 Paper Plugin is not a replacement for Outline and is not another Paper Page.
@@ -40,11 +44,21 @@ route by default:
 
 Both query parameters are required. `path` identifies the owning Board source;
 `file=board.md` states that this is a Board-level surface rather than a
-Page-level Outline route. Use the configured reader-facing origin and keep the
-complete query in one Markdown link. Add a hash such as `#story/claims` only
-when the reader explicitly asks for a particular subspace.
+Page-level Outline route. Use the configured reader-facing origin (the `--public-url` the board
+server was started with; find the listening port before quoting a link, and
+never hand a remote reader `127.0.0.1`) and keep the complete query in one
+Markdown link. Add a hash only when the reader asks for a particular subspace.
+The route is `#<space>/<view>`:
 
-There is no per-paper file behind the route: `live/paper.py` renders the four
+```text
+setup      folders · sessions
+ideation   pool · evidence · admission
+story      spine · claims · tasks · sections · evidence
+run        page · evidence · supporting · gates · workflow
+delivery   manuscript · sections · displays · checks · rounds
+```
+
+There is no per-paper file behind the route: `live/paper.py` renders the five
 Spaces from the Board's Markdown on every open, exactly as Outline does. The
 0.1.0 `console/` prototype (a static `data.js` rebuilt by hand, one paper
 only) is retired and is never read.
@@ -100,7 +114,12 @@ source-backed rows, and no second shell or decorative dashboard chrome.
 Reading rules (JL 260918): base type 16px; label/value rows are a two-column
 table with cell edges and a shaded label cell, never text nested in text; a
 value that is itself a table or a tree spans the full width; every table has
-cell edges; long prose is set one sentence per line, for display only.
+cell edges; long prose is set one sentence per line, for display only. No
+type under 12px; a closed card shows its whole headline (never an ellipsis on
+a claim or an idea); a card says a thing once (a subline that repeats the
+`where` label is dropped). Checked by driving all twenty Space views in real
+Chrome at 1360px and 2000px: no page overflow, no view leaking, nothing past
+the right edge.
 
 The five visible top-level Spaces are:
 
@@ -134,7 +153,12 @@ note:
 ```
 
 The person pastes it into the chat and types the note; the agent then edits
-the Markdown the `source:` line names. Cards carry `data-src` (the Markdown
+the Markdown the `source:` line names. Two sizes of edit: a TRACEABILITY edit
+(an address suffix such as `Task: b03.j02.` or `Discovery: b01.j04.`, a typo)
+is made directly in that file, with no version bump and no rebuild, because
+the page re-reads the Markdown on every open; an edit that changes what the
+paper says (a claim, a research question, a design, a Section's narrative)
+belongs to the owning skill in the table below, and the agent routes there. Cards carry `data-src` (the Markdown
 they were read from) and `data-ref` (the row). The page makes no request of
 its own, so feedback can never fork the truth into a second store. A browser
 `(+)` writer, if added later, must append to the card's judgment Run journal
@@ -225,7 +249,17 @@ Task Roadmap        first the Task home: examples/<Project>/tasks/ (or task/,
                     in both shapes (task folder under the job, or flat
                     runs/<task>/ scripts/<task>/ results/<task>/); a Run's
                     receipt is results/<run>/runtime.yaml. The claim = board.md
-                    `blocks: b03 b04 b02.j01` + every address on a C7 row;
+                    `blocks: b03 b04 b02.j01` + every address on a C7 row.
+                    Address grammar: lowercase two-digit `bNN[.jNN[.tNN[.rNN]]]`
+                    (a row id such as `B2` is not an address). Convention: end
+                    the row's design cell with `Task: b03.j02.`, as C6 ends
+                    its scope cell with `Discovery: b01.j04.`; a row may carry
+                    several addresses and its card resolves each. Two words,
+                    never mixed: CLAIMED = a block or job shows in the Task
+                    home because `blocks:` or any C7 address covers it;
+                    ADDRESSED = the C7 row names its own address, and its card
+                    reads `allocated · N/M levels exist`, `address named ·
+                    nothing on disk`, or else `no address yet`;
                     unclaimed blocks and jobs are named once, muted, never
                     expanded; no claim = whole home, said so. Then one card per
                     C7 row; its bNN[.jNN[.tNN]] address says which levels

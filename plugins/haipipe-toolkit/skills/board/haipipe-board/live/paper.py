@@ -4,7 +4,7 @@
 
 The Paper Plugin is the Board-altitude sibling of 🧭 Outline. Outline shows one
 Page's plan, evidence and runs; this shows one paper Board's journey through
-four Spaces (haipipe-plugin-paper, JL 260916 "like haipipe-plugin-outline,
+five Spaces (haipipe-plugin-paper, JL 260916 "like haipipe-plugin-outline,
 you should have haipipe-plugin-paper"):
 
     Setup      board.md · the scaffold folders · one Codex session row per
@@ -153,7 +153,7 @@ def board_url(path_param, rel):
 
 # ---------------------------------------------------------------- collectors
 def collect(board, path_param):
-    """Read everything the four Spaces show. Pure: no writes, no network."""
+    """Read everything the five Spaces show. Pure: no writes, no network."""
     board = Path(board)
     text = read(board / "board.md")
     groups = board_pages(text)
@@ -746,34 +746,45 @@ def _find(parent, prefix):
 
 
 def task_home(d, cells):
-    """Read a bNN[.jNN[.tNN[.rNN]]] address from a Story row and say which
-    levels exist under the project's tasks/ tree. No address → `no address yet`."""
-    tasks = d["blocks"]["dir"]
+    """Read every bNN[.jNN[.tNN[.rNN]]] address on a Story row and say which
+    levels exist under the project's Task home. The first address is the row's
+    own keys (address · levels · path · state); `all` lists every one, because a
+    row may be answered by more than one job and paper_scope() claims them all.
+    No address → `no address yet`."""
+    found_all, seen = [], set()
     for cell in cells:
-        m = _ADDR_RE.search(cell)
-        if not m:
-            continue
-        bnn, jnn, tnn, rnn = m.groups()
-        levels = []
-        block = _find(tasks, "b" + bnn); levels.append(("b" + bnn, block))
-        job = _find(block, "j" + jnn) if jnn else None
-        if jnn:
-            levels.append(("j" + jnn, job))
-        task = None
-        if tnn:
-            task = _find(job, "t" + tnn) or _find(job / "runs" if job else None, "t" + tnn)
-            levels.append(("t" + tnn, task))
-        if rnn:
-            run = None
-            if task is not None and job is not None:
-                run = _find(job / "results" / task.name, "r" + rnn) or _find(task / "results", "r" + rnn)
-            levels.append(("r" + rnn, run))
-        addr = ".".join(l for l, _ in levels)
-        found = [x for x in levels if x[1] is not None]
-        return {"address": addr, "levels": levels,
-                "path": str(found[-1][1].relative_to(tasks.parent)) if found and tasks else "",
-                "state": ("allocated · %d/%d levels exist" % (len(found), len(levels))) if found else "address named · nothing on disk"}
-    return {"address": "", "levels": [], "path": "", "state": "no address yet"}
+        for m in _ADDR_RE.finditer(cell):
+            one = _resolve_address(d, m)
+            if one["address"] not in seen:
+                seen.add(one["address"]); found_all.append(one)
+    if not found_all:
+        return {"address": "", "levels": [], "path": "", "state": "no address yet", "all": []}
+    return dict(found_all[0], all=found_all)
+
+
+def _resolve_address(d, m):
+    """One address match → which of its levels exist under the Task home."""
+    tasks = d["blocks"]["dir"]
+    bnn, jnn, tnn, rnn = m.groups()
+    levels = []
+    block = _find(tasks, "b" + bnn); levels.append(("b" + bnn, block))
+    job = _find(block, "j" + jnn) if jnn else None
+    if jnn:
+        levels.append(("j" + jnn, job))
+    task = None
+    if tnn:
+        task = _find(job, "t" + tnn) or _find(job / "runs" if job else None, "t" + tnn)
+        levels.append(("t" + tnn, task))
+    if rnn:
+        run = None
+        if task is not None and job is not None:
+            run = _find(job / "results" / task.name, "r" + rnn) or _find(task / "results", "r" + rnn)
+        levels.append(("r" + rnn, run))
+    addr = ".".join(l for l, _ in levels)
+    found = [x for x in levels if x[1] is not None]
+    return {"address": addr, "levels": levels,
+            "path": str(found[-1][1].relative_to(tasks.parent)) if found and tasks else "",
+            "state": ("allocated · %d/%d levels exist" % (len(found), len(levels))) if found else "address named · nothing on disk"}
 
 
 def story(d, p):
@@ -1553,13 +1564,15 @@ def _card(cid, kind, label, sub, where, status, status_cls, rows):
     """One collapsed card, the Evidence-card shape: chevron · kind pill · label
     with a muted subline · where · status; open = label/value rows."""
     detail = _kv(rows)
+    # say a thing once: a subline that is empty, a dash, or the same words as `where` is dropped
+    plain = lambda h: re.sub(r"<[^>]+>", "", h or "").strip()
+    subline = "" if plain(sub) in ("", "—") or plain(sub) == plain(where) else '<span class="item-title">%s</span>' % sub
     return ('<details class="item-card" id="%s"><summary><div class="item-summary">'
             '<span class="item-chevron">›</span><span class="item-kind">%s</span>'
-            '<div class="item-main"><span class="item-label">%s</span>'
-            '<span class="item-title">%s</span></div>'
+            '<div class="item-main"><span class="item-label">%s</span>%s</div>'
             '<span class="item-where">%s</span><span class="item-status %s">%s</span>'
             '</div></summary><div class="item-detail">%s</div></details>'
-            % (esc(cid), esc(kind), esc(label), sub, where, status_cls, esc(status), detail))
+            % (esc(cid), esc(kind), esc(label), subline, where, status_cls, esc(status), detail))
 
 
 def _repo_rel(d, path):
@@ -1730,16 +1743,18 @@ def _task_cards(d, s):
         home = task_home(d, c)
         rows = _fields(s["tt_h"], c, {0, 1})
         if home["levels"]:
-            rows.append(("Task home", " · ".join(
-                '<span class="%s">%s %s</span>' % ("ok" if path else "warn", esc(l), "✓" if path else "✗")
-                for l, path in home["levels"]) + (('<div class="path">%s</div>' % esc(home["path"])) if home["path"] else "")))
+            for one in home["all"]:                       # a row answered by two jobs shows both
+                rows.append(("Task home", " · ".join(
+                    '<span class="%s">%s %s</span>' % ("ok" if path else "warn", esc(l), "✓" if path else "✗")
+                    for l, path in one["levels"]) + (('<div class="path">%s</div>' % esc(one["path"])) if one["path"] else "")))
         else:
             hint = (" · blocks on disk: " + esc(" ".join(x["addr"] for x in d["blocks"]["tree"]))) if d["blocks"]["tree"] else ""
-            rows.append(("Task home", '<span class="mut">no address on this row yet · write bNN.jNN.tNN in a cell when a block answers it%s</span>' % hint))
+            rows.append(("Task home", '<span class="mut">no address on this row yet · end the design cell with <code>Task: bNN.jNN.</code> '
+                         '(or <code>.tNN</code>) when a block answers it%s</span>' % hint))
         rows.append(("Story row", _link(d, s["rel"], "%s on %s · C7" % (tid, s["stem"]), focus="C7")))
         rows.append(_judge_row(d, s["stem"], tid, "rtask"))
         cards.append(_srcd(d, s["rel"], "C7 · " + tid, _card("task-" + tid, tid, c[1] if len(c) > 1 else "(no obligation cell)",
-                           esc(home["address"] or ""), esc(home["address"]), home["state"],
+                           "", esc(" · ".join(x["address"] for x in home["all"])), home["state"],
                            _status_cls(home["state"]), rows)))
     return cards
 
@@ -1822,7 +1837,7 @@ def _tree_card(d):
         if rest:
             src.append("C7 addresses %s" % esc(" ".join(rest)))
         brief = ("This paper claims " + " + ".join(src) + ". Block → Job → Task → Run is read off the folder on every load; "
-                 "a Run's receipt is its results/&lt;run&gt;/runtime.yaml. Nothing here is typed: fix the tree, not this view.")
+                 "a Run's receipt is its results/&lt;run&gt;/runtime.yaml. The tree is read off the folder: fix the tree, not this view. What this paper claims IS typed: board.md <code>blocks:</code> and the addresses on C7 rows.")
     else:
         tally = "%d block(s) · %d job(s) · %d task(s)" % (len(blocks["tree"]), blocks["n_jobs"], blocks["n_tasks"])
         brief = ("No block claimed yet, so the whole Task home is shown. Claim this paper's part with a "
@@ -2246,8 +2261,8 @@ def _tree_html(d, nodes, by_slot, parent_slot=""):
         top = '<span class="tn-note">%s</span>' % esc(n["note"]) if n["note"] else ""
         if first:
             top = "".join('<span class="idtag rt">%s</span>' % esc(x) for x in row["runtypes"]) + top
-        line = ('<span class="tn-name">%s %s</span><span class="tn-works"><span class="tn-top">%s</span></span>'
-                % ("📁" if n["dir"] else "📄", name, top))
+        line = ('<span class="tn-name" title="%s">%s %s</span><span class="tn-works"><span class="tn-top">%s</span></span>'
+                % (esc(n["name"]), "📁" if n["dir"] else "📄", name, top))
         if n["dir"]:
             kids = _tree_html(d, n["children"], by_slot, n["slot"])
             if n["more"]:
@@ -2635,7 +2650,7 @@ table.grid tr:last-child td{border-bottom:0}
 .item-cards{gap:9px;margin-top:8px}
 .item-card{border-radius:10px}
 .item-summary{padding:12px 13px;gap:10px}
-.item-kind{font-size:11px;padding:1px 8px}
+.item-kind{font-size:12px;padding:1px 8px} .item-sub{font-size:12px} .gates b{font-size:12px} .item-bullets b{font-size:12px}
 .item-label{font-size:15.5px;line-height:1.4} .item-title{font-size:13.5px} .item-where{font-size:12px} .item-status{font-size:14px}
 .item-detail{padding:10px 12px 13px}
 .idtag,.path{font-size:12.5px} .item-bullets{font-size:14.5px}
@@ -2676,8 +2691,8 @@ details.tn>summary .tn-name{font-weight:650}
 details.tn[open]>summary .tn-name:before{content:"▾ ";color:var(--mut)} details.tn>summary .tn-name:before{content:"▸ ";color:var(--mut)}
 .tn-file .tn-name:before{content:"  ";white-space:pre}
 @media(max-width:760px){.treebox{--w:200px}}
-.item-card[open] .item-label,.item-card[open] .item-title{white-space:normal;overflow:visible}
-.item-card[open]>summary .item-summary{align-items:start}
+.item-label,.item-title{white-space:normal;overflow:visible;text-overflow:clip}
+.item-summary{align-items:start}
 .cc{opacity:.7;font-size:11.5px;padding:2px 7px}
 @media(max-width:620px){.kv>.item-row{grid-template-columns:minmax(0,1fr)}
  .kv>.item-row>b{border-right:0;border-bottom:1px solid var(--line);padding:6px 12px}
@@ -2685,7 +2700,7 @@ details.tn[open]>summary .tn-name:before{content:"▾ ";color:var(--mut)} detail
 """
 
 _COPY_CSS = """
-.cc{font:600 10.5px -apple-system,sans-serif;border:1px solid var(--line);border-radius:6px;background:var(--card);
+.cc{font:600 12px -apple-system,sans-serif;border:1px solid var(--line);border-radius:6px;background:var(--card);
  color:var(--mut);padding:1px 6px;cursor:pointer;white-space:nowrap;opacity:.55}
 .cc:hover{opacity:1;color:var(--acc);border-color:var(--acc)}
 .item-summary{grid-template-columns:1.1em auto minmax(0,1fr) auto auto auto}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""📄 Paper Plugin: live, storage-less, one paper Board → four Spaces.
+"""📄 Paper Plugin: live, storage-less, one paper Board → five Spaces.
 
 The teeth: no per-paper file is needed (the old console/ folder must not be
 read), a P0 board with a plan but no Content still lists its ideas, one Codex
@@ -15,7 +15,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir
 sys.path.insert(0, str(HERE))
-from live.paper import collect, render_paper, session_rows  # noqa: E402
+from live.paper import collect, render_paper, session_rows, task_home  # noqa: E402
 
 BOARD = """# Paper-Test · paper board
 spine: one idea, told to a desk
@@ -208,7 +208,7 @@ def make_board(root):
 
 
 class PaperPluginTest(unittest.TestCase):
-    def test_collects_the_four_spaces_from_markdown_only(self):
+    def test_collects_the_spaces_from_markdown_only(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             b = make_board(root)
@@ -298,6 +298,18 @@ class PaperPluginTest(unittest.TestCase):
             page = render_paper(board, root, "/papers/Paper-Test/board.md")
             self.assertIn("no delivery/ yet · G4 open", page)
             self.assertIn('data-space="delivery"', page)
+
+    def test_a_row_with_two_addresses_resolves_both(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            b = make_board(root)
+            d = collect(b, "/papers/Paper-Test/board.md")
+            home = task_home(d, ["T9", "two jobs answer this", "alt spec. Task: b01.j01. Task: b01.j02."])
+            self.assertEqual([x["address"] for x in home["all"]], ["b01.j01", "b01.j02"])   # never only the first match
+            self.assertEqual(home["address"], "b01.j01")                                  # the first stays the row's own keys
+            self.assertTrue(all(x["state"].startswith("allocated") for x in home["all"]))
+            none = task_home(d, ["T2", "a robustness check", "alt spec"])
+            self.assertEqual((none["state"], none["all"]), ("no address yet", []))        # a row id like T2 is not an address
 
     def test_render_needs_no_console_and_links_back_to_outline(self):
         with tempfile.TemporaryDirectory() as tmp:
