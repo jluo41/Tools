@@ -41,7 +41,7 @@ the native family identity, so the stem does not repeat `labeling-`:
 ```text
 rl01_corpus-contract_job-v1
 rl02_discovery-search_trait-definition
-rl03_embedding-build_corpus-v1
+rl03_embedding-build_all-minilm-l6-v2
 rl04_round-prepare_round-01
 ```
 

@@ -23,12 +23,15 @@ Human-readable Markdown files are rendered views and never a second source of tr
 │       └── result.yaml               safe pointers to canonical domain Results
 ├── corpus/
 │   ├── manifest.json
-│   ├── items.jsonl
+│   ├── items.jsonl                   every row: population_status eligible | sealed (§7)
 │   └── final/
 │       ├── D_star.jsonl
 │       └── manifest.yaml
-├── cache/
-│   └── embeddings/
+├── cache/                            derived, rebuildable, never authority
+│   ├── embeddings/
+│   └── reveal/<key>.json             reveal index; eligible ids only, never a sealed id
+├── exposure/
+│   └── group_examples.jsonl          append-only: who saw which development item's text outside the Label screen
 ├── policy/
 │   ├── current
 │   └── versions/
@@ -56,6 +59,7 @@ Human-readable Markdown files are rendered views and never a second source of tr
 │       ├── prelabels/
 │       ├── human_batch.jsonl
 │       ├── sessions/
+│       │   └── events.jsonl          append-only, hash-chained item events
 │       ├── human_final.jsonl
 │       ├── policy_draft/
 │       ├── metrics.json
@@ -73,7 +77,7 @@ Human-readable Markdown files are rendered views and never a second source of tr
 │   └── label-v1.yaml
 ├── test/
 │   ├── sealed/
-│   │   ├── manifest.enc-or-protected
+│   │   ├── manifest.protected.jsonl  opaque: sealed ids + text hashes (any one manifest* file)
 │   │   ├── access_log.jsonl
 │   │   └── status.json
 │   └── final/
@@ -171,6 +175,11 @@ landed: checkpoint-03          written at CLOSE
 While `state: proposed` the folder holds `card.md` and nothing else. A killed
 card keeps its folder forever with the reason inside.
 
+The round_01 card written by `engine/calibration.py release_round` starts at
+`state: released`. In place of the `released:` line it records
+`released_by`, `released_at`, and `channel`, plus `policy`,
+`arm: random development draw`, `n`, and `seed`.
+
 ### README.md · identity
 
 ```markdown
@@ -178,7 +187,7 @@ unit: round_03
 lineage: <policy lineage id>
 policy_in: G_02 · policy_out: G_03
 serves: <Job Page id> · §2 Rounds
-state: open | judged | closed@checkpoint-03
+state: open | prepared | judged | closed@checkpoint-03
 closed: <keeper> <YYMMDD> · route: another round | freeze | HOLD
 ```
 
@@ -196,11 +205,21 @@ and the audit-arm metric it should move, before the first item is shown.
 
 `candidate_pool.jsonl` contains `C_t` selection evidence (empty in round 1).
 `prelabels/<executor>.jsonl` holds one executor's immutable sealed rows (none in
-round 1). `sessions/` is append-only: show, first, lock, reveal, final events
-per item, plus policy proposals and backward-impact candidates. `human_final.jsonl`
+round 1). `sessions/` is append-only. Its `events.jsonl` holds the
+hash-chained show, first, lock, reveal, and final events per item; the field
+list is in `../skills/label-building-workflow/SKILL.md` §JUDGE. Policy proposals
+and backward-impact candidates also belong under `sessions/` once LEARN is
+built. `human_final.jsonl`
 is the per-item final decision with its change type. `checkpoint.json` joins
 every checksum and is the only artifact that promotes human gold and a closed
 policy.
+
+The reveal payload for an item is read from `cache/reveal/<key>.json`, an index
+built from config `reveal.reference_observations` (`ref-config.md` §3a). The
+key hashes the source path, size, modified time, and that config block. The
+index holds only `eligible` ids and never a sealed id. It is a cache: deleting
+it only forces a rebuild, and it never confers gold. The reveal a human saw is
+kept in the `reveal` event, not in the cache.
 
 ### view/ · rendered, never authority
 
@@ -277,6 +296,13 @@ register's law, not restated here.
 
 ## 7. Sealed test
 
+Every row of `corpus/items.jsonl` carries `population_status: eligible` or
+`population_status: sealed`; `engine/fence_source.py` writes it before the job
+exists. The development pool is exactly the `eligible` rows. A row without the
+field is not in the pool. A round batch, a reveal index, an embedding, a
+retrieval, or a prelabel reads only `eligible` rows, and a round batch that
+holds a `sealed` row voids the round.
+
 The sealed manifest exists at initialization and is readable only by the custodian until `G*` freezes.
 Its protected identifier storage may be encrypted or isolated by filesystem permissions.
 
@@ -335,11 +361,14 @@ The final report states provenance shares, weighted error and interval, protecte
 | artifact | canonical writer |
 |---|---|
 | vector cache and indexes | Embedder |
-| `C_t` and `B_t` manifests | Candidate Selector |
+| `C_t` and `B_t` manifests | Candidate Selector (round_01 today: `engine/calibration.py release_round`) |
 | executor predictions | registered executor through one `executor-predict` Run |
-| Session human records | Strong Calibration Agent recording human input |
+| Session human records, `sessions/events.jsonl` | `engine/calibration.py`, recording the identified human's input from the Board Label screen or the Strong Calibration Agent |
+| `cache/reveal/` | `engine/calibration.py`; regenerable |
+| `exposure/group_examples.jsonl` | `engine/embedding_build.py` (`group_examples`, `item_text`); append-only, never rebuilt |
+| `population_status` on `corpus/items.jsonl`, sealed manifest at fence time | `engine/fence_source.py`, before the job exists |
 | closed policy, cumulative gold, checkpoint | Checkpoint Keeper |
-| round card `released:` | a person |
+| round card `released:` | a person (round_01 today: the identified human calls `release_round`) |
 | `register.md` | Checkpoint Keeper (Contract scaffolds it) |
 | `view/`, `cheatsheet.md`, `gallery.md`, `README.md` | rendered by the Keeper at close; regenerable |
 | signed Label Handoff | Label Handoff Keeper recording the human freeze signature |

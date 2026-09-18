@@ -1,5 +1,7 @@
 <!-- TEMPLATE · ONE CORPUS + ONE LABEL TARGET = ONE S-Label PAGE.
-     Copy this file to `<board>/<group-folder>/S-Label-<n>-<corpus>-<target>.md`, fill it, and
+     Copy this file into its own folded Page folder, for example
+     `<board>/pages/S-Label-<n>-<corpus>-<target>/S-Label-<n>-<corpus>-<target>.md`, so its
+     job lives beside it at `labeling/` (haipipe-plugin-labeling). Fill it, and
      DELETE each RULE comment as you satisfy it. A RULE comment never ships in a filled page.
 
      WHAT THIS FILE IS. The shape of a labeling Job Page, in the order its sections must run,
@@ -282,16 +284,22 @@ provides: <the terminal deliverable, e.g. "D*, one labeled record per item with 
 **The run on disk**:
 
 ```text
-runs/<corpus>-<target>/                the job folder, ref-assets.md §1
-├── config.yaml              schemas · thresholds · consecutive_rounds_k · executors
-├── register.md              seven regions × open / covered / risky
-├── corpus/manifest.json     ids · text checksum
-├── policy/versions/G_<t>/   closed, immutable · + cheatsheet.md · gallery.md (§1 quotes these)
-├── gold/cumulative.jsonl    human-confirmed rows only
-├── rounds/round_<t>/        one ROUND UNIT per closed round: card · manifest · evidence ·
-│                            prospect · events · checkpoint.json · view/ (§2 indexes these)
-├── handoff/label-v1.yaml    written once at P2 Freeze (§4 shows it)
-└── test/sealed/             reserved, unread
+<page-folder>/labeling/          the job folder, beside this Page · ref-assets.md §1
+├── config.yaml                  schemas · meanings · thresholds · consecutive_rounds_k · executors
+├── register.md                  seven regions × open / covered / risky
+├── gates/                       p0-contract/receipt.json · g0/receipt.json
+├── runs/ · results/             rlNN_<operation>_<target> Ticket ↔ Result, every phase
+├── corpus/manifest.json         ids · text checksum · n_eligible · n_sealed
+├── corpus/items.jsonl           every row: population_status eligible | sealed
+├── policy/versions/G_<t>/       closed, immutable · + cheatsheet.md · gallery.md (§1 quotes these)
+├── gold/cumulative.jsonl        human-confirmed rows only
+├── rounds/round_<t>/            one ROUND UNIT per round: card · manifest · evidence · prospect ·
+│                                human_batch · sessions/events.jsonl · human_final ·
+│                                checkpoint.json · view/ (§2 indexes these)
+├── handoff/label-v1.yaml        written once at P2 Freeze (§4 shows it)
+├── test/sealed/                 reserved, unread · status.json · one protected manifest
+├── evaluation/ · production/ · audit/     Scanning side, P3-P5 (§4 and §5 show them)
+└── cache/                       embeddings/ · reveal/ · derived, never authority
 ```
 
 **The corpus**: <path, and the field the unit is read from.>

@@ -7,8 +7,8 @@ description: >-
   than one Page's outline. Trigger: Paper Plugin, paper plugin, paper console,
   paper work console, paper spaces, /haipipe-plugin-paper.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-16"
+  version: "0.2.1"
+  last_updated: "2026-09-18"
 ---
 
 # /haipipe-plugin-paper · the Paper-level work console
@@ -76,6 +76,12 @@ non-Markdown files read are machine receipts their engines generate and nobody
 authors: `delivery/build-manifest.json` and `paper-build.toml`
 (haipipe-paper-assemble), each Run's `runtime.yaml`, a Discovery Task's
 `discovery.yaml`, and pair manifests. A receipt is shown, never edited.
+
+Every Space ends with a `backend Markdown` card that names the exact files
+it was read from (✓ present · ⬜ absent), so a reader can always trace a word
+to its file. The only words that are not read from a file are the plugin's own
+labels, briefs and empty-state hints, which live in `live/paper.py` and are
+versioned with the board skill.
 
 `board.md`, Story00, StoryA, Section Pages, Round Pages, delivery receipts,
 and owner-native Run records remain authoritative. The Plugin stores nothing:
@@ -279,7 +285,21 @@ Gates             G0–G5 read from the files haipipe-paper-workflow names
                   (I3 receipt · C8 rows vs minted pages · build-manifest.json
                   · Round pages); a gate no file answers says so
 Workflow map      Run-Type rows × Space columns projected from
-                  ref/space-mapping.md; a definition view, not a Run inventory
+                  ref/space-mapping.md, plus a `folder on this board` column;
+                  under it Folder tree × Run-Type, two boxes of two aligned
+                  columns: box 1 the paper folder, box 2 the project homes
+                  (claimed Task-home blocks · Discovery inquiries). Left the
+                  bare, COMPLETE tree of the REAL folders as a collapsible
+                  explorer (board/ and _archive/ skipped; page groups open,
+                  everything else closed; a folder opens three levels below a
+                  page folder, two below a Task or Discovery task; files
+                  listed up to 40 per folder, the rest a count; a folder the
+                  map has no slot for reads `not in the map`); right, one
+                  edged cell per row: the folder's counts, and on the first
+                  folder of each slot its Run-Type chips. Nothing else on the
+                  tree (JL: less is more). A slot with no folder yet is named
+                  under the boxes. The card states its backend Markdown; a
+                  definition view, never a creator
 ```
 
 The Workflow map is a definition view, not another Run inventory. It shows

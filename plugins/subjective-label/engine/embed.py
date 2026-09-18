@@ -11,7 +11,9 @@ CLI subcommands
     cluster    cluster a set of texts
     stratify   stratified sample by cluster
 
-All subcommands take a --project-dir to scope caching.
+All subcommands take a --project-dir to scope caching. On a v2 job root
+(config.yaml schema_version: subjective-label/v2), embed, nearest, project, and
+stratify hold until G0 passes (engine/gates.py); legacy dirs warn and continue.
 
 Config source: {project_dir}/config.yaml → embedding section
     model: "sentence-transformers/all-MiniLM-L6-v2"
@@ -33,9 +35,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import sys
 from pathlib import Path
+
+_ENGINE_DIR = str(Path(__file__).resolve().parent)
+if _ENGINE_DIR not in sys.path:
+    sys.path.insert(0, _ENGINE_DIR)
+from gates import GateHold, guard_job_root  # noqa: E402
 
 
 # ── deferred imports so the CLI help works without heavy deps ───────────────
@@ -119,6 +125,7 @@ def cmd_embed(project_dir: Path, input_jsonl: Path, output_path: Path) -> None:
 
     Reuses cached vectors when text hash + model match.
     """
+    guard_job_root(project_dir, "G0")
     import numpy as np  # noqa: PLC0415
 
     cfg = _read_config(project_dir)
@@ -217,6 +224,7 @@ def cmd_index(project_dir: Path, gallery_jsonl: Path) -> None:
 
 def cmd_nearest(project_dir: Path, query_jsonl: Path, output_jsonl: Path, k: int) -> None:
     """For each query text, find k-nearest gallery entries."""
+    guard_job_root(project_dir, "G0")
     import faiss  # noqa: PLC0415
     import numpy as np  # noqa: PLC0415
 
@@ -316,6 +324,7 @@ def cmd_project(project_dir: Path, input_jsonl: Path, output_dir: Path, method: 
                                         warnings
     Works for any number of label values declared in config.yaml.
     """
+    guard_job_root(project_dir, "G0")
     import numpy as np  # noqa: PLC0415
     from sklearn.metrics import silhouette_samples  # noqa: PLC0415
     from sklearn.cluster import DBSCAN  # noqa: PLC0415
@@ -513,6 +522,7 @@ def cmd_project(project_dir: Path, input_jsonl: Path, output_dir: Path, method: 
 
 def cmd_stratify(project_dir: Path, input_jsonl: Path, cluster_jsonl: Path, output_jsonl: Path, n_per_cluster: int) -> None:
     """Given a cluster assignment, stratified-sample n items per cluster."""
+    guard_job_root(project_dir, "G0")
     import random  # noqa: PLC0415
 
     cluster_map = {}
@@ -579,18 +589,21 @@ def main() -> None:
 
     args = p.parse_args()
 
-    if args.cmd == "embed":
-        cmd_embed(args.project_dir, args.input, args.output)
-    elif args.cmd == "index":
-        cmd_index(args.project_dir, args.gallery)
-    elif args.cmd == "nearest":
-        cmd_nearest(args.project_dir, args.query, args.output, args.k)
-    elif args.cmd == "cluster":
-        cmd_cluster(args.project_dir, args.input, args.output, args.n_clusters)
-    elif args.cmd == "stratify":
-        cmd_stratify(args.project_dir, args.input, args.clusters, args.output, args.n_per_cluster)
-    elif args.cmd == "project":
-        cmd_project(args.project_dir, args.input, args.output_dir, args.method)
+    try:
+        if args.cmd == "embed":
+            cmd_embed(args.project_dir, args.input, args.output)
+        elif args.cmd == "index":
+            cmd_index(args.project_dir, args.gallery)
+        elif args.cmd == "nearest":
+            cmd_nearest(args.project_dir, args.query, args.output, args.k)
+        elif args.cmd == "cluster":
+            cmd_cluster(args.project_dir, args.input, args.output, args.n_clusters)
+        elif args.cmd == "stratify":
+            cmd_stratify(args.project_dir, args.input, args.clusters, args.output, args.n_per_cluster)
+        elif args.cmd == "project":
+            cmd_project(args.project_dir, args.input, args.output_dir, args.method)
+    except GateHold as hold:
+        raise SystemExit(str(hold)) from None
 
 
 if __name__ == "__main__":

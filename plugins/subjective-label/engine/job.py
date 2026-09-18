@@ -99,6 +99,44 @@ def load_mapping(path: Path) -> dict:
     return value
 
 
+def try_load_mapping(path: Path) -> tuple[dict, str | None]:
+    """Load one mapping for status derivation; report a defect instead of raising."""
+    try:
+        if path.is_symlink():
+            return {}, f"refusing symlinked authority file: {path.name}"
+        return load_mapping(path), None
+    except FileNotFoundError:
+        return {}, f"missing: {path.name}"
+    except (OSError, ValueError, UnicodeError, yaml.YAMLError) as error:
+        return {}, f"unreadable {path.name}: {type(error).__name__}"
+
+
+def authority_hold(config: dict) -> tuple[bool, str]:
+    """One HOLD rule for every host: only one named real human may create gold."""
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    human_id = str(authority.get("human_id") or "").strip()
+    mode = str(authority.get("mode") or "")
+    if config.get("simulation_only") is True or "simulation" in mode.lower():
+        return True, "a simulation or proxy cannot create human gold"
+    if mode == "external_annotation_import":
+        return True, "imported source labels only; no local human authority is appointed"
+    if not human_id:
+        return True, "config does not name one identified human semantic authority"
+    if mode != "single_human_semantic_authority" or authority.get("creates_human_gold") is not True:
+        return True, "authority mode does not allow this human to create gold"
+    return False, ""
+
+
+def _unconfirmed_config_bytes(config: dict) -> bytes:
+    """Rebuild the P0 config bytes that existed before meaning confirmation."""
+    original = copy.deepcopy(config)
+    authority = original.get("authority")
+    if isinstance(authority, dict):
+        authority["meaning_confirmed"] = False
+        authority["meaning_receipt"] = None
+    return yaml_bytes(original)
+
+
 def count_jsonl(path: Path) -> int:
     with path.open("r", encoding="utf-8") as handle:
         return sum(1 for line in handle if line.strip())
@@ -534,6 +572,7 @@ def confirm_meaning(
     human_id: str,
     confirmed_at: str,
     accept_current_schema: bool,
+    channel: str = "cli",
 ) -> dict:
     """Record the identified human's explicit confirmation of the current schema."""
     job_root = job_root.resolve()
@@ -547,6 +586,17 @@ def confirm_meaning(
     authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     if authority.get("human_id") != human_id:
         raise RuntimeError("only the identified human semantic authority may confirm")
+    held, reason = authority_hold(config)
+    if held:
+        raise RuntimeError(f"HOLD · {reason}")
+    # Any integrity defect other than the not-yet-written G0 receipt blocks the
+    # confirmation BEFORE a single byte is written.
+    blocking = [
+        error for error in before["integrity_errors"]
+        if error != "G0 receipt missing after semantic confirmation"
+    ]
+    if blocking or before["missing"]:
+        raise RuntimeError(f"P0 integrity must pass before confirmation: {blocking or before['missing']}")
     if before["phase"] == "P1" and before["meaning_receipt_valid"]:
         return {
             "job_root": str(job_root),
@@ -563,8 +613,6 @@ def confirm_meaning(
         raise RuntimeError("P0 contract receipt does not bind the five authority artifacts")
 
     already_semantic = _meaning_receipt_valid(config, job_root)
-    if not already_semantic and not before["p0_contract_integrity_valid"]:
-        raise RuntimeError("P0 integrity must pass before human meaning confirmation")
 
     if not already_semantic:
         final_config = copy.deepcopy(config)
@@ -579,6 +627,7 @@ def confirm_meaning(
             "status": "confirmed",
             "human_id": human_id,
             "confirmed_at": confirmed_at,
+            "channel": channel,
             "bindings": bindings,
         }
         final_config_data = yaml_bytes(final_config)
@@ -637,41 +686,80 @@ def confirm_meaning(
     }
 
 
+def _component_path(policy_dir: Path, name: object) -> Path | None:
+    """Resolve one G_00 component only when its name is a known, contained file."""
+    text = str(name)
+    if text not in POLICY_COMPONENTS or "/" in text or "\\" in text or ".." in text:
+        return None
+    candidate = policy_dir / text
+    if candidate.is_symlink():
+        return None
+    return candidate
+
+
 def status(job_root: Path) -> dict:
+    """Derive the P0/G0 frontier without writing and without raising on defects."""
     job_root = job_root.resolve()
     present = {rel: (job_root / rel).is_file() for rel in P0_FILES}
-    config = load_mapping(job_root / "config.yaml") if present["config.yaml"] else {}
+    missing = [rel for rel, exists in present.items() if not exists]
+    integrity_errors: list[str] = []
+
+    config: dict = {}
+    if present["config.yaml"]:
+        config, error = try_load_mapping(job_root / "config.yaml")
+        if error:
+            integrity_errors.append(error)
     authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     meaning_confirmed = bool(authority.get("meaning_confirmed"))
-    meaning_is_valid = _meaning_receipt_valid(config, job_root)
-    missing = [rel for rel, exists in present.items() if not exists]
+    try:
+        meaning_is_valid = bool(config) and _meaning_receipt_valid(config, job_root)
+    except (OSError, ValueError, TypeError):
+        meaning_is_valid = False
+    hold, hold_reason = authority_hold(config) if config else (False, "")
 
-    integrity_errors: list[str] = []
     exclusion_asserted = False
     g0_receipt_valid = False
-    sealed_status = load_mapping(job_root / "test" / "sealed" / "status.json")
+    sealed_status: dict = {}
+    if present["test/sealed/status.json"]:
+        sealed_status, error = try_load_mapping(job_root / "test" / "sealed" / "status.json")
+        if error:
+            integrity_errors.append(error)
     source_attestation = sealed_status.get("source_fence_attestation")
-    if not missing:
-        corpus_manifest = load_mapping(job_root / "corpus" / "manifest.json")
+    g0_receipt_path = job_root / "gates" / "g0" / "receipt.json"
+    p0_receipt_path = job_root / "gates" / "p0-contract" / "receipt.json"
+    expected_items = ""
+
+    if not missing and not integrity_errors:
+        corpus_manifest, error = try_load_mapping(job_root / "corpus" / "manifest.json")
+        if error:
+            integrity_errors.append(error)
         items_path = job_root / "corpus" / "items.jsonl"
         expected_items = str(corpus_manifest.get("items_checksum") or "").removeprefix(
             "sha256:"
         )
-        if not items_path.is_file() or not expected_items:
+        if items_path.is_symlink():
+            integrity_errors.append("refusing symlinked corpus/items.jsonl")
+        elif not items_path.is_file() or not expected_items:
             integrity_errors.append("corpus items/checksum missing")
         elif sha256_file(items_path) != expected_items:
             integrity_errors.append("corpus items checksum mismatch")
 
-        try:
-            protected_manifest = find_protected_manifest(job_root / "test" / "sealed")
-        except RuntimeError as error:
-            integrity_errors.append(str(error))
+        sealed_dir = job_root / "test" / "sealed"
+        if sealed_dir.is_symlink():
+            integrity_errors.append("refusing symlinked test/sealed/")
         else:
-            expected_seal = str(
-                sealed_status.get("protected_manifest_checksum") or ""
-            ).removeprefix("sha256:")
-            if not expected_seal or sha256_file(protected_manifest) != expected_seal:
-                integrity_errors.append("protected manifest checksum mismatch")
+            try:
+                protected_manifest = find_protected_manifest(sealed_dir)
+            except RuntimeError as error:
+                integrity_errors.append(str(error))
+            else:
+                expected_seal = str(
+                    sealed_status.get("protected_manifest_checksum") or ""
+                ).removeprefix("sha256:")
+                if protected_manifest.is_symlink():
+                    integrity_errors.append("refusing symlinked protected manifest")
+                elif not expected_seal or sha256_file(protected_manifest) != expected_seal:
+                    integrity_errors.append("protected manifest checksum mismatch")
         exclusion_asserted = bool(
             sealed_status.get("status") == "reserved-and-unexposed"
             and sealed_status.get("custodian")
@@ -683,60 +771,72 @@ def status(job_root: Path) -> dict:
         if not exclusion_asserted:
             integrity_errors.append("sealed/development exclusion custody is not asserted")
 
-        policy_manifest = load_mapping(
-            job_root / "policy" / "versions" / "G_00" / "manifest.yaml"
-        )
+        policy_dir = job_root / "policy" / "versions" / "G_00"
+        policy_manifest, error = try_load_mapping(policy_dir / "manifest.yaml")
+        if error:
+            integrity_errors.append(error)
         components = policy_manifest.get("components")
         if not isinstance(components, dict) or not components:
             integrity_errors.append("G_00 component checksums missing")
         else:
             for name, expected in components.items():
-                component = job_root / "policy" / "versions" / "G_00" / str(name)
-                if not component.is_file() or sha256_file(component) != str(expected):
+                component = _component_path(policy_dir, name)
+                if component is None:
+                    integrity_errors.append(f"G_00 component name refused: {name}")
+                elif not component.is_file() or sha256_file(component) != str(expected):
                     integrity_errors.append(f"G_00 component checksum mismatch: {name}")
 
-        g0_receipt_path = job_root / "gates" / "g0" / "receipt.json"
-        receipt_path = (
-            g0_receipt_path
-            if g0_receipt_path.is_file()
-            else job_root / "gates" / "p0-contract" / "receipt.json"
-        )
-        if not receipt_path.is_file():
+        # The immutable P0 receipt is always the anchor.  After confirmation
+        # the only permitted P0 change is config.yaml's meaning fields.
+        if not p0_receipt_path.is_file():
             integrity_errors.append("P0 contract receipt missing")
         else:
-            receipt = load_mapping(receipt_path)
-            receipt_checksums = receipt.get("p0_artifact_checksums")
-            if not isinstance(receipt_checksums, dict):
+            p0_receipt, error = try_load_mapping(p0_receipt_path)
+            p0_checksums = p0_receipt.get("p0_artifact_checksums")
+            if error:
+                integrity_errors.append(error)
+            elif not isinstance(p0_checksums, dict):
                 integrity_errors.append("P0 receipt does not bind all five authority artifacts")
             else:
                 for rel in P0_FILES:
-                    expected = str(receipt_checksums.get(rel) or "")
-                    if not expected or sha256_file(job_root / rel) != expected:
+                    expected = str(p0_checksums.get(rel) or "")
+                    if rel == "config.yaml" and meaning_is_valid:
+                        actual = sha256_bytes(_unconfirmed_config_bytes(config))
+                    else:
+                        actual = sha256_file(job_root / rel)
+                    if not expected or actual != expected:
                         integrity_errors.append(f"P0 authority checksum mismatch: {rel}")
-            if receipt.get("corpus_items_checksum") != expected_items:
-                integrity_errors.append("P0 receipt corpus checksum mismatch")
-            if receipt.get("sealed_manifest_checksum") != sealed_status.get(
-                "protected_manifest_checksum"
-            ):
-                integrity_errors.append("P0 receipt sealed checksum mismatch")
-            if receipt.get("source_fence_attestation_checksum") != canonical_hash(
-                source_attestation
-            ):
-                integrity_errors.append("P0 receipt source-fence attestation mismatch")
+                if p0_receipt.get("corpus_items_checksum") != expected_items:
+                    integrity_errors.append("P0 receipt corpus checksum mismatch")
+                if p0_receipt.get("sealed_manifest_checksum") != sealed_status.get(
+                    "protected_manifest_checksum"
+                ):
+                    integrity_errors.append("P0 receipt sealed checksum mismatch")
+                if p0_receipt.get("source_fence_attestation_checksum") != canonical_hash(
+                    source_attestation
+                ):
+                    integrity_errors.append("P0 receipt source-fence attestation mismatch")
 
         if meaning_confirmed or meaning_is_valid or g0_receipt_path.is_file():
             if not g0_receipt_path.is_file():
                 integrity_errors.append("G0 receipt missing after semantic confirmation")
             else:
-                g0_receipt = load_mapping(g0_receipt_path)
+                g0_receipt, error = try_load_mapping(g0_receipt_path)
                 meaning_receipt = authority.get("meaning_receipt")
+                g0_checksums = g0_receipt.get("p0_artifact_checksums")
+                chain_ok = isinstance(g0_checksums, dict) and all(
+                    str(g0_checksums.get(rel) or "") == sha256_file(job_root / rel)
+                    for rel in P0_FILES
+                )
                 g0_receipt_valid = bool(
-                    g0_receipt.get("schema") == "subjective-label-g0-receipt/v1"
+                    not error
+                    and g0_receipt.get("schema") == "subjective-label-g0-receipt/v1"
                     and g0_receipt.get("status") == "passed"
                     and g0_receipt.get("human_id") == authority.get("human_id")
                     and isinstance(meaning_receipt, dict)
                     and g0_receipt.get("meaning_receipt_checksum")
                     == canonical_hash(meaning_receipt)
+                    and chain_ok
                 )
                 if not g0_receipt_valid:
                     integrity_errors.append("G0 receipt is invalid or semantically unbound")
@@ -750,6 +850,10 @@ def status(job_root: Path) -> dict:
         phase = "P0"
         next_action = "repair P0 integrity before any Round 1 proposal"
         first_blocked = "G0 · contract integrity"
+    elif hold:
+        phase = "P0"
+        next_action = f"HOLD · {hold_reason}"
+        first_blocked = "G0 · human authority"
     elif not meaning_is_valid:
         phase = "P0"
         next_action = "human meaning confirmation"
@@ -767,6 +871,9 @@ def status(job_root: Path) -> dict:
         "p0_files": present,
         "missing": missing,
         "human_id": authority.get("human_id"),
+        "authority_mode": authority.get("mode"),
+        "hold": hold,
+        "hold_reason": hold_reason,
         "meaning_confirmed": meaning_confirmed,
         "meaning_receipt_valid": meaning_is_valid,
         "g0_receipt_valid": g0_receipt_valid,

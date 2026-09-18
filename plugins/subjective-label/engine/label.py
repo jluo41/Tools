@@ -9,6 +9,11 @@ HIGH/LOW/NONE or to any construct. Ported from the per-task
 Two engines act as two independent annotators → their pairwise agreement is a
 reliability signal (NOT ground truth; see note-update.md).
 
+Replies are accepted as valid JSON only (optionally inside one ``` fence). Anything
+else is `pred: PARSE_ERROR`, `status: failed`, with a short `reason` error code; the
+parser never guesses a label from free text and never stores raw model output.
+On a v2 job root nothing is sent to a model until G0 passes (engine/gates.py).
+
 Usage:
     python engine/label.py --project-dir <task> --version v01 --engine both
     python engine/label.py --project-dir <task> --version v01 --labels HIGH,LOW,NONE
@@ -28,8 +33,16 @@ import asyncio
 import json
 import os
 import re
+import sys
 import time
 from pathlib import Path
+
+_ENGINE_DIR = str(Path(__file__).resolve().parent)
+if _ENGINE_DIR not in sys.path:
+    sys.path.insert(0, _ENGINE_DIR)
+from gates import GateHold, guard_job_root  # noqa: E402
+
+_FENCE = re.compile(r"\A```(?:json)?[ \t]*\n?(.*?)\n?```\Z", re.DOTALL | re.IGNORECASE)
 
 
 def _read_config(project_dir: Path) -> dict:
@@ -59,28 +72,34 @@ def _output_contract(labels: list[str]) -> str:
     )
 
 
+def _parse_failure(code: str) -> dict:
+    return {"label": "PARSE_ERROR", "confidence": None, "reason": f"parse_error:{code}",
+            "parse": "fail", "status": "failed"}
+
+
 def _make_parser(labels: list[str]):
     upper = {l.upper(): l for l in labels}
-    # match longest label first so substrings don't shadow (e.g. LOW vs SLOW)
-    ordered = sorted(labels, key=len, reverse=True)
 
     def parse_label(raw: str) -> dict:
         text = (raw or "").strip()
-        m = re.search(r"\{.*\}", text, re.DOTALL)
-        if m:
-            try:
-                obj = json.loads(m.group(0))
-                lab = str(obj.get("label", "")).upper().strip()
-                if lab in upper:
-                    return {"label": upper[lab], "confidence": obj.get("confidence"),
-                            "reason": obj.get("reason", ""), "parse": "json"}
-            except json.JSONDecodeError:
-                pass
-        up = text.upper()
-        for lab in ordered:
-            if re.search(rf"\b{re.escape(lab.upper())}\b", up):
-                return {"label": lab, "confidence": None, "reason": "", "parse": "regex"}
-        return {"label": "PARSE_ERROR", "confidence": None, "reason": text[:120], "parse": "fail"}
+        if not text:
+            return _parse_failure("empty_output")
+        fenced = _FENCE.match(text)
+        if fenced:
+            text = fenced.group(1).strip()
+        try:
+            obj = json.loads(text)
+        except json.JSONDecodeError:
+            return _parse_failure("not_json")
+        if not isinstance(obj, dict):
+            return _parse_failure("not_json_object")
+        lab = obj.get("label")
+        if not isinstance(lab, str):
+            return _parse_failure("label_missing")
+        if lab.strip().upper() not in upper:
+            return _parse_failure("label_not_in_set")
+        return {"label": upper[lab.strip().upper()], "confidence": obj.get("confidence"),
+                "reason": obj.get("reason", ""), "parse": "json", "status": "ok"}
 
     return parse_label
 
@@ -144,6 +163,7 @@ DEFAULT_MODEL = {
 async def run_engine(project_dir: Path, engine: str, version: str, tag: str,
                      system_prompt: str, items: list, parse_label, model: str,
                      concurrency: int = 4, output_path: Path | None = None):
+    guard_job_root(project_dir, "G0")
     fn = ENGINES[engine]
     sem = asyncio.Semaphore(concurrency)
     results = [None] * len(items)
@@ -156,10 +176,12 @@ async def run_engine(project_dir: Path, engine: str, version: str, tag: str,
                 parsed = parse_label(raw)
                 err = None
             except Exception as e:
-                raw, parsed, err = "", {"label": "ERROR", "parse": "exception"}, f"{type(e).__name__}: {e}"
+                raw, parsed, err = "", {"label": "ERROR", "parse": "exception",
+                                        "status": "failed"}, f"{type(e).__name__}: {e}"
             results[i] = {
                 "anchor_idx": item["anchor_idx"], "id": item["id"], "engine": engine,
                 "version": version, "pred": parsed["label"],
+                "status": parsed.get("status", "failed"), "parse": parsed.get("parse"),
                 "confidence": parsed.get("confidence"), "reason": parsed.get("reason", ""),
                 "elapsed_s": round(time.time() - t0, 2), "error": err,
             }
@@ -201,6 +223,10 @@ async def main():
     args = ap.parse_args()
 
     pd = args.project_dir.resolve()
+    try:
+        guard_job_root(pd, "G0")
+    except GateHold as hold:
+        raise SystemExit(str(hold)) from None
     cfg = _read_config(pd)
     labels = _resolve_labels(cfg, args.labels)
     parse_label = _make_parser(labels)

@@ -104,7 +104,7 @@ def _scalar(raw: str) -> str:
         # escape and would emit a warning while reading an otherwise valid
         # Result manifest.
         if "\\" in value[1:-1]:
-            return value[1:-1]
+            return value[1:-1].replace("\\\\", "\\")
         try:
             return str(ast.literal_eval(value))
         except (SyntaxError, ValueError):

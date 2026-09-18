@@ -33,14 +33,35 @@ Evidence Space       Value + Display + Citation sections with collapsed Result c
 Run Space            Page Writing + Page Evidence + Supporting Runs
 ```
 
+## Default Plugin Link
+
+When returning a link for this Page, return the complete Outline Plugin link by
+default. Use the configured public URL and the `/_board/outline` route with
+both the URL-encoded `path=<page>/board.md` and the URL-encoded `file=<page
+Markdown>` parameters, plus `view=scratch` when a view is needed. The route
+without `file` is not a valid Plugin Link and must not be returned.
+
+Do not return Draft, Evidence, Run, Delivery, Supporting Runs, or other
+subspace links unless the user explicitly asks for that subspace. In the
+normal response, label the link `Outline Plugin` or `Plugin Link`, not the
+name of a subspace. Escape query values correctly and keep the complete URL
+inside one Markdown link target so it opens as one route.
+
+Run Space also contains a read-only `Workflow map` definition view. It
+projects the canonical Workflow × Space Specification as Run Spec rows ×
+`Draft / Evidence / Run / Delivery` columns; each cell shows its mode, schema,
+and Page-relative file/folder path. This is a map of ownership and projection,
+not a fourth top-level Space and not a second Run inventory. See
+`ref/space-mapping.md` for the canonical Markdown table.
+
 Context, requirement, discussion, feedback, files, log, and Skill records
-remain durable Markdown process records. They are not visible workspaces;
+remain durable Markdown process records. They are not visible Spaces;
 inspect them through 📂 Folder when needed. This is a presentation removal, not
 a destructive data migration; v4 is a migration gate and retired Evidence files
 must leave the active tree before the Page is rendered as current.
 
 ```text
-  this file      the process records and ONE three-workspace tab
+  this file      the process records and ONE three-Space tab
   ref/           plan-grammar.md · item-table.md · record-shape.md ·
                  skill-record.md · specimen-section-plan.md ·
                  evidence-bundle.md: the exact
@@ -82,6 +103,23 @@ Folder-owner's resolved canonical Result path, plus payload files.
 ```
 
 Do not create new files under `outline/evidence/` or `<page>/evidence/`.
+### V/C/D label identity
+
+A label has one stable key and two representations. Result metadata may use the
+bare key (`V_xxx`, `C_xxx`, or `D_xxx`) because it is a join key. Authored Page
+Markdown uses the typed token so the intended rendering is unambiguous:
+
+| Evidence kind | Authored token | Stable metadata key |
+|---|---|---|
+| VALUE | `$V_xxx$` | `V_xxx` |
+| CITE | `\cite{C_xxx}` | `C_xxx` |
+| DISPLAY · figure | `\figure{D_xxx}` | `D_xxx` |
+| DISPLAY · table | `\table{D_xxx}` | `D_xxx` |
+| DISPLAY · algorithm | `\algorithm{D_xxx}` | `D_xxx` |
+
+The parser accepts either form in a Result manifest and normalizes it to the
+canonical authored token for Draft and Evidence. One Result/Card may expose
+many labels; labels do not create extra Evidence Items or extra Run folders.
 VALUE, DISPLAY (including table/figure), and CITE are Result payload types, not
   storage lanes. DISPLAY includes tables, figures, and algorithm blocks;
   `TABLE` is a legacy compatibility alias for DISPLAY. Conceptual renderer
@@ -157,7 +195,7 @@ read the retired folder or generated snapshot as a compatibility path.
   alphanumeric characters; its accessible label carries `id · type · readable
   name` and its title carries `id · type · status`. Clicking it takes the same precise
   route an Evidence token takes: it opens the Outline plugin's Evidence
-  Workspace at the exact Result row (`lens=evidence`, `focus=run-<id>`),
+  Space at the exact Result row (`lens=evidence`, `focus=run-<id>`),
   scrolled into view and highlighted, where the immutable id, readable name,
   type, Bullet address, status, and Result path are shown once. The compact
   Page opens no Evidence popover and
@@ -353,7 +391,7 @@ planning workspace.
   visibly different concepts; Supporting Runs remain inspectable references,
   never copied artifacts. Result paths live behind a small `Sources` disclosure.
   The standalone Evidence tab is retired; `/_board/evidence` is the current
-  read-only Result-first renderer used by this Workspace.
+  read-only Result-first renderer used by this Space.
 - **Each Run chip opens the exact Runs-lens card, not a file download or the
   owning Evidence card.** The detail begins
   with a readable Purpose derived from an allocated Run's Ticket name and the

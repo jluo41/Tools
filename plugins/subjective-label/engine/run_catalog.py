@@ -86,7 +86,7 @@ def plan_runs(
         _append(rows, "P0", "discovery-search", "contract", f"query-{index:02d}")
     _append(rows, "P0", "guideline-seed", "contract", "G-00")
     _append(rows, "P0", "test-reserve", "contract", "test-v1")
-    _append(rows, "P0", "embedding-build", "contract", "corpus-v1")
+    _append(rows, "P0", "embedding-build", "contract", "all-minilm-l6-v2")
 
     for round_index, weak_count in enumerate(weak_counts, start=1):
         episode = f"round_{round_index:02d}"

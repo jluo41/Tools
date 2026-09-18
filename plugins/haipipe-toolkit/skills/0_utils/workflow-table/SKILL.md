@@ -66,6 +66,12 @@ workspace_roster:
 Use `runtime` as the stable id for the Workspace that presents Runs. Its UI
 label may be `Run`; the Workspace itself is not another Run.
 
+In the Page/Outline plugin, the reader-facing word for a member Workspace is
+`Space`: `Draft Space`, `Evidence Space`, `Run Space`, and `Delivery Space`.
+The normalized contract keeps `workspace_id` and `Workspace` in schemas and
+coordinates as stable internal terms; this is a vocabulary alias, not a new
+axis or a new storage object.
+
 ## Run Spec rows
 
 Each row is one independently closable Run Spec:

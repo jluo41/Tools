@@ -29,14 +29,17 @@ diagnose, draft, and execute; their consensus never creates human gold.
 
 ## Six journey phases
 
-| phase | side | authority artifact | purpose |
-|---|---|---|---|
-| P0 Contract | Building | config + corpus manifest + test reservation | establish one valid job |
-| P1 Round | Building | closed checkpoint | refine `D_t` and `G_t` |
-| P2 Freeze | Building | `handoff/label-v1.yaml` | sign `G*` and `D_cal*` |
-| P3 Test | Scanning | blind `T*` gold + frozen scorecards | qualify an executor route |
-| P4 Scan | Scanning | production run | create one terminal candidate per item |
-| P5 Audit | Scanning | final audit receipt | support a bounded `D*` claim |
+| phase | side | purpose |
+|---|---|---|
+| P0 Contract | Building | establish one valid job |
+| P1 Round | Building | refine `D_t` and `G_t` |
+| P2 Freeze | Building | sign `G*` and `D_cal*` |
+| P3 Test | Scanning | qualify an executor route |
+| P4 Scan | Scanning | create one terminal candidate per item |
+| P5 Audit | Scanning | support a bounded `D*` claim |
+
+Each phase's authority artifact, and the gates G0-G6 between phases, are
+declared in one place only: `skills/subjective-label-workflow/SKILL.md`.
 
 Pick, seal, judge, learn, measure, and decide are steps or verbs inside one
 Round; GOLD and SCORE are the two steps inside Test. "Another round" is a route.
@@ -56,14 +59,16 @@ exact handoff checksum and cannot edit Building artifacts.
 
 ## Skills
 
-| skill | responsibility |
-|---|---|
-| `/subjective-label` | auto-route the job through the family |
-| `/label-building` | the Building law: Contract, Round, Freeze |
-| `/label-building-workflow` | the Building order: card, prepare, prospect, judge, learn, close |
-| `/label-scanning` | the Scanning law: Test, Scan, Audit |
-| `/label-scanning-workflow` | the Scanning order: gold, score, manifest, attempts, queue, audit, repair |
-| `/subjective-label-workflow` | phase numbers, gates, the crossing |
+| skill | folder under `skills/` | responsibility |
+|---|---|---|
+| `/subjective-label` | `subjective-label/` | auto-route the job through the family |
+| `/label-building` | `label-building/` | the Building law: Contract, Round, Freeze |
+| `/label-building-workflow` | `label-building-workflow/` | the Building order: fence, contract, card, prepare, judge, learn, close |
+| `/label-scanning` | `label-scanning/` | the Scanning law: Test, Scan, Audit |
+| `/label-scanning-workflow` | `label-scanning-workflow/` | the Scanning order: gold, score, manifest, attempts, queue, audit, repair |
+| `/subjective-label-workflow` | `subjective-label-workflow/` | phase numbers, gates, authority artifacts, the crossing |
+| `/haipipe-page-for-labeling` | `page-types/haipipe-page-for-labeling/` | the Job Page type: one Page per corpus and target |
+| `/haipipe-plugin-labeling` | `page-plugins/haipipe-plugin-labeling/` | the 🏷 Labeling lane beside a Page: five Spaces and one write door |
 
 Retired names route through the umbrella: `/label-init` and `/label-round` go
 to `/label-building`; `/label-evaluate` and `/label-complete` go to
@@ -80,18 +85,27 @@ subjective-label/
 │   ├── label-scanning/ · label-scanning-workflow/
 │   ├── subjective-label-workflow/
 │   ├── page-types/haipipe-page-for-labeling/
-│   └── page-plugins/haipipe-plugin-labeling/  🏷 receipt workbench + Page Chat
+│   └── page-plugins/haipipe-plugin-labeling/  🏷 Labeling surface: five Spaces + one write door
 ├── agents/                              bounded execution roles
-├── engine/                                 partial technical primitives
+├── engine/                              P0/P1 writers + partial legacy-era primitives
 ├── ref/                                 authority, artifact, and handoff contracts
+├── pages/                               S-Label-1-labeling-lab, a standalone trial Page
 ├── fixtures/                            job-mini (mock job) + its rendered board
+├── field-tests/                         field-test expectations and settlements
+├── personas/                            reader lenses (skeptic, close reader, ...)
 └── diagram/                             design history and rendered board
 ```
 
-The `engine/` folder still contains partial legacy-era primitives. A skill must
-return `HOLD` when the current seal, keeper, writer, reconciler, or audit
-contract is not implemented; it must not fall back to panel-majority gold,
-public-dataset convergence, or unvalidated nearest-neighbor inheritance.
+`engine/` now holds real writers for the start of Building:
+`fence_source.py` (build a fenced source), `job.py` (P0 contract, status, and
+meaning confirmation), `calibration.py` (round_01 card, random draw, and judge
+events), and `gates.py` (`label.py`, `embed.py`, `sample.py`, and
+`classify.py` refuse a v2 job before G0). The rest are partial legacy-era
+primitives. A skill must return `HOLD` when the current seal, keeper, writer,
+reconciler, or audit contract is not implemented (today: LEARN, MEASURE,
+CLOSE, later rounds, and all of P2-P5); it must not fall back to
+panel-majority gold, public-dataset convergence, or unvalidated
+nearest-neighbor inheritance.
 
 ## Final deliverables
 

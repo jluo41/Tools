@@ -1,5 +1,23 @@
 # label-building-workflow · CHANGELOG
 
+## 0.9.0 · 2026-09-16
+
+Match the built engine. P0 names `engine/fence_source.py` as the way to build
+the fenced source that `create` imports (seeded sealed draw, optional
+stratification, `population_status` on every row, G_00 from config meanings),
+records the stronger `status` checks (no raise, `integrity_errors`, `hold`,
+G0 bound to the current P0 files), and adds the Board `Confirm meaning` button
+as a second channel into the same `confirm_meaning`. P1 now says what
+`engine/calibration.py` builds (CARD and PREPARE for round_01's random draw,
+JUDGE events) and what it does not (weak-prelabel, LEARN, MEASURE, CLOSE, and
+later rounds), so the machine stops after round_01 is judged. The
+`sessions/events.jsonl` shape and the exact change types are documented. P0
+step 5 now has a real writer, `engine/embedding_build.py build`: development
+items only, response-then-context input, a versioned
+`cache/embeddings/<version>/` folder, and one `rlNN_embedding-build_<version>`
+Run, not gated on G0 because a vector sets no label. The embedder is chosen
+from an open-weight catalog, one folder and one Run per model.
+
 ## 0.8.0 · 2026-09-13
 
 Document the exact read-only `status` invocation, make optional P0 sidecars

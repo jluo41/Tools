@@ -13,10 +13,19 @@ corpus gives a random anchor ~95% NONE — too few positives to estimate per-lab
 quality. Enrich to see positives; keep a random NONE quota so over-firing on the
 95% is still measured. ALWAYS report base rate alongside any κ.
 
+Determinism + provenance: candidates are sorted by item id before the seeded shuffle
+(same seed ⇒ same sample regardless of corpus order); each stratum draws from its pool
+minus ids already picked; every row carries `seed` and `inclusion_probability`
+(stratum draw size / stratum eligible size). `none_quota` q is the NONE share of the
+batch: n_none = round(q · n_signal / (1 − q)); q = 0 draws none, q = 1 draws the whole
+eligible NONE pool. `probe` reports ids and counts only, never item text.
+On a v2 job root (found above --corpus, or --job-root) sampling holds until G0.
+
 Usage:
     python engine/sample.py probe  --corpus c.jsonl --lexicon lex.json
     python engine/sample.py sample --corpus c.jsonl --lexicon lex.json --confounds conf.json \
-                                --per-stratum 8 --none-quota 0.33 --out batch.jsonl [--exclude ids.txt] [--seed 42]
+                                --per-stratum 8 --none-quota 0.33 --out batch.jsonl [--exclude ids.txt] [--seed 42] \
+                                [--job-root <job>]
     python engine/sample.py selftest
 
 Inputs: lexicon.json = {stratum: regex, ...}   confounds.json = {sibling: regex, ...}
@@ -25,10 +34,17 @@ Inputs: lexicon.json = {stratum: regex, ...}   confounds.json = {sibling: regex,
 
 import argparse
 import json
+import math
 import random
 import re
+import sys
 from collections import Counter
 from pathlib import Path
+
+_ENGINE_DIR = str(Path(__file__).resolve().parent)
+if _ENGINE_DIR not in sys.path:
+    sys.path.insert(0, _ENGINE_DIR)
+from gates import GateHold, guard_job_root  # noqa: E402
 
 
 def _corpus(path, text_field="text"):
@@ -37,14 +53,14 @@ def _corpus(path, text_field="text"):
 
 def base_rate(rows, lexicon, text_field="text"):
     comp = {k: re.compile(v, re.I) for k, v in lexicon.items()}
-    hits = Counter(); any_hit = 0; examples = {k: [] for k in lexicon}
+    hits = Counter(); any_hit = 0; example_ids = {k: [] for k in lexicon}
     for r in rows:
         t = r.get(text_field, "")
         fired = [k for k, rx in comp.items() if rx.search(t)]
         for k in fired:
             hits[k] += 1
-            if len(examples[k]) < 3:
-                examples[k].append({"id": r.get("id"), "text": t[:200]})
+            if len(example_ids[k]) < 3:
+                example_ids[k].append(r.get("id"))   # ids only: never item text
         if fired:
             any_hit += 1
     n = len(rows)
@@ -52,14 +68,31 @@ def base_rate(rows, lexicon, text_field="text"):
             "no_hit_rate": round((n - any_hit) / n, 4) if n else 0.0,
             "per_stratum": {k: {"n": hits[k], "pct": round(100 * hits[k] / n, 2) if n else 0.0}
                             for k in lexicon},
-            "examples": examples}
+            "example_ids": example_ids}
+
+
+def _order_key(r, text_field="text"):
+    return (str(r.get("id")), str(r.get(text_field, "")))
+
+
+def _find_job_root(corpus_path):
+    """Nearest ancestor of the corpus file that holds a config.yaml (None if none)."""
+    for parent in Path(corpus_path).resolve().parents:
+        if (parent / "config.yaml").is_file():
+            return parent
+    return None
 
 
 def sample(rows, lexicon, confounds, per_stratum=8, none_quota=0.33,
-           text_field="text", max_len=900, exclude=None, seed=42):
+           text_field="text", max_len=900, exclude=None, seed=42, job_root=None):
     """Enriched: per probe stratum + per confound stratum + a random NONE quota.
     Probe strata take precedence over confound strata (an item that fires a probe
-    is a probe candidate, not a confound). Returns items tagged with `stratum`."""
+    is a probe candidate, not a confound). Returns items tagged with `stratum`,
+    `seed`, and `inclusion_probability`. `job_root` (optional) is gated at G0."""
+    if job_root is not None:
+        guard_job_root(Path(job_root), "G0")
+    if not 0.0 <= none_quota <= 1.0:
+        raise ValueError(f"none_quota must be in [0, 1], got {none_quota}")
     rng = random.Random(seed)
     exclude = set(exclude or [])
     probe = {k: re.compile(v, re.I) for k, v in lexicon.items()}
@@ -84,18 +117,31 @@ def sample(rows, lexicon, confounds, per_stratum=8, none_quota=0.33,
             strata["none_quota"].append(r)
 
     picked, seen = [], set()
+
+    def draw(name, n):
+        # eligible = stratum pool minus ids already picked, in id order, then seeded shuffle
+        pool = sorted((r for r in strata[name] if r.get("id") not in seen),
+                      key=lambda r: _order_key(r, text_field))
+        eligible = []
+        for r in pool:                       # one row per id inside the stratum
+            if not eligible or eligible[-1].get("id") != r.get("id"):
+                eligible.append(r)
+        rng.shuffle(eligible)
+        chosen = eligible[:max(0, n)]
+        prob = round(len(chosen) / len(eligible), 6) if eligible else None
+        for r in chosen:
+            seen.add(r.get("id"))
+            picked.append({**r, "stratum": name, "seed": seed, "inclusion_probability": prob})
+
     # probe + confound strata: per_stratum each
     for name in [k for k in strata if name_is_signal(k)]:
-        pool = strata[name]; rng.shuffle(pool)
-        for r in pool[:per_stratum]:
-            if r.get("id") not in seen:
-                seen.add(r.get("id")); picked.append({**r, "stratum": name})
-    # random NONE quota
-    n_none = max(1, round(none_quota * len(picked) / (1 - none_quota))) if none_quota < 1 else 0
-    npool = strata["none_quota"]; rng.shuffle(npool)
-    for r in npool[:n_none]:
-        if r.get("id") not in seen:
-            seen.add(r.get("id")); picked.append({**r, "stratum": "none_quota"})
+        draw(name, per_stratum)
+    # random NONE quota: q = NONE share of the final batch
+    if none_quota >= 1.0:
+        n_none = len(strata["none_quota"])
+    else:
+        n_none = math.floor(none_quota * len(picked) / (1 - none_quota) + 0.5)
+    draw("none_quota", n_none)
     return picked
 
 
@@ -118,6 +164,8 @@ def main():
             p.add_argument("--exclude", default=None)
             p.add_argument("--seed", type=int, default=42)
             p.add_argument("--out", default=None)
+            p.add_argument("--job-root", default=None,
+                           help="job root to gate (default: nearest config.yaml above --corpus)")
     sub.add_parser("selftest")
     args = ap.parse_args()
 
@@ -131,6 +179,11 @@ def main():
     else:
         confounds = json.loads(Path(args.confounds).read_text()) if args.confounds else {}
         exclude = Path(args.exclude).read_text().split() if args.exclude else None
+        job_root = Path(args.job_root) if args.job_root else _find_job_root(args.corpus)
+        try:
+            guard_job_root(job_root, "G0")
+        except GateHold as hold:
+            raise SystemExit(str(hold)) from None
         picked = sample(rows, lexicon, confounds, args.per_stratum, args.none_quota,
                         args.text_field, exclude=exclude, seed=args.seed)
         by = Counter(p["stratum"] for p in picked)
@@ -160,8 +213,11 @@ def _selftest():
     by = Counter(p["stratum"] for p in s)
     assert by["curiosity"] == 5, by                 # per_stratum honored
     assert by["confound:agreeableness"] == 5, by    # confound stratum present
-    assert by["none_quota"] >= 1, by                # NONE quota injected
+    assert by["none_quota"] == 10, by               # q=0.5 ⇒ NONE share = half the batch
     assert len({p["id"] for p in s}) == len(s), "deduped"
+    assert all(p["seed"] == 1 and p["inclusion_probability"] for p in s), "provenance"
+    assert Counter(p["stratum"] for p in sample(rows, lex, conf, 5, 0.0, seed=1))["none_quota"] == 0
+    assert sample(list(reversed(rows)), lex, conf, per_stratum=5, none_quota=0.5, seed=1) == s
     print(f"selftest OK: base_rate curiosity=10% · enriched strata {dict(by)}")
 
 

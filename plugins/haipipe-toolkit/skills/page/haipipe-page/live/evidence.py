@@ -121,12 +121,27 @@ html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fall
 .evidence-status.complete,.evidence-status.ready,
 .evidence-status.folded,.evidence-status.accepted{color:var(--ok)}
 .evidence-status.specified,.evidence-status.planned{color:var(--warn)}
-.evidence-detail{border-top:1px solid var(--line);padding:7px 11px 9px}.evidence-detail-row{display:grid;
+.evidence-summary{display:grid;grid-template-columns:1.1em auto minmax(0,1fr) auto auto;align-items:center;gap:7px;padding:9px 10px;min-width:0;
+ box-sizing:border-box}.evidence-summary-main{grid-column:3;min-width:0;display:grid;gap:0}
+.evidence-summary-line{display:flex;align-items:baseline;gap:7px;min-width:0;overflow:hidden}
+.evidence-chevron{grid-column:1;grid-row:1;color:var(--mut);font-size:18px;
+ line-height:1;transition:transform .12s ease}.evidence-card[open] .evidence-chevron{transform:rotate(90deg)}
+.evidence-card[open]{border-color:var(--acc)}.evidence-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:650}
+.evidence-kind{grid-column:2;grid-row:1;color:var(--acc);font:650 9.5px -apple-system,sans-serif;text-transform:uppercase;
+ letter-spacing:.035em;border:1px solid var(--acc);border-radius:999px;padding:0 6px;white-space:nowrap}
+.evidence-title{color:var(--mut);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evidence-bullet{grid-column:4;grid-row:1;justify-self:end;display:block;color:var(--mut);font-size:11px;white-space:nowrap;padding-left:2px}
+.evidence-summary code{background:none;padding:0}
+.evidence-status{grid-column:5;grid-row:1;flex:none;align-self:center;font-weight:650;font-size:13px;white-space:nowrap}
+.evidence-status.complete,.evidence-status.ready,
+.evidence-status.folded,.evidence-status.accepted{color:var(--ok)}
+.evidence-status.specified,.evidence-status.planned,.evidence-status.needs-review,.evidence-status.partial{color:var(--warn)}
+.evidence-detail{border-top:1px solid var(--line);padding:0 11px 10px}.evidence-detail-row{display:grid;
  grid-template-columns:8.5em minmax(0,1fr);gap:8px;padding:3px 0;font-size:12.5px;line-height:1.45}
 .evidence-detail-label{color:var(--mut);font:650 10px -apple-system,sans-serif;text-transform:uppercase;
  letter-spacing:.035em;padding-top:2px}.evidence-detail-value{min-width:0;overflow-wrap:anywhere}
 .evidence-detail-value code{font-size:11.5px;background:none;padding:0;overflow-wrap:anywhere;word-break:break-word}
-.evidence-preview{margin:0 0 8px;padding:8px;border:1px solid var(--line);border-radius:7px;background:var(--card)}
+.evidence-preview{margin:0 0 8px;padding:9px 0 0;border:0;border-radius:0;background:transparent}
 .evidence-preview-label{margin:0 0 5px;color:var(--mut);font:650 9.5px -apple-system,sans-serif;
  text-transform:uppercase;letter-spacing:.05em}.evidence-preview-subhead{margin:8px 0 4px;color:var(--mut);font:650 9.5px -apple-system,sans-serif;
  text-transform:uppercase;letter-spacing:.05em}.evidence-preview-copy{margin:4px 0 0;font-size:12.5px;line-height:1.48}
@@ -138,36 +153,40 @@ html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fall
 .evidence-preview-empty{color:var(--mut);font-size:12.5px}.evidence-preview-hero{font-size:24px;line-height:1.15;
  font-weight:700;color:var(--fg);letter-spacing:-.02em}.evidence-preview-hero small{font-size:12px;font-weight:500;
  color:var(--mut);letter-spacing:0}.evidence-preview-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(8em,1fr));
- gap:5px;margin-top:7px}.evidence-preview-fact{padding:5px 6px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+ gap:0 18px;margin-top:7px}.evidence-preview-fact{padding:6px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}
 .evidence-preview-fact b{display:block;color:var(--mut);font:650 9.5px -apple-system,sans-serif;text-transform:uppercase;
  letter-spacing:.03em}.evidence-preview-fact span{display:block;margin-top:1px;font-size:12px;overflow-wrap:anywhere}
-.evidence-preview-table{width:100%;border-collapse:collapse;font-size:11.5px;background:var(--bg)}
-.evidence-preview-table th,.evidence-preview-table td{padding:4px 6px;border:1px solid var(--line);text-align:left;vertical-align:top}
+.evidence-preview-table{width:100%;border-collapse:collapse;font-size:11.5px;background:transparent}
+.evidence-preview-table th,.evidence-preview-table td{padding:5px 6px 5px 0;border:0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 .evidence-preview-table th{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.025em;font-weight:650}
-.evidence-preview-table-wrap{overflow:auto;max-height:360px;border:1px solid var(--line);border-radius:5px}
+.evidence-preview-table tbody tr:last-child td{border-bottom:0}.evidence-preview-table-wrap{overflow:auto;max-height:360px;border:0;border-radius:0}
 .evidence-preview-source{padding:6px 0;border-top:1px solid var(--line)}.evidence-preview-source:first-child{border-top:0;padding-top:0}
 .evidence-preview-source-head{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;font-size:12px}
 .evidence-preview-source-head b{font-weight:650}.evidence-preview-source-head code{color:var(--mut);font-size:10.5px;background:none;padding:0}
 .evidence-preview-source p{margin:3px 0 0;font-size:12.5px;line-height:1.45}
 .evidence-card.run-focus{outline:2px solid var(--acc);outline-offset:3px}
-.evidence-actions{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 7px}
-.evidence-action{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 8px;
- color:var(--mut);font-size:11px;text-decoration:none;background:var(--bg)}
+.evidence-actions{display:flex;gap:12px;flex-wrap:wrap;margin:2px 0 7px}
+.evidence-action{display:inline-block;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:2px 0;
+ color:var(--mut);font-size:11px;text-decoration:none;background:transparent}
 .evidence-action:hover,.evidence-action:focus-visible{border-color:var(--acc);color:var(--acc);outline:none}
 .evidence-trace{margin-top:7px;border-top:1px solid var(--line);padding-top:5px;color:var(--mut);font-size:12px}
 .evidence-trace>summary{cursor:pointer;list-style:none;font-size:11px}.evidence-trace>summary::-webkit-details-marker{display:none}
 .evidence-trace>summary:before{content:'+';display:inline-block;width:1em;color:var(--acc);font-weight:700}
 .evidence-trace[open]>summary:before{content:'-'} .evidence-trace-body{margin-top:4px}
-.evidence-label-list{display:grid;gap:5px}.evidence-label-binding{border:1px solid var(--line);
- border-radius:6px;padding:4px 7px;background:var(--card)}.evidence-label-binding>summary{cursor:pointer;
+.evidence-label-list{display:grid;gap:0}.evidence-label-binding{border:0;border-bottom:1px solid var(--line);
+ border-radius:0;padding:5px 0;background:transparent}.evidence-label-binding>summary{cursor:pointer;
  list-style:none;display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}.evidence-label-binding>summary::-webkit-details-marker{display:none}
 .evidence-label-visible{font-weight:650;color:var(--fg)}.evidence-label-token{color:var(--acc);font:11px ui-monospace,Menlo,monospace;
  overflow-wrap:anywhere}.evidence-label-state{color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em}
 .evidence-label-meta{margin-top:4px;color:var(--mut);font-size:11.5px;line-height:1.45}.evidence-label-meta code{color:var(--fg)}
+.evidence-label-summary{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 8px;padding:5px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}.evidence-label-summary-title{color:var(--mut);font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em}.evidence-label-chip{display:inline-flex;align-items:baseline;gap:4px;padding:2px 0;border:0;border-radius:0;background:transparent;font-size:11.5px;max-width:100%;overflow:hidden}.evidence-label-chip b{color:var(--acc);font-size:9.5px;letter-spacing:.03em}.evidence-label-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:620px){.evidence-list{padding:6px 10px 16px}.evidence-type-hint{display:none}
  .evidence-summary{grid-template-columns:1.1em auto auto 1fr;gap:6px;padding:8px 9px}
  .evidence-summary .evidence-title{grid-column:2 / -1;white-space:normal;overflow:visible}
  .evidence-summary .evidence-bullet{grid-column:2 / 4}.evidence-summary .evidence-status{justify-self:end}
+ .evidence-summary{grid-template-columns:1.1em auto minmax(0,1fr) auto;gap:6px;padding:8px 9px}
+ .evidence-summary-main{grid-column:3;grid-row:1}
+ .evidence-bullet{grid-column:3;grid-row:2;justify-self:start}.evidence-status{grid-column:4;grid-row:1 / span 2;justify-self:end}
  .evidence-detail-row{grid-template-columns:1fr;gap:1px}.evidence-detail-label{padding-top:2px}}
 """
 
@@ -1425,7 +1444,14 @@ def _status_parts(record: dict[str, object]) -> tuple[str, str]:
     fields = record.get("fields", {})
     raw = str(fields.get("status", "specified")).strip()
     status = raw.lstrip("📝🔗🟢📌✅⚠️⏸✖⛔ ").lower() or "specified"
-    token = re.sub(r"[^a-z0-9_-]", "-", status)
+    status = {
+        "ready_for_human_verification": "Needs review",
+        "ready_for_review": "Needs review",
+        "ready_for_human_review": "Needs review",
+        "in_progress": "In progress",
+        "not_started": "Planned",
+    }.get(status, status.replace("_", " ").capitalize())
+    token = re.sub(r"[^a-z0-9_-]", "-", status.lower())
     return status, token
 
 
@@ -1452,6 +1478,7 @@ def _label_details(labels: object) -> str:
         if not isinstance(raw, dict):
             continue
         token = str(raw.get("token", "")).strip()
+        reference = str(raw.get("reference") or raw.get("key") or token).strip()
         if not token:
             continue
         display = str(raw.get("display", "")).strip()
@@ -1459,6 +1486,7 @@ def _label_details(labels: object) -> str:
         visible = display if display and status not in {"pending", "unresolved", "missing"} else token
         meta = [
             ("kind", raw.get("kind", "")),
+            ("reference", reference),
             ("target", raw.get("target", "")),
             ("item", raw.get("item", "")),
             ("evidence run", raw.get("page_run", "")),
@@ -1483,6 +1511,29 @@ def _label_details(labels: object) -> str:
 
 
 _PREVIEW_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".svg"}
+
+def _label_summary(labels: object) -> str:
+    """Render the small, reader-facing V/C/D index for an open card."""
+    if not isinstance(labels, list):
+        return ""
+    chips = []
+    for raw in labels:
+        if not isinstance(raw, dict):
+            continue
+        token = str(raw.get("token") or raw.get("reference") or raw.get("key") or "").strip()
+        if not token:
+            continue
+        kind = str(raw.get("kind", "")).strip().upper() or "LABEL"
+        display = str(raw.get("display", "")).strip()
+        status = str(raw.get("status", "unresolved")).strip().lower()
+        visible = display if display and status not in {"pending", "unresolved", "missing"} else token
+        chips.append(
+            '<span class=evidence-label-chip title="%s"><b>%s</b><span>%s</span></span>'
+            % (html.escape(token, quote=True), html.escape(kind), html.escape(visible)),
+        )
+    if not chips:
+        return ""
+    return '<div class=evidence-label-summary><span class=evidence-label-summary-title>Labels</span>%s</div>' % "".join(chips)
 _PREVIEW_PATH_KEYS = {
     "artifact", "artifacts", "asset", "assets", "figure", "image", "preview",
     "preview_path", "table", "file", "path",
@@ -1548,6 +1599,57 @@ def _find_preview_scalar(value: object, keys: set[str], *, path: tuple[str, ...]
 
 def _preview_label(value: str) -> str:
     return re.sub(r"[_-]+", " ", value).strip().title()
+def _value_preview_label(value: str) -> str:
+    "Use reader-facing terms for the few Value fields that need context."
+    if value.startswith("Historical Cell · "):
+        result = value.split(" · ", 1)[1]
+        return "Reported Result · " + ("SE" if result == "Se" else result)
+    if value == "Replacement Gate":
+        return "Gate"
+    return value
+
+def _value_preview_rows(value: object, *, prefix: str = "", skip: set[str] | None = None, rows: list[tuple[str, str]] | None = None, limit: int = 40) -> list[tuple[str, str]]:
+    """Flatten scalar VALUE payload fields into reader-facing table rows."""
+    if rows is None:
+        rows = []
+    if len(rows) >= limit or not isinstance(value, dict):
+        return rows
+    skip = {item.lower() for item in (skip or set())}
+    for key, child in value.items():
+        key_text = str(key)
+        if key_text.lower() in skip:
+            continue
+        label = _preview_label(key_text)
+        if prefix:
+            label = "%s · %s" % (prefix, label)
+        label = _value_preview_label(label)
+        if isinstance(child, dict):
+            _value_preview_rows(child, prefix=label, skip=skip, rows=rows, limit=limit)
+        else:
+            text = _preview_scalar(child)
+            if not text and child is not None and isinstance(child, (list, tuple)):
+                text = json.dumps(child, ensure_ascii=False, default=str)
+            if text:
+                rows.append((label, text))
+        if len(rows) >= limit:
+            break
+    return rows
+def _value_preview_table(payload: object) -> str:
+    if not isinstance(payload, dict):
+        return ""
+    skip = (_PREVIEW_COPY_KEYS - {"outcome"}) | {
+        "boundary", "artifact", "artifacts", "preview", "sources"
+    }
+    rows = _value_preview_rows(payload, skip=skip)
+    if not rows:
+        return ""
+    body = "".join(
+        "<tr><th>%s</th><td>%s</td></tr>" %
+        (html.escape(label), html.escape(text))
+        for label, text in rows
+    )
+    return ('<div class=evidence-preview-table-wrap><table class="evidence-preview-table evidence-preview-value-table">'
+            '<thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>%s</tbody></table></div>' % body)
 
 
 def _preview_facts(payload: object, *, skip: set[str] | None = None,
@@ -1620,7 +1722,7 @@ def _payload_table(payload: object) -> str:
 
 def _preview_texts(document: dict[str, object], payload: object) -> list[str]:
     keys = ("reader_takeaway", "caption_claim", "summary", "interpretation",
-            "aggregate_values", "outcome")
+            "aggregate_values")
     values = []
     for source in (payload, document):
         if not isinstance(source, dict):
@@ -1797,42 +1899,13 @@ def _result_preview(record: dict[str, object], page_home: pathlib.Path,
             content.append(rendered)
 
     if kind == "VALUE":
-        hero_path, hero = _find_preview_scalar(
-            payload, {"estimate", "effect", "odds_ratio", "coefficient",
-                      "mean", "median", "value", "n"}
-        )
-        if hero:
-            unit = _preview_scalar(payload.get("unit")) if isinstance(payload, dict) else ""
-            suffix = " · " + unit if unit else ""
-            caption = _preview_label(hero_path) if hero_path else "Value"
-            content.append('<div class=evidence-preview-hero>%s<small>%s%s</small></div>' %
-                           (html.escape(hero), html.escape(caption), html.escape(suffix)))
-        table = ""
-        table_label = ""
-        if isinstance(payload, dict):
-            for key in ("values", "cohorts", "rows", "table", "data",
-                        "ladder", "comparisons"):
-                table = _preview_table(payload.get(key))
-                if table:
-                    table_label = _preview_label(key)
-                    break
+        boundary = _preview_scalar(payload.get("boundary")) if isinstance(payload, dict) else ""
+        if boundary:
+            content.append('<div class=evidence-preview-copy><p><b>Boundary</b> %s</p></div>' %
+                           html.escape(boundary))
+        table = _value_preview_table(payload)
         if table:
-            content.append("<div class=evidence-preview-subhead>%s</div>%s" %
-                           (html.escape(table_label), table))
-        hero_key = hero_path.rsplit(" · ", 1)[-1] if hero_path else ""
-        facts = _preview_facts(
-            payload, skip={hero_key, "unit"} | _PREVIEW_COPY_KEYS, limit=5
-        )
-        if isinstance(payload, dict):
-            for key, value in payload.items():
-                if isinstance(value, dict):
-                    nested = _preview_facts(
-                        value, skip=_PREVIEW_COPY_KEYS, limit=4, prefix=str(key)
-                    )
-                    if nested:
-                        facts += nested
-        if facts:
-            content.append(facts)
+            content.append(table)
     elif kind == "CITE" and isinstance(payload, dict):
         sources = payload.get("sources")
         if isinstance(sources, list):
@@ -1852,9 +1925,13 @@ def _result_preview(record: dict[str, object], page_home: pathlib.Path,
             if source_cards:
                 content.append("".join(source_cards))
     elif kind == "DISPLAY":
-        table = _payload_table(payload)
-        if table and not artifact:
-            content.append(table)
+        # A Display is a reader artifact. Keep its preview PDF/image as the
+        # only visual preview; payload metadata stays in Traceability.
+        content.append(_preview_facts(
+            payload,
+            skip={"unit", "artifact", "artifacts", "preview", "table", "data", "rows", "values"}
+            | _PREVIEW_COPY_KEYS,
+        ))
         content.append(_preview_facts(
             payload, skip={"unit", "artifact", "artifacts", "preview"} | _PREVIEW_COPY_KEYS
         ))
@@ -1947,6 +2024,7 @@ def _evidence_sections(records: list[dict[str, object]],
             safe_item = html.escape(item_id, quote=True)
             display_title = title_text if title_text and title_text.lower() != label.lower() else ""
             label_html = _label_details(fields.get("labels", []))
+            label_summary = _label_summary(fields.get("labels", []))
             trace = "".join((
                 ('<div class=evidence-detail-row><span class=evidence-detail-label>'
                  'Evidence Labels</span><span class=evidence-detail-value>%s</span></div>'
@@ -1964,6 +2042,7 @@ def _evidence_sections(records: list[dict[str, object]],
                 _detail_row("Acceptance", str(fields.get("acceptance", "")).strip()),
             ))
             detail = "".join((
+                label_summary,
                 _result_preview(record, page_home, root),
                 _workspace_actions(path_q, file_q, run_id),
                 '<details class=evidence-trace><summary>Traceability</summary>'
@@ -1972,10 +2051,10 @@ def _evidence_sections(records: list[dict[str, object]],
             cards.append(
                 '<details class=evidence-card id="%s" data-evidence-id="%s" data-evidence-type="%s">'
                 '<summary class=evidence-summary><span class=evidence-chevron aria-hidden=true>›</span>'
+                '<span class=evidence-kind>%s</span>'
                 '<span class=evidence-summary-main><span class=evidence-summary-line>'
-                '<span class=evidence-kind>%s</span><span class=evidence-label>%s</span>'
-                '<span class=evidence-title>%s</span></span>'
-                '<code class=evidence-bullet>%s</code></span>'
+                '<span class=evidence-label>%s</span><span class=evidence-title>%s</span></span></span>'
+                '<code class=evidence-bullet>%s</code>'
                 '<span class="evidence-status %s">%s</span></summary>'
                 '<div class=evidence-detail>%s</div></details>' % (
                     html.escape(focus, quote=True), safe_item, safe_kind,

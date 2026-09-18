@@ -100,6 +100,11 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
         self.assertIn(">Paper Writing</button>", body)
         self.assertIn(">Evidence</button>", body)
         self.assertIn(">Supporting Runs</button>", body)
+        self.assertIn(">Workflow map</button>", body)
+        self.assertIn("Workflow by Space specification", body)
+        self.assertIn("Spaces", body)
+        self.assertIn("OutlinePlan + Mermaid", body)
+        self.assertIn("runs/rp-struct-", body)
         self.assertIn('class="run-space-tab on"', body)
         self.assertIn('class="run-pill total">', body)
         self.assertIn("Writing Runs", body)
@@ -109,8 +114,8 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
         self.assertIn("<h3>Display</h3>", body)
         self.assertIn("<h3>Citation</h3>", body)
         self.assertIn("class=run-card", body)
-        self.assertEqual(body.count('class="run-space-tab'), 3)
-        self.assertEqual(body.count('class="run-space-panel'), 3)
+        self.assertEqual(body.count('class="run-space-tab'), 4)
+        self.assertEqual(body.count('class="run-space-panel'), 4)
         self.assertNotIn("<th>", body)
         self.assertIn("P j01.t01.r01", body)
         self.assertIn("b01.j01.t01.r01", body)
@@ -123,6 +128,14 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
         self.assertIn(
             '<section class="run-space-panel on" id="run-space-panel-evidence"',
             selected,
+        )
+
+        mapped = render_runs(self.page, "/board.md", "S-Test/S-Test.md",
+                             selected_space="map")
+        self.assertIn('class="run-space-tab on" id="run-space-tab-map"', mapped)
+        self.assertIn(
+            '<section class="run-space-panel on" id="run-space-panel-map"',
+            mapped,
         )
 
 

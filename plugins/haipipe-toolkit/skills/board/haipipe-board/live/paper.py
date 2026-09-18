@@ -1419,14 +1419,76 @@ def _link(d, rel, label, **extra):
     return '<a href="%s">%s</a>' % (esc(outline_url(d["path"], rel, **extra)), esc(label))
 
 
-def _views(space, views):
-    """views: [(id, label, html)] → sub-chips + view panels."""
+def _views(space, views, foot=""):
+    """views: [(id, label, html)] → sub-chips + view panels; `foot` (the Space's
+    backend Markdown) stays visible under every view."""
     chips = "".join('<span class="chip" data-view="%s">%s</span>' % (esc(i), esc(l))
                     for i, l, _ in views)
     body = "".join('<div class="view" data-view="%s">%s</div>' % (esc(i), h)
                    for i, _, h in views)
-    return ('<div class="panel" data-space="%s"><div class="subchips">%s</div>%s</div>'
-            % (esc(space), chips, body))
+    return ('<div class="panel" data-space="%s"><div class="subchips">%s</div>%s%s</div>'
+            % (esc(space), chips, body, foot))
+
+
+def _sources_html(d, space):
+    """The backend of one Space: every Markdown file, engine receipt and folder
+    it was read from, as repo-relative paths. Nothing on the Space comes from
+    anywhere else; the plugin's own labels live in live/paper.py (Tools)."""
+    b = d["board"]
+    rows = []
+    def add(label, path, note=""):
+        if path is None:
+            return
+        pth = path if isinstance(path, Path) else (b / path)
+        ok = pth.exists()
+        rows.append((label, '%s <code>%s</code>%s' % ('<span class="ok">✓</span>' if ok else '<span class="mut">⬜</span>',
+                                                       esc(_repo_rel(d, pth)), (' <span class="mut">%s</span>' % esc(note)) if note else "")))
+    pages = [pg for pg in d["pages"] if pg["rel"]]
+    s00 = d["story00"]
+    if space == "setup":
+        add("board", "board.md", "## Pages groups · dialect · blocks · Links")
+        rows.append(("sessions", '<code>%s</code> <span class="mut">pair manifests (JSON), one per Codex session</span>' % esc(str(_PAIRS_DIR))))
+    elif space == "ideation":
+        if s00 and s00["rel"]:
+            folder = (b / s00["rel"]).parent
+            add("idea pool page", s00["rel"])
+            for f in sorted(folder.glob("outline/*-outline-v*.md"))[-1:]:
+                add("plan (latest)", f, "Ideas (ranked) table · Idea divisions")
+            add("evidence items", folder / "outline" / (s00["stem"] + "-evidence-items.md"))
+            for name, note in (("workflow/selection.yaml", "I3 receipt"), ("handoff/paper-ideation.yaml", "handoff"), ("projection/paper-ideation-sync.yaml", "sync")):
+                if (folder / name).exists():
+                    add("receipt", folder / name, note)
+        else:
+            rows.append(("idea pool", '<span class="mut">no Story00 page on board.md yet</span>'))
+    elif space == "story":
+        for st in d["stories"]:
+            add("Story page", st["rel"], "C1–C8 · compile order · judgment Run tickets in runs/")
+        n = sum(1 for pg in d["sections"] if pg["rel"])
+        rows.append(("hero evidence", '<code>%s</code> <span class="mut">%d Section page(s): outline/&lt;stem&gt;-evidence-items.md</span>' % (esc(_repo_rel(d, b)), n)))
+        add("task home", d["blocks"]["dir"], "bNN/jNN/tNN folders · runtime.yaml receipts")
+        add("discovery home", d["disc"]["dir"], "bNN/jNN/tNN folders · discovery.yaml")
+    elif space == "run":
+        n_t = len(d["runs"]); n_r = sum(1 for r in d["runs"] if r["has_result"])
+        rows.append(("page runs", '<code>%s</code> <span class="mut">%d page(s): runs/ tickets (%d) · results/&lt;run&gt;/runtime.yaml (%d)</span>' % (esc(_repo_rel(d, b)), len(pages), n_t, n_r)))
+        rows.append(("evidence items", '<code>%s</code> <span class="mut">every page\'s outline/&lt;stem&gt;-evidence-items.md: Local Run · Supporting Runs lines</span>' % esc(_repo_rel(d, b))))
+        add("task home", d["blocks"]["dir"], "tickets + runtime.yaml")
+        add("discovery home", d["disc"]["dir"], "tickets + runtime.yaml")
+        add("workflow map", _SPACE_MAP, "Workflow map + Folder tree × Run-Type tables")
+        add("gate G4", "delivery/build-manifest.json", "engine receipt")
+    elif space == "delivery":
+        add("build config", "delivery/paper-build.toml", "haipipe-paper-assemble")
+        add("build receipt", "delivery/build-manifest.json", "engine receipt, never edited")
+        add("display register", "delivery/display-register.md", "generated")
+        add("returned files", "delivery/word-feedback", "read, never built from")
+        for r in d["rounds"]:
+            add("Round page", r["rel"])
+        add("venue", "board.md", "Links · venue-page")
+    if not rows:
+        return ""
+    return ('<div class="card"><h2>backend Markdown<span class="tally">%s Space</span></h2>'
+            '<div class="brief">Every word above is read from these files on every open. YAML, JSON and TOML here are receipts a program wrote; '
+            'they are shown, never edited. The Space\'s own labels and hints are the plugin\'s, in live/paper.py.</div>%s</div>'
+            % (esc(space), _kv(rows, "spine-row")))
 
 
 def render_setup(d):
@@ -1469,7 +1531,7 @@ def render_setup(d):
                      % (len(srows), _table(["Section Page", "group", "pair name", "session"], srows)
                         or _empty("no Section Page yet · rows appear when a C8 row is released and its page is minted")))
     return _views("setup", [("folders", "Folder & Page", folders_html),
-                            ("sessions", "Codex sessions", sessions_html)])
+                            ("sessions", "Codex sessions", sessions_html)], foot=_sources_html(d, "setup"))
 
 
 def _kv(rows, cls=""):
@@ -1607,7 +1669,7 @@ def render_ideation(d):
     i = d["ideation"]
     if not i["present"]:
         return _views("ideation", [("pool", "Idea pool",
-                                    '<div class="card">%s</div>' % _empty("no Story00-ideation page on this board"))])
+                                    '<div class="card">%s</div>' % _empty("no Story00-ideation page on this board"))], foot=_sources_html(d, "ideation"))
     head = ('<div class="brief">%s · state %s%s</div>'
             % (_link(d, i["rel"], i["stem"]), esc(i["state"]),
                (" · plan " + esc(i["plan"])) if i["plan"] else ""))
@@ -1637,7 +1699,7 @@ def render_ideation(d):
                     _table(["idea", "went to"], [('<span class="idtag">%s</span>' % esc(x["id"]), esc(x["went"])) for x in went])
                     or _empty("no idea has a went-to Story yet")))
     return _views("ideation", [("pool", "Idea pool", pool), ("evidence", "Evidence items", evidence),
-                               ("admission", "Admission", admission)])
+                               ("admission", "Admission", admission)], foot=_sources_html(d, "ideation"))
 
 
 def _claim_cards(d, s):
@@ -1897,7 +1959,7 @@ def render_story(d):
                            "Every DISPLAY item on a Main page and every VALUE item on the Abstract page.",
                            _hero_cards(d), "no hero evidence yet · no Main Section page carries a DISPLAY or Abstract VALUE item")
         return _views("story", [("spine", "Spine", card), ("tasks", "Task Roadmap", _tree_card(d) + _disc_card(d)),
-                                ("evidence", "Evidence Items", hero)])
+                                ("evidence", "Evidence Items", hero)], foot=_sources_html(d, "story"))
     spine, claims, tasks, secs = [], [], [], []
     for s in d["story"]:
         spine.append('<div class="card"><h2>%s<span class="tally">%d RQ · %d E · %d T · %d sections</span></h2>'
@@ -1944,7 +2006,258 @@ def render_story(d):
                        _hero_cards(d), "no hero evidence yet · no Main Section page carries a DISPLAY or Abstract VALUE item")
     return _views("story", [("spine", "Spine", "".join(spine)), ("claims", "Claims & Hypothesis", "".join(claims)),
                             ("tasks", "Task Roadmap", "".join(tasks)), ("sections", "Sections", "".join(secs)),
-                            ("evidence", "Evidence Items", hero)])
+                            ("evidence", "Evidence Items", hero)], foot=_sources_html(d, "story"))
+
+
+def _md_tables(md):
+    """Every `| … |` table in a Markdown file, keyed by the `## ` heading above it."""
+    out, section, headers, rows = {}, "", None, []
+    def flush():
+        if headers:
+            out[section] = (headers, rows)
+    for line in (md or "").splitlines():
+        t = line.strip()
+        if t.startswith("## "):
+            flush(); section, headers, rows = t[3:].strip(), None, []
+            continue
+        if not t.startswith("|"):
+            if headers:
+                flush(); headers, rows = None, []
+            continue
+        cells = [clean(c) for c in t.strip("|").split("|")]
+        if all(re.fullmatch(r"-+", c or "-") for c in cells):
+            continue
+        if headers is None:
+            headers = cells
+        else:
+            rows.append(cells)
+    flush()
+    return out
+
+
+def _slot_actual(d, slot):
+    """What a Folder tree slot resolves to on THIS board: [(name, present, note)]."""
+    st = d["setup"]
+    def rows_where(pred):
+        return [(r["name"], r["state"].startswith("present"), r["role"]) for r in st if pred(r["name"])]
+    if slot == "board":
+        return [("board.md", True, "dialect: paper" if d["dialect"] == "paper" else "no dialect")]
+    if slot == "story00":
+        return rows_where(lambda n: n.startswith("A1-Story/Story00"))
+    if slot == "story":
+        return rows_where(lambda n: re.match(r"^A1-Story/Story[A-Z]", n))
+    if slot in ("main", "appendix", "round"):
+        kind = {"main": "Main", "appendix": "Appendix", "round": "Round"}[slot]
+        return rows_where(lambda n: re.match(r"^B[abc]-.+-%s/$" % kind, n))
+    if slot == "delivery":
+        dv = d["delivery"]
+        if dv["dir"] is None:
+            return [("delivery/", False, "not generated yet · G4 open")]
+        return [("delivery/", True, ("built " + dv["built"]) if dv["built"] else "no build-manifest.json")]
+    if slot == "tasks":
+        b = d["blocks"]
+        return [(b["label"], b["dir"] is not None, "%d block(s) · %d job(s) · %d task(s)" % (len(b["tree"]), b["n_jobs"], b["n_tasks"]) if b["dir"] else "")]
+    if slot == "discoveries":
+        c = d["disc"]
+        return [(c["label"], c["dir"] is not None, "%d board(s) · %d inquiry(ies) · %d task page(s)" % (len(c["tree"]), c["n_jobs"], c["n_tasks"]) if c["dir"] else "")]
+    return []
+
+
+def folder_map(d):
+    """The `Folder tree × Run-Type` table of space-mapping.md, each slot resolved
+    against this board, plus Run-Type → resolved folders for the map's column."""
+    tables = _md_tables(d["workflow_map"])
+    key = next((k for k in tables if k.lower().startswith("folder tree")), None)
+    rows = []
+    by_rt = {}
+    if key:
+        headers, body = tables[key]
+        for cells in body:
+            if len(cells) < 4:
+                continue
+            slot, folder, holds, rts = cells[0].strip("`"), cells[1], cells[2], cells[3]
+            actual = _slot_actual(d, slot)
+            rt_ids = [x.strip().strip("`") for x in rts.split("·")]
+            rows.append({"slot": slot, "folder": folder, "holds": holds, "runtypes": rt_ids, "actual": actual})
+            for rt in rt_ids:
+                by_rt.setdefault(rt, []).extend(n for n, ok, _ in actual if ok)
+    return {"rows": rows, "by_runtype": by_rt, "map": tables.get(next((k for k in tables if not k.lower().startswith("folder tree")), ""), ([], []))}
+
+
+_TREE_SKIP = {"board", "_archive", "__pycache__", "node_modules", ".git"}   # rendered site, backups, caches: not the paper
+
+
+def _slot_of(rel, is_dir):
+    """Which Folder tree slot a REAL path of the paper belongs to, by its shape."""
+    top = rel.split("/")[0]
+    if rel == "board.md":
+        return "board"
+    if top == "A1-Story":
+        second = rel.split("/")[1] if "/" in rel else ""
+        if second.startswith("Story00"):
+            return "story00"
+        if re.match(r"^Story[A-Z]", second):
+            return "story"
+        return ""
+    if re.match(r"^Ba-.+-Main$", top):
+        return "main"
+    if re.match(r"^Bb-.+-Appendix$", top):
+        return "appendix"
+    if re.match(r"^Bc-.+-Round$", top):
+        return "round"
+    if top == "delivery":
+        return "delivery"
+    return ""
+
+
+def _dir_note(path):
+    """One line of counts for a page or run folder: what its subfolders hold."""
+    parts = []
+    for sub in ("outline", "runs", "results", "delivery", "feedback", "sent", "released", "latex", "word", "word-feedback", "sections", "appendices", "displays"):
+        q = path / sub
+        if q.is_dir():
+            n = sum(1 for x in q.iterdir() if not x.name.startswith("."))
+            parts.append("%s/ %d" % (sub, n))
+    pages = [x.name for x in path.glob("*.md") if x.stem == path.name]
+    if pages:
+        parts.insert(0, pages[0])
+    return " · ".join(parts)
+
+
+_LIST_LIMIT = 40          # a folder with more files than this shows a count, not the files
+
+
+def _node(name, path, is_dir, slot="", note="", children=None, opened=False, more=0):
+    return {"name": name, "path": path, "dir": is_dir, "slot": slot, "note": note,
+            "children": children or [], "open": opened, "more": more}
+
+
+_WALK_DEPTH = 3           # how far a folder opens below a page folder, delivery/, or a project-home entry
+_PAGE_ORDER = ("outline", "runs", "results", "delivery", "feedback", "sent", "released", "workflow", "handoff", "projection")
+
+
+def _walk(path, slot, depth):
+    """Every child of a folder, dirs first then files. A dir recurses while depth
+    > 0 (below that it is a closed count); files list up to _LIST_LIMIT and the
+    rest become a count. The whole tree is on the page; nothing is fetched."""
+    kids, hidden, nfiles = [], 0, 0
+    if not path.is_dir():                      # a flat-shape Task known only from scripts/ or results/
+        return kids, hidden
+    entries = sorted((x for x in path.iterdir() if not x.name.startswith(".") and x.name not in _TREE_SKIP),
+                     key=lambda q: (q.is_file(), q.name.lower()))
+    for x in entries:
+        if x.is_dir():
+            n = sum(1 for y in x.iterdir() if not y.name.startswith(".") and y.name not in _TREE_SKIP)
+            sub, more = _walk(x, slot, depth - 1) if depth > 0 else ([], 0)
+            kids.append(_node(x.name + "/", x, True, slot, "%d item(s)" % n, sub, False, more))
+        elif nfiles < _LIST_LIMIT:
+            kids.append(_node(x.name, x, False, slot, _size(x)))
+            nfiles += 1
+        else:
+            hidden += 1
+    return kids, hidden
+
+
+def build_tree(d):
+    """The paper as a real, complete folder tree: root files, page groups → page
+    folders → everything inside them (to _WALK_DEPTH below a page folder);
+    board/ and _archive/ are skipped. Returns (roots, homes): the paper folder,
+    and the claimed Task-home blocks + Discovery inquiries, which live outside
+    it and get their own box. Every node carries the space-mapping slot it matches."""
+    b = d["board"]
+    def page_folder(path, slot):
+        kids, more = _walk(path, slot, _WALK_DEPTH)
+        page = path.name + ".md"
+        def key(k):
+            if not k["dir"]:
+                return (0 if k["name"] == page else 2, 0, k["name"].lower())
+            sub = k["name"][:-1]
+            return (1, _PAGE_ORDER.index(sub) if sub in _PAGE_ORDER else 99, k["name"].lower())
+        kids.sort(key=key)
+        note = _dir_note(path)
+        if note.startswith(page):                      # the folder is named after its page: say it once
+            note = note[len(page):].lstrip(" ·")
+        return _node(path.name + "/", path, True, slot, note, kids, False, more)
+    roots = []
+    groups = {g["folder"]: g for g in d["groups"]}
+    for x in sorted(b.iterdir(), key=lambda q: (q.is_dir(), q.name != "board.md", q.name.lower())):
+        if x.name.startswith(".") or x.name in _TREE_SKIP:
+            continue
+        rel = x.name
+        if x.is_file():
+            if x.suffix in (".md", ".toml", ".json", ".py"):
+                roots.append(_node(x.name, x, False, _slot_of(rel, False), _size(x)))
+            continue
+        slot = _slot_of(rel, True)
+        if x.name in groups:
+            kids = [page_folder(y, _slot_of(rel + "/" + y.name, True) or slot)
+                    for y in sorted(q for q in x.iterdir() if q.is_dir() and not q.name.startswith(".") and q.name not in _TREE_SKIP)]
+            roots.append(_node(x.name + "/", x, True, slot, "%d page(s)" % len(groups[x.name]["stems"]), kids, True))
+        else:
+            kids, more = _walk(x, slot, _WALK_DEPTH)
+            note = _dir_note(x) if slot == "delivery" else "%d item(s) · not in the map" % (len(kids) + more)
+            roots.append(_node(x.name + "/", x, True, slot, note, kids, slot == "delivery", more))
+    scope = paper_scope(d)
+    homes = []          # the project homes live outside the paper folder: their own box
+    if d["blocks"]["dir"] is not None:
+        kids = []
+        for blk in d["blocks"]["tree"]:
+            if scope and not _claimed(blk["addr"], scope):
+                continue
+            jobs = []
+            for j in blk["jobs"]:
+                if scope and not _claimed(j["addr"], scope):
+                    continue
+                tasks = []
+                for t in j["tasks"]:
+                    sub, more = _walk(t["dir"], "tasks", 2)
+                    tasks.append(_node(t["name"] + "/", t["dir"], True, "tasks", "%d ticket(s) · %s" % (t["tickets"], _fmt_state(t["receipts"])), sub, False, more))
+                jobs.append(_node(j["name"] + "/", j["dir"], True, "tasks", "%d task(s)" % len(j["tasks"]), tasks, False))
+            kids.append(_node(blk["name"] + "/", blk["dir"], True, "tasks", "%d job(s)" % len(blk["jobs"]), jobs, True))
+        homes.append(_node(d["blocks"]["label"], d["blocks"]["dir"], True, "tasks", "the Task home · %d block(s) · claimed ones shown" % len(d["blocks"]["tree"]), kids, True))
+    if d["disc"]["dir"] is not None:
+        kids = []
+        for blk in d["disc"]["tree"]:
+            jobs = []
+            for j in blk["jobs"]:
+                tasks = []
+                for t in j["tasks"]:
+                    sub, more = _walk(t["dir"], "discoveries", 2)
+                    tasks.append(_node(t["name"] + "/", t["dir"], True, "discoveries", "%s%s" % (t["status"] or "?", (" · " + t["outcome"]) if t["outcome"] else ""), sub, False, more))
+                jobs.append(_node(j["name"] + "/", j["dir"], True, "discoveries", "%d task page(s)" % len(j["tasks"]), tasks, False))
+            kids.append(_node(blk["name"] + "/", blk["dir"], True, "discoveries", "%d inquiry(ies)" % len(blk["jobs"]), jobs, True))
+        homes.append(_node(d["disc"]["label"], d["disc"]["dir"], True, "discoveries", "the Discovery home · %d board(s)" % len(d["disc"]["tree"]), kids, True))
+    return roots, homes
+
+
+def _tree_html(d, nodes, by_slot, parent_slot=""):
+    """Nested <ul class="tree">: a directory is a <details>, a file a plain row.
+    Every row is two columns: the bare tree on the left (marker, icon, name),
+    the works on the right (`.tn-works`: the folder's counts on every node; the
+    slot's Run-Type chips once, on the first node of that slot). Nothing else
+    (JL: less is more). A nested <ul> only pads the left, so the right column
+    lines up at every depth."""
+    out = []
+    for n in nodes:
+        row = by_slot.get(n["slot"])
+        first = bool(row) and n["slot"] != parent_slot
+        url = _tree_url(d, n["path"]) if not n["dir"] and n["path"] else ""
+        name = ('<a href="%s">%s</a>' % (esc(url), esc(n["name"]))) if url else esc(n["name"])
+        top = '<span class="tn-note">%s</span>' % esc(n["note"]) if n["note"] else ""
+        if first:
+            top = "".join('<span class="idtag rt">%s</span>' % esc(x) for x in row["runtypes"]) + top
+        line = ('<span class="tn-name">%s %s</span><span class="tn-works"><span class="tn-top">%s</span></span>'
+                % ("📁" if n["dir"] else "📄", name, top))
+        if n["dir"]:
+            kids = _tree_html(d, n["children"], by_slot, n["slot"])
+            if n["more"]:
+                kids += '<li class="tn-more">… %d more file(s) not listed</li>' % n["more"]
+            body = ('<ul>%s</ul>' % kids) if kids else ""
+            out.append('<li><details class="tn"%s><summary>%s</summary>%s</details></li>'
+                       % (" open" if n["open"] else "", line, body))
+        else:
+            out.append('<li><div class="tn-file">%s</div></li>' % line)
+    return "".join(out)
 
 
 def _md_table_html(md):
@@ -1988,7 +2301,7 @@ def render_delivery(d):
                           "compile-order block exists and Section pages carry delivery/latex/<page>.tex fragments"))
         finish = ('<div class="card"><h2>Finish rule</h2><div class="brief">%s</div></div>' % esc(close)) if close else ""
         return _views("delivery", [("manuscript", "Manuscript", empty + finish),
-                                   ("rounds", "Rounds & Venue", _rounds_html(d))])
+                                   ("rounds", "Rounds & Venue", _rounds_html(d))], foot=_sources_html(d, "delivery"))
     build = man.get("build") or {}
     sub = man.get("submission_readiness") or {}
     rd = man.get("readiness") or {}
@@ -2067,7 +2380,7 @@ def render_delivery(d):
                     % (len(warns), ("<ul class=\"item-bullets\">%s</ul>" % "".join("<li>%s</li>" % esc(w) for w in warns)) if warns else _empty("the last build raised none")))
     return _views("delivery", [("manuscript", "Manuscript", manuscript), ("sections", "Sections", sections),
                                ("displays", "Displays", displays), ("checks", "Checks", checks_html),
-                               ("rounds", "Rounds & Venue", _rounds_html(d))])
+                               ("rounds", "Rounds & Venue", _rounds_html(d))], foot=_sources_html(d, "delivery"))
 
 
 def _rounds_html(d):
@@ -2241,12 +2554,48 @@ def render_run(d):
              'haipipe-paper-workflow names; a person closes a gate, this only reports the receipt.</div>'
              '<div class="gates">%s</div></div>'
              % "".join('<span><b>%s</b>%s · %s</span>' % (esc(g), esc(n), esc(v)) for g, n, v in d["gates"]))
+    fm = folder_map(d)
+    headers, body = fm["map"]
+    mrows = []
+    for cells in body:
+        rt = cells[0].strip("`") if cells else ""
+        folders = fm["by_runtype"].get(rt, [])
+        mrows.append([esc(c) for c in cells] + [("<br>".join('<span class="idtag">%s</span>' % esc(x) for x in folders)) if folders else '<span class="mut">—</span>'])
     wmap = ('<div class="card"><h2>Workflow map</h2><div class="brief">Run-Type rows × Space columns, '
-            'projected from haipipe-plugin-paper/ref/space-mapping.md. A definition view, not a Run inventory.</div>%s</div>'
-            % _md_table_html(d["workflow_map"]))
+            'projected from haipipe-plugin-paper/ref/space-mapping.md, plus the folder each Run-Type lands in on this board. '
+            'A definition view, not a Run inventory.</div>%s</div>'
+            % (_table(headers + ["folder on this board"], mrows) if headers else _empty("space-mapping.md has no table")))
+    # the same map seen from disk: the REAL folder tree, each slot's Run-Types shown once, on its node
+    by_slot = {r["slot"]: r for r in fm["rows"]}
+    roots, homes = build_tree(d)
+    def count(ns):
+        return sum(1 + count(n["children"]) for n in ns)
+    missing = [r for r in fm["rows"] if not any(ok for _, ok, _ in r["actual"])]
+    tail = ""
+    if missing:
+        tail = ('<div class="brief mut" style="margin-top:8px">not on this board yet: %s</div>'
+                % " · ".join('<code>%s</code>' % esc(r["folder"].strip("`")) for r in missing))
+    srcs = ('<div class="brief">backend Markdown: <code>%s</code> (the Workflow map and Folder tree × Run-Type tables) · <code>%s</code> '
+            '(the <code>## Pages</code> groups and <code>dialect:</code>) · the folder itself, walked on every open. '
+            'Left: the whole folder tree, click a folder to open it. Right: every folder\'s counts, and the Run-Types '
+            'acting on the first folder of each slot. '
+            'Two boxes: the paper folder, then the project homes the paper claims (Task home · Discovery home).</div>'
+            % (esc(_repo_rel(d, _SPACE_MAP)), esc(_repo_rel(d, "board.md"))))
+    def box(cap, nodes, empty):
+        head = ('<div class="tree-head"><span>%s</span><span><span class="idtag rt">Run-Type</span> acting here · '
+                '<span class="tn-note">counts</span></span></div>' % cap)
+        body = ('<ul class="tree">%s</ul>' % _tree_html(d, nodes, by_slot)) if nodes else '<div class="tn-more">%s</div>' % empty
+        return '<div class="treebox">%s%s</div>' % (head, body)
+    tree = ('<div class="card"><h2>Folder tree × Run-Type<span class="tally">%d node(s)</span></h2>%s%s%s%s</div>'
+            % (count(roots) + count(homes), srcs,
+               box("the paper folder · %s" % esc(d["board"].name), roots, "the paper folder is empty"),
+               box("the project homes · Task home · Discovery home", homes,
+                   "no Task home or Discovery home resolved: set task-home: / discovery-home: in board.md, or add tasks/ and discoveries/ to the project"),
+               tail))
+    wmap += tree
     return _views("run", [("page", "Page Runs", page_runs), ("evidence", "Evidence Runs", ev_runs),
                           ("supporting", "Supporting Runs", ex + di + loose),
-                          ("gates", "Gates", gates), ("workflow", "Workflow map", wmap)])
+                          ("gates", "Gates", gates), ("workflow", "Workflow map", wmap)], foot=_sources_html(d, "run"))
 
 
 # `copy to chat` · the plugin's only engagement, and it writes nothing: a card,
@@ -2293,6 +2642,40 @@ table.grid tr:last-child td{border-bottom:0}
 .tree-job{font-size:14.5px;margin:12px 0 4px} .tree-task{font-size:14px;margin:8px 0 4px 18px}
 .gates{font-size:14.5px} pre.path{font-size:13px}
 .kv>.item-row>.cc{right:8px;top:8px}
+/* Folder tree × Run-Type: two aligned columns. Left the bare tree, right the works
+   (.tn-works, a fixed --w wide). A nested <ul> pads only the left, so every row's
+   right edge is the card's right edge and the works column lines up at any depth. */
+.treebox{--w:clamp(380px,46vw,840px);position:relative;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--card);margin:6px 0 12px}
+/* the divider is each works cell's own left edge (not an overlay), so an opened
+   explanation table, which spans both columns, is never crossed by it */
+.tree-head{display:flex;background:var(--soft);border-bottom:1px solid var(--line);font:700 11.5px -apple-system,sans-serif;
+ text-transform:uppercase;letter-spacing:.03em;opacity:.8}
+.tree-head>span:first-child{flex:1 1 auto;padding:7px 12px}
+.tree-head>span:last-child{flex:0 0 var(--w);box-sizing:border-box;padding:7px 10px 7px 12px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+ border-left:1px solid var(--line)}
+.tree-head .tn-note{text-transform:none;letter-spacing:0;font-weight:500}
+ul.tree,ul.tree ul{list-style:none;margin:0;padding:0 0 0 22px;position:relative}
+ul.tree{padding:5px 0 5px 6px}
+ul.tree ul::before{content:"";position:absolute;left:6px;top:0;bottom:12px;border-left:1.5px solid var(--line)}
+ul.tree li{position:relative;margin:0;min-width:0}
+ul.tree ul>li::before{content:"";position:absolute;left:-16px;top:16px;width:14px;border-top:1.5px solid var(--line)}
+details.tn{margin:0;min-width:0}
+details.tn>summary,.tn-file{display:flex;align-items:stretch;min-width:0;padding:0 0 0 8px;
+ font:inherit;text-transform:none;letter-spacing:normal;color:var(--fg)}
+details.tn>summary{cursor:pointer;border-radius:0} details.tn>summary:before{content:none}
+details.tn>summary:hover,.tn-file:hover{background:var(--soft)}
+.tn-name{flex:1 1 auto;min-width:0;font:500 14px/1.6 ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:5px 12px 5px 0}
+details.tn>summary .tn-name{font-weight:650}
+/* the works: a cell per row, edged below, so each row's chips and counts read as one cell of a table */
+.tn-works{flex:0 0 var(--w);box-sizing:border-box;min-width:0;padding:6px 12px 6px 14px;display:flex;flex-direction:column;gap:3px;
+ border-bottom:1px solid var(--line);border-left:1px solid var(--line)}
+.tn-top{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0;min-height:22px}
+.tn-note{color:var(--fg);opacity:.82;font-size:14px;line-height:1.5;flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.idtag.rt{color:var(--acc);border:1px solid var(--acc);border-radius:999px;padding:1px 9px;font-size:12px;line-height:1.7;white-space:nowrap}
+.tn-more{color:var(--mut);font-size:12.5px;padding:2px 8px}
+details.tn[open]>summary .tn-name:before{content:"▾ ";color:var(--mut)} details.tn>summary .tn-name:before{content:"▸ ";color:var(--mut)}
+.tn-file .tn-name:before{content:"  ";white-space:pre}
+@media(max-width:760px){.treebox{--w:200px}}
 .item-card[open] .item-label,.item-card[open] .item-title{white-space:normal;overflow:visible}
 .item-card[open]>summary .item-summary{align-items:start}
 .cc{opacity:.7;font-size:11.5px;padding:2px 7px}

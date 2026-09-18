@@ -53,6 +53,7 @@ def test_delivery_workspace_passes_matching_lanes_and_flags_source_drift(tmp_pat
     assert "Delivery Workspace" in body
     assert "source fingerprint" in body
     assert "content mirror" in body
+    assert "grid-template-columns:1fr" in body
 
     page.write_text("# Guide\n\n## Opening\nA changed page.\n", encoding="utf-8")
     drifted = check_delivery(page)

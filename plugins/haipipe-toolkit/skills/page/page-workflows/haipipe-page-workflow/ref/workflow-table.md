@@ -1,15 +1,15 @@
-# Page Workflow × Workspace table
+# Page Workflow × Space table
 
-This is the canonical Page Run Spec graph projected into Page Workspaces. The
+This is the canonical Page Run Spec graph projected into Page Spaces. The
 serialized controller labels `CONTEXT`, `OUTLINE`, `EVIDENCE`, `CONTENT`, and
 `CHECK` remain routing/progress coordinates only; they are not Phase authority
 or Run identities.
 
-## Workspace roster
+## Space roster
 
-Page uses the Workspaces exposed by its plugins:
+Page uses the Spaces exposed by its plugins:
 
-| Workspace | Purpose |
+| Space | Purpose |
 |---|---|
 | Draft | Structure, Bullets, candidate prose, and human Scratch capture |
 | Evidence | Evidence Item routes and ready Results |
@@ -17,7 +17,7 @@ Page uses the Workspaces exposed by its plugins:
 | Delivery | Page artifacts, previews, adoption/build receipts |
 
 Context is a generated off-stage record visible through Folder inspection, not
-another reader Workspace.
+another reader Space.
 
 ## Directed Run graph
 
@@ -64,7 +64,7 @@ Runs Overview is where those concrete identities and Version/Step state appear.
 
 ## Run Spec table
 
-| Run Spec | Run Type | Actor | Target/action | Exit Gate | Routes | Cardinality | Workspace Cells | Controller labels |
+| Run Spec | Run Type | Actor | Target/action | Exit Gate | Routes | Cardinality | Space Cells | Controller labels |
 |---|---|---|---|---|---|---:|---|---|
 | `context` | `Page.context` | agent/hybrid | freeze Page/Folder identity, policy, requirements, related context | Context is resolved/fresh or truthful HOLD | `structure`, `SELF`, `HOLD` | `1` when commissioned as a durable Run; otherwise controller input assembly | Folder inspection; Runtime if instantiated | `CONTEXT/PREPARE` |
 | `structure` | `Page.interactive-writing.structure` | hybrid | whole-Page map, Mermaid, Bullets, paragraph jobs, Evidence Item decisions | accepted Shape + Survey contract | `SELF`, `NEW_VERSION`, selected writing/evidence Specs, `NEW_RUN`, `HOLD` | exactly initial `rp-struct-01`; later ids only for new goals | Draft + Evidence + Runtime | `OUTLINE/SHAPE+SURVEY` |
@@ -78,7 +78,17 @@ Runs Overview is where those concrete identities and Version/Step state appear.
 ## Cell binding law
 
 The row owns target, actor, Gate, Route, Result/receipt contract, and planned
-cardinality. A Workspace Cell binds the owner/worker skill and interaction:
+cardinality. A Space Cell binds the owner/worker skill and interaction:
+
+For the corresponding file/folder placement, use the canonical **Workflow ×
+Space Specification** in
+`page-plugins/haipipe-plugin-outline/ref/space-mapping.md`. It is the physical
+projection of this normalized table: each cell records `mode · schema · path`.
+In the Page plugin, the user-facing word is `Space`; the normalized schema
+continues to use `workspace_id` and `Workspace Cell` as stable internal terms.
+The two documents have different jobs and must not become competing
+authorities—this file defines Run Specs and their lifecycle contract; the
+space-mapping file defines the UI projection and Page-relative storage paths.
 
 ```yaml
 id: paragraph-writing@draft
@@ -131,7 +141,7 @@ Actual Page Runs = C + W + S + I + D + Q
 ```
 
 Count allocated identities and receipts, not controller labels, Steps,
-Versions, paragraphs, tool calls, result files, or Workspace cards.
+Versions, paragraphs, tool calls, result files, or Space cards.
 
 ## Exact skill chains
 
@@ -171,7 +181,7 @@ Only a fresh whole-Page check may route the Workflow Runtime to `CLOSE`.
 
 - no controller label is counted as a Run;
 - every real Run joins one Run Spec and one receipt;
-- Gate/Route live on the Run Spec/Instance, not the Workspace Cell;
+- Gate/Route live on the Run Spec/Instance, not the Space Cell;
 - all `rp-*` feedback cycles stay Steps/Versions until target/goal changes;
 - every Runtime card projects the same source identity;
 - planned and actual cardinality remain separate;

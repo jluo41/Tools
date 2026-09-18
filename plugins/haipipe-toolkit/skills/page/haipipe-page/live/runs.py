@@ -123,6 +123,8 @@ code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.route{font-weight:65
 .technical dl{margin:8px 0}.technical dt{margin-top:7px;color:var(--mut);font-size:11px;font-weight:700;text-transform:uppercase}.technical dd{margin:1px 0}
 .refs{margin:5px 0 0;padding-left:18px}.run-preview{overflow-wrap:anywhere;font-size:13px;line-height:1.6;margin:8px 0}
 .detailbox h2{font-size:14px;margin:14px 0 5px}.summary{flex-wrap:wrap}.run-result{margin:0 0 10px;padding:11px 12px;border-left:3px solid var(--ok);border-radius:7px;background:var(--bg)}.run-result h3{margin:0 0 7px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}.run-output{overflow-wrap:anywhere;word-break:break-word}.run-output pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:9px;border-radius:6px;background:var(--card);font-size:12.5px}.run-result-empty{color:var(--mut);font-size:13px}.run-context,.support-member{margin-top:9px;border-top:1px solid var(--line);padding-top:8px}.run-context summary,.support-member>summary{cursor:pointer;font-weight:650;color:var(--mut)}.support-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.support-column{min-width:0}.support-column>h3{font-size:13px;margin:0 0 6px}.support-group-detail{margin:0}.support-member{padding:0 0 8px}.support-member:last-child{border-bottom:0}.support-member>summary code{font-weight:650}.lane-empty{margin:8px 0 0;padding:10px 12px;border:1px dashed var(--line);border-radius:7px;color:var(--mut)}
+.run-label-summary{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 9px;padding:5px 7px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}.run-label-summary-title{color:var(--mut);font:650 10px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.04em}.run-label-chip{display:inline-flex;gap:4px;align-items:baseline;padding:2px 6px;border:1px solid var(--line);border-radius:999px;color:var(--mut);font-size:11.5px;max-width:100%;overflow:hidden}.run-label-chip b{color:var(--acc);font-size:9.5px}.run-label-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.workflow-map-note{margin:0 0 12px;color:var(--mut);font-size:12.5px;line-height:1.5}.workflow-map-viewport{max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:9px;background:var(--bg);-webkit-overflow-scrolling:touch}.workflow-map-grid{display:grid;grid-template-columns:138px repeat(4,minmax(190px,1fr));min-width:898px}.workflow-map-row{display:contents}.workflow-map-cell{min-width:0;padding:9px 10px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);overflow-wrap:anywhere}.workflow-map-cell:nth-child(5n){border-right:0}.workflow-map-row:last-child .workflow-map-cell{border-bottom:0}.workflow-map-head{background:var(--card);color:var(--mut);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.workflow-map-spec{font-weight:700;color:var(--fg);font-size:12.5px}.workflow-map-spec code{display:block;margin-top:2px;color:var(--acc);font-size:11px}.workflow-map-cell code{font-size:11px;white-space:normal}.workflow-map-mode{display:inline-block;margin-bottom:3px;color:var(--acc);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.workflow-map-schema{display:block;font-weight:650;font-size:12px}.workflow-map-path{display:block;margin-top:3px;color:var(--mut);font-size:11px;line-height:1.4}.workflow-map-empty{color:var(--mut);font-size:12px}
 .scripts{margin:16px 0}.scripts summary{cursor:pointer;font-weight:650}.scripts ul{padding-left:20px}
 @media(max-width:700px){body{font-size:15px}.wrap{padding:0 10px 14px;overflow:visible}.summary{padding:7px 10px}.run-space-switcher{margin-bottom:9px}.run-space-tab{font-size:13px;padding:5px 9px}.run-space-overview{gap:5px}.run-space-overview span{font-size:11px;padding:2px 7px}.support-grid{grid-template-columns:1fr}
  .run-card-summary{padding:10px}.run-card-detail{padding:10px}.detailbox{padding:0}.run-meta{grid-template-columns:1fr 1fr}.run-meta .wide{grid-column:1/-1}
@@ -345,6 +347,14 @@ def _attach_evidence_bindings(page_src: Path, rows: list[dict]) -> None:
         bindings = [records[ref] for ref in row.get("refs", []) if ref in records]
         if not bindings:
             continue
+        labels = []
+        for binding in bindings:
+            fields = binding.get("fields", {})
+            for label in fields.get("labels", []):
+                if isinstance(label, dict) and label not in labels:
+                    labels.append(label)
+        if labels:
+            row["evidence_labels"] = labels
         row["evidence_bindings"] = bindings
         primary = bindings[0]
         item_id = str(primary.get("id", "")).strip()
@@ -425,6 +435,29 @@ def _short_text(value: str, limit: int = 150) -> str:
     return clean[: limit - 1].rstrip() + "…"
 
 
+def _run_label_summary(row: dict) -> str:
+    """Render the compact V/C/D provenance index for an Evidence Run."""
+    labels = row.get("evidence_labels", [])
+    if not isinstance(labels, list):
+        return ""
+    chips = []
+    for raw in labels:
+        if not isinstance(raw, dict):
+            continue
+        token = str(raw.get("token") or raw.get("reference") or raw.get("key") or "").strip()
+        if not token:
+            continue
+        kind = str(raw.get("kind", "")).strip().upper() or "LABEL"
+        display = str(raw.get("display", "")).strip()
+        status = str(raw.get("status", "unresolved")).strip().lower()
+        visible = display if display and status not in {"pending", "unresolved", "missing"} else token
+        chips.append(
+            '<span class=run-label-chip title="%s"><b>%s</b><span>%s</span></span>'
+            % (html.escape(token, quote=True), html.escape(kind), html.escape(visible)),
+        )
+    if not chips:
+        return ""
+    return '<div class=run-label-summary><span class=run-label-summary-title>Labels</span>%s</div>' % "".join(chips)
 def _run_name(row: dict) -> str:
     """Return the semantic name shown on a closed Run card."""
     if row.get("lane") == "page" and row.get("operation") == "interactive-writing":
@@ -1727,6 +1760,7 @@ def _detail(row: dict, root: Path, page_src: Path) -> str:
         '<div class=detail-head><span class=detail-title>%s</span></div>' %
         html.escape(_run_name(row)),
         _result_preview(row, root),
+        _run_label_summary(row),
     ]
     for finding in row.get("audit", []):
         chunks.append("<p class=note>Run audit finding: %s.</p>" % html.escape(finding))
@@ -1902,6 +1936,151 @@ def _run_space_panel(key: str, body: str, pills: str, active: bool) -> str:
     )
 
 
+def _workflow_map_rows(page_src: Path) -> list[tuple[str, str, list[tuple[str, str, str]]]]:
+    """Return the small Page Run Spec × Space definition map.
+
+    This is deliberately a definition projection, not a second Run inventory.
+    Run Spec rows are stable; the paths are parameterized by the current Page
+    stem so the same view works for every file-backed Page.
+    """
+    stem = page_src.stem
+    outline = f"outline/{stem}-outline-v*.md"
+    context = f"outline/{stem}-context.md"
+    logic = f"outline/{stem}-logic.mmd"
+    evidence_items = f"outline/{stem}-evidence-items.md"
+    product = f"{stem}.md"
+    return [
+        (
+            "context",
+            "Page.context",
+            [
+                ("read", "PageContext", context),
+                ("—", "—", "—"),
+                ("read-only", "ContextReceipt", "workflow/receipts/context-*.yaml"),
+                ("—", "—", "—"),
+            ],
+        ),
+        (
+            "structure",
+            "Page.interactive-writing.structure",
+            [
+                ("action", "OutlinePlan + Mermaid", f"{outline} · {logic}"),
+                ("review", "EvidenceItemPlan", evidence_items),
+                ("run", "StructureRun", "runs/rp-struct-*.md + results/rp-struct-*/"),
+                ("—", "—", "—"),
+            ],
+        ),
+        (
+            "scratch",
+            "Page.interactive-writing.scratch",
+            [
+                ("input", "ScratchNote", f"{outline}#Scratch"),
+                ("—", "—", "—"),
+                ("run", "ScratchResult", "runs/rp-scratch-* + results/rp-scratch-*/"),
+                ("—", "—", "—"),
+            ],
+        ),
+        (
+            "section-writing",
+            "Page.interactive-writing.section",
+            [
+                ("review", "WritingResult", outline),
+                ("review", "EvidenceBinding", "results/re-*/result.yaml"),
+                ("run", "SectionWritingRun", "runs/rp-sec-*.md + results/rp-sec-*/"),
+                ("read", "PageDraft", product),
+            ],
+        ),
+        (
+            "paragraph-writing",
+            "Page.interactive-writing.paragraph",
+            [
+                ("review", "WritingResult", outline),
+                ("review", "EvidenceBinding", "results/re-*/result.yaml"),
+                ("run", "ParagraphWritingRun", "runs/rp-para-*.md + results/rp-para-*/"),
+                ("read", "PageDraft", product),
+            ],
+        ),
+        (
+            "evidence-item",
+            "Page.evidence-item",
+            [
+                ("review", "EvidenceBinding", evidence_items),
+                ("action", "EvidenceResult", "results/re-{value,display,cite}-*/result.yaml"),
+                ("run", "EvidenceRun", "runs/re-*.md + results/re-*/"),
+                ("review", "ArtifactDependency", "delivery/**/build-manifest.json"),
+            ],
+        ),
+        (
+            "delivery",
+            "Page.delivery",
+            [
+                ("read", "PageSource", product),
+                ("read", "EvidenceResult", "results/re-*/result.yaml"),
+                ("run", "DeliveryRun", "runs/rd*.md + results/rd*/"),
+                ("write", "DeliveryArtifact", "delivery/{web,latex,word,render}/"),
+            ],
+        ),
+        (
+            "check",
+            "Page.check",
+            [
+                ("review", "OutlineCheck", f"{outline} + {product}"),
+                ("review", "EvidenceCheck", "results/re-*/result.yaml"),
+                ("read-only", "CheckReceipt", "workflow/receipts/"),
+                ("review", "DeliveryCheck", "delivery/**/build-manifest.json"),
+            ],
+        ),
+    ]
+
+
+def _workflow_map_cell(mode: str, schema: str, path: str) -> str:
+    """Render one compact, copy-friendly cell in the map grid."""
+    if mode == "—":
+        return '<div class="workflow-map-cell workflow-map-empty" role=cell>—</div>'
+    return (
+        '<div class=workflow-map-cell role=cell>'
+        '<span class=workflow-map-mode>%s</span>'
+        '<span class=workflow-map-schema>%s</span>'
+        '<code class=workflow-map-path>%s</code></div>' % (
+            html.escape(mode), html.escape(schema), html.escape(path)
+        )
+    )
+
+
+def _workflow_map_html(page_src: Path) -> str:
+    """Render the reader-facing Workflow × Space specification."""
+    headers = (
+        ("Run Spec", ""),
+        ("Draft", "draft"),
+        ("Evidence", "evidence"),
+        ("Run", "runtime"),
+        ("Delivery", "delivery"),
+    )
+    header_html = []
+    for label, internal in headers:
+        suffix = f" <code>{internal}</code>" if internal and internal != label.lower() else ""
+        header_html.append(
+            '<div class="workflow-map-cell workflow-map-head" role=columnheader>%s%s</div>' %
+            (html.escape(label), suffix)
+        )
+    rows_html = []
+    for spec_id, run_type, cells in _workflow_map_rows(page_src):
+        cells_html = [
+            '<div class="workflow-map-cell workflow-map-spec" role=rowheader>%s<code>%s</code></div>' %
+            (html.escape(spec_id), html.escape(run_type))
+        ]
+        cells_html.extend(_workflow_map_cell(*cell) for cell in cells)
+        rows_html.append('<div class=workflow-map-row role=row>%s</div>' % "".join(cells_html))
+    return (
+        '<p class=workflow-map-note>Rows are planned Run Specs; columns are Spaces. '
+        'Each cell shows <code>mode · schema · path</code>. This map is read-only; '
+        'the concrete Runs remain in the other Run Space tabs.</p>'
+        '<div class=workflow-map-viewport><div class=workflow-map-grid role=table '
+        'aria-label="Workflow by Space specification">%s%s</div></div>' %
+        ("".join(header_html), "".join(rows_html))
+    )
+
+
 def render(page_src: Path, _path_q: str, _file_q: str,
            selected_run: str = "", selected_space: str = "") -> str:
     rows = run_inventory(page_src)
@@ -1945,7 +2124,9 @@ def render(page_src: Path, _path_q: str, _file_q: str,
         _support_column("Task", task_support, root, page_src, selected_run),
         _support_column("Discovery", discovery_support, root, page_src, selected_run),
     )
+    workflow_map = _workflow_map_html(page_src)
     selected_by_run = {
+        "map": False,
         "writing": any(row.get("run_id") == selected_run for row in run_p),
         "evidence": any(row.get("run_id") == selected_run for row in run_e),
         "supporting": any(row.get("run_id") == selected_run for row in supporting),
@@ -1956,6 +2137,10 @@ def render(page_src: Path, _path_q: str, _file_q: str,
             active_space = key
             break
     space_specs = (
+        ("map", "Workflow map", workflow_map, _run_pills([
+            ("Run Specs", len(_workflow_map_rows(page_src))),
+            ("Spaces", 4),
+        ])),
         ("writing", "Paper Writing", writing_sections, _run_pills([
             ("Writing Runs", len(run_p)),
             ("Structure", len(writing["Structure"])),

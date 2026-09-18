@@ -337,7 +337,7 @@ h1{{font-size:18px;margin:0 0 3px}} h2{{font-size:14px;margin:0 0 4px}}
 .mut{{color:var(--mut);font-size:12px}} code{{font:11.5px ui-monospace,Menlo,monospace}}
 .source{{margin:12px 18px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card)}}
 .source div{{margin:2px 0}} .toolbar{{float:right;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:6px;padding:3px 8px;cursor:pointer}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:12px 18px}}
+.grid{{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 18px}}
 .card{{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--card)}}
 .card ul{{padding-left:18px;margin:7px 0 0}} .card li{{margin:2px 0}} .card li b{{display:inline-block;min-width:112px}}
 .pass,.state-pass{{color:var(--ok)}} .stale,.state-stale{{color:var(--bad)}} .unverified,.state-unverified{{color:var(--warn)}} .not-built,.state-not-built{{color:var(--mut)}}

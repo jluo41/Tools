@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import html
 import importlib.util
-import json
 import re
+import unicodedata
 from functools import lru_cache
 from pathlib import Path
 
@@ -49,8 +49,16 @@ def _field(path: Path, name: str, root: Path) -> str:
     if not _safe_file(path, root):
         return ""
     text = path.read_text(encoding="utf-8", errors="replace")[:65536]
-    hit = re.search(rf"(?m)^{re.escape(name)}:\s*([^#\n]+)", text)
+    # [ \t]* (not \s*): a block mapping `name:` must not read the next line as its value
+    hit = re.search(rf"(?m)^{re.escape(name)}:[ \t]*([^#\n]+)", text)
     return hit.group(1).strip().strip("'\"")[:240] if hit else ""
+
+
+def _short_safe(value: str, limit: int = 160) -> str:
+    """One printable line, at most `limit` chars; the caller still HTML-escapes it."""
+    text = "".join(ch for ch in str(value) if unicodedata.category(ch)[0] != "C" or ch in " \t")
+    text = " ".join(text.split())
+    return text if len(text) <= limit else text[:limit - 1].rstrip() + "…"
 
 
 def _runs(root: Path) -> list[dict[str, str]]:
@@ -76,8 +84,8 @@ def _runs(root: Path) -> list[dict[str, str]]:
             "target": _field(ticket, "target", root)
                       or _field(runtime, "target", root) or "—",
             "status": status,
-            "outcome": _field(result, "outcome", root)
-                       or _field(runtime, "outcome", root) or "No safe outcome yet",
+            "outcome": _short_safe(_field(result, "outcome", root)
+                                   or _field(runtime, "outcome", root) or "No safe outcome yet"),
             "ticket": "present" if _safe_file(ticket, root) else "missing",
             "result": "present" if _safe_file(result, root) else "missing",
         })

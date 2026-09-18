@@ -26,6 +26,11 @@ we look?” rather than “what label is correct?”
   audit sampling;
 - `dedup`: flag exact or near duplicates for an authorized keeper to resolve.
 
+`embed` over a whole corpus (`engine/embedding_build.py build`) starts only when the
+identified human asked for that build: pass `--started-by <person>`. Never start one on
+your own, not even when a job has no embedding yet; say none exists and point to the
+`Run embedding` button in `Data → Embedding`.
+
 Use only operations supported by the actual library. If `region_retrieve`, provenance,
 or access-control behavior is not implemented, return `HOLD`; do not approximate it and
 claim a compliant artifact.

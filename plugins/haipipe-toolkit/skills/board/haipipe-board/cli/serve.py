@@ -308,8 +308,11 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
         if self.path.split("?", 1)[0] == "/_board/delivery":
             # 📤 ONE surface over the four delivery lanes (JL 260831)
             return self.delivery_tab_view()
+        if self.path.split("?", 1)[0] == "/_board/labeling-board":
+            # 🏷 every labeling job on this Board; click one to zoom in
+            return self.labeling_board_view()
         if self.path.split("?", 1)[0] == "/_board/labeling":
-            # 🏷 canonical labeling receipts above, page chat below
+            # 🏷 five Spaces over one labeling/ lane; Studio Chat opens separately
             return self.labeling_view()
         if self.path.split("?", 1)[0] == "/_board/runs":
             # ⚙️ one page's planned and registered Tickets, never an execute door
@@ -408,6 +411,8 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             return self.evidence_tab_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/delivery":
             return self.delivery_tab_view(head_only=True)
+        if self.path.split("?", 1)[0] == "/_board/labeling-board":
+            return self.labeling_board_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/labeling":
             return self.labeling_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/runs":
@@ -518,7 +523,9 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.design_board_act(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if p.get("group"):
+        if isinstance(p.get("group"), str) and p["group"]:
+            # A group-level session names its group in text; any other "group"
+            # value belongs to the route (it once crashed the labeling door).
             # 组级会话（JL 260731）：身份是组的文件夹，不是哪个页面文件。
             # chat/term/sessions/session-name/release/stop 都吃这个 f。
             page = unquote(p.get("path") or "")
@@ -641,7 +648,13 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             res, err = self.plug_evidence(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})
-        if self.path == "/_board/labeling":    # 🏷 read-only receipt surface
+        if self.path == "/_board/labeling-board":  # 🏷 Board-level tab contract + probe
+            res, err = self.plug_labeling_board(p)
+            return self.reply(200 if not err else 400, {"ok": not err, "err": err, **(res or {})})
+        if self.path == "/_board/labeling/act":  # 🏷 the one labeling write door
+            code, res = self.labeling_act(p)
+            return self.reply(code, res)
+        if self.path == "/_board/labeling":    # 🏷 five Spaces over one labeling/ lane
             res, err = self.plug_labeling(p)
             return self.reply(200 if not err else 400,
                               {"ok": not err, "err": err, **(res or {})})

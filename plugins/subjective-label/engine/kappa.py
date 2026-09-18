@@ -14,15 +14,29 @@ Usage:
     python engine/kappa.py --selftest                                         # metric sanity checks
 
 Reads:  <project>/eval/anchor_set.jsonl (gold) + eval/per_version/<version>_<engine>_results.jsonl
-Writes: <project>/eval/trajectory.jsonl (one row per version)
+Writes: <project>/eval/trajectory.jsonl (one row per version, natural version order)
+
+Failed predictions (PARSE_ERROR, ERROR, UNRESOLVED, null, missing, off-set) are never
+silently dropped: every `kappa_*` / `acc_*` over scored items carries `n_scored_*` and
+`n_failed_*`, and `kappa_all_*` / `acc_all_*` score every gold item with a failure as
+its own category that never matches gold.
 """
 
 import argparse
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
 import numpy as np
+
+FAILED = "__FAILED__"      # stand-in category for a failed prediction in *_all metrics
+UNRESOLVED = "UNRESOLVED"  # majority with no valid vote; a disposition, never NONE
+
+
+def version_key(version):
+    """Natural sort key: v2 < v9 < v10 (not the string order v10 < v2)."""
+    return [int(t) if t.isdigit() else t.lower() for t in re.split(r"(\d+)", str(version))]
 
 
 # ── config ──────────────────────────────────────────────────────────────────
@@ -104,12 +118,59 @@ def per_label_prf(pred, gold, labels):
         fn = sum(1 for i in gold if gold[i] == l and pred.get(i) != l)
         prec = tp / (tp + fp) if (tp + fp) else None
         rec = tp / (tp + fn) if (tp + fn) else None
-        f1 = (2 * prec * rec / (prec + rec)) if (prec and rec) else None
+        if tp == 0:
+            f1 = 0.0 if (fp + fn) else None   # predicted or gold, never hit → 0.0
+        else:
+            f1 = 2 * prec * rec / (prec + rec)
         stats[l] = {"n_gold": sum(1 for i in gold if gold[i] == l),
                     "precision": round(prec, 3) if prec is not None else None,
                     "recall": round(rec, 3) if rec is not None else None,
                     "f1": round(f1, 3) if f1 is not None else None}
     return stats
+
+
+def _weighted_kappa_all(a, b, labels):
+    """Quadratic weighted κ where FAILED is an extra category at maximal distance (1.0)
+    from every label; equals weighted_kappa when nothing failed."""
+    k = len(labels)
+    idx = {l: i for i, l in enumerate(labels)}
+    idx[FAILED] = k
+    pairs = [(idx[x], idx[y]) for x, y in zip(a, b) if x in idx and y in idx]
+    n = len(pairs)
+    if not n or k < 2:
+        return None
+    O = np.zeros((k + 1, k + 1))
+    for x, y in pairs:
+        O[x, y] += 1
+    E = np.outer(O.sum(axis=1), O.sum(axis=0)) / n
+    W = np.ones((k + 1, k + 1))
+    W[:k, :k] = [[((i - j) / (k - 1)) ** 2 for j in range(k)] for i in range(k)]
+    W[k, k] = 0.0
+    denom = (W * E).sum()
+    return round(1 - (W * O).sum() / denom, 4) if denom > 1e-12 else (1.0 if (W * O).sum() == 0 else 0.0)
+
+
+def score_vs_gold(pred, gold, labels, ltype="categorical"):
+    """pred/gold: {item: label}. Returns metrics over scored items (pred in labels) with
+    n_scored/n_failed, plus kappa_all/acc_all over every gold item (failure = wrong)."""
+    ids = [i for i in gold if gold[i] in labels]
+    scored = [i for i in ids if pred.get(i) in labels]
+    pl, gl = [pred[i] for i in scored], [gold[i] for i in scored]
+    pa = [pred.get(i) if pred.get(i) in labels else FAILED for i in ids]
+    ga = [gold[i] for i in ids]
+    out = {"n_scored": len(scored), "n_failed": len(ids) - len(scored)}
+    if ltype == "ordinal":
+        out["kappa"] = weighted_kappa(pl, gl, labels)
+        out["kappa_all"] = _weighted_kappa_all(pa, ga, labels)
+    else:
+        out["kappa"] = cohen_kappa(pl, gl, labels)
+        out["kappa_all"] = cohen_kappa(pa, ga, list(labels) + [FAILED])
+    out["acc"] = round(sum(x == y for x, y in zip(pl, gl)) / len(pl), 3) if pl else None
+    out["acc_all"] = round(sum(x == y for x, y in zip(pa, ga)) / len(ids), 3) if ids else None
+    if ltype == "ordinal":
+        out["spearman"] = spearman(pl, gl, labels)
+        out["mae"] = mae(pl, gl, labels)
+    return out
 
 
 def fleiss_kappa(rows, labels):
@@ -180,7 +241,7 @@ def majority(dicts, labels, none_value, tie_break):
     for i in sorted(idxs):
         votes = [d[i] for d in dicts if d and d.get(i) in labels]
         if not votes:
-            out[i] = none_value or labels[-1]
+            out[i] = UNRESOLVED   # no valid label from any engine: never NONE
             continue
         top = Counter(votes).most_common()
         best = top[0][0]
@@ -208,6 +269,8 @@ def main():
     if args.selftest or args.cmd == "selftest":
         return _selftest()
 
+    if args.project_dir is None:
+        ap.error("--project-dir is required (or run: kappa.py selftest)")
     pd = args.project_dir.resolve()
     cfg = _read_config(pd)
     lc = cfg.get("labels") or {}
@@ -245,6 +308,8 @@ def main():
         la = [preds[e1].get(i) for i in idxs]; lb = [preds[e2].get(i) for i in idxs]
         report["panel_kappa"] = primary(la, lb)
         report[f"panel_kappa_{e1}_vs_{e2}"] = report["panel_kappa"]
+        report["panel_n_scored"] = sum(1 for x, y in zip(la, lb) if x in labels and y in labels)
+        report["panel_n_failed"] = len(idxs) - report["panel_n_scored"]
 
     for e in preds:
         report[f"dist_{e}"] = dict(Counter(preds[e][i] for i in idxs if preds[e].get(i)))
@@ -253,14 +318,18 @@ def main():
         maj = majority(list(preds.values()), labels, none_value, tie_break)
         named = list(preds.items()) + [("majority", maj)]
         for name, d in named:
-            pl = [d.get(i) for i in idxs]; gl = [gold.get(i) for i in idxs]
-            report[f"kappa_{name}_vs_gold"] = primary(pl, gl)
-            acc_pairs = [(d.get(i), gold[i]) for i in gold if d.get(i) in labels]
-            report[f"acc_{name}_vs_gold"] = round(sum(x == y for x, y in acc_pairs) / len(acc_pairs), 3) if acc_pairs else None
+            s = score_vs_gold(d, gold, labels, ltype)
+            for key in ("kappa", "acc", "n_scored", "n_failed", "kappa_all", "acc_all"):
+                report[f"{key}_{name}_vs_gold"] = s[key]
             if ltype == "ordinal":
-                report[f"spearman_{name}_vs_gold"] = spearman(pl, gl, labels)
-                report[f"mae_{name}_vs_gold"] = mae(pl, gl, labels)
-        report["per_label_majority"] = per_label_prf({i: maj.get(i) for i in gold}, gold, labels)
+                report[f"spearman_{name}_vs_gold"] = s["spearman"]
+                report[f"mae_{name}_vs_gold"] = s["mae"]
+        # class metrics exclude UNRESOLVED / failed majority rows; counts reported beside
+        maj_gold = {i: g for i, g in gold.items() if maj.get(i) in labels}
+        report["per_label_majority"] = per_label_prf({i: maj[i] for i in maj_gold}, maj_gold, labels)
+        report["per_label_majority_n_scored"] = len(maj_gold)
+        report["per_label_majority_n_failed"] = len(gold) - len(maj_gold)
+        report["n_unresolved_majority"] = sum(1 for v in maj.values() if v == UNRESOLVED)
         report["dist_gold"] = dict(Counter(gold.values()))
         # clarity (R3): executor-independence = strong vs weak model on the SAME guideline,
         # both vs gold. Smaller gap = guideline leans less on the strong model's priors (junjie P01).
@@ -291,7 +360,7 @@ def main():
     traj = pd / "eval" / "trajectory.jsonl"
     rows = [json.loads(l) for l in traj.read_text().splitlines() if l.strip()] if traj.exists() else []
     rows = [r for r in rows if r.get("version") != args.version] + [report]
-    rows.sort(key=lambda r: r["version"])
+    rows.sort(key=lambda r: version_key(r["version"]))
     traj.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
     print(f"\n→ trajectory updated: {traj}")
 
@@ -310,7 +379,12 @@ def _selftest():
     assert weighted_kappa(a, b2, L) < weighted_kappa(a, b1, L)
     # ordinal weighted ≠ nominal cohen in general
     assert weighted_kappa(a, b1, L) != cohen_kappa(a, b1, L)
-    print("selftest OK: cohen, weighted κ (ordinal penalty), krippendorff, mae")
+    # failures are counted, never silently dropped; no valid vote is UNRESOLVED
+    s = score_vs_gold({1: "HIGH", 2: "PARSE_ERROR"}, {1: "HIGH", 2: "LOW"}, L)
+    assert (s["n_scored"], s["n_failed"], s["acc"], s["acc_all"]) == (1, 1, 1.0, 0.5), s
+    assert majority([{1: "ERROR"}], L, "NONE", "none_loses")[1] == UNRESOLVED
+    assert sorted(["v10", "v2", "v9"], key=version_key) == ["v2", "v9", "v10"]
+    print("selftest OK: cohen, weighted κ (ordinal penalty), krippendorff, mae, failures counted")
 
 
 if __name__ == "__main__":

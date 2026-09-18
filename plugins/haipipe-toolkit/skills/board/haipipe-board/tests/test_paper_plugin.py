@@ -305,7 +305,14 @@ class PaperPluginTest(unittest.TestCase):
             b = make_board(root)
             page = render_paper(b, root, "/papers/Paper-Test/board.md")
             self.assertNotIn("GHOST", page)
-            self.assertNotIn("console/", page)
+            self.assertNotIn("console/index.html", page)                    # the ghost console/ is a folder on disk, never a plugin store
+            self.assertIn("📁 console/", page)                               # so the real folder tree shows it, marked not in the map
+            self.assertIn("not in the map", page)
+            self.assertIn(" page(s)</span>", page)
+            self.assertIn("backend Markdown:", page)
+            self.assertEqual(page.count("backend Markdown<span"), 5)         # one footer per Space, naming its files
+            self.assertIn("papers/Paper-Test/A1-Story/Story00-ideation/Story00-ideation.md", page)
+            self.assertIn("papers/Paper-Test/delivery/build-manifest.json", page)
             for chip in ("Setup Space", "Ideation Space", "Story Space", "Run Space"):
                 self.assertIn(chip, page)
             self.assertIn("/_board/outline?path=%2Fpapers%2FPaper-Test%2Fboard.md&amp;file=A1-Story%2FStory00-ideation%2FStory00-ideation.md&amp;lens=div", page)
@@ -358,6 +365,27 @@ class PaperPluginTest(unittest.TestCase):
             self.assertIn("Review text may carry a signal the star rating does not show.", page)
             self.assertIn("Task Roadmap", page)
             self.assertIn("Workflow map", page)
+            # the map joined to the folder tree: each Run-Type names its folder on THIS board, each slot resolves
+            self.assertIn("Folder tree × Run-Type", page)
+            self.assertIn("folder on this board", page)
+            self.assertIn("A1-Story/StoryA-desk-idea/", page)                 # the story slot resolved
+            self.assertIn("Ba-DESK-Main/", page)
+            self.assertIn("Bb-DESK-Appendix/", page)                          # pattern shown as missing
+            self.assertIn("the project homes · Task home · Discovery home", page)   # the homes box, outside the paper folder
+            self.assertIn("the Task home · 1 block(s)", page)                 # the real tree: the claimed block and its jobs
+            self.assertIn("📁 b01_block/", page)
+            self.assertIn("📁 j01_job/", page)
+            self.assertIn("📁 StoryA-desk-idea/", page)
+            self.assertIn('<ul class="tree">', page)                           # a real nested tree, not a table
+            self.assertIn('<span class="idtag rt">paper.story.shape</span>', page)
+            self.assertIn('<span class="tn-note">outline/ ', page)             # a page folder's row: its counts, the page named once (by the folder)
+            # the tree is complete and bare: every folder opens to its files; no holds text, no explanation table
+            self.assertIn("📁 runs/", page)
+            self.assertIn("r01_first.sh", page)
+            self.assertIn("📁 r01_first/", page)
+            self.assertIn("runtime.yaml", page)
+            self.assertNotIn('class="tn-holds"', page)
+            self.assertNotIn("tn-explain", page)
             # copy to chat: every card and Spine division cites the Markdown it was read from; nothing is written
             self.assertIn('data-board="papers/Paper-Test/board.md"', page)
             self.assertIn('data-src="papers/Paper-Test/A1-Story/StoryA-desk-idea/StoryA-desk-idea.md" data-ref="C5 · E1"', page)
@@ -407,7 +435,8 @@ class PaperPluginTest(unittest.TestCase):
             self.assertIn("Bb-DESK-Appendix/", page)
             self.assertIn("Bc-DESK-Round/", page)
             self.assertNotIn("B?-", page)
-            self.assertNotIn("Ba-&lt;desk&gt;", page)
+            setup_panel = page[page.index('data-space="setup"'):page.index('data-space="ideation"')]
+            self.assertNotIn("Ba-&lt;desk&gt;", setup_panel)              # Setup names the desk; the Folder tree shows the pattern beside the real name
             self.assertNotIn("<td><span class=\"path\">delivery/</span></td>", page)
             # the Outline type scale, not the old console's
             self.assertIn("h1{font-size:17px", page)

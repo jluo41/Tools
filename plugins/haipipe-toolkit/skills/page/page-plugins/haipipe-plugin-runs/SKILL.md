@@ -27,6 +27,7 @@ compatibility/internal route, not a separate Page tab.
 
 ```text
 Run Space
+├── Workflow map (read-only definition view)
 ├── Page Writing
 │   ├── Structure
 │   ├── Scratch
@@ -45,6 +46,17 @@ The presentation names above are deliberately semantic. Internally, the
 identity families remain RP (Page Writing), RE (Page Evidence), and owner-
 native supporting Run ids. The UI does not expose those family codes as extra
 lanes or hierarchy.
+
+### Workflow map
+
+Run Space also exposes a compact, read-only **Workflow map** tab. It is a
+definition view of the canonical Workflow × Space Specification: rows are
+planned Run Specs, columns are `Draft`, `Evidence`, `Run` (`runtime`), and
+`Delivery`, and each cell shows `mode · schema · Page-relative path`. The map
+explains the file-backed projection; it is not a fourth top-level Space,
+Run inventory, or execution control. Concrete Run instances remain in the
+three semantic tabs below it, and the map never writes, allocates, renames, or
+copies a Run.
 
 ## 🧭 Run Workflow projection
 
@@ -314,15 +326,6 @@ Delegated Paragraph Writing remains a Task Run. Show `C<n>.P<m>` only as the
 short activity/target; opening the card reads its safe Markdown prompt,
 `paragraph.md`, and `trace.md` as Result context. A missing receipt or missing
 required output is Held. Writing Results are prose, not Evidence Items.
-
-For Labeling rows, show safe identities, checksums, gate summaries, and counts
-only. Never render sealed ids, protected text, raw judgments, or a second
-approve/freeze/reveal/final/run control. A row may deep-link to the same Run in
-the Labeling workbench; only the subjective-label workflow may operate it.
-Use the operation name as the row Kind and the P0-P5 episode only as a grouping
-label. Use `Local` as Where when the Labeling job is physically nested in this
-Page Folder; `Labeling` is the native family, not a physical-origin value.
-Never add a second row for the Round, Test, Scan, or Audit episode.
 
 For Labeling rows, show safe identities, checksums, gate summaries, and counts
 only. Never render sealed ids, protected text, raw judgments, or a second

@@ -1,3 +1,9 @@
+## 1.0.9 · 2026-09-18
+
+- `live/paper.py`: Run Space › Workflow map joins the Run-Type map to the
+  paper's folder tree (`haipipe-plugin-paper/ref/space-mapping.md`, second
+  table), resolving each folder slot on the served board.
+
 ## 1.0.8 · 2026-09-18
 
 - Add the Board-level Paper Plugin route: `GET /_board/paper` (`live/paper.py`,

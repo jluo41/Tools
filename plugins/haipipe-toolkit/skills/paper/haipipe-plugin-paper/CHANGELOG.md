@@ -1,5 +1,30 @@
 # CHANGELOG · haipipe-plugin-paper
 
+## 0.2.1 · 2026-09-18
+
+- Workflow map × Folder tree (JL): `ref/space-mapping.md` gains a second table,
+  `Folder tree × Run-Type`, one row per folder slot of the paper (board ·
+  story00 · story · main · appendix · round · delivery · tasks · discoveries)
+  with what it holds and the Run-Types acting there. Run Space › Workflow map
+  now adds a `folder on this board` column to the map and, under it, draws the
+  REAL folder tree of the paper as a nested collapsible explorer in two boxes
+  (the paper folder; the project homes: claimed Task-home blocks and Discovery
+  inquiries), each box two aligned columns: the bare tree on the left, the
+  works on the right as one edged cell per row (counts on every folder; each
+  slot's Run-Type chips on its first folder) and nothing else. The tree is
+  complete: every folder opens down to its files (three levels below a page
+  folder, two below a Task or Discovery task; 40 files per folder, the rest a
+  count) (JL: a tree, not a table; concise and clean, the works to the right,
+  readable at 1360px, the project homes in another box; the `holds` text and
+  an explanation table were both tried on the tree and dropped: less is
+  more); slots with no folder yet are named under the boxes. The card states
+  its backend Markdown. Nothing is created from the view.
+- Every Space ends with a `backend Markdown` card listing the files it read
+  (JL: every word on the web must come from some Markdown): Markdown pages and
+  outline files, the engine receipts (runtime.yaml, discovery.yaml,
+  build-manifest.json, paper-build.toml), the task and discovery homes, and the
+  space map. The plugin's own labels and hints remain in `live/paper.py`.
+
 ## 0.2.0 · 2026-09-16
 
 - The route is live: `board/haipipe-board/live/paper.py` renders Setup,

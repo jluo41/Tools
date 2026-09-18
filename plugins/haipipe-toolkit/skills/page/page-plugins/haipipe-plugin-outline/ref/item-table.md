@@ -94,6 +94,22 @@ projection: Draft Space may show it inline and hide the original `token` plus
 Item/RE/Result/target metadata in an expandable binding. Authored Markdown
 keeps the token. Pending or missing labels remain visibly unresolved and are
 not treated as a writing-quality failure during draft review.
+### Label identity · one key, one binding
+
+`V_xxx`, `C_xxx`, and `D_xxx` are stable metadata keys, not additional
+Evidence Item types. The authored forms are `$V_xxx$`, `\cite{C_xxx}`, and
+`\figure{D_xxx}` / `\table{D_xxx}` / `\algorithm{D_xxx}`. A Result manifest
+may write either the bare key or the authored token in `labels[].token`; the
+reader normalizes both to the authored token and keeps the bare key as
+`reference`. Therefore:
+
+- one Evidence Item still owns one current RE, Result, and Card;
+- one Result may expose zero-to-many V/C/D labels;
+- a label chip is a direct link to its Result payload, not a new folder;
+- independent acceptance or execution requires a new Evidence Item/RE.
+
+Keep the labels in the Result envelope. Do not create `outline/evidence/`,
+`results/values/`, or a separate folder for each label.
 
 `supporting_results` entries name the full Run id, Result path, and hash;
 `local_sources` entries name governed paths and hashes. DISPLAY records unit

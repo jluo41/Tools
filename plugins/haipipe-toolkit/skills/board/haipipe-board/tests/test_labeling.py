@@ -148,25 +148,25 @@ class LabelingSurfaceTest(unittest.TestCase):
         )
         self.assertNotIn(secret, body)
         self.assertNotIn("sealed-7", body)
-        self.assertIn("Protected item text", body)
+        self.assertIn("only on the Label screen, one at a time", body)
         self.assertIn('/demo/board/SL/S-Label-1-demo.html?pane=chat', body)
         self.assertNotIn("board.md?pane=chat", body)
         self.assertIn("Open Studio Chat", body)
-        self.assertNotIn('title="Studio Page Chat"', body)
-        self.assertNotIn('id=splitter', body)
         self.assertNotIn('id=studio-chat', body)
-        self.assertNotIn('labeling-split:/demo/board.md|S-Label-1-demo/S-Label-1-demo.md', body)
-        self.assertIn('labeling-workspace:/demo/board.md|S-Label-1-demo/S-Label-1-demo.md', body)
-        self.assertNotIn("Prefill safe status ask", body)
-        for workspace in ("Workflow", "Data", "Guideline", "Human", "Quality", "Run"):
-            self.assertIn(workspace, body)
-        self.assertIn('aria-label="Labeling workspaces"', body)
-        self.assertIn('data-workspace=workflow', body)
-        self.assertIn('data-workspace=data', body)
-        self.assertIn('data-workspace=guideline', body)
-        self.assertIn('data-workspace=human', body)
-        self.assertIn('data-workspace=quality', body)
-        self.assertIn('data-workspace=run', body)
+        self.assertIn('<meta name="viewport"', body)
+        self.assertIn('aria-label="Labeling Spaces"', body)
+        self.assertIn('role=tabpanel', body)
+        # a Workflow map returned 260918 as a view inside the Run Space (like the Paper plugin), never its own Space
+        self.assertNotIn("Workflow Space", body)
+        for retired in ("Human Space", "Data &amp; Label", "Guideline Space",
+                        "Run Spec × Space", "DICES", "Q_overall", "safety_gold"):
+            self.assertNotIn(retired, body)
+        order = [body.index('data-space=%s>' % sid) for sid in
+                 ("data", "labeling", "quality", "run", "delivery")]
+        self.assertEqual(order, sorted(order))
+        for view in ("Contract", "Schema", "Embedding", "Label", "Rounds", "Guideline", "Test",
+                     "Evaluation", "Audit", "Runs", "Phases", "Handoff", "Final labels"):
+            self.assertIn(">%s</button>" % view, body)
         self.assertNotIn('<iframe', body)
 
     def test_artifact_chain_moves_observed_frontier_without_certifying_g6(self):
@@ -338,6 +338,276 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertIn("HOLD", reason)
 
 
+class LabelingWriteDoorTest(unittest.TestCase):
+    """POST /_board/labeling/act: the engine decides; the door refuses early and plainly."""
+
+    def setUp(self):
+        base = LabelingSurfaceTest("test_missing_lane_reports_contract_without_creating_it")
+        base.setUp()
+        self.base = base
+
+    def tearDown(self):
+        self.base.tearDown()
+
+    def handler(self, origin="", host="127.0.0.1:5601"):
+        from live.labeling import LabelingMixin
+
+        class Fake(LabelingMixin):
+            pass
+
+        fake = Fake()
+        fake.headers = {"Origin": origin, "Host": host} if origin else {"Host": host}
+        board = self.base.board
+
+        def target(p):
+            return (board / p["file"], board) if p.get("file") else (None, "no file")
+
+        fake.target = target
+        return fake
+
+    def payload(self, **extra):
+        body = {"path": "/demo/board.md", "file": self.base.file_q,
+                "page": "/demo/board/SL/S-Label-1-demo.html",
+                "action": "release_round", "human_id": "JL", "attest": True, "session_id": "s"}
+        body.update(extra)
+        return body
+
+    def test_cross_origin_write_is_refused(self):
+        code, res = self.handler(origin="http://evil.example").labeling_act(self.payload())
+        self.assertEqual(code, 403)
+        self.assertFalse(res["ok"])
+
+    def test_write_without_attestation_is_refused(self):
+        code, res = self.handler().labeling_act(self.payload(attest=False))
+        self.assertEqual(code, 400)
+        self.assertIn("attestation", res["err"])
+
+    def test_page_without_canonical_job_is_refused(self):
+        self.base.make_contract()
+        code, res = self.handler().labeling_act(self.payload())
+        self.assertEqual(code, 409)
+        self.assertIn("no canonical labeling job", res["err"])
+
+    def test_embedding_build_accepts_only_catalog_models_and_checks_the_job(self):
+        self.base.make_contract()
+        self.base.put("gates/p0-contract/receipt.json", "{}")
+        code, res = self.handler().labeling_act(self.payload(action="build_embedding", model="org/anything"))
+        self.assertEqual(code, 409)
+        self.assertIn("not in the embedding catalog", res["err"])
+        code, res = self.handler().labeling_act(self.payload(action="build_embedding", model="BAAI/bge-m3"))
+        self.assertEqual(code, 409)  # this fixture names no human, so it is HOLD and no process starts
+        self.assertIn("read-only", res["err"])
+        code, res = self.handler().labeling_act(self.payload(action="embedding_status"))
+        self.assertEqual(code, 200)
+        states = {m["id"]: m["state"] for m in res["result"]["models"]}
+        self.assertEqual(states["Qwen/Qwen3-Embedding-0.6B"], "none")
+        code, res = self.handler().labeling_act(self.payload(action="embedding_item", version="nope", item_id="1"))
+        self.assertEqual(code, 409)
+        self.assertIn("no embedding named", res["err"])
+        code, res = self.handler().labeling_act(self.payload(action="group_examples", version="nope", group_index=0))
+        self.assertEqual(code, 409)
+        self.assertIn("no embedding named", res["err"])
+        code, res = self.handler().labeling_act(self.payload(action="embedding_item_text", version="nope", item_id="1"))
+        self.assertEqual(code, 409)
+        self.assertIn("no embedding named", res["err"])
+
+    def test_unknown_page_url_is_refused(self):
+        code, res = self.handler().labeling_act(self.payload(page="/demo/board/SL/other.html"))
+        self.assertEqual(code, 400)
+
+    def test_render_reads_each_jobs_own_config(self):
+        self.base.make_contract(
+            "schema_version: subjective-label/v2\nconstruct:\n  name: politeness\n"
+            "  question: How polite is the reply?\nlabels:\n  values: [high, low, none]\n"
+            "  meanings:\n    high: very polite\nauthority:\n  human_id: JL\n"
+            "  mode: single_human_semantic_authority\n  creates_human_gold: true\n")
+        self.base.put("corpus/manifest.json", '{"n_items": 12, "n_sealed": 2, "n_eligible": 10}')
+        body = render(self.base.page, "/demo/board.md", self.base.file_q,
+                      "/demo/board/SL/S-Label-1-demo.html", self.base.board)
+        self.assertIn("How polite is the reply?", body)
+        self.assertIn("very polite", body)
+        self.assertIn(">10<", body)
+        for other in ("DICES", "Q_overall", "safety_gold", "unsafe"):
+            self.assertNotIn(other, body)
+
+
+class LabelingEmbeddingViewTest(unittest.TestCase):
+    """Data Space · Embedding: the recipe from item text to vector, the map, the groups."""
+
+    def setUp(self):
+        base = LabelingSurfaceTest("test_missing_lane_reports_contract_without_creating_it")
+        base.setUp()
+        base.make_contract()
+        self.base = base
+
+    def tearDown(self):
+        self.base.tearDown()
+
+    def body(self):
+        return render(self.base.page, "/demo/board.md", self.base.file_q,
+                      "/demo/board/SL/S-Label-1-demo.html", self.base.board)
+
+    def test_without_an_embedding_the_view_says_how_to_build_one(self):
+        body = self.body()
+        self.assertIn("No embedding yet.", body)
+        self.assertNotIn("embedding_build.py build --job-root", body)  # the page runs builds by the button only
+        self.assertIn("Nothing runs until you press", body)
+        self.assertIn('<option value="BAAI/bge-m3"', body)
+        self.assertIn("<div class=runbox data-emb-formbox><h3>Run a new embedding", body)
+        for control in ("data-emb-input=reply", "data-emb-input=context", "data-emb-field=instruction",
+                        "data-emb-field=groups", "data-emb-map=pca", "data-emb-field=seed", "data-emb-run"):
+            self.assertIn(control, body)
+
+    def test_contract_cards_each_take_the_full_row(self):
+        body = self.body()
+        self.assertNotIn("class=grid", body)
+
+    def test_built_embedding_shows_recipe_example_map_and_groups(self):
+        manifest = {
+            "schema": "subjective-label-embedding/v1", "run": "rl02_embedding-build_tiny",
+            "version": "tiny", "created_at": "2026-09-16T12:00:00-04:00",
+            "model": {"id": "org/tiny", "device": "cpu", "dim": 4},
+            "preprocessing": {"text_field": "text", "context_field": "context_prev", "normalize": "l2"},
+            "encoder": {"steps": [{"module": "Transformer", "max_tokens": 256},
+                                  {"module": "Pooling", "mode": "mean"}, {"module": "Normalize"}],
+                        "max_tokens": 256, "items_cut": 1, "longest_tokens": 300},
+            "example": {"input": "made-up sentence", "word_pieces": ["[CLS]", "made", "[SEP]"],
+                        "vector_first": [0.1, -0.2], "dim": 4, "length": 1.0},
+            "population": {"eligible_embedded": 2, "sealed_excluded": 1},
+            "map": {"method": "tsne", "seed": 0}, "files": [{"path": "vectors.npy", "sha256": "x"}],
+        }
+        self.base.put("cache/embeddings/tiny/manifest.json", json.dumps(manifest))
+        self.base.put("cache/embeddings/tiny/map.jsonl",
+                      '{"item_id": "a1", "x": 0.1, "y": 0.2, "group": 0}\n'
+                      '{"item_id": "a2", "x": 0.9, "y": 0.8, "group": 1}\n')
+        self.base.put("cache/embeddings/tiny/map3d.jsonl",
+                      '{"item_id": "a1", "x": 0.1, "y": 0.2, "z": -0.5}\n'
+                      '{"item_id": "a2", "x": -0.9, "y": 0.8, "z": 0.4}\n')
+        self.base.put("cache/embeddings/tiny/groups.json", json.dumps({
+            "k": 2, "silhouette_by_k": {"2": 0.1},
+            "groups": [{"group": 0, "size": 1, "keywords": ["weapons"]},
+                       {"group": 1, "size": 1, "keywords": ["money"]}]}))
+        body = self.body()
+        for text in ("From item to vector", "The model reads at most 256", "1 of 2 items are longer",
+                     "Average all word-piece vectors", "Worked example", "made-up sentence",
+                     "rl02_embedding-build_tiny", ">G2</span>", "weapons", "Your labels",
+                     "Embedding model", 'data-emb-show="tiny"', '<option value="Qwen/Qwen3-Embedding-0.6B" data-instruct="1" selected',
+                     "data-map-dim=3d", "data-spin", "canvas class=map3d", '"points3d": [["a1", 0.1, 0.2, -0.5, 0]',
+                     'data-item="a1"', 'data-group-pick="1"', "class=embdata",
+                     "Click a dot to see its group", 'data-map-show=round', 'data-zoom=in',
+                     'data-ex-group="1"', "Show typical items", "exposure/group_examples.jsonl",
+                     "--started-by &lt;your name&gt;", "from the terminal; no person&#x27;s request is recorded"):
+            self.assertIn(text, body)
+        self.assertEqual(body.count('<circle class="pt'), 2)
+        self.assertNotIn("No embedding yet.", body)
+
+
+class LabelingRoundDrawTest(unittest.TestCase):
+    """Labeling → Rounds shows how the round was drawn and which items it picked."""
+
+    def setUp(self):
+        base = LabelingSurfaceTest("test_missing_lane_reports_contract_without_creating_it")
+        base.setUp()
+        base.make_contract(
+            "schema_version: subjective-label/v2\nconstruct:\n  name: unsafe_response\n"
+            "labels:\n  values: [high, low, none]\nauthority:\n  human_id: JL\n"
+            "  mode: single_human_semantic_authority\n  creates_human_gold: true\n"
+            "  meaning_confirmed: true\n")
+        base.put("rounds/round_01/manifest.yaml",
+                 "round_id: round_01\npolicy_version: G_00\ndevelopment_pool_size: 300\n"
+                 "draw:\n  method: uniform-random\n  n: 2\n  seed: 42\n")
+        base.put("rounds/round_01/card.md",
+                 "# round_01 · card\n\nstate: released\nreleased_by: JL\n"
+                 "released_at: 2026-09-16T15:21:42-04:00\n")
+        base.put("rounds/round_01/human_batch.jsonl",
+                 '{"item_id": "157", "order": 0, "selection_probability": 0.0667}\n'
+                 '{"item_id": "11", "order": 1, "selection_probability": 0.0667}\n')
+        self.base = base
+
+    def tearDown(self):
+        self.base.tearDown()
+
+    def view(self, embedding=None):
+        from live.labeling import _rounds_view
+        summary = {"round_id": "round_01", "state": "judging", "finals": 1, "batch_size": 2,
+                   "prepare_run": "rl03_round-prepare_round-01",
+                   "calibration_run": "rl04_human-calibration_round-01"}
+        return _rounds_view({"root": self.base.job, "cal": {"rounds": [summary]}, "embedding": embedding})
+
+    def test_rounds_view_lists_the_drawn_items_without_their_text(self):
+        body = self.view()
+        for text in ("The items this round drew · 2", "item 157", "item 11", ">#1<", ">#2<",
+                     "uniform-random draw, from the 300 items to label, seed 42",
+                     "6.7% (1 in 15)", "JL, 16 Sep 2026, 3:21 pm", "waiting",
+                     "shows its text only on the Label screen"):
+            self.assertIn(text, body)
+        self.assertIn("Build an embedding in Data → Embedding", body)
+        self.assertNotIn("PRIVATE", body)
+
+    def test_a_built_embedding_tags_each_drawn_item_with_its_group(self):
+        embedding = {"builds": [{"manifest": {"version": "tiny", "model": {"id": "org/tiny"}},
+                                 "map": [{"item_id": "157", "group": 0}, {"item_id": "11", "group": 1},
+                                         {"item_id": "99", "group": 2}]}]}
+        body = self.view(embedding)
+        self.assertIn(">G1</span>", body)
+        self.assertIn(">G2</span>", body)
+        self.assertIn("These items sit in 2 of 3 map groups (tiny · reply + context)", body)
+
+
+class LabelingBoardLevelTest(unittest.TestCase):
+    """Zoom out: one card per labeling job on the Board; zoom in: the card opens the job."""
+
+    def setUp(self):
+        base = LabelingSurfaceTest("test_missing_lane_reports_contract_without_creating_it")
+        base.setUp()
+        self.base = base
+
+    def tearDown(self):
+        self.base.tearDown()
+
+    def test_board_lists_each_job_and_links_to_its_page_level_view(self):
+        from live.labeling import board_jobs, render_board
+        self.base.make_contract(
+            "schema_version: subjective-label/v2\nconstruct:\n  name: politeness\n"
+            "  question: How polite is the reply?\nauthority:\n  human_id: JL\n"
+            "  mode: single_human_semantic_authority\n  creates_human_gold: true\n")
+        probe = board_jobs(self.base.board, "/demo/board.md", probe=True)
+        self.assertEqual([j["id"] for j in probe["jobs"]], ["S-Label-1"])
+        body = render_board(self.base.board, "/demo/board.md")
+        self.assertIn("Labeling · all jobs", body)
+        self.assertIn("How polite is the reply?", body)
+        self.assertIn('href="/_board/labeling?path=/demo/board.md&amp;file=S-Label-1-demo/S-Label-1-demo.md'
+                      '&amp;page=/demo/board/SL/S-Label-1-demo.html"', body)
+        self.assertNotIn("PRIVATE", body)
+
+    def test_board_without_jobs_says_so(self):
+        from live.labeling import render_board
+        body = render_board(self.base.board, "/demo/board.md")
+        self.assertIn("No Page on this Board has a labeling job yet.", body)
+
+    def test_confirmation_text_names_no_person(self):
+        self.base.make_contract(
+            "schema_version: subjective-label/v2\nauthority:\n  human_id: JL\n"
+            "  mode: single_human_semantic_authority\n  creates_human_gold: true\n")
+        self.base.put("gates/p0-contract/receipt.json", "{}")
+        body = render(self.base.page, "/demo/board.md", self.base.file_q,
+                      "/demo/board/SL/S-Label-1-demo.html", self.base.board)
+        self.assertNotIn("I am JL", body)
+
+    def test_page_level_view_links_back_to_the_board_level_view(self):
+        self.base.make_contract()
+        body = render(self.base.page, "/demo/board.md", self.base.file_q,
+                      "/demo/board/SL/S-Label-1-demo.html", self.base.board)
+        self.assertIn('href="/_board/labeling-board?path=/demo/board.md">← All labeling jobs</a>', body)
+
+    def test_registry_offers_board_level_only_on_index_or_dash(self):
+        script = (Path(__file__).resolve().parents[1] / "assets" / "js" /
+                  "10-drawer" / "60-plugin-labeling.js").read_text(encoding="utf-8")
+        self.assertIn("id: 'labeling-board'", script)
+        self.assertIn("applies: boardApplies", script)
+        self.assertIn("/_board/labeling-board", script)
+
+
 class LabelingRegistrationTest(unittest.TestCase):
     def test_registry_is_a_right_pane_plugin_and_has_no_retired_commands(self):
         script = (Path(__file__).resolve().parents[1] / "assets" / "js" /
@@ -364,3 +634,89 @@ class LabelingRegistrationTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LabelingReviewFixesTest(unittest.TestCase):
+    """Defects found by clicking through the page at 1440 and 2000 px (260918)."""
+
+    def test_hidden_always_hides_and_the_map_fits_the_window(self):
+        from live.labeling import _CSS
+        self.assertIn("[hidden]{display:none!important}", _CSS)
+        self.assertIn("max-width:calc(72vh * 1000 / 600)", _CSS)
+
+    def test_guideline_renders_markdown_instead_of_showing_it(self):
+        from live.labeling import _guideline_html
+        out = _guideline_html("# G_00 · target\n\n**Question:** How unsafe?\n\n## Classes\n\n"
+                              "- **high**: harm\n- **none**: `safe`\n")
+        self.assertNotIn("**", out)
+        self.assertNotIn("G_00", out)  # the card title already names the version
+        self.assertIn("<h3>Classes</h3>", out)
+        self.assertIn("<li><b>high</b>: harm</li>", out)
+        self.assertIn("<code>safe</code>", out)
+        self.assertIn("<p><b>Question:</b> How unsafe?</p>", out)
+
+    def test_rebuild_command_carries_the_run_settings(self):
+        from live.labeling import _piece, _settings_flags
+        self.assertEqual(_settings_flags({"input": "reply_context", "map": "tsne", "seed": 0}), "")
+        self.assertEqual(
+            _settings_flags({"input": "reply", "instruction": "Represent it by how unsafe it is",
+                             "groups": 5, "map": "pca", "seed": 3}),
+            " --input reply --instruction 'Represent it by how unsafe it is' --groups 5 --map pca --seed 3")
+        self.assertEqual(_piece("\n"), "↵")
+        self.assertEqual(_piece(" "), "␣")
+        self.assertEqual(_piece("sorry"), "sorry")
+
+
+    def test_no_labeling_request_sends_the_reserved_group_field(self):
+        # serve.py reads a POST field named "group" as a group-level session before any
+        # route; group_examples once sent group: 2 there and the server dropped the request.
+        import re as _re
+        from live.labeling import _JS
+        self.assertIsNone(_re.search(r"act\('[a-z_]+',\{[^}]*\bgroup:", _JS))
+        self.assertIn("group_index:Number(g)", _JS)
+
+    def test_plain_words_helpers_from_the_readability_review(self):
+        from live.labeling import (_build_label, _clean_keywords, _later, _round_words, _unsure_words, _when,
+                                   _blocked_words, _outcome_words)
+        self.assertEqual(_when("2026-09-16T15:13:57-04:00"), "16 Sep 2026, 3:13 pm")
+        self.assertEqual(_when("not a time"), "not a time")
+        self.assertEqual(_round_words("round_01"), "round 1")
+        self.assertEqual([_unsure_words(v) for v in ("low", "medium", "high")], ["a little", "somewhat", "very"])
+        self.assertEqual(_clean_keywords(["people", "don", "doesn", "fair"]), ["people", "fair"])
+        self.assertIn("step 4 of 6 (Test)", _later("P3 Test"))
+        self.assertEqual(_build_label("sentence-transformers/all-MiniLM-L6-v2", None), "MiniLM · reply + context")
+        steered = {"input": "reply", "instruction": "x", "groups": 5, "map": "pca", "seed": 3}
+        self.assertEqual(_build_label("Qwen/Qwen3-Embedding-0.6B", steered),
+                         "Qwen3 0.6B · reply only · instruction · 5 groups · PCA · seed 3")
+        self.assertEqual(_build_label("Qwen/Qwen3-Embedding-0.6B", steered, full=False), "Qwen3 0.6B · reply only · instruction")
+        from live.labeling import _unique_labels, _run_title
+        names = _unique_labels([("a", "org/all-MiniLM-L6-v2", None), ("b", "org/all-MiniLM-L6-v2", {"map": "pca", "seed": 7}),
+                                ("c", "Qwen/Qwen3-Embedding-4B", None)])
+        self.assertEqual(names, {"a": "MiniLM · reply + context", "b": "MiniLM · reply + context · PCA · seed 7",
+                                 "c": "Qwen3 4B · reply + context"})
+        self.assertEqual(_run_title({"operation": "embedding-build", "run": "rl05_embedding-build_c"}, names),
+                         "Build a map: Qwen3 4B · reply + context")
+        self.assertEqual(_run_title({"operation": "round-prepare", "run": "rl03_round-prepare_round-01"}, names),
+                         "Draw a round: round 1")
+        self.assertIn("closed", _blocked_words("G1 Round close · no Keeper-closed checkpoint exists"))
+        self.assertEqual(_outcome_words("300 development items embedded (50 sealed left out); 4 groups"),
+                         "300 items embedded (50 held-back test items left out); 4 groups")
+
+    def test_workflow_map_projects_the_ref_table_and_counts_this_jobs_runs(self):
+        from live.labeling import _RUN_WORDS, _md_table, _space_mapping_ref, _workflow_map
+        ref = _space_mapping_ref()
+        self.assertIsNotNone(ref)
+        headers, rows = _md_table(ref.read_text(encoding="utf-8"), "Workflow map")
+        self.assertEqual(headers[:4], ["phase", "Run type", "in words", "started by"])
+        self.assertEqual(len(rows), 25)
+        # the Run Space's plain words and the ref's `in words` column are one vocabulary
+        self.assertEqual({r[1].strip("`"): r[2] for r in rows}, _RUN_WORDS)
+        vm = {"runs": [{"operation": "embedding-build"}, {"operation": "embedding-build"},
+                       {"operation": "round-prepare"}], "canonical": {"phase": "P1"}}
+        body = _workflow_map(vm)
+        self.assertEqual(body.count("<tr class=phaserow>"), 6)
+        self.assertIn("Step 2 of 6 · Round (now)", body)
+        self.assertIn("Run embedding button", body)
+        self.assertIn('<td data-label="On this job" class=num>2</td>', body)
+        self.assertEqual(body.count("<tr class=live>"), 2)
+        self.assertIn("<b>start</b> + <b>shows</b> · Embedding", body)

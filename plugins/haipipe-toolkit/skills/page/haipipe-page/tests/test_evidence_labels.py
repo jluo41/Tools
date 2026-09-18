@@ -124,8 +124,12 @@ def test_evidence_cards_render_type_specific_result_previews(tmp_path):
     assert 'class=evidence-preview-image' in card
     assert 'src="data:image/png;base64,' in card
     assert "Four panels connect the design inputs." in card
-    assert "class=evidence-preview-hero>1.25" in card
+    assert 'class="evidence-preview-table evidence-preview-value-table"' in card
+    assert "<th>Field</th><th>Value</th>" in card
+    assert "<th>Estimate</th><td>1.25</td>" in card
     assert "MME" in card and "148" in card
+    assert "class=evidence-preview-hero" not in card
+    assert "class=evidence-preview-facts" not in card
     assert "@Smith_2024" in card
     assert "The source supports the stated mechanism." in card
 

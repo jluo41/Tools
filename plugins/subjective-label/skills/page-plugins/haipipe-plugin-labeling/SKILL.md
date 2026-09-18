@@ -1,15 +1,16 @@
 ---
 name: haipipe-plugin-labeling
 description: >-
-  The 🏷 Labeling lane and full Page-level surface available beside any real Page,
-  including a standalone Page Folder: an optional page-local labeling/ holds the canonical subjective-label
-  job, the full Labeling Space offers receipt-first Workflow, Data, Guideline,
-  Human, Quality, and Runs workspaces; Studio Chat remains a sibling transport
-  surface. Use
-  when designing, opening, diagnosing, or implementing the labeling
-  plugin/tab/folder, or /haipipe-plugin-labeling.
+  The 🏷 Labeling lane and Page-level surface beside any real Page, including a
+  standalone Page Folder. An optional page-local labeling/ folder holds the
+  canonical subjective-label job. Two levels: a Board-level view lists every
+  labeling job on the Board (zoom out), and a click opens that Page's surface
+  with five Spaces (Data, Labeling, Quality, Run, Delivery) and one write door,
+  POST /_board/labeling/act, for exactly ten engine-checked actions (zoom in).
+  Studio Chat opens separately. Use when designing, opening, diagnosing, or
+  implementing the labeling plugin, tab, or folder, or /haipipe-plugin-labeling.
 metadata:
-  version: "0.11.0"
+  version: "0.17.0"
   last_updated: "2026-09-16"
 ---
 
@@ -28,18 +29,24 @@ one page folder
     ├── test/ · evaluation/ · production/ · audit/
     ├── gates/                      P0 contract + G0 receipts
     ├── runs/ · results/            Level-4 `rlNN` operation envelopes
+    ├── cache/                      embeddings/ · reveal/ · derived, never authority
     └── REPORT.md · .state.json  rendered/cache only; receipts win
 
-🏷 Labeling Space · one full Page-level plugin surface
-├── Workflow                 P0-P5 · G0-G6 · next action
-├── Data                     corpus · embeddings · batches · D*
-├── Guideline                meaning · regions · policy versions · handoff
-├── Human                    authority · rounds · bounded human work · gold
-├── Quality                  sealed Test · executors · Scan · Audit
-└── Runs                     rlNN Tickets · safe Results · read-only
+🏷 Board level · GET /_board/labeling-board?path=<board.md>
+all jobs   one card per Page that owns labeling/ · jobs that wait for you first
+           click a card → the Page level below · "← All labeling jobs" comes back
 
-Studio remains a sibling Page plugin and opens on demand; it is not rendered
-inside Labeling as a permanent bottom panel.
+🏷 Page level · five Spaces, each with its views
+Data       Contract · Schema · Embedding
+Labeling   Label · Rounds · Guideline
+Quality    Test · Evaluation · Audit
+Run        Runs · Phases · Workflow map
+Delivery   Handoff · Final labels
+
+header     Next: <one line> · Open Studio Chat (separate tab)
+write      POST /_board/labeling/act · confirm_meaning · release_round · open_item · first · final
+           · build_embedding (catalog models only, runs in the background) · embedding_status (read)
+           · embedding_item (read: one item's group and nearest items, never text)
 ```
 
 ## 🧩 The four-part plugin contract
@@ -47,72 +54,93 @@ inside Labeling as a permanent bottom panel.
 | part | contract |
 |---|---|
 | STORAGE | `<page>/labeling/`, exactly the job layout in `subjective-label/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
-| SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; it fills the plugin pane as one Labeling Space with six switchable Workspaces, while Studio Chat remains a sibling transport surface |
-| WRITER | `subjective-label-workflow` dispatches the Building/Scanning ORDER machines; their Keeper, human event writer, runner, reconciler, and auditor own named artifacts |
-| BOUNDARY | Board discovery never enters `labeling/`; the surface never renders protected item text or sealed ids and never treats an observed file as a validated gate |
+| SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; it fills the plugin pane with five Spaces and their views. Workflow phases P0-P5 are phase state shown in `Run → Phases` and in the one-line `Next:` header; they are not a Space. Studio Chat opens in its own tab |
+| WRITER | `subjective-label-workflow` dispatches the Building/Scanning ORDER machines; their Keeper, human event writer, runner, reconciler, and auditor own named artifacts. In the browser the only writer is `POST /_board/labeling/act`, which calls `engine/job.py` and `engine/calibration.py` |
+| BOUNDARY | Board discovery never enters `labeling/`; overview views never render item text, sealed ids, or private judgments in the page HTML (`Labeling → Rounds` lists the drawn item ids with their map group, never an item's text); an item waiting in a round batch shows its text only on `Labeling → Label`, one at a time; `Data → Embedding` fetches the text of other development items only on request (a group's typical items, or a picked dot), and each fetch is appended to `labeling/exposure/group_examples.jsonl`; an observed file is never treated as a validated gate |
+
+## 🔭 Two levels: Board and Page
+
+| level | where it opens | what it shows | writes |
+|---|---|---|---|
+| Board | the Board index, and the `S-Label-Dash` control Page | one card per Page whose `labeling/` has a `config.yaml`: target, question, data, step badge, progress, next step; Pages with no job listed below | none |
+| Page | any real job Page | the five Spaces and the Label screen | only `POST /_board/labeling/act` |
+
+A card links to `/_board/labeling?path=…&file=…&page=…`, so zooming in opens
+the Page level in the same pane. The Page header's `← All labeling jobs` link
+goes back to `/_board/labeling-board?path=<board.md>`. Cards sort by what waits
+for the human: labeling in progress, then meaning confirmation, then a round to
+start, then judged, repair, and read-only (HOLD) jobs. The Board level reads
+each job through the same view model as the Page level (`_view_model`,
+`_next_step`), so the two can never disagree, and it never stores a label.
+Labels stay per Page because each target has its own human gate.
+
+The registry offers the Board-level entry (`id: labeling-board`) only on the
+Board index or on `S-Label-Dash`, and the Page-level entry (`id: labeling`)
+only on job Pages, so one 🏷 entry is offered at a time. A Board whose job
+Pages are not named `S-Label-*` is recognised after `POST
+/_board/labeling-board` counts its `labeling/` lanes.
 
 The specialized `page-type: labeling` Job Page owns one corpus snapshot × one
 target construct × one identified human semantic authority and uses the
 labeling Page grammar. That Page type is not a
 capability switch: a paper section, algorithm Page, or other Folder may open
 the same plugin before a job exists and route P0 creation through Chat. The
-control Page `S-Label-Dash` owns no job and therefore gets no Labeling lane or
-tab.
+control Page `S-Label-Dash` owns no job, so it gets no Page-level lane; it
+opens the Board-level view instead.
 
 ## 🖼 Surface law
 
-The surface follows Outline's category pattern: one Plugin owns one coherent
-Labeling Space containing stable, noun-named Workspaces. Phases are state,
-never navigation. Switching a Workspace hides but does not destroy the others,
-and the last selected Workspace is remembered per Board source plus Page file.
-The six Workspaces answer:
+The surface uses one location word: **Space**. In this plugin, "Space" and
+"Workspace" are the same concept. There are five Spaces, in this order:
+`Data`, `Labeling`, `Quality`, `Run`, `Delivery`. `Guideline` is a view inside
+`Labeling`, not a Space of its own. The older Human tab and the Workflow map
+are gone. Workflow P0-P5 is phase state: it shows in `Run → Phases` and in the
+`Next:` header line.
 
-1. **Workflow** — which P0-P5 authority artifact is the frontier, which G0-G6
-   assertion fails first, and what is the one next action?
-2. **Data** — which corpus, embedding, calibration/production batches, and
-   audited D* artifacts exist?
-3. **Guideline** — what frozen or draft meaning, regions, policy components,
-   versions, and handoff exist?
-4. **Human** — who is the authority, which rounds and human-work operations
-   exist, and which human-gold artifacts are owned by their Keepers?
-5. **Quality** — what sealed-Test, executor, production-Scan, and final-Audit
-   evidence exists? It names the active destination reservation custodian and
-   labels any imported source custody as provenance only.
-6. **Runs** — which `rlNN_<operation>_<target>` Tickets and safe Results exist,
-   with their availability and next action, without creating or executing one.
+The roster table (views, first question, canonical sources), the rule for
+which Space opens first, and the item-text rule live in
+`../../../ref/ref-space-mapping.md`. In short: the page opens on the Space that
+holds the next step (P0 opens `Data`, P1 opens `Labeling`); a `?space=&view=`
+URL wins, then the browser's saved choice.
 
-These are projections over the one canonical `labeling/` tree, not six new
-`*-space/` storage folders. They render safe metadata and artifact state only.
+These Spaces are projections over the one canonical `labeling/` tree, not
+separate storage folders. Data may show source-preserving imported label
+counts, but no overview view renders protected item text, sealed identifiers,
+or private judgments.
 
 `GET /_board/labeling` re-reads disk on every open. For a v2 lane with a
 `gates/p0-contract/receipt.json` or `gates/g0/receipt.json`, it delegates P0/G0
-truth to the canonical subjective-label status evaluator, including checksum
-and receipt validation. A historical lane with no canonical receipt may say
-“observed”, but it must not silently promote that observation to a pass.
-`REPORT.md`, `.state.json`, and the Page's prose are useful views, never the
-source of the frontier.
+truth to the canonical status evaluator, `engine/job.py status()`. That call
+never raises on a bad file: it reports each defect in `integrity_errors`, and it
+reports `hold` and `hold_reason` from `authority_hold(config)`, the one HOLD
+rule every host uses. If the surface still cannot derive status, it fails
+closed at P0 with an integrity error. A historical lane with no canonical
+receipt may say "observed", but it must not promote that observation to a
+pass. `REPORT.md`, `.state.json`, and the Page's prose are useful views, never
+the source of the frontier.
 
-On a Board host, Labeling fills its own plugin pane. A header action may open the
-exact generated-Page `?pane=chat` document that Studio owns, including its
-composer, sessions, quick actions, settings, GUI/TUI handoff, and optional Draw
-controls; Labeling never embeds that document as a permanent lower panel and
-never implements a second Chat. The Board-source `board.md` is only the source
-resolver and must never receive `?pane=chat`; the current generated
-`<page>.html` URL is carried separately and validated server-side. Chat may
-prepare or dispatch work, but a semantic decision becomes real only when the
-owning workflow writer lands its canonical event immediately under `labeling/`.
+On a Board host, Labeling fills its own plugin pane. The header link
+`Open Studio Chat` opens the exact generated-Page `?pane=chat` document that
+Studio owns in a separate browser tab, including its composer, sessions, quick
+actions, settings, GUI/TUI handoff, and optional Draw controls. Labeling never
+embeds that document and never implements a second Chat. The Board-source
+`board.md` is only the source resolver and must never receive `?pane=chat`;
+the current generated `<page>.html` URL is carried separately and validated
+server-side. Chat may prepare or dispatch work, but a semantic decision becomes
+real only when the owning workflow writer lands its canonical event under
+`labeling/`.
 
-On a standalone host, the domain-owned presenter does not imitate Studio or
-invent an HTTP chat backend. It names the current Codex task as transport and
-offers a copyable next-action prompt derived from canonical status. The same
-rule holds: conversation is transport; only the workflow writer may land a
-semantic event. The Page host keeps `labeling/` private from Source editing and
-static downloads.
+On a standalone host, `engine/page_plugin.py` is still the older read-only
+presenter. It keeps its own older tab names, has no write door, and has not
+moved to the five Spaces yet. It names the current Codex task as transport and
+offers a copyable next-action prompt derived from canonical status. The Page
+host keeps `labeling/` private from Source editing and static downloads.
 
-The Labeling Space has no persistent upper/lower boundary or splitter. Studio's
-own surface owns its layout. Labeling only remembers its selected Workspace,
-keyed by Board source plus Page file; this prevents same-named Pages in
-different Boards from sharing a misleading view.
+The Labeling surface has no persistent upper/lower boundary or splitter.
+Studio's own surface owns its layout. Labeling remembers the selected Space and
+view in the browser, keyed by Board source plus Page file, so same-named Pages
+in different Boards do not share a view. An unknown saved Space falls back to
+the next-step Space; an unknown view falls back to that Space's first view.
 
 At `HOLD`, this is a hard boundary: the server re-derives HOLD from canonical
 artifacts and forces that Page's Chat into read-only scoped mode, independently
@@ -120,7 +148,8 @@ of the browser payload. The permission selector is disabled, a held writable
 client cannot be reused, and write/run tools are disallowed. The same server
 guard rejects TUI start/reuse/input/local-resume commands and model-generated
 Draw writes; keeping Studio's controls does not create alternate execution
-doors. Chat may inspect and discuss; it cannot cross the gate.
+doors. The Label screen shows a read-only notice, and the engine refuses every
+write-door action. Chat may inspect and discuss; it cannot cross the gate.
 
 ## ✍️ Write and authority law
 
@@ -139,23 +168,66 @@ doors. Chat may inspect and discuss; it cannot cross the gate.
 - A backward route appends invalidation and creates new lineage; no closed
   checkpoint, handoff, scorecard, production run, or audit is rewritten.
 
-The browser surface itself is read-only. It offers no “approve,” “freeze,”
-“reveal,” “final,” or arbitrary run button. Those actions ship only when their
-workflow writer and authority check exist end-to-end.
+The browser is not purely read-only anymore. It has exactly one write door,
+`POST /_board/labeling/act`, with exactly ten actions. Each action exists
+because its writer and its authority check exist end to end:
+
+| action | where it is pressed | engine call |
+|---|---|---|
+| `confirm_meaning` | `Data → Contract` · `Confirm meaning` | `job.confirm_meaning(..., channel="board labeling screen")` |
+| `release_round` | `Labeling → Label` · `Start round 1` | `calibration.release_round` |
+| `open_item` | `Labeling → Label`, when that view is on screen and after each save | `calibration.open_item` |
+| `first` | `Labeling → Label` · `Lock first answer` | `calibration.record_first` |
+| `final` | `Labeling → Label` · `Keep and next` / `Save changed final` / `Save as unresolved` | `calibration.record_final` |
+| `build_embedding` | `Data → Embedding` · `Run embedding` with model, text, instruction, groups, map, seed | `embedding_build.start_background_build` (catalog ids and checked settings only; one run per job at a time; records the human as `started_by`; a build never starts without this click or a named person) |
+| `embedding_status` | `Data → Embedding`, polled while a build runs (read only) | `embedding_build.build_status` |
+| `embedding_item` | `Data → Embedding` · click a dot on the map (read only) | `embedding_build.neighbors` (development items only, no text) |
+| `group_examples` | `Data → Embedding` · `Show typical items` / `Show 3 more` on a group | `embedding_build.group_examples` (items nearest the group centre, with text; items waiting in a round left out; appends to `exposure/group_examples.jsonl`) |
+| `embedding_item_text` | `Data → Embedding` · `Show its text` on a picked dot | `embedding_build.item_text` (refuses an item waiting in a round; appends to `exposure/group_examples.jsonl`) |
+
+What each call writes, and the event order, is owned by
+`../../label-building-workflow/SKILL.md` (§P0 Contract and §P1 Round).
+
+The door refuses before any engine call when:
+
+1. the `Origin` header names another host (HTTP 403, same-origin only);
+2. the Page has no labeling lane (404), or the `page` field does not name the
+   matching generated Page URL (400);
+3. the request does not carry `attest: true` (400);
+4. the lane has no canonical job, meaning no `gates/p0-contract/receipt.json`
+   (409).
+
+The request also carries the human's id and a session id. The engine then
+re-checks on every call: the id is the job's one identified human, the job is
+not on HOLD, G0 has passed (for the four P1 actions), the event order holds,
+and sealed custody holds (a sealed item is never drawn, shown, or revealed). A
+refusal returns HTTP 409 with the engine's reason; a malformed value returns
+HTTP 400.
+
+There is still no approve, freeze, reveal-all, final-for-all, or run button.
+A new action ships only when its writer and authority check exist end to end.
 
 ## ⚙️ Relationship to Runs
 
-This workbench is the operational surface for one Labeling job. Newly allocated
-Runs use the native `rlNN_<operation>_<target>` namespace (`rl` = Run of
-Labeling); legacy `rNN_labeling-*` envelopes remain readable without aliases.
-It may allocate
-and resume the 25 independently closable operation kinds declared in
-`ref-run.md`; P0-P5 and their Round/Test/Scan/Audit episodes group those Runs
-without adding umbrella rows. `⚙️ Runs` presents the same Tickets and safe
-Result envelopes under a `Labeling` filter, but it is read-only and creates no
-parallel status, Result, or control. A Run row may deep-link here at the same
-Run address. There is never a second run, approve, freeze, reveal, or final
-button in the Runs surface.
+One Labeling job allocates Level-4 Runs in every phase, P0 to P5. A Run is
+named `rlNN_<operation>_<target>` (`rl` = Run of Labeling). Its Ticket is
+`labeling/runs/<run>.yaml` and its Result folder is `labeling/results/<run>/`
+(`runtime.yaml`, then `result.yaml` when complete). Legacy `rNN_labeling-*`
+envelopes remain readable without aliases. The 25 operation kinds and the
+count law live in `../../../ref/ref-run.md`. Round, Test, Scan, and Audit are
+episodes that group Runs; they add no row.
+
+The browser allocates a Run only as a side effect of an engine call.
+`release_round` writes a complete `rlNN_round-prepare_round-01`. The first
+`open_item` writes a running `rlNN_human-calibration_round-01`, and the last
+`final` completes it. `engine/job.py create` (not the browser) writes
+`rl01_corpus-contract_job-v1`.
+
+`Run → Runs` lists one row per Ticket with its runtime status and outcome.
+`haipipe-plugin-runs` presents the same envelopes read-only under a `Labeling`
+filter and creates no parallel status, Result, or control. A Run row may
+deep-link here at the same Run address. There is never an approve, freeze,
+reveal, final, or run button in Run Space.
 
 ## 🔁 Operate or implement
 
@@ -163,7 +235,7 @@ When opening or diagnosing a job or one of its Runs:
 
 ```text
 resolve   the folded Page and its direct labeling/ lane
-inspect   canonical receipts only; never protected item text
+inspect   canonical receipts only; batch item text only on Labeling → Label
 derive    P0-P5 and the first failed G0-G6 assertion
 route     through /subjective-label to exactly one bounded action
 stop      at human gate, HOLD, invalidation, step limit, or completion
@@ -174,30 +246,46 @@ When implementing or changing the plugin, keep these pieces aligned:
 ```text
 roster       haipipe-plugin/ref/roster.md · labeling/ row first
 registry     assets/js/10-drawer/60-plugin-labeling.js · one tab registration
-surface      Board `live/labeling.py` or domain `engine/page_plugin.py` · read-only
-routes       Board `cli/serve.py` or standalone Page server · `/_board/labeling`
+surface      Board `live/labeling.py` · five Spaces, Label screen, `LabelingMixin`
+             standalone `engine/page_plugin.py` · older read-only presenter
+routes       Board `cli/serve.py` · GET `/_board/labeling` (page)
+             POST `/_board/labeling` (tab URL) · POST `/_board/labeling/act` (write door)
+engine       `engine/job.py` · status, confirm_meaning
+             `engine/embedding_build.py` · CATALOG, build (P0 embedding-build Run), builds,
+             build_status, start_background_build
+             `engine/calibration.py` · release_round, open_item, record_first,
+             record_final, verify_events
 skill        this file · storage/surface/writer/boundary law
-tests        receipt parsing, HOLD across GUI/TUI/Draw, protected-text non-rendering,
-             availability on ordinary and labeling Pages, dashboard exclusion,
-             exact Studio Chat Page URL
+tests        Board `tests/test_labeling.py` · LabelingSurfaceTest,
+             LabelingWriteDoorTest, LabelingRegistrationTest
+             `engine/test_calibration.py` · fence, confirm, round 1, chain, reveal
+             `engine/test_embedding_build.py` · sealed left out, no-op rebuild, failed Run
+             Board LabelingEmbeddingViewTest · recipe, example, map, groups
 ```
 
 Historical `labeling/field-tests/<id>/run/` may be read with a visible
-“migration owed” warning; new jobs and every authoritative write go directly
-under `<page>/labeling/`.
+"migration owed" warning; new jobs and every authoritative write go directly
+under `<page>/labeling/`. The write door refuses such a lane because it has no
+canonical `gates/p0-contract/receipt.json` at the lane root.
 
 An older Board may still render a flat `<group>/<stem>.md` copy while the task
-side lives at `pages/<stem>/labeling/`. The presenter and server-side Chat guard
-must resolve that exact folded sidecar, show the bridge explicitly, and enforce
-its receipts. This compatibility bridge is read-only: it does not make the flat
-copy a second job root or authorize new writes outside the folded lane.
+side lives at `pages/<stem>/labeling/`. The presenter, the server-side Chat
+guard, and the write door must resolve that exact folded sidecar, show the
+bridge explicitly, and enforce its receipts. The flat copy never becomes a
+second job root, and no write lands outside the folded lane.
 
 ## 📂 Files
 
 - `../../../ref/ref-assets.md` · full job tree and canonical/rendered split
 - `../../../ref/ref-run.md` · 25 Labeling Run operations, resolver, count law,
   gates, and safe presentation boundary
+- `../../../ref/ref-space-mapping.md` · the five-Space roster, the opening
+  Space, the item-text rule, and the write door in one page
+- `../../../ref/ref-config.md` · meaning text, round 1, and reveal settings the
+  surface reads
 - `../../../ref/ref-label-handoff.md` · the only Building → Scanning crossing
+- `../../label-building-workflow/SKILL.md` · P0 fence/create/confirm and P1
+  CARD, PREPARE, JUDGE order, including the events file
 - `../../subjective-label-workflow/SKILL.md` · P0-P5, G0-G6, receipt chain
 - `../../page-types/haipipe-page-for-labeling/SKILL.md` · Job Page contract
 - the Board-engine paths in the implementation list above

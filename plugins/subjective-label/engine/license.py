@@ -1,14 +1,15 @@
-"""Autonomy-license assessment (S6, deterministic core).
+"""External-validity diagnostic (S6, deterministic core).
 
-The engine earns the right to run autonomously on constructs with NO human labels
-by first reaching the HUMAN CEILING on a battery of public per-rater datasets
+Compares the engine with the HUMAN CEILING on public per-rater datasets
 (junjie P02: DICES / POPQuorn / GoEmotions / LeWiDi) on THEIR native constructs.
-This is where human ground truth lives — once, externally, amortized (F1/F2/F3).
+The result is an external-validity diagnostic only. It grants no permission to run
+without human gold on any target construct, transfers to no adjacent construct, and
+replaces neither the named human's calibration gold nor the sealed final test.
 
 THIS file is the deterministic scorer: given the engine's predictions on a public
 dataset + that dataset's per-rater human labels (projected to the construct's
 label set), compute the human ceiling (Krippendorff α among raters) and the
-agent-vs-consensus agreement, and issue PASS / BELOW.
+agent-vs-consensus agreement, and issue AT_HUMAN_CEILING / BELOW_CEILING.
 
 Downloading the datasets + running the engine + projecting labels is orchestration
 (label-evaluate); it is network/compute-heavy and run when a license is established.
@@ -60,7 +61,7 @@ def assess(agent, raters, labels, ltype="categorical", eps=0.0):
     if ceiling is None or agent_kappa is None:
         verdict = "INSUFFICIENT_DATA"
     elif agent_kappa >= ceiling - eps:
-        verdict = "PASS"
+        verdict = "AT_HUMAN_CEILING"
     else:
         verdict = "BELOW_CEILING"
     return {"n_items": len(items), "type": ltype,
@@ -68,7 +69,11 @@ def assess(agent, raters, labels, ltype="categorical", eps=0.0):
             "agent_vs_consensus_kappa": agent_kappa,
             "gap": (round(agent_kappa - ceiling, 4) if (ceiling is not None and agent_kappa is not None) else None),
             "verdict": verdict,
-            "note": "PASS = engine reaches human agreement on this construct → licenses autonomy on adjacent constructs"}
+            "diagnostic": "external-validity",
+            "note": ("external-validity diagnostic only: AT_HUMAN_CEILING = engine agreement with "
+                     "public rater consensus reaches inter-rater agreement on THIS dataset's native "
+                     "construct; it is not evidence for any target construct and replaces no human "
+                     "gold or sealed test")}
 
 
 def main():
@@ -108,11 +113,11 @@ def _selftest():
         agent_bad[f"i{i}"] = rng.choice(L)                                    # random
     good = assess(agent_good, raters, L)
     bad = assess(agent_bad, raters, L)
-    assert good["verdict"] == "PASS", good
+    assert good["verdict"] == "AT_HUMAN_CEILING", good
     assert bad["verdict"] == "BELOW_CEILING", bad
     assert good["agent_vs_consensus_kappa"] > bad["agent_vs_consensus_kappa"]
     print(f"selftest OK: ceiling={good['human_ceiling_krippendorff']} · "
-          f"good agent κ={good['agent_vs_consensus_kappa']} PASS · "
+          f"good agent κ={good['agent_vs_consensus_kappa']} AT_HUMAN_CEILING · "
           f"random agent κ={bad['agent_vs_consensus_kappa']} BELOW")
 
 

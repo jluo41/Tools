@@ -848,6 +848,17 @@ class Docx:
         ppr = f'<w:pPr><w:pStyle w:val="{style}"/></w:pPr>' if style else ""
         self.body.append(f"<w:p>{ppr}{self.run(text, bold=bold)}</w:p>")
 
+    def code(self, text):
+        """Emit one kept Markdown fence as a readable monospaced block.
+
+        Board Pages use fenced blocks for compact prompt/specification payloads.
+        The LaTeX writer keeps them as verbatim blocks; Word needs the same
+        content in a paragraph style rather than silently dropping it.
+        """
+        self.body.append(
+            '<w:p><w:pPr><w:pStyle w:val="Code"/></w:pPr>'
+            + self.run(text) + "</w:p>")
+
     def heading(self, level, text):
         self.para(text, style=f"Heading{level}")
 
@@ -1047,6 +1058,11 @@ STYLES = f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="20"/></w:rPr></w:style>
 <w:style w:type="paragraph" w:styleId="CommentText"><w:name w:val="annotation text"/>
 <w:rPr><w:sz w:val="20"/></w:rPr></w:style>
+<w:style w:type="paragraph" w:styleId="Code"><w:name w:val="Code"/>
+<w:basedOn w:val="Normal"/>
+<w:pPr><w:spacing w:before="120" w:after="120" w:line="240" w:lineRule="auto"/>
+<w:shd w:val="clear" w:color="auto" w:fill="F4F4F5"/></w:pPr>
+<w:rPr><w:rFonts w:ascii="Courier New" w:hAnsi="Courier New"/><w:sz w:val="20"/></w:rPr></w:style>
 <w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/></w:style>
 </w:styles>'''
 
@@ -1282,6 +1298,10 @@ def main():
                          "count. Use it for the COMBINED document; leave it off "
                          "for per-section review files, where a sentence per "
                          "paragraph is the point.")
+    ap.add_argument("--keep-fences", action="store_true",
+                    help="render ``` blocks as monospaced Word blocks instead "
+                         "of dropping them; the Board exporter uses this for "
+                         "prompt/specification Pages")
     ap.add_argument("--no-displays", action="store_true",
                     help="skip embedding tables and figures")
     ap.add_argument("--display-root",
@@ -1346,8 +1366,8 @@ def main():
 
     placed, npara, skipped, held = set(), 0, {}, {}
     for page in pages:
-        blocks, nfenced = parse_page(page)
-        if nfenced:
+        blocks, nfenced = parse_page(page, keep_fences=a.keep_fences)
+        if nfenced and not a.keep_fences:
             report.append(("fenced-sketch-skipped",
                            f"{os.path.basename(page)}: {nfenced} ``` block(s) in "
                            f"## Content are ASCII sketches, not prose, and were "
@@ -1379,6 +1399,10 @@ def main():
                 continue
             if b[0] == "pbreak":
                 flush()
+                continue
+            if b[0] == "fence":
+                flush()
+                d.code("\n".join(b[1]))
                 continue
             if b[0] == "h":
                 flush()

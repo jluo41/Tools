@@ -25,6 +25,57 @@ data-space=delivery· lens=delivery · /_board/delivery?workspace=1
 `Bullet`, `div`, and `/_board/evidence` or `/_board/runs` are implementation
 identifiers. They are not required to appear in the reader-facing UI. The old
 `lens=workspace&seg=...` URLs remain aliases during migration.
+## Workflow versus Space
+
+A Space is a read-only UI projection; a workflow is the lifecycle that
+changes the Page records behind it. They are related, but they are not
+additional folders:
+
+| Workflow phase | Primary Space | Authoritative files |
+|---|---|---|
+| SHAPE + SURVEY | Draft Space | `outline/*-outline-v*.md`, `*-logic.mmd`, `*-evidence-items.md` |
+| LAND | Run Space + Evidence Space | `runs/re-*.md`, `results/re-*/result.yaml`, supporting references |
+| EMBED | Draft Space + Evidence Space | Page Markdown plus resolved label bindings |
+| CHECK | Delivery Space | delivery receipts, manifests, and final artifact hashes |
+
+The plugin documents define the protocol. Each Page stores only its current
+plan, process records, Run tickets, Results, and receipts. The browser never
+writes a second Space-specific copy.
+
+## Workflow × Space Specification
+
+The umbrella word for an explanatory “说明书” is **documentation**. For this
+artifact, the precise reader-facing name is **Workflow × Space Specification**:
+it is a
+normative reference that says where each Run Spec appears and which file or
+folder is authoritative. A lighter, non-normative version may be called a
+**Workflow × Space Guide**. Internally, the normalized schema may still use
+`workspace_id`; in the plugin vocabulary, `Workspace` and `Space` mean the
+same member surface. The table below is the canonical specification;
+the Run Space `Workflow map` is its read-only UI projection.
+
+Rows are planned Run Specs. Columns are Spaces, not physical directories.
+Every cell is intentionally compact: `mode · schema · path`. A `—` cell means
+that the Space does not own or project that Run Spec. The path is a
+parameterized Page-relative path, with `<stem>` equal to the current Page
+Markdown stem.
+
+| Run Spec | Draft | Evidence | Run (`runtime`) | Delivery |
+|---|---|---|---|---|
+| `context` | `read · PageContext · outline/<stem>-context.md` | `—` | `read-only · ContextReceipt · workflow/receipts/context-*.yaml` | `—` |
+| `structure` | `action · OutlinePlan + Mermaid · outline/<stem>-outline-v*.md + <stem>-logic.mmd` | `review · EvidenceItemPlan · outline/<stem>-evidence-items.md` | `run · StructureRun · runs/rp-struct-* + results/rp-struct-*/` | `—` |
+| `scratch` | `input · ScratchNote · outline/<stem>-outline-v*.md#Scratch` | `—` | `run · ScratchResult · runs/rp-scratch-* + results/rp-scratch-*/` | `—` |
+| `section-writing` | `review · WritingResult · outline/<stem>-outline-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · SectionWritingRun · runs/rp-sec-* + results/rp-sec-*/` | `read · PageDraft · <stem>.md` |
+| `paragraph-writing` | `review · WritingResult · outline/<stem>-outline-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · ParagraphWritingRun · runs/rp-para-* + results/rp-para-*/` | `read · PageDraft · <stem>.md` |
+| `evidence-item` | `review · EvidenceBinding · outline/<stem>-evidence-items.md` | `action · EvidenceResult · results/re-{value,display,cite}-*/result.yaml` | `run · EvidenceRun · runs/re-* + results/re-*/` | `review · ArtifactDependency · delivery/**/build-manifest.json` |
+| `delivery` | `read · PageSource · <stem>.md` | `read · EvidenceResult · results/re-*/result.yaml` | `run · DeliveryRun · runs/rd*.md + results/rd*/` | `write · DeliveryArtifact · delivery/{web,latex,word,render}/` |
+| `check` | `review · OutlineCheck · outline/<stem>-outline-v*.md + <stem>.md` | `review · EvidenceCheck · results/re-*/result.yaml` | `read-only · CheckReceipt · workflow/receipts/` | `review · DeliveryCheck · delivery/**/build-manifest.json` |
+
+This table does not allocate Runs and does not move ownership. The Run Spec
+still owns target, actor, Gates, Routes, Result/receipt, and cardinality; the
+cell only binds that contract to a Space projection. Concrete Run
+instances remain in the Run Space's Page Writing, Evidence, and Supporting
+Runs tabs.
 
 ## 2. The Page Folder is the backend
 

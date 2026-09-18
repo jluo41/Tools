@@ -264,6 +264,13 @@ reader-side disclosure preserves Item, RE, Result path, target, and provenance.
 An unresolved label remains visible during draft review and is a release gate
 only when the selected final export requires that evidence.
 
+Metadata shorthand is allowed for machine-authored Result manifests:
+`V_xxx`, `C_xxx`, and `D_xxx` normalize to the same authored
+`$V_xxx$`, `\cite{C_xxx}`, and display-command forms used in Page
+Markdown. The shorthand does not create a second identity or storage lane.
+Use `display_kind: table|figure|algorithm` when a `D_` label needs a
+specific display command.
+
 VALUE, CITE, and DISPLAY are Result types, not three sibling payload
 directories. The Evidence Item contract is declared by the Outline plan and
 its Result manifest; its Page-owned execution lineage is the `RE` ticket under

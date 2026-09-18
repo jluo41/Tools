@@ -558,10 +558,14 @@ document.getElementById('rebuild').onclick = function () {
                 # 里面非常扎眼…找一个框给框起来"). Box every verbatim in a
                 # breakable gray-backed frame at \footnotesize so it reads as
                 # apparatus beside the text instead of merging into it.
-                "\\usepackage{fancyvrb,etoolbox,xcolor}",
+                # fvextra extends fancyvrb with safe line breaking.  Long
+                # XML/prompt lines otherwise run past the page edge even
+                # though the surrounding tcolorbox is breakable.
+                "\\usepackage{fvextra,etoolbox,xcolor}",
                 "\\usepackage{tcolorbox}\\tcbuselibrary{breakable}",
                 "\\RecustomVerbatimEnvironment{verbatim}{Verbatim}"
-                "{fontsize=\\footnotesize,baselinestretch=0.92}",
+                "{fontsize=\\footnotesize,baselinestretch=0.92,"
+                "breaklines=true,breakanywhere=true}",
                 "\\BeforeBeginEnvironment{verbatim}{\\begin{tcolorbox}"
                 "[breakable,colback=black!4,colframe=black!25,"
                 "boxrule=0.4pt,arc=2pt,left=4pt,right=4pt,top=1pt,bottom=1pt]}",
@@ -783,6 +787,7 @@ document.getElementById('rebuild').onclick = function () {
         # block's sentences into one flowing paragraph instead.
         cmd = [sys.executable, str(_SCRIPTS / "md2docx.py"), str(src_for_docx),
                "-o", str(docx), "--join-paragraphs",
+               "--keep-fences",
                "--document-title", self._page_title(page_src)]
         if units:
             # the unit index for the page address, and the Display comment

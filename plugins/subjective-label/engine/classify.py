@@ -1,8 +1,11 @@
 """Small-classifier utilities for the subjective-label plugin.
 
 Invoked by the `classifier` agent via Bash. Manages a small supervised model
-trained on gallery + confirmed panel labels; exposes predict and uncertainty
+trained ONLY on human-confirmed gold (the gallery plus rows explicitly marked
+`provenance_tier: human_confirmed`); panel-unanimous, model-majority, and
+unknown-provenance rows are never training labels. Exposes predict and uncertainty
 operations for Tier 1 of the 3-tier cascade and active-learning hard mining.
+On a v2 job root, train/predict hold until G0 passes (engine/gates.py).
 
 CLI subcommands
     train        train a model on gallery + extra labels
@@ -20,7 +23,7 @@ Config source: {project_dir}/config.yaml → classifier section
     train:
       cv_folds: 5
       val_split: 0.2
-      include_panel_labels: true   # use confirmed panel items in addition to gallery
+      # include_panel_labels is IGNORED: model consensus is never training gold
 """
 
 from __future__ import annotations
@@ -31,6 +34,13 @@ import json
 import pickle
 import sys
 from pathlib import Path
+
+_ENGINE_DIR = str(Path(__file__).resolve().parent)
+if _ENGINE_DIR not in sys.path:
+    sys.path.insert(0, _ENGINE_DIR)
+from gates import GateHold, guard_job_root  # noqa: E402
+
+HUMAN_CONFIRMED = {"human_confirmed", "human-confirmed"}
 
 
 # ── shared helpers ──────────────────────────────────────────────────────────
@@ -161,24 +171,36 @@ class _SetFitBackend:
 
 # ── commands ────────────────────────────────────────────────────────────────
 
-def _gather_training_data(project_dir: Path, gallery_path: Path, extras: list[Path], include_panel_labels: bool) -> list[dict]:
-    """Return [{id, text, label}] from gallery + optional confirmed panel labels."""
+def _human_confirmed(row: dict, default: bool) -> bool:
+    marks = [row[k] for k in ("provenance_tier", "provenance") if row.get(k) is not None]
+    return all(str(m) in HUMAN_CONFIRMED for m in marks) if marks else default
+
+
+def _gather_training_data(project_dir: Path, gallery_path: Path, extras: list[Path],
+                          include_panel_labels: bool = False) -> list[dict]:
+    """Return [{id, text, label}] from human-confirmed gold only.
+
+    Gallery rows count as human gold unless they carry a non-human provenance mark;
+    extra rows count only when explicitly marked human_confirmed. Panel consensus is
+    never accepted, whatever `include_panel_labels` says."""
+    if include_panel_labels:
+        print("WARNING · classifier.train.include_panel_labels is ignored: "
+              "panel/model consensus is never training gold", file=sys.stderr)
     items = []
     gallery = json.loads(gallery_path.read_text(encoding="utf-8"))
     for e in gallery:
-        items.append({"id": e["id"], "text": e["text"], "label": e["label"]})
+        if _human_confirmed(e, default=True):
+            items.append({"id": e["id"], "text": e["text"], "label": e["label"]})
 
-    if include_panel_labels:
-        for extra_path in extras:
-            if not extra_path.exists():
+    for extra_path in extras:
+        if not extra_path.exists():
+            continue
+        for line in extra_path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
                 continue
-            for line in extra_path.read_text(encoding="utf-8").splitlines():
-                if not line.strip():
-                    continue
-                r = json.loads(line)
-                # Only include panel-unanimous / category-D items (safe labels)
-                if r.get("provenance") in ("panel-unanimous",) and r.get("category") in (None, "D"):
-                    items.append({"id": r["id"], "text": r["text"], "label": r["label"]})
+            r = json.loads(line)
+            if _human_confirmed(r, default=False):
+                items.append({"id": r["id"], "text": r["text"], "label": r["label"]})
 
     # Dedupe on id (gallery wins)
     seen = set()
@@ -192,11 +214,12 @@ def _gather_training_data(project_dir: Path, gallery_path: Path, extras: list[Pa
 
 
 def cmd_train(project_dir: Path, gallery: Path, extras: list[Path], output_dir: Path, backend: str) -> None:
+    guard_job_root(project_dir, "G0")
     import numpy as np  # noqa: PLC0415
     from sklearn.model_selection import cross_val_score  # noqa: PLC0415
 
     cfg = _read_config(project_dir)
-    include_panel = (cfg.get("train", {}) or {}).get("include_panel_labels", True)
+    include_panel = bool((cfg.get("train", {}) or {}).get("include_panel_labels", False))
 
     train = _gather_training_data(project_dir, gallery, extras, include_panel)
     if len(train) < 4:
@@ -258,6 +281,7 @@ def _load_model(model_dir: Path):
 
 
 def cmd_predict(project_dir: Path, model_dir: Path, input_jsonl: Path, output_jsonl: Path) -> None:
+    guard_job_root(project_dir, "G0")
     import numpy as np  # noqa: PLC0415
 
     backend, m = _load_model(model_dir)
@@ -351,7 +375,8 @@ def main() -> None:
     pt = sub.add_parser("train")
     pt.add_argument("--backend", default="logreg", choices=["logreg", "setfit"])
     pt.add_argument("--gallery", type=Path, required=True)
-    pt.add_argument("--extra", type=Path, nargs="*", default=[], help="optional panel_labels.jsonl files")
+    pt.add_argument("--extra", type=Path, nargs="*", default=[],
+                    help="optional jsonl of rows marked provenance_tier: human_confirmed (others ignored)")
     pt.add_argument("--output", type=Path, required=True, help="output dir (e.g. cache/classifier/iter_N/)")
 
     pp = sub.add_parser("predict")
@@ -374,14 +399,17 @@ def main() -> None:
     ph.add_argument("--top-k", type=int, default=50)
 
     args = p.parse_args()
-    if args.cmd == "train":
-        cmd_train(args.project_dir, args.gallery, args.extra, args.output, args.backend)
-    elif args.cmd == "predict":
-        cmd_predict(args.project_dir, args.model, args.input, args.output)
-    elif args.cmd == "uncertainty":
-        cmd_uncertainty(args.project_dir, args.model, args.input, args.output, args.top_k, args.metric)
-    elif args.cmd == "hard_mining":
-        cmd_hard_mining(args.project_dir, args.model, args.input, args.exclude, args.output, args.top_k)
+    try:
+        if args.cmd == "train":
+            cmd_train(args.project_dir, args.gallery, args.extra, args.output, args.backend)
+        elif args.cmd == "predict":
+            cmd_predict(args.project_dir, args.model, args.input, args.output)
+        elif args.cmd == "uncertainty":
+            cmd_uncertainty(args.project_dir, args.model, args.input, args.output, args.top_k, args.metric)
+        elif args.cmd == "hard_mining":
+            cmd_hard_mining(args.project_dir, args.model, args.input, args.exclude, args.output, args.top_k)
+    except GateHold as hold:
+        raise SystemExit(str(hold)) from None
 
 
 if __name__ == "__main__":

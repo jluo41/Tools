@@ -173,3 +173,5 @@ Where to read next
 * `skills/page/page-plugins/haipipe-plugin-outline/` — Bullet/Evidence
   Workspaces and the evidence-item table.
 * `skills/page/page-plugins/haipipe-plugin-runs/` — the read-only Runs view.
+* `skills/paper/haipipe-plugin-paper/` — the Paper Board's Setup, Ideation,
+  Story, and Run-Type work console.
