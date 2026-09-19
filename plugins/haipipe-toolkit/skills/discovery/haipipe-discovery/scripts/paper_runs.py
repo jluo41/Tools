@@ -108,6 +108,11 @@ DISCOVERY_PAGE_ROLES = (
     "Evidence map",
     "Limits and next move",
 )
+# A Page that files one source per Run may opt into one Content division per
+# Run: `layout: one-division-per-run` in its frontmatter. Its divisions are
+# Concept, then one `rNN · <gist>` per Run in Run order, then Limits.
+RUN_DIVISION_LAYOUT = "one-division-per-run"
+LAYOUT_RE = re.compile(r"(?m)^layout:\s*(\S+)\s*$")
 RETIRED_PAGE_SECTIONS = {
     "Outline",
     "Diagram",
@@ -362,7 +367,58 @@ def _topic_identity(topic: Path) -> tuple[str | None, str | None, list[str]]:
     return ".".join(parts), "".join(parts), errors
 
 
-def _page_errors(page: Path, question: str = "") -> list[str]:
+def _run_division_errors(
+    page: Path,
+    body: str,
+    division_pairs: list[tuple[str, str]],
+    aim_pairs: list[tuple[str, str]],
+    run_ids: list[str] | None,
+) -> list[str]:
+    errors: list[str] = []
+    numbers = [int(number) for number, _ in division_pairs]
+    names = [name.strip() for _, name in division_pairs]
+    if numbers != list(range(1, len(numbers) + 1)) or len(numbers) < 2:
+        errors.append(f"page-run-division-set-invalid: {page}: {numbers}")
+    aim_numbers = [int(number) for number, _ in aim_pairs]
+    if aim_numbers != numbers:
+        errors.append(
+            f"page-run-aim-set-invalid: {page}: A{aim_numbers} != {numbers}"
+        )
+    if not names or not re.match(r"Concept · \S", names[0]):
+        errors.append(
+            f"page-run-division-role-invalid: {page}: 1 expected 'Concept · <concept>'"
+        )
+    if len(names) < 2 or not re.match(r"Limits · \S", names[-1]):
+        errors.append(
+            f"page-run-division-role-invalid: {page}: {len(names)} expected "
+            "'Limits · <what is still open>'"
+        )
+    middle = names[1:-1]
+    found = [re.match(r"(r[0-9]{2}) · \S", name) for name in middle]
+    for index, match in enumerate(found, start=2):
+        if not match:
+            errors.append(
+                f"page-run-division-role-invalid: {page}: {index} expected "
+                "'rNN · <gist>'"
+            )
+    if run_ids is not None:
+        division_runs = [match.group(1) for match in found if match]
+        if division_runs != sorted(run_ids):
+            errors.append(
+                f"page-run-division-runs-mismatch: {page}: "
+                f"divisions {division_runs} != runs {sorted(run_ids)}"
+            )
+        first = re.search(r"(?ms)^### 1 · .+?(?=^### [0-9]+ · |\Z)", body)
+        table = first.group(0) if first else ""
+        for run_id in sorted(run_ids):
+            if not re.search(rf"(?m)^\|\s*[0-9]+\s*\|\s*{run_id}\s*\|", table):
+                errors.append(f"page-run-table-row-missing: {page}: {run_id}")
+    return errors
+
+
+def _page_errors(
+    page: Path, question: str = "", run_ids: list[str] | None = None
+) -> list[str]:
     text = page.read_text(encoding="utf-8")
     errors: list[str] = []
     if not re.search(r"(?m)^folder-kind:\s*discovery\s*$", text):
@@ -396,16 +452,35 @@ def _page_errors(page: Path, question: str = "") -> list[str]:
         number: re.sub(r"^[^A-Za-z0-9]+", "", name).strip()
         for number, name in aim_pairs
     }
-    if len(division_pairs) != 4 or set(divisions) != {"1", "2", "3", "4"}:
-        errors.append(f"page-discovery-division-set-invalid: {page}")
-    if len(aim_pairs) != 4 or set(aim_groups) != {"1", "2", "3", "4"}:
-        errors.append(f"page-discovery-aim-set-invalid: {page}")
-    for index, role in enumerate(DISCOVERY_PAGE_ROLES, start=1):
-        name = divisions.get(str(index), "")
-        if not name.startswith(f"{role} · ") or not name[len(role) + 3 :].strip():
-            errors.append(
-                f"page-discovery-role-invalid: {page}: {index} expected {role!r}"
+    layout_match = LAYOUT_RE.search(text)
+    layout = layout_match.group(1) if layout_match else None
+    if layout == RUN_DIVISION_LAYOUT:
+        content_match = re.search(r"(?ms)^## Content\s*\n(.*?)(?=^## Aims\s*$)", text)
+        errors.extend(
+            _run_division_errors(
+                page,
+                content_match.group(1) if content_match else "",
+                division_pairs,
+                aim_pairs,
+                run_ids,
             )
+        )
+    elif layout is not None:
+        errors.append(
+            f"page-layout-invalid: {page}: {layout!r}; "
+            f"expected {RUN_DIVISION_LAYOUT!r} or no layout field"
+        )
+    else:
+        if len(division_pairs) != 4 or set(divisions) != {"1", "2", "3", "4"}:
+            errors.append(f"page-discovery-division-set-invalid: {page}")
+        if len(aim_pairs) != 4 or set(aim_groups) != {"1", "2", "3", "4"}:
+            errors.append(f"page-discovery-aim-set-invalid: {page}")
+        for index, role in enumerate(DISCOVERY_PAGE_ROLES, start=1):
+            name = divisions.get(str(index), "")
+            if not name.startswith(f"{role} · ") or not name[len(role) + 3 :].strip():
+                errors.append(
+                    f"page-discovery-role-invalid: {page}: {index} expected {role!r}"
+                )
     for number, aim_name in aim_groups.items():
         division_name = divisions.get(number)
         if division_name is None:
@@ -508,8 +583,15 @@ def _manifest_errors(topic: Path) -> list[str]:
         errors.append(f"page-missing: {topic / page}")
     else:
         page_text = (topic / page).read_text(encoding="utf-8")
+        run_ids = sorted(
+            stem[:3] for stem in _pair_maps(topic)[0] if RUN_RE.fullmatch(stem)
+        )
         errors.extend(
-            _page_errors(topic / page, question=_yaml_block(text, "question") or "")
+            _page_errors(
+                topic / page,
+                question=_yaml_block(text, "question") or "",
+                run_ids=run_ids,
+            )
         )
         page_state = re.search(r"(?m)^state:\s*(.+?)\s*$", page_text)
         if task_status in TERMINAL_TASK_STATUSES and (

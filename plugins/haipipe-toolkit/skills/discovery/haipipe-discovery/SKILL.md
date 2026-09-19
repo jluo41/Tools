@@ -13,8 +13,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.13.0"
-  last_updated: "2026-09-13"
+  version: "0.14.0"
+  last_updated: "2026-09-19"
   # version history: ./CHANGELOG.md
 ---
 
@@ -168,6 +168,9 @@ names are Block, Job, Task, and Run.
 
 Result is not a fifth hierarchy level. A Content division may use many Results,
 and one Result may support many divisions.
+A Page that files one source per Run may opt into
+`layout: one-division-per-run` instead (Concept, one `rNN` division per Run,
+Limits); see `ref/page-types.md`.
 
 The Page-facing Run lane is separate from the Discovery Run inventory. D1
 allocates only native Discovery `rNN` Runs for canonical paper/source Subjects.

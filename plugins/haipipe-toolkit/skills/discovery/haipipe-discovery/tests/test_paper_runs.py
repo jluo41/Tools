@@ -135,6 +135,82 @@ The evidence boundary remains open.
     )
 
 
+RUN_DIVISION_PAGE = """---
+folder-kind: discovery
+layout: one-division-per-run
+state: 🟡
+owner: CC
+---
+
+# Demo topic
+
+## Opening
+What does each source say?
+This page files 2 sources. Each source is one Content division below.
+
+## Content
+
+### 1 · Concept · demo idea
+**Concept**: the idea in plain words first, then one row per source.
+```text
+Page   → demo
+```
+
+| # | Run | Source | State |
+|---|---|---|---|
+| 1 | r01 | first source | drafted |
+| 2 | r02 | second source | drafted |
+
+### 2 · r01 · first source gist
+**r01**: what the first source says.
+```text
+Result → results/r01_example2026_demo/
+```
+
+### 3 · r02 · second source gist
+**r02**: what the second source says.
+```text
+Result → results/r02_example2026_other/
+```
+
+### 4 · Limits · what is still open
+**Limits**: what this page does not support yet.
+```text
+Next move → check each source
+```
+
+## Aims
+
+### A1 · Concept · demo idea
+- 🔨 A1.1 · The idea is explained.
+  **Done when:** the explanation answers the Opening.
+
+### A2 · r01 · first source gist
+- 🔨 A2.1 · r01 is checked.
+  **Done when:** its claims are checked.
+
+### A3 · r02 · second source gist
+- 🔨 A3.1 · r02 is checked.
+  **Done when:** its claims are checked.
+
+### A4 · Limits · what is still open
+- 🔨 A4.1 · Open claims stay marked.
+  **Done when:** every source reads checked.
+"""
+
+
+def make_run_division_topic(root: Path) -> Path:
+    topic = make_topic_path(root)
+    make_pair(topic, "r01_example2026_demo")
+    make_pair(topic, "r02_example2026_other", key="Other2026", doi="10.1000/other")
+    (topic / f"{topic.name}.md").write_text(RUN_DIVISION_PAGE, encoding="utf-8")
+    return topic
+
+
+def page_errors_only(errors: list[str]) -> list[str]:
+    return [error for error in errors if error.startswith("page-")]
+
+
 def make_pair(
     topic: Path,
     stem: str,
@@ -560,6 +636,73 @@ class PaperRunContractTest(unittest.TestCase):
             errors, _, _ = paper_runs.check_topic(topic)
             self.assertTrue(
                 any(error.startswith("page-aim-name-drift:") for error in errors)
+            )
+
+    def test_run_division_layout_accepts_one_division_per_run(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_run_division_topic(Path(temp))
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertFalse(page_errors_only(errors), errors)
+
+    def test_run_division_layout_requires_a_division_for_every_run(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_run_division_topic(Path(temp))
+            make_pair(topic, "r03_example2026_third", key="Third2026", doi="10.1000/third")
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(error.startswith("page-run-division-runs-mismatch:") for error in errors),
+                errors,
+            )
+            self.assertTrue(
+                any(error.startswith("page-run-table-row-missing:") for error in errors),
+                errors,
+            )
+
+    def test_run_division_layout_keeps_concept_first_and_limits_last(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_run_division_topic(Path(temp))
+            page = topic / f"{topic.name}.md"
+            page.write_text(
+                page.read_text(encoding="utf-8")
+                .replace("### 4 · Limits · what is still open", "### 4 · Open · what is still open")
+                .replace("### A4 · Limits · what is still open", "### A4 · Open · what is still open"),
+                encoding="utf-8",
+            )
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(error.startswith("page-run-division-role-invalid:") for error in errors),
+                errors,
+            )
+
+    def test_run_division_layout_aims_follow_divisions(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_run_division_topic(Path(temp))
+            page = topic / f"{topic.name}.md"
+            text = page.read_text(encoding="utf-8")
+            page.write_text(
+                text[: text.index("### A3 · ")] + text[text.index("### A4 · ") :],
+                encoding="utf-8",
+            )
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(error.startswith("page-run-aim-set-invalid:") for error in errors),
+                errors,
+            )
+
+    def test_unknown_page_layout_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            topic = make_run_division_topic(Path(temp))
+            page = topic / f"{topic.name}.md"
+            page.write_text(
+                page.read_text(encoding="utf-8").replace(
+                    "layout: one-division-per-run", "layout: free-form"
+                ),
+                encoding="utf-8",
+            )
+            errors, _, _ = paper_runs.check_topic(topic)
+            self.assertTrue(
+                any(error.startswith("page-layout-invalid:") for error in errors),
+                errors,
             )
 
     def test_done_page_cannot_keep_an_active_aim(self) -> None:

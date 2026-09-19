@@ -8,11 +8,14 @@ description: >-
   source yet. Called by /haipipe-task when task-type=page; its Results are
   selected by SURVEY and consumed by LAND. Trigger: page
   collection job, collect the values, serve the page's cards, values.yaml,
-  propose the missing task, task-type page, /haipipe-task-for-page.
+  propose the missing task, task-type page, /haipipe-task-for-page. Also
+  owns the one-subagent-per-Page reorganization job that moves a Discovery
+  Page into one Content division per Run. Trigger: one division per run,
+  reorganize the pages by run, each run one division.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.4"
-  last_updated: "2026-09-04"
+  version: "0.4.0"
+  last_updated: "2026-09-19"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -167,6 +170,96 @@ Execute  bash runs/r<NN>_<batch>.sh with `TASK_NAME="collect_values"`,
 Report   report.yaml mirrors plan · RUN_AUDIT.md Gate 2 · Result receipts
          for answered questions · proposals.md rows for the owed
 ```
+
+## 🧩 Reorganize a Discovery Page into one division per Run
+
+A second job this skill owns, and the one exception to "this job never edits
+the Page": a Discovery Page that files one source per Run (a video knowledge
+page, for example) is moved from the four-division layout into
+`layout: one-division-per-run`, so each Run is one Content division. The
+layout rule itself lives in `haipipe-discovery/ref/page-types.md`, where the
+checker reads it; this section is the job that applies it, one Page at a time.
+
+1. **One subagent per Page folder**: the main session fans out, cheap model.
+2. **The subagent moves text, never rewrites it**: notes stay word for word.
+3. **One reviewer per Page**: `haipipe-discovery-reviewer-agent`, one fix round.
+4. **Three checks close a Page**: checker clean, nothing lost, reviewer pass.
+
+**Who runs it.** The main session lists the Page folders (every Page whose
+Runs are all one-source Runs), then runs one Workflow `pipeline()` over them:
+a writer agent per Page (`model: 'sonnet'`), then a reviewer agent
+(`agentType: 'haipipe-discovery-reviewer-agent'`, `model: 'sonnet'`), then one
+fixer round for a Page the reviewer fails. Each writer edits only its own
+`<task>/<task>.md`, creates no file, and runs no git. The main session commits
+once at the end.
+
+**The target layout**, top to bottom:
+
+```text
+frontmatter     add  layout: one-division-per-run   (every other field kept)
+Opening         question line unchanged; second line becomes
+                "This page files N videos. Each video is one Content division
+                below, and the table in division 1 shows which ones are checked."
+### 1 · Concept · <concept in a few words>
+  **Concept**: the idea in plain words first, then one row per video.
+  text block    the old division 1 Scope block, unchanged (Page, Block, Job,
+                Sources, Nearby, Related, Uses)
+  What it is · How it works · Why it matters      unchanged
+  **The videos on this page**:
+  | # | Run | Video | Length | Interview | State |    one row per Run;
+                Video = the same English gist as that Run's heading;
+                Interview = ★ or ·; State = drafted (checked once verified)
+  How the videos fit · Interview questions        unchanged
+### k · rNN · <English gist, a few plain words>     one per Run, Run order
+  **rNN**: one sentence on what this video says
+  text block    Video → url · Title → original title · Creator → name ·
+                length · interview-marked: yes|no · Result → results/<stem>/ ·
+                State → drafted from the transcript; claims not checked
+                against the video
+  [Bilibili video](...) · [Result Card](...)
+  alias line, Key points, Interview hook, Check before reuse      unchanged
+### N · Limits · what is still open
+  **Limits**: what this page does not support yet.
+  text block    Transcripts → <catalog path> (outside git); automatic speech
+                recognition, terms and numbers may be misheard
+                Source list → <b00 source list> · Citations → ... · Next move → ...
+  the old Limits prose, unchanged
+## Aims          one Aim per division, same names, same order
+  A1            the old A2 item(s) with their Done when and Now lines
+  A2..A(N-1)    🔨 rNN's key claims are checked against the original video.
+                Done when: every item under its Check before reuse is
+                confirmed or corrected against the video.
+  AN            🔨 Notes drawn from transcripts are not treated as checked
+                claims. Done when: every Run's State in the table reads checked.
+                Any old A4 Now line moves here.
+```
+
+**What is dropped, and why nothing is lost.** The old division 1 stock
+sentence ("This page answers the one question in the Opening...") is the same
+on every Page. The old Payload text block (`rNN ★ <title>`) becomes the table
+plus each Run's Title line. The old Evidence map text block becomes each Run's
+Result line plus the Limits block's Transcripts and Source list lines. The old
+A1 and A3 Aims described the four-division layout and go with it. The only
+edits to kept text are cross-references: "section 3" or "division 2" is
+renumbered to where the text now sits.
+
+**The checks.** `paper_runs.py check <task folder>` prints no `ERROR`. The loss
+check compares the Page with `git show HEAD:<page>`: every line of the old
+Page must appear unchanged in the new one (section numbers aside), except the
+layout lines the move replaces (division, Aim, and `####` card headings; the
+Payload and Evidence map text blocks; the old `**Scope**`/`**Payload**`/
+`**Evidence map**` labels; the card link line; the Opening's second line; the
+stock division-1 sentence; Aim item and Done-when lines; the old Transcripts
+line). The counts of notes blocks, video links, Result Card links, and
+`**Now:**` lines must match. The reviewer
+reads the old and new Page side by side and fails it for lost or reworded
+notes, a gist that misstates its notes, non-English headings, or em-dashes.
+Rebuild the Board afterwards (`haipipe-board/cli/build.py <block>`) and open
+one Page to see the divisions render.
+
+**New Pages start in this layout.** A generator that writes new video Pages
+(Proj10's `import_bilibili_archive.mjs`) writes this layout directly, with a
+placeholder gist (`rNN · gist to be written`) that the page writer replaces.
 
 ## 📂 Files
 

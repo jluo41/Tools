@@ -80,10 +80,41 @@ technical-report grammar belongs only to `folder-kind: task`.
 4. **Limits and next move**: state what the Page does not establish and whether
    the honest route is gather, revise, extend, hold, or close.
 
-The Page synthesizes Results many-to-many. It may quote or compress them, but
+In the four-division layout the Page synthesizes Results many-to-many. It may quote or compress them, but
 must not become a pasted `notes.md` ledger or imply one paper per paragraph.
 `Aims` judge whether the article keeps its reader promise; Paper Run status is
 derived separately from runtime receipts.
+
+## One division per Run (`layout: one-division-per-run`)
+
+A Page that files one source per Run (a video, a talk, a post) may instead
+give every Run its own Content division, so a reader opens one source at a
+time and sees which ones are checked. The Page opts in with
+`layout: one-division-per-run` in its frontmatter; without that line the four
+promises above apply. The checker (`paper_runs.py`) reads the field and then
+requires:
+
+1. **Division 1 is `Concept · <concept>`**: the scope text block, the plain
+   explanation (What it is, How it works, Why it matters), a table with one
+   row per Run (`| # | Run | Video | Length | Interview | State |`), how the
+   sources fit, and the interview questions.
+2. **Divisions 2 to N-1 are `rNN · <English gist>`**: one per Run, in Run
+   order, each opening with `**rNN**: <one sentence>` and a text block
+   (Video, Title, Creator, Result, State), then the links and that Run's notes.
+3. **The last division is `Limits · <what is still open>`**: the transcript
+   and source-list pointers, what is unchecked, and the next move.
+4. **Aims mirror divisions one to one**, with identical names: A1 for the
+   concept, one Aim per Run ("rNN's key claims are checked against the
+   original video"), and a last Aim that closes when every table row reads
+   `checked`.
+
+Every division still opens with its `**Label**:` line and a text block. In
+this layout a Result belongs to exactly one division, which is the point: the
+many-to-many rule below is for Pages that argue across sources, not for Pages
+that file them. A Run moved to another Page takes its division with it. The
+per-page reorganization job that moves an existing four-division Page into
+this layout is written in `haipipe-task-for-page` (section "Reorganize a
+Discovery Page into one division per Run").
 
 When human Page interaction is needed, the shared Page workflow starts with
 `rp00_mermaid-structure`, which closes the Mermaid argument map and the global

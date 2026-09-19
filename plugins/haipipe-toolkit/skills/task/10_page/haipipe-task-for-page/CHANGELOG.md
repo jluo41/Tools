@@ -1,5 +1,14 @@
 # CHANGELOG · haipipe-task-for-page
 
+## 0.4.0 · 2026-09-19
+
+Add the per-Page reorganization job: one subagent per Discovery Page folder
+moves a one-source-per-Run Page into `layout: one-division-per-run` (Concept,
+one `rNN` division per Run, Limits), then a reviewer per Page, a checker run,
+and a loss check against the committed Page. This is the one job in this
+skill that edits the Page. The layout rule lives in
+`haipipe-discovery/ref/page-types.md` (0.14.0), where the checker reads it.
+
 ## 0.3.4 · 2026-09-04
 
 Require page-service Tickets to preserve every upstream Result path/hash in

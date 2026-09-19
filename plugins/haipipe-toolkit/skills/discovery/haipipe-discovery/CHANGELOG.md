@@ -8,6 +8,16 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.14.0 · 2026-09-19
+
+- Add the opt-in `layout: one-division-per-run` Page layout for Pages that
+  file one source per Run: division 1 `Concept`, one `rNN · <gist>` division
+  per Run in Run order, a last `Limits` division, and Aims that mirror them.
+  Written in `ref/page-types.md`; `paper_runs.py` checks it
+  (`page-run-division-*`, `page-run-aim-set-invalid`,
+  `page-run-table-row-missing`, `page-layout-invalid`), with five tests.
+  Pages without the field keep the four-division contract.
+
 ## 0.13.0 · 2026-09-13
 
 - Align Discovery with the current Page contract: generated Outline plus the
