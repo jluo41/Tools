@@ -150,6 +150,10 @@ and the Run still fails.
   DEPLOY; a ticket run alone still deploys. Nothing changes between two tickets
   of one batch, so one deploy and twenty leave the same workspace, and one
   means every Run of the batch ran the same code.
+- **Resume is opt-in.** A `resume` mode skips a Run whose receipt already says
+  `status: ok` (and still fetches it), so a stopped batch picks up where it
+  stopped. It is never the default: a skipped Run keeps what an older version
+  of the code wrote.
 
 ## Deploy pitfalls
 

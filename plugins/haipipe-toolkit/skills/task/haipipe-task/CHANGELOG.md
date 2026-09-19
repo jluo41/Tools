@@ -10,6 +10,7 @@
   folder per Run fetched by its own ticket, the run record imported to the
   workspace, batches as flat lists that deploy once, the small-cell rule, the
   entry notebook's `RUN` binding, and three bundle deploy pitfalls.
+- Add opt-in `resume` for a batch: skip a Run whose receipt says `status: ok`.
 
 ## 1.2.1 — 2026-09-15
 
