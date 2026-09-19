@@ -10,8 +10,8 @@ description: >-
   report, run, audit, insight, /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.2.1"
-  last_updated: "2026-09-15"
+  version: "1.2.2"
+  last_updated: "2026-09-18"
   folder_owner: canonical
   folder_kind: task
   primary_face: task

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.2 — 2026-09-18
+
+- Rewrite `ref/databricks-execution.md` from what a live workspace proved
+  (REACH-SPACE, SAFER desktop, 260907 to 260918). It showed an `.sh` ticket,
+  an in-process inline run and run notebooks under `$OUTPUT_ROOT`; it now holds
+  the `.cmd` ticket for a desktop where only cmd.exe runs, the inline run
+  through the Command Execution API when no Job may use the cluster, one Result
+  folder per Run fetched by its own ticket, the run record imported to the
+  workspace, batches as flat lists that deploy once, the small-cell rule, the
+  entry notebook's `RUN` binding, and three bundle deploy pitfalls.
+
 ## 1.2.1 — 2026-09-15
 
 - Mark `/haipipe-task insight` as the behavior-identical compatibility alias
