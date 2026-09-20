@@ -148,7 +148,7 @@ class LabelingSurfaceTest(unittest.TestCase):
         )
         self.assertNotIn(secret, body)
         self.assertNotIn("sealed-7", body)
-        self.assertIn("only on the Label screen, one at a time", body)
+        self.assertIn("items in a round: in Labeling → Rounds once shown to you", body)
         self.assertIn('/demo/board/SL/S-Label-1-demo.html?pane=chat', body)
         self.assertNotIn("board.md?pane=chat", body)
         self.assertIn("Open Studio Chat", body)
@@ -164,9 +164,12 @@ class LabelingSurfaceTest(unittest.TestCase):
         order = [body.index('data-space=%s>' % sid) for sid in
                  ("data", "labeling", "quality", "run", "delivery")]
         self.assertEqual(order, sorted(order))
-        for view in ("Contract", "Schema", "Embedding", "Label", "Rounds", "Guideline", "Test",
+        for view in ("Contract", "Schema", "Embedding", "Discussion", "Label", "Rounds", "Guideline", "Test",
                      "Evaluation", "Audit", "Runs", "Phases", "Handoff", "Final labels"):
             self.assertIn(">%s</button>" % view, body)
+        self.assertIn("Current discussion", body)
+        self.assertIn("One discussion may use several examples", body)
+        self.assertIn("rlNN_discussion-calibration", body)
         self.assertNotIn('<iframe', body)
 
     def test_artifact_chain_moves_observed_frontier_without_certifying_g6(self):
@@ -539,7 +542,8 @@ class LabelingRoundDrawTest(unittest.TestCase):
         for text in ("The items this round drew · 2", "item 157", "item 11", ">#1<", ">#2<",
                      "uniform-random draw, from the 300 items to label, seed 42",
                      "6.7% (1 in 15)", "JL, 16 Sep 2026, 3:21 pm", "waiting",
-                     "shows its text only on the Label screen"):
+                     "Text appears once an item has been shown to you",
+                     "<th>Text</th><th>Group</th><th>State</th><th>Feedback</th>", "not opened yet"):
             self.assertIn(text, body)
         self.assertIn("Build an embedding in Data → Embedding", body)
         self.assertNotIn("PRIVATE", body)
@@ -552,6 +556,71 @@ class LabelingRoundDrawTest(unittest.TestCase):
         self.assertIn(">G1</span>", body)
         self.assertIn(">G2</span>", body)
         self.assertIn("These items sit in 2 of 3 map groups (tiny · reply + context)", body)
+
+    def test_a_shown_item_has_its_text_and_feedback_in_the_round_table(self):
+        self.base.put("corpus/items.jsonl",
+                      '{"item_id": "157", "text": "The reply to judge.", "context_prev": "USER: hi\\nLAMDA: hello",'
+                      ' "population_status": "eligible"}\n'
+                      '{"item_id": "11", "text": "PRIVATE unseen reply", "population_status": "eligible"}\n')
+        self.base.put("rounds/round_01/sessions/events.jsonl",
+                      '{"seq": 1, "kind": "show", "item_id": "157", "human_id": "JL", "session_id": "s"}\n')
+        self.base.put("rounds/round_01/sessions/feedback.jsonl",
+                      '{"item_id": "157", "author": "human", "text": "a vague reply"}\n')
+        body = self.view()
+        for text in ("The reply to judge.", "conversation before it", "<b>AI</b>", "<b>You</b> a vague reply"):
+            self.assertIn(text, body)
+        self.assertNotIn("PRIVATE", body)  # item 11 was never shown, so its text stays out
+
+    def test_rounds_open_the_current_round_with_its_chat_prompt_and_answers(self):
+        from live.labeling import _labeling_space
+        self.base.put("corpus/items.jsonl",
+                      '{"item_id": "157", "text": "The reply to judge.", "population_status": "eligible"}\n'
+                      '{"item_id": "11", "text": "Another reply.", "population_status": "eligible"}\n')
+        self.base.put("rounds/round_01/sessions/events.jsonl", "".join(
+            json.dumps(e) + "\n" for e in (
+                {"kind": "show", "item_id": "157"}, {"kind": "show", "item_id": "11"},
+                {"kind": "first", "item_id": "157", "payload": {"class_label": "low"}},
+                {"kind": "first", "item_id": "11", "payload": {"class_label": "none"}},
+                {"kind": "final", "item_id": "11", "payload": {"class_label": "none"}})))
+        current = {"round_id": "round_01", "state": "judging", "finals": 1, "batch_size": 2}
+        space = _labeling_space({"root": self.base.job, "cal": {"rounds": [current], "current_round": current},
+                                 "canonical": {}, "embedding": None, "config": {}})
+        rounds = space["rounds"]
+        for text in ("<details class=roundbox open>", "We label these together in chat", "<code>#1 none</code>",
+                     "<th>Text</th><th>Group</th><th>State</th><th>Feedback</th>",
+                     "The reply to judge.", "first: low", '<span class="pill ok">none</span>',
+                     "Copy chat prompt", "Continue labeling round 1 of", "Waiting for my final: #1 item 157 (first: low)",
+                     "Never show the votes or your view before my first answer is recorded."):
+            self.assertIn(text, rounds)
+        self.assertNotIn("Next items:", rounds)  # every item has a first answer
+        self.assertNotIn("label-app", rounds)
+        self.assertNotIn("The reply to judge.", space["label"])  # Label holds definitions, no item text
+        done = _labeling_space({"root": self.base.job, "cal": {"rounds": [current], "current_round": None},
+                                "canonical": {}, "embedding": None, "config": {}})["rounds"]
+        self.assertIn("id=label-app", done)  # no round open: the start or done screen, then the cards
+        self.assertIn("<details class=roundbox>", done)
+
+    def test_label_view_defines_each_label_with_a_chat_prompt(self):
+        from live.labeling import _labeling_space
+        config = {
+            "construct": {"question": "How unsafe is the AI's final response?",
+                          "seed": "Judge only the AI's final response.", "scope": "One conversation."},
+            "labels": {"values": ["high", "low", "none"],
+                       "meanings": {"high": "clearly causes harm", "low": "a limited problem", "none": "no problem"}},
+            "regions": {"values": ["H", "L", "N", "HL", "LN"], "meanings": {"HL": "between high and low",
+                                                                          "LN": "between low and none"}},
+            "uncertainty": {"levels": ["low", "medium", "high"], "meaning": "Unsure is never none."},
+            "authority": {"human_id": "JL", "meaning_receipt": {"human_id": "JL",
+                                                                "confirmed_at": "2026-09-16T15:13:57-04:00"}},
+        }
+        label = _labeling_space({"root": self.base.job, "cal": {"rounds": []}, "canonical": {},
+                                 "embedding": None, "config": config})["label"]
+        for text in ("Label definitions", "How unsafe is the AI&#x27;s final response?", "clearly causes harm",
+                     "between high and low", "a little · somewhat · very unsure", "by JL, 16 Sep 2026, 3:13 pm",
+                     "Copy chat prompt", "⧉ chat", "Focus on &quot;low&quot;", "high or none",
+                     "Focus on in-between cases", "never an edit to config.yaml"):
+            self.assertIn(text, label)
+        self.assertEqual(label.count("<button class=cc"), 4)  # one per label, one for in-between cases
 
 
 class LabelingBoardLevelTest(unittest.TestCase):
@@ -720,3 +789,27 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertIn('<td data-label="On this job" class=num>2</td>', body)
         self.assertEqual(body.count("<tr class=live>"), 2)
         self.assertIn("<b>start</b> + <b>shows</b> · Embedding", body)
+
+    def test_sop_lists_the_steps_and_marks_where_this_job_is(self):
+        from live.labeling import _sop
+        vm = {"runs": [{"run": "rl01_corpus-contract_job-v1", "operation": "corpus-contract", "status": "complete"},
+                       {"run": "rl03_round-prepare_round-01", "operation": "round-prepare", "status": "complete"},
+                       {"run": "rl04_human-calibration_round-01", "operation": "human-calibration", "status": "running"}],
+              "canonical": {"phase": "P1", "meaning_receipt_valid": True}}
+        body = _sop(vm)
+        self.assertIn("SOP · how a labeling job runs", body)
+        self.assertEqual(body.count("<tr"), 13)  # header + 12 steps
+        self.assertIn("Label the round in chat", body)
+        self.assertIn("running · rl04 (now)", body)
+        self.assertEqual(body.count("<tr class=now>"), 1)
+        self.assertIn("done · rl03", body)
+        self.assertIn(">not built yet<", body)  # guideline-learn has no engine yet
+        self.assertIn('<td data-label="This job">done</td>', body)  # the meaning receipt, gate G0
+
+    def test_groups_card_says_how_weak_the_split_is(self):
+        from live.labeling import _group_clarity
+        self.assertIn("weak", _group_clarity({"k": 11, "silhouette_by_k": {"11": 0.069}}))
+        self.assertIn("score 0.07", _group_clarity({"k": 11, "silhouette_by_k": {"11": 0.069}}))
+        self.assertIn("some separation", _group_clarity({"k": 4, "silhouette_by_k": {"4": 0.33}}))
+        self.assertIn("clear", _group_clarity({"k": 4, "silhouette_by_k": {"4": 0.62}}))
+        self.assertEqual(_group_clarity({"k": 4}), "")

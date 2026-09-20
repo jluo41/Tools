@@ -396,7 +396,7 @@ class StandaloneWireTest(FeedbackFixture):
         self.assertIn("AI generated the Scratch Summary and the person closed the Run.",
                       (scratch_result / "v001.md").read_text(encoding="utf-8"))
         code, body = self.request("GET", "/_board/outline?path=&file=%s&lens=div" % self.page.name)
-        self.assertIn("Scratch ✓", body)
+        self.assertIn('class="scratch-status">Closed</span>', body)
 
 
 if __name__ == "__main__":

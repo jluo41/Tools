@@ -39,22 +39,31 @@ declared Page owner before applying its additional requirements.
 - [ ] Generated `delivery/` files are outputs, never a second editing authority.
       Create only the process/plugin lanes actually used by this Page.
 
-Configuration can pass while content remains a draft. Default Opening/Aims
-scaffolding provides structure, not substantive completion. Missing evidence of
-a check means **untested**, not pass.
+Configuration can pass while content remains a draft. Default Opening and
+backstage-target scaffolding provides structure, not substantive completion.
+Missing evidence of a check means **untested**, not pass.
 
-## 3. Four Page areas: what must the reader find?
+## 3. Two Page areas: what must the reader find?
 
-All four areas must be assessed explicitly. The reading order remains
-**Opening → generated Outline → Content → Aims**. This does not mean writing
-four Markdown headings into every source file.
+The reader-facing Page has only two areas:
+**Opening → Content**. Outline, Aims, Stage Contract, Files, Discussion, Log,
+and similar records are backstage Folder/Run records. They remain auditable
+and available through their owning Spaces, but they are not additional Page
+sections and should not interrupt the reading flow.
 
 | Area | What it must contain | Completion test |
 |---|---|---|
 | Opening | A Page-specific explanation of the subject, why it matters, and what this Page covers. | A new reader can identify the purpose and boundary without guessing from the title. Generic intake text, placeholders and internal addresses alone do not pass. Opening is never omitted. |
-| Outline | The actual structure/plan and its applicable support, projected from the authoritative `outline/` records or the resolved owner's supported generated projection. | Reading the Bullet heads alone reconstructs the argument in reader order. Each Bullet names one complete reader move and may map to one or more Draft sentences; punctuation never determines Bullet count. Discrepancies and unresolved planning decisions are named. Do not copy a table or add an authored `## Outline` merely to satisfy this checklist. |
-| Content | The actual work promised by Opening and Aims: authored material or the bound imported file. | The material is readable, its relevant assets/links work, and it fulfills the declared scope. A filename, blank heading, stock sample or successful build alone does not pass. Technical imports do not require scholarly rewriting. |
-| Aims | Explicit targets with stable IDs, a `Done when:` test, a factual `Now:`, and an evidence-supported tick. | A reader can see what is met, open, waiting or held and why. Division-level groups match Content; genuinely cross-division targets use the existing Page-level form. Default intake Aims do not certify all content goals. Aims is never omitted. |
+| Content | The actual work promised by Opening and applicable backstage requirements: authored material or the bound imported file. | The material is readable, its relevant assets/links work, and it fulfills the declared scope. A filename, blank heading, stock sample or successful build alone does not pass. Technical imports do not require scholarly rewriting. |
+
+The following backstage records are checked separately when the Page uses
+them; they do not expand the Page Face:
+
+| Backstage record | Owner | Completion test |
+|---|---|---|
+| Outline / Draft | Draft Space and `outline/` | The current plan, Bullets, Drafts, and Mermaid remain addressable and internally consistent. |
+| Aims / requirements | Run Space, CHECK, and `outline/` records | Targets and completion tests are available to the workflow even when no `## Aims` is rendered on the Page. |
+| Stage Contract | Page configuration and upstream records | Required inputs, venue, and handoff are resolvable without appearing in the reading surface. |
 
 The Outline check also requires one uninterrupted Page-global paragraph
 sequence: `P1, P2, …, PN`. `P` does not reset when `C` changes, so after
@@ -62,17 +71,17 @@ sequence: `P1, P2, …, PN`. `P` does not reset when `C` changes, so after
 
 ### Missing areas and legitimate exceptions
 
-- **Outline not initialized:** the base contract permits no visible Outline when
-  no plan exists. A technical import may therefore be configured successfully
-  while Outline is **deferred: no plan yet**. It is not an Outline pass and must
-  not be presented as a complete four-area authored Page. Do not fabricate a
-  plan, evidence or Shape approval merely to make intake pass.
+- **Outline not initialized:** the base contract permits no visible Outline on
+  the Page when no plan exists. A technical import may therefore be configured
+  successfully while the Draft Space is **deferred: no plan yet**. It is not an
+  Outline pass and must not be presented as a complete planning workflow. Do not
+  fabricate a plan, evidence or Shape approval merely to make intake pass.
 - **Content omission:** a Q decision Page may omit Content where its resolved
   contract permits this; report **N/A** with that reason. S Pages may not omit
   Content. An ordinary file import has actual bound Content, not this exception.
-- **Open Aims:** structurally valid Aims may still be unmet. Distinguish “Aims
-  correctly recorded” from “targets achieved.” If a target remains in the
-  requested completion scope, do not claim that scope complete. A held or
+- **Open targets:** backstage target records may still be unmet. Distinguish
+  “targets correctly recorded” from “targets achieved.” If a target remains in
+  the requested completion scope, do not claim that scope complete. A held or
   waiting tick does not waive a required target.
 - **Evidence and review:** apply the owning evidence/writing/phase requirements
   when the Page makes substantive claims or a research delivery is requested.
@@ -91,7 +100,7 @@ sequence: `P1, P2, …, PN`. `P` does not reset when `C` changes, so after
 | Formal content/research delivery | Follow the resolved owner and `user-check-packet.md`; report the current version, required checks and actual human acceptance separately. | This checklist cannot substitute for human approval or mark a draft accepted. |
 
 Board owns group order, navigation and group descriptions. Page owns its own
-Opening, Content, Aims and planning sources. Removing membership must not remove
+Opening, Content, and planning sources. Removing membership must not remove
 the Page's content. Board integration is **N/A: standalone requested** when no
 Board was requested; it is not a prerequisite for Page completion.
 

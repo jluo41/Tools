@@ -205,12 +205,12 @@ a second approval loop.
 ## ✅ Page configuration and completion checklist
 
 For CREATE, a Page configuration/completion audit, or a whole-Page completion
-claim, read `ref/page-checklist.md`. Assess Opening, Outline, Content and Aims
-explicitly, alongside the source configuration and requested delivery surface.
-Report configuration, content, review and hosting separately: a created Folder,
-successful build, or default wrapper is not a completed Page. Outline remains a
-generated projection, not an extra authored section. Apply only checks relevant
-to the requested operation; a narrow edit is not a whole-Page audit.
+claim, read `ref/page-checklist.md`. Assess the reader-facing Opening and
+Content explicitly, then assess any backstage Outline, target, contract, and
+Evidence records separately. Report configuration, content, review and hosting
+separately: a created Folder, successful build, or default wrapper is not a
+completed Page. Apply only checks relevant to the requested operation; a narrow
+edit is not a whole-Page audit.
 
 ## File → Page Folder → work
 
@@ -224,7 +224,7 @@ owns the URL. Choose the intake depth explicitly:
   they can immediately inspect or work on.
 - `setup` is the normal Markdown file-to-working-Page route. It preserves the
   imported source, reads its H1/H2/prose structure, creates a Page-specific
-  Opening and Aims, and writes an unapproved semantic Shape plus reader-move
+  Opening and backstage requirement/target records, and writes an unapproved semantic Shape plus reader-move
   embedded `Draft:` fields in the Outline Markdown, Context/Files records, and
   a completed setup Task Run. A
   non-Section Bullet may map to several sentences; punctuation does not decide
@@ -342,7 +342,7 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 ```text
 <page>/
 ├── page.toml     optional standalone registration: source + imported content
-├── <page>.md      Opening · Outline · Content · Aims           THIS contract
+├── <page>.md      Opening · Content                         THIS reader contract
 ├── outline/       HUMAN process: plan and durable process records
 │   ├── <stem>-context.md  generated context projection for all Page Run Specs
 │   ├── <stem>-logic.mmd    derived Mermaid Structure reviewed by rp-struct-NN
@@ -579,53 +579,37 @@ inside a person's session (the page chat, which knows the phases and reads the
 strip: `haipipe-plugin-studio/ref/chat.md` §🔁) or as that phase's agent; both leave the same
 trace (the artifact, one log record, the receipt).
 
-## 📑 Four sections on stage, and nothing else
+## 📑 Two sections on stage, and nothing else
 
-The authority is `haipipe-board/ref/board-form.md` §4: the on-stage order is
-`Opening → Outline → Content → Aims`, the optional folds (`Law` · `Lesson` ·
-`Glossary`) follow, and everything else a page used to carry lives in
-`outline/` (log, discussion, files) or was merged (States into Aims).
-`check.py` reports a surviving `## States`, `## Files`, `## Log`,
-`## Discussion` or an older name as `retired-section`.
+The reader-facing Page order is `Opening → Content`. Outline, Aims, Stage
+Contract, Files, Discussion, Log, and other process records live in the Page
+Folder and are shown only by their owning Draft, Evidence, Run, Delivery, or
+Folder surfaces. `check.py` may still inspect those records, but their presence
+must not add another main Page section.
 
 ```text
 #   section    conveys · the reader question                 phase authority              omit
 ────────────────────────────────────────────────────────────────────────────────────────────────
 1   🚪 Opening what is this page, why should I care?         CONTENT defines and clarifies      never
-2   Outline    how is this page structured and supported?    generated authoritative projection       when no plan exists
-3   Content    what does this page actually establish?       CONTENT writes and builds          Q may · S never
-4   Aims       what should become true, for which Content    CONTENT sets target and test;      never
-               division, and what is true now for each?      any phase updates Now:
+2   Content    what does this page actually establish?       CONTENT writes and builds          Q may · S never
 ```
 
 Each section answers one reader question, and a sentence answering another
-section's question is misplaced: substance in Opening moves to Content,
-inherited inputs and venue move to the Stage Contract, page-owned prose rules
-to authored W records in `outline/<stem>-requirement.md`, intended outcomes to an Aim's target, current
-facts to that Aim's `Now:`, and a question for a person to a `D<nn>` record.
+section's question is misplaced: substance in Opening moves to Content.
+Inherited inputs and venue move to backstage contract records, page-owned prose
+rules to authored W records in `outline/<stem>-requirement.md`, intended
+outcomes to backstage target records, current facts to their Run/CHECK
+receipts, and a question for a person to a `D<nn>` record.
 There is no `## Boundary` section: what a page covers is the Opening's job,
 stated as a `**Covered elsewhere**:` part in its drawer.
 
-`## Outline` is the only on-page projection of the planning process. It opens
-by default immediately after the always-visible Opening. Normally it renders
-the current plan's `▤ Outline table`: `Address · Bullet · Feedback ·
-Evidence · Supporting Run · Local Run`; C/P rows are planning group headers and B rows
-are the checkable claim/evidence rows. The compact reading projection shows
-the Point statement, not the plan's process-only `Note:` annotations; those
-remain in `outline/` and its plugin workspaces. Evidence chip colour carries the quick
-signal and its deep-linked Evidence Space row carries the detail, so no
-separate Status column or Page popover is shown. A Page
-Type may define one generated
-executive projection from its own authoritative Content records. When it does,
-that projection appears first and the generic plan table remains available in
-a closed evidence drawer. The paper family's Story owns its Section Narrative
-and any supported compact section-map projection; resolve its current semantic
-contract through `haipipe-paper-story`. The base Page does not prescribe the
-Story's research Content divisions. No projection is copied into a Page-authored
-`## Outline`, and a Page-authored section map does not exist. Content, Aims,
-References, and every other optional fold start shut. The `outline/` folder
-remains the authority for every plan, writing rule, evidence, feedback,
-requirement, discussion, file, and log record.
+There is no reader-facing `## Outline` projection. The current plan's `▤ Outline
+table` remains available in Draft Space with `Address · Bullet · Feedback ·
+Evidence · Supporting Run · Local Run`; C/P rows are planning group headers and
+B rows are the checkable claim/evidence rows. The compact reading projection
+shows the Point statement, not the plan's process-only `Note:` annotations.
+The `outline/` folder remains the authority for every plan, writing rule,
+evidence, feedback, requirement, discussion, file, and log record.
 
 The live Outline/Draft Space makes each paragraph address (`C<n>.P<m>`;
 `P` increases once across the whole Page and never resets at a new `C`)
@@ -639,10 +623,11 @@ Shape creates the next unapproved working Shape and preserves the approved
 file; subsequent writes reuse that working version. Generated Page HTML is
 never an edit target.
 
-The visible labels are `🚪 Opening` and `🧭 Outline`; they must not reuse one
-icon because they answer different reader questions. Opening is reader prose,
-not an internal ledger: a bare claim, Evidence, or Run address is forbidden
-there. Name the subject in plain English first and keep any address only as a
+The visible reader labels are `🚪 Opening` and `📚 Content`; they must not reuse
+one icon because they answer different reader questions. Draft/Outline is a
+separate owning Space, not a third reader section. Opening is reader prose, not
+an internal ledger: a bare claim, Evidence, or Run address is forbidden there.
+Name the subject in plain English first and keep any address only as a
 secondary compact handle, such as `primary total-MME association
 (Claim1.TotalMME)`.
 
@@ -655,11 +640,13 @@ product source carries no `### Writing Style`; post-paragraph notes and Stage
 Contract remain source-side and do not appear on the manuscript review
 surface. Other Page Types retain the ordinary Opening drawer when they need it.
 
-## 🎯 One Aim is one row: target, test, and Now
+## 🎯 Backstage target records: one Aim is one row
 
-`## Aims` is the Aims' only home. One Aim is one row: its tick, its target,
-its `Done when:` test and its `Now:` fact. The plan carries 🎯 marks that name
-these rows and no rows of its own.
+The Page Face does not render targets as a third reader section. When a
+workflow uses Aim records, the legacy `## Aims` syntax remains the record
+shape: one Aim is one row with its tick, target, `Done when:` test, and `Now:`
+fact. The plan carries 🎯 marks that name these backstage rows and no rows of
+its own.
 
 ```markdown
 ## Aims

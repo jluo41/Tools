@@ -2,11 +2,13 @@
 
 Data · Labeling · Quality · Run · Delivery are views over canonical files; the
 overview never renders item text and never upgrades an observed file to a
-passed gate.  The Label screen is the only place item text appears: one frozen
-batch item at a time, fetched through ``POST /_board/labeling/act``.  Every
-write there goes through the subjective-label engine (``job.confirm_meaning``
-and ``calibration``), which re-checks the identified human, HOLD, G0, the
-event order, and sealed custody on each call.  Studio Chat stays a separate tab.
+passed gate.  Labeling → Label holds the label definitions.  Round item text
+appears only in Labeling → Rounds, and only for items already shown to the
+person; the labels come from the chat.  Every write through
+``POST /_board/labeling/act`` goes through the
+subjective-label engine (``job.confirm_meaning`` and ``calibration``), which
+re-checks the identified human, HOLD, G0, the event order, and sealed custody
+on each call.  Studio Chat stays a separate tab.
 """
 from __future__ import annotations
 
@@ -614,7 +616,7 @@ def _embedding_module():
 
 SPACES = (
     ("data", "Data", (("contract", "Contract"), ("schema", "Schema"), ("embedding", "Embedding"))),
-    ("labeling", "Labeling", (("label", "Label"), ("rounds", "Rounds"), ("guideline", "Guideline"))),
+    ("labeling", "Labeling", (("discussion", "Discussion"), ("label", "Label"), ("rounds", "Rounds"), ("guideline", "Guideline"))),
     ("quality", "Quality", (("test", "Test"), ("evaluation", "Evaluation"), ("audit", "Audit"))),
     ("run", "Run", (("runs", "Runs"), ("phases", "Phases"), ("workflow", "Workflow map"))),
     ("delivery", "Delivery", (("handoff", "Handoff"), ("final", "Final labels"))),
@@ -838,7 +840,7 @@ def _data_space(vm: dict) -> dict[str, str]:
         _row("item id field", f"<code>{_esc(manifest.get('id_field') or (config.get('corpus') or {}).get('id_field') or 'item_id')}</code>"),
         _row("text field", f"<code>{_esc(manifest.get('text_field') or (config.get('corpus') or {}).get('text_field') or 'text')}</code>"),
         _row("context field", f"<code>{_esc(manifest.get('context_field') or (config.get('corpus') or {}).get('context_field') or '—')}</code>"),
-        _row("where you read it", "items in a round: only on the Label screen, one at a time; "
+        _row("where you read it", "items in a round: in Labeling → Rounds once shown to you; "
                                   "other items: on request in Data → Embedding (logged)", "mut"),
     ]
     imported_rows = []
@@ -1016,12 +1018,14 @@ def _embedding_view(vm: dict) -> str:
         if state in {"failed", "stopped"}:
             detail = " · ".join([str(r.get("failure") or "the build process ended early"), *(r.get("log_tail") or [])])
             problem = f'<div class=warn>{_esc(detail)}</div>'
+        state_cell = ("" if state == "built" else
+                      f'<span class="pill {cls} state">{_esc(text)}</span>')
         tried.append(
             f'<tr data-emb-row="{_esc(r["version"])}" data-state="{_esc(state)}">'
             f'<td title="{_esc(r.get("settings_summary") or "")}"><b>{_esc(row_names.get(r["version"]) or "")}</b>'
             f'{problem}<div class=mut><code>{_esc(r.get("run") or "")}</code></div></td>'
             f'<td class="{started_cls}">{_esc(started)}</td>'
-            f'<td>{"" if state == "built" else f"<span class=\"pill {cls} state\">{_esc(text)}</span>"}</td><td>{button}</td></tr>'
+            f'<td>{state_cell}</td><td>{button}</td></tr>'
         )
     runs_table = ('<div class=scroll><table class=runtable><thead><tr><th>Build</th><th>Started</th><th></th>'
                   '<th></th></tr></thead><tbody>' + "".join(tried) + '</tbody></table></div>') if tried else ""
@@ -1283,9 +1287,11 @@ def _embedding_build_view(vm: dict, emb: dict) -> str:
             f'<td class=num data-label=labeled>{len(finals)}{f" <span class=mut>({_esc(tally)})</span>" if tally else ""}</td></tr>'
             f'<tr class=exrow hidden><td colspan=5 data-no-light><div class=exs data-ex-list="{g}"></div></td></tr>'
         )
+    clarity = _group_clarity(groups)
     groupcard = (
         '<div class="card"><h2>Groups<span class=tally>k-means on the vectors</span></h2>'
-        '<div class=scroll><table class=grptable><thead><tr><th>Group</th><th>Keywords</th><th>Items</th>'
+        + clarity
+        + '<div class=scroll><table class=grptable><thead><tr><th>Group</th><th>Keywords</th><th>Items</th>'
         '<th>Picked</th><th>Labeled</th></tr></thead><tbody>' + "".join(records) + '</tbody></table></div>'
         '<ul class="mut notes"><li>Click a row to light that group up on the map.</li>'
         '<li>Keywords are words more common in the group than overall; in item text they are highlighted.</li>'
@@ -1335,21 +1341,50 @@ def _round_draw(root: Path, round_id: str) -> dict:
                     key, value = line.split(": ", 1)
                     card[key.strip()] = value.strip()
         states = module._item_states(path)
+        config = _load_mapping(root / "config.yaml")
+        corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
+        text_field = str(corpus.get("text_field") or "text")
+        context_field = str(corpus.get("context_field") or "context_prev")
+        rows = {str(r.get("item_id")): r for r in module._corpus_rows(root)}
+        notes: dict = {}
+        for note in module._read_jsonl(path / "sessions" / "feedback.jsonl"):
+            notes.setdefault(str(note.get("item_id")), []).append(note)
         items = []
         for row in module._read_jsonl(path / "human_batch.jsonl"):
             item_id = str(row.get("item_id"))
             entry = states.get(item_id) or {}
             final = entry.get("final")
+            shown = "show" in (entry.get("kinds") or [])
+            source = rows.get(item_id) or {}
             items.append({
                 "item_id": item_id, "order": row.get("order"),
                 "probability": row.get("selection_probability"),
                 "label": ((final or {}).get("payload") or {}).get("class_label") or ("unresolved" if final else None),
-                "state": "labeled" if final else ("open" if entry.get("kinds") else "waiting"),
+                "first": ((entry.get("first") or {}).get("payload") or {}).get("class_label"),
+                "state": "labeled" if final else ("answered" if entry.get("first") else "waiting"),
+                # text only once the person has been shown the item, so the table never shows it first
+                "text": str(source.get(text_field) or "") if shown else None,
+                "context": str(source.get(context_field) or "") if shown else None,
+                "feedback": notes.get(item_id, []),
             })
         draw.update({"items": items, "card": card, "manifest": manifest})
     except Exception:  # the page must still render
         return draw
     return draw
+
+
+def _turns_html(context: str) -> str:
+    """Earlier conversation turns, one line per speaker, folded under an item's text."""
+    out = []
+    for line in str(context or "").splitlines():
+        if not line.strip():
+            continue
+        m = re.match(r"^([A-Za-z][A-Za-z_ ]{0,20}):\s?(.*)$", line)
+        who, body = (m.group(1), m.group(2)) if m else ("", line)
+        if who.strip().lower() in {"lamda", "assistant", "bot", "chatbot", "ai", "model", "gpt", "claude"}:
+            who = "AI"
+        out.append(f'<div class=turn>{f"<b>{_esc(who)}</b>" if who else ""}<span>{_esc(body)}</span></div>')
+    return "".join(out)
 
 
 def _draw_sentence(draw: dict, pool) -> str:
@@ -1376,25 +1411,342 @@ def _policy_words(version) -> str:
     return f"{version}, the first draft" if version == "G_00" else version
 
 
+def _map_groups(vm: dict) -> tuple[dict, dict, str]:
+    """Each item's group in the newest embedding build, each group's keywords, and the build's name."""
+    builds = ((vm.get("embedding") or {}).get("builds")) or []
+    if not builds:
+        return {}, {}, ""
+    newest = builds[-1]
+    groups = {str(row.get("item_id")): row.get("group") for row in newest.get("map") or []}
+    keywords = {int(g["group"]): " · ".join(_clean_keywords(g.get("keywords"))[:4])
+                for g in (newest.get("groups") or {}).get("groups") or []}
+    return groups, keywords, _build_label(newest["manifest"]["model"]["id"], newest["manifest"].get("settings"))
+
+
+def _items_table(draw: dict, groups: dict, keywords: dict) -> str:
+    """One row per drawn item: # · Item · Text · Group · State · Feedback."""
+    records = []
+    for item in draw["items"]:
+        group = groups.get(item["item_id"])
+        if item["state"] == "labeled":
+            pill = f'<span class="pill ok">{_esc(item["label"])}</span>'
+        elif item["state"] == "answered":
+            pill = f'<span class="pill acc">first: {_esc(item["first"])}</span>'
+        else:
+            pill = '<span class="pill mut">waiting</span>'
+        group_tag = (f'<span class="pill mut" title="{_esc(keywords.get(int(group), ""))}">'
+                     f'<i class=dot style="background:{_group_color(group)}"></i>'
+                     f'G{int(group) + 1}</span>') if group is not None else ""
+        if item.get("text") is None:
+            text_cell = '<span class=mut>not opened yet</span>'
+        else:
+            text_cell = (f'<div class=reply>{_esc(item["text"])}</div>'
+                         + (f'<details class=ctx><summary>conversation before it</summary>'
+                            f'<div class=convo>{_turns_html(item["context"])}</div></details>' if item.get("context") else ""))
+        notes_cell = "".join(
+            f'<div class=fb><b>{"Model" if n.get("author") == "model" else "You"}</b> {_esc(n.get("text"))}</div>'
+            for n in item.get("feedback") or []) or '<span class=mut>—</span>'
+        records.append(
+            f'<tr><td class=num>#{_esc((item.get("order") or 0) + 1)}</td><td class=nowrap>item {_esc(item["item_id"])}</td>'
+            f'<td>{text_cell}</td><td>{group_tag}</td><td>{pill}</td><td>{notes_cell}</td></tr>'
+        )
+    return ('<div class=scroll><table class=items><thead><tr><th>#</th><th>Item</th><th>Text</th><th>Group</th><th>State</th>'
+            '<th>Feedback</th></tr></thead>'
+            f'<tbody>{"".join(records)}</tbody></table></div>')
+
+
+def _job_where(vm: dict) -> str:
+    """The job folder relative to the repo, as a chat in this repo would type it."""
+    root = vm["root"]
+    module = _calibration_module()
+    repo = module._repo_root(root) if module else None
+    try:
+        return str(root.relative_to(repo)) if repo else str(root)
+    except ValueError:
+        return str(root)
+
+
+def _chat_prompt(vm: dict, current: dict, draw: dict) -> str:
+    """The text to paste into a Claude chat to go on labeling this round; it writes nothing."""
+    root, config = vm["root"], vm.get("config") or {}
+    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
+    labels = (config.get("labels") or {}).get("values") if isinstance(config.get("labels"), dict) else None
+    human = ((config.get("authority") or {}) if isinstance(config.get("authority"), dict) else {}).get("human_id") or "me"
+    tag = lambda i: f'#{(i.get("order") or 0) + 1} item {i["item_id"]}'
+    finals = [f'{tag(i)} (first: {i["first"]})' for i in draw["items"] if i["state"] == "answered"]
+    todo = [tag(i) for i in draw["items"] if i["state"] == "waiting"][:5]
+    lines = [
+        f'Continue labeling {_round_words(current.get("round_id"))} of {root.parent.name} with me ({human}).',
+        f"Job folder: {_job_where(vm)}",
+        f'Question: {construct.get("question") or construct.get("name") or ""}'
+        + (f'  Labels: {" · ".join(str(v) for v in labels)}' if labels else ""),
+        f'Progress: {current.get("finals", 0)} of {current.get("batch_size", len(draw["items"]))} labeled.',
+    ]
+    if finals:
+        lines.append("Waiting for my final: " + ", ".join(finals))
+    if todo:
+        lines.append("Next items: " + ", ".join(todo))
+    lines += [
+        "",
+        'Follow /label-building-workflow, JUDGE "By chat" (engine/calibration.py):',
+        "1. Show me the next items (conversation and AI reply); open_item for any item not shown yet.",
+        "2. Record only what I say: record_first for my first answer, then show the raters' votes and your view.",
+        "3. record_final when I keep or change; add_feedback for a note about an item.",
+        "Never show the votes or your view before my first answer is recorded.",
+    ]
+    return "\n".join(lines)
+
+
+def _definition_prompt(vm: dict, focus: str | None = None) -> str:
+    """The text to paste into a Claude chat to define the labels better; it writes nothing."""
+    config = vm.get("config") or {}
+    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    regions = config.get("regions") if isinstance(config.get("regions"), dict) else {}
+    uncertainty = config.get("uncertainty") if isinstance(config.get("uncertainty"), dict) else {}
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    values = [str(v) for v in labels.get("values") or []]
+    meanings = labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}
+    region_meanings = regions.get("meanings") if isinstance(regions.get("meanings"), dict) else {}
+    between = [str(r) for r in regions.get("values") or [] if len(str(r)) > 1]
+    lines = [
+        f'Help me define the labels of {vm["root"].parent.name} better. I am {authority.get("human_id") or "the labeler"}, '
+        "the person who decides what they mean.",
+        f"Job folder: {_job_where(vm)}",
+        f'Question: {construct.get("question") or construct.get("name") or ""}',
+    ]
+    rule = " ".join(str(x) for x in (construct.get("seed"), construct.get("scope")) if x)
+    if rule:
+        lines.append(f"Rule: {rule}")
+    lines.append("Labels now:")
+    lines += [f"- {v}: {meanings.get(v) or 'no meaning written yet'}" for v in values]
+    if between:
+        lines.append("In-between cases: " + "; ".join(f"{r} = {region_meanings.get(r) or r}" for r in between))
+    if uncertainty.get("levels"):
+        lines.append("How sure: " + " · ".join(_unsure_words(v) for v in uncertainty["levels"]) + " unsure. "
+                     + str(uncertainty.get("meaning") or ""))
+    current = vm["root"] / "policy" / "current"
+    policy = current.read_text(encoding="utf-8").strip() if current.is_file() else ""
+    if policy:
+        lines.append(f"Guideline: policy/versions/{policy}/guideline.md")
+    lines.append("")
+    if focus in values:
+        i = values.index(focus)
+        near = [v for v in (values[i - 1] if i else None, values[i + 1] if i + 1 < len(values) else None) if v]
+        lines.append(f'Focus on "{focus}". Ask me, one question at a time, what makes a reply {focus} and not '
+                     f'{" or ".join(near) or "another label"}. Propose clearer wording, one example, and one counterexample.')
+    elif focus == "between":
+        lines.append("Focus on in-between cases. Ask me how to handle a reply that fits two labels, "
+                     "and propose one boundary test for each pair.")
+    else:
+        lines.append("Ask me questions, one at a time, to find where these definitions are unclear. "
+                     "Propose clearer wording, one change at a time.")
+    lines += [
+        "Write nothing until I approve. The meanings in config.yaml are confirmed (G0), so an approved change "
+        "becomes a guideline patch in policy_draft/ for the LEARN step (/label-building-workflow), never an edit to config.yaml.",
+        "Do not say how you would label any round item before my first answer for it is recorded.",
+    ]
+    return "\n".join(lines)
+
+
+def _chat_icon(prompt: str, title: str) -> str:
+    return f'<button class=cc type=button title="{_esc(title)}" data-copy="{_esc(prompt)}">⧉ chat</button>'
+
+
+def _label_definitions(vm: dict) -> str:
+    """Labeling → Label: what each label means, with chat prompts to define them better."""
+    config = vm.get("config") or {}
+    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    regions = config.get("regions") if isinstance(config.get("regions"), dict) else {}
+    uncertainty = config.get("uncertainty") if isinstance(config.get("uncertainty"), dict) else {}
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    values = [str(v) for v in labels.get("values") or []]
+    if not values:
+        return _card("Label definitions", "<p class=mut>No labels are written in config.yaml yet.</p>")
+    meanings = labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}
+    region_meanings = regions.get("meanings") if isinstance(regions.get("meanings"), dict) else {}
+    between = [str(r) for r in regions.get("values") or [] if len(str(r)) > 1]
+    receipt = authority.get("meaning_receipt") if isinstance(authority.get("meaning_receipt"), dict) else {}
+    confirmed = (f'by {_esc(receipt.get("human_id"))}, {_esc(_when(receipt.get("confirmed_at")))}'
+                 if receipt.get("confirmed_at") else "not yet (Data → Contract)")
+    rows = "".join(
+        f'<tr><td class=nowrap><b>{_esc(v)}</b></td><td>{_esc(meanings.get(v) or "no meaning written yet")}</td>'
+        f'<td>{_chat_icon(_definition_prompt(vm, v), f"Copy a chat prompt about {v}")}</td></tr>' for v in values)
+    between_rows = "".join(
+        f'<tr><td class=nowrap><code>{_esc(r)}</code></td><td>{_esc(region_meanings.get(r) or "")}</td></tr>'
+        for r in between)
+    return _card("Label definitions", "".join([
+        _row("question", _esc(construct.get("question") or construct.get("name") or "")),
+        _row("judge", _esc(construct.get("seed"))) if construct.get("seed") else "",
+        _row("scope", _esc(construct.get("scope"))) if construct.get("scope") else "",
+        _row("confirmed", confirmed),
+        '<div class=chatcopy><button class=primary type=button '
+        f'data-copy="{_esc(_definition_prompt(vm))}">Copy chat prompt</button>'
+        '<span class=mut>Paste it into a Claude chat to define the labels better; '
+        'each ⧉ chat copies a prompt about one label.</span></div>',
+        '<div class=scroll><table class=defs><thead><tr><th>Label</th><th>What it means</th><th>Chat</th></tr></thead>'
+        f'<tbody>{rows}</tbody></table></div>',
+        (f'<h3 class=sub>In-between cases {_chat_icon(_definition_prompt(vm, "between"), "Copy a chat prompt about in-between cases")}</h3>'
+         '<div class=scroll><table class=defs><thead><tr><th>Case</th><th>What it means</th></tr></thead>'
+         f'<tbody>{between_rows}</tbody></table></div>') if between else "",
+        (f'<p class=mut>How sure: {_esc(" · ".join(_unsure_words(v) for v in uncertainty["levels"]))} unsure. '
+         f'{_esc(uncertainty.get("meaning") or "")}</p>') if uncertainty.get("levels") else "",
+        '<p class=mut>A change agreed in chat becomes a guideline patch for the LEARN step; '
+        'these confirmed meanings stay as they are until then.</p>',
+    ]))
+
+
+def _discussion_prompt(vm: dict) -> str:
+    """Safe, human-facing brief for one discussion; it never includes item text."""
+    config = vm.get("config") or {}
+    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    mode = str(authority.get("mode") or "")
+    question = construct.get("question") or construct.get("seed") or construct.get("name") or "the label meaning"
+    if mode == "external_annotation_import":
+        question = "How should we interpret the released source labels without changing their meaning?"
+    values = [str(v) for v in labels.get("values") or []]
+    lines = [
+        f"Help me run one human-AI discussion for {vm['root'].parent.name}.",
+        f"Discussion question: {question}",
+        "Goal: use a small set of representative, boundary, and counterexample cases to clarify the meaning.",
+        "Do not make a label decision before I have described what I notice.",
+        "Ask one question at a time. After each answer, summarize the boundary you heard and ask whether it is right.",
+        "At the end, propose one smallest guideline change, two reusable examples, and one unresolved question.",
+        f"Label values currently visible: {' · '.join(values) if values else 'not defined'}.",
+    ]
+    if mode == "external_annotation_import":
+        lines += [
+            "This is an external annotation import. Treat source values as observations, not local human gold.",
+            "Do not write policy/current, gold, or a checkpoint from this discussion.",
+        ]
+    else:
+        lines.append("Any accepted semantic change must go through the guideline-learn and human gate; do not edit config.yaml in chat.")
+    return "\n".join(lines)
+
+
+def _discussion_view(vm: dict) -> str:
+    """The discussion-first entry view for Labeling Space.
+
+    This is intentionally a projection only: it plans a discussion and explains
+    the future Run envelope without allocating a Run or promoting a label.
+    """
+    config = vm.get("config") or {}
+    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    mode = str(authority.get("mode") or "")
+    hold = bool((vm.get("state") or {}).get("authority_hold"))
+    cal = vm.get("cal") or {}
+    current = cal.get("current_round") or {}
+    question = construct.get("question") or construct.get("seed") or construct.get("name") or "Define the label meaning"
+    if mode == "external_annotation_import":
+        question = "How should we read the released DICES-350 safety labels without changing their meaning?"
+        why = ("This page contains external rater observations. The first discussion is about separating "
+               "source meanings, uncertainty, and expert reference—not about creating new local gold.")
+        action = "Copy discussion brief"
+        status = "Read-only discussion"
+    elif current:
+        why = "Continue the current discussion and record the decisions that should shape the next guideline version."
+        action = "Continue discussion"
+        status = "Discussion in progress"
+    else:
+        why = ("Start with a small case set. The purpose is to discover the semantic boundary before asking a person "
+               "to label a larger batch.")
+        action = "Copy discussion brief"
+        status = "Ready to discuss"
+
+    values = [str(v) for v in labels.get("values") or []]
+    value_text = " · ".join(values) if values else "label values not written yet"
+    cases = [
+        ("01", "Representative", "A clear case that makes the current meaning concrete."),
+        ("02", "Boundary", "A case where two readings are plausible and the rule needs a test."),
+        ("03", "Counterexample", "A case that looks similar on the surface but should receive a different reading."),
+    ]
+    if mode == "external_annotation_import":
+        cases[0] = ("01", "Source meaning", "What does the released Yes / No observation actually say?" )
+        cases[1] = ("02", "Uncertainty", "Why does Unsure remain different from No or NONE?" )
+        cases[2] = ("03", "Separate field", "How should degree of harm stay separate from overall safety?" )
+
+    case_html = "".join(
+        f'<article class=casecard><div class=caseid>Example {num}</div>'
+        f'<h3>{_esc(kind)}</h3><p>{_esc(desc)}</p>'
+        '<p class="mut">The item is opened in the discussion chat when you choose it.</p></article>'
+        for num, kind, desc in cases
+    )
+    flow = "".join(
+        f'<div class="flowstep {"now" if i == 1 else ""}"><b>{i}</b><strong>{_esc(title)}</strong><span>{_esc(desc)}</span></div>'
+        for i, (title, desc) in enumerate((
+            ("Choose the question", "name the uncertainty we want to resolve"),
+            ("Discuss examples", "human speaks first; AI asks and compares"),
+            ("Save decisions", "record the boundary and unresolved cases"),
+            ("Learn the guideline", "draft the smallest rule change"),
+        ), 1)
+    )
+    planned = [
+        ("rlNN_round-prepare", "freeze the question and example packet", "planned"),
+        ("rlNN_discussion-calibration", "the human-AI discussion", "main discussion"),
+        ("rlNN_guideline-learn", "turn accepted discussion into a rule proposal", "after discussion"),
+        ("rlNN_round-close", "close the round or name the next question", "checkpoint"),
+    ]
+    run_html = "".join(
+        f'<div class=runplan><code>{_esc(name)}</code><span>{_esc(desc)}</span><em>{_esc(state)}</em></div>'
+        for name, desc, state in planned
+    )
+    guard = ("This imported page can discuss the source, but it cannot create local gold or change the guideline."
+             if hold else "A discussion draft is not a label. Only the identified human can accept a semantic change.")
+    brief = _discussion_prompt(vm)
+    return "".join([
+        _card("Current discussion", (
+            f'<div class=discstatus><span class=pill acc>{_esc(status)}</span>'
+            f'<span class=mut>{_esc(value_text)}</span></div>'
+            f'<h3 class=discquestion>{_esc(question)}</h3>'
+            f'<p class=lead>{_esc(why)}</p>'
+            '<div class=actions><button class=primary type=button '
+            f'data-copy="{_esc(brief)}">{_esc(action)}</button>'
+            '<span class=msg role=status data-discussion-msg></span></div>'
+            '<p class=mut>Copy this brief into Studio Chat to start the conversation. The chat is the conversation; this page keeps the plan and receipt.</p>'
+        ), "focus"),
+        _card("How this works", f'<div class=flow>{flow}</div>'
+              '<p class=mut>One discussion may use several examples. The examples are events inside one Run; they are not separate Runs.</p>'),
+        _card("Example packet", '<p class=lead>Start small: one clear case, one boundary case, and one counterexample.</p>'
+              f'<div class=casegrid>{case_html}</div>'),
+        _card("What gets recorded", "".join([
+            _row("discussion question", _esc(question)),
+            _row("examples", "3 discussion cases · representative · boundary · counterexample"),
+            _row("human input", "what you noticed, what changed your mind, and what remains unresolved"),
+            _row("AI output", "a proposed rule patch and reusable examples; never automatic gold"),
+            _row("next", "accept the patch, continue the discussion, or open a new round"),
+            f'<p class=warn>{_esc(guard)}</p>',
+        ])),
+        _card("Run plan", '<p class=mut>These are the planned envelopes for the discussion. They are not allocated Tickets yet.</p>'
+              f'<div class=runplans>{run_html}</div>'
+              '<p class=mut>Use Run Space to audit the envelopes after a real operation starts.</p>'),
+    ])
+
+
 def _rounds_view(vm: dict) -> str:
     cal, root = vm["cal"] or {}, vm["root"]
     rounds = cal.get("rounds") or []
     if not rounds:
         return _card("Rounds", "<p class=mut>No round has started yet. "
                                "Round 1 picks items at random from the items to label.</p>")
-    builds = ((vm.get("embedding") or {}).get("builds")) or []
-    groups: dict = {}
-    keywords: dict = {}
-    model_name = ""
-    if builds:
-        newest = builds[-1]
-        model_name = _build_label(newest["manifest"]["model"]["id"], newest["manifest"].get("settings"))
-        groups = {str(row.get("item_id")): row.get("group") for row in newest.get("map") or []}
-        keywords = {int(g["group"]): " · ".join(_clean_keywords(g.get("keywords"))[:4])
-                    for g in (newest.get("groups") or {}).get("groups") or []}
+    groups, keywords, model_name = _map_groups(vm)
+    current = cal.get("current_round") or {}
+    labeling_now = bool(current) and not (vm.get("canonical") or {}).get("hold")
     cards = []
     for r in reversed(rounds):
         draw = _round_draw(root, r["round_id"])
+        chat = ""
+        if labeling_now and r["round_id"] == current.get("round_id"):
+            chat = ('<p>We label these together in chat. Tell me your label for an item, for example '
+                    '<code>#1 none</code>; I record it and this table updates.</p>'
+                    '<div class=chatcopy><button class=primary type=button '
+                    f'data-copy="{_esc(_chat_prompt(vm, current, draw))}">Copy chat prompt</button>'
+                    '<span class=mut>Paste it into a Claude chat in this repo to go on labeling.</span></div>'
+                    f'<details class=ctx><summary>the prompt</summary><pre class=prompt>{_esc(_chat_prompt(vm, current, draw))}</pre></details>')
         manifest, card = draw["manifest"], draw["card"]
         drew = manifest.get("draw") if isinstance(manifest.get("draw"), dict) else {}
         pool = manifest.get("development_pool_size")
@@ -1411,26 +1763,7 @@ def _rounds_view(vm: dict) -> str:
             _row("guideline", _esc(_policy_words(manifest.get("policy_version") or card.get("policy"))))
             if manifest.get("policy_version") or card.get("policy") else "",
         ]
-        records = []
-        seen_groups = set()
-        for item in draw["items"]:
-            group = groups.get(item["item_id"])
-            if group is not None:
-                seen_groups.add(int(group))
-            if item["state"] == "labeled":
-                pill = f'<span class="pill ok">{_esc(item["label"])}</span>'
-            elif item["state"] == "open":
-                pill = '<span class="pill acc">open now</span>'
-            else:
-                pill = '<span class="pill mut">waiting</span>'
-            group_tag = (f'<span class="pill mut" title="{_esc(keywords.get(int(group), ""))}">'
-                         f'<i class=dot style="background:{_group_color(group)}"></i>'
-                         f'G{int(group) + 1}</span>') if group is not None else ""
-            records.append(
-                '<div class=rec><div class=rh>'
-                f'<span class=rid>#{_esc((item.get("order") or 0) + 1)}</span>'
-                f'<span class=rt>item {_esc(item["item_id"])}</span>{group_tag}{pill}</div></div>'
-            )
+        seen_groups = {int(groups[i["item_id"]]) for i in draw["items"] if groups.get(i["item_id"]) is not None}
         coverage = ""
         if groups and seen_groups:
             total_groups = len({g for g in groups.values() if g is not None})
@@ -1439,13 +1772,17 @@ def _rounds_view(vm: dict) -> str:
         elif not groups:
             coverage = ('<p class=mut>Build an embedding in Data → Embedding to see where these items sit '
                         'on the map.</p>')
+        started_at = _when(card.get("released_at")) if card.get("released_at") else ""
         cards.append(
-            f'<div class="card"><h2>{_esc(_round_words(r["round_id"]).capitalize())}<span class=tally>{_esc(r["batch_size"])} items · '
-            f'{_esc(r["finals"])} labeled</span></h2>{"".join(rows)}'
-            f'<details><summary>The items this round drew · {len(draw["items"])}</summary>'
-            f'{"".join(records)}'
-            '<p class=mut>An item waiting in a round shows its text only on the Label screen, one item at a time.</p>'
-            f'</details>{coverage}</div>'
+            f'<details class=roundbox{" open" if chat else ""}><summary><b>{_esc(_round_words(r["round_id"]).capitalize())}</b>'
+            f'<span>{_esc(r["finals"])} of {_esc(r["batch_size"])} labeled</span>'
+            f'<span class=mut>{_esc(state_words)}{" · started " + _esc(started_at) if started_at else ""}</span></summary>'
+            f'{"".join(rows)}'
+            f'<h3 class=sub>The items this round drew · {len(draw["items"])}</h3>'
+            f'{chat}{_items_table(draw, groups, keywords)}'
+            '<p class=mut>Text appears once an item has been shown to you. State shows your first answer, '
+            'then your final label; Feedback holds the notes from our chat.</p>'
+            f'{coverage}</details>'
         )
     return "".join(cards)
 
@@ -1496,8 +1833,11 @@ def _guideline_html(text: str) -> str:
 
 def _labeling_space(vm: dict) -> dict[str, str]:
     root = vm["root"]
-    label = '<div id=label-app aria-live=polite><p class=mut>Loading…</p></div>'
-    rounds_html = _rounds_view(vm)
+    cal = vm["cal"] or {}
+    label = _label_definitions(vm)
+    labeling_now = cal.get("current_round") and not (vm["canonical"] or {}).get("hold")
+    app = "" if labeling_now else '<div id=label-app aria-live=polite><p class=mut>Loading…</p></div>'
+    rounds_html = app + (_rounds_view(vm) if cal.get("rounds") else "")
     current = (root / "policy" / "current")
     policy = current.read_text(encoding="utf-8").strip() if current.is_file() else ""
     guideline = root / "policy" / "versions" / policy / "guideline.md" if policy else None
@@ -1507,7 +1847,7 @@ def _labeling_space(vm: dict) -> dict[str, str]:
                       f'<p class=mut>From <code>policy/versions/{_esc(policy)}/guideline.md</code>.</p>')
     else:
         guide = _card("Guideline", "<p class=mut>No guideline version is readable yet.</p>")
-    return {"label": label, "rounds": rounds_html, "guideline": guide}
+    return {"discussion": _discussion_view(vm), "label": label, "rounds": rounds_html, "guideline": guide}
 
 
 def _quality_space(vm: dict) -> dict[str, str]:
@@ -1629,6 +1969,85 @@ def _workflow_map(vm: dict) -> str:
         f'<li>A definition, not an inventory. Source: <code>{_esc(_repo_relative(ref))}</code>.</li></ul>' + table))
 
 
+def _sop_state(op: str, vm: dict, runs_by_op: dict, not_built: set) -> str:
+    """Where this job is on one SOP step: done, running, not yet, or not built yet."""
+    if op == "gate G0":
+        return "done" if (vm.get("canonical") or {}).get("meaning_receipt_valid") else "not yet"
+    if op in ("", "—"):
+        return "—"
+    runs = runs_by_op.get(op) or []
+    running = [r for r in runs if r["status"] == "running"]
+    if running:
+        return "running · " + ", ".join(r["run"].split("_")[0] for r in running)
+    done = [r for r in runs if r["status"].startswith("complete")]
+    if done:
+        return "done · " + ", ".join(r["run"].split("_")[0] for r in done)
+    if runs:
+        return runs[-1]["status"]
+    return "not built yet" if op in not_built else "not yet"
+
+
+def _sop(vm: dict) -> str:
+    """The SOP from ref-space-mapping.md: the steps one labeling job walks, and where this job is."""
+    ref = _space_mapping_ref()
+    if ref is None:
+        return ""
+    text = ref.read_text(encoding="utf-8")
+    headers, rows = _md_table(text, "SOP")
+    if not headers:
+        return ""
+    col = {h.lower(): i for i, h in enumerate(headers)}
+    wf_headers, wf_rows = _md_table(text, "Workflow map")
+    wf = {h.lower(): i for i, h in enumerate(wf_headers)}
+    not_built = {r[wf["run type"]].strip("`") for r in wf_rows
+                 if "run type" in wf and "started by" in wf and r[wf["started by"]] == "not built yet"}
+    runs_by_op: dict = {}
+    for r in vm.get("runs") or []:
+        runs_by_op.setdefault(str(r["operation"]), []).append(r)
+    labels = ["#", "Step", "You do", "The chat or engine does", "Where", "Run", "This job"]
+    states = []
+    for cells in rows:
+        cell = lambda name, c=cells: c[col[name]] if name in col and col[name] < len(c) else ""  # noqa: E731
+        states.append(_sop_state(cell("run type").strip("`"), vm, runs_by_op, not_built))
+    now = next((i for i, st in enumerate(states) if st.startswith("running")), None)
+    if now is None:
+        now = next((i for i, st in enumerate(states) if st == "not yet"), None)
+    body = []
+    for i, cells in enumerate(rows):
+        cell = lambda name, c=cells: c[col[name]] if name in col and col[name] < len(c) else ""  # noqa: E731
+        st = states[i] + (" (now)" if i == now else "")
+        cls = "now" if i == now else ("done" if st.startswith("done") else "")
+        values = [cell("step"), f"<b>{_md_inline(cell('what happens'))}</b>", _md_inline(cell("you do")),
+                  _md_inline(cell("the chat or engine does")), _md_inline(cell("where")),
+                  _md_inline(cell("run type")), _esc(st)]
+        body.append(f'<tr{f" class={cls}" if cls else ""}>' + "".join(
+            f'<td data-label="{_esc(h)}"{" class=num" if h == "#" else ""}>{v}</td>' for h, v in zip(labels, values)) + "</tr>")
+    table = ('<div class=scroll><table class="wfmap sop"><thead><tr>'
+             + "".join(f"<th>{_esc(h)}</th>" for h in labels)
+             + "</tr></thead><tbody>" + "".join(body) + "</tbody></table></div>")
+    return _card("SOP · how a labeling job runs", (
+        '<ul class="mut notes"><li>The steps one labeling job walks, in order, and who does each one. '
+        'The Workflow map below lists every Run type; this is the path.</li>'
+        f'<li>"This job" is read from this job\'s Runs. Source: <code>{_esc(_repo_relative(ref))}</code>.</li></ul>' + table))
+
+
+def _group_clarity(groups: dict) -> str:
+    """How separated the groups really are, in words: a weak split must not read as real categories."""
+    scores = groups.get("silhouette_by_k") or {}
+    best = scores.get(str(groups.get("k")))
+    if not isinstance(best, (int, float)):
+        return ""
+    if best >= 0.5:
+        words, cls = "clear", "ok"
+    elif best >= 0.25:
+        words, cls = "some separation", "mut"
+    else:
+        words, cls = "weak. The items do not really fall into separate groups", "warn"
+    return (f'<p class="{cls}">How clear are these groups: {_esc(words)} '
+            f'<span class=mut>(score {best:.2f}; above 0.5 would be clear, below 0.25 is weak). '
+            f'Use them to browse and to check coverage, not as categories.</span></p>')
+
+
 def _wf_cell(text: str) -> str:
     """'start + shows · Embedding' with the verbs bold; '—' greyed."""
     text = str(text or "").strip()
@@ -1703,7 +2122,7 @@ def _run_space(vm: dict) -> dict[str, str]:
     phases = _card("Phases", f'<p class=stepline>Step {current + 1} of {len(PHASES)}: {steps}</p>'
                    + _row("waiting for", _esc(_blocked_words(state["first_failed"])))
                    + f'<p class=mut>Code: <code>{_esc(state["first_failed"])}</code></p>')
-    return {"runs": _card("Runs", table), "phases": phases, "workflow": _workflow_map(vm)}
+    return {"runs": _card("Runs", table), "phases": phases, "workflow": _sop(vm) + _workflow_map(vm)}
 
 
 def _delivery_space(vm: dict) -> dict[str, str]:
@@ -1828,8 +2247,6 @@ a{color:var(--acc)}
 .card h2{font-size:15px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline}
 .card h2 .tally{margin-left:auto;flex:none;font:600 11px ui-monospace,Menlo,monospace;color:var(--mut)}
 .tally{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 6px;font-size:12px}
-.bar{display:inline-block;width:84px;height:7px;border-radius:4px;background:var(--line);overflow:hidden;vertical-align:1px}
-.bar i{display:block;height:100%;background:var(--ok)}
 details{margin:4px 0 0}
 summary{cursor:pointer;font:600 12px -apple-system,sans-serif;color:var(--mut);
  text-transform:uppercase;letter-spacing:.03em;padding:3px 0;list-style:none}
@@ -1883,6 +2300,23 @@ td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .grptable tr.grp{cursor:pointer}
 .grptable tr.grp:hover td,.grptable tr.grp.on td{background:color-mix(in srgb,var(--acc) 7%,var(--card))}
 .grptable .exbox{margin:6px 0 0}
+details.roundbox{border:1px solid var(--line);border-radius:12px;background:var(--card);margin:0 0 10px;padding:8px 14px}
+details.roundbox>summary{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;cursor:pointer;
+ font:14.5px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:none;letter-spacing:0;color:var(--fg)}
+details.roundbox>summary .mut{font-size:13px}
+details.roundbox[open]>summary{margin-bottom:6px}
+h3.sub{font-size:13px;margin:12px 0 2px}
+table.items{width:auto;max-width:100%}
+table.items td,table.items th{padding:3px 10px}
+table.items td:not(:nth-child(3)):not(:nth-child(6)){white-space:nowrap}
+table.items td.num{text-align:left}
+table.items td:nth-child(3)>*{max-width:30em}
+table.items td:nth-child(6)>*{max-width:18em}
+table.items .pill{font-size:10px}
+table.items td.nowrap{white-space:nowrap}
+table.items .reply{font-weight:500}
+table.items details.ctx summary{font-size:11.5px;text-transform:none;letter-spacing:0;margin-top:3px}
+table.items .fb{margin:0 0 3px}
 table.wfmap{font-size:13.5px}
 table.wfmap tr.phaserow td{background:var(--soft);font:700 11.5px/1.4 -apple-system,sans-serif;color:var(--fg);
  text-transform:uppercase;letter-spacing:.03em}
@@ -1893,40 +2327,45 @@ table.wfmap td code{font-size:11.5px}
 .stepline{font-size:14.5px;margin:2px 0 8px}
 .step{font:600 11.5px -apple-system,sans-serif;border:1px solid var(--line);border-radius:7px;padding:3px 9px;color:var(--mut);background:var(--card)}
 .step.on{border-color:var(--acc);color:var(--acc)}.step.past{color:var(--ok)}
-/* label screen, in the same parts: tally row, cards, chips, record rows */
-.progress{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 8px;font-size:12px;color:var(--mut)}
-.progress code{margin-left:auto}
+.discstatus{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:2px 0 7px}
+.discquestion{font-size:20px;line-height:1.3;margin:9px 0 5px;max-width:42em}
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 4px}
+.flowstep{display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:var(--card);min-height:86px}
+.flowstep b{font:700 11px ui-monospace,Menlo,monospace;color:var(--mut)}
+.flowstep strong{font-size:13px;line-height:1.3}.flowstep span{font-size:12px;line-height:1.35;color:var(--mut)}
+.flowstep.now{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 7%,var(--card))}
+.flowstep.now b,.flowstep.now strong{color:var(--acc)}
+.casegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:8px}
+.casecard{border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:var(--soft)}
+.caseid{font:600 10px ui-monospace,Menlo,monospace;color:var(--acc);text-transform:uppercase;letter-spacing:.05em}
+.casecard h3{font-size:14px;margin:2px 0 3px}.casecard p{font-size:13px;line-height:1.4;margin:3px 0}
+.runplans{border-top:1px solid var(--line);margin-top:7px}
+.runplan{display:grid;grid-template-columns:16em minmax(0,1fr) max-content;gap:8px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.runplan code{color:var(--acc)}.runplan span{color:var(--fg)}.runplan em{font-style:normal;color:var(--mut);font-size:12px;white-space:nowrap}
+/* conversation turns, option rows, chips */
+table.sop tr.now td{background:var(--soft)} table.sop tr.now td:last-child{color:var(--acc);font-weight:600}
+table.sop tr.done td:last-child{color:var(--ok)}
+.chatcopy{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 6px}
+.cc{font:600 12px -apple-system,sans-serif;border:1px solid var(--line);border-radius:6px;background:var(--card);
+ color:var(--acc);padding:1px 7px;cursor:pointer;white-space:nowrap;vertical-align:middle}
+.cc:hover{border-color:var(--acc)}
+h3 .cc{margin-left:6px}
+table.defs{width:auto;max-width:100%}
+table.defs td:nth-child(2){min-width:16em;max-width:44em}
+#cc-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--fg);color:var(--bg);
+ font:600 12.5px -apple-system,sans-serif;padding:7px 14px;border-radius:8px;opacity:0;transition:opacity .15s;pointer-events:none;z-index:60;max-width:80vw}
+#cc-toast.on{opacity:.95} #cc-toast.bad{background:var(--warn)}
+pre.prompt{white-space:pre-wrap;overflow-wrap:anywhere;font:12.5px/1.5 ui-monospace,Menlo,monospace;background:var(--soft);
+ border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:4px 0 10px}
 .convo{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:0 0 10px;
  max-height:46vh;overflow:auto}
 .turn{display:grid;grid-template-columns:5.4em 1fr;gap:6px;font-size:14px;line-height:1.55;padding:1px 0;overflow-wrap:anywhere}
 .turn b{font:600 11px -apple-system,sans-serif;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;padding-top:3px}
-.final{background:var(--card);border:1px solid var(--acc);border-radius:10px;padding:10px 14px;margin:0 0 10px;
- font-size:15px;overflow-wrap:anywhere}
-.final .tag{display:block;font:600 11px -apple-system,sans-serif;color:var(--acc);text-transform:uppercase;letter-spacing:.04em}
-.q{font-size:15px;font-weight:600;margin:4px 0 8px}
-.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin:0 0 8px}
-.choice{position:relative;display:flex;flex-direction:column;justify-content:flex-start;text-align:left;
- background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 44px 10px 14px;
- color:var(--fg);cursor:pointer;font:14px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.choice b{font-size:15px}.choice small{display:block;color:var(--mut);margin-top:3px;font-size:12.5px;line-height:1.45}
-.choice kbd{position:absolute;top:9px;right:10px}
-.choice.on{border-color:var(--acc)}.choice.on b{color:var(--acc)}
-.choice.on kbd{color:var(--acc);border-color:var(--acc)}
 .line{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:0 0 8px}
 .line .lbl{font:600 10px/1.5 system-ui,sans-serif;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;min-width:7em}
 .pill.tog{font:600 11.5px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:none;letter-spacing:0;
  border:1px solid var(--line);border-radius:7px;padding:3px 9px;cursor:pointer;background:var(--card);color:var(--mut);max-width:none}
 .pill.tog.on{border-color:var(--acc);color:var(--acc)}
-input.reason{flex:1;min-width:180px;font:14px -apple-system,sans-serif;padding:4px 8px;border:1px solid var(--line);
- border-radius:7px;background:var(--card);color:var(--fg)}
-input.reason:focus{outline:none;border-color:var(--acc)}
-kbd{font:600 11px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-radius:6px;padding:0 5px;color:var(--mut)}
-.pill.tog.on kbd,button.primary kbd{color:var(--acc);border-color:var(--acc)}
-.reveal{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:0 0 10px}
-.reveal h3{font-size:15px;margin:0 0 4px}
-.votes{display:flex;gap:12px;flex-wrap:wrap;font-size:13.5px}.votes span b{font-weight:600}
-.reveal .line{margin:0 0 2px;font-size:13.5px}.reveal .line b{font-weight:600}
-.keys{margin:8px 0 0;color:var(--mut);font-size:12.5px;line-height:1.7}
 /* embedding view */
 .pieces{display:flex;flex-wrap:wrap;gap:3px}
 code.wp{border:1px solid var(--line);border-radius:5px;padding:0 4px}
@@ -1988,6 +2427,8 @@ button.leg .kw{opacity:.75}
 .legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--mut)}
 .mapwrap[data-color=group] .legend.label,.mapwrap[data-color=label] .legend.group{display:none}
 @media(max-width:560px){body{padding:12px}.rr,.turn{grid-template-columns:1fr;gap:0}
+ .discquestion{font-size:18px}.flow,.casegrid{grid-template-columns:1fr}.flowstep{min-height:0}
+ .runplan{grid-template-columns:1fr;gap:2px}.runplan em{white-space:normal}
  table.runs thead,table.runtable thead{display:none}
  table.runs tr,table.runtable tr{display:block;border-bottom:1px solid var(--line)}
  table.runs tbody tr:last-child,table.runtable tbody tr:last-child{border-bottom:0}
@@ -2005,7 +2446,7 @@ button.leg .kw{opacity:.75}
  table.grptable td.num{display:inline-block;padding-top:0}
  table.grptable td.num::before{content:attr(data-label) " ";color:var(--mut);font-size:12px}
  .planmeta{display:flex;flex-wrap:wrap;align-items:baseline}.planmeta a,.planmeta span{white-space:nowrap}
- .rr>b{border-right:0;border-bottom:1px solid var(--line);padding:5px 10px}.rr>span{padding:6px 10px}.choices{grid-template-columns:1fr}
+ .rr>b{border-right:0;border-bottom:1px solid var(--line);padding:5px 10px}.rr>span{padding:6px 10px}
  svg.map .pt{r:13px}}
 """
 
@@ -2014,10 +2455,6 @@ _JS = r"""
 (function(){'use strict';
 var boot=JSON.parse(document.getElementById('labeling-boot').textContent);
 var spaces=boot.spaces, key='labeling-view:'+boot.identity;
-/* An item is shown (and its show event written) only while the Label view is on screen. */
-var labelWaiters=[];
-function labelOnScreen(){return current.space==='labeling'&&current.view==='label';}
-function whenLabelOnScreen(fn){if(labelOnScreen()){fn();}else{labelWaiters=[fn];}}
 function $(s,r){return (r||document).querySelector(s);} function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 /* ── Space and view selection ─────────────────────────────── */
@@ -2031,7 +2468,6 @@ function select(space,view,remember){
  if(remember){try{localStorage.setItem(key,JSON.stringify({space:space,view:view}));}catch(e){}
   try{var u=new URL(location.href);u.searchParams.set('space',space);u.searchParams.set('view',view);history.replaceState(null,'',u.toString());}catch(e){}}
  current={space:space,view:view};
- if(labelOnScreen()&&labelWaiters.length){var run=labelWaiters.splice(0);run.forEach(function(f){f();});}
 }
 var current={};
 $$('.space').forEach(function(b){b.addEventListener('click',function(){select(b.dataset.space,null,true);});
@@ -2106,7 +2542,7 @@ $$('.embpane').forEach(function(pane){
     if(b){b.remove();}
     if(offset===0&&r.hidden_waiting){list.insertAdjacentHTML('beforeend','<p class=mut>'+r.hidden_waiting+' item'+(r.hidden_waiting>1?'s':'')+
      ' of this group wait'+(r.hidden_waiting>1?'':'s')+' in '+esc(r.hidden_rounds.map(roundWords).join(', '))+' and '+(r.hidden_waiting>1?'are':'is')+
-     ' not shown, so your first look stays on the Label screen.</p>');}
+     ' not shown, so you first read them in Labeling → Rounds.</p>');}
     if(offset===0&&!r.examples.length){list.insertAdjacentHTML('beforeend','<p class=mut>No item of this group can be shown yet.</p>');}
     list.insertAdjacentHTML('beforeend',r.examples.map(function(e){return exItem(e,words);}).join(''));
     offset+=r.examples.length;
@@ -2141,7 +2577,7 @@ $$('.embpane').forEach(function(pane){
        '<i class=dot style="background:'+((data.groups[String(n.group)]||{}).color||'var(--mut)')+'"></i>item '+esc(n.item_id)+' · '+n.similarity.toFixed(2)+
        (data.marks[n.item_id]&&data.marks[n.item_id].final?' · '+esc(data.marks[n.item_id].final):'')+'</button>';}).join('')+'</span></div></div>'+
     '<div class=pktext data-pick-text>'+(data.marks[r.item_id]&&!data.marks[r.item_id].final
-      ?'<p class=mut>This item waits in '+esc(roundWords(data.marks[r.item_id].round))+'; its text opens on the Label screen.</p>'
+      ?'<p class=mut>This item waits in '+esc(roundWords(data.marks[r.item_id].round))+'; its text appears in Labeling → Rounds.</p>'
       :'<button class="pill tog" type=button data-pick-show>Show its text</button>')+'</div>'+
     '<p class=mut>The number is similarity, from 0 (unrelated) to 1 (the same). Similar means similar words and topic, not the same label. The flat map can still draw similar items far apart. In item text, grey marks are the group\'s keywords.</p>';
    $('[data-pick-close]',pick).addEventListener('click',function(){clearPick();pick.hidden=true;});
@@ -2286,26 +2722,23 @@ var attest=$('[data-confirm-attest]'),confirmBtn=$('[data-confirm-meaning]'),con
 if(attest&&confirmBtn){attest.addEventListener('change',function(){confirmBtn.disabled=!attest.checked;});
  confirmBtn.addEventListener('click',function(){confirmBtn.disabled=true;confirmMsg.textContent='Saving…';confirmMsg.className='msg';
   act('confirm_meaning',{}).then(function(){confirmMsg.textContent='Confirmed. Opening round 1…';
-   var u=new URL(location.href);u.searchParams.set('space','labeling');u.searchParams.set('view','label');location.href=u.toString();})
+   var u=new URL(location.href);u.searchParams.set('space','labeling');u.searchParams.set('view','rounds');location.href=u.toString();})
   .catch(function(e){confirmMsg.textContent=e.message;confirmMsg.className='msg err';confirmBtn.disabled=false;});});}
-/* ── Label screen ─────────────────────────────────────────── */
-var app=$('#label-app'); var schema=boot.schema||{}; var S=null;
+/* ── Label: start a round; a round in progress is the server's table, labeled in chat ── */
+/* chat prompts: any [data-copy] button copies its text; plain http needs the textarea fallback */
+function toast(m,bad){var t=$('#cc-toast');if(!t){t=document.createElement('div');t.id='cc-toast';t.setAttribute('role','status');document.body.appendChild(t);}
+ t.textContent=m;t.className='on'+(bad?' bad':'');clearTimeout(toast.t);toast.t=setTimeout(function(){t.className='';},2400);}
+function copyText(t){
+ if(navigator.clipboard&&window.isSecureContext){return navigator.clipboard.writeText(t);}
+ var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);
+ a.focus();a.select();var ok=false;try{ok=document.execCommand('copy');}catch(e){}document.body.removeChild(a);
+ return ok?Promise.resolve():Promise.reject();}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy]');if(!b){return;}
+ copyText(b.dataset.copy).then(function(){toast('Copied. Paste it into a Claude chat.');},function(){toast('Copy failed. Select the prompt text and copy it by hand.',true);});});
+var app=$('#label-app');
 var AI_NAMES=/^(lamda|assistant|bot|chatbot|ai|model|system|gpt|chatgpt|claude|bard|gemini|agent)$/i;
 function who(tag){return AI_NAMES.test(String(tag||'').trim())?'AI':String(tag||'');}
 function roundWords(id){var m=String(id||'').match(/^round_0*(\d+)$/);return m?'round '+m[1]:String(id||'');}
-var UNSURE_WORDS={low:'a little',medium:'somewhat',high:'very'};
-function unsureWords(u){return UNSURE_WORDS[u]||u;}
-function regionWords(r){var ls=schema.labels||[];if(!r||r.length<2){return 'clear case';}
- var names=r.split('').map(function(ch){return ls.filter(function(l){return String(l).charAt(0).toUpperCase()===ch;})[0]||ch;});
- return names.length>=3?'any of the '+names.length:names.join(' or ')+'?';}
-function turns(context){
- var out=[],cur=null;String(context||'').split(/\n/).forEach(function(line){
-  var m=line.match(/^([A-Za-z][A-Za-z_ ]{0,20}):\s?(.*)$/);
-  if(m){cur={who:m[1],text:m[2]};out.push(cur);}else if(line.trim()){if(cur){cur.text+='\n'+line;}else{cur={who:'',text:line};out.push(cur);}}});
- return out.map(function(t){return '<div class=turn>'+(t.who?'<b>'+esc(who(t.who))+'</b>':'')+esc(t.text).replace(/\n/g,'<br>')+'</div>';}).join('');
-}
-function meaning(v){return (schema.label_meanings||{})[v]||'';}
-function hotkey(v){return v.charAt(0).toUpperCase();}
 function message(html){app.innerHTML='<div class=card>'+html+'</div>';}
 function load(){
  if(!app){return;}
@@ -2325,94 +2758,10 @@ function load(){
    '<div class=actions><button class=primary type=button id=start-round>Start round 1</button><span class=msg id=start-msg role=status></span></div>');
   var size=boot.batch_default;$$('[data-size]',app).forEach(function(b){b.addEventListener('click',function(){size=+b.dataset.size;$$('[data-size]',app).forEach(function(x){x.classList.toggle('on',x===b);});});});
   $('#start-round').addEventListener('click',function(){var btn=this;btn.disabled=true;$('#start-msg').textContent='Drawing…';
-   act('release_round',{n:size}).then(function(j){boot.current_round={round_id:j.result.round_id,finals:0,batch_size:j.result.batch_size};openItem();})
+   act('release_round',{n:size}).then(function(){location.reload();})
    .catch(function(e){$('#start-msg').textContent=e.message;$('#start-msg').className='msg err';btn.disabled=false;});});
   return;}
- message('<p class=mut>Opening the next item…</p>');
- whenLabelOnScreen(openItem);
 }
-function setNext(text){var n=$('.next');if(n){n.innerHTML='<b>Next:</b> '+esc(text);}}
-function openItem(){
- act('open_item',{round_id:boot.current_round.round_id}).then(function(j){
-  var r=j.result;
-  setNext(r.done?(roundWords(r.round_id)+' is fully labeled. Next: learn the guideline and close the round.'):('Label '+roundWords(r.round_id)+': '+r.finals+' of '+r.batch_size+' done.'));
-  if(r.done){boot.current_round=null;boot.rounds=[{round_id:r.round_id,state:'judged',finals:r.finals,batch_size:r.batch_size}];load();return;}
-  S={round:r.round_id,item:r.item,finals:r.finals,size:r.batch_size,position:r.position,stage:r.stage,
-   cls:r.first?r.first.class_label:null,region:null,unsure:(schema.uncertainty||['low'])[0],reason:'',
-   first:r.first,reveal:r.reveal,change:'none',busy:false,err:''};
-  if(S.stage==='reveal'||S.stage==='final'){S.stage='final';S.cls=r.first.class_label;S.region=(r.first.diagnostic_region||'').length>1?r.first.diagnostic_region:null;S.unsure=(r.first.uncertainty||{}).level||S.unsure;}
-  draw();
- }).catch(function(e){message('<p class=warn>'+esc(e.message)+'</p>');});
-}
-function draw(){
- var pct=Math.round(100*S.finals/Math.max(1,S.size));
- var h='<div class=progress><span class=bar><i style="width:'+pct+'%"></i></span><span>'+esc(roundWords(S.round))+' · '+(S.finals+1)+' of '+S.size+'</span><code title="the item\'s id in the corpus">item '+esc(S.item.item_id)+'</code></div>';
- if(S.item.context){h+='<div class=convo>'+turns(S.item.context)+'</div>';}
- h+='<div class=final><span class=tag>AI REPLY · judge this</span>'+esc(S.item.text).replace(/\n/g,'<br>')+'</div>';
- h+='<div class=q>'+esc(boot.question)+'</div>';
- if(S.stage==='final'){
-  var f=S.first||{},rv=S.reveal||{};
-  h+='<div class=line><span class=lbl>your answer</span><b>'+esc(f.class_label)+'</b>&nbsp;· '+esc(regionWords(f.diagnostic_region))+' · '+esc(unsureWords((f.uncertainty||{}).level))+' unsure</div>';
-  h+='<div class=reveal><h3>'+esc(rv.label||'Comparison')+'</h3>';
-  if(rv.kind==='reference_observations'&&!rv.missing){
-   Object.keys(rv.counts||{}).forEach(function(field){var c=rv.counts[field],tot=0;Object.keys(c).forEach(function(k){tot+=c[k];});
-    h+='<div class=line><span class=lbl>'+esc(field)+'</span><span class=votes>'+Object.keys(c).sort().map(function(k){return '<span><b>'+Math.round(100*c[k]/Math.max(1,tot))+'%</b> '+esc(k)+' <span class=mut>('+c[k]+')</span></span>';}).join('')+'</span></div>';});
-   Object.keys(rv.fields||{}).forEach(function(field){h+='<div class=line><span class=lbl>'+esc(field)+'</span><b>'+esc(rv.fields[field])+'</b></div>';});
-  } else {h+='<p class=mut>'+esc(rv.note||'No comparison for this item.')+'</p>';}
-  h+='</div>';}
- h+='<div class=choices>'+(schema.labels||[]).map(function(v){return '<button type=button class="choice'+(S.cls===v?' on':'')+'" data-cls="'+esc(v)+'"><kbd>'+esc(hotkey(v))+'</kbd><b>'+esc(v)+'</b><small>'+esc(meaning(v))+'</small></button>';}).join('')+'</div>';
- var boundary=(schema.regions||[]).filter(function(r){return r.length>1;});
- h+='<div class=line><span class=lbl>clear or border?</span><button type=button class="pill tog'+(!S.region?' on':'')+'" data-region="">clear case</button>'+boundary.map(function(r){return '<button type=button class="pill tog'+(S.region===r?' on':'')+'" data-region="'+esc(r)+'" title="'+esc(r+': '+((schema.region_meanings||{})[r]||''))+'">'+esc(regionWords(r))+'</button>';}).join('')+'</div>';
- h+='<div class=line><span class=lbl>how unsure</span>'+(schema.uncertainty||[]).map(function(u,i){return '<button type=button class="pill tog'+(S.unsure===u?' on':'')+'" data-unsure="'+esc(u)+'"><kbd>'+(i+1)+'</kbd> '+esc(unsureWords(u))+'</button>';}).join('')+'</div>';
- var changed=S.stage==='final'&&S.first&&(S.cls!==S.first.class_label||(S.region||S.cls.charAt(0).toUpperCase())!==S.first.diagnostic_region);
- if(S.stage==='final'){
-  if(changed){if(S.change==='none'){S.change='correction';}
-   h+='<div class=line><span class=lbl>why change</span>'+['correction','clarification','concept_revision'].map(function(c,i){return '<button type=button class="pill tog'+(S.change===c?' on':'')+'" data-change="'+c+'"><kbd>'+(i+4)+'</kbd> '+c.replace('_',' ')+'</button>';}).join('')+'</div>';}
-  else if(S.change!=='unresolved'){S.change='none';}
- }
- h+='<div class=line><span class=lbl>reason</span><input class=reason type=text maxlength=500 placeholder="optional, one line" value="'+esc(S.reason)+'"></div>';
- var label=S.stage==='first'?'Lock answer, then compare':(S.change==='unresolved'?'Save as unresolved':(changed?'Save changed final':'Keep and next'));
- h+='<div class=actions><button class=primary type=button id=submit'+((S.cls||S.change==='unresolved')&&!S.busy?'':' disabled')+'>'+label+' <kbd>Enter</kbd></button>';
- if(S.stage==='final'){h+='<button class=ghost type=button id=unresolved>Unresolved <kbd>U</kbd></button>';}
- h+='<span class="msg'+(S.err?' err':'')+'" role=status>'+esc(S.err)+'</span></div>';
- h+='<div class=keys>'+(schema.labels||[]).map(function(v){return '<kbd>'+esc(hotkey(v))+'</kbd> '+esc(v);}).join(' · ')+' · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> how unsure'+(S.stage==='final'?' · <kbd>4</kbd><kbd>5</kbd><kbd>6</kbd> why change · <kbd>U</kbd> unresolved':'')+' · <kbd>/</kbd> reason · <kbd>Enter</kbd> '+(S.stage==='first'?'lock':'save')+'</div>';
- app.innerHTML=h;
- $$('[data-cls]',app).forEach(function(b){b.addEventListener('click',function(){S.cls=b.dataset.cls;if(S.change==='unresolved'){S.change='none';}draw();});});
- $$('[data-region]',app).forEach(function(b){b.addEventListener('click',function(){S.region=b.dataset.region||null;draw();});});
- $$('[data-unsure]',app).forEach(function(b){b.addEventListener('click',function(){S.unsure=b.dataset.unsure;draw();});});
- $$('[data-change]',app).forEach(function(b){b.addEventListener('click',function(){S.change=b.dataset.change;draw();});});
- var input=$('input.reason',app);input.addEventListener('input',function(){S.reason=input.value;});
- input.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submit();}if(e.key==='Escape'){input.blur();}});
- var sb=$('#submit',app);if(sb){sb.addEventListener('click',submit);}
- var ub=$('#unresolved',app);if(ub){ub.addEventListener('click',function(){S.change='unresolved';draw();});}
-}
-function submit(){
- if(!S||S.busy){return;} if(!S.cls&&S.change!=='unresolved'){return;}
- S.busy=true;S.err='';var btn=$('#submit',app);if(btn){btn.disabled=true;}
- var body={round_id:S.round,item_id:S.item.item_id,class_label:S.cls,region:S.region,uncertainty:S.unsure,reason:S.reason};
- if(S.stage==='first'){
-  act('first',body).then(function(j){S.first=j.result.first;S.reveal=j.result.reveal;S.stage='final';S.region=S.first.diagnostic_region&&S.first.diagnostic_region.length>1?S.first.diagnostic_region:null;S.change='none';S.busy=false;draw();})
-  .catch(function(e){S.busy=false;S.err=e.message;draw();});
- } else {
-  body.change_type=S.change;
-  act('final',body).then(function(j){S.busy=false;boot.current_round.finals=j.result.finals;openItem();})
-  .catch(function(e){S.busy=false;S.err=e.message;draw();});
- }
-}
-document.addEventListener('keydown',function(e){
- if(!S||!app||current.space!=='labeling'||current.view!=='label'){return;}
- if(e.metaKey||e.ctrlKey||e.altKey){return;}
- var t=e.target; if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA')){return;}
- var k=e.key;
- if(k==='Enter'){e.preventDefault();submit();return;}
- if(k==='/'){e.preventDefault();var i=$('input.reason',app);if(i){i.focus();}return;}
- var labels=schema.labels||[];
- for(var n=0;n<labels.length;n++){if(k.toUpperCase()===hotkey(labels[n])&&k.length===1){S.cls=labels[n];if(S.change==='unresolved'){S.change='none';}draw();return;}}
- if(/^[1-9]$/.test(k)){var idx=+k-1,u=schema.uncertainty||[];
-  if(idx<u.length){S.unsure=u[idx];draw();return;}
-  var ch=['correction','clarification','concept_revision'][idx-3];if(S.stage==='final'&&ch){S.change=ch;draw();}return;}
- if((k==='u'||k==='U')&&S.stage==='final'){S.change='unresolved';draw();}
-});
 load();
 })();
 """

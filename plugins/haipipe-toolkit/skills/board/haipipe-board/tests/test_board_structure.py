@@ -53,9 +53,7 @@ class BoardStructureTest(unittest.TestCase):
     def test_new_page_stub_uses_only_the_current_page_face(self):
         self.assertIn("## Opening", Q_STUB)
         self.assertIn("## Content", Q_STUB)
-        self.assertIn("## Aims", Q_STUB)
-        self.assertIn("**Now:**", Q_STUB)
-        for heading in ("Outline", "States", "Files", "Discussion", "Log"):
+        for heading in ("Aims", "Outline", "States", "Files", "Discussion", "Log"):
             self.assertNotRegex(Q_STUB, rf"(?m)^## {heading}\s*$")
 
     def test_archive_moves_the_whole_page_folder_and_writes_outline_log(self):

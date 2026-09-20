@@ -50,12 +50,6 @@ Replace this paragraph with the subject, the stake, and the exact boundary of th
 #### 1.1 · First paragraph
 (State the job this paragraph must perform.)
 Write the first supported claim here.
-
-## Aims
-### A1 · First division
-- ⬜ A1.1 · Name the durable target this Page must establish.
-  **Done when:** One sentence saying exactly how this Aim is judged met.
-  **Now:** The Page has been created and its content is not yet established.
 """
 
 

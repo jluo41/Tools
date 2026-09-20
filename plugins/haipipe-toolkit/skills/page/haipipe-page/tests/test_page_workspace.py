@@ -155,7 +155,11 @@ def test_runtime_copied_without_board(tmp_path):
                             cwd=tmp_path, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     markup = (destination / 'delivery/web/index.html').read_text()
-    assert 'C1.P1.B1' in markup
+    # The standalone reader keeps the plan in Draft/Outline Space; the static
+    # Page Face remains the minimal Opening → Content surface.
+    assert 'C1.P1.B1' not in markup
+    assert 'Opening' in markup
+    assert 'Content' in markup
     assert 'id="static-workspace"' in markup
 
 
@@ -231,7 +235,7 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
         "plan": "outline/argument-page-outline-v0.1.md",
         "draft": "outline/argument-page-outline-v0.1.md", "run": "r01_page-setup",
         "delivery": "delivery/web/index.html", "mode": "create-semantic-records",
-        "checks": {"pass": 11, "missing": 0, "deferred": 3, "untested": 2, "n/a": 1},
+        "checks": {"pass": 10, "missing": 0, "deferred": 4, "untested": 2, "n/a": 1},
         "blocking_gate": "pass",
     }
     face = page.source.read_text(encoding="utf-8")

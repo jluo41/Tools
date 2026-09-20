@@ -193,3 +193,22 @@ def test_reveal_index_never_contains_sealed_ids(tmp_path: Path) -> None:
                      class_label="none", region=None, uncertainty="low")
     cache = next((root / "cache" / "reveal").glob("*.json"))
     assert not set(json.loads(cache.read_text())) & sealed_ids(root)
+
+
+
+
+def test_feedback_notes_are_appended_per_item(tmp_path: Path) -> None:
+    root, _ = confirmed_job(tmp_path)
+    cal.release_round(root, human_id="JL")
+    rp = root / "rounds/round_01"
+    item_id = json.loads((rp / "human_batch.jsonl").read_text().splitlines()[0])["item_id"]
+    note = cal.add_feedback(root, "round_01", item_id, human_id="JL", author="human", text="  vague   refusal ")
+    assert note["text"] == "vague refusal" and note["author"] == "human"
+    cal.add_feedback(root, "round_01", item_id, human_id="JL", author="model", text="raters split")
+    assert len((rp / "sessions" / cal.FEEDBACK_FILE).read_text().splitlines()) == 2
+    for bad in ({"author": "rater", "text": "x"}, {"author": "human", "text": "  "}):
+        with pytest.raises(cal.LabelingRefused):
+            cal.add_feedback(root, "round_01", item_id, human_id="JL", **bad)
+    with pytest.raises(cal.LabelingRefused):
+        cal.add_feedback(root, "round_01", "sealed-or-missing", human_id="JL", author="human", text="x")
+    assert not [e for e in cal._events(rp) if e["kind"] != "show"]  # notes never touch the event log

@@ -678,6 +678,31 @@ def record_final(job_root: Path, round_id: str, item_id: str, *, human_id: str, 
     return {**progress, "closed_run": closed}
 
 
+FEEDBACK_FILE = "feedback.jsonl"   # rounds/round_NN/sessions/: notes from the chat about an item
+FEEDBACK_AUTHORS = ("human", "model")
+
+
+def add_feedback(job_root: Path, round_id: str, item_id: str, *, human_id: str, author: str, text: str,
+                 session_id: str = "") -> dict:
+    """Append one note from the chat about an item; a note is never a label."""
+    job_root = job_root.resolve()
+    require_human_p1(job_root, human_id)
+    round_path, batch = _round_for_judging(job_root, round_id)
+    if item_id not in {str(row["item_id"]) for row in batch}:
+        raise LabelingRefused("item is not in this round's frozen batch")
+    if author not in FEEDBACK_AUTHORS:
+        raise LabelingRefused(f"author must be one of {list(FEEDBACK_AUTHORS)}")
+    text = " ".join(str(text or "").split())[:2000]
+    if not text:
+        raise LabelingRefused("feedback needs text")
+    note = {"at": now_iso(), "round_id": round_id, "item_id": item_id, "author": author, "text": text,
+            "human_id": human_id, "session_id": session_id}
+    with _locked(round_path / "sessions" / ".lock"):
+        with (round_path / "sessions" / FEEDBACK_FILE).open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(note, sort_keys=True, ensure_ascii=False) + "\n")
+    return note
+
+
 def _close_calibration(job_root: Path, round_path: Path, batch: list[dict], states: dict,
                        run: str, config: dict) -> str:
     errors = verify_events(round_path)

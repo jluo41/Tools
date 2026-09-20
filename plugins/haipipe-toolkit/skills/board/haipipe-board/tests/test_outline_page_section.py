@@ -9,7 +9,7 @@ sys.path.insert(0, str(ENGINE))
 
 from src import body as board_body
 from src.page_board import run_index_body, sidebar_rows
-from src.page_question import render_question
+from src.page_question import render_outline, render_question
 from src.parse import parse_page
 
 
@@ -83,9 +83,11 @@ class OutlinePageSectionTest(unittest.TestCase):
             finally:
                 board_body.BASE = prior_base
 
-        self.assertNotIn("📁 Files", html)
-        self.assertNotIn("💬 Discussion", html)
-        self.assertNotIn("📜 Log", html)
+        self.assertIn("🚪 Opening", html)
+        self.assertIn("📚 Content", html)
+        for backstage in ("🧭 Outline", "🎯 Aims", "📍 States", "Stage Contract",
+                          "📁 Files", "💬 Discussion", "📜 Log"):
+            self.assertNotIn(backstage, html)
 
     def test_outline_section_renders_current_plan_without_a_second_map(self):
         with TemporaryDirectory() as temp:
@@ -103,11 +105,15 @@ class OutlinePageSectionTest(unittest.TestCase):
             try:
                 page = parse_page("QA1", PAGE, file="QA/QA1.md")
                 html = render_question(page, None, None)
+                page_html = html
+                outline_html = render_outline(source, page.get("page_type", ""))
             finally:
                 board_body.BASE = prior_base
 
+        self.assertNotIn("🧭 Outline", page_html)
+        self.assertIn("🚪 Opening", page_html)
+        html = outline_html
         self.assertIn("🧭 Outline", html)
-        self.assertIn("🚪 Opening", html)
         self.assertNotIn("🧭 Opening", html)
         self.assertIn("▤ Outline table", html)
         self.assertIn('<details class="outline-section" open>', html)
@@ -202,6 +208,7 @@ class OutlinePageSectionTest(unittest.TestCase):
             try:
                 page = parse_page("QA1", PAGE, file="QA/QA1.md")
                 html = render_question(page, None, None)
+                html = render_outline(source, page.get("page_type", ""))
             finally:
                 board_body.BASE = prior_base
         self.assertIn("[1 · Phenomenon]", html)
@@ -240,6 +247,7 @@ class OutlinePageSectionTest(unittest.TestCase):
             try:
                 page = parse_page("QA1", PAGE, file="QA/QA1.md")
                 html = render_question(page, None, None)
+                html = render_outline(source, page.get("page_type", ""))
             finally:
                 board_body.BASE = prior_base
 
@@ -283,6 +291,7 @@ class OutlinePageSectionTest(unittest.TestCase):
                 try:
                     page = parse_page("QA1", PAGE, file="QA/QA1.md")
                     html = render_question(page, None, None)
+                    html = render_outline(source, page.get("page_type", ""))
                 finally:
                     board_body.BASE = prior_base
 
@@ -324,6 +333,7 @@ class OutlinePageSectionTest(unittest.TestCase):
             try:
                 page = parse_page("QA1", PAGE, file="QA/QA1.md")
                 html = render_question(page, None, None)
+                html = render_outline(source, page.get("page_type", ""))
                 run_index = run_index_body([page])
             finally:
                 board_body.BASE = prior_base
@@ -377,6 +387,7 @@ class OutlinePageSectionTest(unittest.TestCase):
             try:
                 page = parse_page("QA1", PAGE, file="QA/QA1.md")
                 html = render_question(page, None, None)
+                html = render_outline(source, page.get("page_type", ""))
             finally:
                 board_body.BASE = prior_base
 
@@ -422,9 +433,7 @@ class OutlinePageSectionTest(unittest.TestCase):
             finally:
                 board_body.BASE = prior_base
 
-        self.assertIn("🧭 Outline", html)
-        self.assertIn("▤ Outline table", html)
-        self.assertIn('<details class="outline-section" open>', html)
+        self.assertNotIn("🧭 Outline", html)
         self.assertIn("🧭 Outline", sidebar)
         self.assertIn("🚪 Opening", sidebar)
         self.assertNotIn("🧭 Opening", sidebar)
@@ -505,6 +514,7 @@ GATE        accepted main receipt; otherwise retain placeholders
             try:
                 page = parse_page("NA1", narrative_page, file="NA/NA1.md")
                 html = render_question(page, None, None)
+                html = render_outline(source, "narrative")
             finally:
                 board_body.BASE = prior_base
 

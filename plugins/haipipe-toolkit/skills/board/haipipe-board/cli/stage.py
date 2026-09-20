@@ -347,26 +347,16 @@ provides: {args.provides or ""}
 ## Opening
 What must this stage produce, under which inherited requirements and page Writing Style?
 
-This page is a concrete lifecycle unit. Its Stage Contract and inherited Writing Style are
-generated from explicit dependencies; its Content remains authored here.
+This page is a concrete lifecycle unit. Its backstage contract and inherited Writing Style
+are generated from explicit dependencies; its Content remains authored here.
 
 The named stage output and its human gate are covered here; upstream evidence stays in the linked source pages.
-
-## Stage Contract
 
 ## Content
 
 ### Stage Output
 Write the stage substance here.
 
-## Aims
-### Stage Output
-- ⬜ A1.1 · Produce the declared output.
-  **Done when:** The observable artifact exists and meets its acceptance condition.
-  **Now:** The stage output has not been authored yet.
-- ⬜ A1.2 · Pass the human gate.
-  **Done when:** The decision is recorded before this stage changes to ✅ SETTLED.
-  **Now:** No human ruling has been recorded.
 """
     path.write_text(text, encoding="utf-8")
     if args.group:

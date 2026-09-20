@@ -50,7 +50,7 @@ def test_delivery_workspace_passes_matching_lanes_and_flags_source_drift(tmp_pat
     assert receipt["overall"] == "pass", receipt
     assert receipt["counts"] == {"pass": 3, "stale": 0, "unverified": 0, "not-built": 2}
     body = render_workspace(page, "", page.name)
-    assert "Delivery Workspace" in body
+    assert "Delivery Space" in body
     assert "source fingerprint" in body
     assert "content mirror" in body
     assert "grid-template-columns:1fr" in body

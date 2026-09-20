@@ -523,11 +523,6 @@ caption line above it if the tree is the whole story.
 ### Unit contract
 {block}
 
-## Aims
-### P · Page-level health ruling
-- ⬜ P1 · Rule this skill's health.
-  **Done when:** `state:` records a human judgment: stable, in flux, needs work, or parked.
-  **Now:** The Page was generated on {stamp}; no health judgment has been recorded.
 """
 
 

@@ -54,11 +54,10 @@ class AimsStateTest(unittest.TestCase):
 
     def test_canonical_names_and_counts_render(self):
         html = render_question(parse_page("QT1", CANONICAL), None, None)
-        self.assertIn("🎯 Aims", html)
-        self.assertIn("📍 States", html)
+        self.assertNotIn("🎯 Aims", html)
+        self.assertNotIn("📍 States", html)
         self.assertNotIn('>📍 State<', html)
-        self.assertIn('<span class="cnt">2/3</span>', html)
-        self.assertIn('<span class="shc">1/2</span>', html)
+        self.assertIn("📚 Content", html)
 
     def test_historical_headings_remain_compatible(self):
         legacy = (CANONICAL.replace("## Aims", "## Items to Finish")
@@ -67,20 +66,19 @@ class AimsStateTest(unittest.TestCase):
         self.assertTrue(sec(page["sec"], "Done when").startswith("### C1"))
         self.assertTrue(sec(page["sec"], "Now").startswith("### C1"))
         html = render_question(page, None, None)
-        self.assertIn("🎯 Aims", html)
-        self.assertIn("📍 States", html)
+        self.assertNotIn("🎯 Aims", html)
+        self.assertNotIn("📍 States", html)
 
     def test_singular_state_heading_remains_a_legacy_alias(self):
         page = parse_page("QT3", CANONICAL.replace("## States", "## State"))
         self.assertTrue(sec(page["sec"], "Now").startswith("### C1"))
-        self.assertIn("📍 States", render_question(page, None, None))
+        self.assertNotIn("📍 States", render_question(page, None, None))
 
     def test_current_page_generators_keep_status_inside_aims(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
         for rel in ("live/structure.py", "cli/stage.py", "cli/skillpage.py"):
             text = (root / rel).read_text(encoding="utf-8")
-            self.assertIn("**Now:**", text, rel)
-            for heading in ("States", "Files", "Discussion", "Log"):
+            for heading in ("Aims", "States", "Files", "Discussion", "Log"):
                 self.assertNotRegex(text, rf'(?m)^## {heading}\s*$', rel)
 
         self.assertFalse((root / "cli" / "meetingpage.py").exists())

@@ -275,7 +275,7 @@ PREPARE begins. Do not allocate the later episode Runs early.
 
 In the engine, `release_round` IS the release. Only the identified human may
 call it, after G0 and not at HOLD (the Board button is
-`Labeling → Label → Start round 1`). It writes `card.md` already at
+`Labeling → Rounds → Start round 1`). It writes `card.md` already at
 `state: released`, with `released_by`, `released_at`, `channel`, `policy`,
 `arm: random development draw`, `n`, and `seed`. The engine never writes a
 `proposed` card. Batch size `n` must be 1 to 200; it defaults to config
@@ -325,6 +325,17 @@ final     the human's final decision + change type
 Resume rule: the open item is the first batch row with no `final` event; a
 row with `lock` and no `final` resumes at `reveal`. A dead chat changes nothing
 on disk.
+
+**By chat** (JL 260918): the person reads the round in `Labeling → Rounds`
+(the open round's item table: #, Item, Text, Group, State, Feedback; text appears
+once the item has been shown, and the chat shows an item with `open_item`) and
+talks the items through in chat; the view's `Copy chat prompt` button gives
+the text that starts or resumes that chat. The chat records
+only answers the person states: `record_first` for a first answer (then shows
+the comparison), `record_final` for keep or change, and `add_feedback` for a
+note about an item (`sessions/feedback.jsonl`, author human or model, never a
+label). The model gives its own view of an item only after the person's first
+answer for it is recorded.
 
 Engine calls, each refused unless the caller is the identified human, the job
 is past G0, and it is not at HOLD:

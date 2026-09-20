@@ -140,7 +140,7 @@ class StandaloneServerTests(unittest.TestCase):
         path = '/_page/delivery?file=' + self.source.name + '&workspace=1'
         code, _, body = self.request(path=path)
         self.assertEqual(code, 200, body)
-        self.assertIn(b'Delivery Workspace', body)
+        self.assertIn(b'Delivery Space', body)
         self.assertIn(b'Page source is authoritative', body)
         self.assertIn(b'not built', body)
         code, headers, body = self.request('HEAD', path)
@@ -441,7 +441,7 @@ class StandaloneServerTests(unittest.TestCase):
         writable = self.request(path=route)[2].decode()
         # Scratch is the only bounded Draft write lane. Its forms are hidden
         # outside Scratch Mode and write the registry/Run receipt, never prose.
-        self.assertEqual(writable.count('<form'), writable.count('data-scratch-form'))
+        self.assertEqual(writable.count('<form data-scratch-form'), 2)
         self.assertNotIn('class=fb-form', writable)
         self.assertIn('data-scratch-scope="paragraph"', writable)
         self.assertNotIn('data-preview-write', writable)

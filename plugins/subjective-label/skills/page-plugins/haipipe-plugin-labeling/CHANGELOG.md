@@ -4,9 +4,8 @@
 
 Match the built Board surface and engine. The surface now has five Spaces:
 `Data` (Contract, Schema, Embedding), `Labeling` (Label, Rounds, Guideline), `Quality`
-(Test, Evaluation, Audit), `Run` (Runs, Phases), and `Delivery` (Handoff,
-Final labels). Guideline is a view inside Labeling, and the Workflow map is
-gone; P0-P5 is phase state in `Run → Phases` and the `Next:` header. The page
+(Test, Evaluation, Audit), `Run` (Runs, Phases, Workflow map), and `Delivery` (Handoff,
+Final labels). Guideline is a view inside Labeling; P0-P5 is phase state in `Run → Phases` and the `Next:` header. The page
 opens on the Space that holds the next step. The browser gains one write door,
 `POST /_board/labeling/act`, with exactly ten engine-checked actions
 (`confirm_meaning`, `release_round`, `open_item`, `first`, `final`,
@@ -35,8 +34,7 @@ built model gets its own pane and `Showing` chip. Contract cards now each take
 the full row. `Labeling → Rounds` now shows each round's frozen draw: state,
 who released it and when, the draw method, pool size and seed, each item's
 selection probability, the policy version, both Runs, and a list of the drawn
-item ids in draw order with their map group and their labeled/open/waiting
-state. Item text stays on the Label screen. The embedding map is interactive:
+item ids in draw order with their map group and their state. The embedding map is interactive:
 click a dot to see its group, round state, word-piece count, and its 6 nearest
 items by cosine similarity (lines drawn to them; click one to move on); click a
 group or legend entry to light that group up; show only round items; zoom
@@ -72,9 +70,7 @@ plugin's `.kv` look), the Groups card is one table (group, keywords, items, pick
 labeled) with `Show typical items` per row, the map toggle `Round items` is now
 `Picked for labeling`, and the Contract's embedding row lists one build per line;
 a readability review by a fresh subagent (25 findings, 1440 px and phone) led to plain
-words throughout: the Label screen's boundary buttons read "clear case", "high or low?" (code
-in the tooltip), unsure levels read "a little · somewhat · very", the lock button reads "Lock
-answer, then compare", chatbot turns read "AI"; the page title is the job's question; times
+words throughout: chatbot turns read "AI"; the page title is the job's question; times
 read "16 Sep 2026, 3:13 pm"; rounds read "round 1"; Phases is a step line with "waiting for"
 in words; "held back" and "to label" replace "sealed" and "development" on screen; the
 Embedding view opens on the Map and Groups, with "How the map is made" and "Technical
@@ -83,14 +79,33 @@ tables; the Run Space names what ran in words; the Board list drops its duplicat
 `Run → Workflow map` (like the Paper plugin's) projects the new `## Workflow map` table of
 `ref/ref-space-mapping.md`: one row per Run type (all 25, grouped by step), one column per
 Space (`start` / `shows`), who starts it (a button, Chat, setup, or "not built yet"), where it
-writes, and how many Runs of that type the job has; the Run Space's plain words come from
-the same table's `in words` column; the terminal hint is gone from the top card,
+writes, and how many Runs of that type the job has; above it, an SOP card projects the
+new `## SOP` table (12 steps: what happens, what you do, what the chat or engine does,
+where, which Run) and marks this job's state per step (done, running, not yet, not built
+yet) with the current step as "now"; the Run Space's plain words come from
+the same table's `in words` column;
+`Labeling → Rounds` cards are collapsed to one line with a compact item table whose
+columns are #, Item, Text (the reply once the item has been shown, conversation folded),
+Group, State, and Feedback (notes from the chat, `calibration.add_feedback` →
+`sessions/feedback.jsonl`), so the person reads the round while labeling by chat; the terminal hint is gone from the top card,
 `Runs on this job` (was `Your runs`) and the Build record say who started each build
 (the button, the terminal for a named person, or no request recorded), and the CLI
 refuses a build without `--started-by`.
-The Label screen now opens an item, and
-writes its `show` event, only while `Labeling → Label` is on screen; loading
-any other view writes nothing.
+`Labeling → Label` now holds the label definitions: the question, the judge
+and scope rules, who confirmed them and when, a table of labels with their
+meanings, the in-between cases, and how-sure levels. A `Copy chat prompt`
+button and one `⧉ chat` icon per label (and one for in-between cases) copy a
+prompt for defining the labels better in a Claude chat; an agreed change is a
+guideline patch for LEARN, never an edit to the confirmed `config.yaml`.
+`Labeling → Rounds` holds the rounds: the open round's card starts expanded
+with its own `Copy chat prompt` (job folder, question, labels, progress, items
+waiting for a final, the next five items, and the JUDGE-by-chat rules); State
+shows `first: <label>` after a first answer and the final label after a final.
+The one-item keyboard screen is gone, so no view writes a `show` event any
+more: the chat shows an item (`calibration.open_item`) and records the
+person's stated answers (`record_first`, `record_final`, `add_feedback`). With
+no round open, Rounds shows `Start round 1` or the round-done notice first.
+Every copy button writes nothing.
 
 ## 0.16.0 · 2026-09-16
 

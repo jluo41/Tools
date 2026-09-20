@@ -31,7 +31,7 @@ Human-readable Markdown files are rendered views and never a second source of tr
 │   ├── embeddings/
 │   └── reveal/<key>.json             reveal index; eligible ids only, never a sealed id
 ├── exposure/
-│   └── group_examples.jsonl          append-only: who saw which development item's text outside the Label screen
+│   └── group_examples.jsonl          append-only: who saw which development item's text outside a round
 ├── policy/
 │   ├── current
 │   └── versions/
@@ -363,9 +363,10 @@ The final report states provenance shares, weighted error and interval, protecte
 | vector cache and indexes | Embedder |
 | `C_t` and `B_t` manifests | Candidate Selector (round_01 today: `engine/calibration.py release_round`) |
 | executor predictions | registered executor through one `executor-predict` Run |
-| Session human records, `sessions/events.jsonl` | `engine/calibration.py`, recording the identified human's input from the Board Label screen or the Strong Calibration Agent |
+| Session human records, `sessions/events.jsonl` | `engine/calibration.py`, recording the identified human's input from the chat, the Board write door, or the Strong Calibration Agent |
 | `cache/reveal/` | `engine/calibration.py`; regenerable |
 | `exposure/group_examples.jsonl` | `engine/embedding_build.py` (`group_examples`, `item_text`); append-only, never rebuilt |
+| `rounds/round_NN/sessions/feedback.jsonl` | `engine/calibration.py add_feedback`; notes from the chat about an item (author human or model), append-only, never a label |
 | `population_status` on `corpus/items.jsonl`, sealed manifest at fence time | `engine/fence_source.py`, before the job exists |
 | closed policy, cumulative gold, checkpoint | Checkpoint Keeper |
 | round card `released:` | a person (round_01 today: the identified human calls `release_round`) |

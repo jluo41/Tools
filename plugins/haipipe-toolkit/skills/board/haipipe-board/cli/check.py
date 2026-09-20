@@ -96,7 +96,7 @@ REQUIRED = ["Opening", "Done when"]
 CONSTRUCTS = [
     ("lead is the door",     "details.it.row.qd",  r'<details class="it row qd"', r"^## (?:Opening|Question)\s*$"),
     ("Opening never folds",  "div.ch.opening-head", r'class="ch opening-head"',   r"^## (?:Opening|Question)\s*$"),
-    ("drawer is flat",       "div.fh",             r'<div class="fh"',            r"^## Stage Contract\s*$"),
+    ("drawer is flat",       "div.fh",             r'<div class="fh"',            r"^\*\*(?:Where this Page sits|Why it matters):"),
     ("division",             "details.csec",       r'<details class="csec"',      r"^### "),
     ("paragraph heading",    "div.ph",             r'<div class="ph"',            r"^#### "),
     ("job line",             "div.pj",             r'<div class="pj"',            r"^\([^)]+\)\s*$"),
@@ -2415,8 +2415,12 @@ def check_template(rep, quiet):
         html = "\n".join(p.read_text(encoding="utf-8")
                          for p in sorted((d / "board").glob("*/*.html")))
 
+        # Guide comments describe optional shapes but are not authored Page
+        # content. Do not let their example list items trigger renderer drift
+        # errors for the reader-facing template fixture.
+        source_body = re.sub(r"<!--.*?-->", "", src, flags=re.S)
         for label, cls, pattern, source_pattern in CONSTRUCTS:
-            source_has = bool(re.search(source_pattern, src, re.M))
+            source_has = bool(re.search(source_pattern, source_body, re.M))
             rendered_has = bool(re.search(pattern, html))
             if not source_has:
                 rep.add(GAP, "template-gap", f"ref/page-template.md · {label}",
@@ -2448,7 +2452,8 @@ def check_template(rep, quiet):
             ("Q has no Stage Contract drawer", q_html, r"^(?![\s\S]*<div class=\"fh\">Stage Contract</div>)[\s\S]*$"),
             ("Q Content heading stays plain", q_html, r"📚 Content(?!\s*·)"),
             ("S rationale in Opening", s_html, r'<div class="fh">More details</div>'),
-            ("S Stage Contract in Opening", s_html, r'<div class="fh">Stage Contract</div>'),
+            ("S has no Stage Contract drawer", s_html,
+             r"^(?![\s\S]*<div class=\"fh\">Stage Contract</div>)[\s\S]*$"),
             ("S Content heading names the stage", s_html, r"📚 Content · Main 1 Fixture"),
         ]
         for label, page_html, pattern in mode_checks:

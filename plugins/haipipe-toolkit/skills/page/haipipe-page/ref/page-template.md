@@ -13,8 +13,13 @@ provides: <observable downstream handoff>
 Create a Q Page as Q<group><number>-<slug>.md.
 Create an S Page as S-<Family>-<unit>-<slug>.md, preferably with stage.py.
 
-Keep the current Page Face:
-  Opening → generated Outline → Content → Aims
+Keep the reader-facing Page Face minimal:
+  Opening → Content
+
+Outline, Aims, Stage Contract, Files, Discussion, Log, and other process
+records belong to the Page Folder and their owning Spaces. They may remain in
+legacy Page Faces for compatibility, but they are not reader-facing Page
+areas and should not be added to new Page source files.
 
 Title rule: use a short, objective label naming the Page's subject and the
 work or deliverable it owns. Keep it to three to five visible words. Do not
@@ -28,7 +33,8 @@ Do not create Page-level States, Files, Discussion, or Log sections. Use the
 matching records under outline/, including outline/<stem>-files.md and
 outline/<stem>-log.md.
 
-Q may omit Content. S must contain Content and may carry a Stage Contract.
+Q may omit Content. S must contain Content. Stage contracts, requirements,
+and targets are backstage records, not additional Page Face sections.
 Delete every guide comment before the Page is ready.
 -->
 
@@ -38,20 +44,6 @@ Delete every guide comment before the Page is ready.
 **Where this Page sits:** <the closest upstream or neighbouring Page and what it owns.>
 
 **Why it matters:** <the consequence in reader language.>
-
-## Stage Contract
-<!-- S only. Delete this whole section on a Q Page. stage.py owns the managed blocks. -->
-
-<!-- haipipe:contract:start sha256=... -->
-### Required Inputs
-<generated from explicit requires metadata>
-
-### Venue
-<generated from explicit style-from metadata>
-<!-- haipipe:contract:end -->
-
-### Provides
-<short observable output handed downstream>
 
 ## Content
 <!-- S required; Q optional. Number divisions and paragraphs all the way down.
@@ -94,21 +86,9 @@ Run. The owner still defines sentence-slot requirements. -->
 (the job this paragraph performs)
 <Continue with the next coherent part.>
 
-## Aims
-### A1 · First division
-- ⬜ A1.1 · <durable target>
-  **Done when:** <observable test>
-  **Now:** <one current fact>
-
-### A2 · Second division
-- ⬜ A2.1 · <durable target>
-  **Done when:** <observable test>
-  **Now:** <one current fact>
-
-### P · Page-level
-- ⬜ P1 · <target that genuinely crosses divisions>
-  **Done when:** <whole-Page test>
-  **Now:** <one current fact>
+<!-- Page targets and completion facts live in the Page Folder's requirement,
+     Context, Run, and CHECK records. They are not copied into the reading
+     Page as a second content stream. -->
 
 <!-- Optional current folds: Law, Lesson, Glossary. Add only when earned.
 

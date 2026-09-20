@@ -2,8 +2,8 @@
 
 This module deliberately stops short of claiming editorial acceptance.  It
 turns the supplied document into reviewable Page records: a specific Opening,
-an unapproved Shape, reader-move Bullets, matching candidate prose, explicit
-Aims, Context records, and one completed delegated setup Run.
+an unapproved Shape, reader-move Bullets, matching candidate prose, backstage
+Context records, and one completed delegated setup Run.
 """
 from __future__ import annotations
 
@@ -283,27 +283,10 @@ def _opening(title: str, divisions: tuple[DraftDivision, ...]) -> str:
 
 
 def _face(title: str, content: str, divisions: tuple[DraftDivision, ...]) -> str:
-    aims = []
-    for index, division in enumerate(divisions, 1):
-        count = sum(len(paragraph.bullets) for paragraph in division.paragraphs)
-        noun = "reader move" if count == 1 else "reader moves"
-        aims.append(
-            f"### A{index} · {division.title}\n\n"
-            f"- 🔨 A{index}.1 · Confirm the purpose and wording of “{division.title}.”\n"
-            f"  **Done when:** its planned Bullets and Content Draft express the intended section without unresolved structural disagreement.\n"
-            f"  **Now:** {count} {noun} {'is' if count == 1 else 'are'} mapped; human Shape and Content review remain pending.\n"
-        )
-    aims.append(
-        "### P · Page-level\n\n"
-        "- 🔨 P1 · Preserve enough Page state to resume revision without reconstructing the setup.\n"
-        "  **Done when:** source, current Shape, candidate prose, setup provenance, and delivery can be reopened from this Folder.\n"
-        "  **Now:** source, Shape, Content Draft, Context, Files, and setup Run records exist; no prose is marked accepted.\n"
-    )
     return (
         f"# {title}\nstate: 🟡 Setup complete; Outline review pending\nowner: unassigned\n"
         f"source-content: {content}\n{SETUP_MARKER}\n\n## Opening\n\n{_opening(title, divisions)}\n\n"
-        "## Content\n\n"
-        "## Aims\n\n" + "\n".join(aims)
+        "## Content\n"
     )
 
 
@@ -359,7 +342,7 @@ def _context_files(page, title: str, divisions: tuple[DraftDivision, ...], bulle
     files = (
         f"# {stem} · Files\npage: {page.source.name}\nkind: Page file map\nwritten: {date}\n\n"
         "### F1 · Page Face\n"
-        f"- **Path:** {page.source.name}\n- **Role:** Opening, Aims, and binding to imported Content.\n\n"
+        f"- **Path:** {page.source.name}\n- **Role:** Opening and the Page Face binding to imported Content.\n\n"
         "### F2 · Editable Content\n"
         f"- **Path:** {page.content.relative_to(page.folder).as_posix()}\n"
         "- **Role:** imported Markdown and the one content authority for the article.\n\n"

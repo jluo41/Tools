@@ -20,7 +20,7 @@ corpus:
   path: reviews.jsonl
   id_field: id
   text_field: text
-  context_field: context_prev          # optional; shown above the text on the Label screen
+  context_field: context_prev          # optional; folded under the text in the Rounds table
   metadata_fields: []
   population: "reviews in the declared target study"
   source: {name: "...", uri: "...", license: "..."}
@@ -172,7 +172,7 @@ These fields carry the words a person reads. The engine reads them as follows:
 
 | field | read by | shown as |
 |---|---|---|
-| `construct.question` | Board Labeling surface · `engine/fence_source.py` | the one question on `Data → Contract` and above the choices on `Labeling → Label`; near the top of the G_00 guideline |
+| `construct.question` | Board Labeling surface · `engine/fence_source.py` | the one question on `Data → Contract` and at the top of `Labeling → Label` (the label definitions); near the top of the G_00 guideline |
 | `labels.meanings` | Board · `fence_source.py` | a map from each value in `labels.values` to one sentence; shown on `Data → Contract`, under each class button, and in the G_00 guideline |
 | `regions.meanings` | Board · `fence_source.py` | a map from each region to a short phrase; shown on `Data → Contract` before confirmation, as hover text on the boundary buttons, and in the G_00 guideline |
 | `uncertainty.meaning` | Board · `fence_source.py` | one sentence on `Data → Contract` and in the G_00 guideline |

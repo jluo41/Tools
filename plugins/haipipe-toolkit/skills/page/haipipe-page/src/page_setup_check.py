@@ -264,8 +264,11 @@ def _content(page, face: str) -> SetupCheck:
 def _aims(face: str, plan: Path | None, expect_shape: bool) -> SetupCheck:
     body = _section(face, "Aims")
     if body is None:
-        return SetupCheck("aims_structure", "Aims structure", "missing",
-                          "The Page has no Aims section.", True)
+        return SetupCheck(
+            "aims_structure", "Backstage Aims", "deferred",
+            "The minimal Page Face keeps targets in Folder/Run records rather than rendering an Aims section.",
+            False,
+        )
     records = list(re.finditer(
         r"(?ms)^-\s+[✅🔨🧠⬜❄️]\s+((?:A\d+\.\d+)|P\d+)\s*·.*?(?=^-\s+[✅🔨🧠⬜❄️]|^### |\Z)",
         body,
@@ -281,7 +284,7 @@ def _aims(face: str, plan: Path | None, expect_shape: bool) -> SetupCheck:
         aligned = groups == divisions if expect_shape else groups.issubset(divisions)
         alignment = f"Aim groups {sorted(groups)} align with Shape divisions {sorted(divisions)}."
     return _check(
-        "aims_structure", "Aims structure", complete and aligned,
+        "aims_structure", "Backstage Aims", complete and aligned,
         f"{len(records)} Aim records have stable IDs, Done when, and Now. {alignment}",
         "Aims are missing stable records, Done when/Now fields, or division alignment.",
     )

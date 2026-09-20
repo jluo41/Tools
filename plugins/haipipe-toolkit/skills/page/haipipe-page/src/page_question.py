@@ -26,6 +26,13 @@ STAGE_LABELS = {
     "submission": "SUBMISSION PAGE",
 }
 
+# The Page Face is the reader surface, not the process console. Outline,
+# Aims, Stage Contract, Files, Discussion, Log, and similar records remain
+# available from their owning Spaces and stay in the Page Folder, but they do
+# not belong in the main reading flow. Keeping this boundary here means the
+# standalone Page and the Board-mounted Page share the same minimal face.
+MINIMAL_PAGE_FACE = True
+
 
 # ── 📚 the References block, from the page's own bib (QPf8, JL 260815) ───────
 # The INLINE half of a cite is body.py's: its chip + card own how `\citep{key}`
@@ -1311,7 +1318,7 @@ def _render_question(q, prv, nxt):
     # Stage Contract 现在跟它一致（JL 260725：「I don't want to have >」，以及
     # 「why other information are gone」—— 它们没丢，是被第二层 ▸ 关起来了）。
     inner += render_subsections(opening_sections, flat=True)
-    if is_stage and not is_manuscript_section:
+    if is_stage and not is_manuscript_section and not MINIMAL_PAGE_FACE:
         inner += render_contract(contract_sections, lead=legacy_record)
     # Opening 本身不折（JL 260725：「no > in the Opening, it will always be there」）：
     # 🚪 Opening 这一行和领句永远在台面上。可点的是【领句】—— 点开它，Boundary、
@@ -1392,6 +1399,12 @@ def _render_question(q, prv, nxt):
     nlog = len(re.findall(r"^(?:[-*]\s+)?\d{6}(?:\s+\d{3,4})?\s*[·|]", log, re.M))
     if not has_outline_folder:
         folds += det(f"📜 Log ({nlog})", note_body(log, apparatus=False))
+    # The Page Face intentionally stops after Opening + Content. The omitted
+    # material is not deleted: Outline/Draft, Evidence, Run, Delivery, and
+    # Folder surfaces remain the places where process records are inspected.
+    backstage = "" if MINIMAL_PAGE_FACE else (
+        f'{dia}{fs}{fls}<div class="folds">{folds}</div>'
+    )
     html = (
         f'<section class="slide q {cls}" id="{q["id"]}"'
         f' data-title="{esc(q["title"])}" data-file="{esc(q.get("file",""))}"'
@@ -1426,12 +1439,11 @@ def _render_question(q, prv, nxt):
         # id 后面那个空格是真字符（不是 CSS margin）——复制这行标题时
         # 才不会粘成 QA4Single…，而是 QA4 Single…（JL 260723）
         f'<h2 class="h2"><span class="hid">{q["id"]} </span>{inline(q["title"])}</h2>'
-        + f'<div class="opening">{ask}{bnd}</div>' + dia + content
-        + f'{fs}{fls}<div class="folds">{folds}</div>{nav}</section>')
-    # 📚 References land above durable folds, but only Opening and Outline
-    # start open. The bibliography stays accessible without becoming another
-    # default reading destination.
-    refs = references_block(q)
+        + f'<div class="opening">{ask}{bnd}</div>' + backstage + content
+        + f'{nav}</section>')
+    # References are an auxiliary reader aid. The minimal Page Face keeps them
+    # in the Evidence/Delivery surfaces instead of adding a third main area.
+    refs = references_block(q) if not MINIMAL_PAGE_FACE else ""
     if refs:
         html = html.replace('<div class="folds">',
                             det("📚 References", refs) + '<div class="folds">', 1)

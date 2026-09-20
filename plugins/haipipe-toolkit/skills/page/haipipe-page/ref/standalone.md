@@ -6,7 +6,7 @@
 |---|---|
 | Markdown that should become a working Page | `setup INPUT [--dest FOLDER]` |
 | Technical-only Markdown, text, HTML, code or binary intake | `init --file INPUT --dest FOLDER` |
-| Existing Page Face with Opening/Content/Aims | `inspect`, `build` or `serve` it in place |
+| Existing Page Face with Opening/Content | `inspect`, `build` or `serve` it in place |
 | Page Folder with `page.toml` or same-stem Page Face | Open the Folder; do not create a nested Folder |
 | Board membership request | Use Board to register this same source, after Page creation |
 
@@ -40,7 +40,7 @@ Do not occupy an existing server port or replace an unrelated listener.
 ```text
 my-page/
   page.toml                          portable registration, no absolute paths
-  my-page.md                         Page Face / Opening / Content / Aims
+  my-page.md                         Page Face / Opening / Content
   outline/evidence/materials/
     input.html                       editable imported copy, original bytes
     assets/...                       copied static local dependencies
@@ -51,7 +51,8 @@ my-page/
 original input hash. Its `content` must match the Face's `source-content:`.
 The Page renderer inserts that content directly: no duplicated editable prose.
 For an imported HTML file, edit HTML/CSS/JS under materials; edit the Face for
-Opening/Aims. HTML is displayed in an opaque-origin sandboxed iframe.
+Opening/Content. Requirements and targets stay in backstage records. HTML is
+displayed in an opaque-origin sandboxed iframe.
 The HTML `<title>`, its visible `<h1>`, and the outer Page title are distinct:
 change only the field the user requested. `--title` names the outer Page.
 No arbitrary uploaded code is executed by the server. Binary files remain
@@ -68,7 +69,8 @@ the input relies on those. This is a static-file Page workspace, not a general
 application deployment system.
 
 `setup` accepts imported Markdown. In one step it runs the safe import and then
-populates the Page's real working records: source-specific Opening and Aims,
+populates the Page's real working records: source-specific Opening,
+backstage requirements/targets,
 `outline/<stem>-outline-v0.1.md`, matching reader-move
 `outline/<stem>-outline-v<G>.<S>[.<E>].md` with embedded `Draft:` fields,
 Context/Files projections, and a completed
@@ -82,9 +84,10 @@ stop. Split a paragraph only when it contains independently removable,
 contradictable, or reorderable moves. Re-running setup refuses authored records unless
 `--force` is explicitly supplied after reviewing the replacement scope.
 Every setup Result includes `checks.json` plus the same checklist in
-`report.md`. Configuration, input preservation on intake, Opening, Outline,
-Bullet/Draft freshness, role syntax, Bullet-head readability, Content, Aim
-structure, static delivery, and copied assets are blocking checks. A blocking
+`report.md`. Configuration, input preservation on intake, the reader-facing
+Opening/Content, backstage Outline/Aim records, Bullet/Draft freshness, role
+syntax, Bullet-head readability, static delivery, and copied assets are
+blocking checks. A blocking
 failure records a failed Run and makes the command fail. Semantic-role and
 Bullet-only argument judgment, Aim achievement, human Shape/Content acceptance,
 and unrequested hosting remain visibly
@@ -127,16 +130,18 @@ writer or expose protected corpus text through Source/static routes.
 
 ## Check and hand off
 
-Use `page-checklist.md` to distinguish configuration readiness from substantive
-Opening/Outline/Content/Aims completion. An imported scaffold or successful
-build must not be reported as content acceptance or a hosted site.
+Use `page-checklist.md` to distinguish configuration readiness from the
+reader-facing Opening/Content and the backstage Outline/Aims records. An
+imported scaffold or successful build must not be reported as content
+acceptance or a hosted site.
 
 1. Read the supplied file and identify its dependencies and any sensitive data.
 2. Create or reuse the Page Folder; use `setup` rather than `init` when the user
    expects a content-ready Markdown Page. Compare imported bytes with the original.
-3. Inspect generated Opening, semantic roles, Bullet/Draft coverage, Aims,
-   Context/Files, and setup Result; correct obvious semantic errors without
-   marking Shape or Content accepted. Read the Bullet heads with the right-hand
+3. Inspect the rendered Opening/Content, then inspect generated backstage
+   semantic roles, Bullet/Draft coverage, Aims, Context/Files, and setup
+   Result; correct obvious semantic errors without marking Shape or Content
+   accepted. Read the Bullet heads with the right-hand
    prose hidden: they must reconstruct the argument in reader order. A Bullet
    may map to several sentences when they jointly perform one move. If anything
    changed, rerun `setup <existing-page-folder>` to refresh the audit and build.

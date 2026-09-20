@@ -56,14 +56,14 @@ write      POST /_board/labeling/act · confirm_meaning · release_round · open
 | STORAGE | `<page>/labeling/`, exactly the job layout in `subjective-label/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
 | SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; it fills the plugin pane with five Spaces and their views. Workflow phases P0-P5 are phase state shown in `Run → Phases` and in the one-line `Next:` header; they are not a Space. Studio Chat opens in its own tab |
 | WRITER | `subjective-label-workflow` dispatches the Building/Scanning ORDER machines; their Keeper, human event writer, runner, reconciler, and auditor own named artifacts. In the browser the only writer is `POST /_board/labeling/act`, which calls `engine/job.py` and `engine/calibration.py` |
-| BOUNDARY | Board discovery never enters `labeling/`; overview views never render item text, sealed ids, or private judgments in the page HTML (`Labeling → Rounds` lists the drawn item ids with their map group, never an item's text); an item waiting in a round batch shows its text only on `Labeling → Label`, one at a time; `Data → Embedding` fetches the text of other development items only on request (a group's typical items, or a picked dot), and each fetch is appended to `labeling/exposure/group_examples.jsonl`; an observed file is never treated as a validated gate |
+| BOUNDARY | Board discovery never enters `labeling/`; overview views never render item text, sealed ids, or private judgments in the page HTML (`Labeling → Rounds` lists the drawn item ids with their map group, never an item's text); an item waiting in a round batch shows its text only in its round's table in `Labeling → Rounds`, and only once the chat has shown it (its `show` event); `Data → Embedding` fetches the text of other development items only on request (a group's typical items, or a picked dot), and each fetch is appended to `labeling/exposure/group_examples.jsonl`; an observed file is never treated as a validated gate |
 
 ## 🔭 Two levels: Board and Page
 
 | level | where it opens | what it shows | writes |
 |---|---|---|---|
 | Board | the Board index, and the `S-Label-Dash` control Page | one card per Page whose `labeling/` has a `config.yaml`: target, question, data, step badge, progress, next step; Pages with no job listed below | none |
-| Page | any real job Page | the five Spaces and the Label screen | only `POST /_board/labeling/act` |
+| Page | any real job Page | the five Spaces; label definitions in `Labeling → Label`, round tables in `Labeling → Rounds` | only `POST /_board/labeling/act` |
 
 A card links to `/_board/labeling?path=…&file=…&page=…`, so zooming in opens
 the Page level in the same pane. The Page header's `← All labeling jobs` link
@@ -93,8 +93,10 @@ opens the Board-level view instead.
 The surface uses one location word: **Space**. In this plugin, "Space" and
 "Workspace" are the same concept. There are five Spaces, in this order:
 `Data`, `Labeling`, `Quality`, `Run`, `Delivery`. `Guideline` is a view inside
-`Labeling`, not a Space of its own. The older Human tab and the Workflow map
-are gone. Workflow P0-P5 is phase state: it shows in `Run → Phases` and in the
+`Labeling`, not a Space of its own. The older Human tab is gone.
+`Run → Workflow map` shows the SOP (the steps a job walks, who does each, and
+where this job is) above the Workflow map (every Run type × Space), both
+projected from `ref/ref-space-mapping.md`. Workflow P0-P5 is phase state: it shows in `Run → Phases` and in the
 `Next:` header line.
 
 The roster table (views, first question, canonical sources), the rule for
@@ -148,7 +150,7 @@ of the browser payload. The permission selector is disabled, a held writable
 client cannot be reused, and write/run tools are disallowed. The same server
 guard rejects TUI start/reuse/input/local-resume commands and model-generated
 Draw writes; keeping Studio's controls does not create alternate execution
-doors. The Label screen shows a read-only notice, and the engine refuses every
+doors. `Labeling → Rounds` shows a read-only notice, and the engine refuses every
 write-door action. Chat may inspect and discuss; it cannot cross the gate.
 
 ## ✍️ Write and authority law
@@ -175,10 +177,10 @@ because its writer and its authority check exist end to end:
 | action | where it is pressed | engine call |
 |---|---|---|
 | `confirm_meaning` | `Data → Contract` · `Confirm meaning` | `job.confirm_meaning(..., channel="board labeling screen")` |
-| `release_round` | `Labeling → Label` · `Start round 1` | `calibration.release_round` |
-| `open_item` | `Labeling → Label`, when that view is on screen and after each save | `calibration.open_item` |
-| `first` | `Labeling → Label` · `Lock first answer` | `calibration.record_first` |
-| `final` | `Labeling → Label` · `Keep and next` / `Save changed final` / `Save as unresolved` | `calibration.record_final` |
+| `release_round` | `Labeling → Rounds` · `Start round 1` | `calibration.release_round` |
+| `open_item` | no page button since 260919; the chat calls the engine directly | `calibration.open_item` |
+| `first` | no page button since 260919; the chat calls the engine directly | `calibration.record_first` |
+| `final` | no page button since 260919; the chat calls the engine directly | `calibration.record_final` |
 | `build_embedding` | `Data → Embedding` · `Run embedding` with model, text, instruction, groups, map, seed | `embedding_build.start_background_build` (catalog ids and checked settings only; one run per job at a time; records the human as `started_by`; a build never starts without this click or a named person) |
 | `embedding_status` | `Data → Embedding`, polled while a build runs (read only) | `embedding_build.build_status` |
 | `embedding_item` | `Data → Embedding` · click a dot on the map (read only) | `embedding_build.neighbors` (development items only, no text) |
@@ -235,7 +237,7 @@ When opening or diagnosing a job or one of its Runs:
 
 ```text
 resolve   the folded Page and its direct labeling/ lane
-inspect   canonical receipts only; batch item text only on Labeling → Label
+inspect   canonical receipts only; batch item text only in Labeling → Rounds, once shown
 derive    P0-P5 and the first failed G0-G6 assertion
 route     through /subjective-label to exactly one bounded action
 stop      at human gate, HOLD, invalidation, step limit, or completion
@@ -246,7 +248,7 @@ When implementing or changing the plugin, keep these pieces aligned:
 ```text
 roster       haipipe-plugin/ref/roster.md · labeling/ row first
 registry     assets/js/10-drawer/60-plugin-labeling.js · one tab registration
-surface      Board `live/labeling.py` · five Spaces, Label screen, `LabelingMixin`
+surface      Board `live/labeling.py` · five Spaces, Label definitions, Rounds tables, `LabelingMixin`
              standalone `engine/page_plugin.py` · older read-only presenter
 routes       Board `cli/serve.py` · GET `/_board/labeling` (page)
              POST `/_board/labeling` (tab URL) · POST `/_board/labeling/act` (write door)

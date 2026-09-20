@@ -1977,9 +1977,9 @@ def render_story(d):
                                 ("evidence", "Evidence Items", hero)], foot=_sources_html(d, "story"))
     spine, claims, tasks, secs = [], [], [], []
     for s in d["story"]:
-        spine.append('<div class="card"><h2>%s<span class="tally">%d RQ · %d E · %d T · %d sections</span></h2>'
-                     '<div class="brief">state %s</div></div>'
-                     % (_link(d, s["rel"], s["stem"]), len(s["rq"]), len(s["e"]), len(s["tt"]), len(s["sections"]), esc(s["state"])))
+        # the Story's `state:` line is not shown here (JL 260919: not needed on the Spine); it stays on the Story page
+        spine.append('<div class="card"><h2>%s<span class="tally">%d RQ · %d E · %d T · %d sections</span></h2></div>'
+                     % (_link(d, s["rel"], s["stem"]), len(s["rq"]), len(s["e"]), len(s["tt"]), len(s["sections"])))
         for n, title, (face, subs, paras) in s["spine"]:
             rows = [(k, inline(v)) for k, v in face]
             if paras:
