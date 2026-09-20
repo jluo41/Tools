@@ -9,10 +9,10 @@ from cli.check import Report, check_design_family
 
 def build(root: Path) -> Path:
     board = root / "Current-DesignBoard"
-    folder = board / "2-Design" / "Design-01-patient-confirm-sms"
+    folder = board / "2-Design" / "Design-01-all-patients-prescription-review-sms"
     folder.mkdir(parents=True)
     (board / "board.md").write_text("# Current DesignBoard\n", encoding="utf-8")
-    (folder / "Design-01-patient-confirm-sms.md").write_text(
+    (folder / "Design-01-all-patients-prescription-review-sms.md").write_text(
         "# Current Design\n\nfolder-kind: design\n", encoding="utf-8"
     )
     return board
@@ -33,7 +33,7 @@ class DesignFamilyTest(unittest.TestCase):
         with TemporaryDirectory() as td:
             board = build(Path(td))
             old = (
-                board / "2-Design" / "Design-01-patient-confirm-sms"
+                board / "2-Design" / "Design-01-all-patients-prescription-review-sms"
                 / "design" / "DU01-old"
             )
             old.mkdir(parents=True)
@@ -44,17 +44,25 @@ class DesignFamilyTest(unittest.TestCase):
         with TemporaryDirectory() as td:
             board = build(Path(td))
             old = (
-                board / "2-Design" / "Design-01-patient-confirm-sms"
+                board / "2-Design" / "Design-01-all-patients-prescription-review-sms"
                 / "outline" / "evidence" / "pagex"
             )
             old.mkdir(parents=True)
             rows = findings(board)
             self.assertIn("retired-design-shape", {row[1] for row in rows})
 
+    def test_archived_thread_shape_is_left_alone(self):
+        """A parked record is a closed record: _archive/ is not asked to migrate."""
+        with TemporaryDirectory() as td:
+            board = build(Path(td))
+            old = board / "_archive" / "2-DS-design" / "DS01-old" / "design" / "DU01-old"
+            old.mkdir(parents=True)
+            self.assertEqual(findings(board), [])
+
     def test_rnn_design_ticket_is_rejected(self):
         with TemporaryDirectory() as td:
             board = build(Path(td))
-            runs = board / "2-Design" / "Design-01-patient-confirm-sms" / "runs"
+            runs = board / "2-Design" / "Design-01-all-patients-prescription-review-sms" / "runs"
             runs.mkdir()
             (runs / "r01_design_generate_sms.yaml").write_text(
                 "schema: haipipe.design-ticket/v1\n", encoding="utf-8"

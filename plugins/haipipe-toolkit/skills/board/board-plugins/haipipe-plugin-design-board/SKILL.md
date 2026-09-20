@@ -7,13 +7,13 @@ description: >-
   venue, how many, which Insight board, folder, status) with the form that
   adds tasks; Design Space is every Design Item; Insight Space is every
   signed page the programme draws on and who uses it; Run Space is who is
-  waited on and every Run; Delivery Space is every adopted draft. Two writes:
+  waited on and every Run; Delivery Space is a quick list of every design. Two writes:
   add design tasks to the Brief (and open their folders), open a Design
   Folder for one line. Trigger: design board, board-level design, design
   tasks, all design items, who is waiting, /haipipe-plugin-design-board.
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-16"
+  version: "0.7.0"
+  last_updated: "2026-09-18"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -42,10 +42,16 @@ Page-level header links back up. Nothing is stored twice: the Board level is
 `Space` is the only reader-facing word (JL 260916), and every word on the
 surface must be understood at first glance: "the Brief" and "a line of the
 Brief", never roster; "signed insight", never handoff; "draft", never
-candidate; "records check", never check_unit. Steps are Commission,
+candidate; "run record", never Ticket; "records check", never check_unit; no
+DU and no Brief line id such as `R1`. An insight page shows as its label and
+title (`full-W01 · Send salience`), never its file id `FW01`; the file keeps
+`FW01` (JL 260918). Steps are Commission,
 Generate, Verify, Adopt. Folders carry their full name: the group is
 `2-Design/` and each Design Folder is `Design-NN-<audience>-<job>-<venue>/`
-(the Board engine's `Design-` page branch), never `DS`.
+(the Board engine's `Design-` page branch), never `DS`; each part is the first three content words of that Brief cell, filler words
+(with, within, a, the, of, for, or, under, …) dropped, so the name says the goal:
+`Design-01-all-patients-prescription-review-sms`. A renamed folder keeps
+its `Design-NN` number, and an old link finds it by that number.
 
 ## The five Spaces at board grain
 
@@ -54,33 +60,49 @@ each promise started?" It is the list of design tasks read from the Brief:
 
 ```text
 Design tasks · from the Brief
-line  who                              their job            venue    how many                              insight board     folder                              status
-R1    full SMSR2 population            prescription review  sms      10 wanted · 2 registered · 1 adopted  (board default)   Design-01-patient-confirm-sms       1 adopted · 1 verified
-R2    patients with a refill due …     refill review        ui-card  1 wanted · 1 registered · 0 adopted   (board default)   Design-02-refill-reminder-ui        1 verified
-R3    young male, age 35 or under      prescription review  sms      1 wanted                              (board default)   —                                   no folder yet  [New Design Folder]
+design task                                               how many                               insight board     folder                                               status
+Prescription review SMS for all patients                  10 wanted · 10 registered · 1 adopted  (board default)   Design-01-all-patients-prescription-review-sms       1 adopted · 9 verified
+Refill review app card for patients with a refill due …   1 wanted · 1 registered · 0 adopted    (board default)   Design-02-patients-refill-due-refill-review-ui-card  1 verified
+Prescription review SMS for young male, age 35 or under   1 wanted                               (board default)   —                                                    no folder yet  [New Design Folder]
 
 ▸ New design tasks   subgroups (one per line) · their job · venue · how many · insight board · open folders
 Insight board
 DesignPlugin-Demo-260916-InsightBoard · 1 of 1 insights signed
 ```
 
+Each task shows by its full name, `<job> <venue> for <who>` (the folder page's
+title), linked to its Page level; the Brief's row id (`R1`) is a key in the
+file and never a name on screen (JL 260918).
+
 The list is the first Markdown table in the Brief page under `0-BR-brief/`
-whose header names `audience`; `job`, `venue`, `designs`, `insight`, and
-`folder` columns are matched by header word. `designs` is how many designs
+whose header names `audience`, `job` and `venue` together (an audience table
+elsewhere in the Brief is never read as the list); `designs`, `insight`, and
+`folder` columns are matched by header word too. `designs` is how many designs
 the line asks for; `insight` names the Insight board the line draws from
 (empty means the board's `reads:`); a folder cell of `—` is a promise not yet
-kept. A folder on disk that no line names is listed as "folders the Brief
-does not list". The header counts the whole programme: tasks · wanted ·
-registered · adopted · waiting on the person · waiting on the agent.
+kept. A Brief with no `line` column still works: its rows are numbered R1,
+R2 … in order, as keys in the file, never names on screen. A folder on disk
+that no line names is listed as "folders the Brief does not list".
+
+The header above the Spaces is one line that counts the whole programme,
+`Board level · 3 design tasks · 12 wanted · 11 registered · 1 adopted ·
+waiting on JL: 10 · on agent: 0`; a red line is added only when the records
+check has findings.
 
 **Design Space** is every Design Item across folders in one table: folder,
-item, design, state, who is waited on.
+item, design (the title, with the design text in one line under it), state,
+who is waited on.
 
 **Insight Space** is every Insight board the programme draws on (the board's
 `reads:` plus any board a Brief line names), and on each: its signed pages,
-who signed, what the page says (its Design Handoff `FINDING`), the rules it
-implies (its DO / DO NOT counsel lines), and which folder · item uses it. A signed page no item uses shows "no item yet"; an
-unsigned page shows in red.
+each by its title with its label under it, who signed, what the page says
+(its Design Handoff `FINDING`), the rules it implies (its DO / DO NOT counsel
+lines), and who uses it, grouped per folder (`Design-01 · 6 items`, linked to
+that folder's Insight Space). A signed page no item uses shows "no item yet";
+an unsigned page shows in red. A second table, "Other pages the designs use
+(not signed insights)", lists every other page an item rests on, so nothing
+an item uses is hidden. When no design rests on a signed insight, a red line
+says so at the top.
 
 **Run Space** answers "who is the programme waiting on, and what ran last?"
 First the queue: every item that waits, the person's rows first (`JL · adopt`),
@@ -88,14 +110,19 @@ then the agent's (`agent · verify`). Then every Run across folders, newest
 first, with folder, step, actor and mode, status, outcome. It ends with the
 records check across folders.
 
-**Delivery Space** answers "what has this programme actually adopted?" One
-card per adopted item (folder · item · text · draft hash · verifier · words ·
-adopter · time), then one line naming the items not adopted and why. At the
-top, **↓ Download the bundle**: `GET /_board/design-bundle?path=<board.md>`
-returns one csv row per adopted draft (line · who · their job · venue ·
-folder · item · title · text · sha256 · draft run · verified by · adopted by
-· when · words), the hand-off a send system needs. The static twin has no
-bundle link.
+**Delivery Space** answers "what designs do we have?" One heading per
+folder (its title, linked to the folder's Delivery Space), then one table,
+one row per item: item (id, linked to its card, and title) · design (the
+adopted draft, else the latest draft that passed the records check; a failed
+draft is never listed). No adoption status, hash, or receipt. A folder of
+screens shows as a picture gallery instead of the table. A declined item
+leaves the list and is folded under "Declined, kept for the record · N". At
+the top, **↓ Download all designs**: `GET /_board/design-bundle?path=<board.md>`
+returns a csv with one row per item that has a design, columns `line, who,
+their_job, venue, folder, item, title, state, text, draft_run, sha256,
+render`. The send system takes the rows whose `state` is `adopted`; the other
+rows, declined ones included (state `declined`), are there to read. The
+static twin has no download link.
 
 ## The two Board-level writes
 
@@ -105,47 +132,75 @@ exists on the static `board/design.html`.
 **`add-tasks`** `{subgroups, job, venue, designs, insight, open}` adds one
 line per subgroup to the Brief's list (ids continue `R<N>`; the `designs`,
 `insight`, and `folder` columns are added to the table if the Brief lacks
-them, and the section is created if the Brief has no list yet), and, when
-`open` is yes, opens a Design Folder for each new line. "5 subgroups, 10
-messages each, from Insight board X" is one submission. Refused with one
-plain sentence when no subgroup, job, or venue is given, when `designs` is
-below 1, or when the named Insight board is not found beside this board;
-a refusal writes nothing.
+them, and the section is created under a `### What to design` heading if the
+Brief has no list yet), and, when `open` is yes, opens a Design Folder for
+each new line. "5 subgroups, 10 messages each, from Insight board X" is one
+submission. The form's Insight board picker offers only names that resolve
+to an Insight board, each shown by its folder name. Refused with one plain
+sentence when no subgroup, job, or venue is given, when `designs` is below 1,
+or when the named Insight board does not resolve from this board (a sibling
+name, or a relative path as on `reads:`); a refusal writes nothing.
 
 **`new-folder`** `{row}` opens a Design Folder for one line whose folder
 cell is empty:
 
 ```text
 2-Design/Design-NN-<audience>-<job>-<venue>/
-├── Design-NN-….md                          folder-kind: design · Opening from the line, how many the Brief asks for
+├── Design-NN-….md                          the page (below)
 └── outline/Design-NN-…-design-items.md     empty register with its header
 ```
 
-and writes the folder's name into that line's `folder` cell. Those cells and
-lines are the only Brief edits this plugin makes; the Brief's prose, needs,
-and signed inputs stay with `haipipe-design-brief`. Every other action
-(register a Design Item, release a Commission, queue Generate/Verify, adopt)
-lives on the Page level and is reached by the link in the row.
+The page passes the board checker from the start: `folder-kind: design`,
+`state: 🔴 OPEN · no design registered yet`, `owner:` (the board's owner,
+else the Brief's), and an Opening question, "Which N `<job> <venue>` designs
+should we make for `<audience>`?". The plugin writes the folder's name into
+that line's `folder` cell and lists the page in board.md's `## Pages`, under
+its Design heading when there is one. A second click on the same line is
+refused because the line already names its folder; refusals name the task by
+its full name, never by `R3`. Those cells and lines are the only Brief edits
+this plugin makes; the Brief's prose, needs, and signed inputs stay with
+`haipipe-design-brief`. Every other action (register a Design Item, release a
+Commission, queue Generate/Verify, adopt) lives on the Page level and is
+reached by the link in the row.
 
 ## Reads (and owns nothing)
 
 ```text
-board.md                                title · reads:
+board.md                                title · reads: · owner:
 0-BR-brief/BR00-brief/BR00-brief.md     the list of design tasks
 2-Design/*/<Design-NN-…>.md             each Design Folder, through design_snapshot
 <Insight board>/…                       signed pages, through the Insight plugin's records
 ```
 
-A legacy folder (`design/DU*`, `rNN_design_*`, PageX, v1) appears on its
-Brief line with its refusal reason and no items, exactly as the Page level
-says it; the Board level never reads it either.
+`reads:` names each Insight board by its sibling folder name, or by a `../`
+path that stays inside the checkout, for a board in another Project (first
+use: `B01_DesignBoard-AuthenUI-260917` reading
+`../../Project-Application-SMSDesign/applications/A00_InsightBoard-SMSR2v1-260821`).
+The board checker (`cli/check.py`) accepts both forms.
+
+A legacy folder under `2-Design/` (`design/DU*`, `rNN_design_*`, PageX, v1)
+appears on its Brief line with its refusal reason and no items, exactly as the
+Page level says it; the Board level never reads it either. A `2-DS-design/DS*`
+folder lies outside `2-Design/` and is not read at all. Park such a folder
+under the board's `_archive/` and take its row out of `board.md` `## Pages`:
+the checker judges no `_` folder, so the record keeps its bytes without asking
+the board to migrate it, and only the live design tasks stay on the board.
 
 ## Boundary
 
-Apply to a Board whose `board.md` says `board-kind: design-board`, whose
-folder name ends in `-DesignBoard`, or which holds `2-Design/`. A link that
-names no DesignBoard lands on a list of the DesignBoards under the server
-root, never on a dead end.
+Apply to a Board whose `board.md` says `board-kind: design-board` (the board
+checker knows `design-board` and `insight-board` as kinds), whose folder name
+carries `DesignBoard` as a `-` or `_` separated token (`RefillFraming-DesignBoard`,
+`B01_DesignBoard-AuthenUI-260917`), or which holds `2-Design/`. The board
+checker audits every folder that holds Design runs, including a folder with
+only Commission and Adopt runs.
+
+A bare `/_board/design-board` opens the server's only DesignBoard, or, with
+several, answers 200 with a list of them; a link that names no DesignBoard
+answers 404 with the same list, never a dead end. A Page-level short link
+`/_board/design?folder=Design-01` that fits several boards answers 404 with a
+page listing each board holding that folder, one link each, never a guess;
+`Design-1` reads as `Design-01`.
 
 ## Reader contract
 
@@ -154,9 +209,10 @@ From the Board level alone, the reader can answer:
 1. What has the programme promised to design: for whom, on which venue, how
    many, from which Insight board, and is each promise started?
 2. Every Design Item across the board, in one table, with its state.
-3. Which signed insights exist, what they say, and which items use them.
+3. Which signed insights exist, what they say, which items use them, and
+   which other pages the designs rest on.
 4. Who is the programme waiting on right now, person or agent, for which item?
 5. What ran most recently, where, by whom, with what outcome?
-6. What is adopted, and what is not, board-wide?
+6. What is adopted, and what is not, board-wide? (the csv's `state` column)
 
 See `ref/space-mapping.md` for the Space ↔ file map at board grain.

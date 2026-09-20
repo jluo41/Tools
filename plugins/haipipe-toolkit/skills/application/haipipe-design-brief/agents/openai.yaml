@@ -1,4 +1,4 @@
 interface:
   display_name: "Design Brief Folder"
-  short_description: "Frame an Application and release its Design roster"
-  default_prompt: "Use $haipipe-design-brief to create or repair the canonical Brief Folder that a current Design Commission will pin."
+  short_description: "Frame an Application and list the designs it asks for"
+  default_prompt: "Use $haipipe-design-brief to create or repair the canonical Brief Folder whose design-task list the Design Folders are opened from."

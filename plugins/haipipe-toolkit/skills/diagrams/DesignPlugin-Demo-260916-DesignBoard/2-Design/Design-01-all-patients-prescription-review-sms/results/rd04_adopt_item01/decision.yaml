@@ -13,6 +13,6 @@ verification:
   path: results/rd03_verify_item01/result.yaml
   sha256: d31366de35dcfa7ad0f27a7ba22c0adc73bdc2ad0fd5aff057aa45ca0aa35f77
 preview:
-  path: delivery/render/Design-01-patient-confirm-sms-ITEM01-v1.txt
+  path: delivery/render/Design-01-all-patients-prescription-review-sms-ITEM01-v1.txt
   sha256: c93d51714b4e21779627f256d8805eaf64403a359e57bf694f2560b30350c8af
 at: '2026-09-16T13:09:00Z'

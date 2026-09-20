@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import html
 import re
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
@@ -93,7 +94,9 @@ def _safe_board(root: Path, raw: str) -> Path | None:
     return resolved if (resolved / "board.md").is_file() else None
 
 
-_BOARD_GLOBS = ("examples*/*/applications/*/board.md", "examples*/*/*/board.md")
+# a server rooted at the SPACE, at one project, or at one applications/ folder finds its boards
+_BOARD_GLOBS = ("examples*/*/applications/*/board.md", "examples*/*/*/board.md",
+                "applications/*/board.md", "*/board.md")
 
 
 def insight_boards(root: Path) -> list[Path]:
@@ -320,18 +323,27 @@ def _parents(text: str) -> list[str]:
 
 
 def _rows(text: str) -> list[tuple[str, str, str]]:
-    """`W1   DO send ...   FK01 · K1` rows inside fenced blocks: id, text, from."""
-    rows = []
+    """`W1   DO send ...   FK01 · K1` rows inside fenced blocks: id, text, from.
+    An indented line right under a row continues its text, so a row that
+    wraps in the page is shown whole (W3 on FW01 ended "on the")."""
+    rows: list[list[str]] = []
     for block in re.findall(r"(?ms)^```\w*\n(.*?)^```", text):
+        last, col = None, 0
         for line in block.splitlines():
             m = re.match(r"^([DIKW]\d+)\s{2,}(.+?)\s*$", line)
-            if not m or "←" in line or m.group(1) in {r[0] for r in rows}:
-                continue
-            body = m.group(2)
-            src = re.search(r"\s{2,}([A-Z][DIKW]\d{2} · \S+)\s*$", body)
-            rows.append((m.group(1), body[:src.start()].strip() if src else body.strip(),
-                         src.group(1) if src else ""))
-    return rows
+            if m and "←" not in line and m.group(1) not in {r[0] for r in rows}:
+                body = m.group(2)
+                src = re.search(r"\s{2,}([A-Z][DIKW]\d{2}\s?·\s?\S+)\s*$", body)
+                last = [m.group(1), body[:src.start()].strip() if src else body.strip(),
+                        src.group(1) if src else ""]
+                rows.append(last)
+                col = m.start(2)
+            elif last and "←" not in line and not line[:col].strip() and line[col:col + 1].strip():
+                # only the text column's wrap; a side column's wrap is its own
+                last[1] += " " + re.split(r"\s{2,}", line[col:].strip())[0]
+            else:
+                last = None
+    return [tuple(r) for r in rows]
 
 
 def _opening(text: str) -> list[str]:
@@ -515,10 +527,10 @@ def _gates(snap, row, pid, cell, page, primary, receipt) -> list[dict]:
     needed = {"D": 2, "I": 3, "K": 4, "W": 5}.get(target, 5)
     signed = bool(page and _SIGNED.search(page["text"]))
     gates = [
-        ("GI0", "Meta ready", st(meta), "predicate", meta["state"][:60] if meta else "no MT00"),
+        ("GI0", "Meta ready", st(meta), "automatic", meta["state"] if meta else "no MT00"),
         ("GI1", "Question registered", "passed" if row else "pending", "person",
          f"{row['register']['id']} row" if row else ""),
-        ("GI2", "Data observed", st(lv.get("data")), "predicate",
+        ("GI2", "Data observed", st(lv.get("data")), "automatic",
          (receipt and f"{receipt['rel']} · {receipt['status']}") or (lv.get("data") or {}).get("id", "")),
         ("GI3", "Information derived", st(lv.get("information")), "agent", (lv.get("information") or {}).get("id", "")),
         ("GI4", "Knowledge claimed", st(lv.get("knowledge")), "agent", (lv.get("knowledge") or {}).get("id", "")),
@@ -526,7 +538,7 @@ def _gates(snap, row, pid, cell, page, primary, receipt) -> list[dict]:
          "person", _SIGNED.search(page["text"]).group(1) if signed else ""),
         ("GI6", "Cell settled", "passed" if cell["mark"] == "✅" else ("held" if cell["mark"] == "🟡" else
                                                                    "refused" if cell["mark"] == "🚫" else "pending"),
-         "predicate", cell["raw"]),
+         "automatic", cell["raw"]),
     ]
     out = []
     for i, (key, name, state, who, note) in enumerate(gates):
@@ -542,7 +554,7 @@ _CSS = """
 :root{--bg:#fff;--fg:#1c1c1c;--mut:#767672;--line:#e3e3e6;--soft:#f4f5f7;--acc:#3e5c84;--acc-soft:#e6edf5;--ok:#3a7d44;--ok-soft:#e5f1e7;--warn:#b3541e;--warn-soft:#f8ebe1;--bad:#8a3b3b;--bad-soft:#f5e6e6;--human:#6b4fa0;--human-soft:#ede8f6}
 @media(prefers-color-scheme:dark){:root{--bg:#161719;--fg:#e8e8e6;--mut:#9c9c98;--line:#2c2e33;--soft:#212429;--acc:#8aa7cc;--acc-soft:#22304a;--ok:#7dbb87;--ok-soft:#1f3324;--warn:#e0955a;--warn-soft:#3a2a1c;--bad:#d98b8b;--bad-soft:#3a2323;--human:#b39ddb;--human-soft:#2c2540}}
 *{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-main{max-width:1250px}h1{font-size:17px;margin:0 0 2px}h2{font-size:17px;margin:0 0 3px}h3{font-size:14.5px;margin:14px 0 6px}p{margin:4px 0}
+main{max-width:1440px}h1{font-size:17px;margin:0 0 2px}h2{font-size:17px;margin:0 0 3px}h3{font-size:14.5px;margin:14px 0 6px}p{margin:4px 0}
 .mut{color:var(--mut);font-size:13px}.eyebrow{font:650 11px/1.4 -apple-system,sans-serif;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
 code,.mono{font:12.5px ui-monospace,Menlo,monospace}a{color:var(--acc)}
 .purpose{max-width:1050px;margin-top:8px;font-size:14.5px}.context{max-width:1050px;margin-top:4px;color:var(--mut);font-size:13px}
@@ -553,25 +565,42 @@ code,.mono{font:12.5px ui-monospace,Menlo,monospace}a{color:var(--acc)}
 .view{display:none}.view.on{display:block}.lead{margin:0 0 12px;color:var(--mut);font-size:14px}
 table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}td,th{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--mut);font-size:11px;font-weight:650;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}td.num{text-align:right;font-family:ui-monospace,Menlo,monospace;font-size:12.5px}.scroll{overflow-x:auto}
 .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:11.5px;color:var(--mut);white-space:nowrap}.pill.ok{color:var(--ok);border-color:var(--ok);background:var(--ok-soft)}.pill.warn{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}.pill.bad{color:var(--bad);border-color:var(--bad);background:var(--bad-soft)}.pill.acc{color:var(--acc);border-color:var(--acc);background:var(--acc-soft)}.pill.human{color:var(--human);border-color:var(--human);background:var(--human-soft)}
-.grid th .pn{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px}a.mono .pn{color:var(--mut);font-family:-apple-system,sans-serif;font-size:12px}.grid td.cell{white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;padding:0}.grid td.cell a{display:block;padding:7px 9px;color:inherit;text-decoration:none}.grid td.cell a:hover{background:var(--soft)}.grid td.cell.sel{outline:2px solid var(--acc);outline-offset:-2px;background:var(--acc-soft)}.grid td.q{max-width:300px}.grid tr.group td{background:var(--soft);color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:650;padding:5px 9px}
-.gates{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:8px;overflow:hidden}.gate{padding:8px 9px;border-right:1px solid var(--line);font-size:12px;min-width:0}.gate:last-child{border-right:0}.gate .k{font:650 12px ui-monospace,Menlo,monospace}.gate .n{display:block;color:var(--mut)}.gate.passed{box-shadow:inset 0 3px 0 var(--ok)}.gate.held{box-shadow:inset 0 3px 0 var(--human)}.gate.refused{box-shadow:inset 0 3px 0 var(--bad)}.gate.pending,.gate.skipped{color:var(--mut)}.gate .who{display:block;margin-top:3px}
+.grid th .pn{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px}a.mono .pn{color:var(--mut);font-family:-apple-system,sans-serif;font-size:12px}.grid td.cell{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;padding:0;min-width:92px}.grid td.cell a{display:block;padding:7px 9px;color:inherit;text-decoration:none}.grid td.cell a:hover{background:var(--soft)}.grid td.cell.sel{outline:2px solid var(--acc);outline-offset:-2px;background:var(--acc-soft)}.grid td.q{max-width:300px;min-width:170px}.nw{white-space:nowrap}.grid tr.group td{background:var(--soft);color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:650;padding:5px 9px}
+.gates{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:8px;overflow:hidden}.gate{padding:8px 9px;border-right:1px solid var(--line);font-size:12px;min-width:0;overflow-wrap:anywhere}.gate:last-child{border-right:0}.gate .k{font:650 12px ui-monospace,Menlo,monospace}.gate .n{display:block;color:var(--mut)}.gate.passed{box-shadow:inset 0 3px 0 var(--ok)}.gate.held{box-shadow:inset 0 3px 0 var(--human)}.gate.refused{box-shadow:inset 0 3px 0 var(--bad)}.gate.pending,.gate.skipped{color:var(--mut)}.gate .who{display:block;margin-top:3px}
 .opening{font-size:15.5px;max-width:70ch;padding:6px 0 10px;border-bottom:1px solid var(--line);margin-bottom:6px}.rows td:first-child{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;white-space:nowrap}.rows td.from{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--mut);white-space:nowrap}
 .rung{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.rung:last-child{border-bottom:0}.rung .lvl{font-weight:650;font-size:13px}.rung .lvl small{display:block;color:var(--mut);font-weight:500;font-size:12px}
-.chain{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px}.chain .node{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12.5px;min-width:120px}.chain .node b{display:block;font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}.chain .arrow{align-self:center;color:var(--mut)}
+.trace{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line)}.trace li{display:grid;grid-template-columns:110px minmax(180px,260px) 1fr;gap:12px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}.trace li:last-child{border-bottom:0}
+.wmap{table-layout:fixed}.wmap th,.wmap td{font-size:12.5px;padding:7px;overflow-wrap:break-word}.wmap th{white-space:normal}.wmap th:first-child{width:13%}.wmap th:last-child{width:19%}.wmap .idtag{display:block;margin:0 0 3px}
+.idtag{font:12px ui-monospace,Menlo,monospace;color:var(--mut)}.tree-title{margin-top:26px}
+.treebox{--w:clamp(280px,40vw,560px);border:1px solid var(--line);border-radius:9px;overflow:hidden;margin:6px 0 12px}
+.tree-head{display:flex;background:var(--soft);border-bottom:1px solid var(--line);font:700 11px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.03em;color:var(--mut)}
+.tree-head>span:first-child{flex:1 1 auto;padding:7px 12px;min-width:0;overflow-wrap:anywhere}.tree-head>span:last-child{flex:0 0 var(--w);padding:7px 12px;border-left:1px solid var(--line);display:flex;align-items:center;gap:5px;flex-wrap:wrap}.tree-head .tn-note{text-transform:none;letter-spacing:0;font-weight:500;font-size:12px}
+ul.tree,ul.tree ul{list-style:none;margin:0;padding:0 0 0 20px;position:relative}ul.tree{padding:4px 0 4px 6px}ul.tree ul::before{content:'';position:absolute;left:6px;top:0;bottom:12px;border-left:1.5px solid var(--line)}
+ul.tree li{position:relative;margin:0;min-width:0}ul.tree ul>li::before{content:'';position:absolute;left:-14px;top:15px;width:12px;border-top:1.5px solid var(--line)}
+details.tn{margin:0;min-width:0}details.tn>summary,.tn-file{display:flex;align-items:stretch;min-width:0;padding:0 0 0 6px}details.tn>summary{cursor:pointer;list-style:none}details.tn>summary::-webkit-details-marker{display:none}details.tn>summary:hover,.tn-file:hover{background:var(--soft)}
+.tn-name{flex:1 1 auto;min-width:0;font:500 13px/1.6 ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:4px 10px 4px 0}details.tn>summary .tn-name{font-weight:650}
+.tn-works{flex:0 0 var(--w);min-width:0;padding:5px 12px;border-bottom:1px solid var(--line);border-left:1px solid var(--line)}.tn-top{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-height:21px}
+.tn-note{font-size:13px;line-height:1.5;opacity:.85;overflow-wrap:anywhere}.idtag.rt{color:var(--acc);border:1px solid var(--acc);border-radius:999px;padding:0 8px;font-size:11.5px;line-height:1.7;white-space:nowrap}.tn-more{color:var(--mut);font-size:12.5px;padding:2px 8px}
+details.tn>summary .tn-name:before{content:'▸ ';color:var(--mut)}details.tn[open]>summary .tn-name:before{content:'▾ '}.tn-file .tn-name:before{content:'  ';white-space:pre}
+@media(max-width:820px){.wmap{table-layout:auto;min-width:780px}.treebox{--w:46%}}
+.taxis{display:flex;align-items:flex-end;gap:3px;height:72px;border-bottom:1px solid var(--line);margin:8px 0 3px}.tday{flex:1;min-width:4px;max-width:30px;height:100%;display:flex;flex-direction:column;justify-content:flex-end}.tday:not(.on)::after{content:'';height:3px;background:var(--line);border-radius:1px}.tday i{display:block;border-radius:2px 2px 0 0}.tday i.l{background:var(--acc)}.tday i.r{background:var(--ok)}.tday.on:hover i{opacity:.7}.taxis-lab{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-bottom:6px}.tsec h3{margin:20px 0 6px;font-size:14.5px}.tl{list-style:none;margin:0 0 0 5px;padding:0 0 0 16px;border-left:2px solid var(--line)}.tl li{padding:5px 0;font-size:13.5px;position:relative}.tl li::before{content:'';position:absolute;left:-21px;top:12px;width:8px;height:8px;border-radius:50%;background:var(--acc)}.tl li.trun::before{background:var(--ok)}.tl summary{cursor:pointer;list-style:none}.tl summary::-webkit-details-marker{display:none}.tl details[open]>summary{font-weight:600}.tl details p{margin:6px 0 6px 22px;max-width:95ch}.tl li.tgrp{padding:10px 0 2px;color:var(--mut);font:650 11px/1.4 -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.05em}.tl li.tgrp::before{display:none}.tk{display:inline-block;width:20px;color:var(--mut)}.trun .tk{width:auto;margin-right:6px;color:var(--ok);font-weight:600}
+.boardsum{font-size:13.5px;margin:2px 0 1px}.strip-head{flex-basis:100%;font:650 12.5px -apple-system,sans-serif;color:var(--acc)}.strip-head .mut{font-weight:400}body[data-space=scope] main>.strip,body[data-space=run] main>.strip,body[data-space=delivery] main>.strip{display:none}
+.legend{width:auto;margin-top:6px;font-size:12.5px}.legend td,.legend th{padding:3px 12px 3px 0;border:0}.legend td:first-child{white-space:nowrap;font-family:ui-monospace,Menlo,monospace}
 .timeline{list-style:none;margin:0;padding:0}.timeline li{display:grid;grid-template-columns:70px 70px 1fr;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}.timeline .d,.timeline .p{font:12.5px ui-monospace,Menlo,monospace;color:var(--mut)}
 .limits{border-left:3px solid var(--bad);padding-left:12px;font-size:13.5px}.limits p{margin:6px 0}.note{border:1px dashed var(--line);border-radius:8px;padding:10px 12px;color:var(--mut);font-size:13px}
 .source{margin-top:18px;color:var(--mut);font-size:12px}
 .form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px;align-items:start}.form .full{grid-column:1/-1}.field{display:flex;flex-direction:column;gap:5px}.field label{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:650}.field input,.field select,.field textarea{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:7px;padding:8px;font:14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.field textarea{min-height:60px;resize:vertical}
 .btn{border:1px solid var(--acc);border-radius:8px;padding:8px 13px;background:var(--bg);color:var(--acc);font:650 14px -apple-system,sans-serif;cursor:pointer}.btn.primary{background:var(--acc);color:#fff}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.status{font-size:13px;color:var(--mut)}
 @media(max-width:820px){.form{grid-template-columns:1fr}}
-@media(max-width:820px){.gates{grid-template-columns:repeat(4,1fr)}.rung{grid-template-columns:1fr}.timeline li{grid-template-columns:1fr}}
+@media(max-width:820px){.gates{grid-template-columns:repeat(4,1fr)}.rung{grid-template-columns:1fr}.timeline li,.trace li{grid-template-columns:1fr}}
 """
 
 _JS = """<script>(function(){
 var sp=[].slice.call(document.querySelectorAll('.space')),pn=[].slice.call(document.querySelectorAll('.pane'));
-function sel(s,w){if(!document.querySelector('.pane[data-space="'+s+'"]'))s='scope';sp.forEach(function(b){b.classList.toggle('on',b.dataset.space===s)});pn.forEach(function(p){p.classList.toggle('on',p.dataset.space===s)});if(w){try{var u=new URL(location.href);u.searchParams.set('space',s);history.replaceState({},'',u)}catch(e){}}}
+function sel(s,w){if(!document.querySelector('.pane[data-space="'+s+'"]'))s='scope';document.body.dataset.space=s;sp.forEach(function(b){b.classList.toggle('on',b.dataset.space===s)});pn.forEach(function(p){p.classList.toggle('on',p.dataset.space===s)});if(w){try{var u=new URL(location.href);u.searchParams.set('space',s);history.replaceState({},'',u)}catch(e){}}}
 sp.forEach(function(b){b.onclick=function(){sel(b.dataset.space,true)}});
-document.querySelectorAll('.shell').forEach(function(sh){var tabs=[].slice.call(sh.querySelectorAll('.wtab'));function sync(){var on=sh.querySelector('.wtab.on');sh.querySelectorAll('.view').forEach(function(v){v.classList.toggle('on',on&&v.dataset.view===on.dataset.view)})}tabs.forEach(function(t){t.onclick=function(){tabs.forEach(function(x){x.classList.toggle('on',x===t)});sync()}});sync()});
+document.querySelectorAll('.shell').forEach(function(sh){var tabs=[].slice.call(sh.querySelectorAll('.wtab'));function sync(){var on=sh.querySelector('.wtab.on');sh.querySelectorAll('.view').forEach(function(v){v.classList.toggle('on',on&&v.dataset.view===on.dataset.view)})}tabs.forEach(function(t){t.onclick=function(){tabs.forEach(function(x){x.classList.toggle('on',x===t)});sync();try{var u=new URL(location.href);u.searchParams.set('view',t.dataset.view);history.replaceState({},'',u)}catch(e){}}});sync()});
+try{var vw=new URL(location.href).searchParams.get('view');if(vw==='folders')vw='wmap';if(vw){document.querySelectorAll('.pane[data-space="'+document.body.dataset.space+'"] .wtab[data-view="'+vw+'"]').forEach(function(t){t.click()})}}catch(e){}
 sel(document.body.dataset.space,false);
 var f=document.getElementById('askform');if(f){f.onsubmit=function(ev){ev.preventDefault();var q=document.getElementById('ask-text').value.replace(/\\s+/g,' ').trim();if(!q)return;
 var cmd='/haipipe-insight application '+f.dataset.root+' question "'+q.replace(/"/g,"'")+'"';document.getElementById('ask-cmd').textContent=cmd;document.getElementById('ask-out').hidden=false;
@@ -582,6 +611,32 @@ var st=document.getElementById('ask-status');if(navigator.clipboard){navigator.c
 def _pill(mark: str, text: str = "") -> str:
     cls = {"✅": "ok", "🟡": "warn", "🚫": "bad", "🧊": "acc"}.get(mark, "")
     return f'<span class="pill {cls}">{_e(text or mark)}</span>'
+
+
+# The registers keep a short reason token per refused cell; the screen says
+# what it means.  Meanings from MT02/MT03's legends and FK05's rows.
+_REASONS = {
+    "F-only": ("full data only", "needs the whole extract, so it is answered once on F"),
+    "thin": ("too few rows", "fewer than 300 rows per message in this cut"),
+    "defer": ("board-wide", "asks whether to segment, so it is answered once for the board"),
+    "nomeas": ("not measured", "no field in the extract records it"),
+    "nocon": ("no contrast", "the experiment never varies it"),
+    "noiden": ("not identifiable", "13 messages cannot separate it"),
+}
+
+
+def _cell_text(cell: dict) -> str:
+    """A register cell in plain words: `🚫 thin` -> `🚫 too few rows`."""
+    if cell["mark"] == "🚫" and not cell["page"] and cell["note"] in _REASONS:
+        return f'🚫 {_REASONS[cell["note"]][0]}'
+    return cell["raw"] or "·"
+
+
+def _clip(text: str, n: int) -> str:
+    """Cut at a word boundary, never inside a word ("Gen 1 still car")."""
+    if len(text) <= n:
+        return text
+    return text[:n].rsplit(" ", 1)[0].rstrip(" ·,;") + " …"
 
 
 def _cell_url(snap: dict, qid: str, pid: str, space: str = "insight") -> str:
@@ -628,7 +683,7 @@ def render_insight_board(snapshot: dict, space: str = "scope",
     pid = selected_partition if selected_partition in pids else ("F" if "F" in pids else (pids[0] if pids else ""))
     view = _cell_view(snap, qid, pid) if qid else None
     # Run Space and Delivery Space are always the last two (JL 260916).
-    return "".join([
+    return _spell_ids(snap, "".join([
         '<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">',
         f'<title>🔎 {_e(snap["title"])}</title><style>{_CSS}</style></head><body data-space="{_e(space)}"><main>',
         _render_header(snap),
@@ -642,7 +697,35 @@ def render_insight_board(snapshot: dict, space: str = "scope",
         f'<section class="pane" data-space="delivery"><div class="shell">{_render_delivery(snap)}</div></section>',
         f'<p class=source>source <code>{_e(snap["relative"])}/board.md</code> · re-read on every request</p>',
         "</main>", _JS, "</body></html>",
-    ])
+    ]))
+
+
+_PAGE_CODE = re.compile(r"(?<![/\w])([A-Z])([DIKW])(\d{2})(?![\w/-])")
+
+
+def display_id(pid: str, partitions: dict[str, str]) -> str:
+    """`FD02` -> `full-D02`, `BI07` -> `young-male-I07` (JL 260918).  The
+    first letter is spelled as its data cut; the level letter and number stay.
+    Files keep `FD02`: only the screen changes."""
+    hit = _PAGE_CODE.fullmatch(pid)
+    if not hit or hit.group(1) not in partitions:
+        return pid
+    return f'{_pretty(partitions[hit.group(1)]).replace(" ", "-")}-{hit.group(2)}{hit.group(3)}'
+
+
+def _spell_ids(snap: dict, page_html: str) -> str:
+    """Spell every page code in the TEXT of a rendered page.  Tags and their
+    attributes keep the code (a link's `page=FW01` is what the server reads),
+    and so does a code inside a path or a folder name (`1-F-full/FW01-...`)."""
+    parts = {p["id"]: p["name"] for p in snap["partitions"]}
+    out, skip = [], False
+    for chunk in re.split(r"(<[^>]+>)", page_html):
+        if chunk.startswith("<"):
+            skip = chunk[1:7].lower() in ("script", "style>") or (skip and not chunk.startswith("</"))
+            out.append(chunk)
+        else:
+            out.append(chunk if skip else _PAGE_CODE.sub(lambda m: display_id(m.group(0), parts), chunk))
+    return "".join(out)
 
 
 def _render_header(snap: dict) -> str:
@@ -651,7 +734,13 @@ def _render_header(snap: dict) -> str:
     else:
         links = (f'<a href="/">all boards</a> · '
                  f'<a href="/{_e(snap["relative"])}/board/index.html">board index</a>')
-    return f'<header><h1>🔎 {_e(snap["title"])}</h1><div class=mut>{links}</div></header>'
+    cells = [c for q in snap["questions"] for c in q["cells"].values() if c.get("mark", "·") != "·"]
+    count = {m: sum(c["mark"] == m for c in cells) for m in ("✅", "🟡", "🚫")}
+    summary = (f'{len(snap["questions"])} questions × {len(snap["partitions"])} data cuts · '
+               f'{len(snap["pages"])} pages · {len(cells)} cells asked: {count["✅"]} answered, '
+               f'{count["🟡"]} in part, {count["🚫"]} refused')
+    return (f'<header><h1>🔎 {_e(snap["title"])}</h1><div class=boardsum>{_e(summary)}</div>'
+            f'<div class=mut>{links}</div></header>')
 
 
 def _render_pages(snap: dict) -> str:
@@ -665,7 +754,7 @@ def _render_pages(snap: dict) -> str:
         for page in pages:
             level = page["level"] or page["page_type"] or ""
             out.append(f'<tr><td>{_link(snap, page)}</td><td>{_e(page["title"])}</td>'
-                       f'<td>{_e(level)}</td><td>{_pill(page["state"][:1], page["state"][:70])}</td></tr>')
+                       f'<td>{_e(level)}</td><td>{_pill(page["state"][:1], _clip(page["state"], 70))}</td></tr>')
     return (f'<h2>All pages</h2><p class=lead>{len(snap["pages"])} pages on this board, in folder order.</p>'
             f'<div class=scroll><table class=grid><tr><th>Id</th><th>Title</th><th>Level</th><th>State</th></tr>{"".join(out)}</table></div>')
 
@@ -698,7 +787,7 @@ def _next_step(snap: dict, view: dict, qid: str, pid: str) -> str:
     if cell["mark"] == "✅" and page:
         return f'done · read {_link(snap, page)}'
     if cell["mark"] == "🚫":
-        return f'refused: {_e(cell["note"] or cell["raw"])} · nothing to run'
+        return f'refused: {_e(_REASONS.get(cell["note"], (cell["note"] or cell["raw"],))[0])} · nothing to run'
     if cell["mark"] == "·":
         return 'not asked on this data · use <b>Ask</b> in Scope Space'
     where = f' · stopped at {stop["key"]} {stop["name"]}' if stop else ""
@@ -742,8 +831,11 @@ def _render_strip(snap: dict, view: dict | None, qid: str, pid: str) -> str:
     if not view or not view["row"]:
         return '<div class=strip><span class=mut>No register question found on this board.</span></div>'
     row, cell = view["row"], view["cell"]
-    answer = cell["raw"] if cell["mark"] != "·" else "not asked on this data"
-    return (f'<div class=strip>'
+    answer = _cell_text(cell) if cell["mark"] != "·" else "not asked on this data"
+    pick = ("" if snap["static"] else
+            f' · <a href="{_e(_cell_url(snap, qid, pid, "scope"))}">pick another cell in Scope Space</a>')
+    return (f'<div class=strip><div class=strip-head>Selected cell <span class=mut>· the one question × data cut '
+            f'this Space is about{pick}</span></div>'
             f'<span><span class=eyebrow>Question</span><br><span class=id>{_e(qid)}</span> · {_e(_LEVEL_LABEL.get(qid[1], ""))} · {_e(row["question"])}</span>'
             f'<span><span class=eyebrow>Data</span><br>{_e(_partition_label(snap, pid))}</span>'
             f'<span><span class=eyebrow>Answer</span><br>{_pill(cell["mark"], answer)}</span>'
@@ -753,6 +845,13 @@ def _render_strip(snap: dict, view: dict | None, qid: str, pid: str) -> str:
 def _render_scope(snap: dict, qid: str, pid: str) -> str:
     cols = [p for p in ("F", "B", "C", "D", "E", "G", "X")
             if any(p in q["cells"] for q in snap["questions"])]
+    parts = {p["id"]: p["name"] for p in snap["partitions"]}
+    # "✅ midlife-female-I03" stays on one line; only a note such as "final" wraps
+    def cell_html(c):
+        if c["page"]:
+            return (f'<span class=nw>{_e(c["mark"])} {_e(display_id(c["page"], parts))}</span>'
+                    + (f' {_e(c["note"])}' if c["note"] else ""))
+        return f'<span class=nw>{_e(_cell_text(c))}</span>'
     rows, last = [], ""
     for q in snap["questions"]:
         lv = q["id"][1]
@@ -761,13 +860,16 @@ def _render_scope(snap: dict, qid: str, pid: str) -> str:
             last = lv
         cells = ""
         for p in cols:
-            c = q["cells"].get(p, {"mark": "·", "raw": "·"})
+            c = q["cells"].get(p, {"mark": "·", "page": "", "note": "", "raw": "·"})
             on = " sel" if (q["id"] == qid and p == pid) else ""
-            cells += f'<td class="cell{on}"><a href="{_e(_cell_url(snap, q["id"], p))}">{_e(c["raw"] or "·")}</a></td>'
+            cells += f'<td class="cell{on}"><a href="{_e(_cell_url(snap, q["id"], p))}">{cell_html(c)}</a></td>'
         rows.append(f'<tr><td class=mono>{_e(q["id"])}</td><td class=q>{_e(q["question"])}</td>{cells}</tr>')
     register = (f'<h2>Question register</h2><p class=lead>One row per question, one column per partition, as written in MT01 to MT04. Click a cell.</p>'
                 f'<div class=scroll><table class=grid><tr><th>Id</th><th>Question</th>{"".join(f"<th>{p}<br><span class=pn>{_e(_partition_name(snap, p) or p)}</span></th>" for p in cols)}</tr>{"".join(rows)}</table></div>'
-                '<p class=mut style="margin-top:8px">✅ answered · 🟡 answered in part · 🚫 refused, with the reason · &nbsp;·&nbsp; not asked there</p>')
+                '<p class=mut style="margin-top:8px">✅ answered · 🟡 answered in part · 🚫 refused, with the reason · &nbsp;·&nbsp; not asked there</p>'
+                '<table class="legend mut"><tr><th colspan=2>Why a cell is refused</th></tr>'
+                + "".join(f'<tr><td>🚫 {_e(short)}</td><td>{_e(long)}</td></tr>' for short, long in _REASONS.values())
+                + '</table>')
     prow = "".join(
         f'<tr><td><b>{_e(r["id"])}</b></td><td>{_e(_pretty(r["name"]))}</td><td class=mono>{_e(r["where"] or "—")}</td>'
         f'<td class=num>{_e(r["rows"] or "—")}</td><td class=num>{_e(r["share"] or "—")}</td><td class=num>{r["pages"]}</td></tr>'
@@ -793,8 +895,8 @@ def _render_run(snap: dict) -> str:
     runs = snap["runs"]
     if runs:
         body = "".join(
-            f'<tr><td class=mono>{_e(r["task"] or "?")} · {_e(r["call"] or "?")}</td><td>{_link(snap, r["page"])}</td>'
-            f'<td>{_pill("✅" if r["status"] == "ok" else "🚫", r["status"])}</td><td class=mono>{_e(r["started"])}</td>'
+            f'<tr><td class=mono>{_e(r["task"] or "?")} · {_e(_pretty(r["call"]) if r["call"] else "?")}</td><td>{_link(snap, r["page"])}</td>'
+            f'<td>{_pill("✅" if r["status"] == "ok" else "🚫", r["status"])}</td><td class=mono>{_e(r["started"].replace("T", " ")[:16])}</td>'
             f'<td class=num>{_e(r["duration"] + " s" if r["duration"] else "")}</td><td class=mono>{_e(r["git"])}</td>'
             f'<td class=mono>{_e(r["rel"]) if r["found"] else _e(r["rel"]) + " · not found in store"}</td></tr>'
             for r in runs)
@@ -802,12 +904,379 @@ def _render_run(snap: dict) -> str:
     else:
         ledger = '<p class=note>No page on this board names a run receipt yet. A D page names one with a <code>run receipt</code> line or a <code>receipt:</code> header.</p>'
     ledger = '<h2>Runs</h2><p class=lead>Every run a page names, read from its <code>runtime.yaml</code> in the store.</p>' + ledger
-    events = snap["events"][:60]
-    tl = "".join(
-        f'<li><span class=d>{_e(ev["date"])}</span><span class=p>{_link(snap, ev["page"])}</span><span>{_inline(ev["text"][:220])}{"…" if len(ev["text"]) > 220 else ""}</span></li>'
-        for ev in events) or '<li class=mut>No <code>## Log</code> lines on this board.</li>'
-    timeline = f'<h2>What happened</h2><p class=lead>Every dated <code>## Log</code> line on the board, newest first.</p><ul class=timeline>{tl}</ul>'
-    return _tabs([("ledger", "Runs"), ("timeline", "Timeline")]) + _view("ledger", ledger, True) + _view("timeline", timeline)
+    # The Folders table became the Workflow map's folder tree (the paper board's
+    # shape); an old `view=folders` link opens the map.
+    return (_tabs([("ledger", "Runs"), ("timeline", "Timeline"), ("wmap", "Workflow map")])
+            + _view("ledger", ledger, True) + _view("timeline", _render_timeline(snap))
+            + _view("wmap", _render_workflow_map(snap)))
+
+
+def _render_timeline(snap: dict) -> str:
+    """A day axis, then one section per working day, newest first: each page
+    changed that day on one line (its first log sentence, the rest on click),
+    and the runs that ran that day.  JL 260918: a list of 219 log paragraphs
+    is not a timeline."""
+    days: dict[date, dict] = {}
+    for ev in snap["events"]:
+        try:
+            day = datetime.strptime(ev["date"], "%y%m%d").date()
+        except ValueError:
+            continue
+        days.setdefault(day, {"logs": [], "runs": []})["logs"].append(ev)
+    for run in snap["runs"]:
+        try:
+            day = date.fromisoformat(run["started"][:10])
+        except ValueError:
+            continue
+        days.setdefault(day, {"logs": [], "runs": []})["runs"].append(run)
+    if not days:
+        return '<h2>Timeline</h2><p class=note>No dated <code>## Log</code> line and no run on this board yet.</p>'
+
+    first, last = min(days), max(days)
+    peak = max(len(v["logs"]) + len(v["runs"]) for v in days.values())
+    axis = []
+    for i in range((last - first).days + 1):
+        day = first + timedelta(days=i)
+        v = days.get(day)
+        if not v:
+            axis.append('<span class=tday></span>')
+            continue
+        n_log, n_run = len(v["logs"]), len(v["runs"])
+        tip = f'{day:%a %d %b} · {n_log} change{"" if n_log == 1 else "s"} · {n_run} run{"" if n_run == 1 else "s"}'
+        axis.append(f'<a class="tday on" href="#day-{day:%y%m%d}" title="{tip}">'
+                    f'<i class=r style="height:{max(6, round(64 * n_run / peak)) if n_run else 0}px"></i>'
+                    f'<i class=l style="height:{max(6, round(64 * n_log / peak)) if n_log else 0}px"></i></a>')
+    ticks = f'<div class=taxis-lab><span>{first:%d %b}</span><span>{last:%d %b %Y}</span></div>'
+
+    folder_word = {p["folder"]: ("comparisons across the data cuts" if p["id"] == "X" else f'{_pretty(p["name"])} data')
+                   for p in snap["partitions"]}
+    folder_word["0-MT-meta"] = "meta and question registers"
+    sections = []
+    for day in sorted(days, reverse=True):
+        v = days[day]
+        by_page: dict[str, list] = {}
+        for ev in v["logs"]:
+            by_page.setdefault(ev["page"]["id"], []).append(ev)
+        rows = []
+        groups: dict[tuple, list] = {}      # one line per task and page: six calls of one task read as one
+        for run in sorted(v["runs"], key=lambda r: r["started"]):
+            groups.setdefault((run["task"], run["page"]["id"]), []).append(run)
+        for (task, _pid), runs in groups.items():
+            status = "all ok" if all(r["status"] == "ok" for r in runs) else " · ".join(r["status"] for r in runs)
+            secs = sum(float(r["duration"] or 0) for r in runs)
+            what = f'{len(runs)} runs of' if len(runs) > 1 else "run"
+            rows.append(f'<li class=trun><span class=tk>▶ {what}</span><span class=mono>{_e(task.split("/")[-1])}</span> '
+                        f'· {_e(", ".join(_pretty(r["call"]) for r in runs))} <span class=mut>· {_e(status)} · '
+                        f'{_e(runs[0]["started"][11:16])} · {secs:g} s · for {_link(snap, runs[0]["page"])}</span></li>')
+        last_folder = ""
+        for pid in sorted(by_page, key=lambda p: by_page[p][0]["page"]["rel"]):
+            evs = by_page[pid]
+            folder = evs[0]["page"]["rel"].split("/")[0]
+            if folder != last_folder:
+                rows.append(f'<li class=tgrp>{_e(folder_word.get(folder, folder))}</li>')
+                last_folder = folder
+            first_line = re.split(r"(?<=[.;])\s", evs[0]["text"], 1)[0]
+            more = f' <span class=mut>· {len(evs) - 1} more</span>' if len(evs) > 1 else ""
+            body = "".join(f'<p>{_inline(ev["text"])}</p>' for ev in evs)
+            rows.append(f'<li><details><summary><span class=tk>✎</span>{_link(snap, evs[0]["page"])} '
+                        f'<span>{_inline(_clip(first_line, 130))}</span>{more}</summary>{body}</details></li>')
+        n_pages = len(by_page)
+        head = " · ".join(x for x in (
+            f'{len(v["logs"])} change{"" if len(v["logs"]) == 1 else "s"} on {n_pages} page{"" if n_pages == 1 else "s"}' if v["logs"] else "",
+            f'{len(v["runs"])} run{"" if len(v["runs"]) == 1 else "s"}' if v["runs"] else "") if x)
+        sections.append(f'<section class=tsec id="day-{day:%y%m%d}"><h3>{day:%a %d %b %Y} <span class=mut>· {head}</span></h3>'
+                        f'<ul class=tl>{"".join(rows)}</ul></section>')
+    total, n_runs = sum(len(v["logs"]) for v in days.values()), sum(len(v["runs"]) for v in days.values())
+    return ('<h2>Timeline</h2><p class=lead>Each bar is one working day: blue for page changes, green for runs. '
+            f'Click a bar to jump to that day. {total} changes and {n_runs} runs over {len(days)} days, newest first below.</p>'
+            f'<div class=taxis>{"".join(axis)}</div>{ticks}{"".join(sections)}')
+
+
+def _task_calls(snap: dict) -> list[dict]:
+    """Every task config whose `store:` is this board's store: the calls this
+    board runs.  The task code sits in the project's `tasks/`, shared by every
+    board; only the config's `store:` ties a call to one board."""
+    tasks_root = snap["board"].parent.parent / "tasks"
+    store = (snap["store"] or "").rstrip("/")
+    if not store or not tasks_root.is_dir():
+        return []
+    calls = []
+    for cfg in sorted(tasks_root.glob("*/*/configs/*.yaml")):
+        hit = re.search(r"(?m)^store:\s*(\S+)", _read(cfg))
+        if not hit or hit.group(1).rstrip("/") != store:
+            continue
+        task_dir = cfg.parent.parent
+        result = (snap["store_path"] / task_dir.parent.name / task_dir.name / "results" / cfg.stem / "runtime.yaml"
+                  if snap["store_path"] else None)
+        calls.append({"family": task_dir.parent.name, "task": task_dir.name, "call": cfg.stem,
+                      "script": (task_dir / "runs" / f"{cfg.stem}.sh").exists(),
+                      "ran": bool(result and result.is_file())})
+    return calls
+
+
+# Run-type rows × Space columns: a definition view, not a Run inventory.
+# From haipipe-insight-workflow §"The six Insight RunTypes" and §"Runtime
+# control keys"; the task run is the Supporting Run a D page binds to.  The
+# third field is the folder slot the row lands in, resolved on the served
+# board for the `Folder on this board` column (the paper board's shape,
+# haipipe-plugin-paper 0.2.1).
+_WORKFLOW_MAP = (
+    ("I0 Meta", "MT00", "meta", ("set · data cuts, extract, thresholds · Data tab", "—",
+                                 "read · the extract, last line of the trace", "gate GI0 · meta ready",
+                                 "log · MT00's dated lines", "—")),
+    ("I1 Question", "MT01 – MT04", "question", ("ask · one row per question, one cell per data cut · Register, Ask",
+                                               "read · the chosen question on the top strip", "—",
+                                               "gate GI1 · question registered · GI6 · cell settled",
+                                               "log · the registers' dated lines", "—")),
+    ("Task run", "tasks/…/runs/<call>.sh", "task", ("—", "—", "read · the run line: status, git, seconds",
+                                                    "part of GI2 · the data page names a run that finished ok",
+                                                    "run · writes results/<call>/runtime.yaml · Runs tab", "—")),
+    ("I2 Data", "D pages", "data", ("cell · ✅ full-D02", "answer · the counts, D rows", "hop · data line, bound to its run",
+                                    "gate GI2 · data observed", "named by · Runs table", "—")),
+    ("I3 Information", "I pages", "information", ("cell · ✅ full-I05", "answer · the results, I rows", "hop · information lines",
+                                                  "gate GI3 · information derived", "log · Timeline", "—")),
+    ("I4 Knowledge", "K pages · X verdict", "knowledge", ("cell · ✅ full-K02", "answer · claims with their strength, K rows",
+                                                          "hop · knowledge line", "gate GI4 · knowledge claimed", "log · Timeline", "—")),
+    ("I5 Wisdom", "W pages", "wisdom", ("cell · ✅ full-W01", "answer · DO and DO NOT rules · Limits tab",
+                                        "hop · first line of the trace", "gate GI5 · signed by a person", "log · Timeline",
+                                        "out · signed pages ready for design")),
+)
+_RUN_TYPE = {slot: name for name, _, slot, _ in _WORKFLOW_MAP}
+
+
+def _page_slot(page: dict) -> str:
+    if page["id"] == "MT00":
+        return "meta"
+    if page["id"].startswith("MT"):
+        return "question"
+    return page["level"]
+
+
+def _slot_folders(snap: dict) -> dict[str, list[tuple[str, str]]]:
+    """Each map slot → the real folders it lands in on this board, with a count."""
+    out: dict[str, list[tuple[str, str]]] = {slot: [] for slot in _RUN_TYPE}
+    for page in snap["pages"]:
+        if page["id"].startswith("MT"):
+            out[_page_slot(page)].append((page["rel"].rsplit("/", 1)[0] + "/", ""))
+    for level in _LEVELS:
+        tops: dict[str, int] = {}
+        for page in snap["pages"]:
+            if page["level"] == level and page["partition"]:
+                top = page["rel"].split("/", 1)[0]
+                tops[top] = tops.get(top, 0) + 1
+        out[level] = [(f"{top}/", str(n)) for top, n in sorted(tops.items())]
+    calls = _task_calls(snap)
+    for family in sorted({c["family"] for c in calls}):
+        out["task"].append((f"tasks/{family}/", _plural(sum(c["family"] == family for c in calls), "call")))
+    if snap["store"] and calls:
+        out["task"].append((f'{snap["store"].rstrip("/")}/', _plural(sum(c["ran"] for c in calls), "result")))
+    return out
+
+
+_TREE_SKIP = {"__pycache__", ".git", "node_modules"}
+_TREE_LEAF = {"board": "the built site, generated; never edited", "_archive": "parked records, not read"}
+_TREE_FILES = 40          # a folder with more files than this lists a count, not the files
+
+
+def _size(path: Path) -> str:
+    try:
+        n = float(path.stat().st_size)
+    except OSError:
+        return ""
+    for unit in ("B", "KB", "MB"):
+        if n < 1024 or unit == "MB":
+            return f"{int(n)} B" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1024.0
+    return ""
+
+
+def _plural(n: int, word: str) -> str:
+    return f'{n} {word}{"" if n == 1 else "s"}'
+
+
+def _tnode(name: str, path: Path, is_dir: bool, chips=(), note: str = "", kids=(), opened: bool = False,
+           more: int = 0) -> dict:
+    return {"name": name, "path": path, "dir": is_dir, "chips": list(chips), "note": note,
+            "kids": list(kids), "open": opened, "more": more}
+
+
+def _entries(path: Path) -> list[Path]:
+    return sorted((x for x in path.iterdir() if not x.name.startswith(".") and x.name not in _TREE_SKIP),
+                  key=lambda x: (x.is_file(), x.name.lower()))
+
+
+def _walk(path: Path, depth: int) -> tuple[list[dict], int]:
+    """Every child of a folder, folders first.  A folder opens while depth > 0
+    (below that it is a closed count); files list up to _TREE_FILES."""
+    kids, hidden, files = [], 0, 0
+    if not path.is_dir():
+        return kids, hidden
+    for x in _entries(path):
+        if x.is_dir():
+            sub, more = _walk(x, depth - 1) if depth > 0 else ([], 0)
+            kids.append(_tnode(x.name + "/", x, True, note=_plural(len(_entries(x)), "item"), kids=sub, more=more))
+        elif files < _TREE_FILES:
+            kids.append(_tnode(x.name, x, False, note=_size(x)))
+            files += 1
+        else:
+            hidden += 1
+    return kids, hidden
+
+
+def _board_tree(snap: dict) -> list[dict]:
+    """The board folder as it is on disk: every page folder carries the run
+    type that writes it; a data-cut folder carries the run types inside it."""
+    board = snap["board"]
+    by_dir = {p["path"].parent: p for p in snap["pages"]}
+    cuts = {row["folder"] for row in snap["partitions"]}
+    roots = []
+    for x in sorted(_entries(board), key=lambda x: (x.is_dir(), x.name != "board.md", x.name.lower())):
+        if x.is_file():
+            roots.append(_tnode(x.name, x, False, note=_size(x)))
+            continue
+        if x.name in _TREE_LEAF:
+            roots.append(_tnode(x.name + "/", x, True, note=_TREE_LEAF[x.name]))
+            continue
+        kids = []
+        for y in _entries(x):
+            page = by_dir.get(y)
+            if not y.is_dir():
+                kids.append(_tnode(y.name, y, False, note=_size(y)))
+                continue
+            sub, more = _walk(y, 2)
+            if page:
+                state = page["state"].split(" · ", 1)[0]
+                extra = len(sub) + more - 1
+                note = state + (f' · {_plural(extra, "more item")}' if extra > 0 else "")
+                kids.append(_tnode(y.name + "/", y, True, [_RUN_TYPE[_page_slot(page)]] if _page_slot(page) else [],
+                                   note, sub, False, more))
+            else:
+                kids.append(_tnode(y.name + "/", y, True, note=_plural(len(sub) + more, "item"), kids=sub, more=more))
+        mine = [p for p in snap["pages"] if p["rel"].split("/", 1)[0] == x.name]
+        slots = [slot for slot in _RUN_TYPE if any(_page_slot(p) == slot for p in mine)]
+        if x.name in cuts:
+            note = _plural(len(mine), "page") + "".join(
+                f' · {sum(p["level"] == lv for p in mine)} {lv[0].upper()}' for lv in _LEVELS if any(p["level"] == lv for p in mine))
+        elif mine:
+            note = _plural(len(mine), "page") + (f' · {_plural(len(snap["questions"]), "question")}'
+                                                 if "question" in slots else "")
+        else:
+            note = _plural(len(kids), "item")
+        roots.append(_tnode(x.name + "/", x, True, [_RUN_TYPE[s] for s in slots], note, kids, x.name not in cuts))
+    return roots
+
+
+def _homes_tree(snap: dict) -> list[dict]:
+    """The project homes this board uses, outside its folder: the Task home
+    (shared by every board of the project) and this board's Results store."""
+    homes = []
+    calls = _task_calls(snap)
+    project = snap["board"].parent.parent
+    tasks_root = project / "tasks"
+    if tasks_root.is_dir():
+        families = []
+        for fam in _entries(tasks_root):
+            if not fam.is_dir():
+                families.append(_tnode(fam.name, fam, False, note=_size(fam)))
+                continue
+            mine = [c for c in calls if c["family"] == fam.name]
+            kids = []
+            for task in _entries(fam):
+                if not task.is_dir():
+                    kids.append(_tnode(task.name, task, False, note=_size(task)))
+                    continue
+                here = [c for c in mine if c["task"] == task.name]
+                sub, more = _walk(task, 2)
+                note = (f'{_plural(len(here), "call")} for this board · {sum(c["ran"] for c in here)} ran'
+                        if here else "no call for this board")
+                kids.append(_tnode(task.name + "/", task, True, note=note, kids=sub, more=more))
+            tasks = sum(1 for k in kids if k["dir"])
+            note = (f'{_plural(tasks, "task")} · {_plural(len(mine), "call")} for this board' if mine
+                    else f'{_plural(tasks, "task")} · not used by this board')
+            families.append(_tnode(fam.name + "/", fam, True, note=note, kids=kids, opened=bool(mine)))
+        homes.append(_tnode(f"{project.name}/tasks/", tasks_root, True, ["Task run"],
+                            "the Task home · the code, one config per call · shared by every board", families, True))
+    store = snap["store_path"]
+    if store and store.is_dir():
+        sub, more = _walk(store, 4)
+        homes.append(_tnode(f'{snap["store"].rstrip("/")}/', store, True, ["Task run"],
+                            f'the Results store · outside git · {_plural(sum(c["ran"] for c in calls), "result")} '
+                            "· data pages cite these", sub, True, more))
+    return homes
+
+
+def _tree_href(snap: dict, path: Path) -> str:
+    page = next((p for p in snap["pages"] if p["path"] == path), None)
+    if page:
+        return _page_link(snap, page)
+    try:
+        if snap["static"]:
+            return "../" + quote(path.resolve().relative_to(snap["board"].resolve()).as_posix(), safe="/")
+        return "/" + quote(path.resolve().relative_to(snap["root"].resolve()).as_posix(), safe="/")
+    except ValueError:
+        return ""
+
+
+def _tree_html(snap: dict, nodes: list[dict]) -> str:
+    """Two aligned columns per row: the bare tree on the left, the run types and
+    counts on the right (the paper board's Folder tree × Run-Type)."""
+    out = []
+    for n in nodes:
+        url = "" if n["dir"] else _tree_href(snap, n["path"])
+        name = f'<a href="{_e(url)}">{_e(n["name"])}</a>' if url else _e(n["name"])
+        top = "".join(f'<span class="idtag rt">{_e(c)}</span>' for c in n["chips"])
+        top += f'<span class=tn-note>{_e(n["note"])}</span>' if n["note"] else ""
+        line = (f'<span class=tn-name title="{_e(n["name"])}">{"📁" if n["dir"] else "📄"} {name}</span>'
+                f'<span class=tn-works><span class=tn-top>{top}</span></span>')
+        if n["dir"]:
+            kids = _tree_html(snap, n["kids"])
+            if n["more"]:
+                kids += f'<li class=tn-more>… {_plural(n["more"], "more file")} not listed</li>'
+            body = f"<ul>{kids}</ul>" if kids else ""
+            out.append(f'<li><details class=tn{" open" if n["open"] else ""}><summary>{line}</summary>{body}</details></li>')
+        else:
+            out.append(f"<li><div class=tn-file>{line}</div></li>")
+    return "".join(out)
+
+
+def _wbr(text: str) -> str:
+    """A path that may break only after a slash, never inside a name."""
+    return "/<wbr>".join(_e(part) for part in text.split("/"))
+
+
+def _render_workflow_map(snap: dict) -> str:
+    where = _slot_folders(snap)
+    head = "".join(f"<th>{s}</th>" for s in ("Run type", "Scope", "Insight", "Evidence", "Check", "Run", "Delivery",
+                                               "Folder on this board"))
+    body = "".join(
+        f'<tr><td><b>{_e(name)}</b><div class="mut mono">{_wbr(hint)}</div></td>'
+        + "".join(f'<td class={"mut" if c == "—" else ""}>{_wbr(c)}</td>' for c in cells)
+        + '<td>' + ("".join(f'<span class=idtag>{_wbr(f)}' + (f' <span class=nw>· {_e(n)}</span>' if n else "") + '</span>'
+                            for f, n in where.get(slot, []))
+                    or '<span class=mut>—</span>') + '</td></tr>'
+        for name, hint, slot, cells in _WORKFLOW_MAP)
+
+    def count(nodes):
+        return sum(1 + count(n["kids"]) for n in nodes)
+
+    def box(caption, nodes, empty):
+        tree = f'<ul class=tree>{_tree_html(snap, nodes)}</ul>' if nodes else f'<div class=tn-more>{empty}</div>'
+        return (f'<div class=treebox><div class=tree-head><span>{caption}</span><span><span class="idtag rt">Run type</span>'
+                f' acting here · <span class=tn-note>counts</span></span></div>{tree}</div>')
+
+    roots, homes = _board_tree(snap), _homes_tree(snap)
+    return ('<h2>Workflow map</h2><p class=lead>Run-type rows × Space columns: what each step of the Insight workflow '
+            'shows or does in each Space, and the folder it lands in on this board. A definition view, not a list of runs.</p>'
+            f'<div class=scroll><table class=wmap><tr>{head}</tr>{body}</table></div>'
+            f'<h2 class=tree-title>Folder tree × Run type <span class=mut>· {count(roots) + count(homes)} folders and files</span></h2>'
+            '<p class=lead>The same map seen from disk, walked on every open. Left: the real folder tree; click a folder '
+            'to open it. Right: the run type that writes each folder, and its counts. Two boxes: the board folder, then the '
+            'project homes it uses. The map\'s words live in <code>live/insightboard.py</code> (<code>_WORKFLOW_MAP</code>, '
+            'from haipipe-insight-workflow\'s six run types and gate keys); the store comes from <code>store:</code> in '
+            f'<code>{_wbr(snap["relative"] + "/board.md")}</code>.</p>'
+            + box(f'the board folder · {_e(snap["board"].name)}', roots, "the board folder is empty")
+            + box("the project homes · Task home · Results store", homes,
+                  "no Task home or Results store: add tasks/ to the project, or a store: line to board.md"))
 
 
 def _rows_table(rows: list[tuple[str, str, str]]) -> str:
@@ -823,7 +1292,9 @@ def _render_insight(snap: dict, view: dict | None, qid: str, pid: str) -> str:
     row, cell, page = view["row"], view["cell"], view["page"]
     if not page:
         if cell["mark"] == "🚫":
-            answer = f'<h2>{_e(row["question"])}</h2><p class=opening>Refused on {_e(pid)}: <b>{_e(cell["note"] or cell["raw"])}</b>. A refusal is a recorded answer, not a gap.</p>'
+            short, why = _REASONS.get(cell["note"], (cell["note"] or cell["raw"], ""))
+            answer = (f'<h2>{_e(row["question"])}</h2><p class=opening>Refused on {_e(_partition_label(snap, pid))}: '
+                      f'<b>{_e(short)}</b>{(", " + _e(why)) if why else ""}. A refusal is a recorded answer, not a gap.</p>')
         else:
             answer = f'<h2>{_e(row["question"])}</h2><p class=opening>Not asked on partition {_e(pid)}. Pick another cell in the register.</p>'
         return _tabs([("answer", "Answer")]) + _view("answer", answer, True)
@@ -845,7 +1316,7 @@ def _render_insight(snap: dict, view: dict | None, qid: str, pid: str) -> str:
         rungs.append(
             f'<div class=rung><div class=lvl>{_e(_LEVEL_LABEL[level[0].upper()])}'
             f'<small>{_link(snap, main["page"])} · {_e(main["page"]["title"])}</small>'
-            f'<small>{_pill(main["page"]["state"][:1], main["page"]["state"][:48])}</small></div>'
+            f'<small>{_pill(main["page"]["state"][:1], _clip(main["page"]["state"], 48))}</small></div>'
             f'<div>{_rows_table(main["rows"][:8])}'
             f'{("<p class=mut>… " + str(len(main["rows"]) - 8) + " more rows</p>") if len(main["rows"]) > 8 else ""}'
             f'{("<p class=mut>also cited: " + ", ".join(_link(snap, p) for p in others) + "</p>") if others else ""}</div></div>')
@@ -858,33 +1329,39 @@ def _render_insight(snap: dict, view: dict | None, qid: str, pid: str) -> str:
 
 
 def _render_evidence(snap: dict, view: dict | None) -> str:
-    nodes = []
+    # One hop per line, read top to bottom; a wrapping row of arrows left an
+    # arrow dangling at each line end.
+    hops = []
     if view and view["page"]:
         for p in view["primary"]:
             rows = _rows(p["text"])
             first = rows[0] if rows else None
-            nodes.append(f'<div class=node><b>{_e(p["level"] or "page")}</b>{_link(snap, p)}<br><span class=mut>{_e(first[1][:70] if first else p["title"][:70])}</span></div>')
+            hops.append((p["level"] or "page", _link(snap, p), _inline(first[1] if first else p["title"])))
         r = view["receipt"]
         if r:
-            nodes.append(f'<div class=node><b>receipt</b><span class=mono>{_e(r["rel"])}</span><br><span class=mut>{_e(r["status"])} · {_e(r["git"])} · {_e(r["duration"])} s</span></div>')
+            hops.append(("run", f'<span class=mono>{_e(r["rel"])}</span>',
+                         _e(f'{r["status"]} · git {r["git"]} · {r["duration"]} s')))
         if snap["context"]:
-            nodes.append(f'<div class=node><b>extract</b><span class=mono>{_e(snap["context"].split(" · ")[0])}</span></div>')
-    chain = ('<h2>Trace</h2><p class=lead>From the answer down to the extract. Each hop is a file that exists.</p><div class=chain>'
-             + '<span class=arrow>←</span>'.join(nodes) + '</div>') if nodes else '<p class=note>Select an answered cell to trace it.</p>'
+            hops.append(("extract", f'<span class=mono>{_e(snap["context"].split(" · ")[0])}</span>', ""))
+    chain = ('<h2>Trace</h2><p class=lead>From the answer down to the extract. Each line is a file that exists.</p><ol class=trace>'
+             + "".join(f'<li><span class=eyebrow>{_e(k)}</span><span>{w}</span><span>{t}</span></li>' for k, w, t in hops)
+             + '</ol>') if hops else '<p class=note>Select an answered cell to trace it.</p>'
     if view and view["page"] and not view["receipt"]:
         chain += '<p class=note style="margin-top:12px">No page in this chain names a run receipt, so the trace stops at the D page.</p>'
     return chain
 
 
 def _render_delivery(snap: dict) -> str:
-    """What leaves this board: person-signed Wisdom handoffs a DesignBoard may bind."""
+    """What leaves this board: person-signed Wisdom pages a DesignBoard may use."""
     hrows = "".join(
         f'<tr><td>{_link(snap, h["record"])} · {_e(h["title"])}</td><td class=mono>{_e(h["serves"])}</td>'
         f'<td>{_pill("✅", "✅ " + h["signature"]) if h["signed"] else _pill("⬜", "unsigned · waits for a person")}</td></tr>'
-        for h in snap["handoffs"]) or '<tr><td colspan=3 class=mut>No Wisdom handoff on this board yet.</td></tr>'
+        for h in snap["handoffs"]) or '<tr><td colspan=3 class=mut>No Wisdom page is ready to leave this board yet.</td></tr>'
     signed = sum(h["signed"] for h in snap["handoffs"])
-    return (f'<h2>Delivery</h2><p class=lead>{signed} signed handoff(s) can be bound by a DesignBoard; '
-            f'{len(snap["handoffs"]) - signed} wait for a signature. D, I and K pages never leave the board directly.</p>'
+    waiting = len(snap["handoffs"]) - signed
+    return (f'<h2>Delivery</h2><p class=lead>{signed} signed Wisdom page{"" if signed == 1 else "s"} ready for design'
+            f'{f"; {waiting} wait for a signature" if waiting else ""}. '
+            f'Data, Information and Knowledge pages never leave the board directly.</p>'
             f'<table><tr><th>Wisdom page</th><th>Serves</th><th>Signed</th></tr>{hrows}</table>')
 
 
@@ -895,7 +1372,7 @@ def _render_check(snap: dict, view: dict | None, qid: str, pid: str) -> str:
         gates = '<div class=gates>' + "".join(
             f'<div class="gate {g["state"]}"><span class=k>{_e(g["key"])}</span><span class=n>{_e(g["name"])}</span>'
             f'<span class=who><span class="pill {"human" if g["who"] == "person" else "acc" if g["who"] == "agent" else ""}">{_e(g["who"])}</span> {_e(g["state"])}</span>'
-            f'{("<span class=n>" + _e(g["note"][:60]) + "</span>") if g["note"] else ""}</div>'
+            f'{("<span class=n title=" + chr(34) + _e(g["note"]) + chr(34) + ">" + _e(_clip(g["note"], 90)) + "</span>") if g["note"] else ""}</div>'
             for g in view["gates"]) + '</div>'
     gates = f'<h2>Gates for {_e(qid)} × {_e(pid)}</h2><p class=lead>Seven gates per cell. Purple gates need a person; GI5 always does.</p>' + gates
     groom = groom_snapshot(snap["board"], snap)
@@ -961,16 +1438,16 @@ def render_page_insight(snap: dict, page: dict, board_path: str, view: str = "pa
     level = _LEVEL_LABEL.get((page["level"] or " ")[0].upper(), page["page_type"] or "page")
     where = (" · ".join(f'<a href="{_e(_cell_url(snap, q, p))}" class=mono>{_e(q)} × {_e(_partition_label(snap, p))}</a>' for q, p in cells)
              or "<span class=mut>answers no register cell</span>")
-    header = (f'<header><h1>🔎 {_e(page["title"])}</h1><div class=mut>{_e(page["path"].stem)} · {_e(level)} · '
+    header = (f'<header><h1>🔎 {_e(page["title"])}</h1><div class=mut>{_e(page["id"])} {_e(_slug(page))} · {_e(level)} · '
               f'part of <a href="{_e(board_url)}">{_e(snap["title"])}</a> · answers {where}</div></header>')
     strip = _render_strip(snap, cv, qid, pid) if cv and cv["row"] else ""
-    this = (f'<h2>This page</h2><p class=mut>{_pill(page["state"][:1], page["state"][:90])}</p>{opening}{_rows_table(rows)}'
+    this = (f'<h2>This page</h2><p class=mut>{_pill(page["state"][:1], _clip(page["state"], 90))}</p>{opening}{_rows_table(rows)}'
             + ('' if rows else '<p class=note>No id-numbered rows in a fenced block on this page.</p>'))
     cites = ('<h2>Cites</h2>' + ('<table><tr><th>Page</th><th>Title</th><th>State</th></tr>' + "".join(
-        f'<tr><td>{_link(snap, p)}</td><td>{_e(p["title"])}</td><td>{_pill(p["state"][:1], p["state"][:40])}</td></tr>'
+        f'<tr><td>{_link(snap, p)}</td><td>{_e(p["title"])}</td><td>{_pill(p["state"][:1], _clip(p["state"], 40))}</td></tr>'
         for p in parents) + '</table>' if parents else '<p class=note>This page cites no other page by id.</p>'))
     by = ('<h2>Cited by</h2>' + ('<table><tr><th>Page</th><th>Title</th><th>State</th></tr>' + "".join(
-        f'<tr><td>{_link(snap, p)}</td><td>{_e(p["title"])}</td><td>{_pill(p["state"][:1], p["state"][:40])}</td></tr>'
+        f'<tr><td>{_link(snap, p)}</td><td>{_e(p["title"])}</td><td>{_pill(p["state"][:1], _clip(p["state"], 40))}</td></tr>'
         for p in cited_by) + '</table>' if cited_by else '<p class=note>No page cites this one yet.</p>'))
     gates = ('<h2>Gates</h2><div class=gates>' + "".join(
         f'<div class="gate {g["state"]}"><span class=k>{_e(g["key"])}</span><span class=n>{_e(g["name"])}</span>'
@@ -982,13 +1459,13 @@ def render_page_insight(snap: dict, page: dict, board_path: str, view: str = "pa
         + '</ul>') if log_lines else '<h2>Log</h2><p class=note>No dated log line on this page.</p>'
     shell = (_tabs([("page", "This page"), ("cites", "Cites"), ("by", "Cited by"), ("gates", "Gates"), ("log", "Log")])
              + _view("page", this, True) + _view("cites", cites) + _view("by", by) + _view("gates", gates) + _view("log", log))
-    return "".join([
+    return _spell_ids(snap, "".join([
         '<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">',
         f'<title>🔎 {_e(page["id"])} · {_e(page["title"])}</title><style>{_CSS}</style></head><body data-space="page"><main>',
         header, strip, f'<div class="shell">{shell}</div>',
         f'<p class=source>source <code>{_e(snap["relative"])}/{_e(page["rel"])}</code> · <a href="{_e(_page_link(snap, page))}">rendered page</a></p>',
         "</main>", _JS, "</body></html>",
-    ])
+    ]))
 
 
 # ─── server mixin ───────────────────────────────────────────────────────────

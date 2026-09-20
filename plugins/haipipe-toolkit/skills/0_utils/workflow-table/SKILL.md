@@ -56,12 +56,16 @@ workspace_roster:
   id: design-workspaces
   declared_by: haipipe-design
   workspaces:
-    - {id: plan, label: Plan}
-    - {id: create, label: Create}
-    - {id: review, label: Review}
+    - {id: goal, label: Goal}
+    - {id: design, label: Design}
+    - {id: insight, label: Insight}
     - {id: runtime, label: Run}
     - {id: delivery, label: Delivery}
 ```
+
+Design's reader-facing word for a member Workspace is `Space` (Goal Space,
+Design Space, Insight Space, Run Space, Delivery Space, in that order); the
+retired Plan, Create, and Review surfaces are not part of its roster.
 
 Use `runtime` as the stable id for the Workspace that presents Runs. Its UI
 label may be `Run`; the Workspace itself is not another Run.
@@ -127,28 +131,36 @@ references the row's Gate/Route; it never carries a conflicting copy.
 
 ## Worked Design table
 
-Design uses one Plugin with five Workspaces and four Run Spec kinds:
+Design uses one Plugin with five Spaces and four Run Spec kinds; the cells
+follow `haipipe-design-workflow`'s Space bindings:
 
-| Run Spec row | Plan | Create | Review | Run (`runtime`) | Delivery |
+| Run Spec row | Goal | Design | Insight | Run (`runtime`) | Delivery |
 |---|---|---|---|---|---|
-| `commission` · `Design.commission` | own + human decision | empty | empty | read-only | preview receipt |
-| `generate` · `Design.generate` | brief projection | agent action | empty | read-only | candidate preview |
-| `verify` · `Design.verify` | criteria projection | empty | independent agent action | read-only | verdict preview |
-| `adopt` · `Design.adopt` | scope projection | empty | verified-set projection | read-only | human decision |
+| `commission` · `Design.commission` | read-only: the Brief line and the Insight board | human decision (Release or Hold); the goal and rules it pins | read-only: the insights the Commission run record pins by hash | read-only: release/hold row, person, time, words, route | empty |
+| `generate` · `Design.generate` | empty | read-only: the latest draft that passed the records check | empty | read-only: agent, time, verdict n/m, folded checks and draft text | read-only: the draft listed until one is adopted |
+| `verify` · `Design.verify` | empty | read-only: the rule marks of the draft it reviewed | empty | read-only: independent reviewer, time, verdict n/m, folded checks | empty |
+| `adopt` · `Design.adopt` | read-only: the adopted count | human decision (Adopt, Decline, Revise, Hold); item state and who is waited on | empty | read-only: decision row, person, time, words, draft hash | read-only: the adopted draft's text |
 
 ```text
-Design.commission ──release──▶ N × Design.generate
-N generation Runs ──ready──▶ J × Design.verify
-verification pass ──ready──▶ Design.adopt
-adopt ──▶ CLOSE
-decline/revise ──▶ generate | HOLD
+Design.commission ──release──▶ N × Design.generate          (one Commission per Design Item)
+Design.generate ──passes the records check──▶ J × Design.verify
+Design.generate ──fails the records check──▶ Design.generate (a person queues a revise)
+Design.verify ──pass──▶ Design.adopt
+Design.verify ──fail──▶ Design.generate (revise)
+Design.verify ──fails the records check──▶ Design.verify (a person queues the review again)
+Design.adopt ──adopt/decline──▶ CLOSE
+Design.adopt ──revise──▶ Design.generate
+Design.commission / Design.adopt ──hold──▶ HOLD (a person's decision only)
 
-Expected actual Runs = 1 + N + J + 1
+Expected actual Runs per Design Item = 1 + N + J + 1
 ```
 
 Commission and Adopt are decision Runs because each has a bounded question,
 explicit commission, human actor, durable decision Result/receipt, and its own
 close rule. An individual click/comment remains a Step or Gate inside that Run.
+The Design Space also carries the person's queue buttons (Queue Generate,
+Queue Verify, Queue revise, Queue again); a click there allocates a planned
+Generate or Verify Run, and never becomes a Run of its own.
 
 ## Synchronized projections
 

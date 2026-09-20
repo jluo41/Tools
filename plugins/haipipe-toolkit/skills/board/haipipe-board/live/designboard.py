@@ -6,7 +6,7 @@ draws from) and many Design Folders under ``2-Design/``.  This presenter
 stacks every folder's ``design_snapshot`` into one view, in the same five
 Spaces as the Page level, one grain up: Goal (the list of design tasks),
 Design (every item), Insight (the boards and pages the programme draws on),
-Run (who is waited on, what ran), Delivery (what is adopted).  It reads the
+Run (who is waited on, what ran), Delivery (what is ready for handoff).  It reads the
 same files as the Page level and stores nothing of its own.  Its two writes
 are adding design tasks to the Brief's list and opening a Design Folder for a
 line that has none yet.
@@ -20,7 +20,8 @@ from urllib.parse import parse_qs, quote, unquote, urlparse
 
 from live.design import (
     _declared_insight_boards, _handoff_says, _insight_bindings, _read, _short, _signal_line,
-    brief_page, brief_rows, design_snapshot,
+    brief_page, brief_rows, design_picture, design_snapshot, design_title, insight_caption,
+    is_task_header, name_refs, shown_design, venue_word,
 )
 
 _TITLE = re.compile(r"(?m)^#\s+(.+?)\s*$")
@@ -28,6 +29,7 @@ _FIELD = re.compile(r"(?m)^\s*([a-z][a-z-]*):\s*(.*?)\s*$", re.I)
 _READS_LINE = re.compile(r"(?im)^\s*reads:\s*(.*?)\s*$")
 _DESIGN_BOARD = re.compile(r"(?:^|[-_])designboard(?:$|[-_])", re.I)
 _BOARD_GLOBS = ("examples*/*/applications/*/board.md", "examples*/*/*/board.md",
+                "applications/*/board.md",      # a Project folder served as the root
                 "*/board.md", "board.md")
 _ROW = re.compile(r"^\s*\|(.+)\|\s*$")
 DESIGN_GROUP = "2-Design"                      # the group folder of Design Folders
@@ -77,7 +79,11 @@ def resolve_board(root: Path, raw: str) -> Path | None:
         only = design_boards(root)
         return only[0] if len(only) == 1 else None
     if "/" not in value.strip("/") and not value.endswith("board.md"):
-        matches = [b for b in design_boards(root) if b.name == value.strip("/")]
+        name = value.strip("/")
+        boards = design_boards(root)
+        matches = [b for b in boards if b.name == name]
+        if not matches:  # the start of the name is enough when it is unique: ?board=B00
+            matches = [b for b in boards if b.name.lower().startswith(name.lower())]
         return matches[0] if len(matches) == 1 else None
     try:
         resolved = (root / value.lstrip("/")).resolve()
@@ -125,7 +131,7 @@ def design_board_snapshot(board_root: Path, server_root: Path | None = None,
                          row["snapshot"]["reason"] if not row["snapshot"]["current"] else
                          _folder_summary(row["snapshot"]))
         row["registered"] = len(row["snapshot"]["items"]) if row["snapshot"] else 0
-        row["adopted"] = sum(1 for i in row["snapshot"]["items"] if i["adopted"]) if row["snapshot"] else 0
+        row["ready"] = sum(1 for i in row["snapshot"]["items"] if i.get("ready")) if row["snapshot"] else 0
     listed = {row["folder"] for row in brief_lines if row["folder"]}
     items = [dict(item, folder=f["name"], rel=f["rel"]) for f in folders for item in f["items"]]
     runs = sorted((dict(run, folder=f["name"]) for f in folders for run in f["runs"]),
@@ -143,6 +149,7 @@ def design_board_snapshot(board_root: Path, server_root: Path | None = None,
     for row in brief_lines:
         if row["insight"] and row["insight"] not in names:
             names.append(row["insight"])
+    names = [n for n in names if _declared_insight_boards(board_root, [n])]   # a dead or non-Insight entry is not offered
     insight = _insight_bindings(board_root / "board.md", server_root, names or None)
     return {
         "title": title, "board": board_root, "root": server_root, "static": static,
@@ -150,12 +157,12 @@ def design_board_snapshot(board_root: Path, server_root: Path | None = None,
         "brief": brief, "brief_rows": brief_lines, "folders": folders,
         "unlisted": [f for f in folders if f["name"] not in listed],
         "items": items, "runs": runs, "waiting": waiting,
-        "adopted": [i for i in items if i["adopted"]],
+        "ready": [i for i in items if i.get("ready")],
         "audit": [f'{f["name"]}: {issue}' for f in folders for issue in f["audit"]],
         "insight": insight, "insight_names": names,
         "insight_space": _board_insight_space(folders, insight),
         "totals": {"lines": len(brief_lines), "wanted": sum(r["designs"] for r in brief_lines),
-                   "registered": len(items), "adopted": sum(1 for i in items if i["adopted"])},
+                   "registered": len(items), "ready": sum(1 for i in items if i.get("ready"))},
         "human": next((f["human"] for f in folders if f["human"] != "person"), "person"),
         "relative": rel, "current": is_design_board(board_root),
     }
@@ -178,7 +185,7 @@ def _board_insight_space(folders: list[dict], insight: dict) -> list[dict]:
             for r in block["rows"]:
                 if r["exists"]:
                     try:
-                        used.setdefault(r["file"].resolve(), []).append(f'{f["name"]} {block["item"]["id"]}')
+                        used.setdefault(r["file"].resolve(), []).append((f["name"], f["rel"], block["item"]["id"]))
                     except OSError:
                         pass
     boards = []
@@ -198,7 +205,27 @@ def _board_insight_space(folders: list[dict], insight: dict) -> list[dict]:
                           "finding": says["finding"], "counsel": says.get("counsel", []),
                           "used_by": used.get(resolved, [])})
         boards.append({"title": board["title"], "live_url": board["live_url"], "pages": pages})
+    # pages the items rest on that are not signed insights: shown too, so nothing an item uses is hidden
+    listed = {Path(p["file"]).resolve() for b in boards for p in b["pages"]}
+    others = [{"title": (re.search(r"(?m)^#\s+(.+?)\s*$", _read(f)) or [None, f.stem])[1], "name": f.name, "file": f,
+               "signed": "", "finding": "", "counsel": [], "used_by": users}
+              for f, users in sorted(used.items(), key=lambda kv: kv[0].as_posix()) if f not in listed]
+    if others:
+        boards.append({"title": "Other pages the designs use (not signed insights)", "live_url": "", "pages": others,
+                       "unsigned": True})
     return boards
+
+
+def _used_by(snapshot: dict, users: list[tuple]) -> str:
+    """Who uses a page, per folder: 'Design-01 · 6 items', each linked to that folder's Insight Space."""
+    if not users:
+        return "<span class=mut>no item yet</span>"
+    per: dict[str, list] = {}
+    for name, rel, item in users:
+        per.setdefault((name, rel), []).append(item)
+    return " · ".join(f'<a href="{_e(_page_url(snapshot, rel, "insight"))}">{_e(name.split("-", 2)[0] + "-" + name.split("-", 2)[1])}</a> '
+                      f'<span class=mut>{len(ids)} item{"s" if len(ids) != 1 else ""}</span>'
+                      for (name, rel), ids in per.items())
 
 
 # ----------------------------------------------------------------- render --
@@ -219,6 +246,9 @@ code{font:12px ui-monospace,Menlo,monospace;word-break:break-word}a{color:var(--
 tr.me td{background:var(--soft)}
 .card{border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:8px 0}.card .head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 pre.text{margin:8px 0;padding:10px 12px;background:var(--soft);border-left:3px solid var(--acc);font:15px/1.45 -apple-system,sans-serif;white-space:pre-wrap;word-break:break-word}
+table.designs td.who{width:230px}.design{white-space:pre-wrap;word-break:break-word;font-size:14.5px}
+img.shot{display:block;width:100%;height:auto;margin:0 0 6px;border:1px solid var(--line);border-radius:18px;background:#fff}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px 18px;margin:10px 0}.gallery figure{margin:0}.gallery figcaption{font-size:13px;line-height:1.35}
 button.do{font:600 12.5px -apple-system,sans-serif;border:1px solid var(--acc);border-radius:4px;padding:3px 9px;background:var(--bg);color:var(--acc);cursor:pointer}
 .msg{font-size:12.5px}.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
 .empty{color:var(--mut);padding:10px 0}
@@ -227,6 +257,7 @@ details{margin:2px 0}summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 .form input,.form textarea,.form select{font:13px -apple-system,sans-serif;border:1px solid var(--line);border-radius:4px;padding:4px 6px;background:var(--bg);color:var(--fg)}
 .form textarea{min-height:72px}.form .full{grid-column:1/3}
 @media(max-width:640px){body{padding:12px}td,th{padding:5px 6px}.form{grid-template-columns:1fr}.form .full{grid-column:1}}
+@media(max-width:720px){main table{display:block;max-width:100%;overflow-x:auto}main table code{white-space:nowrap;word-break:normal}}
 """
 
 
@@ -237,7 +268,7 @@ def _page_url(snapshot: dict, rel: str, space: str = "design", item: str = "") -
 
 
 def _tasks_form(snapshot: dict) -> str:
-    options = "".join(f'<option value="{_e(n)}">{_e(n)}</option>' for n in snapshot["insight_names"])
+    options = "".join(f'<option value="{_e(n)}">{_e(Path(n).name)}</option>' for n in snapshot["insight_names"])
     default = snapshot["insight_names"][0] if snapshot["insight_names"] else ""
     return (
         '<details class=newtasks><summary>New design tasks</summary><div class=form data-act="add-tasks">'
@@ -258,7 +289,7 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
                "intent": "design", "items": "design",
                "signal": "insight", "evidence": "insight", "insights": "insight",
                "runs": "run", "queue": "run", "waiting": "run", "workflow": "run",
-               "adopted": "delivery", "launch": "delivery"}
+               "ready": "delivery", "launch": "delivery"}
     selected = aliases.get(space, space) if space else "goal"
     if selected not in ("goal", "design", "insight", "run", "delivery"):
         selected = "goal"
@@ -267,10 +298,10 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
     totals = snapshot["totals"]
     header = (
         f'<h1>🎨 {_e(snapshot["title"])}</h1>'
-        f'<div class=mut>Board level · {totals["lines"]} design task(s) · {totals["wanted"]} wanted · '
-        f'{totals["registered"]} registered · {totals["adopted"]} adopted · '
+        f'<div class=mut>Board level · {totals["lines"]} design task{"s" if totals["lines"] != 1 else ""} · {totals["wanted"]} wanted · '
+        f'{totals["registered"]} registered · {totals["ready"]} ready · '
         f'waiting on {_e(human)}: {len(mine)} · on agent: {len(snapshot["waiting"]) - len(mine)}</div>'
-        + (f'<div class=mut bad>records check: {len(snapshot["audit"])} finding(s) across folders</div>' if snapshot["audit"] else "")
+        + (f'<div class="mut bad">records check: {len(snapshot["audit"])} finding(s) across folders</div>' if snapshot["audit"] else "")
     )
 
     # Goal Space: the list of design tasks, from the Brief -------------------
@@ -286,16 +317,19 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
             folder_cell = '<span class=mut>—</span>'
             action = (f'<button class=do data-action=new-folder data-row="{_e(row["id"])}">New Design Folder</button>'
                       '<span class=msg></span>') if not snapshot["static"] else ""
-        progress = (f'{row["designs"] or "—"} wanted · {row["registered"]} registered · {row["adopted"]} adopted'
+        progress = (f'{row["designs"] or "—"} wanted · {row["registered"]} registered · {row["ready"]} ready'
                     if row["snapshot"] else (f'{row["designs"]} wanted' if row["designs"] else "—"))
+        # the task by its full name (job · venue · who), never the Brief's row id (JL 260918)
+        name = _e(design_title(row))
+        if row["snapshot"] is not None:
+            name = f'<a href="{_e(_page_url(snapshot, row["snapshot"]["rel"], "goal"))}">{name}</a>'
         task_rows.append(
-            f'<tr data-row="{_e(row["id"])}"><td><b>{_e(row["id"])}</b></td><td>{_e(row["audience"])}</td>'
-            f'<td>{_e(row["job"])}</td><td>{_e(row["venue"])}</td><td>{_e(progress)}</td>'
+            f'<tr data-row="{_e(row["id"])}"><td><b>{name}</b></td><td>{_e(progress)}</td>'
             f'<td>{_e(row["insight"] or "(board default)")}</td><td>{folder_cell}</td>'
             f'<td class="{"bad" if not row["snapshot"] else ""}">{_e(row["status"])} {action}</td></tr>')
     if task_rows:
-        goal_html = ('<h2>Design tasks · from the Brief</h2><table><tr><th>line</th><th>who</th><th>their job</th>'
-                     f'<th>venue</th><th>how many</th><th>insight board</th><th>folder</th><th>status</th></tr>{"".join(task_rows)}</table>')
+        goal_html = ('<h2>Design tasks · from the Brief</h2><table><tr><th>design task</th>'
+                     f'<th>how many</th><th>insight board</th><th>folder</th><th>status</th></tr>{"".join(task_rows)}</table>')
     elif snapshot["brief"]:
         goal_html = (f'<h2>Design tasks · from the Brief</h2><div class=empty>The Brief '
                      f'<code>{_e(snapshot["brief"].name)}</code> has no list yet; add the first design tasks below.</div>')
@@ -321,7 +355,7 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
         f'<tr class="{"me" if i["waiting"] and not i["waiting"].startswith("agent") else ""}">'
         f'<td><a href="{_e(_page_url(snapshot, i["rel"]))}"><code>{_e(i["folder"])}</code></a></td>'
         f'<td><a href="{_e(_page_url(snapshot, i["rel"], "design", i["id"]))}"><b>{_e(i["id"])}</b></a></td>'
-        f'<td>{_e(i["title"])}<div class=mut>{_e(" · ".join(x for x in (i["type"], i["audience"]) if x))}</div></td>'
+        f'<td>{_e(i["title"])}<div class=mut>{_e(" ".join((shown_design(i) or {"text": "no draft yet"})["text"].split())[:140])}</div></td>'
         f'<td>{_e(i["glyph"])} {_e(i["state"])}</td><td class=mut>{_e(i["waiting"] or "—")}</td></tr>'
         for i in snapshot["items"])
     design_html = ('<h2>Design Items · every folder</h2><table><tr><th>folder</th><th>item</th><th>design</th>'
@@ -337,14 +371,17 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
             insight_html.append('<div class=empty>No signed insight page on this board yet.</div>')
             continue
         insight_html.append('<table><tr><th>insight</th><th>signed</th><th>what it says</th><th>used by</th></tr>' + "".join(
-            f'<tr><td>{_e(p["title"])}<div class=mut>{_e(p["name"])}</div></td>'
+            f'<tr><td>{_e(p["title"])}<div class=mut>{_e(insight_caption(p["file"]))}</div></td>'
             f'<td>{("✅ " + _e(p["signed"])) if p["signed"] else "<span class=bad>⬜ unsigned</span>"}</td>'
-            f'<td>{_e(p["finding"]) if p["finding"] else "<span class=mut>—</span>"}'
-            f'{("<div class=mut>rules it implies: " + " · ".join(("DO " if c["do"] else "DO NOT ") + _e(c["text"]) for c in p["counsel"]) + "</div>") if p["counsel"] else ""}</td>'
-            f'<td>{_e(" · ".join(p["used_by"])) if p["used_by"] else "<span class=mut>no item yet</span>"}</td></tr>'
+            f'<td>{name_refs(_e(p["finding"]), p["file"]) if p["finding"] else "<span class=mut>—</span>"}'
+            f'{("<div class=mut>rules it implies: " + " · ".join(("DO " if c["do"] else "DO NOT ") + name_refs(_e(c["text"]), p["file"]) for c in p["counsel"]) + "</div>") if p["counsel"] else ""}</td>'
+            f'<td>{_used_by(snapshot, p["used_by"])}</td></tr>'
             for p in board["pages"]) + '</table>')
     if not insight_html:
         insight_html.append('<div class=empty>No Insight board is declared on board.md (<code>reads:</code>) or on a Brief line.</div>')
+    signed_used = any(p["used_by"] and p["signed"] for b in snapshot["insight_space"] for p in b["pages"])
+    if snapshot["items"] and not signed_used:
+        insight_html.insert(0, '<div class=bad>No design rests on a signed insight yet: every item uses unsigned pages or the Brief alone.</div>')
 
     # Run Space: the queue, then every run --------------------------------------
     queue_rows = "".join(
@@ -353,14 +390,14 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
         f'<td>{_e(i["title"])}</td><td>{_e(i["glyph"])} {_e(i["state"])}</td></tr>'
         for i in snapshot["waiting"])
     queue_html = ('<h2>Waiting on</h2><table><tr><th>who · step</th><th>folder · item</th><th>design</th><th>state</th></tr>'
-                  f'{queue_rows}</table>' if queue_rows else '<h2>Waiting on</h2><div class=empty>Nothing is waiting; every item is adopted or declined.</div>')
+                  f'{queue_rows}</table>' if queue_rows else '<h2>Waiting on</h2><div class=empty>Nothing is waiting; every item is ready for Delivery or still in progress.</div>')
     run_rows = "".join(
         f'<tr><td class=mut>{_e(r["finished"] or r["started"] or "—")}</td>'
         f'<td><a href="{_e(_page_url(snapshot, next(f["rel"] for f in snapshot["folders"] if f["name"] == r["folder"]), "run", r["item"]))}"><code>{_e(r["folder"])}</code></a></td>'
-        f'<td><code>{_e(r["id"])}</code></td><td>{_e(r["step"])}</td>'
+        f'<td><code>{_e(r["id"].replace("_adopt_", "_delivery_"))}</code></td><td>{_e(r["step"])}</td>'
         f'<td>{_e(r["actor"])} <span class=mut>{_e(r["mode"])}</span></td>'
         f'<td class="{"bad" if r["status"] in ("failed", "blocked") else "ok" if r["status"] == "complete" else ""}">{_e(r["status"])}</td>'
-        f'<td>{_e(r["outcome"])}</td></tr>' for r in snapshot["runs"])
+        f'<td>{_e({"adopt": "ready", "decline": "not delivered"}.get(r["outcome"], r["outcome"]))}</td></tr>' for r in snapshot["runs"])
     runs_html = ('<h2>Every Run · newest first</h2><table><tr><th>when</th><th>folder</th><th>run</th><th>step</th>'
                  f'<th>who</th><th>status</th><th>outcome</th></tr>{run_rows}</table>' if run_rows
                  else '<h2>Every Run</h2><div class=empty>No Design Run in any folder yet.</div>')
@@ -372,29 +409,33 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
         audit_html = '<div class="mut ok">records check: PASS in every folder</div>'
     run_html = queue_html + runs_html + audit_html
 
-    # Delivery Space: adopted per folder -----------------------------------------
-    cards = []
-    for i in snapshot["adopted"]:
-        a = i["adopted"]
-        cards.append(
-            f'<div class=card><div class=head><b><a href="{_e(_page_url(snapshot, i["rel"], "delivery", i["id"]))}">'
-            f'{_e(i["folder"])} · {_e(i["id"])}</a> · {_e(i["title"])}</b>'
-            f'<span class=mut>✅ adopted · {_e(a["actor"])} · {_e(a["when"])}</span></div>'
-            f'<pre class=text>{_e(a["text"] or "(draft text not readable)")}</pre>'
-            f'<div class=mut>draft <code>{_e(a["candidate"])}</code> · sha256 <code>{_e(_short(a["sha256"]))}</code>'
-            f' · verified by <code>{_e(a["verification"] or "—")}</code></div>'
-            f'{("<div class=mut>“" + _e(a["words"]) + "”</div>") if a["words"] else ""}</div>')
-    not_adopted = [i for i in snapshot["items"] if not i["adopted"]]
+    # Delivery Space: a quick overview of every design, one table per folder -------
+    blocks = []
+    for f in snapshot["folders"]:
+        rows, tiles = "", ""
+        retired = [i for i in f["items"] if i["state"] == "declined"]   # retired items leave the overview
+        for i in (i for i in f["items"] if i["state"] != "declined" and i.get("ready")):
+            design = i.get("ready")
+            text = f'<div class=design>{_e(design["text"])}</div>' if design else '<span class=mut>not ready for Delivery yet</span>'
+            link = f'<a href="{_e(_page_url(snapshot, f["rel"], "design", i["id"]))}">{_e(i["id"])}</a>'
+            rows += (f'<tr><td class=who><b>{link}</b>'
+                     f'<div class=mut>{_e(i["title"])}</div></td><td>{text}</td></tr>')
+            tiles += (f'<figure>{design_picture(snapshot["root"], i) or text}'
+                      f'<figcaption><b>{link}</b> {_e(i["title"])}</figcaption></figure>')
+        head = f'<h2><a href="{_e(_page_url(snapshot, f["rel"], "delivery"))}">{_e(f["title"])}</a></h2>'
+        if any(i.get("render") and i.get("ready") for i in f["items"] if i["state"] != "declined"):
+            blocks.append(f'{head}<div class=gallery>{tiles}</div>')      # screens read as pictures
+        elif rows:
+            blocks.append(f'{head}<table class=designs><tr><th>item</th><th>design</th></tr>{rows}</table>')
+        if retired:
+            blocks.append(f'<details class=retired><summary>Declined, kept for the record · {len(retired)}</summary>'
+                          f'<div class=mut>{" · ".join(_e(i["id"] + " " + i["title"]) for i in retired)}</div></details>')
     bundle_link = ""
-    if cards and not snapshot["static"]:
+    count = len(bundle_rows(snapshot))
+    if count and not snapshot["static"]:
         bundle_link = (f'<div class=mut><a href="/_board/design-bundle?path={quote(board_path_of(snapshot), safe="")}">'
-                       f'↓ Download the bundle · {len(cards)} adopted message(s) · csv</a> · one row per adopted draft: '
-                       'who · their job · venue · folder · item · text · sha256 · verified by · adopted by · when</div>')
-    delivery_html = bundle_link + ("".join(cards) or '<div class=empty>Nothing adopted on this board yet.</div>')
-    if not_adopted:
-        delivery_html += ('<div class=mut>not adopted: ' + " · ".join(
-            f'<a href="{_e(_page_url(snapshot, i["rel"], "design", i["id"]))}">{_e(i["folder"])} {_e(i["id"])}</a> ({_e(i["state"])})'
-            for i in not_adopted) + '</div>')
+                       f'↓ Download all designs · {count} · csv</a></div>')
+    delivery_html = bundle_link + ("".join(blocks) or '<div class=empty>No design on this board yet.</div>')
 
     panes = {"goal": goal_html, "design": design_html, "insight": "".join(insight_html),
              "run": run_html, "delivery": delivery_html}
@@ -432,18 +473,23 @@ def board_path_of(snapshot: dict) -> str:
 
 
 def bundle_rows(snapshot: dict) -> list[dict]:
-    """One row per adopted draft, with the Brief line it serves: the send-system hand-off."""
+    """One row per design on the board, with its state and the Brief line it serves.
+
+    The design is the candidate whose independent Verify passed; a failed or
+    unverified draft is never listed for handoff."""
     by_folder = {r["folder"]: r for r in snapshot["brief_rows"] if r["folder"]}
     rows = []
-    for i in snapshot["adopted"]:
-        a = i["adopted"]
+    for i in snapshot["items"]:
+        design = i.get("ready")
+        if not design:
+            continue
         line = by_folder.get(i["folder"], {})
         rows.append({
             "line": line.get("id", ""), "who": line.get("audience") or i.get("audience", ""),
             "their_job": line.get("job") or i.get("job", ""), "venue": line.get("venue") or i.get("type", ""),
-            "folder": i["folder"], "item": i["id"], "title": i["title"], "text": a["text"],
-            "sha256": a["sha256"], "draft_run": a["candidate"], "verified_by": a["verification"],
-            "adopted_by": a["actor"], "adopted_at": a["when"], "words": a["words"],
+            "folder": i["folder"], "item": i["id"], "title": i["title"], "state": i["state"], "text": design["text"],
+            "draft_run": design["run"], "sha256": design["sha256"],
+            "render": i["render"]["render"] if i.get("render") else "",
         })
     return rows
 
@@ -452,8 +498,7 @@ def bundle_csv(snapshot: dict) -> str:
     import csv
     import io
     out = io.StringIO()
-    fields = ["line", "who", "their_job", "venue", "folder", "item", "title", "text", "sha256",
-              "draft_run", "verified_by", "adopted_by", "adopted_at", "words"]
+    fields = ["line", "who", "their_job", "venue", "folder", "item", "title", "state", "text", "draft_run", "sha256", "render"]
     writer = csv.DictWriter(out, fieldnames=fields, lineterminator="\n")
     writer.writeheader()
     for row in bundle_rows(snapshot):
@@ -468,8 +513,12 @@ def _json(obj) -> str:
 
 # ----------------------------------------------------------------- writes --
 
-def _slug(text: str, words: int = 2) -> str:
-    parts = [p for p in re.sub(r"[^a-z0-9]+", " ", text.lower()).split() if p]
+_FILLER = {"a", "an", "the", "with", "within", "of", "for", "to", "in", "on", "or", "and", "at", "by", "under", "over"}
+
+
+def _slug(text: str, words: int = 3) -> str:
+    """The first content words of a Brief cell, so a folder name says the goal (JL 260917)."""
+    parts = [p for p in re.sub(r"[^a-z0-9]+", " ", text.lower()).split() if p and p not in _FILLER]
     return "-".join(parts[:words]) or "item"
 
 
@@ -480,7 +529,7 @@ def _table_bounds(lines: list[str]) -> tuple[int, int, list[str]] | None:
         if not hit:
             continue
         cells = [c.strip().lower() for c in hit.group(1).split("|")]
-        if any("audience" in c for c in cells):
+        if is_task_header(cells):
             end = i + 1
             while end < len(lines) and _ROW.match(lines[end]):
                 end += 1
@@ -582,63 +631,94 @@ def add_tasks(board_root: Path, subgroups: list[str], job: str, venue: str, desi
 
 
 def new_folder(board_root: Path, row_id: str) -> dict:
-    """Open a Design Folder for one Brief line that has none, and name it on the line."""
+    """Open a Design Folder for one Brief line that has none, and name it on the line.
+
+    The line is found by its place in the task table (a Brief with no `line`
+    column still numbers its rows R1, R2 …), and the folder cell is written on
+    that same row, so a second click finds the folder and refuses (audit L9)."""
     brief = brief_page(board_root)
     if brief is None:
         raise ValueError("no Brief under 0-BR-brief/; the list of designs lives there")
     text = _read(brief)
     rows = brief_rows(text)
-    row = next((r for r in rows if r["id"] == row_id), None)
-    if row is None:
-        raise ValueError(f"line {row_id!r} is not in the Brief {brief.name}")
+    index = next((n for n, r in enumerate(rows) if r["id"] == row_id), None)
+    if index is None:
+        raise ValueError(f"that design task is not in the Brief {brief.name}; reload the page")
+    row = rows[index]
     if row["folder"]:
-        raise ValueError(f"{row_id} already names folder {row['folder']}")
+        raise ValueError(f"{design_title(row)} already has its folder {row['folder']}")
+    lines = text.splitlines()
+    bounds = _table_bounds(lines)
+    if bounds is None:
+        raise ValueError(f"no design-task table in {brief.name}")
+    lines, header = _ensure_columns(lines, *bounds)
+    start, end, header = _table_bounds(lines)
+    data_rows = [i for i in range(start + 1, end)
+                 if not all(set(c.strip()) <= set("-: ") for c in _ROW.match(lines[i]).group(1).split("|"))]
+    target = data_rows[index]
+    folder_col = next(i for i, c in enumerate(header) if "folder" in c)
     group = board_root / DESIGN_GROUP
     group.mkdir(exist_ok=True)
     numbers = [int(m.group(1)) for p in group.iterdir() if (m := _FOLDER_ID.match(p.name))]
-    name = f"Design-{max(numbers, default=0) + 1:02d}-{_slug(row['audience'])}-{_slug(row['job'])}-{_slug(row['venue'], 1)}"
+    name = f"Design-{max(numbers, default=0) + 1:02d}-{_slug(row['audience'])}-{_slug(row['job'])}-{_slug(row['venue'])}"
+    title = design_title(row)
+    wanted = row["designs"]
+    count = "" if wanted == 1 else f"{wanted} " if wanted else ""
+    ask = (f"Which {count}{row['job'].strip()} {venue_word(row['venue'])} design{'' if wanted == 1 else 's'} "
+           f"should we make for {row['audience'].strip()}?")
     folder = group / name
     folder.mkdir()
-    title = f"{row['job'].strip().capitalize() or 'Design'} · {row['audience'].strip()} · {row['venue'].strip()}"
-    wanted = f" The Brief asks for {row['designs']} design{'s' if row['designs'] != 1 else ''}." if row["designs"] else ""
     (folder / f"{name}.md").write_text(
-        f"# {title}\nfolder-kind: design\n\n## Opening\n\nDesign for {row['audience'].strip()} "
-        f"({row['job'].strip()}, {row['venue'].strip()}), opened from Brief line {row_id}.{wanted}\n\n"
+        f"# {title}\nfolder-kind: design\nstate: 🔴 OPEN · no design registered yet\nowner: {_owner(board_root)}\n\n"
+        f"## Opening\n\n{ask}\n\nListed in the Brief's design tasks.\n\n"
         f"## Outline\n\nDesign Items are registered in `outline/{name}-design-items.md`; their drafts,\n"
-        "verifications, and adoptions are `rdNN_*` Runs.\n\n## Content\n\nDraft wording lives in "
+        "verifications are `rdNN_*` Runs; a passed Verify is ready for Delivery.\n\n## Content\n\nDraft wording lives in "
         "immutable Design Run Results, never here.\n\n## Aims\n\n### A1 · Every registered item reaches a "
-        "truthful terminal decision\n\n- ⬜ A1.1 · adopt, decline, or a visible hold for each item.\n",
+        "truthful terminal decision\n\n- ⬜ A1.1 · pass Verify so the item is ready for Delivery.\n",
         encoding="utf-8")
     (folder / "outline").mkdir()
     (folder / "outline" / f"{name}-design-items.md").write_text(
         f"# {title} · Design Items\n\nOne block per design target: the goal, its evidence, and its acceptance rules.\n"
         "Runs name an item through `item:`; state is derived from those Runs, never typed here.\n",
         encoding="utf-8")
-    # The one Brief cell this write touches: name the folder on the line it came from.
-    new_lines = []
-    done = False
-    for line in text.splitlines():
-        hit = _ROW.match(line)
-        if hit and not done:
-            cells = [c.strip() for c in hit.group(1).split("|")]
-            if cells and cells[0] == row_id:
-                header_cells = None
-                for earlier in reversed(new_lines):
-                    h = _ROW.match(earlier)
-                    if h and any("audience" in c.lower() for c in h.group(1).split("|")):
-                        header_cells = [c.strip().lower() for c in h.group(1).split("|")]
-                        break
-                if header_cells and any("folder" in c for c in header_cells):
-                    idx = next(i for i, c in enumerate(header_cells) if "folder" in c)
-                    while len(cells) <= idx:
-                        cells.append("")
-                    cells[idx] = f"`{name}`"
-                    line = "| " + " | ".join(cells) + " |"
-                    done = True
-        new_lines.append(line)
-    if done:
-        brief.write_text("\n".join(new_lines) + ("\n" if text.endswith("\n") else ""), encoding="utf-8")
-    return {"folder": name, "rel": f"{DESIGN_GROUP}/{name}/{name}.md", "brief_updated": done}
+    cells = [c.strip() for c in _ROW.match(lines[target]).group(1).split("|")]
+    while len(cells) <= folder_col:
+        cells.append("")
+    cells[folder_col] = f"`{name}`"
+    lines[target] = "| " + " | ".join(cells) + " |"
+    brief.write_text("\n".join(lines) + ("\n" if text.endswith("\n") else ""), encoding="utf-8")
+    _list_page(board_root, f"{DESIGN_GROUP}/{name}/{name}.md")
+    return {"folder": name, "rel": f"{DESIGN_GROUP}/{name}/{name}.md", "brief_updated": True}
+
+
+def _owner(board_root: Path) -> str:
+    """The person a new page names as owner: the board's own owner line, else the Brief's."""
+    for page in (Path(board_root) / "board.md", brief_page(board_root)):
+        hit = re.search(r"(?m)^owner:\s*(\S.*?)\s*$", _read(page)) if page else None
+        if hit:
+            return hit.group(1)
+    return "person"
+
+
+def _list_page(board_root: Path, rel: str) -> None:
+    """Add a new Design Folder page to board.md's Pages, under its Design heading when there is one."""
+    board_md = Path(board_root) / "board.md"
+    text = _read(board_md)
+    if not text or rel in text:
+        return
+    lines = text.splitlines()
+    pages = next((i for i, l in enumerate(lines) if re.match(r"^##\s+Pages\b", l)), None)
+    if pages is None:
+        return
+    stop = next((i for i in range(pages + 1, len(lines)) if re.match(r"^##\s", lines[i])), len(lines))
+    heading = next((i for i in range(pages + 1, stop) if re.match(r"^###\s+.*Design", lines[i])), None)
+    at = stop
+    if heading is not None:
+        at = next((i for i in range(heading + 1, stop) if re.match(r"^###\s", lines[i])), stop)
+    while at > pages + 1 and not lines[at - 1].strip():
+        at -= 1
+    lines[at:at] = [rel]
+    board_md.write_text("\n".join(lines) + ("\n" if text.endswith("\n") else ""), encoding="utf-8")
 
 
 class DesignBoardMixin:
@@ -659,13 +739,14 @@ class DesignBoardMixin:
                     '<body style="font:14px/1.5 system-ui;margin:24px"><h1>🎨 Design Board</h1>'
                     f"<p>This link does not name a DesignBoard (got <code>{_e(raw) or 'nothing'}</code>). Pick one:</p>"
                     f"<ul>{items}</ul></body>").encode("utf-8")
-            return self._design_board_send(body, 404, head_only)
+            # a bare link is a question with a good answer (the list); a wrong name is a 404
+            return self._design_board_send(body, 404 if raw else 200, head_only)
         snapshot = design_board_snapshot(board, self.root)
         body = render_design_board(snapshot, (query.get("space") or ["goal"])[0]).encode("utf-8")
         return self._design_board_send(body, 200, head_only)
 
     def design_bundle_view(self, head_only=False):
-        """GET /_board/design-bundle?path=… -> every adopted draft on the board as CSV."""
+        """GET /_board/design-bundle?path=… -> every design on the board as CSV."""
         query = parse_qs(urlparse(self.path).query)
         board = self._design_board_target((query.get("board") or query.get("path") or [""])[0])
         if board is None or not is_design_board(board):

@@ -267,8 +267,8 @@ Page · Display           one display unit candidate
 Labeling                 a domain operation declared by subjective-label/ref/ref-run.md
 Insight · Item           one `riNN` binding from a normal R to new frozen data,
                          producing its own checked DIKW/RF Result
-Design                   one commission decision, generated DU, independent
-                         verification, or adoption decision
+Design                   one Commission decision, one Generate Result, one
+                         independent Verify, or one Adopt decision
 ```
 
 Inside EVIDENCE/LAND, a DISPLAY-typed Evidence Item is still exactly one

@@ -1,11 +1,11 @@
-# Patient confirmation SMS · Design Items
+# Prescription review SMS for all patients · Design Items
 
 One block per design target: the bet, its evidence, and its acceptance rules.
 Runs name an item through `item:`; state is derived from those Runs, never typed here.
 
 ## ITEM01 · Send the tested winner, verbatim
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: Field the salience template exactly as round 1 sent it
 stance: follow
@@ -24,7 +24,7 @@ acceptance:
 
 ## ITEM02 · Attribution removed
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: Test whether the message works without the provider attribution
 stance: challenge
@@ -42,7 +42,7 @@ acceptance:
 
 ## ITEM03 · Deadline stated
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: State a concrete review-by time to see whether a deadline changes click
 stance: explore
@@ -63,7 +63,7 @@ acceptance:
 
 ## ITEM04 · Question opener
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: Open with a question about the new prescription details instead of a statement
 stance: explore
@@ -84,7 +84,7 @@ acceptance:
 
 ## ITEM05 · Action first
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: Put the review action in the first three words and the sender second
 stance: explore
@@ -105,7 +105,7 @@ acceptance:
 
 ## ITEM06 · Why it matters
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: Add one clause on why the review helps, without any medical or outcome claim
 stance: explore
@@ -126,7 +126,7 @@ acceptance:
 
 ## ITEM07 · Under 90 characters
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: Test the shortest message that still names the sender, the action, and the opt-out
 stance: explore
@@ -147,7 +147,7 @@ acceptance:
 
 ## ITEM08 · Two steps
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: Give the review as two numbered steps to see whether structure changes click
 stance: explore
@@ -168,7 +168,7 @@ acceptance:
 
 ## ITEM09 · Patient greeting
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: Greet the patient by first name before the review ask
 stance: explore
@@ -189,7 +189,7 @@ acceptance:
 
 ## ITEM10 · Help line close
 type: sms
-audience: full SMSR2 population, unconditioned
+audience: all patients
 job: prescription review
 goal: Close with one line on where to ask questions before the opt-out
 stance: explore

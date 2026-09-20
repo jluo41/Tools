@@ -124,7 +124,12 @@ class InsightBoardPluginTest(unittest.TestCase):
                 self.assertIn(f'data-space="{space}"', html)
             self.assertIn("DO send", html)                 # the answer's rows are shown
             self.assertIn("signed", html.lower())
-            self.assertNotIn("Workflow map", html)         # documentation blocks are gone
+            self.assertIn("Workflow map", html)            # Run Space: run types × Spaces (JL 260918)
+            self.assertIn("I5 Wisdom", html)
+            self.assertIn("Folder on this board", html)    # the map names the folder each run type lands in
+            self.assertIn("Folder tree × Run type", html)  # the folder tree replaced the Folders table (260918)
+            self.assertIn("0-MT-meta/MT00-meta/", html)
+            self.assertNotIn('data-view="folders"', html)
             self.assertNotIn("Identity chain", html)
             self.assertEqual(insight_boards(root), [board])
             self.assertEqual(_board_by_name(root, "Demo-InsightBoard"), board)
@@ -180,10 +185,12 @@ class InsightBoardPluginTest(unittest.TestCase):
             html = render_page_insight(snap, fw01, "/Demo-InsightBoard/board.md")
             self.assertIn("QW1 × F", html)                 # the cell this page answers
             self.assertIn("DO send", html)                 # its own rows
-            self.assertRegex(html, r">FD01[ <]")           # what it cites, id then full name
+            self.assertRegex(html, r">full-D01[ <]")       # what it cites: FD01 spelled full-D01 (JL 260918)
+            self.assertIn('href="/Demo-InsightBoard/1-F-full/FW01-what-to-send/', html)  # links keep the code
+            self.assertIn("<code>Demo-InsightBoard/1-F-full/FW01-what-to-send/", html)  # so do paths
             fd01 = snap["by_id"]["FD01"]
             html = render_page_insight(snap, fd01, "/Demo-InsightBoard/board.md")
-            self.assertRegex(html, r">FW01[ <]")           # cited by
+            self.assertRegex(html, r">full-W01[ <]")       # cited by
             self.assertIn("open this page", render_insight_board(snap, "insight", "QW1", "F"))
 
     def test_ordinary_board_is_not_promoted(self):

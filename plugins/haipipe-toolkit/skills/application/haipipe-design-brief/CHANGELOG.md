@@ -1,10 +1,32 @@
 # haipipe-design-brief · version history
 
-## 0.4.0 current · 2026-09-13 · user ruling
+## 0.4.0 current · 2026-09-18 (version unchanged at 0.4.0)
 
-- Keep the current Brief pre-1.0. Later-looking labels below are retracted as
-  release assignments and retained only as development provenance.
-- Any future `1.0.0+` requires explicit user approval.
+- The design-task table grammar now lives here: the list sits under the
+  `What to design` heading and is the only Brief table whose header holds
+  `audience`, `job` and `venue` together; columns `line`, `audience`, `job`,
+  `venue`, `designs`, `insight`, `folder` by header word; a Brief with no
+  `line` column numbers its rows R1, R2 …; a line id is a key in the file,
+  never a name on screen; the audience is written in plain words.
+- The Board-level Design plugin is named as the second writer: it adds lines
+  (`add-tasks`) and writes a line's `folder` cell (`new-folder`), nothing
+  else.
+- The eighth division is `What to design` (was "What to design and handoff").
+- Handoff says what the code does: a Commission pins its item's config and
+  evidence files, not the Brief version, `reads:`, or venue packs.
+- One version-governance paragraph instead of two.
+
+## 0.4.0 · 2026-09-13 (user ruling) and 2026-08-24
+
+- 2026-09-13: Keep the current Brief pre-1.0. Later-looking labels below are
+  retracted as release assignments and retained only as development
+  provenance.
+- 2026-09-13: Any future `1.0.0+` requires explicit user approval.
+- 2026-08-24, the earlier use of the same label: `born-of:` required — a
+  Brief is born mandate-first (a person names the program, needs raised
+  open) or evidence-first (signed W handoffs propose it; opportunity/
+  audience/outcome/kill drafted from the handoff fields, settled needs born
+  answered).
 
 ## 2.0.0 — 2026-09-13
 
@@ -26,10 +48,6 @@
 
 - Migrated from `haipipe-page-for-brief` to Design workflow phase D0.
 - The Brief skill now owns both faces, plugin profile, GD0, and its Card handoff.
-
-## 0.4.0 — 2026-08-24
-
-- `born-of:` required — a Brief is born mandate-first (a person names the program, needs raised open) or evidence-first (signed W handoffs propose it; opportunity/audience/outcome/kill drafted from the handoff fields, settled needs born answered).
 
 ## 0.3.0 — 2026-08-20
 

@@ -3,11 +3,11 @@ name: haipipe-design-workflow
 description: >-
   Native Design Workflow inside one stable Design Folder. Defines the directed
   Run Spec graph Design.commission → Design.generate → Design.verify →
-  Design.adopt, binds it across the Goal/Design/Insight/Run/Delivery Spaces, and
+  Delivery, binds it across the Goal/Design/Insight/Run/Delivery Spaces, and
   coordinates with but never impersonates the Page workflow.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-09-15"
+  last_updated: "2026-09-18"
 ---
 
 # /haipipe-design-workflow · a directed graph of Design Runs
@@ -22,26 +22,28 @@ a `v1.x` release without explicit user permission.
 ## Run Spec graph
 
 ```text
-Design.commission (1)
-  release ──▶ Design.generate (N)
-  hold ─────▶ HOLD
+Design.commission (1 per Design Item)
+  release ──────────────────────────▶ Design.generate (N)
+  hold ─────────────────────────────▶ HOLD (a person may release it later)
 
 Design.generate
-  pass ─────▶ Design.verify (J)
-  fail ─────▶ HOLD
+  passes the records check ─────────▶ Design.verify (J)
+  fails the records check ──────────▶ Design.generate (the person queues a revise, with feedback)
 
 Design.verify
-  pass ─────▶ Design.adopt (1)
-  revise ───▶ Design.generate
-  blocked ──▶ HOLD
+  pass ─────────────────────────────▶ Delivery (ready)
+  fail ─────────────────────────────▶ Design.generate (revise)
+  fails the records check ──────────▶ Design.verify (the person queues the review again;
+    (unresolved checks included)       state "verify invalid")
 
-Design.adopt
-  adopt/decline ──▶ CLOSE
-  revise ─────────▶ Design.generate
-  hold ───────────▶ HOLD
 ```
 
-Expected actual Runs: `1 + N_generate + J_verify + 1`.
+Expected actual Runs per Design Item: `1 Commission + N Generate + J Verify`.
+`rdNN` numbers count across the whole Design Folder.
+
+There is no HOLD route from the agent side. HOLD is a person's decision at
+Commission. A passed independent review is ready for Delivery; the agent-side
+"Queue revise" exists for a failed draft or a failed review.
 
 There is no Design Phase layer. Every row is an independently closable Run
 Spec. Gate and Route belong to that Run. A Workflow execution materializes
@@ -51,14 +53,15 @@ Run Instances and records the selected routes.
 
 | Spec | Type | Actor | Target | Action | Exit Gate | Result/receipt |
 |---|---|---|---|---|---|---|
-| `commission` | `Design.commission` | named human | exact Commission/config version | release/hold decision | decision names exact fingerprint | `decision.yaml` + `runtime.yaml` |
-| `generate` | `Design.generate` | designer agent | released unit/set/sequence | generate/revise | integrity + self-check pass | candidate Result + checks + runtime |
-| `verify` | `Design.verify` | fresh independent agent | named generation Results | verify | complete independent coverage settles | verdict Result + checks + runtime |
-| `adopt` | `Design.adopt` | named human | exact verified candidate hashes | adopt/decline/revise | exact decision + preview/handoff fingerprints | `decision.yaml` + `runtime.yaml` |
+| `commission` | `Design.commission` | named human | one Design Item's exact config version | release/hold decision | decision names exact fingerprint | `decision.yaml` + `runtime.yaml` |
+| `generate` | `Design.generate` | designer agent | the released item | generate/revise | the records check passes (integrity + self-check) | draft Result + checks + runtime |
+| `verify` | `Design.verify` | fresh independent agent | named generation Results | verify | the records check passes (complete independent coverage) | verdict Result + checks + runtime |
+| `delivery` | Delivery projection | none | the exact Verify-passed draft hash | records check + Verify pass | ready candidate and verification pointer | read-only projection |
 
-Commission and Adopt are decision Runs. The bounded decision itself has one
-Ticket, Result, close rule, and receipt. Individual comments/clicks are Steps or
-Gate events inside that Run and never receive new Run ids.
+Commission is the only human decision Run. It has one Ticket, Result, close
+rule, and receipt. Individual comments/clicks are Steps or Gate events inside
+that Run and never receive new Run ids. Delivery is a read-only projection,
+not a Run.
 
 ## Space bindings
 
@@ -70,10 +73,10 @@ group by that id:
 
 | Run Spec | Design Space | Insight Space | Run Space | Delivery Space |
 |---|---|---|---|---|
-| Commission | the item's goal and acceptance rules it freezes | the insights the config pins by hash | release/hold row: person, time, words, route | — |
-| Generate | — | — | row: agent, time, verdict n/m, folded checks and draft text | — |
-| Verify | — | — | row: independent reviewer, time, verdict n/m, folded checks | — |
-| Adopt | derived item state and waiting-on | — | adopt/decline/revise/hold row: person, time, words | the adopted card: text, draft hash, verifier, words |
+| Commission | the item's goal and acceptance rules it pins; a warning when the register changed after release | the insights the Commission run record pins by hash | release/hold row: person, time, words, route | — |
+| Generate | the latest draft that passed the records check, and its self-check marks | — | row: agent, time, verdict n/m, folded checks and draft text; `Generate · revise of rdNN` with its feedback | listed only after Verify passes |
+| Verify | the rule marks of the draft it reviewed | — | row: independent reviewer, time, verdict n/m, folded checks; red when it fails | — |
+| Delivery | ready state and exact Verify-passed candidate | — | the Verify row remains the authority | the ready draft's text is listed for handoff |
 
 Run Space presents the same Run ids, Results, Gates, Routes, and receipts the
 Folder holds. It cannot mint, rename, copy, or recount.
@@ -82,48 +85,61 @@ Folder holds. It cannot mint, rename, copy, or recount.
 
 The Design Item register lives under `outline/` (`outline/<stem>-design-items.md`); the Commission freezes one of its blocks.
 
-The caller authors `rdNN_commission_<slug>.yaml` and freezes the Design Item
-it serves (`item: ITEM<NN>`), the exact Brief, config, target, criteria, allowed
-sources, iteration budget, and `design_intent`. The named person records `release` or `hold` in the paired
-decision Result. Only `release` routes to Generate.
+The caller authors `rdNN_commission_<slug>.yaml` for the Design Item it serves
+(`item: ITEM<NN>`). It pins its config (the goal sentence, stance, basis, mode,
+expected, falsified, the compiled criteria, the raw rule text, unit, and
+`max_iterations`) and the item's evidence files, each with sha256; it does not
+pin the Brief version or venue packs. The named person records `release` or
+`hold` in the paired decision Result. Only `release` routes to Generate. One
+Commission per item: a second Release is refused, and a held Commission can
+be released later by a new Commission decision.
 
 Do not create an unsigned Commission and later back-fill the bet after seeing
-candidate output. A changed Commission target/fingerprint requires a new
-Commission Run and new downstream generation Runs.
+candidate output. Generate and Verify copy the released config and evidence
+list, so an edit to the register after release reaches only a new Commission,
+which means a new Design Item.
 
 ## Generate Runs
 
 For every released independently closable target, allocate one
 `rdNN_generate_<slug>.yaml`. Load `haipipe-design-unit`; generate only what the
-Ticket permits; write the paired immutable Result, checks, and caller-owned
-runtime receipt. Internal ideation, renderer/model calls, revisions under the
-same frozen target, and self-checks are Steps of this Run.
+Ticket permits. The worker writes the paired immutable Result and its checks;
+the caller writes the runtime receipt (`design_actions.name_worker` before
+dispatch, `design_actions.complete_run` after). Internal ideation,
+renderer/model calls, revisions under the same frozen target, and self-checks
+are Steps of this Run.
 
-Changed target, config, source, criteria, candidate base, or feedback after
-closure creates a new Generate Run with `supersedes`. An unchanged failed
-attempt may append a retry trail under the same Run.
+A draft changes only through a new Generate Run: a revise pins the base draft
+and a feedback file (`outline/feedback/<run>.md`). A queued run whose pinned
+file changed is never re-pinned in place: "Queue again with today's insight
+files" marks it `superseded`, with the changed files as its reason, and
+queues a fresh run; a revise keeps its base and feedback. A worker that dies
+without a Result is put back in the queue under the same Run, with the lost
+worker named on the receipt.
 
 ## Verify Runs
 
 Allocate `rdNN_verify_<slug>.yaml` over exact generation Result hashes and
 criteria. Use a genuinely fresh reviewer context. A verification Run returns a
 complete pass/fail/unresolved judgment and never edits the candidate. A
-generation self-check is not independent verification.
+generation self-check is not independent verification. A draft that already
+has a review is not reviewed again.
 
-`pass` may route to Adopt. Review pass cannot adopt by itself: only the named person's adopt decision does. A candidate defect routes to a new Generate Run.
-Missing coverage or contaminated reviewer context routes to HOLD.
+`pass` routes directly to Delivery as a ready candidate. A fail verdict routes
+to a new revise Generate
+Run. A review that fails the records check, including a review with
+unresolved checks, is recorded failed and routes back to Verify; the person
+queues the review again. A reviewer that is not independent writes no Result,
+and the run goes back to the queue.
 
-## Adopt Run
+## Delivery projection
 
-The preview the person judges is rendered under `delivery/render/` and pinned by hash in the adopt decision together with the render manifest/version, so Verify and Adopt stay bound to one exact rendered version.
-
-The caller creates `rdNN_adopt_<slug>.yaml` over exact verified candidates and
-a rendered preview manifest. The named person records `adopt`, `decline`,
-`revise`, or `hold`, including exact words and candidate/result fingerprints.
-
-`adopt` and `decline` are truthful terminal outcomes. `revise` routes back to a
-new Generate Run without rewriting any prior Result. The adoption receipt is the immutable adoption receipt of the item and
-also the Design Folder's domain ruling consumed by Page CHECK.
+Delivery is not a decision Run. When the latest independent Verify is complete
+with verdict `pass`, the exact generation candidate it targeted becomes
+`ready`. The presenter exposes its text, hash, generating Run, and verifying
+Run as a read-only handoff. Optional files under `delivery/render/` may show a
+screen or copied text render, but they never replace the Verify Result or add
+another approval step.
 
 ## Page interlock
 
@@ -133,8 +149,8 @@ Page and Design Workflows share the Folder, not a controller:
 
 ```text
 Page RP/RE/RD/check Runs      explain, support, deliver, and verify the Page
-Design Runs                  commission, generate, verify, and decide candidates
-adoption decision receipt    one exact cross-workflow authority pointer
+Design Runs                  commission, generate, and verify candidates
+Verify-passed candidate      one exact cross-workflow authority pointer
 ```
 
 Page work never mints or renumbers Design Runs. Design work never writes Page
@@ -143,23 +159,30 @@ Generate Run; an explanatory wording-only change is a Page Writing Step.
 
 ## Status and stop rules
 
-Only Commission → Generate → Verify → Adopt is routable; every other route is HOLD.
-Stop Design work once the exact adopted version is recorded in the adopt decision; implementation, distribution, and measurement belong to other families.
+Only Commission → Generate → Verify is routable. The page shows only
+the button an item's state allows and refuses any other action, naming the
+state and who is waited on; the writer refuses a second open run for one item
+and a second review of an already-reviewed draft.
+Stop Design work once the exact Verify-passed version is ready for Delivery;
+implementation, distribution, and measurement belong to other families.
 
 Report each actual Run with type, target, actor, status, Result, Gate outcome,
 Route taken, and receipt. Planned cardinality is not actual inventory.
 
-Stop at `HOLD` for missing authority, unresolved target, invalid Ticket,
-unfrozen input, contaminated independent review, missing receipt, illegal
-route, or changed candidate after decision. Preserve failed and superseded
-Results.
+HOLD is a person's decision at Commission, and a `blocked` receipt
+shows as hold. A caller that cannot run a queued record (missing authority,
+invalid run record, a pinned file changed since queueing, a reviewer that is
+not independent) leaves it queued or replaces it, and says why; it never
+re-pins in place. Preserve failed and superseded Results.
 
 ## Clean break
 
-Unsupported Design bytes are not readable history.
+Unsupported Design bytes are not readable history. Historical `rdNN_adopt_*`
+records from the retired flow may be read only as legacy Delivery evidence;
+new writers must not create them.
 
 Current grammar is v2 Ticket/Result plus
-`rdNN_commission|generate|verify|adopt_*`. Reject v1, `rNN_design_*`,
+`rdNN_commission|generate|verify_*`. Reject v1, `rNN_design_*`,
 D0-D5/GD0-GD6, `design/DU*/`, PageX, and phase-shaped Design folders. Do not
 read them as compatibility history and do not offer migration.
 

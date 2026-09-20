@@ -27,9 +27,9 @@ Task / Discovery Folders
           │ accepted Supporting Run Results
           ▼
 🔎 InsightBoard                            🎨 DesignBoard
-I0 Meta → I1-I5 Folders ── signed X1 input ─▶ Brief → stable DS Folder → ✅ adopted
+I0 Meta → I1-I5 Folders ── signed X1 input ─▶ Brief → stable Design Folder → ✅ adopted
         D→I→K→W                                  Commission + Design Runs + Page Runs
-        + Design Handoff                         DU Results + render + Page CHECK
+        + Design Handoff                         Generate Results + preview + Page CHECK
 ```
 
 Application owns the folders, the design need, the contextual Wisdom, and acceptance. Task rules still own how a chain page crosses Task/Discovery evidence. Folder ownership does not transfer evidence authority.
@@ -40,7 +40,7 @@ One board carrying both halves made one Brief Page do two jobs and gave two diff
 
 ```text
 🔎 InsightBoard    reader: whoever checks the evidence     ends at: settled handoff
-🎨 DesignBoard     reader: whoever approves the send       ends at: accepted version
+🎨 DesignBoard     reader: whoever approves the send       ends at: adopted version
 ```
 
 Insight evidence uses Supporting Run Results plus Local Input/Result. Design
@@ -94,7 +94,7 @@ page-level procedures both doors share.
 
 design-side verbs (brief · design · commission · release · generate · verify ·
 render · adopt) are OWNED by the sibling door /haipipe-design: reads:/born-of:
-authority, `rdNN_*` Run-backed DU Results, independent verification, and the
+authority, `rdNN_*` Run-backed Generate Results, independent verification, and the
 unit worker. Old card/thread records are unsupported.
 The rows above remain as forwards; fn/brief.md and fn/design.md stay as the
 page-level procedures both doors share.
@@ -156,18 +156,18 @@ A project whose executable Task folders use a stage-letter grammar such as `task
     ├── 0-BR-brief/BR00-brief/            outcome · venue scope · audience set
     └── 2-Design/Design-<NN>-<audience>-<job>-<venue>/  one stable Design Folder
         ├── runs/                         caller-authored YAML Run Tickets
-        ├── results/                      generation DUs and verification Results
+        ├── results/                      Generate and Verify Results; results/rdNN_commission|adopt_*/decision.yaml
         ├── scripts/config/               frozen per-Run configuration
-        ├── delivery/render/              the unit as the recipient sees it
-        ├── workflow/                    Design lifecycle + Page receipts
+        ├── delivery/render/              the Adopt preview: the exact draft, copied
+        ├── workflow/                    Page workflow receipts (when used)
+        ├── outline/<stem>-design-items.md  the Design Item register (goal and rules)
         ├── outline/evidence/            Page-owned typed evidence
-        ├── outline/decisions/           release/adoption receipts
         └── delivery/web|latex|word/     released Page projections
 ```
 
 The InsightBoard tree above is the RUNG-MAJOR layout; the next section gives the partition-major alternative, and a page's path depends on which one its board uses.
 
-A board is **one head page's scope**: one Meta is one source scope (one prepared extract), one Brief is one program scope (one outcome, venue and promise). A new source extract is a new InsightBoard; a new question is a new chain inside it. A SUBGROUP of an existing extract is never a new board by default: it is a partition (next section), and it may become its own board only by citing a SPLIT verdict (`ref/partition.md`). A new program is a new DesignBoard; a new audience is a new DS page inside it.
+A board is **one head page's scope**: one Meta is one source scope (one prepared extract), one Brief is one program scope (one outcome, venue and promise). A new source extract is a new InsightBoard; a new question is a new chain inside it. A SUBGROUP of an existing extract is never a new board by default: it is a partition (next section), and it may become its own board only by citing a SPLIT verdict (`ref/partition.md`). A new program is a new DesignBoard; a new audience is a new line in the Brief and a new Design Folder inside it.
 
 ## Two InsightBoard layouts (JL 260823)
 
@@ -290,11 +290,13 @@ Run identity, or inspect raw Task results from a Design Page.
 A Design candidate is adoptable only when all are true:
 
 ```text
-trace         every substantive move reaches a settled Insight Design Handoff
+trace         every evidence-informed move reaches a settled Insight Design Handoff;
+              a brief-only item says it rests on the Brief alone
 applicability the borrowed K/W actually covers this audience, context, and outcome
 venue         format, length, timing, interaction, and audience rules pass
 safety        prohibited moves and uncertainty language pass
-version       adoption names DU/member/verify/handoff/render versions
+version       adoption names the exact draft hash, its Verify Result, and the preview
+              copy; the Commission and run records pin the insight versions
 human         the exact visible candidate is explicitly adopted
 ```
 

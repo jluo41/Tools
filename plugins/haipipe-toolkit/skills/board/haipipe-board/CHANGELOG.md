@@ -3,6 +3,17 @@
 - `live/paper.py`: reading polish after a twenty-view Chrome audit of the Paper
   Plugin (12px type floor, unclipped card headlines, deduplicated card
   subline, tree name tooltips). See haipipe-plugin-paper 0.2.2.
+- `cli/check.py`: `retired-design-shape` skips `board/` and any `_` folder,
+  the same reading `check_draw_folders` already applies: a record parked
+  under `_archive/` is a person's deliberate parking and is not asked to
+  migrate. Its message now names the parking as the third answer beside
+  migrating and deleting (B00's `2-DS-design/DS01`, 18 errors, JL 260918).
+- `live/insightboard.py`: the Insight board's Run Space › Workflow map takes the
+  paper board's shape (haipipe-plugin-paper 0.2.1): a `Folder on this board`
+  column resolved on the served board, a width that fits the page, and a
+  Folder tree × Run type card (the real board folder, then the Task home and
+  Results store, each folder tagged with the run type that writes it). It
+  replaces the Folders table; an old `view=folders` link opens the map.
 
 ## 1.0.9 · 2026-09-18
 

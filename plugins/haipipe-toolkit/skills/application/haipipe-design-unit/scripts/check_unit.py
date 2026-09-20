@@ -15,7 +15,8 @@ RUN = re.compile(r"rd[0-9]{2,}_(generate|verify)_[a-z0-9][a-z0-9_-]*")
 DECISION_RUN = re.compile(r"rd[0-9]{2,}_(commission|adopt)_[a-z0-9][a-z0-9_-]*")
 HASH = re.compile(r"[0-9a-f]{64}")
 ROLES = {"evidence", "inspiration", "reference", "avoid", "base", "feedback", "handoff"}
-KINDS = {"max_chars", "contains", "excludes", "semantic", "visual"}
+KINDS = {"max_chars", "contains", "excludes", "starts_with", "ends_with", "semantic", "visual"}
+TEXT_KINDS = {"contains", "excludes", "starts_with", "ends_with"}
 TICKET_SCHEMA = "haipipe.design-ticket/v2"
 RESULT_SCHEMA = "haipipe.design-result/v2"
 STANCES = {"follow", "challenge", "explore", "generate"}
@@ -119,25 +120,39 @@ def reference(root, ref, bounded=False):
     path = resolve(root, ref.get("path"), bounded)
     sha = ref.get("sha256")
     need(isinstance(sha, str) and bool(HASH.fullmatch(sha)), "invalid SHA-256")
-    need(path.is_file(), f"missing input/artifact: {path}")
-    need(digest(path) == sha, f"hash mismatch: {path}")
+    shown = _shown(path, root)
+    need(path.is_file(), f"missing input/artifact: {shown}")
+    need(digest(path) == sha, f"hash mismatch: {shown} changed after it was pinned")
     return path
 
 
+def _shown(path, root):
+    """A path as a reader finds it: relative to the folder being checked, never absolute."""
+    import os
+    try:
+        return os.path.relpath(path, Path(root).resolve())
+    except ValueError:
+        return path.name
+
+
 def artifact_records(folder, records):
-    need(isinstance(records, list) and records, "DU requires content artifacts")
+    need(isinstance(records, list) and records, "a Generate Result requires content artifacts")
     seen = set()
     out = []
     for ref in records:
         path = reference(folder, ref, bounded=True)
-        need(ref["path"].startswith("content/"), "DU artifact must live in content/")
+        need(ref["path"].startswith("content/"), "a Generate Result artifact must live in content/")
         need(path not in seen, "duplicate content artifact")
         seen.add(path)
         out.append((ref["path"], path))
     return out
 
 
-def context(ticket):
+def context(ticket, historical=False):
+    """Read and check one Ticket.  ``historical`` reads a closed run: an input that
+    lives outside the Design Folder (an Insight page, still being edited) is
+    history the run already consumed, so its later edits do not void the run.
+    Everything inside the folder (config, approval, targets, artifacts) stays exact."""
     ticket = Path(ticket).resolve()
     need(ticket.parent.name == "runs" and ticket.suffix == ".yaml",
          "Ticket must be owner/runs/<run>.yaml")
@@ -187,7 +202,7 @@ def context(ticket):
         if kind == "max_chars":
             need(type(criterion.get("value")) is int and criterion["value"] >= 0,
                  "max_chars requires a nonnegative integer")
-        elif kind in {"contains", "excludes"}:
+        elif kind in TEXT_KINDS:
             string(criterion.get("value"), "criterion.value")
         else:
             string(criterion.get("description"), "criterion.description")
@@ -202,6 +217,8 @@ def context(ticket):
     for item in inputs:
         need(isinstance(item, dict) and item.get("role") in ROLES, "invalid input role")
         roles.add(item["role"])
+        if historical and not inside(resolve(owner, item.get("path")), owner.resolve()):
+            continue
         path = reference(owner, item)
         need(not inside(path, output), "input/output overlap")
         if "run_id" in item:
@@ -214,20 +231,20 @@ def context(ticket):
         need(bool(roles & {"evidence", "handoff"}), "evidence-informed has no evidence")
     targets = data.get("targets")
     need(isinstance(targets, list), "targets must be an explicit list")
-    need(bool(targets) == (op == "verify"), "only verify requires target DU Results")
+    need(bool(targets) == (op == "verify"), "only verify requires target Generate Results")
     subjects = []
     producers = set()
     seen_targets = set()
     for target in targets:
         path = reference(owner, target)
-        need(path.name == "result.yaml", "target must name a DU result.yaml")
+        need(path.name == "result.yaml", "target must name a Generate result.yaml")
         need(path not in seen_targets, "duplicate verification target")
         seen_targets.add(path)
         need(not inside(output, path.parent) and not inside(path.parent, output),
              "verification output overlaps target")
         manifest = document(path)
         need(manifest.get("schema") == RESULT_SCHEMA
-             and manifest.get("operation") == "generate", "target is not a DU Result")
+             and manifest.get("operation") == "generate", "target is not a Generate Result")
         target_run = string(manifest.get("run"), "target.run")
         target_match = RUN.fullmatch(target_run)
         need(target_match is not None and target_match.group(1) == "generate"
@@ -244,10 +261,10 @@ def context(ticket):
     return ticket, data, owner, output, config, subjects
 
 
-def validate(ticket, result=None):
+def validate(ticket, result=None, historical=False):
     """Return diagnostic strings. No mutation, dispatch, or authority promotion."""
     try:
-        ticket, data, owner, output, config, subjects = context(ticket)
+        ticket, data, owner, output, config, subjects = context(ticket, historical)
         if result is None:
             return []
         result = Path(result).resolve()
@@ -264,7 +281,7 @@ def validate(ticket, result=None):
         need(manifest.get("targets") == data["targets"], "Result target refs mismatch")
         if data["operation"] == "generate":
             subjects = artifact_records(output, manifest.get("artifacts"))
-            need(len(subjects) == config["unit"]["count"], "DU artifact count mismatch")
+            need(len(subjects) == config["unit"]["count"], "Generate artifact count mismatch")
         else:
             need(manifest.get("artifacts") == [], "verify must not produce replacement artifacts")
         checks_path = reference(output, manifest.get("checks"), bounded=True)
@@ -289,6 +306,8 @@ def validate(ticket, result=None):
                 value = criterion["value"]
                 passed = (len(content) <= value if kind == "max_chars"
                           else value in content if kind == "contains"
+                          else content.lstrip().startswith(value) if kind == "starts_with"
+                          else content.rstrip().endswith(value) if kind == "ends_with"
                           else value not in content)
                 need(indexed[(target, criterion["id"])]["status"] == ("pass" if passed else "fail"),
                      f"check disagrees with actual artifact: {target}/{criterion['id']}")
@@ -298,7 +317,7 @@ def validate(ticket, result=None):
         need(manifest.get("verdict") == verdict, "verdict disagrees with checks")
         need(verdict != "unresolved", "required checks remain unresolved")
         if data["operation"] == "generate":
-            need(verdict == "pass", "generated DU has failing criteria")
+            need(verdict == "pass", "the generated draft has failing criteria")
         return []
     except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError) as exc:
         return [str(exc)]
@@ -341,9 +360,21 @@ def audit_folder(folder):
         if DECISION_RUN.fullmatch(ticket.stem):
             issues.extend(f"{ticket}: {p}" for p in decision_run(folder, ticket))
             continue
-        for problem in validate(ticket):
-            issues.append(f"{ticket}: {problem}")
         output = folder / "results" / ticket.stem
+        try:
+            runtime = document(output / "runtime.yaml")
+        except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError):
+            runtime = {}
+        if runtime.get("status") == "superseded":
+            # A queued run replaced before any worker touched it (an input changed after
+            # it was queued): its pins are stale by definition; only its reason is checked.
+            if not runtime.get("failure") or (output / "result.yaml").is_file():
+                issues.append(f"{ticket}: a superseded run needs a reason and no result")
+            continue
+        # an open run must still match its pins; a closed one is read as history
+        closed = runtime.get("status") in {"complete", "failed", "blocked"}
+        for problem in validate(ticket, historical=closed):
+            issues.append(f"{ticket}: {problem}")
         try:
             data = document(ticket)
             runtime = document(output / "runtime.yaml")
@@ -376,7 +407,7 @@ def audit_folder(folder):
             if status in {"failed", "blocked"}:
                 need(bool(runtime.get("failure")), "non-success requires a reason")
             if status == "complete":
-                issues.extend(f"{ticket}: {p}" for p in validate(ticket, output / "result.yaml"))
+                issues.extend(f"{ticket}: {p}" for p in validate(ticket, output / "result.yaml", historical=True))
         except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError) as exc:
             issues.append(f"{ticket}: {exc}")
     for output in sorted((folder / "results").glob("rd*_*")):

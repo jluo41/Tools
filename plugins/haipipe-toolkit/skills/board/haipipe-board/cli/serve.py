@@ -40,7 +40,7 @@ regenerates board/ so a plain reload shows the rendered comment.
                             read-only Plan/Create/Review/Run/Delivery overview
     POST /_board/design-board {path}                   -> live Board-level Design URL (design tasks × folders × items);
     POST /_board/design-board-act {path, action: new-folder | add-tasks, ...}
-    GET  /_board/design-bundle?path=<board.md>           -> csv of every adopted draft (the send-system hand-off)
+    GET  /_board/design-bundle?path=<board.md>           -> csv of every design with its state (send the adopted rows)
                                                        -> open a Design Folder for one roster row
     POST /_board/insight-board {path}                  -> live Board-level Insight URL;
                             read-only Meta/Questions/Partitions/DIKW overview
@@ -291,7 +291,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             # 🎨 the same plugin one grain up: the Brief's design tasks × folders × items
             return self.design_board_view()
         if self.path.split("?", 1)[0] == "/_board/design-bundle":
-            # 🎨 every adopted draft on the board, as one csv for the send system
+            # 🎨 every design on the board with its state, as one csv; the send system takes the adopted rows
             return self.design_bundle_view()
         if self.path.split("?", 1)[0] == "/_board/insight-board":
             # 🔎 one live projection over the whole InsightBoard

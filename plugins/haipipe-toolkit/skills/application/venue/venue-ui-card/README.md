@@ -48,5 +48,7 @@ Per-widget review pass on multi-widget cards; simple cards
 
 ### Verify and adopt
 UI spec with layout, content, interaction, and data binding,
-owned by the Design Unit. Include an ASCII wireframe, judge every widget and
-binding, render to `delivery/render/`, then adopt or decline.
+owned by the Design Unit. Judge every widget and binding, render to
+`delivery/render/`, then adopt or decline. A drawn screen renders with
+`haipipe-design-unit/scripts/render_screen.py` and is judged on that picture;
+an ASCII wireframe stands in only while no screen is drawn yet.

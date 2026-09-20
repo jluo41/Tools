@@ -4,129 +4,185 @@
 
 | Run Type | Operation | Actor mode | Target |
 |---|---|---|---|
-| `Design.commission` | `commission` | human | one exact Commission/config version |
-| `Design.generate` | `generate` or `revise` | agent | one released unit/set/sequence |
+| `Design.commission` | `commission` | human | one Design Item's exact config version |
+| `Design.generate` | `generate` (config mode compose, revise, brainstorm, theory-driven, or challenge) | agent | the released item |
 | `Design.verify` | `verify` | agent | named immutable generation Result(s) |
-| `Design.adopt` | `adopt` | human | exact verified candidate hashes |
 
-Expected actual Design Runs are `1 + N_generate + J_verify + 1`. Count only
-allocated Tickets with runtime receipts. Do not count Workflow, Workspace,
-Steps, calls, drafts, renders, Results, projections, or retry attempts.
+Expected actual Design Runs per Design Item are `1 Commission + N Generate +
+J Verify`. Count only allocated run records with runtime receipts.
+Do not count Workflow, Space, Steps, calls, drafts, renders, Results,
+projections, or retry attempts.
 
 ## Identity
 
 ```text
-<DS>/runs/rdNN_commission_<slug>.yaml
-<DS>/runs/rdNN_generate_<slug>.yaml
-<DS>/runs/rdNN_verify_<slug>.yaml
-<DS>/runs/rdNN_adopt_<slug>.yaml
+<Design Folder>/runs/rdNN_commission_<slug>.yaml
+<Design Folder>/runs/rdNN_generate_<slug>.yaml
+<Design Folder>/runs/rdNN_verify_<slug>.yaml
 
-<DS>/results/<same-stem>/
+<Design Folder>/results/<same-stem>/
 ```
 
-`haipipe.design-ticket/v2` and its paired v2 Result/receipt are the only
-accepted Design schemas. Ticket and Result stem are one Run identity.
+The slug is the item id: `rd01_commission_item01`, `rd02_generate_item01`.
+`rdNN` counts across the whole Design Folder, so ITEM02's first Run may be
+`rd05`. `haipipe.design-ticket/v2` and its paired v2 Result/receipt are the
+only accepted Design schemas. Run record and Result stem are one Run identity.
 
-## Common required fields
+## Run record fields
+
+There are two shapes: the Commission decision run record, written by the
+Design plugin for a person, and worker run records (Generate, Verify), read by
+`haipipe-design-unit`. They are not interchangeable: `check_unit.py` rejects a
+worker run record written in the decision shape ("unexpected worker").
+
+Commission decision run record, as `design_actions` writes it:
 
 ```yaml
 schema: haipipe.design-ticket/v2
-run: rdNN_<operation>_<slug>
-run_type: Design.<operation>
-operation: commission | generate | verify | adopt
-target: <bounded target>
-actor: {mode: human | agent, owner: <literal owner>}
-action: <decision or execution action>
-inputs: [<immutable path/hash entries>]
-entry_gate: <open or testable condition>
-exit_gate: {mode: human | automatic | agent | hybrid, assertion: <close rule>}
-routes: {<outcome>: <next Run Spec | CLOSE | HOLD>}
-result: results/<same-stem>/
-receipt: results/<same-stem>/runtime.yaml
+run: rd01_commission_item01          # equals the file stem
+run_type: Design.commission
+operation: commission                # matches the stem
+item: ITEM01
+target: <the item's title>
+actor: {mode: human, owner: <the named person>}
+action: release or hold the frozen commission
+inputs: [{path, sha256}, …]          # Commission: its config + the item's evidence (role, path, sha256)
+entry_gate: <condition>
+exit_gate: {mode: human, assertion: <close rule>}
+routes: {release: generate, hold: HOLD}
+result: results/rd01_commission_item01/
+receipt: results/rd01_commission_item01/runtime.yaml
 ```
 
-Inputs may be empty only for a new Commission whose exact target/config is
-fully inside the Ticket. Exit Gate, route outcomes, and receipt are required.
+`check_unit.py --folder` checks a decision run for pairing only: `schema`, `run`
+equal to the stem, `operation` matching the stem, a `runtime.yaml` with the
+same `run` and a known status, and, once complete, a `decision.yaml` with
+`run`, `decision`, and `actor`, plus `finished_at` on the receipt.
+
+Worker run record (Generate, Verify): these are the fields `check_unit.py`
+requires; the full contract is `haipipe-design-unit/references/unit-contract.md`.
+
+```yaml
+schema: haipipe.design-ticket/v2
+run: rd02_generate_item01            # equals the file stem
+operation: generate                  # generate | verify; matches the stem
+worker: haipipe-design-unit          # exactly this
+actor: designer-context-01           # a plain string naming the worker context
+item: ITEM01                         # the plugin groups by it; the checker ignores it
+target: <the item's title>
+config: {path: scripts/config/rd02_generate_item01.yaml, sha256: <hash>}
+approval:
+  actor: <the person who released>
+  record: {path: results/rd01_commission_item01/decision.yaml, sha256: <hash>}
+inputs: [{role, path, sha256, run_id?}, …]   # evidence | handoff | inspiration | reference | avoid | base | feedback
+targets: []                          # verify: the exact Generate result.yaml refs
+```
+
+The config it pins needs `goal` (the goal sentence), `kind`, `mode`, `basis`,
+the five `design_intent` fields, `review_mode` (`self` for generate,
+`independent` for verify), a positive `max_iterations`, `unit`
+(`shape`, `count`), and a nonempty `criteria` list with unique ids. A revise
+needs `base` and `feedback` inputs; `evidence-informed` needs an `evidence` or
+`handoff` input; an independent reviewer's `actor` must differ from every
+producer.
 
 ## Commission decision Run
 
-The human actor decides `release` or `hold` for one exact Commission/config
-fingerprint. The Result is `decision.yaml` with actor, exact words, decision,
-target, input hashes, and timestamp. `release` routes to Generate; `hold`
-routes to HOLD. The decision itself is independently closable, so this is a
-Run. Each comment/click leading to it is a Step, not another Run.
+The human actor decides `release` or `hold` for one Design Item's exact config
+fingerprint. The Result is `decision.yaml` with run, item, decision, actor,
+exact words, target, input hashes, and timestamp. `release` routes to
+Generate; `hold` routes to HOLD, and the person may release later with a new
+Commission decision. One Commission per item: a second Release is refused.
+The decision itself is independently closable, so this is a Run. Each
+comment/click leading to it is a Step, not another Run.
 
 ## Generate Run
 
 Modes include `compose`, `brainstorm`, `theory-driven`, `challenge`, and
-`revise`; revise pins frozen base + feedback. The worker is
-`haipipe-design-unit` through the existing designer dispatcher.
+`revise`; revise pins the base draft and the feedback file
+(`outline/feedback/<run>.md`); a challenge item's revise stays in challenge
+mode. The worker is `haipipe-design-unit` through the existing designer
+dispatcher.
 
-The Ticket pins config, Commission decision receipt, exact file references and
-hashes, defaults, and one `design_intent` bet. The Result folder contains
-`result.yaml`, `checks.yaml`, operation payload, and caller-owned
-`runtime.yaml`. Completion requires integrity and substantive self-checks.
+The run record pins a copy of the released Commission's config, the
+Commission's `decision.yaml` as approval, and the evidence files the
+Commission pinned. The Result folder contains `result.yaml`, `checks.yaml`,
+`content/`, and caller-owned `runtime.yaml`. Completion requires the records
+check to pass; a draft that fails it is recorded `failed` with route
+`generate`, and the person queues a revise with feedback.
 
 ## Verify Run
 
-The Ticket pins exact generation Results/hashes, criteria, and an independent
-reviewer context. The Result contains complete coverage and a pass/fail/
-unresolved verdict. Pass and fail can be honest terminal judgments; unresolved
-is a HOLD. Verification never edits the candidate.
+The run record pins exact generation Results/hashes, the released config's
+criteria, and an independent reviewer context. The Result contains complete
+coverage and a pass/fail/unresolved verdict. Pass routes to the read-only
+Delivery projection; fail routes to a revise Generate. A review that fails the
+records check, including one with unresolved checks, is recorded `failed` with
+route `verify`, and the person queues the review again. Verification never
+edits the candidate.
 
-## Adopt decision Run
+## Delivery projection
 
-The Ticket pins exact candidate hashes, verification Results, preview manifest,
-and handoff versions. The named human records `adopt`, `decline`, `revise`, or
-`hold` in `decision.yaml`. Adopt/decline route to CLOSE, revise to a new
-Generate Run, hold to HOLD. The exact adoption receipt is reused by the Design
-Page owner gate; Page CHECK verifies and never duplicates the decision.
+Delivery is not another decision Run. It is a read-only projection of the
+exact Generate Result and Verify receipt whose latest independent verdict is
+`pass`. The projection exposes the design text, source Result, verification
+Run, and hashes so the next team can consume the candidate directly. No
+person-specific status is recorded or displayed.
 
 ## Runtime receipt
 
+A worker run's receipt, as the plugin queues it and `complete_run` closes it:
+
 ```yaml
-run: rd03_generate_sms
-run_type: Design.generate
+run: rd02_generate_item01
+family: design
 operation: generate
-target: One SMS
-actor: {mode: agent, owner: designer-context-01}
-action: generate
-status: complete
-ticket: runs/rd03_generate_sms.yaml
-result: results/rd03_generate_sms/
+item: ITEM01
+target: <the item's title>
+status: complete                     # planned | running | complete | failed | blocked | superseded
+ticket: runs/rd02_generate_item01.yaml
+result: results/rd02_generate_item01/
+ticket_sha256: <hash of the run record>
 inputs:
-  - {path: scripts/config/rd03_generate_sms.yaml, sha256: <hash>}
-  - {path: results/rd01_commission_sms/decision.yaml, sha256: <hash>}
-entry_gate: {status: passed, assertion: Commission released}
-exit_gate: {status: passed, assertion: integrity and self-check pass}
-route: verify
-terminal_outcome: pass
+  - {path: scripts/config/rd02_generate_item01.yaml, sha256: <hash>}
+  - {path: results/rd01_commission_item01/decision.yaml, sha256: <hash>}
+  - {role: handoff, path: <insight page>, sha256: <hash>}
 worker: {kind: skill, name: haipipe-design-unit, actor: designer-context-01}
+queued_at: <RFC3339 timestamp>
 started_at: <RFC3339 timestamp>
 finished_at: <RFC3339 timestamp>
-failure: null
-supersedes: null
+route: verify
+terminal_outcome: pass
+failure: null                        # failed, blocked, superseded: the reason
 ```
 
-Actor/context provenance must be honest. The worker may write only its paired
-Result; the caller owns runtime and human authority.
+A decision run's receipt carries the same run, family, status, and input
+fields plus `run_type`, `actor: {mode: human, owner}`, `action`,
+`entry_gate`, and `exit_gate`. Actor/context provenance must be honest. The
+worker may write only its paired Result; the caller owns runtime and human
+authority.
 
 ## Reopen and retry
 
-A changed target, config, source, criteria, candidate content, decision set, or
-post-closure feedback creates a new Run and may name `supersedes`. Preserve the
-old Result and decision. An unchanged failed attempt may append an attempt
-trail under the same identity.
+A draft changes only through a new Generate Run (a revise with base and
+feedback); preserve the old Result and decision. A queued run whose pinned
+file changed is replaced, never re-pinned in place: "Queue again with today's
+insight files" marks it `superseded`, with the changed files as its
+`failure` reason, and queues a fresh run that pins today's bytes. A worker
+that dies without a Result is put back to `planned` under the same identity,
+with the lost worker named on the receipt.
 
 ## Audit
 
 ```bash
-python3 <haipipe-design-unit>/scripts/check_unit.py --folder <DS>
+python3 <haipipe-design-unit>/scripts/check_unit.py --folder <Design Folder>
 ```
 
-Also verify that every Design Run resolves to one Workflow Run Spec, legal
-Gate/Route outcomes, paired v2 Result, and runtime receipt; Runtime Workspace
-cards must preserve the same ids.
+An open run must match its pins exactly; a closed run (complete, failed,
+blocked) reads inputs outside the Design Folder (Insight pages) as history;
+a superseded run needs a reason and no result. Also verify that every Design
+Run resolves to one Workflow Run Spec, legal Gate/Route outcomes, paired v2
+Result, and runtime receipt; Run Space rows must show the same ids.
 
 ## Clean break
 

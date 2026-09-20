@@ -1,5 +1,71 @@
 # Changelog
 
+## 0.7.0 — 2026-09-18
+
+- A retired record parks under the board's `_archive/` instead of being
+  migrated or deleted: the checker judges no `_` folder, so `2-DS-design/DS*`
+  keeps its bytes for the Log to cite while the board claims only its live
+  design tasks (B00's DS01, JL 260918).
+
+- Tasks show by their full name, `<job> <venue> for <who>`; the Brief's row
+  id (`R1`) is a key in the file and never a name on screen, refusals
+  included (JL 260918).
+- The task list is the first Brief table whose header names `audience`,
+  `job` and `venue` together, so an audience table elsewhere is never read as
+  the list. A Brief with no `line` column numbers its rows R1, R2 … in order,
+  and `new-folder` writes the folder cell on that same row, so a second click
+  is refused instead of opening a duplicate folder.
+- `new-folder` writes a page that passes the board checker: `state: 🔴 OPEN ·
+  no design registered yet`, `owner:` (the board's, else the Brief's), an
+  Opening question, and an entry in board.md `## Pages` under its Design
+  heading.
+- The csv gains a `state` column and lists the adopted draft, else the
+  latest draft that passed the records check; a failed draft is never listed.
+  The send system takes the rows whose state is `adopted`; declined rows stay
+  in with state `declined`.
+- Insight Space groups "used by" per folder (`Design-01 · 6 items`, linked to
+  that folder's Insight Space), adds a table of the other pages the designs
+  use (not signed insights), and shows a red line when no design rests on a
+  signed insight. The Insight board picker offers only boards that resolve,
+  by folder name. Design Space shows each item's design text under its title.
+- The header is one line; a bare `/_board/design-board` with several boards
+  answers 200 with the list; an ambiguous Page-level `?folder=` answers 404
+  with a page listing each board that holds it, never a guess.
+- The board checker knows `board-kind: design-board` and `insight-board`,
+  accepts a `reads:` entry that is a `../` path staying inside the checkout,
+  and audits folders holding only Commission and Adopt runs.
+- Docs: the board-kind and board-name rules, the csv columns, the gallery and
+  the declined fold are now in the SKILL body; the examples match the demo
+  (10 wanted · 10 registered · 1 adopted).
+
+## 0.6.0 — 2026-09-18
+
+- Delivery Space shows a folder of screens as a picture gallery (the Page
+  level's rendered pictures); text designs keep the table. The csv gains a
+  `render` column naming each screen's picture.
+- A Project folder can be the server root: boards under its `applications/`
+  are found, and `reads:` may name an Insight board in another Project by a
+  path relative to the board's parent (first use: `Project-Application-
+  AuthenUIDesign` reading `Project-Application-SMSDesign`'s A00).
+
+## 0.5.3 — 2026-09-17
+
+- New Design Folders are titled `<job> <venue> for <who>` (`design_title`),
+  the same plain phrase the Page level shows.
+
+## 0.5.2 — 2026-09-17
+
+- Delivery Space is a quick list of every design, one table per folder:
+  item (id · title) and the design text; no adoption status. The csv
+  download became **Download all designs**, one row per design.
+
+## 0.5.1 — 2026-09-17
+
+- Delivery Space lists every design: **Adopted** cards, then **Not adopted
+  yet** cards with the latest draft text, state, and waiting-on.
+- New folders are named from the first three content words of each Brief
+  cell, filler dropped (`Design-03-young-male-age-prescription-review-sms`).
+
 ## 0.5.0 — 2026-09-17
 
 - Delivery Space: **Download the bundle**, `GET /_board/design-bundle`, one

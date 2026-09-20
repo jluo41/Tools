@@ -14,10 +14,14 @@
         failed carrying the check's own words. A verify never runs in the same
         dispatch as the generate it judges.
 
-Human steps (Release, Adopt) are never taken here; a person clicks them on
-the Page level. Draft requests are listed, not fulfilled: drafting the
-register is the agent's creative step and is dispatched the same way with
-`--drafts`.
+A planned run whose pinned files changed after it was queued (an insight page
+edited since) is skipped with the names of the files; the person clicks
+"Queue again" on the Page level, which replaces it with a fresh run.
+
+Human steps (Release, Adopt, Queue again) are never taken here; a person clicks
+them on the Page level. Draft requests are listed, not fulfilled: a Claude
+session drafts the register from the request file, through
+`design_actions.add_item`.
 """
 from __future__ import annotations
 
@@ -112,6 +116,11 @@ def main() -> int:
             break
         actor = f"{'designer' if row['operation'] == 'generate' else 'reviewer'}-cli-{i:02d}"
         folder = Path(row["folder"])
+        changed = acts.stale_inputs(folder, row["run"])
+        if changed:
+            print(f"⏭ {row['run']} · changed since it was queued: {', '.join(changed)} · "
+                  "click Queue again on the page")
+            continue
         if not args.dry_run:
             acts.name_worker(folder, row["run"], actor)
         code, text = dispatch(row, actor, args.dry_run)

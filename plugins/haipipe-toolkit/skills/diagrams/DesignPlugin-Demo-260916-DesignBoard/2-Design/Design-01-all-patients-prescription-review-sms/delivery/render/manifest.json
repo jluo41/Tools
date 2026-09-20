@@ -1,7 +1,7 @@
 [
   {
     "item": "ITEM01",
-    "render": "Design-01-patient-confirm-sms-ITEM01-v1.txt",
+    "render": "Design-01-all-patients-prescription-review-sms-ITEM01-v1.txt",
     "candidate": "rd02_generate_item01",
     "sha256": "c93d51714b4e21779627f256d8805eaf64403a359e57bf694f2560b30350c8af",
     "version": 1

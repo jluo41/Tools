@@ -1,5 +1,134 @@
 # Changelog
 
+## 0.11.0 — 2026-09-18
+
+- Delivery handoff now follows a passed independent Verify directly. The live
+  surface no longer creates or shows an Adopt action, state, counter, or batch
+  button; Goal and Board count `ready` items, and Delivery lists only ready
+  candidates. Historical `rdNN_adopt_*` bytes remain readable as legacy
+  records but are never created by the current writer.
+
+- A legacy folder parked under the board's `_archive/` no longer holds its
+  old links at 410: the file it names is gone, so the link heals to the
+  `Design-NN` folder that replaced it (B00's DS01 link now opens Design-01).
+
+- The card rewrite (JL 260918). Each item is one fixed-height row (46px):
+  id, title, the design in one line (a screen previews its goal), state, and
+  who is waited on; on a phone the preview hides. A row opens into a
+  fixed-height card (560px) that scrolls inside; `open all · close all` sits
+  above the list. The design sits on the left and stays in view while the
+  explanation scrolls; the decision form and buttons sit under the design, so
+  they are never below the fold. The explanation is a bordered two-column
+  table: Why this design, From insight to design, The bet, Rules, Steps.
+- From insight to design is a flow of the item's pages by rung, Data →
+  Information → Knowledge → Wisdom → This design, with an Also read rung for
+  a source that is not an insight page and `· avoid` on a page the register
+  avoids. Each insight page shows as its label and title (`full-D02`, never
+  the file id `FD02`), linked to the Insight view only when the page is under
+  the server root. The one-line insight pointer of 0.8.0 is gone.
+- Rules are marked by the Verify of the draft the card shows, else by that
+  draft's self-check, else "not checked yet"; a hand-written config shows its
+  own criteria in words. The card warns when the register changed after
+  release. Steps mark a run that failed the records check with `✗` and skip
+  superseded runs.
+- A card shows the adopted draft, else the latest draft that passed the
+  records check; a failed draft is never shown, in Design Space, Delivery
+  Space, or the csv.
+- Waiting on "agent" only while a run is queued or running; otherwise the
+  person, with the step (queue the draft, queue the review, queue again, …).
+  New states `commission open`, `adoption open`, and `queued run out of date`
+  (a queued run whose pinned file changed), with the button "Queue again with
+  today's insight files": the old run becomes `superseded` with its reason.
+- Every state that waits on a click shows its button (a held Commission gets
+  its Release form back, a held Adopt its Adopt form, `verify invalid` its
+  Queue Verify); the page refuses any other action, naming the state and who
+  is waited on. One Commission per item. A draft that passed its review is
+  revised only through a person's Revise decision.
+- Generate and Verify copy the released Commission's config and evidence, so
+  a later register edit never reaches this item's drafts. The config's `goal`
+  is the goal sentence.
+- Rule compiling: not, does not, doesn't, don't count as negative; `ends
+  with 'X'` and `starts with 'X'` are their own checks; "under N characters"
+  allows N − 1; every quoted phrase of a rule is compiled; apostrophes inside
+  words are never quotes.
+- Routing: a draft that fails the records check goes back to Generate, a
+  review that fails it goes back to Verify, a fail verdict goes to a revise.
+- Run Space: a revise reads `Generate · revise of rdNN` with its feedback;
+  checks name their rule in words; a fail verdict is red with its checks
+  open; a superseded run is grey with its reason.
+- Insight Space: pages by label and title; "what it says" never shows an
+  opening question; "Available, unused: none …" when every signed insight is
+  used; `?item=` says "showing ITEM02 only · show every item".
+- `?item=` opens and marks the card and scrolls to it; every item button lands
+  back on Design Space at the item.
+- The Adopt preview is one copy per draft, versioned per item, with the
+  draft's own suffix, for all four decisions.
+- Short links: an ambiguous `?folder=` answers with a page listing each board
+  that holds it (404), never a guess; `Design-1` reads as `Design-01`.
+- Legacy `2-DS-design/DS*` folders are refused with 410; an old DS link is
+  rewritten only when the file it names is gone.
+- The New Design Item form uses plain labels (approach, built on, expected,
+  wrong if, insights, rules); stance `generate` reads "a new design".
+- Docs: the register and card examples judge design quality (no arm, winner,
+  or re-fielding); the contract word no longer follows a plain word in
+  parentheses; the demo rebuild refuses without `--force`.
+
+## 0.10.0 — 2026-09-18
+
+- Screens read as pictures (JL: "design the UI for the whole population"):
+  `delivery/render/manifest.json` names the rendered picture of a draft;
+  the Design Space card shows it beside the facts (`the HTML behind this
+  screen` folds the source), and Delivery Space shows every screen as a
+  gallery. `_render_for` matches the picture to the exact draft shown.
+- `compile_criteria`: a rule "judged on the render" is a `visual` check.
+- A declined item is retired from the Delivery overview and folded under
+  `Declined, kept for the record · N` (Page and Board level).
+- First real use: `B01_DesignBoard-AuthenUI-260917`, six screens for all
+  patients, measured at 390 x 844 in headless Chrome.
+
+## 0.9.5 — 2026-09-17
+
+- An old link is only rewritten to a current folder name when that folder
+  exists. A legacy folder (`2-DS-design/DS01-…`, `design/DU*`) is now read as
+  given and served 410 with "legacy design/DU* storage is not a current
+  Design Folder", instead of a bare 404 from the rewritten path.
+
+## 0.9.4 — 2026-09-17
+
+- Titles read as one plain phrase (JL: "the name here is not good"):
+  `design_title(row)` gives `<job> <venue> for <who>`, e.g. `Prescription
+  review SMS for all patients`; Goal Space says `10 prescription review SMS
+  designs for all patients`. The demo Brief's audience became `all patients`,
+  so the folder is `Design-01-all-patients-prescription-review-sms`.
+
+## 0.9.3 — 2026-09-17
+
+- Delivery Space is a quick overview of what we designed (JL: "it is not
+  about what to adopt"): one table, one row per item, item (id · title) and
+  the design text. The Adopted / Not adopted yet groups, hashes, verifier,
+  preview, and adopt words left the Space; they remain in Design Space and
+  Run Space. `shown_design(item)` picks the adopted draft, else the latest.
+
+## 0.9.2 — 2026-09-17
+
+- Delivery Space lists every item (JL): **Adopted** cards first, then **Not
+  adopted yet** cards with the latest draft text, state, waiting on, and a
+  link to decide in Design Space; they say "not adopted, so not delivered".
+- Folder names say the goal: the first three content words of the Brief's
+  audience, job, and venue, filler dropped. The demo folders became
+  `Design-01-all-patients-prescription-review-sms` and
+  `Design-02-patients-refill-due-refill-review-ui-card`, titled from their
+  Brief line. `renamed_folder` sends an old link or `?folder=` to the folder
+  with the same `Design-NN` number.
+
+## 0.9.1 — 2026-09-17
+
+- Decision forms are folded by default (JL): each item's name + words +
+  buttons sit under one line (`Adopt, decline, revise, or hold`, `Release or
+  hold the commission`, `Queue a revise, with feedback`), open for the item
+  selected with `?item=`. The batch bar folds the same way (`For all items at
+  once: …`). A single agent-queue button stays in view.
+
 ## 0.9.0 — 2026-09-17
 
 - Batch buttons above the cards: Release all · Queue all · Adopt all

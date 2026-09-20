@@ -419,14 +419,14 @@ def sms_criteria(max_chars: int = 160) -> list[dict]:
 def demo_specs() -> dict[str, dict]:
     """The demo board: Design-01 (two items, one adopted, one failed) and Design-02 (verify owed)."""
     return {
-        "Design-01-patient-confirm-sms": dict(
-            title="Patient confirmation SMS",
-            opening=("Design the round-2 confirmation message for a patient who has "
-                     "completed a prescription review step and needs a clear next action."),
+        "Design-01-all-patients-prescription-review-sms": dict(
+            title="Prescription review SMS for all patients",
+            opening=("Design for all patients (prescription review, sms), "
+                     "listed in the Brief's design tasks."),
             specs=[
                 ItemSpec(id="ITEM01", title="Send the tested winner, verbatim", kind="sms",
                          goal="Field the salience template exactly as round 1 sent it",
-                         audience="full SMSR2 population, unconditioned",
+                         audience="all patients",
                          job="prescription review", content=SMS_SALIENCE,
                          stance="follow", basis="evidence-informed",
                          expected=("salience stays the best arm on click and authentication "
@@ -445,7 +445,7 @@ def demo_specs() -> dict[str, dict]:
                          words="Adopt ITEM01 v1: byte-identical to the fielded salience template, warrant P01"),
                 ItemSpec(id="ITEM02", title="Attribution removed", kind="sms",
                          goal="Test whether the message works without the provider attribution",
-                         audience="full SMSR2 population, unconditioned",
+                         audience="all patients",
                          job="prescription review", content=SMS_ATTRIBUTION,
                          stance="challenge", basis="evidence-informed", mode="challenge",
                          expected="click does not fall when the provider attribution is removed",
@@ -458,10 +458,10 @@ def demo_specs() -> dict[str, dict]:
                                      "no predicted-lift text"],
                          stage="generate-failed"),
             ]),
-        "Design-02-refill-reminder-ui": dict(
-            title="Refill reminder UI card",
-            opening=("Design a small in-app card that reminds a patient to review an "
-                     "approaching refill."),
+        "Design-02-patients-refill-due-refill-review-ui-card": dict(
+            title="Refill review app card for patients with a refill due within 7 days",
+            opening=("Design for patients with a refill due within 7 days (refill review, ui-card), "
+                     "listed in the Brief's design tasks."),
             specs=[
                 ItemSpec(id="ITEM01", title="Refill approaching card", kind="ui-card",
                          goal="Make the refill date and the one next action visible at a glance",
@@ -483,7 +483,24 @@ def demo_specs() -> dict[str, dict]:
     }
 
 
-def build_demo(board: Path = DEMO_BOARD, insight: Path = DEMO_INSIGHT) -> dict:
+def demo_runs_at_risk(board: Path = DEMO_BOARD) -> dict[str, int]:
+    """Run records on the demo that a rebuild would delete, by folder (audit H10)."""
+    out = {}
+    for stem in demo_specs():
+        runs = board / "2-Design" / stem / "runs"
+        count = len(list(runs.glob("rd*_*.yaml"))) if runs.is_dir() else 0
+        if count:
+            out[stem] = count
+    return out
+
+
+def build_demo(board: Path = DEMO_BOARD, insight: Path = DEMO_INSIGHT, force: bool = False) -> dict:
+    """Rebuild the demo boards from the fixture.  The demo also holds runs people made
+    by clicking on it, so a rebuild over existing runs is refused unless forced."""
+    at_risk = demo_runs_at_risk(board)
+    if at_risk and not force:
+        raise SystemExit("refused: rebuilding would delete " + ", ".join(f"{n} runs in {k}" for k, n in at_risk.items())
+                         + "; pass --force only if those runs may go")
     build_insight_board(insight)
     out = {}
     for stem, spec in demo_specs().items():
@@ -503,10 +520,11 @@ def audit(folder: Path) -> list[str]:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--demo", action="store_true", help="regenerate the demo boards")
+    parser.add_argument("--force", action="store_true", help="delete the demo's existing runs while rebuilding")
     args = parser.parse_args()
     if not args.demo:
         parser.error("choose --demo")
-    built = build_demo()
+    built = build_demo(force=args.force)
     for stem, runs in built.items():
         issues = audit(DEMO_BOARD / "2-Design" / stem)
         print(stem, "· audit:", "PASS" if not issues else issues)

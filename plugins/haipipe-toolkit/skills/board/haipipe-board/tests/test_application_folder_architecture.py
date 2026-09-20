@@ -334,7 +334,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
             self.application / "haipipe-design-workflow" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("one Folder, two workflows", design)
-        self.assertIn("rp00_mermaid-structure", design)
+        self.assertIn("rp-struct-01", design)   # the Page workflow's current Structure Run id (haipipe-page-outline)
         self.assertIn("rdNN_", design)
         self.assertNotIn("rNN_design_", design.split("## Clean-break contract")[0])
         self.assertIn("Page Runs cannot satisfy Commission release", workflow)
@@ -396,7 +396,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         workflow = (
             self.application / "haipipe-application-workflow" / "SKILL.md"
         ).read_text(encoding="utf-8")
-        self.assertIn("DS adoption/crossing index", workflow)
+        self.assertIn("Design adoption/crossing index", workflow)   # the DS folder kind is retired (260918)
         self.assertIn("immutable human adoption receipt", workflow)
         for path in self.application.rglob("*.md"):
             if "_old" in path.parts or path.name == "CHANGELOG.md":

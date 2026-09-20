@@ -1,10 +1,43 @@
 # haipipe-design-unit · version history
 
-## 0.4.0 current · 2026-09-13 · user ruling
+## 0.4.0 current · 2026-09-20 (version unchanged at 0.4.0)
+
+- `render_screen.py` measures form controls: a control's shown text (its
+  value, its chosen option, or its placeholder) joins the weakest-contrast
+  sweep, which walked past it before, and every field's edge against what it
+  sits on is reported as `weakest_control_border`, with `controls` counting
+  them. Found on a login screen whose three `select` date controls were
+  invisible to the sweep.
+- A UI unit draws anything the patient types into or chooses from as a real
+  form control, never a styled `div`, so the render can measure it.
+
+## 0.4.0 · 2026-09-18 (version unchanged at 0.4.0)
+
+- Criterion kinds `starts_with` and `ends_with` join the v2 contract;
+  `ends_with` compares the draft with trailing whitespace stripped,
+  `starts_with` with leading whitespace stripped.
+- The records check reads a closed run's inputs outside the Design Folder
+  (Insight pages) as history, so their later edits do not void it; an open
+  run must match its pins exactly; a superseded run needs a reason and no
+  result. Messages use folder-relative paths and plain words ("Generate
+  Result", never "DU").
+- Docs: config `goal` is the item's goal sentence; the config carries the
+  released rule text and is copied unchanged into Generate and Verify;
+  `max_iterations` is the budget inside one Generate run; the brainstorm
+  stance limit and the challenge stance/mode pairing are stated; the approval
+  record is `results/rdNN_commission_*/decision.yaml`; examples use
+  `_item01` slugs and `rNN` criterion ids; a review with unresolved checks is
+  failed and routed back to Verify; venue packs are not pinned; the "DU" and
+  "v4" labels are gone; one version-governance paragraph instead of two.
+
+## 0.4.0 · 2026-09-13 · user ruling
 
 - Keep the current worker pre-1.0. Later-looking labels below are retracted as
   release assignments and retained only as development provenance.
 - Any future `1.0.0+` requires explicit user approval.
+- 2026-09-16: the Ticket gained `item: ITEM<NN>`, naming the Design Item the
+  Run serves; the checker does not interpret it, the Design plugin groups
+  Runs by it.
 
 ## 4.0.1 · 2026-09-13
 

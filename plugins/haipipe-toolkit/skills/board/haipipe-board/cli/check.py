@@ -300,7 +300,7 @@ def check_board(d, rep):
     task_block = kind == "task-block"
     discovery_block = kind == "discovery-block"
     block_board = task_block or discovery_block
-    if kind and kind not in {"task-block", "discovery-block"}:
+    if kind and kind not in {"task-block", "discovery-block", "design-board", "insight-board"}:
         rep.add(ERROR, "unknown-board-kind", "board.md",
                 f"board-kind {kind!r} has no Board container contract")
 
@@ -362,15 +362,25 @@ def check_board(d, rep):
         for entry in [e.strip() for e in reads.group(1).split("\u00b7")]:
             if not entry:
                 continue
-            if entry.startswith("~") or ".." in entry.split("/"):
+            climbs = ".." in entry.split("/")
+            _root = _repo_root(d)
+            inside = False
+            if climbs and _root:
+                try:
+                    (d / entry).resolve().relative_to(_root.resolve())
+                    inside = True
+                except ValueError:
+                    inside = False
+            if entry.startswith("~") or (climbs and not inside):
                 rep.add(ERROR, "board-reads-path", f"board.md -> {entry}",
-                        "a `reads:` entry must be a plain sibling-board name or a "
-                        "repo-relative path with no `..` and no `~`")
+                        "a `reads:` entry must be a plain sibling-board name, a "
+                        "repo-relative path, or a `../` path that stays inside the "
+                        "checkout (a board in another Project); never `~`")
                 continue
             # repo-relative means from the CHECKOUT ROOT, never the invoker's
             # cwd: the same board must check identically from anywhere.
             _rr = _repo_root(d)
-            cand = [d.parent / entry] + ([_rr / entry] if _rr else [])
+            cand = [d.parent / entry, d / entry] + ([_rr / entry] if _rr else [])
             if not any(c.is_dir() for c in cand):
                 rep.add(ERROR, "board-reads-target", f"board.md -> {entry}",
                         "a `reads:` entry names no board on disk; the grant chain "
@@ -1886,6 +1896,7 @@ def check_native_design_runs(d, rep):
     # misclassify those valid Page Results as orphan Design Results.
     folders = set()
     for pattern in ("runs/rd*_generate_*.yaml", "runs/rd*_verify_*.yaml",
+                    "runs/rd*_commission_*.yaml", "runs/rd*_adopt_*.yaml",
                     "results/rd*_generate_*", "results/rd*_verify_*"):
         paths = d.rglob(pattern)
         folders.update(p.parent.parent for p in paths
@@ -1938,9 +1949,16 @@ def check_design_family(d, rep):
                     text):
                 retired.add(phase_file)
         for path in sorted(retired):
+            # an underscore folder (_archive/) is a person's deliberate parking
+            # and stays unjudged, the same reading as check_draw_folders: the
+            # record survives on disk and the board is not asked to migrate it
+            parts = path.relative_to(d).parts
+            if "board" in parts or any(p.startswith("_") for p in parts):
+                continue
             rep.add(ERROR, "retired-design-shape", str(path.relative_to(d)),
                     "D0-D5, design/DU*, and PageX are unsupported; create a current "
-                    "Design Folder and rdNN Run instead of adapting this record")
+                    "Design Folder and rdNN Run instead of adapting this record; "
+                    "park the old record under _archive/ to keep it unjudged")
     return
 
 

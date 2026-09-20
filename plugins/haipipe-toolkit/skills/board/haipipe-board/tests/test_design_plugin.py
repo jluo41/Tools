@@ -20,15 +20,15 @@ from tests.fixture_design_v2 import (
 
 def legacy_fixture(root: Path) -> tuple[Path, Path]:
     board = root / "Current-DesignBoard"
-    folder = board / "2-Design" / "Design-01-patient-confirm-sms"
+    folder = board / "2-Design" / "Design-01-all-patients-prescription-review-sms"
     folder.mkdir(parents=True)
     (board / "board.md").write_text("# Current DesignBoard\n", encoding="utf-8")
-    page = folder / "Design-01-patient-confirm-sms.md"
-    page.write_text("# Patient confirmation SMS\n\nfolder-kind: design\n", encoding="utf-8")
+    page = folder / "Design-01-all-patients-prescription-review-sms.md"
+    page.write_text("# Prescription review SMS for all patients\n\nfolder-kind: design\n", encoding="utf-8")
     return board, page
 
 
-def v2_fixture(root: Path, stem: str = "Design-01-patient-confirm-sms",
+def v2_fixture(root: Path, stem: str = "Design-01-all-patients-prescription-review-sms",
                specs: list | None = None) -> tuple[Path, Path, dict]:
     """A DesignBoard reading a sibling InsightBoard, laid out like the demo."""
     build_insight_board(root / "DesignPlugin-Demo-260916-InsightBoard")
@@ -42,8 +42,8 @@ def v2_fixture(root: Path, stem: str = "Design-01-patient-confirm-sms",
     brief.write_text(
         "# Design Brief\nfolder-kind: brief\n\n### 8 · What to design\n\n"
         "| line | audience | job | venue | designs | folder |\n|---|---|---|---|---|---|\n"
-        "| R1 | full SMSR2 population, unconditioned | prescription review | sms | 2 | `Design-01-patient-confirm-sms` |\n"
-        "| R2 | patients with a refill due within 7 days | refill review | ui-card | 1 | `Design-02-refill-reminder-ui` |\n",
+        "| R1 | all patients | prescription review | sms | 2 | `Design-01-all-patients-prescription-review-sms` |\n"
+        "| R2 | patients with a refill due within 7 days | refill review | ui-card | 1 | `Design-02-patients-refill-due-refill-review-ui-card` |\n",
         encoding="utf-8")
     spec = demo_specs()[stem]
     folder = board / "2-Design" / stem
@@ -90,7 +90,7 @@ class DesignItemsTest(unittest.TestCase):
             self.assertIn("best arm on click", item01["expected"])
             self.assertIn("outside overlapping intervals", item01["falsified"])
             self.assertEqual(len(item01["acceptance"]), 5)
-            self.assertEqual(item01["state"], "adopted")
+            self.assertEqual(item01["state"], "ready")
             self.assertEqual(item01["waiting"], "")
             self.assertEqual([r["id"] for r in item01["runs"]],
                              [runs["ITEM01"][k] for k in ("commission", "generate", "verify", "adopt")])
@@ -101,7 +101,7 @@ class DesignItemsTest(unittest.TestCase):
             self.assertTrue(evidence[0]["pinned"])
             self.assertEqual(evidence[0]["signed"], "signed ✅ JL 260828")
             item02 = by_id["ITEM02"]
-            self.assertEqual((item02["state"], item02["waiting"]), ("generate failed", "agent · revise"))
+            self.assertEqual((item02["state"], item02["waiting"]), ("generate failed", "JL · queue a revise"))
             self.assertEqual(item02["mode"], "challenge")
             self.assertEqual(snapshot["insight"]["status"], "bound")
             self.assertEqual(snapshot["unassigned"], [])
@@ -132,38 +132,59 @@ class DesignItemsTest(unittest.TestCase):
             board, page, _runs = v2_fixture(Path(td))
             rendered = render_design(design_snapshot(page, board), "design", "ITEM01")
             for label in ("Hi, it&#x27;s Dr. {NAME}&#x27;s office.", "follows the evidence",
-                          "built on evidence", "supported by FW01-send-salience ✅", "<th>insight</th>",
-                          "expected: salience stays the best arm",
-                          "falsified if: a concurrently fielded", "byte-identical to the fielded salience template",
-                          "Page level", "Queue revise · agent", "New Design Item", "<th>goal</th>"):
+                          "built on evidence", "ready for Delivery",
+                          "Page level", "Queue revise · agent", "New Design Item",
+                          # the explanation reads as blocks, the insight as a flow (JL 260918)
+                          "<th>Why this design</th>", "<th>From insight to design</th>", "<th>The bet</th>",
+                          "<th>Rules</th>", "<th>Steps</th>", "<table class=explain>",
+                          "<span class=rung>Wisdom</span>", "<b>full-W01</b>", "✅ signed",
+                          # named criteria (length, optout) still mark their rules: audit M5
+                          "5 of 5 pass",
+                          "<span class=rung>This design</span>",
+                          # each item folds into one fixed-height row; the selected one opens (JL 260918)
+                          "<details class=itemfold open><summary><b>ITEM01", "<span class=peek>Hi, it&#x27;s Dr.",
+                          "<details class=itemfold><summary><b>ITEM02", "data-fold=open", "class=itembody", ".itembody .pair .pic{position:sticky",
+                          "expected</span>salience stays the best arm",
+                          "wrong if</span>a concurrently fielded", "Commission ✓ JL"):
                 self.assertIn(label, rendered)
+            for gone in ("<table class=kv><tr><th>goal</th>", "supported by FW01"):
+                self.assertNotIn(gone, rendered)
             for jargon in ("pinned in Ticket", "candidate text", "check_unit", "handoffs signed", "roster"):
                 self.assertNotIn(jargon, rendered)
+            # the design on the left, its explanation on the right; an SMS reads as a phone bubble
+            # with the link where the sending system puts it (JL 260918)
+            for label in ('<div class="pair text"><div class=pic><div class=phone>', "<div class=bubble>",
+                          ": <span class=link>link</span> Reply STOP to opt-out</div>", "<div class=facts>"):
+                self.assertIn(label, rendered)
             for noise in ("current Design Folder", "handoffs signed", "waiting on JL · adopt</div>", "register "):
                 self.assertNotIn(noise, rendered.split("<div class=tabs", 1)[0])
             for retired in ("Flow nodes", "Spaces: 4", "Anchor", "Trial", "Candidates:", "Signal Space"):
                 self.assertNotIn(retired, rendered)
 
-    def test_adopted_card_pins_the_exact_candidate(self):
+    def test_ready_card_pins_the_exact_verified_candidate(self):
         with TemporaryDirectory() as td:
             board, page, runs = v2_fixture(Path(td))
             snapshot = design_snapshot(page, board)
-            adopted = snapshot["items"][0]["adopted"]
-            self.assertEqual(adopted["candidate"], runs["ITEM01"]["generate"])
-            self.assertEqual(adopted["verification"], runs["ITEM01"]["verify"])
-            self.assertEqual(len(adopted["sha256"]), 64)
-            self.assertIn("warrant P01", adopted["words"])
-            rendered = render_design(snapshot, "delivery")
-            self.assertIn("✅ adopted · JL", rendered)
-            self.assertIn("ITEM02 · Attribution removed · not adopted", rendered)
+            ready = snapshot["items"][0]["ready"]
+            self.assertEqual(ready["run"], runs["ITEM01"]["generate"])
+            self.assertEqual(ready["verification"], runs["ITEM01"]["verify"])
+            self.assertEqual(len(ready["sha256"]), 64)
+            rendered = render_design(snapshot, "delivery").split('data-space="delivery">', 1)[1]
+            # Delivery Space lists only designs whose independent Verify passed.
+            self.assertIn("<tr><th>item</th><th>design</th></tr>", rendered)
+            for text in ("ITEM01", "Send the tested winner, verbatim", "Hi, it&#x27;s Dr. {NAME}&#x27;s office.",
+                         ):
+                self.assertIn(text, rendered)
+            for status in ("adopted", "sha256", "waiting on", "data-action=adopt"):
+                self.assertNotIn(status, rendered.split("</section>", 1)[0])
 
     def test_generated_item_waits_on_the_independent_verifier(self):
         with TemporaryDirectory() as td:
-            board, page, _runs = v2_fixture(Path(td), "Design-02-refill-reminder-ui")
+            board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
             snapshot = design_snapshot(page, board)
             item = snapshot["items"][0]
-            self.assertEqual((item["state"], item["waiting"]), ("generated", "agent · verify"))
-            self.assertIsNone(item["adopted"])
+            self.assertEqual((item["state"], item["waiting"]), ("generated", "JL · queue the review"))
+            self.assertIsNone(item["ready"])
             self.assertIn("Queue Verify · independent agent", render_design(snapshot))
 
     def test_empty_current_folder_is_truthful(self):
@@ -172,7 +193,7 @@ class DesignItemsTest(unittest.TestCase):
             rendered = render_design(design_snapshot(page, board))
             self.assertIn("No Design Item register yet", rendered)
             self.assertIn("No Design Run records", rendered)
-            self.assertIn("Nothing adopted", rendered)
+            self.assertIn("No design is ready yet", rendered)
             self.assertNotIn("nothing waiting", rendered)
             self.assertIn("Page level", rendered)
 
@@ -180,7 +201,7 @@ class DesignItemsTest(unittest.TestCase):
 def verified_spec() -> ItemSpec:
     return ItemSpec(id="ITEM01", title="Send the tested winner, verbatim", kind="sms",
                     goal="Field the salience template exactly as round 1 sent it",
-                    audience="full SMSR2 population", job="prescription review",
+                    audience="all patients", job="prescription review",
                     content="Hi, it's Dr. {NAME}'s office. New prescription details require your review: Reply STOP to opt-out",
                     criteria=sms_criteria(), acceptance=["≤ 160 characters", "ends with 'Reply STOP to opt-out'"],
                     stage="verified")
@@ -208,11 +229,11 @@ class DesignActionsTest(unittest.TestCase):
             self.assertTrue(out["run"].startswith("rd07_commission_"))
             snapshot = design_snapshot(page, board)
             item = {i["id"]: i for i in snapshot["items"]}["ITEM03"]
-            self.assertEqual((item["state"], item["waiting"]), ("commissioned", "agent · generate"))
+            self.assertEqual((item["state"], item["waiting"]), ("commissioned", "JL · queue the draft"))
             self.assertEqual(snapshot["audit"], [])
             config = acts._load(page.parent / "scripts" / "config" / f"{out['run']}.yaml")
             kinds = [c["kind"] for c in config["criteria"]]
-            self.assertEqual(kinds, ["max_chars", "contains", "excludes", "semantic"])
+            self.assertEqual(kinds, ["max_chars", "ends_with", "excludes", "semantic"])
             self.assertEqual(config["criteria"][2]["value"], "{NAME}")
             out, err = perform_action(page, self.payload(page, action="queue-generate", item="ITEM03"))
             self.assertIsNone(err, err)
@@ -239,43 +260,37 @@ class DesignActionsTest(unittest.TestCase):
             self.assertEqual(config["mode"], "challenge")
             self.assertEqual(design_snapshot(page, board)["audit"], [])
 
-    def test_verify_and_adopt_are_refused_before_their_inputs_exist(self):
+    def test_verify_is_refused_before_its_inputs_exist(self):
         with TemporaryDirectory() as td:
-            board, page, _runs = v2_fixture(Path(td), "Design-02-refill-reminder-ui")
-            _out, err = perform_action(page, self.payload(page, action="adopt", item="ITEM01", actor="JL"))
-            self.assertIn("no complete Verify Result", err)
+            board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
             out, err = perform_action(page, self.payload(page, action="queue-verify", item="ITEM01"))
             self.assertIsNone(err, err)
             item = design_snapshot(page, board)["items"][0]
             self.assertEqual((item["state"], item["waiting"]), ("verify queued", "agent · verify"))
             _out, err = perform_action(page, self.payload(page, action="queue-verify", item="ITEM01"))
-            self.assertIsNone(err)  # a second planned verify is legal; it is the agent's queue
+            self.assertIn('"verify queued"; it waits on agent · verify', err)  # a double click queues nothing
+            item = design_snapshot(page, board)["items"][0]
+            with self.assertRaises(acts.ActionError):                             # nor does the writer alone
+                acts.queue_verify(page.parent, page.stem, item, item["runs"])
 
-    def test_adopt_writes_preview_decision_and_closes_the_item(self):
+    def test_verify_pass_is_ready_for_delivery_without_a_decision_run(self):
         with TemporaryDirectory() as td:
             board, page, _runs = v2_fixture(Path(td), specs=[verified_spec()])
             item = design_snapshot(page, board)["items"][0]
-            self.assertEqual((item["state"], item["waiting"]), ("verified", "JL · adopt"))
-            _out, err = perform_action(page, self.payload(page, action="adopt", item="ITEM01", actor="",
-                                                          words="x"))
-            self.assertIn("named", err)
-            out, err = perform_action(page, self.payload(page, action="adopt", item="ITEM01", actor="JL",
-                                                         words="Adopt v1, verbatim salience"))
-            self.assertIsNone(err, err)
+            self.assertEqual((item["state"], item["waiting"]), ("ready", ""))
+            self.assertIsNotNone(item["ready"])
             snapshot = design_snapshot(page, board)
             item = snapshot["items"][0]
-            self.assertEqual(item["state"], "adopted")
-            self.assertEqual(item["adopted"]["words"], "Adopt v1, verbatim salience")
-            self.assertTrue((page.parent / "delivery" / "render" / out["preview"]).is_file())
             self.assertEqual(snapshot["audit"], [])
             rendered = render_design(snapshot, "design")
-            for gone in ("data-action=adopt", "data-action=decline", "Release commission"):
+            for gone in ("data-action=adopt", "data-action=decline", "Adopt", "Decline", "Release commission"):
                 self.assertNotIn(gone, rendered)
+            self.assertIn("ready for Delivery", rendered)
             self.assertIn("data-action=add-item", rendered)  # the register stays open
 
     def test_queue_verify_on_an_evidence_informed_item_carries_the_evidence(self):
         with TemporaryDirectory() as td:
-            spec = demo_specs()["Design-01-patient-confirm-sms"]["specs"][0]
+            spec = demo_specs()["Design-01-all-patients-prescription-review-sms"]["specs"][0]
             spec.stage = "generated"
             board, page, _runs = v2_fixture(Path(td), specs=[spec])
             out, err = perform_action(page, self.payload(page, action="queue-verify", item="ITEM01"))
@@ -286,7 +301,7 @@ class DesignActionsTest(unittest.TestCase):
 
     def test_complete_run_gates_the_worker_result_before_writing_the_receipt(self):
         with TemporaryDirectory() as td:
-            board, page, _runs = v2_fixture(Path(td), "Design-02-refill-reminder-ui")
+            board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
             out, err = perform_action(page, self.payload(page, action="queue-verify", item="ITEM01"))
             self.assertIsNone(err, err)
             run = out["run"]
@@ -302,18 +317,14 @@ class DesignActionsTest(unittest.TestCase):
             self.assertTrue(closed["problems"])
             item = design_snapshot(page, board)["items"][0]
             self.assertEqual(item["state"], "verify invalid")   # the review failed the gate
-            self.assertEqual(item["waiting"], "agent · verify")  # redo the review, not the candidate
+            self.assertEqual(item["waiting"], "JL · queue the review again")  # redo the review, not the candidate
 
-    def test_revise_decision_queues_a_revise_generate(self):
+    def test_decision_actions_are_removed_after_verify(self):
         with TemporaryDirectory() as td:
             board, page, _runs = v2_fixture(Path(td), specs=[verified_spec()])
-            out, err = perform_action(page, self.payload(page, action="revise", item="ITEM01", actor="JL",
-                                                         words="drop the apostrophe form"))
-            self.assertIsNone(err, err)
-            self.assertIn("revise", out)
-            item = design_snapshot(page, board)["items"][0]
-            self.assertEqual((item["state"], item["waiting"]), ("generate queued", "agent · generate"))
-            self.assertEqual(design_snapshot(page, board)["audit"], [])
+            _out, err = perform_action(page, self.payload(page, action="revise", item="ITEM01",
+                                                          actor="JL", words="drop the apostrophe form"))
+            self.assertEqual(err, "unknown action 'revise'")
 
 
 class GoalAndInsightSpaceTest(unittest.TestCase):
@@ -323,13 +334,14 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             snapshot = design_snapshot(page, board)
             goal = snapshot["goal"]
             self.assertEqual(goal["row"]["id"], "R1")
-            self.assertEqual((goal["wanted"], goal["registered"], goal["adopted"]), (2, 2, 1))
-            self.assertEqual(goal["sentence"], "2 sms designs for full SMSR2 population, unconditioned, prescription review")
+            self.assertEqual((goal["wanted"], goal["registered"], goal["ready"]), (2, 2, 1))
+            self.assertEqual(goal["sentence"], "2 prescription review SMS designs for all patients")
             rendered = render_design(snapshot, "goal")
             for label in ("Goal Space", "Design Space", "Insight Space", "Run Space", "Delivery Space",
-                          "2 sms designs for full SMSR2 population", "2 wanted · 2 registered · 1 adopted",
-                          "<th>their job</th>", "line R1", "Insight board", "1 of 1 insights signed"):
+                          "2 prescription review SMS designs for all patients", "2 wanted · 2 registered · 1 ready",
+                          "<th>their job</th>", "· design tasks", "Insight board", "1 of 1 insights signed"):
                 self.assertIn(label, rendered)
+            self.assertNotIn("line R1", rendered)  # the Brief's row id is a key, never a name on screen
 
     def test_goal_space_is_truthful_without_a_brief_line(self):
         with TemporaryDirectory() as td:
@@ -357,7 +369,7 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
 
     def test_insight_space_flags_an_item_built_on_evidence_with_none_named(self):
         with TemporaryDirectory() as td:
-            board, page, _runs = v2_fixture(Path(td), "Design-02-refill-reminder-ui")
+            board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
             acts.add_item(page.parent, page.stem, {
                 "title": "Second card", "goal": "Try a shorter card", "type": "ui-card",
                 "audience": "patients due a refill", "job": "refill review",
@@ -419,8 +431,8 @@ class OldLinkTest(unittest.TestCase):
     def test_old_ds_links_map_to_the_full_names(self):
         self.assertEqual(modern_file("2-DS-design/DS01-patient-confirm-sms/DS01-patient-confirm-sms.md"),
                          "2-Design/Design-01-patient-confirm-sms/Design-01-patient-confirm-sms.md")
-        self.assertEqual(modern_file("2-Design/Design-02-refill-reminder-ui/Design-02-refill-reminder-ui.md"),
-                         "2-Design/Design-02-refill-reminder-ui/Design-02-refill-reminder-ui.md")
+        self.assertEqual(modern_file("2-Design/Design-02-patients-refill-due-refill-review-ui-card/Design-02-patients-refill-due-refill-review-ui-card.md"),
+                         "2-Design/Design-02-patients-refill-due-refill-review-ui-card/Design-02-patients-refill-due-refill-review-ui-card.md")
         self.assertEqual(modern_file(""), "")
 
 
@@ -430,13 +442,84 @@ class BatchAndDraftTest(unittest.TestCase):
             board, page, _runs = v2_fixture(Path(td))
             rendered = render_design(design_snapshot(page, board), "design")
             self.assertNotIn("Release all", rendered)            # both items already commissioned
-            self.assertNotIn("Adopt all verified", rendered)     # nothing verified in the fixture
-            self.assertNotIn("Queue all", rendered)              # adopted + generate failed: nothing queueable
+            self.assertNotIn("Adopt", rendered)                 # ready is terminal; there is no decision button
+            self.assertNotIn("Queue all", rendered)              # ready + generate failed: nothing queueable
             self.assertNotIn("mode <b>", rendered)               # mode is not a reader word
 
-    def test_release_all_queue_all_and_adopt_all(self):
+    def test_a_renamed_folder_is_found_by_its_design_number(self):
+        from live.design import renamed_folder
         with TemporaryDirectory() as td:
-            board, page, _runs = v2_fixture(Path(td), "DS02-refill-reminder-ui".replace("DS02", "Design-02"))
+            board, page, _runs = v2_fixture(Path(td))
+            self.assertEqual(renamed_folder(board, "Design-01-patient-confirm-sms"), page.parent.name)
+            self.assertEqual(renamed_folder(board, page.parent.name), page.parent.name)
+            self.assertEqual(renamed_folder(board, "Design-09-nothing-here"), "Design-09-nothing-here")
+
+    def test_decision_forms_are_folded_until_opened(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
+            acts.add_item(page.parent, page.stem, {
+                "title": "Card 2", "goal": "Try card 2", "type": "ui-card", "audience": "patients due a refill",
+                "job": "refill review", "stance": "generate", "basis": "brief-only", "acceptance": "≤ 200 characters"})
+            snapshot = design_snapshot(page, board)
+            rendered = render_design(snapshot, "design")
+            self.assertIn("<details class=decide><summary>Release or hold the commission</summary>", rendered)
+            self.assertIn("<details class=batchfold><summary>For all items at once: release 1, queue 1</summary>", rendered)
+            self.assertIn('<div class=act><button class=do data-action=queue-verify>', rendered)   # one agent button stays in view
+            self.assertIn("<details class=decide open>", render_design(snapshot, "design", "ITEM02"))
+
+    def test_a_screen_design_is_shown_as_its_rendered_picture(self):
+        import base64
+        import json
+        png = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==")
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
+            item = design_snapshot(page, board)["items"][0]
+            render = page.parent / "delivery" / "render"
+            render.mkdir(parents=True)
+            (render / "screen-ITEM01-v1.png").write_bytes(png)
+            manifest = render / "manifest.json"
+            manifest.write_text(json.dumps([{"item": "ITEM01", "render": "screen-ITEM01-v1.png",
+                                             "candidate": item["latest"]["run"], "version": 1}]), encoding="utf-8")
+            snapshot = design_snapshot(page, board)
+            card = render_design(snapshot, "design")
+            self.assertIn('<img class=shot src="/2-Design/', card)                 # served beside the board
+            self.assertIn("<summary>the HTML behind this screen</summary>", card)  # the source is one click away
+            self.assertIn("<div class=pair>", card)
+            self.assertIn("No design is ready yet", render_design(snapshot, "delivery"))
+            # A picture of another draft is never shown for this one.
+            manifest.write_text(json.dumps([{"item": "ITEM01", "render": "screen-ITEM01-v1.png",
+                                             "candidate": "rd99_generate_item01", "version": 1}]), encoding="utf-8")
+            snapshot = design_snapshot(page, board)
+            self.assertNotIn("<img class=shot", render_design(snapshot, "design"))
+            self.assertIn("No design is ready yet", render_design(snapshot, "delivery"))
+
+    def test_a_declined_item_leaves_the_delivery_overview(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            snapshot = design_snapshot(page, board)
+            snapshot["items"][1]["state"] = "declined"
+            delivery = render_design(snapshot, "delivery")
+            overview, _, folded = delivery.partition("<details class=retired>")
+            self.assertIn("<summary>Declined, kept for the record · 1</summary>", folded)
+            self.assertIn(snapshot["items"][1]["title"], folded)
+            self.assertNotIn(snapshot["items"][1]["title"], overview.split('data-space="delivery"')[-1])
+            self.assertIn(snapshot["items"][0]["title"], overview)
+            cards = render_design(snapshot, "design").split('data-space="design"')[-1].split('data-space="insight"')[0]
+            live, _, folded_cards = cards.partition("<details class=retired>")
+            self.assertIn('id="item-ITEM02"', folded_cards)                 # Design Space folds it the same way
+            self.assertNotIn('id="item-ITEM02"', live)
+            self.assertIn("<details class=retired open>", render_design(snapshot, "design", "ITEM02"))
+
+    def test_a_rule_judged_on_the_render_is_a_visual_check(self):
+        kinds = [c["kind"] for c in acts.compile_criteria([
+            "fits 390 x 844 with no scrolling, judged on the render",
+            "one primary button labelled 'Continue'",
+            "plain words a patient understands"])]
+        self.assertEqual(kinds, ["visual", "contains", "semantic"])
+
+    def test_release_all_and_queue_all(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
             for n in (2, 3):
                 acts.add_item(page.parent, page.stem, {
                     "title": f"Card {n}", "goal": f"Try card {n}", "type": "ui-card", "audience": "patients due a refill",
@@ -461,11 +544,11 @@ class BatchAndDraftTest(unittest.TestCase):
             self.assertEqual(snapshot["audit"], [])
             _out, err = perform_action(page, {"path": "/board.md", "file": f"2-Design/{page.parent.name}/{page.name}",
                                               "action": "adopt-all", "item": "__all__", "actor": "JL", "words": "x"})
-            self.assertEqual(err, "nothing to adopt; no item is verified")
+            self.assertEqual(err, "unknown action 'adopt-all'")
 
     def test_name_worker_repins_the_receipt(self):
         with TemporaryDirectory() as td:
-            board, page, _runs = v2_fixture(Path(td), "Design-02-refill-reminder-ui")
+            board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
             snapshot = design_snapshot(page, board)
             run = acts.queue_verify(page.parent, page.stem, snapshot["items"][0], snapshot["items"][0]["runs"])["run"]
             out = acts.name_worker(page.parent, run, "reviewer-context-09")
@@ -505,7 +588,7 @@ class BatchAndDraftTest(unittest.TestCase):
             self.assertIsNone(err, err)
             request = Path(out["request"])
             text = request.read_text(encoding="utf-8")
-            for label in ("items: 8", "goal: 10 sms designs for full SMSR2 population", "DO NOT vary the message",
+            for label in ("items: 8", "goal: 10 prescription review SMS designs for all patients", "DO NOT vary the message",
                           "finding: Of thirteen arms", "asked-by: JL"):
                 self.assertIn(label, text)
             snapshot = design_snapshot(page, board)
@@ -523,3 +606,122 @@ class BatchAndDraftTest(unittest.TestCase):
             rendered = render_design(design_snapshot(page, board), "insight")
             self.assertIn("rules it implies: DO send", rendered)
             self.assertIn("DO NOT vary the message by age, gender, send day or region", rendered)
+
+
+class AuditFixesTest(unittest.TestCase):
+    """The fixes of the 260918 skill review, one behaviour each."""
+
+    def payload(self, page: Path, **kw) -> dict:
+        return {"path": "/board.md", "file": f"2-Design/{page.parent.name}/{page.name}", **kw}
+
+    def new_item(self, page: Path, **fields) -> str:
+        base = {"title": "Nudge", "goal": "Say what to review", "type": "sms", "audience": "all patients",
+                "job": "prescription review", "stance": "generate", "basis": "brief-only",
+                "acceptance": "≤ 160 characters\nends with 'Reply STOP to opt-out'"}
+        return acts.add_item(page.parent, page.stem, {**base, **fields})["item"]
+
+    def item(self, page: Path, board: Path, item_id: str) -> dict:
+        return {i["id"]: i for i in design_snapshot(page, board)["items"]}[item_id]
+
+    def test_rules_compile_by_what_they_say(self):
+        got = lambda rule: [(c["kind"], c.get("value")) for c in acts.compile_criteria([rule])]
+        self.assertEqual(got("does not use 'urgent'"), [("excludes", "urgent")])                    # H1
+        self.assertEqual(got("DO NOT say 'urgent' or 'act now'"), [("excludes", "urgent"), ("excludes", "act now")])
+        self.assertEqual(got("keeps 'Hi' and does not say 'urgent'"), [("contains", "Hi"), ("excludes", "urgent")])
+        self.assertEqual(got("it's short and it's kind"), [("semantic", None)])                     # no apostrophe quotes
+        self.assertEqual(got("doesn't say 'urgent'"), [("excludes", "urgent")])
+        self.assertEqual(got("surrendered nothing"), [("semantic", None)])                          # not "render"
+        self.assertEqual(got("ends with 'Reply STOP to opt-out' verbatim"), [("ends_with", "Reply STOP to opt-out")])  # N7
+        self.assertEqual(got("under 140 characters"), [("max_chars", 139)])
+        self.assertEqual([c["id"] for c in acts.compile_criteria(["x", "no 'a' or 'b'"])], ["r01", "r02", "r02b"])
+
+    def test_a_released_bet_stays_frozen(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            item_id = self.new_item(page)
+            perform_action(page, self.payload(page, action="commission-release", item=item_id, actor="JL", words="go"))
+            register = page.parent / "outline" / f"{page.stem}-design-items.md"
+            register.write_text(register.read_text(encoding="utf-8").replace(
+                "goal: Say what to review", "goal: Something else").replace("≤ 160 characters", "≤ 40 characters"),
+                encoding="utf-8")                                       # edited after release (H2)
+            out, err = perform_action(page, self.payload(page, action="queue-generate", item=item_id))
+            self.assertIsNone(err, err)
+            config = acts._load(page.parent / "scripts" / "config" / f"{out['run']}.yaml")
+            self.assertEqual(config["goal"], "Say what to review")          # M4: the goal sentence, frozen
+            self.assertEqual(config["criteria"][0]["value"], 160)
+            snapshot = design_snapshot(page, board)
+            self.assertEqual(snapshot["audit"], [])
+            card = render_design(snapshot, "design", item_id)
+            self.assertIn("the register changed after release", card)
+
+    def test_a_changed_insight_is_queued_again_in_the_open(self):
+        from tests.fixture_design_v2 import HANDOFF_REL
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            item_id = self.new_item(page, basis="evidence-informed", evidence=f"evidence · {HANDOFF_REL}")
+            perform_action(page, self.payload(page, action="commission-release", item=item_id, actor="JL", words="go"))
+            first, err = perform_action(page, self.payload(page, action="queue-generate", item=item_id))
+            self.assertIsNone(err, err)
+            insight = (page.parent / HANDOFF_REL).resolve()
+            insight.write_text(insight.read_text(encoding="utf-8") + "\nedited after the queue\n", encoding="utf-8")
+            item = self.item(page, board, item_id)
+            self.assertEqual((item["state"], item["waiting"]), ("queued run out of date", "JL · queue again"))   # H3
+            self.assertIn("data-action=requeue", render_design(design_snapshot(page, board), "design", item_id))
+            out, err = perform_action(page, self.payload(page, action="requeue", item=item_id))
+            self.assertIsNone(err, err)
+            self.assertEqual(out["replaces"], first["run"])
+            self.assertEqual(acts._load(page.parent / "results" / first["run"] / "runtime.yaml")["status"], "superseded")
+            self.assertEqual(self.item(page, board, item_id)["state"], "generate queued")
+            self.assertEqual(design_snapshot(page, board)["audit"], [])     # the records check accepts both
+
+    def test_waiting_names_who_must_click(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            item_id = self.new_item(page)
+            perform_action(page, self.payload(page, action="commission-release", item=item_id, actor="JL", words="go"))
+            self.assertEqual(self.item(page, board, item_id)["waiting"], "JL · queue the draft")        # H4
+            _out, err = perform_action(page, self.payload(page, action="commission-release", item=item_id,
+                                                          actor="JL", words="again"))
+            self.assertIn('"commissioned"', err)                                                  # M14
+
+    def test_a_hold_can_be_picked_up_again(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            item_id = self.new_item(page)
+            perform_action(page, self.payload(page, action="commission-hold", item=item_id, actor="JL", words="wait"))
+            item = self.item(page, board, item_id)
+            self.assertEqual(item["state"], "hold")
+            self.assertIn("data-action=commission-release", render_design(design_snapshot(page, board), "design"))  # N3
+            out, err = perform_action(page, self.payload(page, action="commission-release", item=item_id,
+                                                         actor="JL", words="now go"))
+            self.assertIsNone(err, err)
+            self.assertEqual(self.item(page, board, item_id)["state"], "commissioned")
+
+    def test_a_failed_draft_is_never_shown_as_passed(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td))
+            snapshot = design_snapshot(page, board)
+            failed = next(i for i in snapshot["items"] if i["state"] == "generate failed")
+            card = render_design(snapshot, "design", failed["id"]).split(f'id="item-{failed["id"]}"')[1].split("</section>")[0]
+            self.assertIn("Generate ✗", card)                                                     # N4
+            self.assertIsNone(failed["latest"])                                                   # N8: no failed draft shown
+
+    def test_rule_marks_belong_to_the_draft_on_the_card(self):
+        with TemporaryDirectory() as td:
+            board, page, _runs = v2_fixture(Path(td), specs=[verified_spec()])
+            item = self.item(page, board, "ITEM01")
+            gen = next(r for r in item["runs"] if r["kind"] == "generate")
+            ver = next(r for r in item["runs"] if r["kind"] == "verify")
+            self.assertTrue(str(ver["targets"][0]["path"]).startswith(f'results/{gen["id"]}/'))
+            card = render_design(design_snapshot(page, board), "design", "ITEM01")
+            self.assertIn(f'independent review {ver["id"].split("_")[0]}', card)                   # N2
+            self.assertIn("ready for Delivery", card)
+
+    def test_a_legacy_ds_folder_is_refused(self):
+        with TemporaryDirectory() as td:
+            folder = Path(td) / "B-DesignBoard" / "2-DS-design" / "DS01-population-rx-review"
+            folder.mkdir(parents=True)
+            page = folder / "DS01-population-rx-review.md"
+            page.write_text("# Old\nfolder-kind: design\n", encoding="utf-8")
+            self.assertEqual(design_contract_status(page),
+                             (False, "legacy 2-DS-design/DS* folder is not a current Design Folder"))  # L1

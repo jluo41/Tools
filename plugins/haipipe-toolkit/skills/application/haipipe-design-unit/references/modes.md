@@ -1,4 +1,4 @@
-# Conditional Design modes · v4
+# Conditional Design modes
 
 Load only the mode selected in frozen config. The common contract and
 `design_intent` remain mandatory for every v2 Ticket.
@@ -7,9 +7,13 @@ Load only the mode selected in frozen config. The common contract and
 |---|---|---|---|
 | compose | realize one bounded goal | forecast may be null | commissioned Brief/constraints |
 | revise | change exact base in response to exact feedback; preserve named invariants | forecast may be null | `base` + `feedback` |
-| brainstorm | generate a mutually distinct set; name what each member is trying | forecast and failure must be null | per-member from insight/knowledge/intuition provenance |
+| brainstorm | generate a mutually distinct set; name what each member is trying | stance `explore` or `generate`; forecast and failure must be null | per-member from insight/knowledge/intuition provenance |
 | theory-driven | explore from a named mechanism without calling it observed | expected effect + failure condition required | pinned theory/reference + uncertainty |
-| challenge | make an alternative to one exact authorized claim | challenge stance + alternative effect + distinguishing condition required | exact claim and authorized source |
+| challenge | make an alternative to one exact authorized claim | challenge stance (which goes only with this mode) + alternative effect + distinguishing condition required | exact claim and authorized source |
+
+The register's New Design Item check (`design_actions.add_item`) refuses the
+same bindings the records check enforces, so an item that breaks them is
+never released. A revise of a challenge item stays in challenge mode.
 
 Brainstorm is candidate-space expansion, not experiment design: no control,
 allocation, arm, winner, or comparator forecast. Its per-member provenance may
@@ -28,6 +32,7 @@ Any rationale, ideation summary, member provenance, mechanism note, uncertainty,
 or forecast file is conditional output only when commissioned with explicit
 criteria. Record observable design choices, not private chain-of-thought.
 
-Venue rules remain in `application/venue/venue-<kind>/`. The caller pins the
-selected pack and compiles applicable checks. A visual/UI unit may invoke its
-renderer internally; separately reusable display work keeps its own native Run.
+Venue rules remain in `application/venue/venue-<kind>/`. The caller compiles
+the item's acceptance rules into checks; venue packs are not pinned by the
+Commission. A visual/UI unit may invoke its renderer internally; separately
+reusable display work keeps its own native Run.

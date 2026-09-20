@@ -99,8 +99,8 @@ Domain category extensions may add a page-folder skill beside these five when
 the domain needs one cross-lane Page surface; they are not generic categories
 and remain governed by their domain owner. For example,
 `page-plugins/haipipe-plugin-design` presents the Design Folder, while
-`application/haipipe-design-unit` still owns the Design Unit Result and its
-writer. `subjective-label/haipipe-plugin-labeling` follows the same extension
+`application/haipipe-design-unit` still owns the Generate and Verify Results
+and their writer. `subjective-label/haipipe-plugin-labeling` follows the same extension
 pattern. A domain extension never promotes its internal lanes to duplicate
 top-level plugins.
 One of them inverts the shape: `haipipe-plugin-folder` is the 📂 meta-surface over the roster itself — no subfolder, no storage, no roster row (JL 260816).
@@ -177,8 +177,8 @@ Delivery and Studio remain category surfaces:
 ```text
 🧭 Outline   haipipe-plugin-outline    Draft + Evidence + Run over the
                                        outline/ process; FIRST/default tab
-🎨 Design    haipipe-plugin-design     Plan + Create + Review + Run + Delivery
-                                       over one current Design Page-Folder
+🎨 Design    haipipe-plugin-design     Goal · Design · Insight · Run · Delivery
+                                       Spaces over one current Design Page-Folder
 📤 Delivery  haipipe-plugin-delivery   latex · word · slide · render — the
                                        🎞 segment carries the deck's ✨ pen
 🎨 Studio    haipipe-plugin-studio     chat + draw AS ONE PAGE: the drawing

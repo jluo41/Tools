@@ -17,15 +17,15 @@ Brief → Design Folders → Commission → Generate → Verify → Adopt → De
 
 ```text
 Brief
-  ├── Design-01 patient confirmation SMS     ✅ adopted receipt visible
-  └── Design-02 refill reminder UI            🟡 review still owed
+  ├── Design-01 prescription review SMS for all patients    ✅ ITEM01 adopted · 9 wait on JL
+  └── Design-02 refill review app card, refill due soon     🟡 ITEM01 waits on JL
 ```
 
 ## Pages
 
 ### DS · Design Folders
-2-Design/Design-01-patient-confirm-sms/Design-01-patient-confirm-sms.md
-2-Design/Design-02-refill-reminder-ui/Design-02-refill-reminder-ui.md
+2-Design/Design-01-all-patients-prescription-review-sms/Design-01-all-patients-prescription-review-sms.md
+2-Design/Design-02-patients-refill-due-refill-review-ui-card/Design-02-patients-refill-due-refill-review-ui-card.md
 
 ### BR · Brief
 0-BR-brief/BR00-brief/BR00-brief.md

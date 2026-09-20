@@ -26,7 +26,7 @@ auditing that cross-board Runtime view.
 ```text
 haipipe-insight-workflow    I0–I5 RunTypes · one derived Question Group + one register cell
 haipipe-design-workflow     Commission/Generate/Verify/Adopt RunTypes · one design target
-haipipe-page-workflow       Page RunTypes · rp00/rpNN/release/CHECK · one readable Page
+haipipe-page-workflow       Page RunTypes · rp-struct-01/rpNN/release/CHECK · one readable Page
 haipipe-application-workflow
                             X0–X3 crossing assertions + delegation only
 ```
@@ -82,7 +82,7 @@ workflow never builds, sends, allocates, executes, or measures.
   `rpNN`, or raw Task output becomes Design authority.
 
 This crossing is Design-domain authority, not a Page Evidence shortcut. Any
-factual claim on the DS Page separately uses a typed item under
+factual claim on the Design Page separately uses a typed item under
 `outline/evidence/` and the current Page evidence contract.
 
 ## X2 · adopted candidate to downstream Task
@@ -101,13 +101,13 @@ Write a new immutable packet; never overwrite a previous revision:
 
 ```yaml
 schema: haipipe.application-candidate/v2
-packet_id: <DS-id>-<candidate-slug>-v<N>
+packet_id: <Design-NN>-<candidate-slug>-v<N>
 packet_version: <N>
 state: proposed
 source:
   application: <application-root>
   design_board: <board-path>
-  folder: <DS-folder-path>
+  folder: <Design-folder-path>
   generation_results: [<result.yaml path@sha256>]
   selected_members: [<artifact path@sha256>]
   verification_results: [<result.yaml path@sha256>]
@@ -115,7 +115,7 @@ source:
   render: <manifest path@sha256>
   adoption: <decision receipt path@sha256>
   page:
-    source: <DS page path@sha256>
+    source: <Design page path@sha256>
     release: <Page release receipt path@sha256>
     check: <terminal CHECK receipt path@sha256>
 target:
@@ -125,7 +125,7 @@ target:
 ```
 
 The target Task decides how to bind these inputs and allocate its own Runs.
-The DS Folder and Page are not fabricated as Supporting Runs. Missing any
+The Design Folder and Page are not fabricated as Supporting Runs. Missing any
 required target/source/version/authority row is `X2 HOLD`.
 
 ## X3 · measured effect back to Insight
@@ -142,7 +142,7 @@ Report four coordinates:
 ```text
 insight:     <board> · <QG-partition-rung> · <cell> · I0..I5 · gate · next
 design:      <board> · <commission/Run/result> · verify/adoption · next
-design-page: <rp00/rpNN/release/CHECK> · projection freshness · next
+design-page: <rp-struct-01/rpNN/release/CHECK> · projection freshness · next
 crossing:    none | X0 | X1 | X2 | X3 · assertion/hold
 runtime:     <workflow_runtime_id> · running | held | complete | failed
 ```
@@ -168,8 +168,8 @@ Design Page unit → /haipipe-page-workflow
 
 ```text
 X0  BR00 log + Question log
-X1  W log + consuming Commission/DS decision index
-X2  DS adoption/crossing index + downstream workflow inbox packet
+X1  W log + consuming Commission/Design decision index
+X2  Design adoption/crossing index + downstream workflow inbox packet
 X3  Task Result/report + I2 log
 ```
 

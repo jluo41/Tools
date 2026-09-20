@@ -65,14 +65,18 @@ rewinding or erasing history.
 
 ```yaml
 current:
-  phase: D2
-  folder-kind: design-unit
+  phase: B
+  folder-kind: <kind-of-phase-B>
 history:
-  - {from: D1, to: D2, gate: GD1, at: 2026-08-31}
+  - {from: A, to: B, gate: <the gate that closed phase A>, at: <date>}
 ```
 
+(The Design family no longer uses phases: a Design Folder keeps one
+`folder-kind: design` and records its work as `rdNN_*` Runs, so it is not an
+example of this pattern.)
+
 `workflow/` is control material, not product material. A purity law such as
-“a proposed Card has no realization beside it” may permit `workflow/phase.yaml`
+“a phase-A Folder has no phase-B product beside it” may permit `workflow/phase.yaml`
 without treating the Folder as realized. The phase contract must say so, and
 its checker must distinguish control metadata from produced artifacts.
 

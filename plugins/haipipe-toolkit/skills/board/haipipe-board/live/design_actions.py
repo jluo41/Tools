@@ -3,9 +3,10 @@
 Every action here writes exactly the files the Design contract already names
 (``haipipe-design`` register, ``haipipe-design-workflow`` Tickets and
 decisions, ``haipipe-design-unit`` v2 config/receipt shapes) and nothing else.
-A person's decisions (Commission, Adopt) are written with the person's name
-and words; agent steps (Generate, Verify) are only *queued* as planned Tickets
-for ``haipipe-designer-agent`` to execute.  Nothing here generates content,
+A person's Commission decision is written with the person's name and words;
+agent steps (Generate, Verify) are only *queued* as planned Tickets for
+``haipipe-designer-agent`` to execute. A passed Verify becomes ready for
+Delivery without a second human decision. Nothing here generates content,
 judges a candidate, or marks a Run complete on the agent's behalf.
 """
 from __future__ import annotations
@@ -24,9 +25,16 @@ BASES = ("brief-only", "evidence-informed")
 MODES = ("compose", "revise", "brainstorm", "theory-driven", "challenge")
 ROLES = ("evidence", "inspiration", "reference", "avoid", "base", "feedback", "handoff")
 _RD = re.compile(r"^rd(\d+)_", re.I)
-_QUOTED = re.compile(r"['\"‘’“”]([^'\"‘’“”]+)['\"‘’“”]")
+# A quote opens after a space or line start and closes before one, so the apostrophe
+# in "it's" or "doesn't" is never read as a quote mark (audit H1, 260918).
+_QUOTED = re.compile(r"(?<!\w)['\"‘“](.+?)['\"’”](?!\w)")
+_NEGATIVE = re.compile(r"\b(?:no|not|never|without|excludes?|avoids?|don['’]t|doesn['’]t|isn['’]t)\b", re.I)
+_ENDS = re.compile(r"\b(?:ends|ending|finishes)\s+with\b", re.I)
+_STARTS = re.compile(r"\b(?:starts|starting|begins|opens)\s+with\b", re.I)
+_RENDER = re.compile(r"\brender(?:s|ed|ing)?\b", re.I)
 _PLACEHOLDER = re.compile(r"\{[A-Za-z_]+\}")
-_MAX_CHARS = re.compile(r"(?:≤|<=|at most|max(?:imum)?|no more than|under)\s*(\d+)\s*(?:chars?|characters?|字)", re.I)
+_MAX_CHARS = re.compile(r"(≤|<=|<|at most|max(?:imum)?|no more than|under|fewer than|less than)\s*(\d+)\s*(?:chars?|characters?|字)", re.I)
+_STRICT = ("<", "under", "fewer than", "less than")
 _MAX_CHARS_2 = re.compile(r"(\d+)\s*(?:chars?|characters?)\s*(?:max|cap|or fewer|or less)", re.I)
 
 
@@ -106,6 +114,17 @@ def add_item(folder: Path, stem: str, fields: dict) -> dict:
     mode = (fields.get("mode") or ("challenge" if stance == "challenge" else "compose")).strip()
     if mode not in MODES:
         raise ActionError(f"mode must be one of {', '.join(MODES)}")
+    expected = (fields.get("expected") or "").strip()
+    falsified = (fields.get("falsified") or "").strip()
+    # the same bindings the records check enforces (check_unit.design_intent), said up front
+    if (stance == "challenge") != (mode == "challenge"):
+        raise ActionError("a challenge stance goes with challenge mode, and only with it")
+    if mode in ("challenge", "theory-driven") and not (expected and falsified):
+        raise ActionError(f"{mode} needs both expected and falsified: the bet and what would prove it wrong")
+    if mode == "brainstorm" and stance not in ("explore", "generate"):
+        raise ActionError("brainstorm goes with stance explore or generate")
+    if mode == "brainstorm" and (expected or falsified):
+        raise ActionError("brainstorm makes rough options, so it carries no expected or falsified")
     acceptance = [line.strip("- ").strip() for line in str(fields.get("acceptance") or "").splitlines()
                   if line.strip("- ").strip()]
     if not acceptance:
@@ -126,10 +145,10 @@ def add_item(folder: Path, stem: str, fields: dict) -> dict:
              f"audience: {(fields.get('audience') or '').strip()}",
              f"job: {(fields.get('job') or '').strip()}",
              f"goal: {goal}", f"stance: {stance}", f"basis: {basis}", f"mode: {mode}"]
-    if (fields.get("expected") or "").strip():
-        lines.append(f"expected: {fields['expected'].strip()}")
-    if (fields.get("falsified") or "").strip():
-        lines.append(f"falsified: {fields['falsified'].strip()}")
+    if expected:
+        lines.append(f"expected: {expected}")
+    if falsified:
+        lines.append(f"falsified: {falsified}")
     if evidence:
         lines.append("evidence:")
         lines += [f"- {line}" for line in evidence]
@@ -142,40 +161,84 @@ def add_item(folder: Path, stem: str, fields: dict) -> dict:
 
 # --------------------------------------------------------------- criteria --
 
+_CLAUSE = re.compile(r",|;|\band\b|\bbut\b|\bwhile\b|\bthen\b", re.I)
+_CONNECTOR = re.compile(r"^(?:\s|,|\bor\b|\bnor\b|\band\b)*$", re.I)
+
+
+def _phrases(rule: str) -> list[tuple[str, str]]:
+    """(kind, phrase) for every quoted phrase and {PLACEHOLDER} of a rule, in order.
+
+    Each phrase reads the words just before it, back to the last clause break:
+    "keeps 'Hi' and does not say 'urgent'" contains Hi and excludes urgent.  A
+    phrase with only "or"/"and"/commas before it shares the previous one's kind,
+    so "no 'urgent', 'act now' or 'hurry'" excludes all three."""
+    quoted = [(m.start(), m.end(), m.group(1)) for m in _QUOTED.finditer(rule)]
+    spans = quoted + [(m.start(), m.end(), m.group(0)) for m in _PLACEHOLDER.finditer(rule)
+                      if not any(a <= m.start() < b for a, b, _ in quoted)]
+    out, prev_end, prev_kind = [], 0, None
+    for start, end, phrase in sorted(spans):
+        before = rule[prev_end:start]
+        part = _CLAUSE.split(before)[-1]
+        if prev_kind and _CONNECTOR.match(before):
+            kind = prev_kind
+        else:
+            words = part if part.strip() else before
+            kind = ("excludes" if _NEGATIVE.search(words) else "ends_with" if _ENDS.search(words)
+                    else "starts_with" if _STARTS.search(words) else "contains")
+        out.append((kind, phrase))
+        prev_end, prev_kind = end, kind
+    return out
+
+
 def compile_criteria(acceptance: list[str]) -> list[dict]:
-    """Turn acceptance prose into v2 criteria; anything not mechanical is semantic."""
+    """Turn acceptance prose into v2 criteria; anything not mechanical is semantic.
+
+    Rule N compiles to criterion ``rNN``; a rule quoting several phrases adds
+    ``rNNb``, ``rNNc`` for the rest, so "no 'urgent' or 'act now'" excludes both.
+    A negative word (no, not, does not, never, without, avoid) before a quoted
+    phrase or a {PLACEHOLDER} makes it ``excludes``; "ends with 'X'" is
+    ``ends_with``; "under N characters" allows N - 1.
+    """
     criteria = []
     for index, rule in enumerate(acceptance, start=1):
         cid = f"r{index:02d}"
-        lowered = rule.lower()
-        hit = _MAX_CHARS.search(rule) or _MAX_CHARS_2.search(rule)
+        hit = _MAX_CHARS.search(rule)
+        if hit:
+            limit = int(hit.group(2))
+            criteria.append({"id": cid, "kind": "max_chars",
+                             "value": limit - 1 if hit.group(1).lower() in _STRICT else limit})
+            continue
+        hit = _MAX_CHARS_2.search(rule)
         if hit:
             criteria.append({"id": cid, "kind": "max_chars", "value": int(hit.group(1))})
             continue
-        quoted = _QUOTED.search(rule)
-        placeholder = _PLACEHOLDER.search(rule)
-        negative = re.search(r"\b(no|never|without|excludes?|must not|avoid)\b", lowered)
-        if quoted and negative:
-            criteria.append({"id": cid, "kind": "excludes", "value": quoted.group(1)})
-        elif quoted:
-            criteria.append({"id": cid, "kind": "contains", "value": quoted.group(1)})
-        elif placeholder and negative:
-            criteria.append({"id": cid, "kind": "excludes", "value": placeholder.group(0)})
-        elif placeholder:
-            criteria.append({"id": cid, "kind": "contains", "value": placeholder.group(0)})
+        phrases = _phrases(rule)
+        if phrases:
+            for n, (kind, phrase) in enumerate(phrases):
+                criteria.append({"id": cid + ("" if n == 0 else chr(ord("a") + n)), "kind": kind, "value": phrase})
+        elif _RENDER.search(rule):
+            # A rule judged on the rendered picture (a UI screen) is a visual observation.
+            criteria.append({"id": cid, "kind": "visual", "description": rule})
         else:
             criteria.append({"id": cid, "kind": "semantic", "description": rule})
     return criteria
+
+
+def split_evidence(line: str) -> tuple[str, str]:
+    """One register evidence line, `role · path` or `role  path`, as (role, path).
+
+    The path is relative to the Design Folder (the folder holding `<stem>.md`).
+    An unknown role word reads as `evidence`."""
+    parts = [p.strip() for p in re.split(r"\s*·\s*|\s{2,}", line.strip(), maxsplit=1)]
+    role, ref = (parts[0], parts[1]) if len(parts) == 2 else ("evidence", parts[0])
+    return (role if role in ROLES else "evidence"), ref
 
 
 def _evidence_inputs(folder: Path, evidence: list[str]) -> tuple[list[dict], list[str]]:
     """Resolve register evidence lines (`role · path`) into hashed Ticket inputs."""
     inputs, missing = [], []
     for line in evidence:
-        parts = [p.strip() for p in re.split(r"\s*·\s*|\s{2,}", line, maxsplit=1)]
-        role, ref = (parts[0], parts[1]) if len(parts) == 2 else ("evidence", parts[0])
-        if role not in ROLES:
-            role = "evidence"
+        role, ref = split_evidence(line)
         path = (folder / ref).resolve()
         if path.is_file():
             inputs.append({"role": role, **_ref(folder, path)})
@@ -197,10 +260,11 @@ def _config(folder: Path, stem: str, item: dict, run: str, review_mode: str,
     if mode == "brainstorm":
         intent["expected_effect"] = intent["failure_condition"] = None
     return _dump(folder / "scripts" / "config" / f"{run}.yaml", {
-        "goal": item.get("title"), "kind": item.get("type") or "sms", "mode": mode,
+        "goal": item.get("goal") or item.get("title"), "kind": item.get("type") or "sms", "mode": mode,
         "basis": intent["basis"], "item": item["id"], "design_intent": intent,
         "unit": {"shape": "single", "count": 1}, "max_iterations": 2,
         "review_mode": review_mode, "criteria": compile_criteria(item.get("acceptance") or []),
+        "acceptance": list(item.get("acceptance") or []),   # the rule text as released, for the card
     })
 
 
@@ -230,6 +294,10 @@ def commission(folder: Path, stem: str, item: dict, actor: str, words: str,
     actor = actor.strip()
     if not actor:
         raise ActionError("the releasing person must be named")
+    runs = item.get("runs") or []
+    released = _latest(runs, "commission", outcome="release")
+    if released is not None:
+        raise ActionError(f"{item['id']} was already released in {released['id']}; one Commission per item")
     number = _next_run(folder)
     slug = _slug(item["id"])
     run = f"rd{number:02d}_commission_{slug}"
@@ -259,6 +327,37 @@ def commission(folder: Path, stem: str, item: dict, actor: str, words: str,
     return {"run": run, "missing_evidence": missing}
 
 
+def _frozen(folder: Path, stem: str, item: dict, released: dict, run: str, review_mode: str,
+            mode: str | None = None) -> tuple[Path, list[str]]:
+    """The config and evidence lines a released Commission froze, copied for a new run.
+
+    An edit to the register after release reaches only the next Commission
+    (audit H2, 260918).  A Commission written before configs were pinned falls
+    back to the register."""
+    ticket = _load(folder / "runs" / f"{released['id']}.yaml")
+    refs = [r for r in ticket.get("inputs") or [] if isinstance(r, dict) and r.get("path")]
+    config_ref = next((r for r in refs if str(r["path"]).startswith("scripts/config/")), None)
+    frozen = _load(folder / config_ref["path"]) if config_ref else {}
+    evidence = [f"{r['role']} · {r['path']}" for r in refs if r.get("role") in ROLES]
+    if not frozen:
+        return _config(folder, stem, item, run, review_mode, mode), item.get("evidence") or []
+    config = dict(frozen, review_mode=review_mode)
+    if mode:
+        config["mode"] = mode
+    return _dump(folder / "scripts" / "config" / f"{run}.yaml", config), evidence
+
+
+def open_runs(runs: list[dict]) -> list[dict]:
+    """An item's Generate and Verify runs that are queued or running (not closed, not superseded)."""
+    return [r for r in runs if r["kind"] in ("generate", "verify") and r["status"] in ("planned", "running")]
+
+
+def _refuse_if_open(runs: list[dict]) -> None:
+    busy = open_runs(runs)
+    if busy:
+        raise ActionError(f"{busy[-1]['id']} is already {busy[-1]['status']} for this item; wait for it to close")
+
+
 def _latest(runs: list[dict], kind: str, **where) -> dict | None:
     rows = [r for r in runs if r["kind"] == kind and all(r.get(k) == v for k, v in where.items())]
     return rows[-1] if rows else None
@@ -270,6 +369,7 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
     released = _latest(runs, "commission", outcome="release")
     if released is None:
         raise ActionError("no released Commission for this item; a person releases first")
+    _refuse_if_open(runs)
     number = _next_run(folder)
     run = f"rd{number:02d}_generate_{_slug(item['id'])}"
     mode = None
@@ -279,6 +379,9 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
             next((r for r in reversed(runs) if r["kind"] == "generate" and r["artifacts"]), None)
         if base is None or not base["artifacts"]:
             raise ActionError("revise needs an earlier candidate to revise")
+        # A passed review is ready for Delivery.  If a later brief change needs
+        # a new candidate, the normal revise path may queue it again; there is
+        # no separate adoption decision in the Design workflow.
         note = folder / "outline" / "feedback" / f"{run}.md"
         note.parent.mkdir(parents=True, exist_ok=True)
         note.write_text(f"# feedback for {run}\n\nbase: {base['id']}\n\n{feedback.strip()}\n",
@@ -288,8 +391,10 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
         # A challenge bet stays in challenge mode (the checker binds stance to
         # mode); its revision is the same challenge over a frozen base + feedback.
         mode = "challenge" if (item.get("stance") == "challenge") else "revise"
-    config_path = _config(folder, stem, item, run, "self", mode)
-    inputs, _missing = _evidence_inputs(folder, item.get("evidence") or [])
+    config_path, evidence = _frozen(folder, stem, item, released, run, "self", mode)
+    inputs, missing = _evidence_inputs(folder, evidence)
+    if missing:
+        raise ActionError("evidence named at release is gone: " + ", ".join(missing))
     approval = folder / "results" / released["id"] / "decision.yaml"
     ticket_path = _dump(folder / "runs" / f"{run}.yaml", {
         "schema": TICKET_SCHEMA, "run": run, "operation": "generate",
@@ -317,14 +422,21 @@ def queue_verify(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
     generated = _latest(runs, "generate", status="complete")
     if generated is None:
         raise ActionError("no complete Generate Result to verify yet")
+    _refuse_if_open(runs)
+    judged = [r for r in runs if r["kind"] == "verify" and r["status"] == "complete"
+              and any(str(t.get("path", "")).startswith(f"results/{generated['id']}/") for t in r.get("targets") or [])]
+    if judged:
+        raise ActionError(f"{generated['id']} already has an independent review ({judged[-1]['id']})")
     number = _next_run(folder)
     run = f"rd{number:02d}_verify_{_slug(item['id'])}"
-    config_path = _config(folder, stem, item, run, "independent")
+    config_path, evidence = _frozen(folder, stem, item, released, run, "independent")
     approval = folder / "results" / released["id"] / "decision.yaml"
     target = _ref(folder, generated["result_dir"] / "result.yaml")
     # The reviewer reads the same evidence the bet rests on; an
     # evidence-informed Ticket with no evidence input fails the gate.
-    inputs, _missing = _evidence_inputs(folder, item.get("evidence") or [])
+    inputs, missing = _evidence_inputs(folder, evidence)
+    if missing:
+        raise ActionError("evidence named at release is gone: " + ", ".join(missing))
     ticket_path = _dump(folder / "runs" / f"{run}.yaml", {
         "schema": TICKET_SCHEMA, "run": run, "operation": "verify",
         "worker": "haipipe-design-unit", "actor": "reviewer-context-pending",
@@ -374,12 +486,14 @@ def complete_run(folder: Path, run: str, started_at: str = "") -> dict:
     now = _now()
     runtime.update(started_at=started_at or runtime.get("queued_at") or now, finished_at=now)
     if problems:
-        runtime.update(status="failed", failure="; ".join(problems), route="generate")
+        # A draft that fails the check is drafted again; a review that fails it is reviewed again.
+        runtime.update(status="failed", failure="; ".join(problems),
+                       route="verify" if ticket.get("operation") == "verify" else "generate")
     elif ticket.get("operation") == "verify" and verdict == "fail":
         runtime.update(status="complete", failure=None, route="generate", terminal_outcome="fail")
     else:
         runtime.update(status="complete", failure=None,
-                       route="verify" if ticket.get("operation") == "generate" else "adopt",
+                       route="verify" if ticket.get("operation") == "generate" else "delivery",
                        terminal_outcome=verdict or "complete")
     _dump(runtime_path, runtime)
     return {"run": run, "status": runtime["status"], "verdict": verdict,
@@ -406,16 +520,22 @@ def adopt(folder: Path, stem: str, item: dict, runs: list[dict], decision: str,
     artifact = candidate["artifacts"][0]["path"]
     number = _next_run(folder)
     run = f"rd{number:02d}_adopt_{_slug(item['id'])}"
-    version = 1 + len(list((folder / "delivery" / "render").glob(f"{stem}-{item['id']}-v*.txt"))) \
-        if (folder / "delivery" / "render").is_dir() else 1
-    preview = folder / "delivery" / "render" / f"{stem}-{item['id']}-v{version}.txt"
-    preview.parent.mkdir(parents=True, exist_ok=True)
-    preview.write_bytes(Path(artifact).read_bytes())
-    manifest_path = folder / "delivery" / "render" / "manifest.json"
+    # The preview is the exact draft file, copied once per draft: a second decision on the
+    # same draft reuses it, and a new draft takes the item's next version (audit N9).
+    render_dir = folder / "delivery" / "render"
+    manifest_path = render_dir / "manifest.json"
     entries = json.loads(manifest_path.read_text()) if manifest_path.is_file() else []
-    entries.append({"item": item["id"], "render": preview.name, "candidate": candidate["id"],
-                    "sha256": _digest(preview), "version": version})
-    manifest_path.write_text(json.dumps(entries, indent=2), encoding="utf-8")
+    mine = [e for e in entries if isinstance(e, dict) and e.get("item") == item["id"]]
+    suffix = Path(artifact).suffix if Path(artifact).suffix in (".txt", ".html", ".md") else ".txt"
+    same = next((e for e in mine if e.get("candidate") == candidate["id"]), None)
+    version = int(same["version"]) if same else 1 + max((int(e.get("version") or 0) for e in mine), default=0)
+    preview = render_dir / f"{stem}-{item['id']}-v{version}{suffix}"
+    if not (preview.is_file() and _digest(preview) == _digest(Path(artifact))):
+        preview.parent.mkdir(parents=True, exist_ok=True)
+        preview.write_bytes(Path(artifact).read_bytes())
+        entries.append({"item": item["id"], "render": preview.name, "candidate": candidate["id"],
+                        "sha256": _digest(preview), "version": version})
+        manifest_path.write_text(json.dumps(entries, indent=2), encoding="utf-8")
     gen_result = _ref(folder, candidate["result_dir"] / "result.yaml")
     ver_result = _ref(folder, verified["result_dir"] / "result.yaml")
     inputs = [gen_result, ver_result, _ref(folder, preview)]
@@ -444,9 +564,61 @@ def adopt(folder: Path, stem: str, item: dict, runs: list[dict], decision: str,
     out = {"run": run, "candidate": candidate["id"], "preview": preview.name}
     if decision == "revise":
         runs = runs + [{"id": run, "kind": "adopt", "outcome": "revise", "status": "complete",
-                        "actor": actor, "artifacts": []}]
+                        "actor": actor, "artifacts": [], "number": number}]
         out["revise"] = queue_generate(folder, stem, item, runs, feedback=words or "revise", base_run=candidate["id"])
     return out
+
+
+# ------------------------------------------------------------ stale queue --
+
+def stale_inputs(folder: Path, run: str) -> list[str]:
+    """The files a queued run pinned that changed (or vanished) since it was queued."""
+    ticket = _load(folder / "runs" / f"{run}.yaml")
+    refs = [ticket.get("config"), (ticket.get("approval") or {}).get("record")]
+    refs += list(ticket.get("inputs") or []) + list(ticket.get("targets") or [])
+    changed = []
+    for ref in refs:
+        if isinstance(ref, dict) and ref.get("path"):
+            path = (folder / str(ref["path"])).resolve()
+            if not path.is_file() or _digest(path) != ref.get("sha256"):
+                changed.append(Path(str(ref["path"])).name)
+    return changed
+
+
+def supersede(folder: Path, run: str, reason: str) -> dict:
+    """Retire a queued run no worker has taken, with its reason; its record stays."""
+    runtime_path = folder / "results" / run / "runtime.yaml"
+    runtime = _load(runtime_path)
+    if runtime.get("status") != "planned":
+        raise ActionError(f"{run}: receipt is {runtime.get('status')}; only a queued run can be replaced")
+    runtime.update(status="superseded", failure=reason, finished_at=_now())
+    _dump(runtime_path, runtime)
+    return {"run": run, "status": "superseded"}
+
+
+def requeue(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
+    """Queue again: replace an item's out-of-date queued run with a fresh one that pins today's files.
+
+    A person asks for this on the page after an insight page changed under a queued
+    run (audit H3); the old run is kept as superseded, with the files that changed."""
+    stale = [r for r in open_runs(runs) if r["status"] == "planned" and stale_inputs(folder, r["id"])]
+    if not stale:
+        raise ActionError("no queued run of this item is out of date")
+    old = stale[-1]
+    changed = stale_inputs(folder, old["id"])
+    supersede(folder, old["id"], "an input changed after it was queued: " + ", ".join(changed))
+    rest = [dict(r, status="superseded") if r["id"] == old["id"] else r for r in runs]
+    if old["kind"] == "verify":
+        return {**queue_verify(folder, stem, item, rest), "replaces": old["id"], "changed": changed}
+    ticket = _load(folder / "runs" / f"{old['id']}.yaml")
+    base = next((i for i in ticket.get("inputs") or [] if isinstance(i, dict) and i.get("role") == "base"), None)
+    note = next((i for i in ticket.get("inputs") or [] if isinstance(i, dict) and i.get("role") == "feedback"), None)
+    feedback = ""
+    if note and (folder / str(note["path"])).is_file():
+        feedback = (folder / str(note["path"])).read_text(encoding="utf-8").split("\n\n", 2)[-1].strip()
+    out = queue_generate(folder, stem, item, rest, feedback=feedback,
+                         base_run=str(base.get("run_id") or "") if base else "")
+    return {**out, "replaces": old["id"], "changed": changed}
 
 
 # ------------------------------------------------------------ batch + queue --
@@ -511,8 +683,10 @@ def queue_all(folder: Path, stem: str, items: list[dict]) -> dict:
     for item in items:
         if item["state"] in ("commissioned", "revise requested"):
             runs.append(queue_generate(folder, stem, item, item["runs"])["run"])
-        elif item["state"] == "generated":
+        elif item["state"] in ("generated", "verify invalid"):
             runs.append(queue_verify(folder, stem, item, item["runs"])["run"])
+        elif item["state"] == "queued run out of date":
+            runs.append(requeue(folder, stem, item, item["runs"])["run"])
         else:
             skipped.append(item["id"])
     if not runs:
@@ -548,17 +722,29 @@ _COUNSEL = re.compile(r"^\s*(W\d+)\s+(DO NOT|DO)\s+(.+?)(?:\s{2,}\S.*)?$")
 
 
 def counsel_lines(text: str) -> list[dict]:
-    """The DO / DO NOT counsel lines of an insight page, in order."""
-    rows = []
+    """The DO / DO NOT counsel lines of an insight page, in order.  A rule that
+    wraps goes on at the column its DO started in; only that column is read,
+    so a side column's own wrap is not glued on (FW01's W3 used to end "on the")."""
+    rows, col = [], None
     for line in text.splitlines():
         hit = _COUNSEL.match(line)
         if hit:
-            rows.append({"id": hit.group(1), "do": hit.group(2) == "DO", "text": hit.group(3).strip().rstrip(".")})
+            rows.append({"id": hit.group(1), "do": hit.group(2) == "DO", "text": hit.group(3).strip()})
+            col = hit.start(2)
+        elif col and not line[:col].strip() and line[col:col + 1].strip():
+            rows[-1]["text"] += " " + re.split(r"\s{2,}", line[col:].strip())[0]
+        else:
+            col = None
+    for row in rows:
+        row["text"] = row["text"].rstrip(".")
     return rows
 
 
 def counsel_rules(text: str) -> list[str]:
-    """Acceptance rules implied by the counsel: every DO NOT becomes a plain 'no …' rule."""
+    """Acceptance rules implied by the counsel: every DO NOT becomes a 'does not …' rule.
+
+    Quote the phrase to ban ("does not say 'urgent'") and it compiles to an
+    ``excludes`` check; left unquoted, the reviewer judges it (semantic)."""
     return [f"does not {row['text'][0].lower() + row['text'][1:]}" for row in counsel_lines(text) if not row["do"]]
 
 

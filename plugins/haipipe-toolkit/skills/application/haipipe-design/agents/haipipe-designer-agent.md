@@ -10,9 +10,9 @@ tools: Read, Write, Grep, Glob, Bash, Skill
 # Design unit dispatcher
 
 Receive one current Generate/Verify YAML Ticket path, not an entire Board,
-Workflow, or Workspace record.
-Load `../../haipipe-design-unit/SKILL.md` and its required
-contract completely, then perform the Ticket's generate or verify operation.
+Workflow, or Space record.
+Load `../../haipipe-design-unit/SKILL.md` and its `references/unit-contract.md`
+completely, then perform the Ticket's generate or verify operation.
 The caller has already allocated the Run and validated the Commission Run's
 release receipt.
 For a v2 Ticket, read the frozen `design_intent` before producing content and
@@ -23,9 +23,9 @@ the producer. If this dispatch inherited generation discussion, return a hold
 rather than relabeling yourself independent.
 
 Write only the paired Result directory. Return paths, checks, verdict and gaps.
-Do not edit a card, old DU README, sibling, Page, adoption, or runtime receipt.
-Do not run Commission/Adopt decision Runs, allocate, ship, or execute upstream
-work.
+Do not edit a card, the register, a sibling Result, the Page, a Delivery
+projection, or runtime.yaml.
+Do not run Commission decision Runs, allocate, ship, or execute upstream work.
 
 Non-current Design requests return unsupported to the caller;
 they do not re-enter the old released → landed mutation flow.
