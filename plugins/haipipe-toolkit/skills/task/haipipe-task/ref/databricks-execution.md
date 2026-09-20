@@ -97,6 +97,42 @@ hold, the one route is an INLINE notebook run, driven by the ticket. *Proven.*
   `exit /b %errorlevel%` inside a parenthesized block expands before the block
   runs and always reports the value from before it.
 
+## The Task is the SUBJECT; the Runs are what you ask of it
+
+Let each level answer a different question, and keep one SUBJECT's answers in
+one Result folder:
+
+```text
+JOB    a set of subjects      the tables this Job covers
+TASK   a topic                what a reader would ask about together
+RUN    ONE subject            one table, measured every way at once
+```
+
+For a table census the Run is a TABLE, not a group of them: a group Run holds
+seven tables up when one is slow, and its Result folder mixes them. Do not
+make the Task the MEASUREMENT either - that splits one table's answers across
+two distant folders - and do not make the Task the table when there are a
+hundred of them, which buries the topics and declares a hundred bundle jobs.
+Measurements of one subject that are read together belong in one Run.
+
+Where that means a hundred Runs, GENERATE the tree from a Result the work
+already produced (here, the table catalog), and keep a `--check` mode that
+fails when the tree is stale. A generated tree can also be audited as a whole:
+the generator refuses a subject the catalog has and the map does not, which a
+hand-written tree cannot promise. Order the Tasks by the reading order of the
+domain, not the alphabet, and put that order in the map beside the membership.
+
+**Keep the `rNN_`, and make what follows the subject's own name, unchanged.**
+`runs/r02_encounter_dx.cmd` for the table `encounter_dx`: the number keeps the
+Run inside the address grammar and orders the batch, and the rest is the
+subject's name verbatim, so the ticket, the config and the Result folder cannot
+drift from the thing they measure.
+
+Retiring that structure does not mean deleting it. A Task whose Results were
+already fetched keeps them: move it beside the Tasks that supersede it, freeze
+the inputs it reads so a published number stays reproducible, and say on its
+Page that it is retired.
+
 ## Results
 
 ```text
@@ -140,9 +176,10 @@ and the Run still fails.
   from whatever exists on the day.
 - Only `run_all` calls other batches, so no list is written twice, and a Job's
   `run_all` must reach every ticket that Job has.
-- Order a batch by what a reader needs complete. A table group runs its shape,
-  columns and time-coverage Runs back to back; a roll-up that combines the
-  groups runs after them, and only when the Runs it reads have passed.
+- Order a batch by what a reader needs complete, and by what it costs. A census
+  whose Run is one TABLE orders its batch smallest table first, so most of the
+  Job is done before the slow tables start; a roll-up that combines Runs comes
+  after them, and only when the Runs it reads have passed.
 - Each ticket opens and closes with a full-width rule naming its Run and its
   outcome (`OK`, `FAILED`, `FETCH-FAILED`, `STILL-RUNNING`). Each batch has its
   own rule and closes with a table of every Run's outcome.
