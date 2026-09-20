@@ -21,28 +21,20 @@ class BoardV1ContractTest(unittest.TestCase):
         self.assertIsNotNone(match)
         version = match.group(1)
         self.assertEqual(version.split(".", 1)[0], "1")
-        self.assertTrue(changelog.startswith(f"## {version} · 2026-09-13\n"))
+        self.assertRegex(changelog, rf"\A## {re.escape(version)} · \d{{4}}-\d{{2}}-\d{{2}}\n")
 
-    def test_page_compatibility_surfaces_resolve_to_one_canonical_family(self):
+    def test_page_family_has_one_canonical_home_and_no_board_alias(self):
         canonical = SKILLS / "page"
-        self.assertTrue(
-            (BOARD_FAMILY / "haipipe-page" / "SKILL.md").samefile(
-                canonical / "haipipe-page" / "SKILL.md"
-            )
-        )
-        self.assertTrue(
-            (BOARD_FAMILY / "haipipe-page" / "ref").samefile(
-                canonical / "haipipe-page" / "ref"
-            )
-        )
         for name in (
+            "haipipe-page",
             "haipipe-plugin",
             "haipipe-sentence",
             "page-workflows",
             "page-plugins",
         ):
-            self.assertTrue((BOARD_FAMILY / name).is_symlink(), name)
-            self.assertEqual((BOARD_FAMILY / name).resolve(), (canonical / name).resolve())
+            self.assertTrue((canonical / name).is_dir(), name)
+            self.assertFalse((BOARD_FAMILY / name).exists(), f"board/{name} alias is retired")
+        self.assertEqual(sorted(p.name for p in BOARD_FAMILY.iterdir() if p.is_symlink()), [])
 
     def test_active_board_docs_link_directly_to_canonical_page_contracts(self):
         links = {

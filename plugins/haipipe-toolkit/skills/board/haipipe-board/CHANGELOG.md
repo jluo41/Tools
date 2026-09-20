@@ -1464,7 +1464,7 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   (extract-only subset of the paper's `0-*.bib` → `bibex/<stem>.bib` + cards;
   never invents an entry, per citation-craft.md). `--paper-root` is discovered
   by walking up for a `0-*.bib`; pages outside a paper export cite-less.
-- The contract itself is the new `board/haipipe-plugin` skill
+- The contract itself is the new `page/haipipe-plugin` skill
   (SKILL.md + ref/roster.md): a plugin is STORAGE + SURFACE + WRITER +
   BOUNDARY, named once in the roster.
 
@@ -2508,7 +2508,7 @@ Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are t
 
 `src/page_phase.py` gains `owed_ledger()` and `render_ledger()`;
 `cli/pagephase.py` gains `--owed`. Full rationale in
-`../page-workflows/haipipe-page-workflow/CHANGELOG.md` 0.20.0.
+`../../page/page-workflows/haipipe-page-workflow/CHANGELOG.md` 0.20.0.
 
 - `_cards()` and `_displays()` now carry `path` and `checked`; a new `_bibex()`
   returns one row per ENTRY where only a count existed before.

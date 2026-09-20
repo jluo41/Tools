@@ -243,7 +243,7 @@ class WordTitleTest(unittest.TestCase):
     def test_writer_has_a_real_title_style(self):
         writer = (
             Path(__file__).resolve().parents[3]
-            / "board" / "page-plugins" / "_shared-export" / "md2docx.py"
+            / "page" / "page-plugins" / "_shared-export" / "md2docx.py"
         )
         spec = importlib.util.spec_from_file_location("board_md2docx", writer)
         module = importlib.util.module_from_spec(spec)
@@ -256,7 +256,7 @@ class WordTitleTest(unittest.TestCase):
     def test_writer_detexes_long_comparison_commands_without_residue(self):
         writer = (
             Path(__file__).resolve().parents[3]
-            / "board" / "page-plugins" / "_shared-export" / "md2docx.py"
+            / "page" / "page-plugins" / "_shared-export" / "md2docx.py"
         )
         spec = importlib.util.spec_from_file_location("board_md2docx_detex", writer)
         module = importlib.util.module_from_spec(spec)
@@ -343,7 +343,7 @@ class WordTitleTest(unittest.TestCase):
     def test_word_parser_reads_tabularx_without_leaking_tex_scaffolding(self):
         writer = (
             Path(__file__).resolve().parents[3]
-            / "board" / "page-plugins" / "_shared-export" / "md2docx.py"
+            / "page" / "page-plugins" / "_shared-export" / "md2docx.py"
         )
         spec = importlib.util.spec_from_file_location("board_md2docx_table", writer)
         module = importlib.util.module_from_spec(spec)

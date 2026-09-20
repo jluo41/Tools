@@ -143,7 +143,9 @@ discovery             Search, Review, and Synthesize external evidence
 run                   neutral Level-4 Run/Result contract
 ideation              evidence bundles and research directions
 paper                 academic composition and Page Types
-application           non-academic Page consumers
+insight               evidence-led understanding: I0 Meta -> I5 Wisdom
+design                creative production: Brief -> Commission -> Verify
+application           the Insight/Design join and its delivery channels
 display / writing     rendering and prose engines
 ```
 

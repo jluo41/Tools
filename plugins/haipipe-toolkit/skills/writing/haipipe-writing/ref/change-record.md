@@ -1,6 +1,6 @@
 # The change record: `✎`
 
-**This file does not own the sentence apparatus.** `board/haipipe-sentence`
+**This file does not own the sentence apparatus.** `page/haipipe-sentence`
 does, and `QB4 §3.3.3` states the taxonomy. Read those first. What follows is
 only the part that belongs to this skill: how a change record is COMPUTED and
 WHERE it is placed.

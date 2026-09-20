@@ -50,7 +50,7 @@ Evidence Workspace binds exact Supporting Run ids and Local Run/Result receipts;
 Task and Discovery never write consumer prose.
 
 The neutral spine is `skills/run/haipipe-run/SKILL.md`; Page evidence wiring is
-owned by `skills/board/page-plugins/haipipe-plugin-outline/`.
+owned by `skills/page/page-plugins/haipipe-plugin-outline/`.
 
 
 Commands
@@ -71,7 +71,9 @@ Commands
 /haipipe-ideation     the semantic bridge — evidence bundle | ideas | Paper handoff
 /haipipe-paper        thin academic router over Ideation, Story, Venue,
                       Section, and Round Pages (Roadmap/Narrative retired 260907)
-/haipipe-application  the non-academic consumer — same model, venue-gated
+/haipipe-insight      the evidence side — I0 Meta → I5 Wisdom, signed handoff
+/haipipe-design       the creative side — Brief → Commission → Generate → Verify
+/haipipe-application  the join of the two — same model, venue-gated
 ```
 
 Discovery work is addressed as discoveries → bNN Block → jNN Job → tNN Task
@@ -120,12 +122,14 @@ skills/
 ├── discovery/         🔍 external evidence — Search | Review | Synthesize + Run/Result
 ├── ideation/          💡 semantic research directions over Task + Discovery evidence
 ├── paper/             📄 academic composition over six Page Types
-├── application/       📱 non-academic consumer — venue-gated
+├── insight/           🔎 evidence-led understanding — I0 Meta → I5 Wisdom
+├── design/            🎨 creative production — Brief → Commission → Verify
+├── application/       📱 the Insight/Design join — venue-gated delivery
 ├── board/             🧭 Board + Page Type/Phase contracts + producer/reviewer/orchestrator
 ├── diagrams/          🗺 working design Boards; kept outside delivery skills
 ├── project/           📦 container setup
 ├── 0_utils/ 0_connect/   utilities and connectors
-└── insight/           🪦 RETIRED 2026-07-12 — tombstone only
+└── run/               🎟 the neutral Level-4 Run/Result contract
 ```
 
 **There is no `_archive/` in this tree, and that is deliberate** (JL 260822:
@@ -141,7 +145,7 @@ Where to read next
 
 ```
 skills/run/haipipe-run/SKILL.md  the neutral Level-4 Run/Result contract
-skills/board/page-workflows/     the Page Context → Outline → Evidence → Content → Check loop
+skills/page/page-workflows/     the Page Context → Outline → Evidence → Content → Check loop
 skills/STRUCTURE.md      the skill-tree mental model
 skills/board/README.md   the first-class Board family and its reviewer
 ```

@@ -285,7 +285,7 @@ boundary. Historical `division-writing` Runs remain readable history; new
 Content commissions use paragraph targets without renaming old artifacts.
 Design's caller-owned YAML Ticket dialect and commission/generate/verify/adopt
 gates are in
-`../../application/haipipe-design-workflow/references/run-profile.md`;
+`../../design/haipipe-design-workflow/references/run-profile.md`;
 the worker is `haipipe-design-unit`, not another Folder owner.
 The Run Spec supplies the target grammar and the worker/dialect supplies the
 kind-specific Result gate. A Workflow may extend the vocabulary only when the

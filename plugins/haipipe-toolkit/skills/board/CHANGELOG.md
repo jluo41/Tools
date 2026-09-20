@@ -108,7 +108,7 @@ by this sweep (`test_aims_state`, `test_home`, `test_status`).
 ## 2026-08-15 · The display plugin gets its skill; the roster catches up
 
 `page-plugins/haipipe-plugin-display/` joins draw, latex, and word (JL 260815:
-"we might have the page-plugins in skills/board/page-plugins"). Display is the
+"we might have the page-plugins in skills/page/page-plugins"). Display is the
 first FAMILY-WRITER variant: its writer is a routing decision across five
 renderer kinds plus the human `accepted:` tick, which is exactly the knowledge
 a roster row cannot hold and QPf5 could only hold with the board open. The

@@ -60,7 +60,8 @@ PLACEHOLDER = re.compile(r"^<[^>]+>/")
 # A cross-skill citation is different: it names a real file, a reader is meant
 # to open it, and if it does not resolve the instruction cannot be followed.
 FAMILIES = {"paper", "board", "display", "writing", "task", "discovery",
-            "application", "project", "0_connect", "0_utils", "skills"}
+            "insight", "design", "application", "project", "page", "run",
+            "ideation", "0_connect", "0_utils", "skills"}
 
 
 def cited_paths(text):

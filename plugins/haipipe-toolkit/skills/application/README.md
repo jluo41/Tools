@@ -45,15 +45,19 @@ are new Design revise Runs. Explanatory Page edits are Page Writing Steps.
 ## Active Design skills
 
 ```text
-application/
+design/
 ├── haipipe-design/                stable DS Folder owner
 ├── haipipe-design-workflow/       Commission → Generate → Verify → Adopt
 ├── haipipe-design-brief/          canonical Brief Folder owner
-└── haipipe-design-unit/           rdNN worker, not a Folder phase
+├── haipipe-design-unit/           rdNN worker, not a Folder phase
+└── field-tests/                   recorded clean-break trials
 ```
 
-Insight I0–I5 phase skills remain under `application/workflow-phases/`. Design
-has no D0–D5 phase skills, compatibility readers, or Design thread plugin.
+Insight and Design are now their own top-level buckets: `skills/insight/`
+(with the I0–I5 phase skills under `insight/workflow-phases/`) and
+`skills/design/`. This README covers the join that `haipipe-application`
+owns. Design has no D0–D5 phase skills, compatibility readers, or Design
+thread plugin.
 
 ## Runtime
 

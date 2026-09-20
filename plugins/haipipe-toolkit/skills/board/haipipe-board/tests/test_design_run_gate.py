@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 from cli.check import Report, check_design_family
 
-HELPER = (Path(__file__).resolve().parents[3] / "application"
+HELPER = (Path(__file__).resolve().parents[3] / "design"
           / "haipipe-design-unit" / "tests" / "test_unit.py")
 spec = importlib.util.spec_from_file_location("unit_fixtures", HELPER)
 fixtures = importlib.util.module_from_spec(spec)

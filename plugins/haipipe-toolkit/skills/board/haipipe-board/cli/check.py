@@ -1906,7 +1906,7 @@ def check_native_design_runs(d, rep):
                    if p.is_dir())
     if not folders:
         return
-    checker = (HERE.parents[1] / "application" /
+    checker = (HERE.parents[1] / "design" /
                "haipipe-design-unit" / "scripts" / "check_unit.py")
     try:
         spec = importlib.util.spec_from_file_location("design_unit_gate", checker)

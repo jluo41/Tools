@@ -33,7 +33,7 @@ _READS = re.compile(r"(?im)^\s*reads:\s*(.*?)\s*$")
 _ITEM_HEAD = re.compile(r"^##\s+(ITEM\d+)\s*[·:-]\s*(.+?)\s*$")
 _FIELD = re.compile(r"^([a-z][a-z-]*):\s*(.*?)\s*$")
 _SIGNED = re.compile(r"(?im)^\s*signed:\s*(✅|⬜)\s*(.*?)\s*$")
-_UNIT_CHECKER = (Path(__file__).resolve().parents[3] / "application"
+_UNIT_CHECKER = (Path(__file__).resolve().parents[3] / "design"
                  / "haipipe-design-unit" / "scripts" / "check_unit.py")
 _STEP = {"commission": "Commission", "generate": "Generate",
          "verify": "Verify", "adopt": "Delivery"}  # adopt is legacy storage only

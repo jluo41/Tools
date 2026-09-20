@@ -23,7 +23,7 @@ HERE = Path(__file__).resolve().parent
 SKILLS = HERE.parents[2]
 DEMO_BOARD = SKILLS / "diagrams" / "DesignPlugin-Demo-260916-DesignBoard"
 DEMO_INSIGHT = SKILLS / "diagrams" / "DesignPlugin-Demo-260916-InsightBoard"
-UNIT_CHECKER = SKILLS / "application" / "haipipe-design-unit" / "scripts" / "check_unit.py"
+UNIT_CHECKER = SKILLS / "design" / "haipipe-design-unit" / "scripts" / "check_unit.py"
 
 STAGES = ("commissioned", "generate-failed", "generated", "verified", "adopted", "declined")
 HANDOFF_REL = "../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md"

@@ -99,7 +99,7 @@ Domain category extensions may add a page-folder skill beside these five when
 the domain needs one cross-lane Page surface; they are not generic categories
 and remain governed by their domain owner. For example,
 `page-plugins/haipipe-plugin-design` presents the Design Folder, while
-`application/haipipe-design-unit` still owns the Generate and Verify Results
+`design/haipipe-design-unit` still owns the Generate and Verify Results
 and their writer. `subjective-label/haipipe-plugin-labeling` follows the same extension
 pattern. A domain extension never promotes its internal lanes to duplicate
 top-level plugins.

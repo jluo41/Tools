@@ -38,8 +38,8 @@ from live import design_actions as acts  # noqa: E402
 from live.designboard import DESIGN_GROUP, is_design_board  # noqa: E402
 from live.design import design_snapshot  # noqa: E402
 
-AGENT_DOC = HERE.parents[2] / "application" / "haipipe-design" / "agents" / "haipipe-designer-agent.md"
-UNIT_SKILL = HERE.parents[2] / "application" / "haipipe-design-unit" / "SKILL.md"
+AGENT_DOC = HERE.parents[2] / "design" / "haipipe-design" / "agents" / "haipipe-designer-agent.md"
+UNIT_SKILL = HERE.parents[2] / "design" / "haipipe-design-unit" / "SKILL.md"
 
 
 def folders(board: Path) -> list[Path]:

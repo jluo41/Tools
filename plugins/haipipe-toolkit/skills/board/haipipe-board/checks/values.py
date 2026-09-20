@@ -52,7 +52,7 @@ from src.page_phase import ORDER as PAGE_PHASE_ORDER
 
 # ── the recipes, one per value id ────────────────────────────────────────────
 def _phase_census():
-    d = SKILLS / "board/page-workflows"
+    d = SKILLS / "page/page-workflows"
     contracts = [d / f"haipipe-page-{phase.lower()}/SKILL.md"
                  for phase in PAGE_PHASE_ORDER]
     cards = (d / "haipipe-page-workflow/ref/phase-cards.md").read_text(

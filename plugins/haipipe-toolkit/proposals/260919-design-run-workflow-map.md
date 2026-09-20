@@ -227,9 +227,9 @@ already have unrelated working-tree edits, which this proposal leaves intact.
 
 | Skill / source | Role; cells | Observed version / lines | Static finding / proposed repair | Field-test for this map |
 |---|---|---|---|---|
-| [haipipe-design](../skills/application/haipipe-design/SKILL.md) | Contract; `commission@goal`, `generate@goal`, `verify@goal`, `generate@delivery`, `verify@delivery` | 0.4.0 / 301 | Owns Item and five Spaces; proposed expanded input freeze/assessment needs contract alignment | ? Not run |
-| [haipipe-design-workflow](../skills/application/haipipe-design-workflow/SKILL.md) | Machine; `commission@design`, `commission@insight` | 0.4.0 / 190 | Three current Run types; agent HOLD and cause-specific recovery are missing from current routes | ? Not run |
-| [haipipe-design-unit](../skills/application/haipipe-design-unit/SKILL.md) | Craft; `generate@design`, `generate@insight`, `verify@design`, `verify@insight` | 0.4.0 / 137 | Existing production/review worker; add explicit choice/source-use deliverables and remove stale adoption language | ? Not run |
+| [haipipe-design](../skills/design/haipipe-design/SKILL.md) | Contract; `commission@goal`, `generate@goal`, `verify@goal`, `generate@delivery`, `verify@delivery` | 0.4.0 / 301 | Owns Item and five Spaces; proposed expanded input freeze/assessment needs contract alignment | ? Not run |
+| [haipipe-design-workflow](../skills/design/haipipe-design-workflow/SKILL.md) | Machine; `commission@design`, `commission@insight` | 0.4.0 / 190 | Three current Run types; agent HOLD and cause-specific recovery are missing from current routes | ? Not run |
+| [haipipe-design-unit](../skills/design/haipipe-design-unit/SKILL.md) | Craft; `generate@design`, `generate@insight`, `verify@design`, `verify@insight` | 0.4.0 / 137 | Existing production/review worker; add explicit choice/source-use deliverables and remove stale adoption language | ? Not run |
 | [haipipe-run](../skills/run/haipipe-run/SKILL.md) | Contract; `commission@runtime`, `generate@runtime`, `verify@runtime` | 0.26.1 / 689 | Preserves identity/receipt invariants; generic Design examples still mention retired Adopt | ? Not run |
 
 These are semantic owner bindings, not new browser presenters. The existing

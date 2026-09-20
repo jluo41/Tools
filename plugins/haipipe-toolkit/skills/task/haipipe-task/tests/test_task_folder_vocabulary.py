@@ -21,7 +21,7 @@ class TaskFolderVocabularyTest(unittest.TestCase):
         paths = (
             SKILL / "SKILL.md",
             TOOLKIT_SKILLS / "board" / "haipipe-folder" / "SKILL.md",
-            TOOLKIT_SKILLS / "board" / "haipipe-page" / "SKILL.md",
+            TOOLKIT_SKILLS / "page" / "haipipe-page" / "SKILL.md",
         )
         for path in paths:
             with self.subTest(path=path):

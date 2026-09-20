@@ -345,7 +345,7 @@ They are not invented here. They were ruled by JL while rewriting `QB4` and they
 
 ## 🔗 6 · It plugs into an apparatus that already exists
 
-A `>` line under a sentence belongs to that sentence. `board/haipipe-sentence`
+A `>` line under a sentence belongs to that sentence. `page/haipipe-sentence`
 owns that contract, and `QB4 §3.3.3` names its three kinds: eight ⚑ typed lanes, a
 💬 comment, and the ✎ change record this skill writes.
 

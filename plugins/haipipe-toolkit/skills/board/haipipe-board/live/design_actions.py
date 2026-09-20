@@ -465,7 +465,7 @@ def complete_run(folder: Path, run: str, started_at: str = "") -> dict:
     gate's own words when it does not.  It never edits the Result.
     """
     import importlib.util
-    checker = Path(__file__).resolve().parents[3] / "application" / "haipipe-design-unit" / "scripts" / "check_unit.py"
+    checker = Path(__file__).resolve().parents[3] / "design" / "haipipe-design-unit" / "scripts" / "check_unit.py"
     spec = importlib.util.spec_from_file_location("design_unit_gate", checker)
     gate = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(gate)

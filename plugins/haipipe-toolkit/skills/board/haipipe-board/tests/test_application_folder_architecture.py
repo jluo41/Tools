@@ -105,11 +105,11 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
 
     def test_runs_is_optional_presenter_beneath_task_face(self):
         self.assertFalse(
-            (self.skills / "board" / "page-plugins"
+            (self.skills / "page" / "page-plugins"
              / "haipipe-plugin-execution").exists()
         )
         runs = (
-            self.skills / "board" / "page-plugins"
+            self.skills / "page" / "page-plugins"
             / "haipipe-plugin-runs" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("Runs, not Execution", runs)
@@ -224,7 +224,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
 
     def test_render_has_folder_native_writer_and_optional_adapter(self):
         render = (
-            self.skills / "board" / "page-plugins"
+            self.skills / "page" / "page-plugins"
             / "haipipe-plugin-delivery" / "ref" / "render.md"
         ).read_text(encoding="utf-8")
         self.assertIn("haipipe-application/fn/render.md", render)
@@ -278,7 +278,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
 
     def test_probe_lane_is_legacy_read_only(self):
         workflow = (
-            self.skills / "board" / "page-workflows"
+            self.skills / "page" / "page-workflows"
             / "haipipe-page-workflow" / "SKILL.md"
         ).read_text(encoding="utf-8")
         phase = (
@@ -364,7 +364,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
 
     def test_page_run_is_folder_first_and_probe_is_retired(self):
         workflow = (
-            self.skills / "board" / "page-workflows"
+            self.skills / "page" / "page-workflows"
             / "haipipe-page-workflow" / "SKILL.md"
         ).read_text(encoding="utf-8")
         self.assertIn("authoritative `workflow/phase.yaml`", workflow)
@@ -512,7 +512,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn("| R01 |", task_template)
 
         item_table = (
-            self.skills / "board" / "page-plugins" / "haipipe-plugin-outline"
+            self.skills / "page" / "page-plugins" / "haipipe-plugin-outline"
             / "ref" / "item-table.md"
         ).read_text(encoding="utf-8")
         self.assertIn("exactly one owner-native", item_table)
@@ -608,11 +608,11 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
 
     def test_presenters_route_pagex_and_render_to_their_real_owners(self):
         outline = (
-            self.skills / "board" / "page-plugins"
+            self.skills / "page" / "page-plugins"
             / "haipipe-plugin-outline" / "SKILL.md"
         ).read_text(encoding="utf-8")
         delivery = (
-            self.skills / "board" / "page-plugins"
+            self.skills / "page" / "page-plugins"
             / "haipipe-plugin-delivery" / "SKILL.md"
         ).read_text(encoding="utf-8")
         live_delivery = (
@@ -627,7 +627,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertNotIn("route pending", live_delivery)
 
     def test_generic_page_plugins_keep_five_categories_and_allow_domain_extensions(self):
-        root = self.skills / "board" / "page-plugins"
+        root = self.skills / "page" / "page-plugins"
         found = {
             path.parent.name
             for path in root.glob("*/SKILL.md")
@@ -665,7 +665,7 @@ class ApplicationFolderArchitectureTest(unittest.TestCase):
         self.assertIn("Page-local meetings are retired", serve)
 
     def test_content_has_no_phase_redirect_skills_or_agents(self):
-        workflows = self.skills / "board" / "page-workflows"
+        workflows = self.skills / "page" / "page-workflows"
         self.assertFalse((workflows / "haipipe-page-draft").exists())
         self.assertFalse((workflows / "haipipe-page-revise").exists())
         self.assertFalse((workflows / "agents" / "haipipe-page-draft-agent.md").exists())
