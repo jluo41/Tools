@@ -73,7 +73,6 @@ Commands
                       Section, and Round Pages (Roadmap/Narrative retired 260907)
 /haipipe-insight      the evidence side — I0 Meta → I5 Wisdom, signed handoff
 /haipipe-design       the creative side — Brief → Commission → Generate → Verify
-/haipipe-application  the join of the two — same model, venue-gated
 ```
 
 Discovery work is addressed as discoveries → bNN Block → jNN Job → tNN Task
@@ -124,7 +123,6 @@ skills/
 ├── paper/             📄 academic composition over six Page Types
 ├── insight/           🔎 evidence-led understanding — I0 Meta → I5 Wisdom
 ├── design/            🎨 creative production — Brief → Commission → Verify
-├── application/       📱 the Insight/Design join — venue-gated delivery
 ├── board/             🧭 Board + Page Type/Phase contracts + producer/reviewer/orchestrator
 ├── diagrams/          🗺 working design Boards; kept outside delivery skills
 ├── project/           📦 container setup

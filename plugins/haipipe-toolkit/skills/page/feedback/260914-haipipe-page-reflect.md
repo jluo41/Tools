@@ -70,7 +70,7 @@ The wanted change in this session is the `reflect` function itself. While
 investigating it, the assistant also read (and I verified still exist)
 `Tools/plugins/haipipe-toolkit/skills/page/haipipe-page/fn/runs.md`,
 `fn/serve.md`,
-`Tools/plugins/haipipe-toolkit/skills/application/haipipe-application/fn/digest.md`,
+`skills/application/haipipe-application/fn/digest.md` (retired 2026-09-20),
 `fn/feedback.md`,
 `Tools/plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow/ref/post-run-analysis.md`,
 and

@@ -82,7 +82,7 @@ Read `ref/project-structure.md` before creating, auditing, or updating a Project
 tasks/          → haipipe-task       BJTR execution; Task = Page; Run = identity
 discoveries/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
 papers/         → haipipe-paper      academic consumer
-applications/   → haipipe-application
+applications/   → haipipe-insight + haipipe-design
 diagram/        → haipipe-board / haipipe-page plus Project story surfaces
 external/       → this skill owns only the read-only root boundary
 ```

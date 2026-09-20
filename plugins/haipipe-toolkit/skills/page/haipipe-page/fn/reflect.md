@@ -40,7 +40,6 @@ skill revision pass → fresh-subagent field test
 | Function | Reads | Writes | Judges |
 |---|---|---|---|
 | **reflect** (this) | one whole Page session, both sides of every turn | one record per session under `skills/page/feedback/` | what the person wanted from the Page machinery |
-| `haipipe-application/fn/digest.md` | a session's human turns | routed items in per-skill inboxes, after a confirm gate | tool/skill gripes across the Application family |
 | `haipipe-page-workflow/ref/post-run-analysis.md` | one closed Page Run journal | one analysis Task Result | preference signals inside that Run |
 | Writing Step (`interactive-writing-run.md`) | one feedback message | the next Step in the open Run | nothing beyond the paragraph |
 

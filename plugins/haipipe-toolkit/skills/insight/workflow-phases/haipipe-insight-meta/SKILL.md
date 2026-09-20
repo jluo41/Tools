@@ -47,7 +47,7 @@ Folders owned by I1, not divisions of Meta.
 - accepted Task/Discovery Run Results, bound through full Supporting Run ids,
   or governed page-local static sources frozen in Local Input;
 - source versions, unit/grain, population, time window, and refresh clocks;
-- the optional partition proposal and shared thresholds from `../../../application/haipipe-application/ref/partition.md`.
+- the optional partition proposal and shared thresholds from `../../haipipe-insight/ref/partition.md`.
 
 ## Page Face
 
@@ -88,6 +88,6 @@ partition register plus shared thresholds. Do not hand it a preferred question.
 ## Files
 
 - Folder Page: `0-MT-meta/MT00-meta/MT00-meta.md`
-- Shared partition law: `../../../application/haipipe-application/ref/partition.md`
+- Shared partition law: `../../haipipe-insight/ref/partition.md`
 - Page adapter: `../../haipipe-insight/ref/page-v2-adapter.md`
 - This phase owns no private scripts.

@@ -67,7 +67,7 @@ Resolve the route in this order:
 | Signal | Route | First owner to load | Resulting unit |
 |---|---|---|---|
 | explicit `task` | Task-side | `haipipe-task` → `fn/insight.md` → `haipipe-page-insight` | one topic/data Page and its `riNN` items |
-| explicit `application` | Application | `haipipe-application` → this door → `haipipe-insight-workflow` | one InsightBoard cell through I0-I5 |
+| explicit `application` | Application | this door → `haipipe-insight-workflow` | one InsightBoard cell through I0-I5 |
 | an existing `*-InsightBoard` or Application root | Application | same Application route | existing board status or requested verb |
 | an existing Task Board, dataset-first topic, or bare topic | Task-side | same Task route | create/resume a neutral Insight Page |
 | ambiguous path/context | stop and ask for the scope | neither | never create a duplicate or guess an audience |
@@ -105,13 +105,10 @@ haipipe-page-insight          Task-side topic/data Page, item, RI, and DIKW/RF R
 haipipe-insight-meta         the head: source inventory only, holds NO question
 haipipe-insight-question     the four registers MT01-MT04: asked and tracked, never concluded
 haipipe-insight-data/-information/-knowledge/-wisdom     what each rung IS
-haipipe-application           the umbrella keeps ref/partition.md (the partition grammar's single
-                              source) and fn/meta.md + fn/chain.md, the page-level procedures
 haipipe-page-workflow         the loop every page here runs, like every page anywhere
 haipipe-insight-workflow      the lane's RunType/Runtime controller: I0-I5,
                               GI0-GI6, the CELL frontier, dispatch, receipts, climb order
 haipipe-folder                the shared two-face Folder contract
-haipipe-application-workflow  cross-board handoffs only; no duplicate Insight RunTypes
 ```
 
 Read `ref/page-v2-adapter.md` whenever creating, reopening, or checking a rung
@@ -163,7 +160,7 @@ a new question              ──▶ a new chain INSIDE the board
 a subgroup of the extract   ──▶ a PARTITION inside the board, never a board
 a subgroup + SPLIT verdict  ──▶ MAY become a child board · the verdict is its birth
                                 certificate, necessary and not sufficient: the child
-                                still needs its own consumer (../../application/haipipe-application/ref/partition.md)
+                                still needs its own consumer (ref/partition.md)
 ```
 
 Re-extracting a subgroup's rows into their own parquet does not make them "a new source extract": a new extract is new SCOPE — rows or fields the old one did not carry — never the same rows re-cut. The child-board path always runs through the SPLIT verdict, and a re-extract cannot launder around it.
@@ -220,7 +217,7 @@ PARTITION-MAJOR · when each subgroup must produce its OWN K claims and W counse
                                            letters sort last (legacy: 9-X-cross/)
 ```
 
-The layout is chosen once, at scaffold; `../../application/haipipe-application/ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page declares its typed Evidence Items in `outline/` and binds Supporting and Local Runs; Meta and the four registers own none, and no flat run bank exists. Legacy probe paths are read-only migration input and are never created by new work. `A<NN>_` is only a project-local ordering option before the subject; the canonical shape stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
+The layout is chosen once, at scaffold; `ref/partition.md` stays the partition grammar's single source (the mirror rule, reserved letters F/X/Q/S/M, the index-free X seat, the shared-threshold file, the POOL/SPLIT verdict conditioning every W — under POOL a non-template W page DEFERS by id and exports no handoff). Each rung page declares its typed Evidence Items in `outline/` and binds Supporting and Local Runs; Meta and the four registers own none, and no flat run bank exists. Legacy probe paths are read-only migration input and are never created by new work. `A<NN>_` is only a project-local ordering option before the subject; the canonical shape stays `<DataSubject>-InsightBoard` (umbrella §Runtime folders).
 
 ## The Folder RunTypes this door owns
 
@@ -277,7 +274,7 @@ Application's four domain authority transfers, two per door.
 
 The `run` verb's procedure. These six are VERBS, not RunTypes: none can name an
 authority page beyond the pages already on the board, which is the naming-law
-test (`haipipe-application-workflow` 0.4.0) — the design door's realize and
+test — the design door's realize and
 judge are verbs by the same test. The lane's RunTypes are the rungs themselves,
 named in `haipipe-insight-workflow`; a lap is how one register cell moves
 through them.

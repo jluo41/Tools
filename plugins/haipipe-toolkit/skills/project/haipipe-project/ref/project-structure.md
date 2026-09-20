@@ -87,7 +87,7 @@ tasks/ ──────────────────────┘    
 | `discoveries/` | external-evidence bank | `haipipe-discovery`; its current BJTR contract |
 | `diagram/` | navigation and interpretation surfaces | Project story plus project-level Boards and meetings |
 | `papers/` | academic consumer | `haipipe-paper`; may contain nested submodules |
-| `applications/` | non-academic consumer | `haipipe-application` |
+| `applications/` | non-academic consumer | `haipipe-insight` and `haipipe-design` |
 | `external/` | upstream dependency | pinned/read-only here; analysis belongs in Discovery or Task |
 
 An Insight is a Page type on the Task/Insights Board, not a sixth root world.
@@ -173,7 +173,7 @@ valid profile-owned structure.
 | `discoveries/` internals | `haipipe-discovery` |
 | Board/Page internals | `haipipe-board`, `haipipe-page`, owning workflow |
 | `papers/` internals | `haipipe-paper` |
-| `applications/` internals | `haipipe-application` |
+| `applications/` internals | `haipipe-insight`, `haipipe-design` |
 
 An audit at this layer checks only Project-root truth. It must not claim that a
 child world is internally compliant without invoking that world's checker.

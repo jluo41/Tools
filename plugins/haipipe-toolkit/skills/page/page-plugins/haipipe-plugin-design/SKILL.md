@@ -499,7 +499,7 @@ owner:
 | Verify a draft | `haipipe-design-workflow` → `Design.verify` (fresh reviewer) |
 | Hand off a passed design | Delivery Space (read only; no second decision) |
 | Sign an insight | the Insight plugin, never this tab |
-| Render a preview | `haipipe-application/fn/render.md` |
+| Render a preview | `haipipe-plugin-delivery/ref/render.md` |
 | Inspect Page acceptance | Page CHECK, not this plugin |
 
 Selecting an item or a Space is local presentation state and writes nothing.

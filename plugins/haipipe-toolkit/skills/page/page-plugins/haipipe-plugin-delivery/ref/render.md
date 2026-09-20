@@ -45,7 +45,7 @@ A render is regenerated, never edited. Someone will edit a rendered file directl
 ## ⚙️ Writer · one contract, optional UI adapter
 
 ```text
-haipipe-application/fn/render.md
+haipipe-plugin-delivery/ref/render.md
     render one division or all · stamp design/warrants/render · rebuild the
     derived preview · refuse when the venue is unpinned
 

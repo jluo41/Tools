@@ -48,7 +48,7 @@ the category  <page>/delivery/ (flat names are compatibility reads only)
 │                     explicit press → /_board/autodeck, claude -p); a missing
 │                     deck is a ghost until a person presses — never a view
 └── 📱 Render         saved recipient previews; build through the live
-                      Folder-native `haipipe-application/fn/render.md` writer;
+                      Folder-native `haipipe-plugin-delivery/ref/render.md` writer;
                       `POST /_board/render` is only an optional served adapter
 ```
 

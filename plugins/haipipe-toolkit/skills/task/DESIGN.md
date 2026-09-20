@@ -36,7 +36,7 @@ tasks/               /haipipe-task-*               task/    <- THIS SECTION
 
 📄 THE CONSUMERS — they ask; each owns its own evidence questions, privately
 paper/               /haipipe-paper-*              paper/
-applications/        /haipipe-application-*        application/
+applications/        /haipipe-insight, /haipipe-design   insight/ + design/
 ```
 
 The executors answer questions through the same Run/Result contract as every

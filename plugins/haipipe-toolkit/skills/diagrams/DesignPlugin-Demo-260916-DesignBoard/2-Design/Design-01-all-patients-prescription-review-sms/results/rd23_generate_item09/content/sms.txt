@@ -1,1 +1,0 @@
-Hi {FIRST_NAME}, it's Dr. {NAME}'s office. New prescription details require your review. Reply STOP to opt-out
