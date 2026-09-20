@@ -79,6 +79,13 @@ FIXED and the seam is a string.
                                        "basal insulin"
 ```
 
+When a WellDoc `MedicationID` reaches this door directly, the same E2_LEXICON
+hop is applied before the PK table. For example, `612997` resolves to the
+Lyumjev/lispro-aabc product and `553838` to Humalog/lispro; `PKSource` keeps
+the `lexicon:<id>` hop visible. An input that explicitly names alternatives,
+such as `Humalog (Lispro) or Novolog (Aspart)`, returns `PKConf=AMBIGUOUS`,
+keeps both canonical names in `InsulinResolved`, and writes no action curve.
+
 
 WHAT COMES BACK IS PARAMETERS, NOT A CURVE
 --------------------------------------------------------------------------------

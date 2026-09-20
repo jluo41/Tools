@@ -793,6 +793,12 @@ if __name__ == "__main__":
     a = ap.parse_args()
     config = load_server_config(a.root)
     config_dir = server_config_dir(a.root)
+    # A SPACE whose settings.env says JJLUO_NO_AUTH=1 chose the tailnet as its
+    # only gate, so a plain start keeps that choice instead of turning login on
+    # from JJLUO_AUTH_FILE. An explicit --auth-file or --public-read still wins.
+    if (not a.auth_file and not a.public_read
+            and config.get("JJLUO_NO_AUTH", "").lower() in {"1", "true", "yes"}):
+        a.no_auth = True
     host = (a.host or config.get("JJLUO_BIND_HOST") or
             config.get("JJLUO_TAILSCALE_ADDRESS") or "127.0.0.1").strip()
     port = a.port

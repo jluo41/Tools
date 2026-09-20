@@ -11,7 +11,7 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.108.0"
+  version: "0.109.0"
   last_updated: "2026-09-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -293,7 +293,11 @@ the raw notes and closes the Run only after a non-empty Summary is returned.
 Scratch writes only the selected Outline's `## Scratch` registry plus its
 paired `runs/` and `results/` receipt; it never edits `Draft:` prose. In
 Scratch Mode, saved raw Scratch remains visible by default even when the
-underlying body is hidden; `+` reopens its editor.
+underlying body is hidden; `+` reopens its editor. The Board-hosted Page Chat
+and terminal read the current Scratch registry at connect time, and a saved
+Scratch refreshes a held Page Chat's context. When the person asks to use
+Scratch, treat the notes as user-authored planning context and route any
+resulting wording through the normal Page workflow.
 
 The reader-facing completion packet is defined in
 `ref/user-check-packet.md`. The Draft Space includes a read-only Draft

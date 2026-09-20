@@ -7,11 +7,12 @@ description: >-
   Use for Task Board work, Plan → Build → Execute → Report, Run/Result
   interpretation, block or job iteration, and task-side Insight routing.
   Trigger: task, job, block, task folder, Task Board, plan, build, execute,
-  report, run, audit, insight, /haipipe-task.
+  report, run, audit, insight, GPU queue, GPU training, OOM retry,
+  /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.2.2"
-  last_updated: "2026-09-18"
+  version: "1.3.0"
+  last_updated: "2026-09-19"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -194,11 +195,38 @@ individual  haipipe-task-for-individual        haipipe-individual
 agent       haipipe-task-for-agent             haipipe-task-llm-engine
 endpoint    haipipe-task-for-endpoint          haipipe-end
 page        haipipe-task-for-page              one Board Page's evidence route
+gpu         haipipe-task-gpu                   GPU-bound queue and supervisor
 ```
 
 Stata execution routes wholly to `haipipe-task-for-stata`. A Block prefix does
 not encode type. Infer type from explicit input, then Task code, then request
-keywords. If none resolves, ask once or return `blocked` in auto mode.
+keywords. Route GPU scheduling to `haipipe-task-gpu`; keep model/training or
+evaluation semantics in the owning specialist. If none resolves, ask once or
+return `blocked` in auto mode.
+
+## GPU-bound execution
+
+GPU scheduling is a cross-cutting execution concern, not a new hierarchy
+level. A GPU-bound Task keeps the normal `tNN`/`rNN` identity and may use a
+Task-local `sbatch/` or Job-level supervisor when several Runs must execute in
+order. The supervisor owns queue state and child-process teardown; each Run
+still owns its config, Ticket, `runtime.yaml`, Result gate, and failure record.
+
+For GPU training, serving, sweeps, or evaluation, load
+`haipipe-task-gpu` before authoring the queue. Its required invariants are:
+
+- preflight the exact GPU set and never kill an unowned process;
+- launch the next Ticket after the previous receipt is terminal and CUDA
+  teardown is complete;
+- preserve failed Runs and use only finite, explicitly declared fallback
+  ladders for OOM or service failure;
+- distinguish a workload-specific safe concurrency from a speed-only ceiling;
+- record queue order, GPU snapshots, timestamps, exit codes, and fallback
+  decisions so “GPU stayed busy” never replaces evidence of correctness.
+
+No-idle is an execution objective, not permission to overlap exclusive Runs or
+to count a partial/failed benchmark as complete. Short gaps during weight
+loading, compilation, or teardown are expected and should be reported.
 
 ## Scope resolution
 

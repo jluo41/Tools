@@ -1,28 +1,37 @@
 ---
 name: task-table
 description: >-
-  Render a block/job/task/run tree as a two-lens table: the display lens says
-  what exists and has run, while the plan lens says what every task DEVELOPS,
+  Render a block/job/task/run tree as a structure tree plus two-lens tables: the display lens says
+  what exists, has run, and where each task stands (a status rolled up from its
+  runs), while the plan lens says what every task DEVELOPS,
   reads, and writes. Generated from the tree by ref/render_task_table.py, never
   typed: the three words a person owns (develops:, input:, output:) live on the
   task page and the table projects them, falling back to the code's own
   docstring headline and config out_* keys. Shape: a block is a section, a job
   is one table, a task folder is one row; Config Catalog, Runs Overview, and
   Store Slots are appendices. A config never multiplies a Task row.
-  Use when a tasks/ tree needs a one-page plan of what each task builds,
+  Use when a tasks/ tree needs a one-page tree and plan of what each task builds,
   when checking a table on disk still matches the tree, or when handing a
   restructured tree to a colleague. Not for a Phase/Cycle design contract
   (that is /workflow-table) and not for the naming audit (that is
   haipipe-task/ref/check_task_tree.py). Trigger: task table, what does each
-  task develop, render the tasks, TASK-TABLE.md, /task-table.
+  task develop, render the tasks, task status tree, TASK-TABLE.md, /task-table.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-05"
+  version: "0.5.0"
+  last_updated: "2026-09-18"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /task-table · task plan plus display, read off the tree
+
+Markdown output starts with a compact Structure Tree showing
+block → job → task → run, followed by the detailed projections. Every task in
+the tree carries a status rolled up from its runs (`✅ Done 7/7`), and every
+job and block counts its tasks by status. The tree is for orientation; the
+tables remain the detailed read projection. `--surface tree --depth task`
+prints only the tree, stopped at the task level: the answer to "what is the
+status?" for a whole block.
 
 `/workflow-table` is typed by a designer and says what MAY happen: one row per
 Phase/Cycle contract. `/task-table` is its mirror image: generated from disk,
@@ -35,6 +44,7 @@ What does this task build?   → Develops (one line)
 What does it read?           → Input
 What does it write?          → Output (a store slot, a results folder)
 Has it run?                  → tickets ↔ receipts, by status
+Where does the task stand?   → Status, one word rolled up from its runs
 Which job serves a store?    → mode ① self-serving / ② consumer-serving
 ```
 
@@ -43,7 +53,7 @@ The same row carries two lenses:
 | Lens | Question | Task Table fields | Authority |
 |---|---|---|---|
 | **Plan** | what is this task intended to build and consume? | Develops · Input · Output · Config Catalog purpose | task-page head and config declarations, with named fallbacks |
-| **Display** | what is present and what has happened? | Addr · Task · Configs · Code · Runs · State | task tree, config files, tickets, receipts, and declared stores |
+| **Display** | what is present and what has happened? | Addr · Task · Status · Configs · Code · Runs · State | task tree, config files, tickets, receipts, and declared stores |
 
 The plan lens and display lens are shown together for comprehension, but they
 remain distinguishable. A typed page line is plain; a code-derived plan is
@@ -89,8 +99,18 @@ missing `purpose:`, `description:`, or `headline:` is rendered as
   pairs with `<job>/results/<task>/<stem>/runtime.yaml` by stem. Ticket
   without receipt = `Ready`. Receipt without ticket = orphan finding. The
   receipt's `status` is normalised the way `haipipe-run` does
-  (`ok`/`complete` → Done, `running` → Running, `failed` → Failed, absent →
-  `? (no status)`); a process exit code alone is never promoted to Done.
+  (`ok`/`complete` → Done, `running` → Running, `failed` → Failed,
+  `expected_missing`/`external_required` → No data, absent → `? (no status)`);
+  a process exit code alone is never promoted to Done. A Run named in a newer
+  receipt's `supersedes:` renders `Superseded` and stops counting.
+- **A task's status is rolled up from its Runs, never typed.** First match
+  wins over the Runs that still count: no ticket and no receipt → `⚪ No runs`;
+  any Running → `🏃 Running`; any Failed → `❌ Failed`; any unknown receipt
+  status → `❓ Unknown`; any Held → `⏸️ Held`; any No data → `📭 No data`
+  (the input is not on this machine); some Done and some Ready → `🟡 Partial`;
+  every Run Ready → `⬜ Not run`; every Run Done → `✅ Done`. `N/M` after the
+  word is Runs Done out of the Runs that count. This is the runtime status; the
+  page's `state:` line stays a separate, typed column.
 
 ## 🧭 Table family boundary
 
@@ -107,7 +127,7 @@ No `board-table` skill or unified Board Table is installed yet. Do not invent
 one from a Folder tab, and do not place Board-level planning fields in a Task
 Table row.
 
-## 📋 The shape: block = section, job = table, task folder = row
+## 📋 The shape: tree first; block = section, job = table, task folder = row
 
 JL 260904: "each job will be a large table, the tasks are the rows, and a
 block is the multiple job tables." That is the rendered shape, and the job's
@@ -120,20 +140,39 @@ own facts sit on its heading line so there is no separate job table:
 
 ### b04j08 · j08_npi2photo
 
-① self-serving · 6 tasks · pages 6/6 (develops typed 0) · src 0 · tickets 0 · runs —
+① self-serving · 6 tasks (No runs 6) · pages 6/6 (develops typed 0) · src 0 · tickets 0 · runs —
 
-| Addr | Task | Develops | Input | Output | Configs | Code | Runs | State |
-|---|---|---|---|---|---|---|---|
-| b04j08t01 | t01_photo_url_table | _one photo URL per NPI, and a verdict on whether it is a face._ | — | — | r01_v2026-08 · r02_v2026-09 | npi2photo.py | 0 tk | ⬜ MIGRATED · … |
-| b04j08t05 | t05_ratemds_photo_probe | _what a third platform would actually add, before adding it._ | — | — | — | probe_ratemds_photo.py | 0 tk | ⬜ MIGRATED · … |
+| Addr | Task | Status | Develops | Input | Output | Configs | Code | Runs | State |
+|---|---|---|---|---|---|---|---|---|---|
+| b04j08t01 | t01_photo_url_table | ⚪ No runs | _one photo URL per NPI, and a verdict on whether it is a face._ | — | — | r01_v2026-08 · r02_v2026-09 | npi2photo.py | 0 tk | ⬜ MIGRATED · … |
+| b04j08t05 | t05_ratemds_photo_probe | ⚪ No runs | _what a third platform would actually add, before adding it._ | — | — | — | probe_ratemds_photo.py | 0 tk | ⬜ MIGRATED · … |
 ```
 
-The nine columns, and the question each one answers:
+The generated Markdown starts with a compact Structure Tree. It shows
+block → job → task → run: each block and job with its tasks counted by status,
+each task with its rolled-up status, each Run with its normalized status.
+`--depth block|job|task|run` stops the tree at that level. TSV output remains
+tabular and does not embed the Markdown tree; its Status cell is the word and
+count without the mark.
+
+```text
+└── b01 · b01_rawdata [465 tasks: ✅ 340 · 📭 125]
+    ├── b01j07 · j07_welldoc2026libre_raw [55 tasks: ✅ 14 · 📭 41]
+    └── b01j22 · j22_aireadi_v3_raw [23 tasks: ✅ 23]
+        ├── b01j22t21 · t21_datapoint_timeline  ✅ Done 1/1
+        │   ├── r05_datapoint_timeline [Superseded by r09_datapoint_timeline]
+        │   └── r09_datapoint_timeline [Done]
+        └── b01j22t23 · t23_cross_stream_linkage  ✅ Done 1/1
+            └── r08_cross_stream_linkage [Done]
+```
+
+The ten columns, and the question each one answers:
 
 | Column | Answers | Read from |
 |---|---|---|
 | **Addr** | where is it, for grep and citations | `bNNjNNtNN` off the path |
 | **Task** | what is the folder called | folder name, verbatim |
+| **Status** | where does the task stand, by its Runs | rolled up from the Runs column's statuses (rule above) |
 | **Develops** | what will this task build | page `develops:`; else the ticketed script's docstring headline, in _italics_ |
 | **Input** | what does it read | page `input:`; else the newest config's `worklist`/`payload`/`inputs`/`source`/`base` |
 | **Output** | what does it write, and where | page `output:`; else the config's `entry` + `out_*` keys, or `output`, or `store` |
@@ -163,10 +202,14 @@ are read off the tree, not judged; the full audit stays with
 ## 🗣 Showing the table (JL 260904)
 
 "Show me the table", "preview it", "so we can understand it" means: **paste the
-rendered markdown into the reply**, block by block, job by job. Nothing else.
+rendered Markdown into the reply**, starting with the Structure Tree and then
+the block-by-block, job-by-job detail. Nothing else.
 
 - Never publish an Artifact, build an HTML page, or open a viewer for it. JL
   reads the chat; a link is a detour and the build is his tokens.
+- "What is the status?" for a block or a tasks/ tree means the tree alone:
+  `--surface tree --depth task`, or `--depth job` when the task level would
+  run past a screen, then expand only the job the question is about.
 - Drop the columns that carry no information yet (a Runs column that is all
   `0 tk`, a State column that is all one value) and say so in one line.
 - Point at `<tasks-dir>/TASK-TABLE.md` for the full Task Table and its Config
@@ -196,7 +239,8 @@ facts. A future Board Table is outside this scan.
 G="$(git rev-parse --show-toplevel)/Tools/plugins/haipipe-toolkit/skills/0_utils/task-table/ref/render_task_table.py"
 
 python3 $G <tasks-dir>                       # print Task + Config + Run + Store surfaces
-python3 $G <tasks-dir> --surface task        # one surface: task | config | run | store
+python3 $G <tasks-dir> --surface task        # one surface: tree | task | config | run | store
+python3 $G <tasks-dir> --surface tree --depth task   # status tree only, stopped at tasks
 python3 $G <tasks-dir> --surface config      # one row per configuration
 python3 $G <tasks-dir> --out auto            # write <tasks-dir>/TASK-TABLE.md
 python3 $G <tasks-dir> --format tsv          # machine-readable
@@ -243,6 +287,8 @@ The rendered table is ready only when all of these hold:
 - every Run row pairs a ticket with a receipt, or says which side is missing;
 - no Run is `Done` on an exit code alone; a receipt with no `status` renders
   `? (no status)`;
+- every Task Status is the rollup of its own Runs by the rule above, and the
+  tree's job and block counts add up to their task counts;
 - a job shows one mode and, when ②, one store with its provenance
   (`declared` or `derived`);
 - `--check` against the file on disk exits 0, and has been shown to exit 1 on

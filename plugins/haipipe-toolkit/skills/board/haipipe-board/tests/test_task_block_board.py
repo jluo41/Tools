@@ -6,6 +6,7 @@ from pathlib import Path
 
 from src.common import page_files
 from src.parse import parse_dir
+from src.page_parse import parse_page
 
 
 ENGINE = Path(__file__).resolve().parents[1]
@@ -60,6 +61,24 @@ next run b03j01t01r01
   **Done when:** the result is bound to its full Run address.
   **Now:** no accepted Result exists.
 """
+
+
+def test_page_title_skips_yaml_frontmatter():
+    page = """---
+folder-kind: discovery
+status: planned
+---
+
+# A real discovery title
+
+## Opening
+The page body.
+"""
+
+    parsed = parse_page("b02j01t01", page, kind="discovery")
+
+    assert parsed["title"] == "A real discovery title"
+    assert parsed["folder_kind"] == "discovery"
 
 
 def _board(tmp_path, pages_lines=""):
@@ -186,7 +205,13 @@ def test_task_block_build_emits_job_groups_and_addressed_task_pages(tmp_path):
     main_index = index[index.index('<div class="idx">'):]
     assert "ALL TASKS" in index
     assert "j01 · first job" in main_index
-    assert '<a href="j01.html">j01 · first job</a>' in main_index
+    # each Job is a closed fold: the heading is the <summary>, its tasks sit inside
+    assert '<details class="gfold" data-g="j01 · first job">' in main_index
+    assert '<details class="gfold" data-g="j01 · first job" open' not in main_index
+    assert '<span class="gt">j01 · first job</span>' in main_index
+    assert '<a class="gopen" href="j01.html"' in main_index
+    assert main_index.index('<summary class="grp"') < main_index.index('<a class="ir compact"')
+    assert main_index.count("<details class=\"gfold\"") == main_index.count("</div></details>")
     assert '<a class="ir compact"' in main_index
     assert '<span class="i">t01</span>' in main_index
     assert '<span class="t">First task</span>' in main_index
@@ -248,7 +273,8 @@ def test_discovery_block_uses_the_same_bjtr_projection_without_task_contract_err
     page = rendered_page.read_text(encoding="utf-8")
     assert "ALL DISCOVERY TASKS" in index
     assert "0/2 discovery tasks closed" not in index
-    assert '<a href="j01.html">j01 · first job</a>' in index
+    assert '<span class="gt">j01 · first job</span>' in index
+    assert '<a class="gopen" href="j01.html"' in index
     assert '<div class="spine">' not in index
     assert 'Close when' not in index
     assert 'SECTION MATRIX' not in index

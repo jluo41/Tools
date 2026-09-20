@@ -18,6 +18,17 @@ Full training config, heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, desig
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / task_folder / run_name / files).
 
+## GPU queue handoff
+
+When the fit job uses a real GPU, a multi-run sweep, or an OOM fallback, also
+read `../../haipipe-task-gpu/SKILL.md` and
+`../../haipipe-task-gpu-training/SKILL.md`. Keep training semantics,
+checkpoints, and metrics here; let the generic GPU specialist own
+exclusive-card preflight, sequential Ticket handoff, teardown, and queue
+receipts, while the training companion owns checkpoint integrity, safe
+resume, preemption, effective-batch accounting, and training-specific
+fallbacks.
+
 
 
 Not the same as task-algo

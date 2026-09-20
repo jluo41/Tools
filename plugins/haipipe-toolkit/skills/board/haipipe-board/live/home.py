@@ -91,19 +91,30 @@ def project_owner(board: Path, root: Path) -> dict[str, str]:
     """
     root = root.resolve()
     board = board.resolve()
+    # The server may intentionally be started at a project sub-root (for
+    # example ``<project>/discoveries``).  That must not erase the owning
+    # Project identity: the Home is still rendering the same source tree.
+    # Walk through the selected root's parents until the repository boundary,
+    # while keeping the nearest project.yaml as the authority.
     for candidate in (board, *board.parents):
-        if candidate == root.parent:
-            break
-        if not candidate.is_relative_to(root):
+        if not (candidate.is_relative_to(root) or root.is_relative_to(candidate)):
             continue
         manifest = _project_manifest(candidate)
         if manifest:
-            rel = candidate.relative_to(root).as_posix()
+            # A project above the selected root is still the real owner, but
+            # its path is outside the served URL space.  Keep the path useful
+            # for diagnostics without letting Path.relative_to raise here.
+            rel = (candidate.relative_to(root).as_posix()
+                   if candidate.is_relative_to(root) else candidate.name)
             return {"project": manifest.get("id", candidate.name),
                     "project_path": rel, "project_key": f"project:{rel}",
                     "project_scope": "project",
                     "project_profile": manifest.get("profile", ""),
                     "project_state": manifest.get("state", "")}
+        # Do not cross into an unrelated repository while looking for an
+        # owner.  A .git file also marks a worktree boundary.
+        if (candidate / ".git").exists():
+            break
 
     parts = board.relative_to(root).parts
     if len(parts) >= 2 and parts[0].lower().startswith("examples"):
@@ -310,6 +321,12 @@ def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
         key=lambda section: (0 if section.lower() == "examples" else 1,
                              section.lower()),
     )
+    hide_implicit_space = (
+        len(ordered_sections) == 1
+        and ordered_sections[0] == "SPACE"
+        and open_cards
+        and all(card.get("project_scope") == "project" for card in open_cards)
+    )
     for section in ordered_sections:
         project_groups = section_groups[section]
         project_rows = []
@@ -347,10 +364,16 @@ def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
   <span class="project-name">{project_label}</span></summary>
   <div id="{group_id}" class="project-list" role="list" aria-label="{project_label} boards">
   {''.join(rows)}</div></details>''')
+        section_id = f"space-title-{len(groups)}"
+        hide_heading = hide_implicit_space and section == "SPACE"
+        section_heading = "" if hide_heading else (
+            f'<h2 class="space-heading" id="{section_id}">{section_label}</h2>')
+        section_accessibility = ('aria-label="Boards"' if hide_heading else
+                                 f'aria-labelledby="{section_id}"')
         groups.append(
             f'''<section class="space-section" data-space-key="{section_label}"
-  data-search="{section_label}" aria-labelledby="space-title-{len(groups)}">
-  <h2 class="space-heading" id="space-title-{len(groups)}">{section_label}</h2>
+  data-search="{section_label}" {section_accessibility}>
+  {section_heading}
   <div class="space-projects" role="list" aria-label="{section_label} projects">
   {''.join(project_rows)}</div></section>''')
     if groups:
@@ -359,7 +382,7 @@ def render_home(root: Path, space_name: str = "", public_url: str = "") -> str:
         body = '<p class="empty">No boards are ready to open.</p>'
     else:
         body = '<p class="empty">No boards found below this SPACE root.</p>'
-    heading = html.escape(HOME_BRAND)
+    heading = html.escape(space_name.strip() or HOME_BRAND)
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{heading}</title><style>

@@ -30,12 +30,12 @@ rows:
                           Units are mixed: mg 2,440 and g 798, so
                           'metformin 0.5 g' must normalise to 500 mg.
 
-DOSE UNITS ARE NOT IN THE LOG
+DOSE UNITS ARE NOT IN EVERY LOG
 ================================================================================
-Except in Shanghai, where they are inside the string. WellDoc and Ohio state a
-bare number, and the unit follows from the drug. That is why parse() reports
-what it FOUND and never guesses: the unit is decided in aggregate.py, after the
-drug is known.
+Shanghai puts them inside its medication string, and a named catalogue string
+can do the same. WellDoc and Ohio rows instead state a bare number, and the unit
+follows from the drug. That is why parse() reports what it FOUND and never
+guesses: an absent unit is decided in aggregate.py, after the drug is known.
 """
 import json
 import re
@@ -43,7 +43,7 @@ from collections import namedtuple
 from typing import List, Optional
 
 from .constants import (CLASS_ONLY, CODED, DOSE_SENTINELS, G, IU, MG, ML,
-                        NAMED, PLACEHOLDER, SENTINEL)
+                        NAMED, PLACEHOLDER, SENTINEL, UNIT_PER_ML)
 
 # One logged medication, typed.
 #   kind        constants.TYPES
@@ -79,15 +79,34 @@ SHANGHAI_CATEGORY = {
 _CODE_RE = re.compile(r"^\d+$")
 _BARE_NUM_RE = re.compile(r"^\s*[\d.]+\s*$")
 # 'metformin 0.5 g' / 'acarbose 50 mg'
-_DRUG_DOSE_RE = re.compile(r"([A-Za-z][A-Za-z\- ]*[A-Za-z])\s+([\d.]+)\s*(IU|mg|g|ml|mL|u)\b")
+# Put the compound unit first: otherwise `100 unit/mL` would be read as a
+# bare `unit` and leave the denominator behind.
+_DOSE_UNIT_RE = r"unit\s*/\s*mL|units\s*/\s*mL|IU\s*/\s*mL|U\s*/\s*mL|IU|mg|g|ml|mL|u"
+_NUMBER_RE = r"[\d]+(?:\.[\d]+)?"
+_DRUG_DOSE_RE = re.compile(
+    rf"([A-Za-z][A-Za-z\- ]*[A-Za-z])\s+({_NUMBER_RE})\s*({_DOSE_UNIT_RE})\b",
+    re.I)
 # 'insulin degludec, 12 IU' / 'Novolin R, 5 IU'
-_DRUG_COMMA_RE = re.compile(r"^(.+?),\s*([\d.]+)\s*(IU|U|mg|g|ml)\b", re.I)
+_DRUG_COMMA_RE = re.compile(
+    rf"^(.+?),\s*({_NUMBER_RE})\s*({_DOSE_UNIT_RE})\b", re.I)
 
-_UNIT_CANON = {"iu": IU, "u": IU, "mg": MG, "g": G, "ml": ML, "mL": ML}
+# A catalogue/free-text medication can put its strength in the item itself,
+# outside the Shanghai JSON payload path. This is intentionally anchored at the
+# beginning and stops at the first number+unit pair, so the `U-100` in a brand
+# qualifier is not mistaken for the stated concentration later in the string.
+_EMBEDDED_DOSE_RE = re.compile(
+    rf"^(?P<name>.+?)\s+(?P<dose>{_NUMBER_RE})\s*(?P<unit>{_DOSE_UNIT_RE})\b",
+    re.I)
+
+_UNIT_CANON = {
+    "iu": IU, "u": IU, "mg": MG, "g": G, "ml": ML,
+    "unit/ml": UNIT_PER_ML, "units/ml": UNIT_PER_ML,
+    "iu/ml": UNIT_PER_ML, "u/ml": UNIT_PER_ML,
+}
 
 
 def canon_unit(u: Optional[str]) -> Optional[str]:
-    return _UNIT_CANON.get(str(u).lower()) if u else None
+    return _UNIT_CANON.get(re.sub(r"\s+", "", str(u)).lower()) if u else None
 
 
 def to_mg(value: float, unit: Optional[str]):
@@ -169,5 +188,13 @@ def parse(raw, dose=None, payload=None) -> Item:
 
     if not text or text.lower() in PLACEHOLDER_TEXT:
         return Item(PLACEHOLDER, None, d, None, original, [])
+
+    # Named catalogue strings can carry their own strength. Preserve the
+    # explicit number and unit before the resolver strips product/device words.
+    m = _EMBEDDED_DOSE_RE.match(text)
+    if m:
+        v, u = to_mg(_num(m.group("dose")), canon_unit(m.group("unit")))
+        name = m.group("name").strip(" ,;-")
+        return Item(NAMED, name, v, u, original, [])
 
     return Item(NAMED, text, d, None, original, [])

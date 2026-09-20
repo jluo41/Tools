@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 URL = os.environ.get("INSNORM_URL", "http://127.0.0.1:8080").rstrip("/")
 PASS, FAIL = [], []
 FIELDS = ["InsulinClass", "OnsetMin", "PeakMin", "DurationMin", "Biphasic",
-          "InsulinResolved", "PKSource", "PKConf"]
+          "InsulinResolved", "DeliveryMode", "PKBasis", "PKSource", "PKConf"]
 
 
 def post(path, body, timeout=600):
@@ -78,6 +78,22 @@ def t_chain_input_from_medication():
     miss = [k for k, r in zip(keys, d["results"]) if r["InsulinClass"] is None]
     assert not miss, miss
     return f"{len(keys)}/{len(keys)} DrugKeys resolve"
+
+
+def t_e2_ids_and_ambiguity_over_the_wire():
+    s, d = post("/normalize/batch", {
+        "items": ["612997", "553838", "Humalog (Lispro) or Novolog (Aspart)"]
+    })
+    assert s == 200 and d["count"] == 3, (s, d)
+    assert d["results"][0]["InsulinResolved"] == "insulin lispro-aabc", d
+    assert d["results"][1]["InsulinResolved"] == "insulin lispro", d
+    assert all(r["PKSource"].startswith(f"lexicon:{mid}+")
+               for mid, r in zip(("612997", "553838"), d["results"][:2])), d
+    ambiguous = d["results"][2]
+    assert ambiguous["PKConf"] == "AMBIGUOUS", ambiguous
+    assert ambiguous["InsulinResolved"] == "insulin lispro | insulin aspart", ambiguous
+    assert ambiguous["DurationMin"] is None, ambiguous
+    return "2 E2_LEXICON ids resolved · alternative kept AMBIGUOUS"
 
 
 def t_patient_dia_over_the_wire():
@@ -144,6 +160,7 @@ if __name__ == "__main__":
         ("single item", t_one),
         ("peakless crosses as null, not 0", t_peakless_null_over_the_wire),
         ("every DrugKey from the chain resolves", t_chain_input_from_medication),
+        ("E2_LEXICON ids and ambiguity over HTTP", t_e2_ids_and_ambiguity_over_the_wire),
         ("measured DIA over HTTP", t_patient_dia_over_the_wire),
         ("non-insulin is a clean miss", t_non_insulin_miss),
         ("empty batch is 200", t_empty_batch),

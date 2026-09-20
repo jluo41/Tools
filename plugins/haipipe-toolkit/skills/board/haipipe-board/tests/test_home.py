@@ -65,11 +65,35 @@ class SpaceHomeTest(unittest.TestCase):
     def test_home_can_be_branded_for_a_space(self):
         with tempfile.TemporaryDirectory() as tmp:
             page = render_home(Path(tmp), "Physician-SPACE", "https://physician.jjluo.com")
-            self.assertIn("<h1>Physician Space</h1>", page)
+            self.assertIn("<h1>Physician-SPACE</h1>", page)
             self.assertNotIn('class="workspace-title"', page)
             self.assertNotIn("Fusion Space", page)
-            self.assertNotIn("Physician-SPACE", page)
             self.assertNotIn("https://physician.jjluo.com", page)
+
+    def test_project_owner_survives_a_server_started_in_a_project_subroot(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            project = workspace / "examples-2-lm" / "Proj10-LLM-Baseline"
+            (project / "project.yaml").parent.mkdir(parents=True)
+            (project / "project.yaml").write_text(
+                "schema: haipipe-project/v1\n"
+                "id: Proj10-LLM-Baseline\n"
+                "profile: research\n"
+                "state: active\n")
+            discoveries = project / "discoveries"
+            board = discoveries / "b00_source_intake"
+            (board / "board").mkdir(parents=True)
+            (board / "board.md").write_text("# Source Intake\nspine: s\n")
+            (board / "board" / "index.html").write_text("index")
+
+            cards = discover_boards(discoveries)
+            self.assertEqual(len(cards), 1)
+            self.assertEqual(cards[0]["project"], "Proj10-LLM-Baseline")
+            self.assertEqual(cards[0]["project_scope"], "project")
+            page = render_home(discoveries)
+            self.assertNotIn("SPACE / Shared", page)
+            self.assertIn(
+                '<span class="project-name">Proj10-LLM-Baseline</span>', page)
 
     def test_groups_task_discovery_paper_design_and_skill_boards_with_skill_precedence(self):
         with tempfile.TemporaryDirectory() as tmp:

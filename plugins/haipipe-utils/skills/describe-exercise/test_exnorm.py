@@ -307,6 +307,27 @@ def t_real_text_coverage():
     return f"{len(named)}/{len(named)} named resolve, 0/{len(unnamed)} unnamed do"
 
 
+def t_decorated_free_text_resolves():
+    """Trailing provenance and common prose must not hide a named activity.
+
+    The raw log spelling remains separate from the cleaned lookup name, and
+    the intensity-bearing phrase uses a curated alias rather than the
+    ambiguous fuzzy tier.
+    """
+    activities = ["Walking, measured by Apple Watch", "walking (apple watch)",
+                  "Brisk walking", "went for a walk"]
+    got = normalize(activities, minutes=30, weight_kg=70)
+    assert [r["ExerciseConf"] for r in got] == ["ALIAS"] * 4, got
+    assert [r["ActivityCode"] for r in got] == ["17190", "17190", "17200", "17190"], got
+    assert [r["METValue"] for r in got] == [3.8, 3.8, 4.8, 3.8], got
+    assert all(r["TypeSource"] == "session|text" for r in got), got
+
+    measured = parse(activities[0])
+    assert measured.raw == activities[0]
+    assert measured.name == "walking"
+    return "4 decorated spellings resolve with raw provenance retained"
+
+
 # ------------------------------------------------------------- code books ----
 
 def t_apple_prefix_is_the_source_id():
@@ -498,6 +519,7 @@ if __name__ == "__main__":
         ("empty batch", t_empty_batch),
         ("NaN is not a quantity", t_nan_is_not_a_quantity),
         ("all 32 real free-text values", t_real_text_coverage),
+        ("decorated free text resolves", t_decorated_free_text_resolves),
         ("apple prefix is the EntrySourceID", t_apple_prefix_is_the_source_id),
         ("four dialects, one activity, one MET", t_four_dialects_one_activity),
         ("name provenance survives the fold", t_name_provenance_survives),

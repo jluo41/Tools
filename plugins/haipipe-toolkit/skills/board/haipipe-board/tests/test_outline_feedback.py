@@ -1,5 +1,9 @@
-"""Board host: Draft Space's one browser write is the paragraph note composer,
-and it lands in the owning Run's journal under results/, never in the plan."""
+"""Board host: Draft Space exposes Scratch as its browser write surface.
+
+Historical feedback records remain readable, but new Draft interaction uses
+the Page-owned Scratch writer and lands in the selected Outline plus its
+paired Run receipt.
+"""
 import sys
 import tempfile
 import unittest
@@ -7,7 +11,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from live.outline import OutlineMixin, plan_card
-from live.outline_feedback import feedback_items
 
 
 PLAN = '''# S-test · outline v1.1
@@ -41,28 +44,37 @@ class DraftSpaceFeedbackTest(unittest.TestCase):
         base.update(over)
         return base
 
-    def test_render_has_composer_but_no_plan_editor(self):
+    def test_render_has_scratch_composer_but_no_plan_editor(self):
         card = plan_card(self.page, self.board, '/board.md', 'S-test/S-test.md')
-        self.assertIn('data-fb-add="C1.P1"', card)
-        self.assertIn('data-paragraph-feedback', card)
+        self.assertIn('data-scratch-scope="paragraph"', card)
+        self.assertIn('data-scratch-target="C1.P1"', card)
+        self.assertIn('name="path" value="/board.md"', card)
+        self.assertIn('name="file" value="S-test/S-test.md"', card)
+        self.assertNotIn('data-paragraph-feedback', card)
         self.assertNotIn('data-preview-write', card)
         self.assertNotIn('Save Bullet', card)
 
-    def test_feedback_action_writes_results_not_outline(self):
+    def test_feedback_action_is_removed_from_draft_space(self):
         handler = OutlineMixin()
         handler.target = lambda p: ('S-test/S-test.md', self.board)
-        before = self.plan.read_bytes()
         result, error = handler.plug_outline(self.payload())
+        self.assertIsNone(result)
+        self.assertEqual(error, 'Draft comments are removed; use Scratch Mode')
+        self.assertFalse((self.folder / 'results').exists())
+
+    def test_scratch_action_accepts_the_board_route_fields(self):
+        handler = OutlineMixin()
+        handler.target = lambda p: ('S-test/S-test.md', self.board)
+        result, error = handler.plug_outline({
+            'action': 'scratch', 'phase': 'save',
+            'path': '/board.md', 'file': 'S-test/S-test.md',
+            'scope': 'paragraph', 'target': 'C1.P1',
+            'notes': 'Keep the opening focused.',
+        })
         self.assertIsNone(error, error)
-        self.assertEqual(result['run'], 'rp-para-01_P01')
-        self.assertNotIn('version', result)
-        self.assertEqual(self.plan.read_bytes(), before)
-        journal = self.folder / 'results/rp-para-01_P01/v001.md'
-        self.assertTrue(journal.is_file())
-        self.assertIn('- Kind: explore', journal.read_text())
-        self.assertTrue((self.folder / 'runs/rp-para-01_P01.md').is_file())
-        items = feedback_items(self.page)['C1.P1']
-        self.assertEqual([i['disposition'] for i in items], ['pending'])
+        self.assertEqual(result['status'], 'open')
+        self.assertEqual(result['target'], 'C1.P1')
+        self.assertTrue((self.folder / 'results' / result['run'] / 'v001.md').is_file())
 
     def test_legacy_editor_actions_stay_rejected(self):
         handler = OutlineMixin()

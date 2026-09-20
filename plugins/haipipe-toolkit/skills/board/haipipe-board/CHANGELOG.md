@@ -6,9 +6,24 @@
 
 ## 1.0.9 · 2026-09-18
 
+- `live/paper.py`: the Delivery Space's `pages` fact reads
+  `readiness.not_ready` from `delivery/build-manifest.json` as the engine
+  writes it, one `{id, reasons}` dict per page (`build_delivery.py`), and
+  still accepts the older bare-id list. Before this, any paper with a build
+  and one unready page answered HTTP 500 (`sequence item 0: expected str
+  instance, dict found`); Paper-ScalingGlucose-NatSeries2026 was the first
+  real board to hit it. `tests/test_paper_plugin.py` now writes the engine's
+  real shape into its fixture manifest.
 - `live/paper.py`: Run Space › Workflow map joins the Run-Type map to the
   paper's folder tree (`haipipe-plugin-paper/ref/space-mapping.md`, second
   table), resolving each folder slot on the served board.
+- Fold each Job on a Task or Discovery Block index: `index_rows(...,
+  fold_groups=True)` wraps a group in a closed `<details class="gfold">` whose
+  `<summary>` is the heading with its task count, like the SPACE Home project
+  fold. The title opens the fold; a small ↗ opens the Job page. No script is
+  needed, and `80-restore.js` keeps an opened Job open across reloads. Generic
+  Boards keep their open group list. Styles in `assets/css/40-structure.css`;
+  `tests/test_task_block_board.py` asserts the closed fold.
 
 ## 1.0.8 · 2026-09-18
 

@@ -110,6 +110,31 @@ def t_regular_insulin_alias_resolves():
     return "common free-text alias is covered"
 
 
+def t_welldoc_ids_resolve_through_e2_lexicon():
+    """WellDoc's MedicationID is a coded DrugKey, not a product name.
+
+    These are the two gallery ids whose medication-door answers were already
+    known but whose insulin-door answers had split from the chain.
+    """
+    out = normalize(["612997", "553838"])
+    expected = ["insulin lispro-aabc", "insulin lispro"]
+    for mid, r, key in zip(("612997", "553838"), out, expected):
+        assert r["InsulinResolved"] == key, (mid, r)
+        assert r["PKConf"] == "OK", (mid, r)
+        assert r["PKSource"].startswith(f"lexicon:{mid}+"), (mid, r)
+    return "612997 -> lispro-aabc · 553838 -> lispro via E2_LEXICON"
+
+
+def t_explicit_multi_product_is_ambiguous():
+    r = normalize(["Humalog (Lispro) or Novolog (Aspart)"])[0]
+    assert r["PKConf"] == "AMBIGUOUS", r
+    assert r["InsulinResolved"] == "insulin lispro | insulin aspart", r
+    for field in ("InsulinClass", "OnsetMin", "PeakMin", "DurationMin", "Biphasic"):
+        assert r[field] is None, (field, r)
+    assert r["PKSource"] == "ambiguous:insulin lispro | insulin aspart", r
+    return "both candidates kept; no curve selected"
+
+
 def t_class_only_inputs_resolve():
     """OhioT1DM logs a CLASS and 5,026 rows depend on this working."""
     for s, cls in (("basal insulin", "long"), ("bolus insulin", "rapid")):
@@ -214,6 +239,8 @@ if __name__ == "__main__":
         ("JSON payload is not a DrugKey", t_json_payload_is_not_a_drug_key),
         ("parenthesized product beats regimen", t_parenthesized_product_beats_regimen),
         ("regular insulin alias resolves", t_regular_insulin_alias_resolves),
+        ("WellDoc IDs resolve through E2_LEXICON", t_welldoc_ids_resolve_through_e2_lexicon),
+        ("an explicit multi-product input is ambiguous", t_explicit_multi_product_is_ambiguous),
         ("class-only inputs resolve", t_class_only_inputs_resolve),
         ("a combination is ALIAS, not OK", t_combination_is_alias_not_ok),
         ("a premix is flagged biphasic", t_premix_is_flagged_biphasic),

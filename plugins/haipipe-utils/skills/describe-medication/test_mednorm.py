@@ -15,8 +15,8 @@ from mednorm import FIELDS, normalize
 from mednorm import bank
 from mednorm.aggregate import is_insulin
 from mednorm.constants import (CLASS_ONLY, CODED, COUNT, DOSE_SENTINELS, G, IU,
-                               MG, NAMED, PER_ADMIN, PLACEHOLDER, SENTINEL,
-                               TRUSTED)
+                               MG, NAMED, PER_ADMIN, PER_ML, PLACEHOLDER,
+                               SENTINEL, TRUSTED, UNIT_PER_ML)
 from mednorm.dialect import parse
 
 PASS, FAIL = [], []
@@ -155,6 +155,27 @@ def t_logged_unit_wins():
     return "log's own unit is used"
 
 
+def t_embedded_dose_survives():
+    """A named catalogue string can state a dose without a separate Dose field."""
+    oral = normalize(["metformin 500 mg"])[0]
+    assert oral["Ingredient"] == "metformin", oral
+    assert oral["DoseValue"] == 500.0 and oral["DoseUnit"] == MG, oral
+    assert oral["DoseBasis"] == PER_ADMIN, oral
+
+    for raw, ingredient in (
+        ("insulin lispro-aabc (LYUMJEV TEMPO PEN,U-100,INSULN) "
+         "100 unit/mL insulin pen, sensor", "Insulin lispro-aabc"),
+        ("insulin lispro (HUMALOG TEMPO PEN,U-100,INSULN) "
+         "100 unit/mL SC inps", "Insulin lispro"),
+    ):
+        concentration = normalize([raw])[0]
+        assert concentration["Ingredient"] == ingredient, concentration
+        assert concentration["DoseValue"] == 100.0, concentration
+        assert concentration["DoseUnit"] == UNIT_PER_ML, concentration
+        assert concentration["DoseBasis"] == PER_ML, concentration
+    return "500 mg and both 100 unit/mL forms retained"
+
+
 def t_no_unit_no_basis():
     """Rule 4. A dose whose unit cannot be named must not read as summable."""
     r = normalize(["999999999"], doses=[5])[0]
@@ -226,14 +247,26 @@ def t_good_requires_the_code():
     ids = ["612997", "606257", "155744", "582255", "241223", "553838"]
     out = normalize(ids, doses=[1] * len(ids))
     for i, r in zip(ids, out):
+        tier_source = r["MedSource"].split("|")[-1]
         if r["MedConf"] == "GOOD":
-            assert r["MedSource"].startswith("fda_ndc:"), (i, r["MedSource"])
-        if r["MedSource"].startswith(("fda_generic", "fda_brand")):
+            assert tier_source.startswith("fda_ndc:"), (i, r["MedSource"])
+        if tier_source.startswith(("fda_generic", "fda_brand")):
             assert r["MedConf"] == "OK", (i, r["MedConf"])
-        if r["MedSource"].startswith("fda_generic_prefix"):
+        if tier_source.startswith("fda_generic_prefix"):
             assert r["MedConf"] == "ALIAS", (i, r["MedConf"])
     good = sum(1 for r in out if r["MedConf"] == "GOOD")
     return f"{good}/{len(ids)} via NDC; tier and confidence always agree"
+
+
+def t_lexicon_provenance_survives_the_fda_hop():
+    for i, ndc in (("612997", "0002-8235-0"), ("606257", "0002-8213-0")):
+        r = normalize([i])[0]
+        assert r["MedSource"] == f"lexicon:{i}|fda_ndc:{ndc}", r
+    generic = normalize(["150529"])[0]
+    assert generic["MedSource"].startswith("lexicon:150529|fda_generic:"), generic
+    miss = normalize(["169434"])[0]
+    assert miss["MedSource"] == "lexicon:169434|fda:no_match", miss
+    return "opaque id -> lexicon -> FDA remains visible"
 
 
 def t_ndc_dashes_are_the_segmentation():
@@ -309,6 +342,7 @@ if __name__ == "__main__":
         ("sentinel ids are typed", t_sentinel_ids_are_typed),
         ("the unit comes from the drug", t_unit_comes_from_the_drug),
         ("a logged unit wins", t_logged_unit_wins),
+        ("embedded stated dose survives", t_embedded_dose_survives),
         ("no unit -> no basis", t_no_unit_no_basis),
         ("basis present when unit is", t_basis_present_when_unit_is),
         ("DrugKey survives a bank miss", t_drugkey_survives_a_bank_miss),
@@ -316,6 +350,7 @@ if __name__ == "__main__":
         ("five failures keep five sources", t_five_failures_five_sources),
         ("only TRUSTED writes an identity", t_only_trusted_writes_identity),
         ("GOOD requires the NDC", t_good_requires_the_code),
+        ("lexicon provenance survives the FDA hop", t_lexicon_provenance_survives_the_fda_hop),
         ("NDC dashes are the segmentation", t_ndc_dashes_are_the_segmentation),
         ("result shape is constant", t_shape_is_constant),
         ("order held, dose per row", t_order_and_dose_are_per_row),

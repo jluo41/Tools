@@ -102,7 +102,8 @@ SHAPES = [
     Shape("02-decorated-text", "a name with something else stuck to it",
           "What a real free-text box produces. Not on this board, because "
           "WellDoc uses a picker and nobody here has typed one. It is on the "
-          "API's promise anyway, and today the door resolves none of the four. "
+          "API's promise anyway; the dialect strips provenance and resolves "
+          "all four examples. "
           "describe-food handles the same shape, because food splits a string "
           "into components and exercise reads it whole.",
           {"activities": ["Walking, measured by Apple Watch", "walking (apple watch)",

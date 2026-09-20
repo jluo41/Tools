@@ -4,6 +4,27 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-09-19 — Separate GPU-training lifecycle from LM-engine execution (JL)
+----------------------------------------------------------------------------
+
+Added `haipipe-task-gpu-training` as the training-specific companion to
+`haipipe-task-for-fit`. Kept `haipipe-task-gpu` as the generic GPU supervisor
+for allocation, teardown, queue receipts, and process safety. LM
+serving/engine/MTP benchmarks remain with their LLM/evaluation owner and the
+generic GPU skill.
+
+2026-09-19 — GPU-bound execution gets a dedicated supervisor contract (JL)
+----------------------------------------------------------------------------
+
+Added the cross-cutting `haipipe-task-gpu` specialist and routed GPU queue,
+training, OOM-retry, and sequential Run requests from `haipipe-task` to it.
+The contract requires per-Run receipts, exact GPU preflight, no killing of
+unowned processes, terminal-receipt handoff, finite fallback ladders, and an
+explicit distinction between no intentional queue gap and zero utilization
+during model loading/teardown. `haipipe-task-for-fit` now hands real GPU
+training queues to this specialist while retaining ownership of checkpoints
+and training metrics.
+
 2026-08-23 — the store is set by the CONSUMER, not by convention (JL)
 ----------------------------------------------------------------------
 

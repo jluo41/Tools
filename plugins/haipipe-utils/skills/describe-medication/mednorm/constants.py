@@ -61,11 +61,16 @@ TRUSTED = (GOOD, OK, ALIAS)
 # Writing 7 without saying which is the same defect as reading a per-100g
 # nutrition composition as a per-meal dose.
 IU, MG, G, ML, COUNT = "iu", "mg", "g", "mL", "count"
-UNITS = (IU, MG, G, ML, COUNT, None)
+# A catalogue string can state product strength rather than an administered
+# amount, for example `100 unit/mL`. Keep that scale explicit instead of
+# collapsing it into either `iu` or `mL`.
+UNIT_PER_ML = "unit/mL"
+UNITS = (IU, MG, G, ML, COUNT, UNIT_PER_ML, None)
 
 PER_ADMIN = "per_administration"   # this one event
+PER_ML = "per_ML"                  # product concentration, units per mL
 PER_DAY = "per_day"                # a daily total (regimen rows)
-BASES = (PER_ADMIN, PER_DAY, None)
+BASES = (PER_ADMIN, PER_ML, PER_DAY, None)
 
 # uint8 overflow and its friends. 6,039 rows carry Dose 255 and the 99th
 # percentile of the whole column IS 255, which is what gives it away.

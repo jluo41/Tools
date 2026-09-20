@@ -60,11 +60,16 @@ def resolve(item: Item) -> Tuple[Optional[Dict], str, str, Optional[str]]:
         return None, MISS, f"class_only:{item.key}", None
 
     name, ndc = None, None
+    provenance = ""
     if item.kind == CODED:
         entry = bank.lexicon_lookup(item.key)
         if entry is None:
             return None, MISS, "lexicon:no_such_id", None
         name, ndc = entry["MedicationName"], entry["NDC"]
+        # The FDA tier is downstream evidence. Keep the opaque-id lookup in
+        # front of it so a caller can distinguish a typed name from a name
+        # unwrapped through the WellDoc lexicon.
+        provenance = f"lexicon:{item.key}|"
     else:
         name = item.key
 
@@ -72,7 +77,7 @@ def resolve(item: Item) -> Tuple[Optional[Dict], str, str, Optional[str]]:
     if ndc:
         hit = bank.by_ndc(ndc)
         if hit:
-            return hit, GOOD, "fda_ndc:" + str(ndc), ndc
+            return hit, GOOD, provenance + "fda_ndc:" + str(ndc), ndc
 
     # B / C -- the name. WellDoc writes 'generic (BRAND) strength form'.
     lead = _lead(name)
@@ -82,10 +87,10 @@ def resolve(item: Item) -> Tuple[Optional[Dict], str, str, Optional[str]]:
             continue
         hit = bank.by_generic(probe)
         if hit:
-            return hit, OK, f"fda_generic:{probe}", ndc
+            return hit, OK, provenance + f"fda_generic:{probe}", ndc
         hit = bank.by_brand(probe)
         if hit:
-            return hit, OK, f"fda_brand:{probe}", ndc
+            return hit, OK, provenance + f"fda_brand:{probe}", ndc
 
     # B2 -- the ingredient without its salt
     for probe in (lead, brand):
@@ -93,9 +98,9 @@ def resolve(item: Item) -> Tuple[Optional[Dict], str, str, Optional[str]]:
             continue
         hit = bank.by_generic_prefix(probe)
         if hit:
-            return hit, ALIAS, f"fda_generic_prefix:{probe}", ndc
+            return hit, ALIAS, provenance + f"fda_generic_prefix:{probe}", ndc
 
-    return None, MISS, "fda:no_match", ndc
+    return None, MISS, provenance + "fda:no_match", ndc
 
 
 import re as _re

@@ -101,12 +101,20 @@ _CODE_RE = re.compile(r"^\d+$")
 # 'src20:20903' -- how a caller passes a namespace through the string door.
 _NS_RE = re.compile(r"^(?:src)?(\d+)\s*:\s*(.+)$", re.I)
 
+# Free-text exporters sometimes append provenance to an otherwise usable
+# activity name. It is not part of the activity identity: keep the original in
+# Activity.raw, but remove only these trailing decorations before lookup. The
+# cleanup runs only after numeric vendor codes have been handled.
+_MEASURED_BY_RE = re.compile(r"\s*,\s*measured\s+by\s+.+$", re.I)
+_TRAILING_PAREN_RE = re.compile(r"\s*\([^()]*\)\s*$")
+
 # Free text as five cohorts spell it, folded to the compendium's own words.
 # 32 distinct values measured over 13,406 rows; the map is written out in full
 # rather than derived, because 'Dancing__Aerobics' is not a rule, it is a fact
 # about one exporter.
 TEXT_CANON = {
     "walk": "walking", "walking": "walking", "treadmill": "walking, treadmill",
+    "went for a walk": "walking",
     "hike": "hiking", "hiking": "hiking",
     "run": "running", "running": "running",
     "bike": "bicycling", "bicycling": "bicycling", "outdoor bike": "bicycling",
@@ -142,6 +150,21 @@ def reject_code_join(code: str) -> None:
 def _fold(s: str) -> str:
     """lowercase, underscores to spaces, whitespace collapsed. Nothing else."""
     return " ".join(str(s).strip().lower().replace("_", " ").split())
+
+
+def _strip_free_text_decorations(text: str) -> str:
+    """Remove trailing provenance stuck to a free-text activity name.
+
+    The logged spelling remains available through ``Activity.raw``. The
+    parenthetical rule is limited to a terminal pair so an activity's own
+    comma-separated qualifiers remain searchable.
+    """
+    cleaned = _MEASURED_BY_RE.sub("", text).strip()
+    while True:
+        stripped = _TRAILING_PAREN_RE.sub("", cleaned).strip()
+        if stripped == cleaned:
+            return cleaned
+        cleaned = stripped
 
 
 # The lookup is keyed on FOLDED keys, built once at import. The alternative --
@@ -216,4 +239,8 @@ def parse(raw, source_id=None) -> Activity:
             return Activity(PLACEHOLDER, None, original, namespace, via)
         return Activity(SESSION, canonical(label), original, namespace, via)
 
+    text = _strip_free_text_decorations(text)
+    low = _fold(text)
+    if low in PLACEHOLDER_TEXT:
+        return Activity(PLACEHOLDER, None, original, namespace, "text")
     return Activity(SESSION, canonical(text), original, namespace, "text")

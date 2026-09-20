@@ -2,7 +2,8 @@
 """render_task_table.py — task plan plus display, read off the tree.
 
     python3 render_task_table.py <tasks-dir | block-dir>
-        [--surface all|task|config|run|store] default all
+        [--surface all|tree|task|config|run|store] default all
+        [--depth block|job|task|run]         where the tree stops; default run
         [--format md|tsv]                    default md
         [--out PATH | --out auto]            auto = <tasks-dir>/TASK-TABLE.md
         [--check PATH] [--expect-fail]       re-render and diff against PATH
@@ -50,7 +51,20 @@ this scan.
 
 THE SHAPE (JL 260904): a BLOCK is a section, a JOB is one table, a TASK is one
 row. Configs and Runs are appendix rows; they never multiply the Task row. The
-job's facts (mode, store, tickets, runs) sit on its heading line.
+job's facts (mode, store, tasks by status, tickets, runs) sit on its heading line.
+
+Markdown output also begins with a compact Structure Tree (`--surface tree`
+prints only the tree, `--depth` stops it at a level):
+    BLOCK [tasks by status]
+    └── JOB [tasks by status]
+        └── TASK  ✅ Done 7/7
+            └── RUN [status]
+The tree is an orientation view; the Task, Config, Run, and Store tables remain
+the detailed projections and source-independent machine-readable surfaces.
+
+TASK STATUS: one word per Task, rolled up from its Runs, shown in the tree and
+in the Task Table's Status column. The rule sits at TASK_ORDER below. A Run
+named in a newer receipt's `supersedes:` renders Superseded and does not count.
 
     ## b04 · b04_npi_dimension_tables            block section
     ### b04j08 · j08_npi2photo                   job = one table, its rollup on this line
@@ -88,7 +102,30 @@ HEAD_PREFIX = re.compile(r"^(?:\d+[_-])?[A-Za-z0-9_.\-]+\s*(?:[:—–-]+|--)\s+
 
 STATUS = {"ok": "Done", "complete": "Done", "completed": "Done",
           "running": "Running", "failed": "Failed", "aborted": "Failed",
-          "planned": "Ready", "blocked": "Held", "superseded": "Superseded"}
+          "planned": "Ready", "blocked": "Held", "superseded": "Superseded",
+          # the Run executed and recorded that its input data is not on this
+          # machine (code/haiutils/haistep/run_raw_table.py ABSENT_PRESENCE)
+          "expected_missing": "No data", "external_required": "No data",
+          "not_present": "No data", "drop_missing": "No data",
+          "external_not_mounted": "No data"}
+RUN_ORDER = ("Done", "Running", "Failed", "Held", "No data", "Ready", "Superseded", "?")
+
+# TASK STATUS (JL 260918): one word per Task, rolled up from its Runs. A Run
+# named in a newer receipt's `supersedes:` is left out. First match wins:
+#   no ticket and no receipt   → No runs
+#   any Run Running            → Running
+#   any Run Failed             → Failed
+#   any Run status unknown     → Unknown
+#   any Run Held               → Held
+#   any Run No data            → No data   (the input is not on this machine)
+#   some Done, some Ready      → Partial   (tickets still waiting)
+#   every Run Ready            → Not run
+#   every Run Done             → Done
+TASK_ORDER = ("Done", "Partial", "Not run", "Running", "Failed", "Held", "No data", "Unknown", "No runs")
+TASK_MARK = {"Done": "✅", "Partial": "🟡", "Not run": "⬜", "Running": "🏃", "Failed": "❌",
+             "Held": "⏸️", "No data": "📭", "Unknown": "❓", "No runs": "⚪"}
+TASK_MEANS = {"Partial": "some tickets not run yet", "No data": "input not on this machine",
+              "Unknown": "a receipt status this table does not know"}
 IN_KEYS = ("worklist", "payload", "inputs", "input", "source", "base")
 BLOCK_MARKERS = {"|", ">", "|-", ">-", "|+", ">+"}
 
@@ -154,6 +191,32 @@ def flat_yaml(path):
         return _scalar_map(path.read_text(errors="replace").splitlines(), 0)
     except OSError:
         return {}
+
+
+def supersedes_of(path):
+    """Run stems a receipt's `supersedes:` names, as a scalar or a `- item` list."""
+    try:
+        lines = path.read_text(errors="replace").splitlines()
+    except OSError:
+        return set()
+    out = set()
+    for i, line in enumerate(lines):
+        m = re.match(r"^supersedes:\s*(.*?)\s*$", line)
+        if not m:
+            continue
+        raw = _scalar(m.group(1))
+        if raw.startswith("["):
+            out.update(_scalar(x) for x in raw.strip("[]").split(",") if x.strip())
+        elif raw:
+            out.add(raw)
+        else:
+            for item in lines[i + 1:]:
+                im = re.match(r"^\s*-\s+(.*?)\s*$", item)
+                if not im:
+                    break
+                out.add(_scalar(im.group(1)))
+        break
+    return {s for s in out if s and s.lower() not in ("null", "none", "~")}
 
 
 def head_field(path, key):
@@ -429,11 +492,40 @@ def scan_task(t, j, job_addr, findings):
             runs.append(run_row(addr, prefix(stem, "r")[0], stem, None, rec, t,
                                 cfg["path"] if cfg else "? (config not found)"))
 
+    # a newer receipt's `supersedes:` retires the Run it names, whatever that Run said
+    replaced = {old: stem for stem, rec in receipts.items() for old in supersedes_of(rec["path"])}
+    for r in runs:
+        if r["run"] in replaced:
+            r["status"], r["superseded_by"] = "Superseded", replaced[r["run"]]
+
     return dict(addr=addr, name=t.name, path=t, page=page if page.is_file() else None,
                 state=state, owner=owner, develops=develops or "?", inp=inp or "—", out=out or "—",
                 src=src_note or "page", scripts=[s.name for s in scripts],
                 main=main.name if main else "", configs=config_records,
-                tickets=[p.name for p in tickets], runs=runs)
+                tickets=[p.name for p in tickets], runs=runs, status=task_status(runs))
+
+
+def task_status(runs):
+    """One word for the Task, rolled up from its Runs (rule at TASK_ORDER)."""
+    live = [run_key(r["status"]) for r in runs if r["status"] != "Superseded"]
+    done = live.count("Done")
+    if not runs:
+        word = "No runs"
+    elif not live:
+        word = "Done"        # every Run was superseded by another in this Task
+    else:
+        word = next((w for w in ("Running", "Failed", "?", "Held", "No data") if w in live), None)
+        word = "Unknown" if word == "?" else word
+        if word is None:
+            ready = live.count("Ready")
+            word = "Partial" if ready and done else "Not run" if ready else "Done"
+    return dict(word=word, done=done, live=len(live))
+
+
+def task_label(s, mark=True):
+    """`✅ Done 7/7`: the word, then Runs Done out of the Runs that count."""
+    text = s["word"] + (f" {s['done']}/{s['live']}" if s["live"] else "")
+    return f"{TASK_MARK[s['word']]} {text}" if mark else text
 
 
 def run_row(taddr, raddr, stem, ticket, rec, t, config):
@@ -465,20 +557,38 @@ def orphan_results(j, tasks, findings):
 # Configs and Runs are appendices, so neither multiplies the Task row. The job's
 # own facts (mode, store, tickets, runs) sit on its heading line, so there is no
 # separate Job Rollup surface: the heading IS the rollup.
+def run_key(status):
+    """Count key: `? (expected_x)` and `? (no status)` both count as `?`."""
+    return "?" if status.startswith("?") else status
+
+
 def run_counts(runs):
     c = {}
     for r in runs:
-        k = r["status"].split(" ")[0]
+        k = run_key(r["status"])
         c[k] = c.get(k, 0) + 1
     return c
 
 
 def fmt_counts(c):
-    parts = [f"{k} {c[k]}" for k in ("Done", "Running", "Failed", "Held", "Ready", "?") if k in c]
+    parts = [f"{k} {c[k]}" for k in RUN_ORDER if k in c]
     return " · ".join(parts) if parts else "—"
 
 
-TASK_HDR = ["Addr", "Task", "Develops", "Input", "Output", "Configs", "Code", "Runs", "State"]
+def n_tasks(n):
+    return f"{n} task" if n == 1 else f"{n} tasks"
+
+
+def task_counts(tasks, mark=False):
+    """`Done 20 · Partial 1`, or `✅ 20 · 🟡 1` for the tree, in TASK_ORDER."""
+    c = {}
+    for t in tasks:
+        c[t["status"]["word"]] = c.get(t["status"]["word"], 0) + 1
+    parts = [f"{TASK_MARK[k]} {c[k]}" if mark else f"{k} {c[k]}" for k in TASK_ORDER if k in c]
+    return " · ".join(parts) if parts else "—"
+
+
+TASK_HDR = ["Addr", "Task", "Status", "Develops", "Input", "Output", "Configs", "Code", "Runs", "State"]
 
 
 def compact(value, limit=80):
@@ -510,7 +620,8 @@ def task_row(t, italics=True):
     code = t["main"] or "—"
     configs = config_summary(t["configs"])
     runs = f"{len(t['tickets'])} tk" + (f" · {fmt_counts(run_counts(t['runs']))}" if t["runs"] else "")
-    return [t["addr"], t["name"], dev, t["inp"], t["out"], configs, code, runs, t["state"]]
+    return [t["addr"], t["name"], task_label(t["status"], mark=italics), dev, t["inp"], t["out"],
+            configs, code, runs, t["state"]]
 
 
 def job_heading(j):
@@ -520,7 +631,7 @@ def job_heading(j):
     pages = sum(1 for t in ts if t["page"] is not None)
     typed = sum(1 for t in ts if t["src"] == "page")
     return (f"### {j['addr']} · {j['name']}\n\n"
-            f"{mode} · {len(ts)} tasks · pages {pages}/{len(ts)} (develops typed {typed}) · "
+            f"{mode} · {n_tasks(len(ts))} ({task_counts(ts)}) · pages {pages}/{len(ts)} (develops typed {typed}) · "
             f"src {len(j['src'])} · tickets {sum(len(t['tickets']) for t in ts)} · "
             f"runs {fmt_counts(run_counts(runs))}")
 
@@ -529,10 +640,11 @@ def surface_blocks(blocks):
     """Sections: ## block → ### job → | task rows |."""
     out = []
     for b in blocks:
-        n_tasks = sum(len(j["tasks"]) for j in b["jobs"])
+        b_tasks = [t for j in b["jobs"] for t in j["tasks"]]
         stores = sorted({j["store"] for j in b["jobs"] if j["store"]})
         out += [f"## {b['addr']} · {b['name']}", "",
-                f"{len(b['jobs'])} jobs · {n_tasks} tasks" + (f" · stores: {', '.join(stores)}" if stores else ""), ""]
+                f"{len(b['jobs'])} jobs · {n_tasks(len(b_tasks))} ({task_counts(b_tasks)})"
+                + (f" · stores: {', '.join(stores)}" if stores else ""), ""]
         for j in b["jobs"]:
             out += [job_heading(j), "", md_table(TASK_HDR, [task_row(t) for t in j["tasks"]]), ""]
     return "\n".join(out)
@@ -584,7 +696,58 @@ def tsv_table(hdr, rows):
     return "\n".join(["\t".join(hdr)] + ["\t".join(str(c).replace("\t", " ") for c in r) for r in rows])
 
 
-def render(root, blocks, findings, which, fmt):
+DEPTHS = ("block", "job", "task", "run")
+
+
+def structure_tree(blocks, depth="run"):
+    """Render the block → job → task → run shape before the detail tables.
+
+    Every Task carries its rolled-up status (`✅ Done 7/7` = Runs Done out of
+    the Runs that count); every Job and Block carries its Tasks counted by
+    status. `depth` stops the tree at that level. The tables below keep the
+    complete fields and remain the stable projection for Markdown/TSV readers.
+    """
+    fence = chr(96) * 3
+    stop = DEPTHS.index(depth)
+    legend = " · ".join(f"{TASK_MARK[w]} {w}" + (f" ({TASK_MEANS[w]})" if w in TASK_MEANS else "")
+                        for w in TASK_ORDER)
+    lines = ["## Structure Tree", "",
+             f"Task status: {legend}. `N/M` = Runs Done out of the Runs that count "
+             f"(a superseded Run does not count).", "", f"{fence}text"]
+    for bi, block in enumerate(blocks):
+        block_last = bi == len(blocks) - 1
+        block_tasks = [t for j in block["jobs"] for t in j["tasks"]]
+        lines.append(f"{'└──' if block_last else '├──'} {block['addr']} · {block['name']} "
+                     f"[{n_tasks(len(block_tasks))}: {task_counts(block_tasks, mark=True)}]")
+        if stop < 1:
+            continue
+        job_indent = "    " if block_last else "│   "
+        jobs = block["jobs"]
+        for ji, job in enumerate(jobs):
+            job_last = ji == len(jobs) - 1
+            lines.append(f"{job_indent}{'└──' if job_last else '├──'} {job['addr']} · {job['name']} "
+                         f"[{n_tasks(len(job['tasks']))}: {task_counts(job['tasks'], mark=True)}]")
+            if stop < 2:
+                continue
+            task_indent = job_indent + ("    " if job_last else "│   ")
+            tasks = job["tasks"]
+            for ti, task in enumerate(tasks):
+                task_last = ti == len(tasks) - 1
+                lines.append(f"{task_indent}{'└──' if task_last else '├──'} {task['addr']} · {task['name']}  "
+                             f"{task_label(task['status'])}")
+                runs = task["runs"]
+                if stop < 3 or not runs:
+                    continue
+                run_indent = task_indent + ("    " if task_last else "│   ")
+                for ri, run in enumerate(runs):
+                    by = f" by {run['superseded_by']}" if run.get("superseded_by") else ""
+                    lines.append(f"{run_indent}{'└──' if ri == len(runs) - 1 else '├──'} {run['run']} "
+                                 f"[{run['status']}{by}]")
+    lines += [fence, ""]
+    return "\n".join(lines)
+
+
+def render(root, blocks, findings, which, fmt, depth="run"):
     tasks = [t for b in blocks for j in b["jobs"] for t in j["tasks"]]
     runs = [r for t in tasks for r in t["runs"]]
     configs = [cfg for t in tasks for cfg in t["configs"]]
@@ -593,15 +756,18 @@ def render(root, blocks, findings, which, fmt):
     receipts = sum(1 for r in runs if r["source"] == "receipt")
     declared_config_descriptions = sum(1 for cfg in configs if cfg["purpose"] != "? (not declared)")
     lines = []
-    if fmt == "md":
+    if fmt == "md" or which == "tree":
         lines += [f"<!-- generated by task-table/ref/render_task_table.py from {root} · do not edit; rerun instead -->",
                   f"# Task Table · {root.name}", "",
                   f"generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
-                  f"blocks {len(blocks)} · jobs {n_jobs} · tasks {len(tasks)} · tickets {sum(len(t['tickets']) for t in tasks)} "
+                  f"blocks {len(blocks)} · jobs {n_jobs} · tasks {len(tasks)} ({task_counts(tasks)}) "
+                  f"· tickets {sum(len(t['tickets']) for t in tasks)} "
                   f"· configs {len(configs)} ({declared_config_descriptions} described) · receipts {receipts} "
                   f"· runs {fmt_counts(run_counts(runs))}",
                   f"Develops: {typed} typed on the page, {len(tasks) - typed} _in italics_ = the code's own docstring, "
                   f"not yet confirmed by a person", ""]
+        if which in ("all", "tree"):
+            lines += [structure_tree(blocks, depth)]
     if which in ("all", "task"):
         if fmt == "md":
             lines += [surface_blocks(blocks)]
@@ -638,7 +804,9 @@ def strip_gen(text):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("root")
-    ap.add_argument("--surface", default="all", choices=["all", "task", "config", "run", "store"])
+    ap.add_argument("--surface", default="all", choices=["all", "tree", "task", "config", "run", "store"])
+    ap.add_argument("--depth", default="run", choices=DEPTHS,
+                    help="where the Structure Tree stops; the tables are unaffected")
     ap.add_argument("--format", default="md", choices=["md", "tsv"])
     ap.add_argument("--out", help="write here; 'auto' = <root>/TASK-TABLE.md")
     ap.add_argument("--check", help="re-render and diff against this file; exit 1 on drift")
@@ -649,7 +817,7 @@ def main():
     if not root.is_dir():
         sys.exit(f"not a directory: {root}")
     blocks, findings = scan(root)
-    text = render(root, blocks, findings, A.surface, A.format)
+    text = render(root, blocks, findings, A.surface, A.format, A.depth)
 
     if A.check:
         old = Path(A.check).read_text() if Path(A.check).is_file() else ""

@@ -452,8 +452,14 @@ def scratch_control_html(scope: str, target: str, record: dict | None = None,
     )
 
 
-def scratch_assets_html() -> str:
-    """CSS and the tiny same-origin controller emitted once per Draft."""
+def scratch_assets_html(path_q: str = "", file_q: str = "") -> str:
+    """CSS and the tiny same-origin controller emitted once per Draft.
+
+    The Board write route resolves a Page from the ``path`` and ``file``
+    fields before it can dispatch a Scratch action.  The form carries those
+    route fields explicitly; the JavaScript fallback covers callers that
+    render this asset without passing route arguments.
+    """
     return r"""<style>
 .scratch-slot{display:none;margin:6px 0 12px}
 .scratch-flag{display:inline-block;width:6px;height:6px;margin:0 2px 1px 1px;border-radius:50%;background:var(--acc);vertical-align:middle}

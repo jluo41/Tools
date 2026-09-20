@@ -55,6 +55,22 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
     i = 0
     while i < len(lines) and not lines[i].strip():
         i += 1
+    # Current Page files may begin with YAML frontmatter.  The old parser
+    # treated the opening `---` as the Page title, which made every
+    # frontmatter-based Board Page render as `---` in the sidebar and group
+    # index.  Keep the frontmatter available for metadata parsing, but start
+    # title/body parsing after its closing delimiter.
+    frontmatter = []
+    title_start = i
+    if i < len(lines) and lines[i].strip() == "---":
+        end = next((j for j in range(i + 1, len(lines))
+                    if lines[j].strip() in {"---", "..."}), None)
+        if end is not None:
+            frontmatter = lines[i + 1:end]
+            title_start = end + 1
+            while title_start < len(lines) and not lines[title_start].strip():
+                title_start += 1
+    i = title_start
     qt = lines[i].lstrip("# ").strip() if i < len(lines) else qid
     # A paper page titles itself `SD00 · Ideation · …`, and every surface that
     # shows the title already prints the id beside it (the h2's `.hid`, the
@@ -92,6 +108,13 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
         if m:
             meta[m.group(1).replace("-", "_")] = m.group(2).strip()
         i += 1
+    for line in frontmatter:
+        m = re.match(
+            r"^(state|owner|method|route|page-type|folder-kind|task|task-type|session|requires|style-from|provides|contract-source-hash|source-content):\s*(.*)$",
+            line.strip(),
+        )
+        if m:
+            meta[m.group(1).replace("-", "_")] = m.group(2).strip()
     # Author notes are dropped ONCE, here, so every downstream renderer sees clean
     # text. Doing it per-renderer was the old shape and it missed paths: a comment
     # written under ## Question came out as escaped `&lt;!--` prose on the page,
@@ -102,4 +125,3 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
     body_md = strip_notes("\n".join(lines[i:]))
     return dict(id=qid, title=qt, group=group, file=file, kind=kind, family=family,
                 sec=split_sections(body_md), **meta)
-

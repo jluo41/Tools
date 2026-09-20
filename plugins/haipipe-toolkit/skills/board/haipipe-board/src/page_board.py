@@ -474,9 +474,16 @@ def _gi_body(gi):
     return "".join(parts)
 
 
-def index_rows(meta, qs, href_for=None, group_href=None, compact_titles=False):
+def index_rows(meta, qs, href_for=None, group_href=None, compact_titles=False,
+               fold_groups=False):
     """The index listing: group headings, group intros (prose AND their ascii
     figures), and one row per page.
+
+    `fold_groups` wraps each group in a native <details>, closed by default:
+    the heading is the <summary>, a click opens the group's rows (JL 260918,
+    the b01 Task Board listed 465 tasks at once). It mirrors the SPACE Home's
+    project fold, needs no script, and 80-restore.js keeps an opened group open
+    across reloads because it keys on the summary text.
 
     ONE implementation reused by the generated Index, group pages, sidebar,
     and the legacy single-Markdown renderer. Hand-rewriting this for the board/
@@ -501,8 +508,15 @@ def index_rows(meta, qs, href_for=None, group_href=None, compact_titles=False):
 
     ginfo = meta.get("groups") or {}
     dsubs = desk_subblocks(meta, qs)
-    rows, cur, cur_tok = [], None, None
+    sizes = {}
     for q in qs:
+        if q.get("group"):
+            sizes[q["group"]] = sizes.get(q["group"], 0) + 1
+    rows, cur, cur_tok, folded = [], None, None, False
+    for q in qs:
+        if folded and q.get("group") != cur:
+            rows.append('</div></details>')
+            folded = False
         if q.get("group") and q["group"] != cur:
             cur = q["group"]
             cur_tok = None
@@ -510,9 +524,23 @@ def index_rows(meta, qs, href_for=None, group_href=None, compact_titles=False):
             # groups, so a group heading needs an anchor of its own. It is NOT a
             # page — `#group-QA` scrolls the index, it does not open a card — so
             # the id stays in its own namespace and never collides with a page.
-            rows.append(f'<div class="grp" id="group-{esc(bd.group_token(cur))}"'
-                        f' data-g="{esc(cur)}">'
-                        f'<span class="gt">{_gt_link(cur, group_href, cur)}</span></div>')
+            if fold_groups:
+                # The title is plain text so a click anywhere on the heading
+                # opens the fold; the group page keeps a small link of its own.
+                h = group_href(bd.group_token(cur))
+                go = (f'<a class="gopen" href="{h}" title="Open the {esc(cur)} page">↗</a>'
+                      if h else "")
+                n_pages = sizes.get(cur, 0)
+                rows.append(f'<details class="gfold" data-g="{esc(cur)}">'
+                            f'<summary class="grp" id="group-{esc(bd.group_token(cur))}"'
+                            f' data-g="{esc(cur)}"><span class="gt">{inline(cur)}</span>'
+                            f'<span class="gn">{n_pages} {"task" if n_pages == 1 else "tasks"}</span>'
+                            f'{go}</summary><div class="gbody">')
+                folded = True
+            else:
+                rows.append(f'<div class="grp" id="group-{esc(bd.group_token(cur))}"'
+                            f' data-g="{esc(cur)}">'
+                            f'<span class="gt">{_gt_link(cur, group_href, cur)}</span></div>')
             # Group intro (QC2): one sentence always visible; if more lines follow,
             # they open on click via a native <details>. No script involved, so the
             # strip-scripts invariant is untouched.
@@ -565,6 +593,8 @@ def index_rows(meta, qs, href_for=None, group_href=None, compact_titles=False):
             f'<span class="s">{st(q)[0]}</span><span class="i">{q["id"]}</span>'
             f'<span class="t">{nav_inline(q["title"])}</span>'
             + f'<span class="w">{"🧠 JL" if q["owner"]=="JL" else ("🔧 "+q["owner"] if q["owner"] else "")}</span></a>')
+    if folded:
+        rows.append('</div></details>')
     return rows
 
 
@@ -1425,7 +1455,8 @@ def render_tree(meta, qs, out_dir, only=None):
     bd.EMBEDS.clear()
     rows = index_rows(meta, qs, href_for=_href,
                       group_href=lambda tok: f"{tok}.html",
-                      compact_titles=compact_titles)
+                      compact_titles=compact_titles,
+                      fold_groups=is_block_board(meta))
     # The default index carries Board-level orientation; a Board can opt into
     # `index-view: pages` when the page roster is the only useful landing view.
     hrefs = tree_href_map(qs)

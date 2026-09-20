@@ -46,6 +46,7 @@ compared is REPORTED AS SUCH, never folded into the headline.
 import argparse
 import datetime
 import json
+import os
 import pathlib
 import sys
 
@@ -151,7 +152,46 @@ def run_off(n):
     """Branded packaged food. US subset only: the dump is multilingual and the
     door, like USDA, reads English. Scoring a French product name would measure
     language, not food resolution."""
-    o = pd.read_parquet(EXT / "openfoodfacts/off_product.parquet")
+    # The raw dump is normally materialized by build_openfoodfacts.py on the
+    # Lambda/shared-data host.  The frozen corpus is a portable copy of the
+    # same independent US reference and is present on lightweight checkouts
+    # where the 1.2 GB dump-derived parquet is intentionally not mounted.
+    # Prefer the raw artifact, then use the frozen copy without touching any
+    # resolver-produced columns.  A missing reference should remain an
+    # explicit error rather than silently turning this lane into zero rows.
+    configured = os.environ.get("FOODNORM_OPENFOODFACTS_PARQUET")
+    candidates = ([pathlib.Path(configured)] if configured else [])
+    candidates += [
+        EXT / "openfoodfacts/off_product.parquet",
+        ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_FoodInfo/2-corpus"
+                  "/OpenFoodFacts-US/E3_OFF.parquet",
+    ]
+    off_path = next((p for p in candidates if p.exists()), None)
+    if off_path is None:
+        wanted = "\n    ".join(str(p) for p in candidates)
+        raise FileNotFoundError("OpenFoodFacts reference not found; tried:\n    " + wanted)
+
+    o = pd.read_parquet(off_path)
+    if {"product_name", "countries_en"}.issubset(o.columns):
+        reference_kind = "dump-derived"
+    elif {"unit_text", "gold_Calories", "gold_Carbs", "gold_Protein",
+          "gold_Fat", "gold_Fiber"}.issubset(o.columns):
+        # E3_OFF is the frozen, US-filtered public reference used by the
+        # corpus builder.  Do not carry its resolved_* answer columns into the
+        # score; the evaluator only needs the public name and gold macros.
+        o = o.rename(columns={
+            "unit_text": "product_name",
+            "gold_Calories": "Calories",
+            "gold_Carbs": "Carbs",
+            "gold_Protein": "Protein",
+            "gold_Fat": "Fat",
+            "gold_Fiber": "Fiber",
+        })
+        o["countries_en"] = "United States"
+        reference_kind = "frozen-corpus-copy"
+    else:
+        raise ValueError(f"unrecognized OpenFoodFacts schema in {off_path}")
+
     o = o[o["countries_en"].astype(str).str.contains("United States", na=False)]
     o = o.dropna(subset=list(NUTRIENTS)).reset_index(drop=True)
     if n and n < len(o):
@@ -159,6 +199,8 @@ def run_off(n):
     res, _ = _score(o, o["product_name"], "openfoodfacts_us")
     res["truth_basis"] = "per_100g"
     res["comparable_basis"] = "per_100g"
+    res["reference"] = str(off_path.relative_to(ROOT)) if off_path.is_relative_to(ROOT) else str(off_path)
+    res["reference_kind"] = reference_kind
     res["note"] = ("crowd-sourced label transcription -- what the PACKAGE says. "
                    "strong on brand identity, weak on absolute nutrient truth.")
     return res

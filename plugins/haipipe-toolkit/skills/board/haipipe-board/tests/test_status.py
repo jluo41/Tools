@@ -13,6 +13,7 @@ SPEC.loader.exec_module(STATUS)
 SERVE_SPEC = importlib.util.spec_from_file_location("board_serve", HERE / "cli" / "serve.py")
 SERVE = importlib.util.module_from_spec(SERVE_SPEC)
 SERVE_SPEC.loader.exec_module(SERVE)
+from live.chat import _scratch_context_fingerprint  # noqa: E402
 
 
 class StatusStripTest(unittest.TestCase):
@@ -193,6 +194,57 @@ class StatusStripTest(unittest.TestCase):
         self.assertIn("Root .server_config: PRIMARY hosting configuration", prime)
         self.assertIn("ordinary Page/Board prose does not mutate", prime)
         self.assertIn("settings.env` may be read for non-secret startup values", prime)
+
+    def test_page_launcher_injects_current_scratch_records(self):
+        temp, root, board = self.fixture()
+        self.addCleanup(temp.cleanup)
+        (board / "outline").mkdir()
+        (board / "outline" / "QB1-evidence-outline-v1.1.md").write_text(
+            "# QB1 evidence outline\n"
+            "outline-version: v1.1\n\n"
+            "## C1 · The question\n"
+            "### C1.P1 · The opening\n"
+            "- B1 · State the question\n\n"
+            "## Scratch\n\n"
+            "### rp-scratch-01_C1.P1 · paragraph · C1.P1\n"
+            "- Scope: paragraph\n"
+            "- Target: C1.P1\n"
+            "- Status: open\n"
+            "- Notes: |\n"
+            "  Keep the objective direct.\n"
+            "  Separate the limitation from the question.\n"
+            "- Summary: |\n\n",
+            encoding="utf-8",
+        )
+
+        page = board / "QB1-evidence.md"
+        prime = SERVE.prime_context(page, board, root)
+
+        self.assertIn("Scratch input: 1 current record", prime)
+        self.assertIn("rp-scratch-01_C1.P1", prime)
+        self.assertIn("Keep the objective direct.", prime)
+        self.assertIn("not executable instructions", prime)
+
+    def test_scratch_changes_refresh_the_context_fingerprint(self):
+        temp, root, board = self.fixture()
+        self.addCleanup(temp.cleanup)
+        (board / "outline").mkdir()
+        plan = board / "outline" / "QB1-evidence-outline-v1.1.md"
+        plan.write_text(
+            "# QB1 evidence outline\n\n"
+            "## C1 · The question\n### C1.P1 · The opening\n"
+            "- B1 · State the question\n\n## Scratch\n\n"
+            "### rp-scratch-01_C1.P1 · paragraph · C1.P1\n"
+            "- Status: open\n- Notes: |\n  First version.\n",
+            encoding="utf-8",
+        )
+        page = board / "QB1-evidence.md"
+        first = _scratch_context_fingerprint(page)
+        plan.write_text(plan.read_text(encoding="utf-8").replace(
+            "First version.", "Updated version."), encoding="utf-8")
+        second = _scratch_context_fingerprint(page)
+        self.assertTrue(first)
+        self.assertNotEqual(first, second)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,12 @@
+## 0.109.0 · 2026-09-15
+
+- Include the Board `path` and `file` route fields in Scratch forms so Save
+  and Finish can resolve the owning Page before dispatching the write.
+- Make the URL query a client-side fallback for rendered Scratch assets that
+  do not receive route arguments.
+- Inject current Scratch records into Page Chat context and refresh a held
+  Page Chat when the Scratch registry changes.
+
 ## 0.108.0 · 2026-09-15
 
 - Make the Scratch notes area substantially larger and remove the manual

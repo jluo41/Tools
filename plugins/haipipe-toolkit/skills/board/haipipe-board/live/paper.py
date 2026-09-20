@@ -2300,6 +2300,16 @@ def _yn(v):
     return '<span class="ok">✓</span>' if v else '<span class="warn">✗</span>'
 
 
+def _not_ready_ids(rd):
+    """`readiness.not_ready` from build-manifest.json: the engine writes one
+    {"id", "reasons"} dict per page (build_delivery.py), older manifests a bare
+    id string. Either way the Delivery card names the page, never the dict."""
+    out = []
+    for x in rd.get("not_ready") or []:
+        out.append(str(x.get("id", "?")) if isinstance(x, dict) else str(x))
+    return out
+
+
 def render_delivery(d):
     """Delivery Space: what leaves the paper. Manuscript · Sections · Displays ·
     Checks · Rounds & Venue, every cell read from delivery/ and the pages."""
@@ -2341,7 +2351,7 @@ def render_delivery(d):
         facts += [("main text", "%s words%s" % (build.get("main_text_words", "?"), (" · limit %s" % build["main_text_word_limit"]) if build.get("main_text_word_limit") else " · no declared limit")),
                   ("citations", "%s cited · %s bib entries" % (build.get("citations", "?"), man.get("bib_entries", "?"))),
                   ("displays", "%s main table(s) · %s main figure(s)" % (build.get("main_tables", "?"), build.get("main_figures", "?"))),
-                  ("pages", "%s of %s ready%s" % (rd.get("ready", "?"), rd.get("total", "?"), (" · not ready: " + ", ".join(rd.get("not_ready") or [])) if rd.get("not_ready") else "")),
+                  ("pages", "%s of %s ready%s" % (rd.get("ready", "?"), rd.get("total", "?"), (" · not ready: " + ", ".join(_not_ready_ids(rd))) if rd.get("not_ready") else "")),
                   ("submission", "%s%s" % (sub.get("status", "?"), (" · " + "; ".join(sub.get("blockers") or [])) if sub.get("blockers") else ""))]
     if dv["stale"]:
         facts.append(("sources moved", "%d page(s) edited after the build: %s" % (len(dv["stale"]), ", ".join(dv["stale"]))))

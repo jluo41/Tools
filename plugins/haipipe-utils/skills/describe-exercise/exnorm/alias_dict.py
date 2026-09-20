@@ -24,6 +24,7 @@ writes NULL. That is the correct outcome, not a gap to be filled.
 ALIAS_CODE = {
     "walking":             ("17190", "Walking, 2.8-3.4 mph, level, moderate pace"),
     "walking, treadmill":  ("17190", "same pace assumption; the belt is not the activity"),
+    "brisk walking":       ("17200", "Walking, 3.5-3.9 mph, level, brisk, for exercise"),
     "hiking":              ("17082", "normal pace through fields, no load"),
     "running":             ("12020", "Jogging, general, self-selected pace"),
     "bicycling":           ("01014", "Bicycling, general"),

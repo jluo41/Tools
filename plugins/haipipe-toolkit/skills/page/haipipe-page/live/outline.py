@@ -2765,7 +2765,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         )
 
     _flush_paragraph()
-    rows.append(scratch_assets_html()) if not read_only else None
+    rows.append(scratch_assets_html(path_q, file_q)) if not read_only else None
 
     # ── the join runs BOTH ways ────────────────────────────────────────
     # Bullet → disk catches "we promised a display and built none". Disk →

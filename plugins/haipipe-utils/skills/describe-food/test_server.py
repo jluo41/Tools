@@ -13,6 +13,7 @@ visible from inside Python.
 """
 import json
 import os
+import pathlib
 import sys
 import time
 import urllib.error

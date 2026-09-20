@@ -157,7 +157,7 @@ you type                 phase     the chat loads                       ends whe
 `live/chat.py prime_context` injects, at connect: the board and page, the
 page's question and open Aims, `page-type:` and the phase strip, the outline
 inventory (plan version and tick, open `D<nn>` count, open feedback rows,
-evidence owed and landed), the page's own skill list (`<page>/outline/skill/<stem>.md`,
+current Scratch records, evidence owed and landed), the page's own skill list (`<page>/outline/skill/<stem>.md`,
 one ranked `- <name> · note:` row per skill), its off-stage Context-record authority
 rows, and its Evidence Item Supporting/Local Run bindings, plus the SPACE
 context and the status-strip duty. PageX bindings are compatibility history,

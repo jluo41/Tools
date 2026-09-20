@@ -24,7 +24,8 @@ sums it across drugs is, and a null unit is what stops them.
 import re
 from typing import Dict, Optional
 
-from .constants import (COUNT, FIELDS, G, IU, MG, ML, PER_ADMIN, TRUSTED)
+from .constants import (COUNT, FIELDS, G, IU, MG, ML, PER_ADMIN, PER_ML,
+                        TRUSTED, UNIT_PER_ML)
 
 # An ingredient string that means insulin. Deliberately generous on brand names,
 # because the ingredient field sometimes carries one.
@@ -77,6 +78,13 @@ def infer_unit(logged_unit, ingredient, dosage_form, insulin) -> Optional[str]:
     return None
 
 
+def infer_basis(unit: Optional[str]) -> Optional[str]:
+    """Return the scale basis for a dose unit that was actually reported."""
+    if unit == UNIT_PER_ML:
+        return PER_ML
+    return PER_ADMIN if unit else None
+
+
 def empty(source: str, conf: str) -> Dict:
     d = {k: None for k in FIELDS}
     d["MedSource"] = source
@@ -121,5 +129,5 @@ def build(item, hit: Optional[Dict], conf: str, source: str,
         d["DoseValue"] = float(item.dose)
         d["DoseUnit"] = infer_unit(item.unit, d["Ingredient"],
                                    d["DosageForm"], d["IsInsulin"])
-        d["DoseBasis"] = PER_ADMIN if d["DoseUnit"] else None
+        d["DoseBasis"] = infer_basis(d["DoseUnit"])
     return d

@@ -1,5 +1,22 @@
 # Changelog · task-table
 
+## 0.5.0 · 2026-09-18
+
+- Give every Task a status rolled up from its Runs (Done, Partial, Not run,
+  Running, Failed, Held, No data, Unknown, No runs), shown on the tree, in a
+  new Status column, and counted on every job and block line.
+- Read a receipt's `supersedes:` (scalar or list): the named Run renders
+  Superseded and stops counting toward its Task.
+- Normalize `expected_missing` and `external_required` receipts to No data.
+- Add `--surface tree` and `--depth block|job|task|run`.
+
+## 0.4.0 · 2026-09-15
+
+- Add a generated Markdown Structure Tree before the detailed Task, Config,
+  Run, and Store projections.
+- Show the full block → job → task → run shape with each Run's normalized
+  status, while keeping TSV output machine-readable and tabular.
+
 ## 0.3.0 · 2026-09-05
 
 - Make the Task Folder the only main-table row grain: one task remains one row

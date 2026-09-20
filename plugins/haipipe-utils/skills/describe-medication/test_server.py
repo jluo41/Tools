@@ -105,6 +105,19 @@ def t_three_dialects_over_the_wire():
     return "welldoc · ohio · shanghai all correct over HTTP"
 
 
+def t_stated_dose_and_lexicon_provenance_over_the_wire():
+    s, dose = post("/normalize", {"item": "metformin 500 mg"})
+    assert s == 200, dose
+    assert dose["Ingredient"] == "metformin", dose
+    assert dose["DoseValue"] == 500.0 and dose["DoseUnit"] == "mg", dose
+    assert dose["DoseBasis"] == "per_administration", dose
+
+    s, coded = post("/normalize", {"item": "612997"})
+    assert s == 200, coded
+    assert coded["MedSource"] == "lexicon:612997|fda_ndc:0002-8235-0", coded
+    return "stated dose and lexicon hop survive HTTP"
+
+
 def t_sentinel_over_the_wire():
     s, d = post("/normalize", {"item": "612997", "dose": 255})
     assert d["DoseValue"] is None and d["MedConf"] == "MISS", d
@@ -172,6 +185,8 @@ if __name__ == "__main__":
         ("batch order held, dose per row", t_batch_order),
         ("MISS crosses the wire as null", t_miss_is_null_not_nan),
         ("all three dialects over HTTP", t_three_dialects_over_the_wire),
+        ("stated dose and lexicon provenance over HTTP",
+         t_stated_dose_and_lexicon_provenance_over_the_wire),
         ("dose sentinel refused over HTTP", t_sentinel_over_the_wire),
         ("empty batch is 200", t_empty_batch),
         ("length mismatch -> 422", t_length_mismatch_is_422),

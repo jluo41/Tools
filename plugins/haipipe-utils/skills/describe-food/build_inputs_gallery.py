@@ -53,6 +53,47 @@ def sample_shape(*names, n=1):
     return take
 
 
+def sample_photo(n=1):
+    """Return a real CGMacros photo row, not the text placeholder ``Unknown``.
+
+    The frozen gold index intentionally omits image paths, so the photo shape
+    must join back to the source Diet frame.  Keep the first frame as an
+    absolute path: that is the contract consumed by stage 0, and it makes the
+    gallery specimen independently checkable on the host that built it.
+    """
+    def take(g):
+        rows = []
+        source = ROOT / "_WorkSpace/1-SourceStore/CGMacros"
+        for f in sorted(source.glob("@*/Diet.parquet")):
+            d = pd.read_parquet(f)
+            if not len(d) or "ImagePath" not in d.columns:
+                continue
+            d = d.copy()
+            d["PatientID"] = d["PatientID"].astype(str)
+            d["FoodName"] = d["FoodName"].astype(str)
+            d = d[(d["FoodName"].str.strip().str.lower() == "unknown")
+                   & d["ImagePath"].notna()]
+            rows.append(d[["PatientID", "CarbsEntryID", "FoodName", "ImagePath"]])
+        if not rows:
+            raise FileNotFoundError("no CGMacros photo rows with ImagePath")
+
+        d = pd.concat(rows, ignore_index=True)
+        d = d.sort_values(["PatientID", "CarbsEntryID"], kind="stable")
+        for _, row in d.iterrows():
+            rel = next((p.strip() for p in str(row["ImagePath"]).split(",")
+                        if p.strip()), "")
+            path = ROOT / "_WorkSpace/0-RawDataStore/CGMacros/Source" \
+                         / str(row["PatientID"]) / rel
+            if path.is_file():
+                return {
+                    "FoodName": [row["FoodName"]],
+                    "ImagePath": [str(path)],
+                }, ("Real CGMacros row. `Unknown` appears 1,644 times; this "
+                    f"specimen carries {path.name} from {row['PatientID']}.")
+        raise FileNotFoundError("CGMacros photo rows exist but no JPG is readable")
+    return take
+
+
 def sources(g):
     """Who wrote the rows, and what kind of thing each cohort writes."""
     rows = []
@@ -121,7 +162,7 @@ SHAPES = [
           "sit on the same row, so it is the only place this shape exists.",
           {"FoodName": ["Unknown"], "ImagePath": ["<a CGMacros photo>"]},
           by_shape("photo_only"), "5-api-examples/06-image-upload",
-          sample=sample_shape("photo_only")),
+          sample=sample_photo()),
     Shape("09-batch", "several meals at once",
           "A call shape rather than a row shape. Order is preserved and each "
           "meal keeps its own verdict.",

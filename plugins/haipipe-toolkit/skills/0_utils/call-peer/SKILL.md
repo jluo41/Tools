@@ -50,10 +50,26 @@ Use the user's action verb, not merely the presence of the word "peer".
 | create a new peer only so it can supply historical progress from a missing peer | READ_EXISTING_PEER | A new session has no old transcript. Return PAIR_NOT_REGISTERED; do not create a substitute. |
 | ambiguous wording | READ_EXISTING_PEER | Choose the safe read-only interpretation and report what was found. Never start a provider merely to clarify. |
 
+## Chinese shorthand for the peer
+
+Users may call the paired peer the ``对手`` (opponent), ``对手 session``,
+``对手的 session``, or ``peer session``. Treat these as colloquial names for
+the already registered other side of the pair, not as a request to create a
+new adversarial agent or a new cloud task. In the current Codex + Claude
+setup, ``对手`` normally means the registered Claude native session; resolve
+the exact provider and session ID from the manifest rather than inferring it
+from a display title.
+
+Apply the normal action-verb router to this shorthand: reading or checking
+the ``对手 session`` is `READ_EXISTING_PEER`; asking the ``对手`` to act,
+continue, or send a response is `START_OR_RESUME_PEER`.
+
 Examples:
 
 - "读一下 Claude session 现在干了啥" means READ_EXISTING_PEER.
+- "看一下你的对手 session 做到哪了" means READ_EXISTING_PEER.
 - "启动 Claude peer，让它读 Codex session" means START_OR_RESUME_PEER.
+- "让你的对手继续处理这个任务" means START_OR_RESUME_PEER.
 - "你自己读一下 peer，不要启动 Claude" is an explicit READ_EXISTING_PEER
   request and forbids all provider CLI calls.
 

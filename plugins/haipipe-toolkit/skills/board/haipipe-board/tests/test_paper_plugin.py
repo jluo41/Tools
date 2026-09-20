@@ -195,7 +195,7 @@ def make_board(root):
         "order_source": "compile-order block · A1-Story/StoryA",
         "pages": [{"id": "S-DESK-Main-1-Introduction", "ready": True, "reasons": [], "warnings": ["fragment may be stale"],
                    "outline": {"version": "v1.0", "approval": "✅ JL 260906 · in chat"}}],
-        "readiness": {"ready": 1, "total": 2, "not_ready": ["S-DESK-Main-2-Results"]},
+        "readiness": {"ready": 1, "total": 2, "not_ready": [{"id": "S-DESK-Main-2-Results", "reasons": ["outline not approved (no v1.x)"]}]},   # the engine's real shape: one dict per page
         "submission_readiness": {"status": "DRAFT", "blockers": ["G4 unverified"]},
         "warnings": ["bib key smith2020 differs between two pages"], "unresolved_refs": [], "bib_entries": 7,
         "build": {"main_text_words": 1200, "main_text_word_limit": None, "citations": 5, "main_tables": 0, "main_figures": 1,

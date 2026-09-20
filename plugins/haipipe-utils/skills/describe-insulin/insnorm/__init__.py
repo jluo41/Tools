@@ -18,10 +18,10 @@ They are also not nested, which is why this is its own skill: 5,445 rows -- all
 describe-medication, because they name a class or a product the FDA Directory
 does not list. Counted per cohort in `_InsInfo/README.md`.
 """
-from .client import (DEFAULT_TRANSPORT, DEFAULT_URL, FIELDS, TRANSPORTS,
-                     TRUSTED, canon, normalize)
+from .client import (AMBIGUOUS, DEFAULT_TRANSPORT, DEFAULT_URL, FIELDS,
+                     TRANSPORTS, TRUSTED, canon, normalize)
 from .pk_table import CLASSES
 
-__all__ = ["normalize", "FIELDS", "CLASSES", "TRUSTED", "TRANSPORTS", "canon",
-           "DEFAULT_TRANSPORT", "DEFAULT_URL"]
+__all__ = ["normalize", "FIELDS", "CLASSES", "TRUSTED", "AMBIGUOUS",
+           "TRANSPORTS", "canon", "DEFAULT_TRANSPORT", "DEFAULT_URL"]
 __version__ = "0.1.0"

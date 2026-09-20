@@ -53,7 +53,9 @@ PROFILE = Profile(
     scaled=("OnsetMin", "DurationMin"),
 
     conf_field="PKConf", source_field="PKSource", basis_field="PKBasis",
-    conf_order=["GOOD", "OK", "ALIAS", "MISS"],
+    # AMBIGUOUS is an explicit untrusted answer, distinct from a bank miss:
+    # the door knows multiple products were named but cannot choose one curve.
+    conf_order=["GOOD", "OK", "ALIAS", "AMBIGUOUS", "MISS"],
     trusted=list(TRUSTED),
 
     port=8080, url_env="INSNORM_URL",

@@ -52,3 +52,18 @@ details.gi summary:hover{color:var(--fg)}
  letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
 .dsub .st{font:600 11.5px ui-monospace,Menlo,monospace;color:var(--accent);letter-spacing:0}
 .dsub+.ir{margin-top:4px}
+
+/* ── folded groups on a Block index (JL 260918): each Job is a closed
+   <details> whose <summary> is the group heading, like the SPACE Home's
+   project fold. ▸ closed, ▾ open; the ↗ link opens the Job's own page. ── */
+details.gfold{margin:14px 0 0}
+details.gfold:first-of-type{margin-top:8px}
+details.gfold>summary.grp{margin:0;cursor:pointer;list-style:none;user-select:none;align-items:center}
+details.gfold>summary.grp::-webkit-details-marker{display:none}
+details.gfold>summary.grp::before{content:'▸';width:16px;flex:none;color:var(--accent);font-size:15px;line-height:1}
+details.gfold[open]>summary.grp::before{content:'▾'}
+details.gfold>summary.grp:hover .gt{color:var(--accent)}
+details.gfold .gn{font-size:12.5px;font-weight:400;color:var(--mut)}
+details.gfold .gopen{font-size:13px;font-weight:400;color:var(--mut);text-decoration:none;padding:0 4px}
+details.gfold .gopen:hover{color:var(--accent)}
+details.gfold>.gbody{padding:4px 0 6px}

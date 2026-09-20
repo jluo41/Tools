@@ -39,6 +39,8 @@ CONFIDENCE, and the one way to reach GOOD
            2.0 hours -- and that beats any table.
     OK     the curated table. Population values from FDA labels.
     ALIAS  a combination product resolved to its insulin component.
+    AMBIGUOUS  multiple products were named; both identity candidates are kept
+               and no single action curve is written.
     MISS   not an insulin this table knows.
 """
 import os
@@ -47,11 +49,12 @@ from typing import Dict, List, Optional, Sequence, Union
 
 from .pk_table import (ALIASES, COMBINATIONS, PK, PK_BASIS, REFERENCE_BASIS,
                        UNSUPPORTED_BASIS)
+from .lexicon import lookup as lexicon_lookup
 
 DEFAULT_TRANSPORT = os.environ.get("INSNORM_TRANSPORT", "local")
 DEFAULT_URL = os.environ.get("INSNORM_URL", "http://127.0.0.1:8080")
 
-GOOD, OK, ALIAS, MISS = "GOOD", "OK", "ALIAS", "MISS"
+GOOD, OK, ALIAS, AMBIGUOUS, MISS = "GOOD", "OK", "ALIAS", "AMBIGUOUS", "MISS"
 TRUSTED = (GOOD, OK, ALIAS)
 
 FIELDS = ("InsulinClass", "OnsetMin", "PeakMin", "DurationMin", "Biphasic",
@@ -127,8 +130,19 @@ def _basis(mode) -> str:
     return PK_BASIS.get(m, REFERENCE_BASIS if not m else m)
 
 
+_ID_RE = re.compile(r"^\d+(?:\.0+)?$")
+_OR_RE = re.compile(r"\s+\bor\b\s+", re.I)
+
+
 def _lookup(name):
-    """(pk key, confidence, source) for one drug string."""
+    """(pk key, confidence, source) for one drug string.
+
+    A numeric DrugKey is a WellDoc MedicationID, not a product name.  Resolve
+    it through the same lexicon used by describe-medication before entering
+    the PK table.  Also split explicit alternatives before the parenthesized
+    product precedence rule, so a field naming two different products cannot
+    silently select the first one.
+    """
     raw = str(name or "").strip()
     # `describe-insulin` consumes the medication resolver's DrugKey, not the
     # source row's JSON payload.  Treating a JSON blob as free text can find a
@@ -138,16 +152,39 @@ def _lookup(name):
             (raw.startswith("[") and raw.endswith("]"))):
         return None, MISS, "not_resolvable:json_payload"
 
+    if _ID_RE.fullmatch(raw):
+        med_name = lexicon_lookup(raw)
+        if med_name is None:
+            return None, MISS, "lexicon:no_such_id"
+        key, conf, src = _lookup_text(med_name)
+        return key, conf, f"lexicon:{int(float(raw))}+{src}"
+
+    alternatives = _OR_RE.split(raw)
+    if len(alternatives) > 1:
+        resolved = []
+        for alternative in alternatives:
+            key, conf, src = _lookup(alternative)
+            if key is not None and conf != AMBIGUOUS and key not in resolved:
+                resolved.append(key)
+        if len(resolved) > 1:
+            kept = " | ".join(resolved)
+            return kept, AMBIGUOUS, f"ambiguous:{kept}"
+
     # In clinical phrases the product is often inside parentheses while the
     # words outside describe the regimen (for example, "basal" or "bolus").
     # Resolve an explicit parenthesized product first; fall back to the whole
     # phrase for ordinary decorated product strings such as "Humalog (Lispro)".
     for part in re.findall(r"\(([^)]*)\)", raw):
-        key, conf, src = _lookup_canon(canon(part))
+        key, conf, src = _lookup_text(part)
         if key is not None:
             return key, conf, f"parenthesized:{src}"
 
-    return _lookup_canon(canon(raw))
+    return _lookup_text(raw)
+
+
+def _lookup_text(name):
+    """Resolve a non-ID string after any input-shape handling."""
+    return _lookup_canon(canon(name))
 
 
 def _lookup_canon(c):
@@ -222,7 +259,8 @@ def _normalize_local(items, dia_hours=None, delivery=None, raw=None,
             # to nothing makes _more_specific return None, which then compares
             # EQUAL to akey and overwrites a perfectly good seam answer with
             # nothing. Caught by the probe 'insulin lispro' + 'some junk'.
-            if akey is not None and _more_specific(akey, key) == akey:
+            if (akey is not None and aconf != AMBIGUOUS and conf != AMBIGUOUS
+                    and _more_specific(akey, key) == akey):
                 key, conf = akey, aconf
                 src = f"raw_more_specific:{akey}+{src}"
         mode = modes[i]
@@ -235,6 +273,18 @@ def _normalize_local(items, dia_hours=None, delivery=None, raw=None,
         d["DeliveryMode"] = mode
         d["PKBasis"] = basis
         if key is None:
+            out.append(d)
+            continue
+
+        # There is no single action curve for an explicit alternative. Keep
+        # both canonical candidates in the identity seam, but leave the curve
+        # fields null because choosing one would recreate the old silent-first
+        # defect. AMBIGUOUS is intentionally untrusted and declared by the
+        # insulin benchmark profile alongside MISS.
+        if conf == AMBIGUOUS:
+            d["InsulinResolved"] = key
+            d["PKSource"] = src
+            d["PKConf"] = conf
             out.append(d)
             continue
 

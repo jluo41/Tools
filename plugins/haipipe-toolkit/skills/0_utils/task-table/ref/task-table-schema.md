@@ -5,7 +5,7 @@ rendered surfaces. The generator `render_task_table.py` is the only writer of
 a task table; this file says what each of its cells means and where it came
 from. The generated row has two lenses: the plan lens (`Develops`, `Input`,
 `Output`, and config declarations) and the observed display/runtime lens
-(`Addr`, `Task`, `Configs`, `Code`, `Runs`, `State`). They are shown together
+(`Addr`, `Task`, `Status`, `Configs`, `Code`, `Runs`, `State`). They are shown together
 but remain separate sources of truth. The main Task Table has exactly one row
 per Task Folder; Configs and Runs are separate appendix grains.
 
@@ -33,6 +33,7 @@ name never filters a folder out.
 |---|---|---|
 | Address | folder prefixes joined | `t??` + N1 |
 | Task | folder name | — |
+| **Status** | rolled up from the task's Runs, section 2a | `⚪ No runs` |
 | **Develops** | 1 page head `develops:` · 2 docstring headline of the main script | `?` |
 | Input | 1 page head `input:` · 2 newest config top-level or `_meta` `worklist`/`payload`/`inputs`/`input`/`source`/`base` | `—` |
 | Output | 1 page head `output:` · 2 newest config top-level or `_meta`: `entry`+`out_tier`/`out_platform`/`out_vintage`, else `entry`+`out_dimension`/`vintage`/`out_name`, else `output`, else `store` | `—` |
@@ -41,6 +42,29 @@ name never filters a folder out.
 | Code | main script name | `—` |
 | Runs | `n tk` (tickets) · receipts by status | `0 tk` |
 | Provenance | Develops in _italics_ = docstring fallback; Config Catalog reports the purpose source. The TSV surface carries no italics; a `--surface task --format tsv` reader treats the page/configs as the source of truth | — |
+
+## 2a. Task Status rollup
+
+One word per Task, read off its Runs (section 5 statuses). A Run named in a
+newer receipt's `supersedes:` (a scalar, a `[a, b]` list, or `- item` lines)
+renders `Superseded` and is left out. First match wins:
+
+| Runs that still count | Status | Mark |
+|---|---|---|
+| no ticket and no receipt | No runs | ⚪ |
+| any Running | Running | 🏃 |
+| any Failed | Failed | ❌ |
+| any `? (…)` status | Unknown | ❓ |
+| any Held | Held | ⏸️ |
+| any No data | No data | 📭 |
+| some Done, some Ready | Partial | 🟡 |
+| every one Ready | Not run | ⬜ |
+| every one Done (or every Run superseded) | Done | ✅ |
+
+The cell reads `<mark> <word> N/M`: N Runs Done out of M Runs that count. TSV
+drops the mark. The tree, the job heading line, the block line, and the file
+header count tasks by this word. `state:` on the page is a separate typed
+column and is never overwritten by this rollup.
 
 **Main script** = the script a ticket names (`TASK_NAME="…"` or any literal
 `*.py`/`*.do`/`*.R`), matched with and without a legacy `NN_` prefix; else the
@@ -85,6 +109,7 @@ The job has no table of its own; its facts are one line under `### bNNjNN · <jo
 | Store | `src/config-defaults.yaml` or `.do` `store:` → `declared`; else the first `store:` found in a task config → `derived`. Two distinct values → `S-store` finding |
 | src | file count in `src/` (shared code) |
 | pages | tasks with `tNN_<task>.md` / tasks; `develops typed n` counts pages carrying a `develops:` line |
+| tasks by status | the job's tasks counted by the section 2a word |
 | tickets · runs | summed over the job's tasks |
 
 ## 5. Runs Overview fields
@@ -94,7 +119,7 @@ The job has no table of its own; its facts are one line under `### bNNjNN · <jo
 | Run | task address + ticket/receipt stem prefix |
 | Ticket | `runs/<stem>.sh` or `.ps1`; `⬜ none` for an orphan receipt |
 | Config | matching `scripts/config/<stem>.*` relative to the task |
-| Status | receipt `status` normalised: `ok`/`complete`/`completed` → Done · `running` → Running · `failed`/`aborted` → Failed · `planned` → Ready · `blocked` → Held · `superseded` → Superseded · absent → `? (no status)`; ticket without receipt → Ready |
+| Status | receipt `status` normalised: `ok`/`complete`/`completed` → Done · `running` → Running · `failed`/`aborted` → Failed · `planned` → Ready · `blocked` → Held · `superseded` → Superseded · `expected_missing`/`external_required`/`not_present`/`drop_missing`/`external_not_mounted` → No data · absent → `? (no status)`; ticket without receipt → Ready; named in a newer receipt's `supersedes:` → Superseded |
 | Started / Ended | receipt `started`/`started_at`, `ended`/`finished_at`, first 16 chars |
 | Exit | receipt `exit_code` |
 | Result | receipt folder relative to the block |
@@ -143,6 +168,7 @@ never failed is a tick, not a gate.
 [ ] Input/Output from the page, or from the config with the file named, or —
 [ ] every Run row pairs ticket ↔ receipt or says which is missing
 [ ] no Done without a receipt status that says so
+[ ] every Task Status follows section 2a; job and block counts add up
 [ ] one mode per job; store provenance declared or derived
 [ ] --check exits 0 on disk and has exited 1 on a mutated copy
 [ ] the table is regenerated, never edited

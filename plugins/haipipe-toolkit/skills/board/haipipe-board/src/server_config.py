@@ -16,6 +16,7 @@ SERVER_CONFIG_KEYS = frozenset({
     "JJLUO_TAILSCALE_PORT",
     "JJLUO_AUTH_FILE",
     "JJLUO_ACCESS_MODE",
+    "JJLUO_NO_AUTH",
 })
 
 
