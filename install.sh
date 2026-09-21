@@ -141,6 +141,7 @@ enumerate_skills() {
     local plugins_root="$1"
 
     find "$plugins_root" \
+        -path "$plugins_root/haipipe-toolkit/skills/display/_todo" -prune -o \
         -path '*/_paper-writing-backup' -prune -o \
         -path '*/_archive' -prune -o \
         -path '*/_old' -prune -o \

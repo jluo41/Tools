@@ -69,7 +69,13 @@ function Get-Skills {
         # Only accept <plugin>/skills/<...>; skip anything not under a skills/ tree.
         if ($parts.Length -lt 3 -or $parts[1] -ne 'skills') { continue }
         # install.sh's -prune, as an exclusion rather than a demotion.
-        if ($parts -contains '_archive' -or $parts -contains '_paper-writing-backup') { continue }
+        # The parked HAIPipe display implementations in _todo/ are explicitly retired.
+        if ($parts -contains '_archive' -or $parts -contains '_paper-writing-backup' -or
+            $parts -contains '_old' -or
+            ($parts.Length -ge 4 -and $parts[0] -eq 'haipipe-toolkit' -and
+             $parts[1] -eq 'skills' -and $parts[2] -eq 'display' -and $parts[3] -eq '_todo')) {
+            continue
+        }
 
         $plugin  = $parts[0]
         $relPath = ($parts[2..($parts.Length - 1)] -join '/')

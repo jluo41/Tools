@@ -1,23 +1,23 @@
 {
   "name": "jluo41-tools",
-  "description": "Personal Claude Code skill plugins for chronicle workflows, HAI-Pipe research, in-lab endpoint evaluation, JHU research-IT help, and subjective labeling",
+  "description": "Personal Claude Code skill plugins for HAI-Pipe research, in-lab endpoint evaluation, and subjective labeling",
   "owner": {
     "name": "Junjie Luo",
     "url": "https://github.com/jluo41"
   },
   "plugins": [
     {
-      "name": "chronicle",
-      "description": "Session, daily, email, and Obsidian chronicle workflows",
-      "version": "1.0.0",
-      "source": "./plugins/chronicle",
-      "category": "productivity"
+      "name": "haipipe",
+      "description": "HAI-Pipe research and machine-learning workflows for data, models, endpoints, evidence, and papers",
+      "version": "0.3.0",
+      "source": "./plugins/haipipe-toolkit",
+      "category": "research"
     },
     {
-      "name": "haipipe",
-      "description": "HAI-Pipe research toolkit: data, NN, endpoint, task, experiment, paper, and application workflows",
-      "version": "0.2.0",
-      "source": "./plugins/haipipe-toolkit",
+      "name": "haipipe-utils",
+      "description": "Normalizer utilities for cohort-specific food and exercise text with provenance",
+      "version": "0.1.0",
+      "source": "./plugins/haipipe-utils",
       "category": "research"
     },
     {
@@ -28,16 +28,9 @@
       "category": "research"
     },
     {
-      "name": "jhu-research-it",
-      "description": "JHU Research-IT helpdesk chatbot. Answers how-to questions about Johns Hopkins research IT infrastructure (PMAP, SAFE, SAFER, Discovery, Databricks, Crunchr, Epic Cosmos, REACH) by reading a local WIKI/ knowledge base. Invoke as /jhu-research-it.",
-      "version": "0.1.0",
-      "source": "./plugins/jhu-research-it",
-      "category": "productivity"
-    },
-    {
       "name": "subjective-label",
       "description": "Human-grounded subjective labeling with separate Building and Scanning doors joined by a signed, auditable handoff",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "source": "./plugins/subjective-label",
       "category": "research"
     }

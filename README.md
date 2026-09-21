@@ -1,178 +1,135 @@
 # Tools
 
-Personal [Claude Code](https://claude.ai/code) skill plugins for productivity,
-academic research, clinical model evaluation, and knowledge management.
+A personal collection of research and workflow tools for Claude Code and
+Codex. The repository contains first-party skill packages in `plugins/` and
+upstream projects in `references/`.
 
-## Plugins
+## First-party packages
 
-| Plugin | Description |
-|--------|-------------|
-| **[chronicle](plugins/chronicle/)** | Session logs, daily rollups, email indexing, and Obsidian/JSON Canvas workflows |
-| **[haipipe](plugins/haipipe-toolkit/)** | HAI-Pipe research toolkit: data, NN, endpoint, task, discovery, probe, paper, application, board, and display workflows |
-| **[inlab-human](plugins/inlab-human/)** | In-lab human interaction with deployed prediction endpoints, where the Claude Code chat is the UI: on-demand inference in CONSOLE mode, blind-then-assisted reader protocol in STUDY mode |
-| **[jhu-research-it](plugins/jhu-research-it/)** | JHU Research-IT helpdesk: answers how-to questions about PMAP, SAFE, SAFER, Discovery, Databricks, Crunchr, Epic Cosmos, and REACH from a local `WIKI/` |
-| **[subjective-label](plugins/subjective-label/)** | Multi-agent subjective text annotation with calibration, validation, and scale workflows |
+| Package | Focus | Guide |
+|---|---|---|
+| **haipipe** | Research and ML workflows across evidence, task Runs, first-class Insight and Design, papers, and the data → model → endpoint pipeline | [HAI-Pipe guide](plugins/haipipe-toolkit/README.md) |
+| **haipipe-utils** | Normalization skills that turn cohort-specific food and exercise text into typed measurements with provenance | [Utilities guide](plugins/haipipe-utils/README.md) |
+| **inlab-human** | Clinician studies of deployed prediction endpoints, including blind-then-assisted review | [In-Lab Human guide](plugins/inlab-human/README.md) |
+| **subjective-label** | Human-grounded construct building and corpus labeling with calibration and audit workflows | [Subjective Label guide](plugins/subjective-label/README.md) |
 
-`plugins/learn-infra/` is skills only (`learn-azure`, `learn-databricks`,
-`learn-audio-to-pronunciation`) and carries no `.claude-plugin/plugin.json`, so it
-is not installable as a plugin. Its skills arrive through the symlink installs
-below like any other.
+This table covers the four package directories directly under `plugins/`. The HAI-Pipe display subtree also contains nested HTML-PPT package metadata; nested packages are not automatically top-level entries in the root marketplace.
 
-### Inside haipipe
+## Repository map
 
-The largest plugin by far, and the one whose shape moves most. Counted from disk
-on 2026-08-02, excluding `_archive/`:
+| Path | Purpose |
+|---|---|
+| `plugins/` | First-party packages. The installers discover skills recursively under these package roots. |
+| `references/` | Upstream projects, reference material, and Git submodules. The installers do not install skills from this tree. |
+| `references/sources.yaml` | Source, origin, and license notes for the reference collection. |
+| `.claude-plugin/marketplace.json` | Claude Code marketplace catalog for this repository. |
+| `install.sh`, `install.ps1` | macOS/Linux and Windows installers for marketplace registration and skill links. |
+| `install-hooks.json` | Shared per-OS sound-hook configuration read by both installers. |
 
-```text
-family        skills   what it covers
-────────────────────────────────────────────────────────────────────────
-task            44     the internal executor: plan → build → execute → report
-paper           37     the paper lifecycle, seed through submission
-application     23     grant and application lifecycle
-discovery       15     the external-evidence executor: search · review · idea
-display         10     tables, figures, diagrams, slides, posters
-0_utils          8     shared utilities (diagrams, notebooks, obsidian, arxiv)
-board            5     one topic, one folder, one page per decision or stage
-0_connect        3     remote and infrastructure connectors
-probe            1     the consumer-level Q/A map binding questions to answers
-project          1     container scaffolding for a new project
-writing          1     prose rules for any authored text in the repo
-────────────────────────────────────────────────────────────────────────
-                148    plus 20 agents, and `diagrams/` (design boards, not skills)
-```
-
-`diagrams/` holds design **boards** rather than skills: one folder per topic,
-argued page by page, which is where a family's rules are settled before they
-graduate into a `SKILL.md`. See `plugins/haipipe-toolkit/skills/STRUCTURE.md`.
+For HAI-Pipe workflows, see its [package guide](plugins/haipipe-toolkit/README.md)
+and [skill structure map](plugins/haipipe-toolkit/skills/STRUCTURE.md).
 
 ## Installation
 
-### Quick Setup
+Clone with submodules to populate the reference collection as well as the
+first-party packages:
 
 ```bash
-git clone git@github.com:jluo41/Tools.git
+git clone --recurse-submodules git@github.com:jluo41/Tools.git
 cd Tools
-./install.sh
 ```
 
-Then in Claude Code:
+If the repository is already cloned, initialize its pinned submodules with:
 
-```text
-/plugin install chronicle@jluo41-tools
-/plugin install haipipe@jluo41-tools
-/plugin install inlab-human@jluo41-tools
-/plugin install jhu-research-it@jluo41-tools
-/plugin install subjective-label@jluo41-tools
+```bash
+git submodule update --init --recursive
 ```
 
-The list a plugin name must appear in is `.claude-plugin/marketplace.json`, and
-its `source` must be a directory that exists. An entry pointing at a deleted
-folder fails only at install time, which is why the two halves are worth checking
-together whenever a plugin is added or retired.
+Both installers discover skills recursively under first-party package
+`skills/` trees. The retired `plugins/haipipe-toolkit/skills/display/_todo/`
+tree is excluded on macOS/Linux and Windows, matching the Display package
+guide; its skills remain in the repository for historical reference.
 
-By default, `install.sh` registers this repository as the `jluo41-tools`
-marketplace. If the parent workspace has a `.claude/` directory, it symlinks
-the skills into that Claude workspace. If the parent workspace has a `.codex/`
-directory, it also symlinks the same skills into `.codex/skills/` for Codex.
+### macOS and Linux
+
+To link the current skills into a specific workspace without registering the
+marketplace:
+
+```bash
+./install.sh --no-marketplace --project /path/to/workspace
+```
+
+This creates `.claude/` and `.codex/` in the target workspace, links skills
+into both tools' `skills/` directories, and links plugin agents into
+`.claude/agents/`.
+
+Other options:
+
+```bash
+./install.sh                  # register the marketplace; may detect the parent workspace
+./install.sh --global         # link skills and agents into ~/.claude/
+./install.sh --hooks          # configure Claude Code sound hooks
+./install.sh --all            # marketplace + global links + hooks
+```
+
+The default shell installer registers this repository as the `jluo41-tools`
+marketplace. It auto-detects a parent workspace when that directory contains
+`.git` or `pyproject.toml`; use `--project` to select a target explicitly.
+Marketplace commands use the package names listed in
+`.claude-plugin/marketplace.json`.
 
 ### Windows
 
-Native symlinks on Windows require Administrator or Developer Mode, so use the
-PowerShell installer, which creates directory **junctions** instead (no special
-privileges needed):
+In PowerShell, create the target tool directories first, then link skills into
+them:
 
 ```powershell
-cd Tools
-.\install.ps1                          # marketplace + auto-detected project skills
-.\install.ps1 -Project C:\path\repo    # link into a specific workspace
-.\install.ps1 -Global                  # also link into ~\.claude\skills
-.\install.ps1 -Hooks                   # configure sound hooks in settings.json
-.\install.ps1 -All                     # marketplace + global + hooks
-.\install.ps1 -Symlink                 # use symlinks instead (needs admin / Dev Mode)
-.\install.ps1 -NoMarketplace           # skip marketplace registration
+New-Item -ItemType Directory -Force -Path 'C:\workspace\.claude','C:\workspace\.codex'
+.\install.ps1 -NoMarketplace -Project 'C:\workspace'
 ```
 
-Agents are single `.md` files, so without `-Symlink` they are copied rather than
-linked. The installer records what it wrote in `.jluo41-tools-agents.json` inside
-the agents directory, which is how a re-run can refresh its own copies and delete
-retired ones while never touching an agent file you wrote yourself.
+The Windows installer only installs into `.claude/` and `.codex/` directories
+that already exist under the target. It creates directory junctions by default;
+agents are copied and tracked so a later run can refresh installer-owned copies.
+Use `-Symlink` to create symbolic links instead, which requires Administrator
+privileges or Developer Mode.
 
-Junctions use absolute targets, so re-run `install.ps1` if you relocate the
-repo. The generated links are OS/machine-specific, so gitignore
-`<workspace>/.claude/skills/` and `<workspace>/.codex/skills/` and regenerate
-per machine rather than committing them (committed symlinks check out as dead
-text stubs on Windows).
+Other options:
 
-### Project Install
-
-```bash
-./install.sh --project /path/to/workspace
+```powershell
+.\install.ps1                         # register the marketplace and detect an existing parent workspace
+.\install.ps1 -Global                 # link skills globally and copy agents
+.\install.ps1 -Hooks                  # configure Claude Code sound hooks
+.\install.ps1 -All                    # marketplace + global links + hooks
+.\install.ps1 -NoMarketplace          # skip marketplace registration
 ```
 
-This symlinks every discovered skill into `/path/to/workspace/.claude/skills/`
-and `/path/to/workspace/.codex/skills/` when those tool directories exist.
-Skill discovery is recursive, so deeply nested skills such as
-`haipipe-toolkit/skills/paper/3-deliver/4-ship/haipipe-paper-to-word` are
-included.
+Windows junctions use absolute paths. Re-run the installer after moving the
+repository. The project auto-detection behavior differs between the shell and
+PowerShell installers, so use an explicit project path when targeting a
+workspace.
 
-Recursive means recursive: anything matching `*/skills/*/SKILL.md` is a skill, at
-any depth. A vendored dependency that ships its own `SKILL.md` is therefore picked
-up too, so keep third-party trees out of `skills/`.
+### Sound hooks
 
-### Global Install
+`--hooks` / `-Hooks` updates the `hooks` section in
+`~/.claude/settings.json` using the shared event and sound table in
+`install-hooks.json`. Other settings are preserved. A sound file that is not
+present on the machine leaves that hook silent.
 
-```bash
-./install.sh --global
-```
-
-This symlinks all skills to `~/.claude/skills/` so they are available in every
-Claude Code session.
-
-`_archive/` and `_paper-writing-backup/` are excluded, by both installers, so a
-retired skill never lands in your skills directory.
-
-Duplicate skill names are resolved deterministically because one skills directory
-cannot contain two symlinks with the same basename. No promotion rule is live
-today: every skill name is currently unique, so the tie-break is a stable
-plugin/path sort and whichever loses is reported on stdout.
-
-### Hooks
+### Updating the checkout
 
 ```bash
-./install.sh --hooks        # macOS / Linux
-.\install.ps1 -Hooks        # Windows
-```
-
-This configures Claude Code sound hooks in `~/.claude/settings.json`. The per-OS
-sound table lives in `install-hooks.json` and is read by both installers, so they
-cannot drift; each keeps its own small writer, which is why the PowerShell one
-needs no Python. A sound file missing on your machine is reported and its hook
-stays silent.
-
-### Update
-
-```bash
-cd Tools
 git pull
+git submodule update --init --recursive
 ```
 
-## Skill Development Validation
+## Skill development
 
-When adding or changing a skill, treat implementation and validation as two
-separate steps:
-
-1. Develop or revise the skill.
-2. Test the skill by calling a subagent with a fresh context and explicitly
-   instructing that subagent to invoke the new or revised skill against a
-   realistic task.
-3. Confirm that the subagent selected and used the skill as expected, followed
-   the skill instructions, and produced the intended result before committing or
-   publishing the change.
-
-This fresh-context subagent check is required because it tests the skill from
-the point of view of a new agent that has not seen the development discussion.
-The standard workflow is: develop the skill, then test the skill.
+When adding or changing a skill, validate it from a fresh context: ask a
+subagent to invoke the skill on a realistic task, then confirm it selected the
+skill, followed its instructions, and produced the intended result. Follow any
+package-specific guidance as well.
 
 ## License
 
-MIT
+The root `LICENSE` applies to repository-owned material. Projects under `references/` retain their upstream licenses; check their license files and `references/sources.yaml` before reuse.
