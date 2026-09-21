@@ -10,8 +10,8 @@ description: >-
   rounds; guideline freeze; executor evaluation; corpus scanning; final audit;
   or /subjective-label.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-01"
+  version: "0.8.0"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -45,13 +45,14 @@ Three layers, never mixed:
 
 ```text
 LAW      label-building · label-scanning          who may decide, human gates, verbs, forbidden acts
-ORDER    label-building-workflow · label-scanning-workflow   step order, resume, run receipts
-CROSSING subjective-label-workflow               phase numbers P0-P5, gates G0-G6, handoff validity, invalidation
+ORDER    label-building-workflow · label-scanning-workflow   operation order, internal steps, Run resume
+CROSSING subjective-label-workflow               Run Specs, dependencies, gates, Routes, handoff validity, invalidation
 RUN      haipipe-run + ref-run.md                 Level-4 identity, Ticket/Result pairing, receipt, presentation
 ```
 
-A rule that fits two layers goes in the door. Phase and gate numbers are
-declared in `subjective-label-workflow` only.
+A rule that fits two layers goes in the door. P0-P5 and G0-G6 are stable
+compatibility labels declared in `subjective-label-workflow`; they are not
+independent Workflow units, owners, or route authority.
 
 ## The crossing
 
@@ -154,6 +155,6 @@ was loaded through a symlink (`~/.claude/skills/...`), resolve it first.
 Inspect actual engine capability before writing. A conceptual contract is not
 evidence that sealing, checkpointing, evaluation, production, or auditing ran.
 When a required keeper, writer, runner, or verifier is absent, return `HOLD`
-with the missing capability, preserved artifact frontier, responsible owner,
-and next implementation action. Never emulate a missing phase with majority
-vote, inferred provenance, or placeholder receipts.
+with the missing capability, preserved Run frontier, responsible owner, and
+next implementation action. Never emulate a missing Run, owner, or gate with
+majority vote, inferred provenance, or placeholder receipts.

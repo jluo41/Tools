@@ -1,37 +1,39 @@
 ---
 name: label-scanning-workflow
 description: >-
-  The ORDER machine of the Scanning side of the subjective-label family: drives
-  P3 Test (GOLD locked before SCORE), P4 Scan (manifest, preflight, shards,
-  risk queue, reconcile), and P5 Audit (design, blind sample, findings, route,
-  repair loop) as independently closable Labeling operations on
-  disk, owns Run-level resume and receipts, and hands
-  the crossing back to subjective-label-workflow. It owns no law: boundary,
-  human gates and forbidden acts live in label-scanning. Use when running or
+  The Scanning Run Spec guide for the subjective-label Workflow: describes
+  operation order, Run-level resume, receipts, and repair paths for test,
+  production, and audit work. P3-P5 are compatibility capability tags, not
+  lifecycle owners. The shared Workflow Definition owns the Run graph and
+  Routes; this guide owns no semantic law, gate authority, or separate
+  frontier. Use when running or
   resuming an evaluation, a production scan, a risk queue, an audit or a
   repair, or /label-scanning-workflow.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-01"
+  version: "0.7.0"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /label-scanning-workflow · one Scanning operation at a time
+# /label-scanning-workflow · Scanning Run Specs and internal steps
 
-Load `subjective-label` (family), `subjective-label-workflow` (phase numbers,
-gates G3-G6) and `label-scanning` (the law) first. This file says only in what
-ORDER the Scanning side runs, what it resumes, and which receipt each step
-writes. Nothing here may start without a valid Label Handoff; the first step of each
-phase binds its checksum into that phase's registry or manifest.
+Load `subjective-label` (family), `subjective-label-workflow` (the Run Spec
+graph and Routes), and `label-scanning` (semantic authority and restrictions)
+first. **A Workflow is a list of Runs.** The operation names below are Run
+Types used by the shared Workflow's Run Specs. This file describes their
+Scanning-side prerequisites and internal Steps; the source Run Spec owns its
+commission, actor, entry/exit gates, Route, and completion rule. P3-P5 are
+compatibility capability tags only and do not create a separate frontier.
+Every Scanning Run binds the exact Label Handoff checksum in its Ticket.
 
 ## Run allocation
 
 Read `../../ref/ref-run.md` before allocating. P3-P5 use these Runs:
 
 ```text
-P3  test-gold-lock → executor-predict* → executor-score* → executor-select
-P4  scan-preflight → scan-shard* → risk-route → human-review → reconcile
-P5  audit-sample → audit-human-gold → audit-analyze → dstar-materialize
+P3 (compat tag)  test-gold-lock → executor-predict* → executor-score* → executor-select
+P4 (compat tag)  scan-preflight → scan-shard* → risk-route → human-review → reconcile
+P5 (compat tag)  audit-sample → audit-human-gold → audit-analyze → dstar-materialize
 ```
 
 The registry, production manifest, and audit design commission an episode;
@@ -41,7 +43,7 @@ Ticket to `runs/<RUNNAME>.yaml` and its runtime/Result envelope to
 protected data. Parallelize only the starred Runs after their prerequisite
 closes.
 
-## P3 Test · order
+## Test Run Specs · P3 compatibility tag
 
 The human step is first and locks before any executor runs.
 
@@ -72,7 +74,7 @@ SCORE
 Step 7 may not start before `lock.json` exists; step 8 may not start while any
 candidate prediction Run is open. A registry edited after step 3 invalidates the episode.
 
-## P4 Scan · order
+## Production Run Specs · P4 compatibility tag
 
 ```text
 0 manifest    freeze the episode commission: handoff checksum · qualified executor + wrapper · route · thresholds ·
@@ -98,7 +100,7 @@ queue row with no human final, and `reconcile` at the first id with no terminal
 row. A changed threshold, executor, or wrapper creates a new production episode
 and new downstream Runs.
 
-## P5 Audit · order
+## Audit Run Specs · P5 compatibility tag
 
 ```text
 0 design     freeze the episode commission: population, strata, seed, inclusion probabilities, blind protocol,
@@ -118,20 +120,21 @@ and new downstream Runs.
 ```
 
 The repair loop is steps 4 → 0 under a new folder; a receipt is never edited.
-`rescan` returns to P4 with `run_<n+1>`; `semantic` returns the job to the
-family workflow, which reopens Building under a new lineage and writes the
-invalidation receipt.
+`rescan` Routes to a new `scan-preflight` Run with `run_<n+1>`; `semantic`
+Routes to `round-prepare` under a new Building lineage. Record invalidation
+and affected Runs in the authorized source Run receipt or job control; do not
+derive either Route from a compatibility tag.
 
 ## Receipts this machine writes
 
 ```text
 runs/<RUNNAME>.yaml            one authored operation Ticket
 results/<RUNNAME>/             runtime.yaml + safe result.yaml for that operation
-evaluation/registry.yaml       G3 receipt: frozen before release
+evaluation/registry.yaml       input bound by test-gold-lock; G3 is its compatibility predicate
 test/final/lock.json           GOLD locked; SCORE may start
-evaluation/summary.md          G4 receipt: qualified route or none
-production/run_<n>/run_report.md   G5 receipt: one terminal per id
-audit/final_<n>/receipt.json   G6 receipt: route and, on pass, the D* checksum
+evaluation/summary.md          executor-select Run Result: qualified route or none
+production/run_<n>/run_report.md   reconcile Run Result: one terminal per id
+audit/final_<n>/receipt.json   audit-analyze Run Result: route and, on pass, the D* checksum
 ```
 
 Each operation Result carries job, lineage, handoff checksum, Run address,
@@ -139,7 +142,7 @@ actor, assertions, input/output checksums, route, timestamp, and prior receipt.
 
 ## Return
 
-Return the bound handoff checksum, current Run address or `none`, operation and
+Return the bound handoff checksum, current Run address or `none`, Run Spec/operation and
 episode, files written this Run, actual allocated Run count, queue length still
-owed to a human, receipt route, and exactly one next runnable operation or
+owed to a human, receipt Route, and exactly one next runnable Run Spec or
 named human gate.

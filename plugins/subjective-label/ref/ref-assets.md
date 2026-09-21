@@ -23,7 +23,7 @@ Human-readable Markdown files are rendered views and never a second source of tr
 │       └── result.yaml               safe pointers to canonical domain Results
 ├── corpus/
 │   ├── manifest.json
-│   ├── items.jsonl                   every row: population_status eligible | sealed (§7)
+│   ├── items.jsonl                   eligible development rows only (§7)
 │   └── final/
 │       ├── D_star.jsonl
 │       └── manifest.yaml
@@ -139,18 +139,22 @@ results/<RUNNAME>/runtime.yaml
 results/<RUNNAME>/result.yaml
 ```
 
-The envelope points to the canonical artifacts already owned by P0-P5; it does
-not copy them or become semantic authority. The 25 operation kinds include
-bounded P0 construction, P1 calibration work, P2 handoff, P3 prediction and
-scoring, P4 shards and review, and P5 audit and materialization. Round, Test,
-Scan, and Audit are grouping episodes, not extra Runs. Item events, tool calls,
-and retries under unchanged frozen inputs stay inside the relevant operation.
+The envelope points to canonical artifacts produced or consumed by its Run
+Spec; it does not copy them or become semantic authority. P0-P5 are
+compatibility capability tags for the 25 operation kinds: bounded contract
+work, calibration, handoff, prediction and scoring, production, audit, and
+materialization. Round, Test, Scan, and Audit are grouping episodes, not extra
+Runs. Item events, tool calls, and retries under unchanged frozen inputs stay
+inside the relevant operation.
 Read `ref-run.md` for allocation, count law, completion gates, and presentation.
 
-The `gates/` receipts are phase authority, not Run envelopes.  In particular,
-the Board Labeling surface must call the canonical status evaluator whenever a
-P0 or G0 receipt exists; it may show a compatibility file-presence view only
-for historical lanes that have no canonical receipt yet.
+The `gates/` receipts hold domain predicates and evidence; they are not
+automatically Run envelopes or independent authority units. The Workflow
+Definition binds each gate to its owning Run Spec/receipt or to a named job
+`resource_controls` entry. In particular, the Board Labeling surface must call the
+canonical status evaluator whenever a contract or G0 receipt exists; it may
+show a compatibility file-presence view only for historical lanes that have
+no canonical receipt yet.
 
 ## 3. Calibration Round episode
 
@@ -296,15 +300,15 @@ register's law, not restated here.
 
 ## 7. Sealed test
 
-Every row of `corpus/items.jsonl` carries `population_status: eligible` or
-`population_status: sealed`; `engine/fence_source.py` writes it before the job
-exists. The development pool is exactly the `eligible` rows. A row without the
-field is not in the pool. A round batch, a reveal index, an embedding, a
-retrieval, or a prelabel reads only `eligible` rows, and a round batch that
-holds a `sealed` row voids the round.
-
-The sealed manifest exists at initialization and is readable only by the custodian until `G*` freezes.
-Its protected identifier storage may be encrypted or isolated by filesystem permissions.
+`engine/fence_source.py` draws the sealed test before development access and
+writes only eligible rows to `corpus/items.jsonl`, each with
+`population_status: eligible`. The public corpus manifest records the eligible
+and sealed counts. The protected sealed manifest stores item IDs and hashes,
+not test text. The custodian must retain the raw source separately under
+appropriate access controls; the engine has no sealed-text release reader.
+Development batches, reveal indexes, embeddings, retrievals, and prelabels
+resolve inputs from the eligible corpus only. A row not in that canonical
+eligible corpus is refused by model-facing readers.
 
 The access log records:
 
@@ -367,7 +371,7 @@ The final report states provenance shares, weighted error and interval, protecte
 | `cache/reveal/` | `engine/calibration.py`; regenerable |
 | `exposure/group_examples.jsonl` | `engine/embedding_build.py` (`group_examples`, `item_text`); append-only, never rebuilt |
 | `rounds/round_NN/sessions/feedback.jsonl` | `engine/calibration.py add_feedback`; notes from the chat about an item (author human or model), append-only, never a label |
-| `population_status` on `corpus/items.jsonl`, sealed manifest at fence time | `engine/fence_source.py`, before the job exists |
+| eligible `population_status` rows and protected ID/hash manifest | `engine/fence_source.py`, before the job exists |
 | closed policy, cumulative gold, checkpoint | Checkpoint Keeper |
 | round card `released:` | a person (round_01 today: the identified human calls `release_round`) |
 | `register.md` | Checkpoint Keeper (Contract scaffolds it) |

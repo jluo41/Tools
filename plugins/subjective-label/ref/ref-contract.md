@@ -8,6 +8,10 @@ It applies to the human-grounded subjective-label lifecycle governed by the curr
 One identified human is the semantic authority for one subjective trait in one project.
 Models may retrieve, pre-label, diagnose, draft, and execute a frozen policy.
 Only an inspectable human decision creates human gold or accepts a substantive semantic rule.
+In the current local implementation, `human_id` is caller-supplied and G0 is
+caller-attested; the CLI and Board do not authenticate the actor. Use only
+within a trusted single-user workflow until an authenticated principal is
+bound to meaning and labeling receipts.
 
 Required final deliverables:
 

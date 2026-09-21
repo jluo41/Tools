@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import subprocess
 import sys
 from collections import Counter
@@ -90,15 +91,81 @@ def test_planner_cli_executes_the_documented_example():
         text=True,
     )
 
-    assert "P0        6" in completed.stdout
-    assert "P1       19" in completed.stdout
-    assert "TOTAL    43" in completed.stdout
+    assert "P tag (compatibility only)" in completed.stdout
+    assert "Compat tag (not authority)" in completed.stdout
+    assert "P0-P5 are compatibility capability tags only" in completed.stdout
+    tag_counts = {
+        line.split()[0]: int(line.split()[1])
+        for line in completed.stdout.splitlines()
+        if line.split() and line.split()[0] in {"P0", "P1", "P2", "P3", "P4", "P5"}
+    }
+    assert tag_counts == {"P0": 6, "P1": 19, "P2": 1, "P3": 8, "P4": 5, "P5": 4}
+    total_line = next(line for line in completed.stdout.splitlines() if line.startswith("TOTAL"))
+    assert total_line.split() == ["TOTAL", "43"]
     assert "rl43_dstar-materialize_d-star-v1" in completed.stdout
+
+
+def test_optional_p0_run_counts_can_be_zero_and_match_formula():
+    catalog = _catalog_module()
+    runs = catalog.plan_runs(
+        discovery=2,
+        round_weak=(0, 2, 2),
+        executors=3,
+        shards=1,
+        guideline_seed_count=0,
+        test_reserve_count=0,
+        embedding_build_count=0,
+    )
+
+    assert len(runs) == 40
+    assert not {
+        "guideline-seed",
+        "test-reserve",
+        "embedding-build",
+    }.intersection(run.operation for run in runs)
+    assert len(runs) == 2 + 0 + 0 + 0 + 4 + 5 * 3 + 2 * 3 + 1 + 12
+
+
+def test_planner_cli_accepts_zero_optional_p0_counts():
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(CATALOG_PATH),
+            "plan",
+            "--discovery",
+            "2",
+            "--round-weak",
+            "0,2,2",
+            "--executors",
+            "3",
+            "--shards",
+            "1",
+            "--guideline-seeds",
+            "0",
+            "--test-reservations",
+            "0",
+            "--embedding-builds",
+            "0",
+            "--json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    payload = json.loads(completed.stdout)
+    operations = [run["operation"] for run in payload["runs"]]
+    assert payload["planned_count"] == 40
+    assert payload["phase_semantics"] == (
+        "compatibility capability tag only; not Workflow route authority"
+    )
+    assert "guideline-seed" not in operations
+    assert "test-reserve" not in operations
+    assert "embedding-build" not in operations
 
 
 def test_labeling_run_ids_use_the_native_rl_namespace():
     catalog = _catalog_module()
-    runs = catalog.plan_runs(discovery=0, round_weak=(), executors=1, shards=1)
+    runs = catalog.plan_runs(discovery=0, round_weak=(0,), executors=1, shards=1)
 
     assert runs
     assert all(run.run.startswith("rl") for run in runs)
@@ -110,7 +177,7 @@ def test_neutral_run_presenter_and_family_workflows_use_granular_dialect():
         TOOLKIT_ROOT / "skills" / "run" / "haipipe-run" / "SKILL.md",
         TOOLKIT_ROOT
         / "skills"
-        / "board"
+        / "page"
         / "page-plugins"
         / "haipipe-plugin-runs"
         / "SKILL.md",
@@ -145,14 +212,49 @@ def test_neutral_run_presenter_and_family_workflows_use_granular_dialect():
         assert stale not in text
 
     assert "Never add a second row for the Round, Test, Scan, or Audit episode" in text
-    assert "Bare human" in text
+    assert "Bare approval, signature" in text
 
 
 def test_planner_rejects_negative_cardinality():
     catalog = _catalog_module()
-    try:
-        catalog.plan_runs(discovery=-1, round_weak=(), executors=1, shards=1)
-    except ValueError as exc:
-        assert "discovery must be non-negative" in str(exc)
-    else:
-        raise AssertionError("negative cardinality must fail")
+    for kwargs, expected in (
+        ({"discovery": -1}, "discovery must be non-negative"),
+        ({"guideline_seed_count": -1}, "guideline_seed_count must be non-negative"),
+        ({"test_reserve_count": -1}, "test_reserve_count must be non-negative"),
+        ({"embedding_build_count": -1}, "embedding_build_count must be non-negative"),
+    ):
+        values = {
+            "discovery": 0,
+            "round_weak": (0,),
+            "executors": 1,
+            "shards": 1,
+            **kwargs,
+        }
+        try:
+            catalog.plan_runs(**values)
+        except ValueError as exc:
+            assert expected in str(exc)
+        else:
+            raise AssertionError(f"negative cardinality must fail: {expected}")
+
+
+def test_planner_rejects_missing_required_routes():
+    catalog = _catalog_module()
+    for kwargs, expected in (
+        ({"round_weak": ()}, "round_weak must contain at least one calibration round"),
+        ({"executors": 0}, "executors must be at least 1"),
+        ({"shards": 0}, "shards must be at least 1"),
+    ):
+        values = {
+            "discovery": 0,
+            "round_weak": (0,),
+            "executors": 1,
+            "shards": 1,
+            **kwargs,
+        }
+        try:
+            catalog.plan_runs(**values)
+        except ValueError as exc:
+            assert expected in str(exc)
+        else:
+            raise AssertionError(f"missing required route must fail: {expected}")

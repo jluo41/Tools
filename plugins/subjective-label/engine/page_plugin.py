@@ -99,9 +99,12 @@ def _count_files(directory: Path, root: Path, pattern: str = "*") -> int:
     return sum(1 for path in directory.glob(pattern) if _safe_file(path, root))
 
 
-def _phase_index(state: dict) -> int:
-    phase = str(state.get("phase") or "P0")
-    return next((i for i, (name, _) in enumerate(PHASES) if name == phase), 0)
+def _capability_state(index: int, state: dict) -> str:
+    if index == 0:
+        return "P0 contract valid" if state.get("p0_contract_integrity_valid") else "HOLD · P0 contract"
+    if index == 1:
+        return "Round 1 available · partial" if state.get("g0_passed") else "partial · blocked by G0"
+    return "not implemented · HOLD"
 
 
 def _metric(label: str, value: object) -> str:
@@ -120,10 +123,9 @@ def render(page_src: Path) -> str:
          if row["status"].lower() not in {"complete", "done", "superseded"}),
         None,
     )
-    phase_i = _phase_index(state)
     phase_strip = "".join(
-        f'<div class="phase {"past" if i < phase_i else "now" if i == phase_i else ""}">'
-        f'<b>{pid}</b><span>{name}</span></div>'
+        f'<div class="phase"><b>{pid}</b><span>{name}</span>'
+        f'<small>{html.escape(_capability_state(i, state))}</small></div>'
         for i, (pid, name) in enumerate(PHASES)
     )
     integrity = state.get("integrity_errors") or []
@@ -164,14 +166,14 @@ def render(page_src: Path) -> str:
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>🏷 Labeling · {html.escape(page_src.stem)}</title><style>{_CSS}</style></head>
 <body><header><div><h1>🏷 Labeling</h1><p>{html.escape(page_src.stem)}</p></div>
-<div class="tags"><span>{html.escape(str(state.get("phase") or "P0"))}</span>
+<div class="tags"><span>{html.escape(str(state.get("phase") or "P0"))} compatibility tag</span>
 <span>👤 {html.escape(str(authority))}</span><span>⚙ {len(runs)} rl Runs</span></div></header>
 <nav role="tablist" aria-label="Labeling spaces">
 <button class="on" data-space="workflow">🧭 Workflow</button>
 <button data-space="data">🗃 Data</button><button data-space="guideline">📘 Guideline</button>
 <button data-space="human">🧑 Human</button><button data-space="quality">🧪 Quality</button></nav>
 <main>
-<section class="space on" data-panel="workflow"><h2>Workflow Space</h2>
+<section class="space on" data-panel="workflow"><h2>Compatibility capabilities · not lifecycle progress</h2>
 <div class="phases">{phase_strip}</div><div class="decision"><article><b>First blocked frontier</b>
 <p>{html.escape(str(failed))}</p></article><article><b>One next action</b>
 <p>{html.escape(str(next_action))}</p></article></div>
@@ -186,12 +188,12 @@ def render(page_src: Path) -> str:
 <p class="guard">Protected item text and sealed identifiers are never rendered here.</p></section>
 <section class="space" data-panel="guideline"><h2>Guideline Space</h2><div class="grid">
 <article>{_metric("policy versions", policies)}{_metric("current", _field(root / "policy/current", "policy", root) or ((root / "policy/current").read_text(encoding="utf-8").strip() if _safe_file(root / "policy/current", root) else "none"))}</article>
-<article>{_metric("meaning receipt", "valid" if state.get("meaning_receipt_valid") else "open")}
+<article>{_metric("meaning receipt", "caller-attested" if state.get("meaning_receipt_valid") else "open")}
 {_metric("Label Handoff", "present" if (root / "handoff/label-v1.yaml").is_file() else "not yet")}</article></div></section>
 <section class="space" data-panel="human"><h2>Human Space</h2><div class="grid">
 <article>{_metric("semantic authority", authority)}{_metric("meaning confirmation", "confirmed" if state.get("meaning_receipt_valid") else "owed")}</article>
 <article>{_metric("round episodes", rounds)}{_metric("closed checkpoints", checkpoints)}</article></div>
-<p class="guard">Only the named human creates gold or signs STOP/FREEZE. Chat transports the decision; receipts make it real.</p></section>
+<p class="guard">G0 records a caller attestation; this local surface does not authenticate identity. Chat transports a decision, while receipts record it.</p></section>
 <section class="space" data-panel="quality"><h2>Quality Space</h2><div class="grid">
 <article>{_metric("sealed reservation", "present" if (root / "test/sealed/status.json").is_file() else "missing")}
 {_metric("active custodian", state.get("sealed_custodian") or "missing")}

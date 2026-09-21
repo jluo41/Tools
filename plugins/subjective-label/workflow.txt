@@ -1,7 +1,7 @@
 🏗🔍 subjective-label plugin · v0.4.0
 =====================================
 
-One umbrella · two sibling doors · six journey phases · one signed crossing.
+One Workflow · a list of Labeling Runs · two capability groupings · one signed crossing.
 
 
 FAMILY
@@ -14,34 +14,36 @@ FAMILY
   🏗 LABEL BUILDING                                          🔍 LABEL SCANNING
   "Is this what the human means?"                          "Was it executed reliably?"
 
-  P0 CONTRACT                                               P3 TEST
+  P0 capability tag (compatibility)                        P3 capability tag (compatibility)
       │                                                         │  GOLD · SCORE
       ▼                                                         ▼
-  P1 ROUND × N                                              P4 SCAN
+  P1 capability tag (compatibility)                        P4 capability tag (compatibility)
       │  PREPARE · JUDGE · LEARN · CLOSE                       │  risk queue
       │  another round ───────────────────↺                     ▼
-      ▼                                                     P5 AUDIT
-  P2 FREEZE                                                     │  repair ↺
+      ▼                                                     P5 capability tag (compatibility)
+  P2 capability tag (compatibility)                            │  repair ↺
       │                                                         ▼
   SIGNED LABEL HANDOFF ─────────────────────────────────────────▶ D*
      G* · D_cal* · corpus · schema · sealed-test checksum
 
 
-WORD LAW
-────────
+WORKFLOW LAW
+────────────
 
-  journey phase   Contract · Round · Freeze · Test · Scan · Audit
-                  each names its own authority artifact
+  Workflow       list of Run Specs + dependencies + Routes + completion rule
+  Run instance   one allocated commission with Ticket · attempts · Result · receipt
 
-  round step      PREPARE · JUDGE · LEARN · CLOSE
-                  resumable actions inside one Round
+  P0-P5           serialized capability tags retained for existing records/views
+                  not workflow nodes, lifecycle owners, or route authority
 
-  test step       GOLD (human, blind) · SCORE (executors, blind)
-                  ordered actions inside Test
+  internal Step  PREPARE · JUDGE · LEARN · CLOSE, or GOLD · SCORE
+                  actions inside a commissioned Run
 
-  gate            G0-G6, checkable transitions between artifacts
+  gate            predicate on a Run Spec transition, with evidence on its
+                  owning Run receipt or named `resource_controls` record
 
-  route           another round · HOLD · repair · rescan · reopen · complete
+  route           declared Run Spec outcome: another Run · HOLD · repair ·
+                  rescan · semantic reopen · CLOSE
 
   item event      one human-first or final judgment
 
@@ -49,7 +51,8 @@ WORD LAW
                   → events → checkpoint.json → view/   (ref/ref-assets.md §3)
   register        register.md · seven regions × open / covered / risky
 
-Pick, seal, label, rules, measure, and next are not journey phases.
+Pick, seal, label, rules, measure, and next are not independent Runs unless
+they meet the shared Run commission and close-rule criteria.
 
 
 THE CROSSING
@@ -70,7 +73,7 @@ USER SURFACE
   /subjective-label              auto-route one next runnable action
   /label-building                the Building LAW · /label-building-workflow  the Building ORDER
   /label-scanning                the Scanning LAW · /label-scanning-workflow  the Scanning ORDER
-  /subjective-label-workflow     phase numbers, gates, the crossing
+  /subjective-label-workflow     Run Specs, dependencies, gates, Routes, crossing
 
 
 STOP RULE

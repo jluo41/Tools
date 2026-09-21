@@ -1,7 +1,9 @@
 # Reference: human-grounded agent architecture
 
 This reference defines roles, access, write authority, and call order for the revised subjective-label system.
-One human is the semantic authority.
+One configured human is the semantic authority. The current CLI and Board
+record caller attestation but do not authenticate the actor; G0 receipts are
+not identity proof.
 Models create evidence and execution artifacts but do not substitute for that authority.
 
 ## 1. Family topology
@@ -22,9 +24,12 @@ subjective-label umbrella
     ├── Production executor + terminal reconciler
     └── Final audit keeper
 
-subjective-label-workflow sits above both sides and owns the phase numbers,
-gates, and the crossing; label-building-workflow and label-scanning-workflow
-order the steps inside each side; the doors own the law.
+`subjective-label-workflow` defines one list of Run Specs, its dependencies,
+gates, Routes, and completion rule. P0-P5 are compatibility capability tags,
+not lifecycle owners. The side workflow guides describe the ordered Run Specs
+and their internal Steps; the Building and Scanning doors own semantic law and
+human authority. A gate is recorded on its owning Run receipt or a named job
+control, not as an independent Run or phase.
 ```
 
 The sibling doors have different questions and write authority. Building asks
@@ -113,19 +118,20 @@ umbrella → label-building Round
 → checkpoint keeper
 ```
 
-After the stopping conjunction and human signoff pass:
+When the final `round-close` Run satisfies its exit predicate and the human
+STOP evidence is bound:
 
 ```text
-label-building freeze (P2)
+`handoff-freeze` Run
 → Label Handoff keeper rehashes G* + D_cal* + custody
 → records the signed immutable Label Handoff
-→ subjective-label-workflow tests G2
+→ its Result records the G3 compatibility predicate and Route to test work
 ```
 
 ## 6. Final evaluation call graph
 
 ```text
-umbrella → label-scanning Test
+umbrella → `test-gold-lock` Run Spec
 → verify valid Label Handoff
 → test custodian releases T* text
 → strong calibration agent records blind human gold
@@ -139,7 +145,7 @@ The evaluator remains read-only over `G*`, wrappers, test gold, and candidate re
 ## 7. Production and audit call graph
 
 ```text
-umbrella → label-scanning Scan
+umbrella → `scan-preflight` Run Spec
 → production-policy selection from frozen scorecards and handoff
 → preflight
 → production executor

@@ -9,15 +9,16 @@ description: >-
   new labeling jobs, calibration rounds, human annotation sessions, boundary
   discovery, guideline revision, stopping decisions, freeze, or /label-building.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-01"
+  version: "0.7.0"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /label-building · the law of building one meaning
 
-`subjective-label` is the family umbrella; `subjective-label-workflow` declares
-the phase numbers and gates; `label-building-workflow` orders the steps. This
+`subjective-label` is the family umbrella; `subjective-label-workflow` defines
+the Run Spec graph and Routes; `label-building-workflow` documents Building
+Run order and internal steps. P0-P2 are compatibility capability tags only. This
 door owns the LAW of the Building side, symmetric to `/label-scanning`. Nothing
 here says in what order a step runs.
 
@@ -32,7 +33,7 @@ Weak executors are independent diagnostic readers. Their sealed predictions may
 select challenge cases and expose guideline failures after the human-first
 lock. Agreement among them is a sampling stratum, never gold.
 
-## The three phases and what each may create
+## The three Building capability groups
 
 ```text
 P0 Contract   one valid job: corpus, target, authority, schemas, sealed reservation
@@ -43,8 +44,10 @@ P2 Freeze     one signed Label Handoff binding exact G* and D_cal*
               creates NO new content; it packages what is already closed
 ```
 
-Each phase is a phase because it has an authority artifact of its own; the
-artifacts are named in `subjective-label-workflow`.
+Each heading above describes a group of Run Types for compatibility and
+reader orientation. The workflow is the shared list of Run Specs and Routes;
+an authority artifact is a Run Result or a canonical domain artifact, not an
+independent lifecycle owner. See `subjective-label-workflow` for the graph.
 
 ## Building Run boundary
 
@@ -107,14 +110,14 @@ release, a label, a rule, a stop, or a freeze.
 ## Verbs
 
 ```text
-enter | status      resolve the Building frontier from closed artifacts
-start | contract    establish or resume P0 without creating gold
-round               run or resume exactly one operation in the active P1 episode
+enter | status      inspect closed artifacts and the current Run Spec frontier
+start | contract    establish or resume `corpus-contract` without creating gold
+round               run/resume exactly one eligible Run Spec in this round episode
 card                propose a round card for a person to release
 prepare · judge · learn · checkpoint   the round steps, ordered by label-building-workflow
-freeze              run P2 and record the human-signed Label Handoff
+freeze              run/resume `handoff-freeze` and record the human-signed Label Handoff
 reopen              open a new policy lineage and invalidate downstream claims
-workflow | run      hand the frontier to label-building-workflow
+workflow | run      use the Building Run Spec guide for the next eligible operation
 ```
 
 ## Forbidden

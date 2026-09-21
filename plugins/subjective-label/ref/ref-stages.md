@@ -1,44 +1,53 @@
-# Reference: two-side lifecycle and state machine
+# Reference: Labeling Run graph and compatibility capability tags
 
-The subjective-label family has two sibling sides joined by one immutable Label
-Handoff. The scales are journey phase, calibration round, round step, and item
-event. They have different units and closure rules.
+The subjective-label Workflow is a list of Run Specs connected by dependencies
+and Routes; its execution is the native Run Instances and receipts. Building
+and Scanning are capability groupings joined by the immutable Label Handoff.
+P0-P5 remain serialized compatibility tags for those groupings. They do not
+own Runs, gates, Routes, or an independent lifecycle. Calibration rounds,
+internal Steps, and item events remain distinct domain units inside the graph.
 
-## 1. Family lifecycle
-
-```text
-🏗 Label Building
-P0 Contract → P1 Round × N → P2 Freeze → signed Label Handoff
-                                              │
-                                              ▼
-🔍 Label Scanning
-P3 Test → P4 Scan → P5 Audit → complete
-```
-
-`subjective-label-workflow` declares the phase numbers and gates and owns the
-crossing. `label-building-workflow` and `label-scanning-workflow` order the
-steps inside their side. The doors `label-building` and `label-scanning` own
-the law: authority, human gates, verbs, forbidden acts.
-
-Canonical states:
+## 1. Workflow graph overview
 
 ```text
-new
-→ contracted
-→ calibrating
-→ frozen            (handoff signed)
-→ testing
-→ qualified
-→ scanning
-→ auditing
-→ complete
+Workflow Definition: Run Specs + dependencies + allowed Routes + completion rule
+  Building Run Specs [P0-P2 compatibility tags]
+    corpus-contract → round-prepare → weak-prelabel* → human-calibration
+      → guideline-learn → round-measure → round-close → handoff-freeze
+  immutable handoff-freeze Result (Label Handoff checksum)
+  Scanning Run Specs [P3-P5 compatibility tags]
+    test-gold-lock → executor-predict* → executor-score* → executor-select
+      → scan-preflight → scan-shard* → risk-route → human-review → reconcile
+      → audit-sample → audit-human-gold → audit-analyze → dstar-materialize
 ```
 
-`hold` is an explicit side state with a reason and owner. A semantic change
-after handoff creates a new Building lineage and invalidates downstream claims
-as required.
+`subjective-label-workflow` defines the shared Run Spec graph and Routes.
+`label-building-workflow` and `label-scanning-workflow` document operation
+order and internal Steps for their respective Run Specs. The doors
+`label-building` and `label-scanning` own semantic authority and forbidden acts.
+An episode name such as Round, Test, Scan, or Audit groups domain work; it does
+not add a Workflow node or Run count.
 
-## 2. P0 Contract
+The old `state.phase`/P0-P5 labels are compatibility projections derived by
+the current adapter from domain receipts. They may support existing views but
+are not the Workflow frontier or routing authority. Resolve the next Run from
+the Run Spec graph and native Ticket/Result/runtime receipts. Likewise a job
+`hold` is a named resource/control state or Run outcome, not a side-specific
+lifecycle state.
+
+## 2. Legacy adapter labels (read-only projection)
+
+```text
+new → contracted → calibrating → frozen → testing → qualified → scanning
+    → auditing → complete
+```
+
+These labels are retained for older status consumers. Each is a projection of
+domain evidence, not an independently authored lifecycle state. `hold` must
+name its control/Run owner and reason. A semantic change after handoff creates
+a new Building Run lineage and invalidates downstream claims as required.
+
+## 3. Contract capability group (P0 tag)
 
 Contract validates one corpus snapshot with stable ids and text, records one
 target and identified human semantic authority, declares class/region/
@@ -47,7 +56,7 @@ creates the artifact scaffold, and records retrieval-cache provenance.
 
 Contract creates no gold and does not open protected test text.
 
-## 3. P1 Calibration Round
+## 4. Calibration Run Specs and Round episode (P1 tag)
 
 A round is one unit folder `rounds/round_<t>/` (`ref-assets.md` §3). It is
 born as a card a person releases, begins from one closed state, and closes
@@ -67,12 +76,12 @@ checkpoint → closed G_t + D_t → register cells settled → view/ rendered
         → repeat / freeze / HOLD
 ```
 
-PREPARE, JUDGE, LEARN, and CLOSE are round steps, not journey phases. Round 1
-uses a declared random development batch and no model prelabels or inherited
-regions. Later rounds combine targeted challenge cases with a probability or
-weighted consensus-audit arm.
+PREPARE, JUDGE, LEARN, and CLOSE are internal Steps in the calibration Runs.
+Round 1 uses a declared random development batch and no model prelabels or
+inherited regions. Later rounds combine targeted challenge cases with a
+probability or weighted consensus-audit arm.
 
-## 4. Human-AI Session
+## 5. Human-AI Session Steps
 
 For every item:
 
@@ -85,18 +94,18 @@ For every item:
 
 Sessions resume per item. Unresolved is a workflow disposition, never `NONE`.
 
-## 5. Checkpoint and stopping
+## 6. Checkpoint Result and stopping Route
 
 The Checkpoint Keeper validates every batch disposition, human evidence,
 cumulative gold, policy changes, regression effects, audit/challenge separation,
 coverage, risk, checksums, and the next route.
 
-Calibration may route to P2 Freeze only when quality, stability, coverage,
-acceptable risk, and human signoff all pass for the configured comparable
-streak. A low plateau, elapsed time, round limit, or model agreement does not
-pass.
+`round-close` may Route to `handoff-freeze` only when quality, stability,
+coverage, acceptable risk, and human signoff all pass for the configured
+comparable streak. A low plateau, elapsed time, round limit, or model agreement
+does not satisfy that Run's exit predicate.
 
-## 6. P2 Freeze
+## 7. Handoff Run (P2 tag)
 
 Freeze exact `G*` and `D_cal*`, verify sealed-test custody, obtain the human
 signature, and materialize `handoff/label-v1.yaml`. Read
@@ -105,7 +114,7 @@ signature, and materialize `handoff/label-v1.yaml`. Read
 The handoff ends Building and is the only input authority Scanning may consume.
 It carries a protected-manifest checksum, never protected ids or text.
 
-## 7. P3 Test
+## 8. Test Run Specs (P3 tag)
 
 Validate the handoff; preregister candidate executors, model-family roles,
 wrappers, baselines, metrics, repeats, quality floors, and selection rule;
@@ -117,16 +126,17 @@ passes (the SCORE step).
 
 Public data is optional external validity and never project gold.
 
-## 8. P4 Scan
+## 9. Production Run Specs (P4 tag)
 
 Freeze a production manifest, run preflight, execute append-only idempotent
 attempts, route declared risks to human review, and reconcile exactly one
 terminal candidate per in-scope item. Production human decisions override model
 outputs semantically but do not revise `G*`.
 
-The candidate is not `D*` until P5 closes.
+The candidate is not `D*` until `dstar-materialize` completes on its declared
+passing or accepted-limit Route.
 
-## 9. P5 Audit
+## 10. Audit Run Specs (P5 tag)
 
 Freeze a probability audit design before inspection, collect blind human audit
 gold, estimate weighted errors and intervals, inspect protected strata and
@@ -136,7 +146,7 @@ human-accepted limitation, or semantic reopen.
 Complete means every in-scope item has one terminal disposition and the audit
 supports the exact bounded claim materialized with `D*`.
 
-## 10. Retired names
+## 11. Retired names
 
 ```text
 /label-init · /label-round          → /label-building
@@ -149,9 +159,10 @@ subjective-scanning (draft name)    → label-scanning
 Legacy `/sl-*` names forward through the same routes. None of them preserves
 old panel-consensus, public-kappa, or static-cascade semantics.
 
-## 11. Implementation status
+## 12. Implementation status
 
-This lifecycle is the governing contract. Existing libraries provide partial
+This Run graph is the governing contract. Existing libraries provide partial
 technical primitives and may still contain legacy code paths. Skills emit an
 explicit `HOLD` when a required keeper, seal, writer, runner, reconciler, or
-auditor has not shipped; they never manufacture a successful phase receipt.
+auditor has not shipped; they never manufacture a successful Run Result,
+gate receipt, or control record.

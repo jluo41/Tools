@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Build one fenced source job that ``job.py create`` can import (P0 test-reserve).
+"""Build a development-only fenced source job for ``job.py create``.
 
 A fenced source is a corpus snapshot whose sealed test is reserved BEFORE any
-development read.  This tool draws the sealed ids with a declared seed,
-optionally stratified by one item-level field from a side file, marks each
-corpus row ``population_status: eligible | sealed``, and writes an opaque
-protected manifest (ids + text hashes only) with its custody status.  It
-also renders a readable G_00 guideline from the seed config's class meanings.
+development read. This tool draws sealed ids with a declared seed, optionally
+stratified by one item-level field from a side file, writes only eligible rows
+to the development corpus, and writes an opaque protected manifest containing
+sealed ids and text hashes only. Sealed text is not copied into the fenced
+source or the Page-visible development corpus. It also renders a readable G_00
+guideline from the seed config's class meanings.
 
 The writer is additive: an existing different file is refused, never replaced.
 """
@@ -14,6 +15,7 @@ The writer is additive: an existing different file is refused, never replaced.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import importlib.util
 import json
@@ -95,39 +97,66 @@ def guideline_markdown(config: dict) -> str:
 
 def build(*, items: Path, config_path: Path, out: Path, sealed_n: int, seed: int,
           custodian: str, stratify_jsonl: Path | None, stratify_field: str | None,
-          id_field: str = "item_id") -> dict:
+          id_field: str | None = None) -> dict:
     config = job.load_mapping(config_path)
     rows = _read_jsonl(items)
-    ids = [str(row[id_field]) for row in rows]
+    corpus_cfg = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
+    source_id_field = str(id_field or corpus_cfg.get("id_field") or "item_id")
+    text_field = str(corpus_cfg.get("text_field") or "text")
+    ids = []
+    text_by_id: dict[str, str] = {}
+    for index, row in enumerate(rows, start=1):
+        if not isinstance(row, dict):
+            raise ValueError(f"source row {index} must be a JSON object")
+        raw_id = row.get(source_id_field)
+        item_id = str(raw_id).strip() if raw_id is not None else ""
+        if not item_id:
+            raise ValueError(f"source row {index} has no non-empty {source_id_field!r}")
+        text = row.get(text_field)
+        if not isinstance(text, str) or not text.strip():
+            raise ValueError(f"source item {item_id!r} has no non-empty {text_field!r}")
+        ids.append(item_id)
+        text_by_id[item_id] = text
     if len(set(ids)) != len(ids):
         raise RuntimeError("duplicate item ids in the corpus")
-    strata = _item_strata(stratify_jsonl, id_field, stratify_field) if stratify_jsonl and stratify_field else None
+    strata = (
+        _item_strata(stratify_jsonl, source_id_field, stratify_field)
+        if stratify_jsonl and stratify_field else None
+    )
     sealed, report = draw_sealed(ids, sealed_n, seed, strata)
     sealed_set = set(sealed)
 
     corpus_rows = []
+    protected_rows = []
     for row in rows:
+        item_id = str(row[source_id_field]).strip()
+        text_hash = hashlib.sha256(text_by_id[item_id].encode("utf-8")).hexdigest()
+        if item_id in sealed_set:
+            protected_rows.append({"item_id": item_id, "text_hash": text_hash})
+            continue
         copy_row = dict(row)
-        copy_row["population_status"] = "sealed" if str(row[id_field]) in sealed_set else "eligible"
-        if not copy_row.get("text_hash"):
-            copy_row["text_hash"] = hashlib.sha256(str(row.get("text") or "").encode("utf-8")).hexdigest()
+        copy_row["item_id"] = item_id
+        copy_row["population_status"] = "eligible"
+        # Always recompute against the declared text field; an incoming hash
+        # may describe another field or an earlier version of the row.
+        copy_row["text_hash"] = text_hash
         corpus_rows.append(copy_row)
     items_bytes = "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in corpus_rows).encode("utf-8")
     protected = "".join(
-        json.dumps({"item_id": r[id_field], "text_hash": r["text_hash"]}, sort_keys=True) + "\n"
-        for r in corpus_rows if r["population_status"] == "sealed"
+        json.dumps(r, sort_keys=True) + "\n" for r in protected_rows
     ).encode("utf-8")
-    corpus_cfg = config.get("corpus") or {}
     created = datetime.now(timezone.utc).isoformat(timespec="seconds")
     manifest = {
         "schema_version": "subjective-label/fenced-corpus-v1",
         "items_file": "corpus/items.jsonl",
         "items_checksum": "sha256:" + job.sha256_bytes(items_bytes),
         "n_items": len(corpus_rows),
-        "n_eligible": len(corpus_rows) - len(sealed),
+        "n_eligible": len(corpus_rows),
         "n_sealed": len(sealed),
-        "id_field": id_field,
-        "text_field": corpus_cfg.get("text_field", "text"),
+        "n_source_items": len(rows),
+        "id_field": "item_id",
+        "source_id_field": source_id_field,
+        "text_field": text_field,
         "context_field": corpus_cfg.get("context_field"),
         "population": corpus_cfg.get("population"),
         "source": corpus_cfg.get("source"),
@@ -146,11 +175,11 @@ def build(*, items: Path, config_path: Path, out: Path, sealed_n: int, seed: int
         "frame": {"rule": frame_rule, "sampling": "seeded_random", "seed": seed, "strata": report},
         "n_items": len(sealed),
         "protected_manifest_checksum": "sha256:" + job.sha256_bytes(protected),
-        "text_location": "resolved from the corpus snapshot at authorized release only",
+        "text_location": "not retained in the fenced source; remains under custodian-controlled source custody",
         "access_policy": [
             "no development read, embed, index, retrieve, dedup, or prelabel",
             "release only after G* freezes, by the custodian",
-            "leakage is checkable: no round batch may contain a population_status == sealed row",
+            "sealed ids and hashes stay in the protected manifest; no development batch may contain a protected id",
         ],
         "invalidation_state": "valid",
     }
@@ -167,8 +196,14 @@ def build(*, items: Path, config_path: Path, out: Path, sealed_n: int, seed: int
         "schema": "subjective-label-policy/v1", "policy_id": "G_00", "parent": None,
         "status": "seed", "components": {k: job.sha256_bytes(v) for k, v in policy_parts.items()},
     }
+    fenced_config = copy.deepcopy(config)
+    fenced_corpus = fenced_config.setdefault("corpus", {})
+    if not isinstance(fenced_corpus, dict):
+        raise ValueError("config.corpus must be a mapping")
+    fenced_corpus["path"] = "corpus/items.jsonl"
+    fenced_corpus["id_field"] = "item_id"
     files = {
-        out / "config.yaml": config_path.read_bytes(),
+        out / "config.yaml": job.yaml_bytes(fenced_config),
         out / "corpus" / "items.jsonl": items_bytes,
         out / "corpus" / "manifest.json": job.json_bytes(manifest),
         out / "test" / "sealed" / "manifest.protected.jsonl": protected,
@@ -193,10 +228,11 @@ def main() -> None:
     parser.add_argument("--custodian", required=True)
     parser.add_argument("--stratify-jsonl", type=Path)
     parser.add_argument("--stratify-field")
+    parser.add_argument("--id-field", help="override config.corpus.id_field")
     args = parser.parse_args()
     result = build(items=args.items, config_path=args.config, out=args.out, sealed_n=args.sealed_n,
                    seed=args.seed, custodian=args.custodian, stratify_jsonl=args.stratify_jsonl,
-                   stratify_field=args.stratify_field)
+                   stratify_field=args.stratify_field, id_field=args.id_field)
     print(json.dumps(result, indent=2, ensure_ascii=False))
 
 

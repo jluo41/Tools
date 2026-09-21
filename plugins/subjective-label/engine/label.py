@@ -12,7 +12,9 @@ reliability signal (NOT ground truth; see note-update.md).
 Replies are accepted as valid JSON only (optionally inside one ``` fence). Anything
 else is `pred: PARSE_ERROR`, `status: failed`, with a short `reason` error code; the
 parser never guesses a label from free text and never stores raw model output.
-On a v2 job root nothing is sent to a model until G0 passes (engine/gates.py).
+On a v2 job root nothing is sent to a model until G0 passes (engine/gates.py),
+and model inputs are restricted to exact text for canonical eligible items in
+the Page's fenced development corpus. Sealed test text is never read here.
 
 Usage:
     python engine/label.py --project-dir <task> --version v01 --engine both
@@ -59,6 +61,58 @@ def _resolve_labels(cfg: dict, override: str | None) -> list[str]:
         raise SystemExit(
             "no label set: add `labels.values` to config.yaml or pass --labels A,B,C")
     return [str(x) for x in labels]
+
+
+def _canonical_v2_items(project_dir: Path, cfg: dict, input_rows: list[dict]) -> list[dict]:
+    """Resolve v2 inputs only through the Page's canonical eligible corpus."""
+    if cfg.get("schema_version") != "subjective-label/v2":
+        return input_rows
+
+    corpus_cfg = cfg.get("corpus") if isinstance(cfg.get("corpus"), dict) else {}
+    text_field = str(corpus_cfg.get("text_field") or "text")
+    corpus_path = project_dir / "corpus" / "items.jsonl"
+    eligible: dict[str, str] = {}
+    try:
+        corpus_rows = [
+            json.loads(line)
+            for line in corpus_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"canonical v2 corpus is unavailable or invalid: {type(error).__name__}") from None
+
+    for row in corpus_rows:
+        if not isinstance(row, dict):
+            raise ValueError("canonical v2 corpus rows must be objects")
+        if row.get("population_status") != "eligible":
+            continue
+        raw_id = row.get("item_id")
+        item_id = str(raw_id).strip() if raw_id is not None else ""
+        text = row.get(text_field)
+        if not item_id or not isinstance(text, str) or not text.strip():
+            raise ValueError("canonical eligible corpus rows need item_id and non-empty configured text")
+        if item_id in eligible:
+            raise ValueError(f"canonical eligible corpus has duplicate item_id {item_id!r}")
+        eligible[item_id] = text
+
+    canonical: list[dict] = []
+    for source in input_rows:
+        if not isinstance(source, dict):
+            raise ValueError("v2 model input rows must be objects")
+        raw_id = source.get("item_id", source.get("id"))
+        item_id = str(raw_id).strip() if raw_id is not None else ""
+        if not item_id or item_id not in eligible:
+            raise ValueError("v2 model input is not a canonical eligible corpus item")
+        text = eligible[item_id]
+        for field in {"text", text_field}:
+            supplied = source.get(field)
+            if supplied is not None and supplied != text:
+                raise ValueError(f"v2 model input text does not match canonical eligible item {item_id!r}")
+        row = dict(source)
+        row.update({"item_id": item_id, "id": item_id, "text": text,
+                    "population_status": "eligible"})
+        canonical.append(row)
+    return canonical
 
 
 def _output_contract(labels: list[str]) -> str:
@@ -245,7 +299,11 @@ async def main():
         src = pd / "eval" / "anchor_set.jsonl"
     if not src.is_absolute():
         src = pd / src
-    items = [json.loads(l) for l in src.read_text().splitlines() if l.strip()]
+    try:
+        items = [json.loads(l) for l in src.read_text(encoding="utf-8").splitlines() if l.strip()]
+        items = _canonical_v2_items(pd, cfg, items)
+    except (OSError, json.JSONDecodeError, ValueError) as error:
+        raise SystemExit(f"HOLD · {error}") from None
     if args.limit is not None:
         if args.limit < 1:
             raise SystemExit("--limit must be positive")

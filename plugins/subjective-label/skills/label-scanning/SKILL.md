@@ -9,15 +9,17 @@ description: >-
   model qualification, production labeling, risk queues, corpus scanning, spot
   checks, repair, final audit, or /label-scanning.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-01"
+  version: "0.7.0"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /label-scanning · the law of executing a frozen meaning
 
-`subjective-label` is the family umbrella; `subjective-label-workflow` declares
-the phase numbers and gates; `label-scanning-workflow` orders the steps. This
+`subjective-label` is the family umbrella; `subjective-label-workflow` defines
+the Run Spec graph and Routes; `label-scanning-workflow` documents Scanning
+Run order and internal steps. P3-P5 are compatibility capability tags only.
+This
 door owns the LAW of the Scanning side, symmetric to `/label-building`.
 
 ## Boundary
@@ -29,7 +31,7 @@ defect found here is preserved as evidence and returned to Building under a new
 lineage; it is never patched inside a Scanning Run, and neither are wrappers,
 thresholds, or routing.
 
-## The three phases and what each may create
+## The three Scanning capability groups
 
 ```text
 P3 Test    blind human gold T* on the sealed test, then comparable scorecards,
@@ -50,8 +52,10 @@ P4  scan-preflight · scan-shard* · risk-route · human-review · reconcile
 P5  audit-sample · audit-human-gold · audit-analyze · dstar-materialize
 ```
 
-Test, Scan, and Audit are episodes that group these Runs and their phase gates;
-they are not additional umbrella Runs.
+Test, Scan, and Audit are domain groupings over these Run Specs and their
+Instances; they are not additional umbrella Runs. Gate predicates and Routes
+belong to their declared Run Specs or explicit job controls, not to a P3-P5
+lifecycle unit.
 
 ## Laws of Scanning Runs
 
@@ -85,13 +89,13 @@ No model, ensemble, or confidence threshold may write these decisions.
 ## Verbs
 
 ```text
-enter | status       resolve the Scanning frontier from the bound handoff
-test | qualify       run or resume P3
-scan | produce       run or resume P4
-audit | spot-check   run or resume P5
+enter | status       inspect the bound handoff and current Run Spec frontier
+test | qualify       run/resume `test-gold-lock` through `executor-select`
+scan | produce       run/resume `scan-preflight` through `reconcile`
+audit | spot-check   run/resume `audit-sample` through `dstar-materialize`
 repair               apply an audit-owned repair under a new audit folder
 reopen-building      route a semantic failure to a new Building lineage
-workflow | run       hand the frontier to label-scanning-workflow
+workflow | run       use the Scanning Run Spec guide for the next eligible operation
 ```
 
 ## Forbidden

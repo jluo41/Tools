@@ -10,8 +10,8 @@ description: >-
   Studio Chat opens separately. Use when designing, opening, diagnosing, or
   implementing the labeling plugin, tab, or folder, or /haipipe-plugin-labeling.
 metadata:
-  version: "0.17.0"
-  last_updated: "2026-09-16"
+  version: "0.18.0"
+  last_updated: "2026-09-20"
 ---
 
 # /haipipe-plugin-labeling · one job, one folder, one operated surface
@@ -54,8 +54,8 @@ write      POST /_board/labeling/act · confirm_meaning · release_round · open
 | part | contract |
 |---|---|
 | STORAGE | `<page>/labeling/`, exactly the job layout in `subjective-label/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
-| SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; it fills the plugin pane with five Spaces and their views. Workflow phases P0-P5 are phase state shown in `Run → Phases` and in the one-line `Next:` header; they are not a Space. Studio Chat opens in its own tab |
-| WRITER | `subjective-label-workflow` dispatches the Building/Scanning ORDER machines; their Keeper, human event writer, runner, reconciler, and auditor own named artifacts. In the browser the only writer is `POST /_board/labeling/act`, which calls `engine/job.py` and `engine/calibration.py` |
+| SURFACE | one optional `🏷 Labeling` right-pane tab on a real Page; it fills the plugin pane with five Spaces and their views. The current adapter keeps P0-P5 as compatibility capability tags in `Run → Phases` and the one-line `Next:` header; they are not Workflow nodes, Run owners, or Route authority. Studio Chat opens in its own tab |
+| WRITER | `subjective-label-workflow` defines the Run Spec graph and Routes; the Building/Scanning guides document operation order. Their Keeper, human event writer, runner, reconciler, and auditor own named artifacts. In the browser the only writer is `POST /_board/labeling/act`, which calls `engine/job.py` and `engine/calibration.py` |
 | BOUNDARY | Board discovery never enters `labeling/`; overview views never render item text, sealed ids, or private judgments in the page HTML (`Labeling → Rounds` lists the drawn item ids with their map group, never an item's text); an item waiting in a round batch shows its text only in its round's table in `Labeling → Rounds`, and only once the chat has shown it (its `show` event); `Data → Embedding` fetches the text of other development items only on request (a group's typical items, or a picked dot), and each fetch is appended to `labeling/exposure/group_examples.jsonl`; an observed file is never treated as a validated gate |
 
 ## 🔭 Two levels: Board and Page
@@ -96,14 +96,17 @@ The surface uses one location word: **Space**. In this plugin, "Space" and
 `Labeling`, not a Space of its own. The older Human tab is gone.
 `Run → Workflow map` shows the SOP (the steps a job walks, who does each, and
 where this job is) above the Workflow map (every Run type × Space), both
-projected from `ref/ref-space-mapping.md`. Workflow P0-P5 is phase state: it shows in `Run → Phases` and in the
-`Next:` header line.
+projected from `ref/ref-space-mapping.md`. The current adapter shows P0-P5 in
+`Run → Phases` and the `Next:` header as compatibility capability tags. This
+projection and the legacy Space choice do not own Runs or authorize allocation,
+closure, or Workflow Routes.
 
 The roster table (views, first question, canonical sources), the rule for
 which Space opens first, and the item-text rule live in
-`../../../ref/ref-space-mapping.md`. In short: the page opens on the Space that
-holds the next step (P0 opens `Data`, P1 opens `Labeling`); a `?space=&view=`
-URL wins, then the browser's saved choice.
+`../../../ref/ref-space-mapping.md`. The current adapter uses the legacy tag to
+choose a presentation Space (P0 opens `Data`, P1 opens `Labeling`); that is
+not the Workflow Route. A `?space=&view=` URL wins, then the browser's saved
+choice.
 
 These Spaces are projections over the one canonical `labeling/` tree, not
 separate storage folders. Data may show source-preserving imported label
@@ -119,7 +122,9 @@ rule every host uses. If the surface still cannot derive status, it fails
 closed at P0 with an integrity error. A historical lane with no canonical
 receipt may say "observed", but it must not promote that observation to a
 pass. `REPORT.md`, `.state.json`, and the Page's prose are useful views, never
-the source of the frontier.
+the source of the Run Spec frontier. The existing status/Space adapter still
+projects compatibility state from gate receipts; it is not the host Run graph
+and cannot by itself authorize a later Run.
 
 On a Board host, Labeling fills its own plugin pane. The header link
 `Open Studio Chat` opens the exact generated-Page `?pane=chat` document that
@@ -157,7 +162,11 @@ write-door action. Chat may inspect and discuss; it cannot cross the gate.
 
 - First judgment, immutable lock, reveal, and final judgment are separate
   append-only events. A transcript is never a substitute.
-- Only the identified human creates semantic gold or signs STOP/FREEZE.
+- The workflow assigns semantic authority to one human. The current CLI and
+  local Board require a matching caller-supplied id and explicit attestation,
+  but do not authenticate the caller; deployments needing identity assurance
+  must add an authenticated principal before treating these receipts as proof
+  of actor identity.
 - Models may prelabel, retrieve, diagnose, draft, and execute a frozen policy;
   agreement or consensus never promotes gold.
 - Missing Keeper, event writer, sealed-test custodian, reconciler, runner, or
@@ -176,7 +185,7 @@ because its writer and its authority check exist end to end:
 
 | action | where it is pressed | engine call |
 |---|---|---|
-| `confirm_meaning` | `Data → Contract` · `Confirm meaning` | `job.confirm_meaning(..., channel="board labeling screen")` |
+| `confirm_meaning` | `Data → Contract` · `Confirm meaning` | `job.confirm_meaning(..., attest_as_human=True, channel="board labeling screen")` |
 | `release_round` | `Labeling → Rounds` · `Start round 1` | `calibration.release_round` |
 | `open_item` | no page button since 260919; the chat calls the engine directly | `calibration.open_item` |
 | `first` | no page button since 260919; the chat calls the engine directly | `calibration.record_first` |
@@ -199,20 +208,21 @@ The door refuses before any engine call when:
 4. the lane has no canonical job, meaning no `gates/p0-contract/receipt.json`
    (409).
 
-The request also carries the human's id and a session id. The engine then
-re-checks on every call: the id is the job's one identified human, the job is
-not on HOLD, G0 has passed (for the four P1 actions), the event order holds,
-and sealed custody holds (a sealed item is never drawn, shown, or revealed). A
-refusal returns HTTP 409 with the engine's reason; a malformed value returns
-HTTP 400.
+The request also carries the configured human id and a session id. The engine
+checks that supplied id against the job configuration on every call; this is
+not identity authentication. It also checks that the job is not on HOLD, G0
+has passed (for the four P1 actions), the event order holds, and sealed
+custody holds (a sealed item is never drawn, shown, or revealed). A refusal
+returns HTTP 409 with the engine's reason; a malformed value returns HTTP 400.
 
 There is still no approve, freeze, reveal-all, final-for-all, or run button.
 A new action ships only when its writer and authority check exist end to end.
 
 ## ⚙️ Relationship to Runs
 
-One Labeling job allocates Level-4 Runs in every phase, P0 to P5. A Run is
-named `rlNN_<operation>_<target>` (`rl` = Run of Labeling). Its Ticket is
+One Labeling job allocates Level-4 Runs for the bounded commissions in its
+Workflow Run Spec list. Existing Tickets may retain a P0-P5 compatibility
+tag. A Run is named `rlNN_<operation>_<target>` (`rl` = Run of Labeling). Its Ticket is
 `labeling/runs/<run>.yaml` and its Result folder is `labeling/results/<run>/`
 (`runtime.yaml`, then `result.yaml` when complete). Legacy `rNN_labeling-*`
 envelopes remain readable without aliases. The 25 operation kinds and the
@@ -238,8 +248,9 @@ When opening or diagnosing a job or one of its Runs:
 ```text
 resolve   the folded Page and its direct labeling/ lane
 inspect   canonical receipts only; batch item text only in Labeling → Rounds, once shown
-derive    P0-P5 and the first failed G0-G6 assertion
-route     through /subjective-label to exactly one bounded action
+derive    compatibility tags and failed gate evidence for display; identify
+          an eligible Run Spec from the shared Workflow graph and Run receipts
+route     through /subjective-label to exactly one bounded action under that Spec
 stop      at human gate, HOLD, invalidation, step limit, or completion
 ```
 

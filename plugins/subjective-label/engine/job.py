@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Canonical P0 Contract API for one subjective-label job.
 
-The API imports one already-fenced corpus snapshot and its opaque sealed-test
-reservation into a page-local ``labeling/`` lane.  The protected manifest is
-hashed and byte-copied, but never parsed or printed.  The API deliberately
-creates no round, no human gold, and no claim that the seed policy is mature.
+The API imports one already-fenced corpus snapshot and its sealed-test
+reservation into a page-local ``labeling/`` lane. Legacy snapshots may still
+contain sealed rows inline; those rows are removed before the Page corpus is
+written, and custody is normalized to sealed IDs and text hashes. The API
+deliberately creates no round, no human gold, and no claim that the seed policy
+is mature.
 
 The writer is additive and idempotent: an existing identical artifact is
 accepted, while an existing different artifact is never overwritten.
@@ -112,7 +114,7 @@ def try_load_mapping(path: Path) -> tuple[dict, str | None]:
 
 
 def authority_hold(config: dict) -> tuple[bool, str]:
-    """One HOLD rule for every host: only one named real human may create gold."""
+    """Require one named human semantic authority; local callers are not authenticated."""
     authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     human_id = str(authority.get("human_id") or "").strip()
     mode = str(authority.get("mode") or "")
@@ -127,6 +129,16 @@ def authority_hold(config: dict) -> tuple[bool, str]:
     return False, ""
 
 
+def g0_passed(state: dict) -> bool:
+    """Return the semantic G0 predicate; compatibility phase tags are ignored."""
+    return bool(
+        state.get("p0_contract_integrity_valid")
+        and not state.get("hold")
+        and state.get("meaning_receipt_valid")
+        and state.get("g0_receipt_valid")
+    )
+
+
 def _unconfirmed_config_bytes(config: dict) -> bytes:
     """Rebuild the P0 config bytes that existed before meaning confirmation."""
     original = copy.deepcopy(config)
@@ -135,11 +147,6 @@ def _unconfirmed_config_bytes(config: dict) -> bytes:
         authority["meaning_confirmed"] = False
         authority["meaning_receipt"] = None
     return yaml_bytes(original)
-
-
-def count_jsonl(path: Path) -> int:
-    with path.open("r", encoding="utf-8") as handle:
-        return sum(1 for line in handle if line.strip())
 
 
 def find_protected_manifest(sealed_dir: Path) -> Path:
@@ -193,6 +200,231 @@ def validate_source_fence(status: dict, protected_checksum: str) -> None:
         )
 
 
+def _source_count(value: object, field: str, source: str) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise RuntimeError(f"source {source} {field} must be a non-negative integer")
+    return value
+
+
+def _declared_count(mapping: dict, fields: tuple[str, ...], source: str) -> int | None:
+    values = [
+        (field, _source_count(mapping.get(field), field, source))
+        for field in fields if mapping.get(field) is not None
+    ]
+    distinct = {value for _, value in values}
+    if len(distinct) > 1:
+        raise RuntimeError(f"source {source} has inconsistent counts: {values}")
+    return values[0][1] if values else None
+
+
+def _protected_records(data: bytes) -> dict[str, str] | None:
+    """Parse the supported ID/hash JSONL form; return None for opaque custody."""
+    try:
+        lines = data.decode("utf-8").splitlines()
+    except UnicodeDecodeError:
+        return None
+    records: dict[str, str] = {}
+    saw_opaque = False
+    saw_structured = False
+    for line in lines:
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            if saw_structured:
+                raise RuntimeError("source protected manifest mixes structured and opaque rows") from None
+            return None
+        if not isinstance(row, dict) or set(row) != {"item_id", "text_hash"}:
+            if isinstance(row, dict) and ("item_id" in row or "text_hash" in row):
+                raise RuntimeError("source protected manifest has a malformed ID/hash record")
+            if saw_structured:
+                raise RuntimeError("source protected manifest mixes structured and opaque rows")
+            saw_opaque = True
+            continue
+        if saw_opaque:
+            raise RuntimeError("source protected manifest mixes structured and opaque rows")
+        raw_id = row.get("item_id")
+        item_id = str(raw_id).strip() if raw_id is not None else ""
+        raw_hash = row.get("text_hash")
+        text_hash = str(raw_hash).strip().removeprefix("sha256:").lower() if raw_hash is not None else ""
+        if not item_id or len(text_hash) != 64 or any(c not in "0123456789abcdef" for c in text_hash):
+            raise RuntimeError("source protected manifest requires non-empty IDs and SHA-256 text hashes")
+        if item_id in records:
+            raise RuntimeError(f"source protected manifest repeats item_id {item_id!r}")
+        records[item_id] = text_hash
+        saw_structured = True
+    if saw_opaque:
+        return None
+    return records
+
+
+def _canonical_source_corpus(
+    source_items: Path,
+    source_config: dict,
+    source_manifest: dict,
+    protected_data: bytes,
+    sealed_status: dict,
+) -> tuple[bytes, bytes, int, int, int]:
+    """Return eligible-only Page rows and normalized protected ID/hash JSONL.
+
+    Older snapshots stored sealed rows in corpus/items.jsonl, while current
+    snapshots keep only eligible rows and a structured protected manifest.
+    Unmarked legacy rows can be classified only when the protected manifest
+    identifies their IDs; an opaque manifest with an unresolved sealed count
+    is refused rather than copied into a Page lane.
+    """
+    try:
+        source_rows = [
+            json.loads(line)
+            for line in source_items.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        raise RuntimeError(f"source corpus is unreadable: {type(error).__name__}") from None
+    if any(not isinstance(row, dict) for row in source_rows):
+        raise RuntimeError("source corpus rows must be JSON objects")
+
+    corpus_cfg = source_config.get("corpus")
+    if corpus_cfg is not None and not isinstance(corpus_cfg, dict):
+        raise RuntimeError("source config.corpus must be a mapping")
+    corpus_cfg = corpus_cfg if isinstance(corpus_cfg, dict) else {}
+    config_text_field = corpus_cfg.get("text_field")
+    manifest_text_field = source_manifest.get("text_field")
+    if config_text_field and manifest_text_field and str(config_text_field) != str(manifest_text_field):
+        raise RuntimeError("source config and corpus manifest disagree on text_field")
+    text_field = str(config_text_field or manifest_text_field or "text")
+    id_fields = tuple(dict.fromkeys(str(value) for value in (
+        source_manifest.get("id_field"), corpus_cfg.get("id_field"), "item_id", "id"
+    ) if value))
+    text_hashes = _protected_records(protected_data)
+    opaque = text_hashes is None
+    text_hashes = dict(text_hashes or {})
+    protected_ids = set(text_hashes)
+
+    sealed_count = _declared_count(
+        sealed_status, ("n_items", "n", "n_sealed", "sealed_count"), "sealed status"
+    )
+    manifest_sealed_count = _declared_count(
+        source_manifest, ("n_sealed", "sealed_reserved_n", "sealed_count"), "corpus manifest"
+    )
+    declared_sealed_counts = {value for value in (sealed_count, manifest_sealed_count) if value is not None}
+    if len(declared_sealed_counts) > 1:
+        raise RuntimeError("source sealed status and corpus manifest disagree on sealed count")
+    declared_sealed = next(iter(declared_sealed_counts), None)
+
+    eligible: list[dict] = []
+    seen_ids: set[str] = set()
+    seen_protected_rows: set[str] = set()
+    n_excluded = 0
+    inline_sealed: dict[str, str] = {}
+    for index, source in enumerate(source_rows, start=1):
+        aliases: set[str] = set()
+        for field in id_fields:
+            raw_value = source.get(field)
+            value = str(raw_value).strip() if raw_value is not None else ""
+            if value:
+                aliases.add(value)
+        if not aliases:
+            raise RuntimeError(f"source corpus row {index} has no non-empty item ID")
+        item_id = next((str(source[field]).strip() for field in id_fields
+                        if source.get(field) is not None and str(source[field]).strip()), "")
+        if item_id in seen_ids:
+            raise RuntimeError(f"source corpus repeats item_id {item_id!r}")
+        seen_ids.add(item_id)
+        text = source.get(text_field)
+        if not isinstance(text, str) or not text.strip():
+            raise RuntimeError(f"source item {item_id!r} has no non-empty {text_field!r}")
+        text_hash = sha256_bytes(text.encode("utf-8"))
+        status = source.get("population_status")
+        if status not in (None, "eligible", "sealed", "excluded", "invalid"):
+            raise RuntimeError(f"source item {item_id!r} has unsupported population_status {status!r}")
+        if opaque and protected_data.strip() and status is None:
+            raise RuntimeError(
+                "opaque source protected manifest requires explicit population_status on every corpus row"
+            )
+        protected_matches = aliases & protected_ids
+        if len(protected_matches) > 1:
+            raise RuntimeError(f"source item {item_id!r} resolves to multiple protected IDs")
+        if status == "eligible" and protected_matches:
+            raise RuntimeError(f"source item {item_id!r} is eligible but appears in protected custody")
+        if status in ("excluded", "invalid") and protected_matches:
+            raise RuntimeError(f"source item {item_id!r} is excluded but appears in protected custody")
+
+        is_sealed = status == "sealed" or bool(protected_matches)
+        if status == "sealed" and not opaque and not protected_matches:
+            raise RuntimeError(f"sealed source item {item_id!r} is absent from protected custody")
+        if is_sealed:
+            custody_id = sorted(protected_matches)[0] if protected_matches else item_id
+            if custody_id in seen_protected_rows:
+                raise RuntimeError(f"source repeats sealed item {custody_id!r}")
+            seen_protected_rows.add(custody_id)
+            prior_hash = text_hashes.get(custody_id)
+            if prior_hash is not None and prior_hash != text_hash:
+                raise RuntimeError(f"sealed item {custody_id!r} text hash disagrees with protected custody")
+            if custody_id in inline_sealed and inline_sealed[custody_id] != text_hash:
+                raise RuntimeError(f"sealed item {custody_id!r} has conflicting source text")
+            inline_sealed[custody_id] = text_hash
+            if prior_hash is None:
+                text_hashes[custody_id] = text_hash
+            continue
+        if status in ("excluded", "invalid"):
+            n_excluded += 1
+            continue
+        row = dict(source)
+        row["item_id"] = item_id
+        row["population_status"] = "eligible"
+        row["text_hash"] = text_hash
+        eligible.append(row)
+
+    if opaque and protected_data.strip() and not inline_sealed:
+        raise RuntimeError(
+            "opaque source protected manifest cannot be resolved to corpus rows; refusing to import"
+        )
+    if opaque and protected_data.strip() and declared_sealed is None:
+        raise RuntimeError("opaque source protected manifest has no verifiable sealed count")
+    if declared_sealed is not None and declared_sealed != len(text_hashes):
+        raise RuntimeError(
+            f"source declares {declared_sealed} sealed items but protected custody resolves {len(text_hashes)}"
+        )
+    if declared_sealed is not None and opaque and protected_data.strip() and declared_sealed != len(inline_sealed):
+        raise RuntimeError(
+            f"opaque source custody declares {declared_sealed} sealed items but only {len(inline_sealed)} inline sealed rows are resolvable"
+        )
+
+    declared_eligible = _declared_count(
+        source_manifest, ("n_eligible", "development_pool_n"), "corpus manifest"
+    )
+    if declared_eligible is not None and declared_eligible != len(eligible):
+        raise RuntimeError(
+            f"source declares {declared_eligible} eligible items but resolves {len(eligible)}"
+        )
+    resolved_source_total = len(eligible) + len(text_hashes) + n_excluded
+    declared_total = _declared_count(source_manifest, ("n_items",), "corpus manifest")
+    if declared_total is not None and declared_total not in {
+        len(source_rows), len(eligible), resolved_source_total
+    }:
+        raise RuntimeError(
+            f"source declares {declared_total} corpus items but contains {len(source_rows)} rows and resolves {resolved_source_total} total ({len(eligible)} eligible)"
+        )
+    declared_source_total = _declared_count(source_manifest, ("n_source_items",), "corpus manifest")
+    if declared_source_total is not None and declared_source_total != resolved_source_total:
+        raise RuntimeError(
+            "source corpus manifest n_source_items does not match eligible, sealed, and excluded records"
+        )
+
+    eligible_bytes = "".join(
+        json.dumps(row, ensure_ascii=False) + "\n" for row in eligible
+    ).encode("utf-8")
+    protected_bytes = "".join(
+        json.dumps({"item_id": item_id, "text_hash": digest}, sort_keys=True) + "\n"
+        for item_id, digest in sorted(text_hashes.items())
+    ).encode("utf-8")
+    return eligible_bytes, protected_bytes, len(eligible), len(text_hashes), resolved_source_total
+
+
 def semantic_bindings(config: dict, policy_manifest: Path) -> dict:
     construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
     labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
@@ -221,7 +453,7 @@ def runtime_timestamp(value: str) -> str:
     return parsed.isoformat(timespec="seconds")
 
 
-def _meaning_receipt_valid(config: dict, job_root: Path) -> bool:
+def _meaning_receipt_bound(config: dict, job_root: Path) -> bool:
     authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     receipt = authority.get("meaning_receipt")
     policy_manifest = job_root / "policy" / "versions" / "G_00" / "manifest.yaml"
@@ -234,6 +466,16 @@ def _meaning_receipt_valid(config: dict, job_root: Path) -> bool:
         and receipt.get("confirmed_at")
         and policy_manifest.is_file()
         and receipt.get("bindings") == semantic_bindings(config, policy_manifest)
+    )
+
+
+def _meaning_receipt_valid(config: dict, job_root: Path) -> bool:
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    receipt = authority.get("meaning_receipt")
+    return bool(
+        _meaning_receipt_bound(config, job_root)
+        and isinstance(receipt, dict)
+        and receipt.get("identity_assurance") == "caller_attested_not_authenticated"
     )
 
 
@@ -284,14 +526,23 @@ def create_contract(
     if not source_items.is_file():
         raise FileNotFoundError(source_items)
 
-    items_checksum = sha256_file(source_items)
+    source_items_checksum = sha256_file(source_items)
     manifest_items_checksum = str(
         source_corpus_manifest.get("items_checksum")
         or source_corpus_manifest.get("canonical_table", {}).get("checksum")
         or ""
     ).removeprefix("sha256:")
-    if manifest_items_checksum and manifest_items_checksum != items_checksum:
+    if manifest_items_checksum and manifest_items_checksum != source_items_checksum:
         raise RuntimeError("source corpus manifest does not match corpus/items.jsonl")
+
+    source_protected_checksum = sha256_file(source_protected)
+    validate_source_fence(source_sealed_status, source_protected_checksum)
+    items_data, protected_data, n_eligible, n_sealed, n_source_items = _canonical_source_corpus(
+        source_items, source_config, source_corpus_manifest,
+        source_protected.read_bytes(), source_sealed_status,
+    )
+    items_checksum = sha256_bytes(items_data)
+    protected_checksum = sha256_bytes(protected_data)
 
     config = copy.deepcopy(source_config)
     config["schema_version"] = "subjective-label/v2"
@@ -323,8 +574,20 @@ def create_contract(
         "source_config_checksum": sha256_file(source_job / "config.yaml"),
         "source_corpus_manifest_checksum": sha256_file(source_job / "corpus" / "manifest.json"),
         "source_sealed_status_checksum": sha256_file(source_job / "test" / "sealed" / "status.json"),
+        "source_protected_manifest_checksum": source_protected_checksum,
         "created_at": created_at,
     }
+
+    corpus_cfg = config.get("corpus")
+    if corpus_cfg is not None and not isinstance(corpus_cfg, dict):
+        raise RuntimeError("source config.corpus must be a mapping")
+    corpus_cfg = corpus_cfg if isinstance(corpus_cfg, dict) else {}
+    corpus_cfg["path"] = "corpus/items.jsonl"
+    corpus_cfg["id_field"] = "item_id"
+    corpus_cfg["text_field"] = corpus_cfg.get("text_field") or source_corpus_manifest.get("text_field") or "text"
+    if not corpus_cfg.get("context_field") and source_corpus_manifest.get("context_field"):
+        corpus_cfg["context_field"] = source_corpus_manifest["context_field"]
+    config["corpus"] = corpus_cfg
 
     corpus_manifest = copy.deepcopy(source_corpus_manifest)
     corpus_manifest.update(
@@ -333,15 +596,19 @@ def create_contract(
             "simulation_only": False,
             "items_file": "corpus/items.jsonl",
             "items_checksum": items_checksum,
-            "n_items": count_jsonl(source_items),
+            "id_field": "item_id",
+            "n_items": n_eligible,
+            "n_eligible": n_eligible,
+            "n_sealed": n_sealed,
+            "n_source_items": n_source_items,
             "imported_from_manifest_checksum": sha256_file(
                 source_job / "corpus" / "manifest.json"
             ),
         }
     )
+    corpus_manifest.setdefault("text_field", corpus_cfg.get("text_field") or "text")
+    corpus_manifest.setdefault("input_items_checksum", "sha256:" + source_items_checksum)
 
-    protected_checksum = sha256_file(source_protected)
-    validate_source_fence(source_sealed_status, protected_checksum)
     sealed_status = copy.deepcopy(source_sealed_status)
     sealed_status.update(
         {
@@ -349,6 +616,7 @@ def create_contract(
             "custodian": human_id,
             "simulation_only": False,
             "protected_manifest_checksum": protected_checksum,
+            "n_items": n_sealed,
             "imported_from_status_checksum": sha256_file(
                 source_job / "test" / "sealed" / "status.json"
             ),
@@ -356,6 +624,7 @@ def create_contract(
                 "validated": True,
                 "source_status": source_sealed_status.get("status"),
                 "source_custodian": source_sealed_status.get("custodian"),
+                "source_protected_manifest_checksum": source_protected_checksum,
                 "source_invalidation_state": source_sealed_status.get(
                     "invalidation_state"
                 ),
@@ -511,10 +780,10 @@ def create_contract(
 
     artifacts: dict[Path, bytes] = {
         job_root / "config.yaml": config_data,
-        job_root / "corpus" / "items.jsonl": source_items.read_bytes(),
+        job_root / "corpus" / "items.jsonl": items_data,
         job_root / "corpus" / "manifest.json": corpus_manifest_data,
         job_root / "test" / "sealed" / "status.json": sealed_status_data,
-        job_root / "test" / "sealed" / source_protected.name: source_protected.read_bytes(),
+        job_root / "test" / "sealed" / "manifest.protected.jsonl": protected_data,
         job_root / "test" / "sealed" / "access_log.jsonl": b"",
         job_root / "register.md": register_bytes,
         job_root / "gold" / "cumulative.jsonl": b"",
@@ -546,8 +815,9 @@ def create_contract(
         "created_files": created,
         "created_count": len(created),
         "items": corpus_manifest["n_items"],
-        "protected_manifest_copied_opaquely": True,
-        "protected_manifest_parsed": False,
+        "sealed_items": n_sealed,
+        "protected_manifest_copied_opaquely": False,
+        "protected_manifest_parsed": _protected_records(source_protected.read_bytes()) is not None,
         "protected_manifest_exposed": False,
         "next_action": "human meaning confirmation",
     }
@@ -572,32 +842,51 @@ def confirm_meaning(
     human_id: str,
     confirmed_at: str,
     accept_current_schema: bool,
+    attest_as_human: bool = False,
     channel: str = "cli",
 ) -> dict:
-    """Record the identified human's explicit confirmation of the current schema."""
+    """Record an explicit caller attestation for the current semantic schema.
+
+    ``human_id`` is a configured project identifier, not an authenticated
+    principal. Callers must opt into that attestation explicitly; the receipt
+    records this limitation so it cannot be mistaken for identity proof.
+    """
     job_root = job_root.resolve()
     validate_page_lane(page_file, job_root)
     if not accept_current_schema:
         raise RuntimeError("confirmation requires --accept-current-schema")
+    if attest_as_human is not True:
+        raise RuntimeError("confirmation requires an explicit human caller attestation")
 
     before = status(job_root)
     config_path = job_root / "config.yaml"
     config = load_mapping(config_path)
     authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     if authority.get("human_id") != human_id:
-        raise RuntimeError("only the identified human semantic authority may confirm")
+        raise RuntimeError(
+            "caller-supplied human_id must match the configured semantic authority"
+        )
     held, reason = authority_hold(config)
     if held:
         raise RuntimeError(f"HOLD · {reason}")
     # Any integrity defect other than the not-yet-written G0 receipt blocks the
     # confirmation BEFORE a single byte is written.
-    blocking = [
-        error for error in before["integrity_errors"]
+    blocking_p0 = before["p0_integrity_errors"]
+    blocking_g0 = [
+        error for error in before["g0_integrity_errors"]
         if error != "G0 receipt missing after semantic confirmation"
     ]
-    if blocking or before["missing"]:
-        raise RuntimeError(f"P0 integrity must pass before confirmation: {blocking or before['missing']}")
-    if before["phase"] == "P1" and before["meaning_receipt_valid"]:
+    if blocking_p0 or before["missing"]:
+        raise RuntimeError(
+            "P0 contract integrity must pass before confirmation: "
+            f"{blocking_p0 or before['missing']}"
+        )
+    if blocking_g0:
+        raise RuntimeError(
+            "G0 receipt integrity must be repaired before confirmation: "
+            f"{blocking_g0}"
+        )
+    if g0_passed(before):
         return {
             "job_root": str(job_root),
             "phase": "P1",
@@ -613,6 +902,7 @@ def confirm_meaning(
         raise RuntimeError("P0 contract receipt does not bind the five authority artifacts")
 
     already_semantic = _meaning_receipt_valid(config, job_root)
+    prior_meaning_bound = _meaning_receipt_bound(config, job_root)
 
     if not already_semantic:
         final_config = copy.deepcopy(config)
@@ -626,6 +916,7 @@ def confirm_meaning(
             "schema": "subjective-label-meaning-confirmation/v1",
             "status": "confirmed",
             "human_id": human_id,
+            "identity_assurance": "caller_attested_not_authenticated",
             "confirmed_at": confirmed_at,
             "channel": channel,
             "bindings": bindings,
@@ -666,17 +957,31 @@ def confirm_meaning(
 
     updated: list[str] = []
     if not already_semantic:
+        expected_config_checksum = (
+            sha256_file(config_path) if prior_meaning_bound
+            else str(initial_checksums.get("config.yaml") or "")
+        )
         if _replace_exact(
-            config_path, str(initial_checksums.get("config.yaml") or ""), final_config_data
+            config_path, expected_config_checksum, final_config_data
         ):
             updated.append("config.yaml")
     g0_path = job_root / "gates" / "g0" / "receipt.json"
-    if write_once(g0_path, json_bytes(g0_receipt)):
+    g0_data = json_bytes(g0_receipt)
+    if g0_path.is_file() and g0_path.read_bytes() != g0_data:
+        if not (prior_meaning_bound and before.get("g0_receipt_valid")):
+            raise RuntimeError(f"refusing to replace unverified G0 receipt: {g0_path}")
+        prior_data = g0_path.read_bytes()
+        prior_hash = sha256_bytes(prior_data)
+        archive = job_root / "gates" / "g0" / "history" / f"{prior_hash}.json"
+        write_once(archive, prior_data)
+        _replace_exact(g0_path, prior_hash, g0_data)
+        updated.extend([archive.relative_to(job_root).as_posix(), "gates/g0/receipt.json"])
+    elif write_once(g0_path, g0_data):
         updated.append("gates/g0/receipt.json")
 
     after = status(job_root)
-    if after["phase"] != "P1":
-        raise RuntimeError(f"confirmation did not close P0: {after['integrity_errors']}")
+    if not g0_passed(after):
+        raise RuntimeError(f"confirmation did not pass G0: {after['integrity_errors']}")
     return {
         "job_root": str(job_root),
         "phase": "P1",
@@ -698,23 +1003,28 @@ def _component_path(policy_dir: Path, name: object) -> Path | None:
 
 
 def status(job_root: Path) -> dict:
-    """Derive the P0/G0 frontier without writing and without raising on defects."""
+    """Derive P0 integrity and G0 predicates without writing or raising on defects."""
     job_root = job_root.resolve()
     present = {rel: (job_root / rel).is_file() for rel in P0_FILES}
     missing = [rel for rel, exists in present.items() if not exists]
-    integrity_errors: list[str] = []
+    p0_integrity_errors: list[str] = []
+    g0_integrity_errors: list[str] = []
 
     config: dict = {}
     if present["config.yaml"]:
         config, error = try_load_mapping(job_root / "config.yaml")
         if error:
-            integrity_errors.append(error)
+            p0_integrity_errors.append(error)
     authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
     meaning_confirmed = bool(authority.get("meaning_confirmed"))
     try:
         meaning_is_valid = bool(config) and _meaning_receipt_valid(config, job_root)
     except (OSError, ValueError, TypeError):
         meaning_is_valid = False
+    try:
+        meaning_is_bound = bool(config) and _meaning_receipt_bound(config, job_root)
+    except (OSError, ValueError, TypeError):
+        meaning_is_bound = False
     hold, hold_reason = authority_hold(config) if config else (False, "")
 
     exclusion_asserted = False
@@ -723,43 +1033,43 @@ def status(job_root: Path) -> dict:
     if present["test/sealed/status.json"]:
         sealed_status, error = try_load_mapping(job_root / "test" / "sealed" / "status.json")
         if error:
-            integrity_errors.append(error)
+            p0_integrity_errors.append(error)
     source_attestation = sealed_status.get("source_fence_attestation")
     g0_receipt_path = job_root / "gates" / "g0" / "receipt.json"
     p0_receipt_path = job_root / "gates" / "p0-contract" / "receipt.json"
     expected_items = ""
 
-    if not missing and not integrity_errors:
+    if not missing and not p0_integrity_errors:
         corpus_manifest, error = try_load_mapping(job_root / "corpus" / "manifest.json")
         if error:
-            integrity_errors.append(error)
+            p0_integrity_errors.append(error)
         items_path = job_root / "corpus" / "items.jsonl"
         expected_items = str(corpus_manifest.get("items_checksum") or "").removeprefix(
             "sha256:"
         )
         if items_path.is_symlink():
-            integrity_errors.append("refusing symlinked corpus/items.jsonl")
+            p0_integrity_errors.append("refusing symlinked corpus/items.jsonl")
         elif not items_path.is_file() or not expected_items:
-            integrity_errors.append("corpus items/checksum missing")
+            p0_integrity_errors.append("corpus items/checksum missing")
         elif sha256_file(items_path) != expected_items:
-            integrity_errors.append("corpus items checksum mismatch")
+            p0_integrity_errors.append("corpus items checksum mismatch")
 
         sealed_dir = job_root / "test" / "sealed"
         if sealed_dir.is_symlink():
-            integrity_errors.append("refusing symlinked test/sealed/")
+            p0_integrity_errors.append("refusing symlinked test/sealed/")
         else:
             try:
                 protected_manifest = find_protected_manifest(sealed_dir)
             except RuntimeError as error:
-                integrity_errors.append(str(error))
+                p0_integrity_errors.append(str(error))
             else:
                 expected_seal = str(
                     sealed_status.get("protected_manifest_checksum") or ""
                 ).removeprefix("sha256:")
                 if protected_manifest.is_symlink():
-                    integrity_errors.append("refusing symlinked protected manifest")
+                    p0_integrity_errors.append("refusing symlinked protected manifest")
                 elif not expected_seal or sha256_file(protected_manifest) != expected_seal:
-                    integrity_errors.append("protected manifest checksum mismatch")
+                    p0_integrity_errors.append("protected manifest checksum mismatch")
         exclusion_asserted = bool(
             sealed_status.get("status") == "reserved-and-unexposed"
             and sealed_status.get("custodian")
@@ -769,57 +1079,57 @@ def status(job_root: Path) -> dict:
             and source_attestation.get("source_invalidation_state") == "valid"
         )
         if not exclusion_asserted:
-            integrity_errors.append("sealed/development exclusion custody is not asserted")
+            p0_integrity_errors.append("sealed/development exclusion custody is not asserted")
 
         policy_dir = job_root / "policy" / "versions" / "G_00"
         policy_manifest, error = try_load_mapping(policy_dir / "manifest.yaml")
         if error:
-            integrity_errors.append(error)
+            p0_integrity_errors.append(error)
         components = policy_manifest.get("components")
         if not isinstance(components, dict) or not components:
-            integrity_errors.append("G_00 component checksums missing")
+            p0_integrity_errors.append("G_00 component checksums missing")
         else:
             for name, expected in components.items():
                 component = _component_path(policy_dir, name)
                 if component is None:
-                    integrity_errors.append(f"G_00 component name refused: {name}")
+                    p0_integrity_errors.append(f"G_00 component name refused: {name}")
                 elif not component.is_file() or sha256_file(component) != str(expected):
-                    integrity_errors.append(f"G_00 component checksum mismatch: {name}")
+                    p0_integrity_errors.append(f"G_00 component checksum mismatch: {name}")
 
         # The immutable P0 receipt is always the anchor.  After confirmation
         # the only permitted P0 change is config.yaml's meaning fields.
         if not p0_receipt_path.is_file():
-            integrity_errors.append("P0 contract receipt missing")
+            p0_integrity_errors.append("P0 contract receipt missing")
         else:
             p0_receipt, error = try_load_mapping(p0_receipt_path)
             p0_checksums = p0_receipt.get("p0_artifact_checksums")
             if error:
-                integrity_errors.append(error)
+                p0_integrity_errors.append(error)
             elif not isinstance(p0_checksums, dict):
-                integrity_errors.append("P0 receipt does not bind all five authority artifacts")
+                p0_integrity_errors.append("P0 receipt does not bind all five authority artifacts")
             else:
                 for rel in P0_FILES:
                     expected = str(p0_checksums.get(rel) or "")
-                    if rel == "config.yaml" and meaning_is_valid:
+                    if rel == "config.yaml" and meaning_is_bound:
                         actual = sha256_bytes(_unconfirmed_config_bytes(config))
                     else:
                         actual = sha256_file(job_root / rel)
                     if not expected or actual != expected:
-                        integrity_errors.append(f"P0 authority checksum mismatch: {rel}")
+                        p0_integrity_errors.append(f"P0 authority checksum mismatch: {rel}")
                 if p0_receipt.get("corpus_items_checksum") != expected_items:
-                    integrity_errors.append("P0 receipt corpus checksum mismatch")
+                    p0_integrity_errors.append("P0 receipt corpus checksum mismatch")
                 if p0_receipt.get("sealed_manifest_checksum") != sealed_status.get(
                     "protected_manifest_checksum"
                 ):
-                    integrity_errors.append("P0 receipt sealed checksum mismatch")
+                    p0_integrity_errors.append("P0 receipt sealed checksum mismatch")
                 if p0_receipt.get("source_fence_attestation_checksum") != canonical_hash(
                     source_attestation
                 ):
-                    integrity_errors.append("P0 receipt source-fence attestation mismatch")
+                    p0_integrity_errors.append("P0 receipt source-fence attestation mismatch")
 
         if meaning_confirmed or meaning_is_valid or g0_receipt_path.is_file():
             if not g0_receipt_path.is_file():
-                integrity_errors.append("G0 receipt missing after semantic confirmation")
+                g0_integrity_errors.append("G0 receipt missing after semantic confirmation")
             else:
                 g0_receipt, error = try_load_mapping(g0_receipt_path)
                 meaning_receipt = authority.get("meaning_receipt")
@@ -839,9 +1149,19 @@ def status(job_root: Path) -> dict:
                     and chain_ok
                 )
                 if not g0_receipt_valid:
-                    integrity_errors.append("G0 receipt is invalid or semantically unbound")
+                    g0_integrity_errors.append("G0 receipt is invalid or semantically unbound")
 
-    p0_contract_integrity_valid = not missing and not integrity_errors
+    p0_contract_integrity_valid = not missing and not p0_integrity_errors
+    integrity_errors = p0_integrity_errors + g0_integrity_errors
+    g0_state = {
+        "p0_contract_integrity_valid": p0_contract_integrity_valid,
+        "hold": hold,
+        "meaning_receipt_valid": meaning_is_valid,
+        "g0_receipt_valid": g0_receipt_valid,
+    }
+    g0_ready = g0_passed(g0_state)
+    # `phase` is a compatibility projection for older status readers. The
+    # booleans above and below own every gate and confirmation decision.
     if missing:
         phase = "P0"
         next_action = "supply missing P0 files"
@@ -854,14 +1174,14 @@ def status(job_root: Path) -> dict:
         phase = "P0"
         next_action = f"HOLD · {hold_reason}"
         first_blocked = "G0 · human authority"
+    elif g0_integrity_errors:
+        phase = "P0"
+        next_action = "repair the G0 receipt before any Round 1 proposal"
+        first_blocked = "G0 · receipt integrity"
     elif not meaning_is_valid:
         phase = "P0"
         next_action = "human meaning confirmation"
         first_blocked = "G0 · human meaning confirmation"
-    elif not g0_receipt_valid:
-        phase = "P0"
-        next_action = "repair the G0 receipt before any Round 1 proposal"
-        first_blocked = "G0 · receipt integrity"
     else:
         phase = "P1"
         next_action = "propose round_01 card"
@@ -877,7 +1197,10 @@ def status(job_root: Path) -> dict:
         "meaning_confirmed": meaning_confirmed,
         "meaning_receipt_valid": meaning_is_valid,
         "g0_receipt_valid": g0_receipt_valid,
+        "g0_passed": g0_ready,
         "p0_contract_integrity_valid": p0_contract_integrity_valid,
+        "p0_integrity_errors": p0_integrity_errors,
+        "g0_integrity_errors": g0_integrity_errors,
         "integrity_errors": integrity_errors,
         "sealed_development_exclusion_asserted": exclusion_asserted,
         "sealed_custodian": sealed_status.get("custodian"),
@@ -908,13 +1231,17 @@ def main() -> None:
     )
 
     confirm = sub.add_parser(
-        "confirm", help="record the identified human's current-schema confirmation"
+        "confirm", help="record explicit caller attestation to the current meaning"
     )
     confirm.add_argument("--job-root", type=Path, required=True)
     confirm.add_argument("--page-file", type=Path, required=True)
     confirm.add_argument("--human-id", required=True)
     confirm.add_argument("--confirmed-at", default=date.today().isoformat())
     confirm.add_argument("--accept-current-schema", action="store_true", required=True)
+    confirm.add_argument(
+        "--attest-as-human", action="store_true", required=True,
+        help="explicitly attest that you are the configured human authority; identity is not authenticated",
+    )
 
     inspect = sub.add_parser("status", help="derive the P0 frontier without writing")
     inspect.add_argument("--job-root", type=Path, required=True)
@@ -937,6 +1264,7 @@ def main() -> None:
             human_id=args.human_id,
             confirmed_at=args.confirmed_at,
             accept_current_schema=args.accept_current_schema,
+            attest_as_human=args.attest_as_human,
         )
     else:
         result = status(args.job_root)

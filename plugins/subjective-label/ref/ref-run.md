@@ -5,21 +5,27 @@ or auditing Runs inside one subjective-label job. Load `haipipe-run` first for
 the neutral Level-4 contract. This file defines only the Labeling domain's
 operation catalog, physical resolver, completion gates, and count law.
 
-## 1. Identity: operation, Run, episode, gate
+## 1. Identity: Run Type, Run Spec, Run, episode, gate
 
 Keep four things distinct:
 
 ```text
-operation kind   reusable kind of independently closable work
-Run              one allocated attempt at one bounded operation target
-episode          phase-local grouping such as round_03 or production_01
-gate event       a named human/Keeper authorization; never a Run by itself
+operation kind   Labeling Run Type for independently closable work
+Run Spec         one planned bounded commission in a Workflow Definition
+Run              one allocated instance of a Run Spec for one target
+episode          domain grouping such as round_03 or production_01; not a Run
+gate event       a named human/Keeper authorization; normally evidence on a Run
 ```
 
 One job is one corpus snapshot × one target construct × one identified human
 semantic authority. It is the Level-3 work object, not a Run. `Round`, `Test`,
-`Scan`, and `Audit` are episodes that group Runs and phase receipts; do not add
-them to the Run count when their independently closable operations are counted.
+`Scan`, and `Audit` are episodes that group Run Specs, Instances, and domain
+artifacts; do not add them to the Run count. A Workflow is the list of
+Run Specs and their dependency/Route graph; its runtime is the allocated native
+Run Instances and their receipts. P0-P5 are compatibility capability tags on
+Labeling records only. They do not own Specs, Runs, gates, Routes, or lifecycle
+state. Retain serialized `phase` fields when a reader expects them, but do not
+use them as routing or allocation authority.
 
 Mint a Run only when all neutral criteria hold: one frozen target, one authored
 Ticket, one durable Result, and a disk-testable terminal state. Chat turns,
@@ -54,17 +60,20 @@ results/<RUNNAME>/result.yaml          terminal safe receipt and artifact pointe
 ```
 
 The envelope does not copy or replace canonical Labeling artifacts. The Ticket
-binds its phase commission, such as a released Card or frozen registry. The
+binds its Run Spec commission, such as a released Card or frozen registry. The
 Result records paths, checksums, counts, and the operation gate over the domain
 artifacts listed below. Protected ids, raw item text, private judgments,
 credentials, and model secrets never enter the envelope.
 
-Use these required Ticket fields:
+Use these required Ticket fields. A `phase` field may remain in a
+legacy/current dialect record as a compatibility capability tag; it is never a
+Run Spec identity or gate/Route authority:
 
 ```yaml
 run: rl14_executor-predict_test-v1-executor-a
 family: labeling
 domain: subjective-label
+phase: P3                          # compatibility capability tag only
 operation: executor-predict
 episode: test_01
 target: {executor: executor-a, test: test-v1}
@@ -82,16 +91,17 @@ rename or alias them; every newly allocated Labeling Run uses `rlNN`.
 
 ## 3. The 25 Labeling operation kinds
 
-The table names the minimum canonical Result. A Result envelope may bind more
-files required by the phase gate.
+The table names each Labeling Run Type and its minimum canonical Result. A
+Result envelope may bind more files required by the Run Spec's entry/exit
+gates. Its P0-P5 value is compatibility metadata, not Workflow ownership.
 
-| phase | operation | cardinality | bounded target | minimum canonical Result |
+| capability tag (compatibility only) | Run Type / operation | cardinality | bounded target | minimum canonical Result |
 |---|---|---:|---|---|
 | P0 | `corpus-contract` | 1 | one imported, fenced job snapshot | `gates/p0-contract/receipt.json` |
 | P0 | `discovery-search` | D | one bounded external-evidence query | `discovery/search_<n>/result.json` |
-| P0 | `guideline-seed` | 1 | one initial policy candidate | `policy/versions/G_00/manifest.yaml` |
-| P0 | `test-reserve` | 1 | one sealed-test reservation frame | `test/sealed/status.json` |
-| P0 | `embedding-build` | 1 | one corpus × embedder version | `cache/embeddings/<version>/manifest.json` |
+| P0 | `guideline-seed` | G (optional) | one initial policy candidate per commissioned Run | `policy/versions/G_00/manifest.yaml` |
+| P0 | `test-reserve` | T (optional) | one sealed-test reservation frame per commissioned Run | `test/sealed/status.json` |
+| P0 | `embedding-build` | E (optional) | one corpus × embedder version per commissioned Run | `cache/embeddings/<version>/manifest.json` |
 | P1 | `round-prepare` | N | one released Card | frozen `manifest.yaml`, batch, evidence, and prospect |
 | P1 | `weak-prelabel` | ΣW_r | one round × weak executor | `rounds/round_<t>/prelabels/<executor>.jsonl` |
 | P1 | `human-calibration` | N | one frozen human batch | complete `human_final.jsonl` plus Session events |
@@ -121,11 +131,12 @@ production shards.
 The expected happy-path instance count is:
 
 ```text
-planned Runs = D + sum(W_r) + 5N + 2K + S + 15
+planned Runs = D + G + T + E + sum(W_r) + 5N + 2K + S + 12
 ```
 
-For `D=2`, `N=3`, `W=[0,2,2]`, `K=3`, and `S=1`, the planned count is `43`.
-This is a plan, not an inventory claim. The actual count is the number of
+`G`, `T`, and `E` may each be zero when that independent Run Type is not
+commissioned. For `D=2`, `G=T=E=1`, `N=3`, `W=[0,2,2]`, `K=3`, and `S=1`, the planned
+count is `43`. This is a plan, not an inventory claim. The actual count is the number of
 allocated Run envelopes with a valid runtime receipt. Repairs, rescans,
 semantic reopens, materially changed inputs, and superseding candidates add
 Runs. Retries under an unchanged Ticket add attempts to the same Run.
@@ -138,27 +149,38 @@ Allocate only at the last responsible moment, after the operation's commission
 and authoritative inputs freeze. Preserve this dependency order:
 
 ```text
-P0  contract/search/seed/reserve → embedding
-P1  released Card → prepare → weak-prelabel* → human-calibration
+P0 (compat)  corpus-contract → G0 entry predicate → released Card → round-prepare
+             discovery-search, guideline-seed, and test-reserve are separately
+             commissioned Specs under their owner contracts; they are not a
+             prerequisite chain for one another when initial contract artifacts
+             suffice. embedding-build is separately commissioned after P0
+             integrity passes and is not gated on G0.
+P1 (compat)  released Card → prepare → weak-prelabel* → human-calibration
     → guideline-learn → round-measure → round-close
-P2  stopped checkpoints → handoff-freeze
-P3  frozen registry → test-gold-lock → executor-predict* → executor-score*
+P2 (compat)  stopped checkpoints → handoff-freeze
+P3 (compat)  frozen registry → test-gold-lock → executor-predict* → executor-score*
     → executor-select
-P4  frozen manifest → scan-preflight → scan-shard* → risk-route
+P4 (compat)  frozen manifest → scan-preflight → scan-shard* → risk-route
     → human-review → reconcile
-P5  frozen design → audit-sample → audit-human-gold → audit-analyze
+P5 (compat)  frozen design → audit-sample → audit-human-gold → audit-analyze
     → dstar-materialize
 ```
 
 Parallelize only the starred Runs after their common prerequisite closes.
 Never let an executor prediction see T* before `test-gold-lock` completes, and
-never score an executor while its prediction Run remains open.
+never score an executor while its prediction Run remains open. These are
+Run Spec dependencies and source-Run exit predicates; P0-P5 do not define the
+dependency graph.
 
-Human gates authorize or block the relevant Run transition:
+Human gates authorize or block the relevant Run Spec transition. Attach their
+evidence to the owning Run Result/receipt, or to a named `resource_controls`
+when the control changes job authority without an independently commissioned
+Run. Never make a gate a Run solely to count it:
 
 ```text
-meaning confirmation  follows corpus/seed/reserve and is required for G0
-Card release          commissions round-prepare
+meaning confirmation  validates the transition to round-prepare after a valid
+                      corpus-contract Result; pending confirmation is not HOLD
+Card release          commissions round-prepare after G0 passes
 item/rule decisions   occur inside human-calibration/guideline-learn
 stop signoff          permits handoff-freeze allocation
 freeze signature      occurs inside handoff-freeze before promotion
@@ -191,15 +213,15 @@ as separate facts in `result.yaml`.
 Enumerate the union of `runs/*.yaml` and `results/*/runtime.yaml`. Report an
 orphan Ticket, orphan runtime, missing `result.yaml`, duplicate `run:`, path
 mismatch, or invalid terminal gate explicitly. Count one row per allocated
-logical Run, never per episode, domain artifact, item, chat, API call, or
-attempt. Put active and recovery-needed rows first.
+logical Run, never per episode, capability tag, domain artifact, item, chat,
+API call, or attempt. Put active and recovery-needed rows first.
 
 `haipipe-plugin-labeling` owns operation. `haipipe-plugin-runs` presents the
-same envelopes read-only and may group them by P0-P5 episode. Show only safe
+same envelopes read-only and may group them by compatibility tag or episode. Show only safe
 targets, checksums, counts, status, and Result pointers. Never add a second
 approve, reveal, freeze, final, or run control.
 
 If the allocator, worker, Keeper, or verifier required by an operation does
-not exist in the implementation, return `HOLD` at the preserved frontier.
+not exist in the implementation, return `HOLD` at the preserved Run frontier.
 Do not backfill historical domain artifacts as Runs without authored Tickets
 and truthful runtime receipts.

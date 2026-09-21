@@ -471,7 +471,20 @@ def _build(job_root: Path, version: str, out: Path, *, model: str, device: str, 
     context_field = str(corpus_cfg.get("context_field") or "context_prev")
     rows = cal._corpus_rows(job_root)
     eligible = [r for r in rows if r.get("population_status") == "eligible" and r.get("item_id") is not None]
+    # A fenced v2 corpus contains development rows only. Its public manifest
+    # carries the sealed count, while protected item ids and text stay outside
+    # this reader. Older corpora can still report their inline sealed rows.
     n_sealed = sum(1 for r in rows if r.get("population_status") == "sealed")
+    corpus_manifest_path = job_root / "corpus" / "manifest.json"
+    if corpus_manifest_path.is_file():
+        corpus_manifest = job.load_mapping(corpus_manifest_path)
+        if "n_sealed" in corpus_manifest:
+            try:
+                n_sealed = int(corpus_manifest["n_sealed"])
+            except (TypeError, ValueError):
+                raise EmbeddingRefused("corpus manifest has an invalid n_sealed count") from None
+            if n_sealed < 0:
+                raise EmbeddingRefused("corpus manifest has a negative n_sealed count")
     if not eligible:
         raise EmbeddingRefused("no development item is marked population_status: eligible")
     eligible.sort(key=lambda r: str(r["item_id"]))

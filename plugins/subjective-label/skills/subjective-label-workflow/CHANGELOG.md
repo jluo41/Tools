@@ -1,5 +1,12 @@
 # subjective-label-workflow · CHANGELOG
 
+## 0.12.0 · 2026-09-20
+
+Clarify that the local confirmation API checks a caller-supplied authority id
+and records self-attestation without authenticating identity. Document the
+guarded upgrade path for a previously bound G0 receipt: archive it by checksum
+before replacement only when its existing chain still verifies.
+
 ## 0.11.0 · 2026-09-13
 
 Make P0 cardinality match its optional sidecars: one required corpus-contract

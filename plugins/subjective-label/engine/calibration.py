@@ -153,14 +153,20 @@ def _repo_root(start: Path) -> Path | None:
 
 
 def require_human_p1(job_root: Path, human_id: str) -> dict:
-    """Only the identified human, after G0, on a job not on HOLD."""
+    """Require the configured caller id after G0 on a job not on HOLD.
+
+    The local engine checks the supplied id against project configuration; it
+    does not authenticate the caller's identity.
+    """
     state = job.status(job_root)
     if state.get("hold"):
         raise LabelingRefused(f"HOLD · {state.get('hold_reason')}")
     if state["phase"] != "P1":
         raise LabelingRefused(f"{state['first_blocked_frontier']} · {state['next_action']}")
     if not human_id or human_id != state.get("human_id"):
-        raise LabelingRefused("only the identified human semantic authority may label this job")
+        raise LabelingRefused(
+            "caller-supplied human_id must match the configured semantic authority"
+        )
     return state
 
 
@@ -769,8 +775,23 @@ def _reference_index(job_root: Path, ref: dict) -> dict:
     source = (root / str(ref.get("file") or "")).resolve()
     if not source.is_file():
         return {}
-    stat = source.stat()
-    key = job.sha256_bytes(f"{source}|{stat.st_size}|{int(stat.st_mtime)}|{json.dumps(ref, sort_keys=True)}".encode())[:16]
+    # Read the source once, then key and build the index from the same bytes.
+    # Size and mtime are not content identities: an in-place replacement can
+    # preserve both and otherwise replay a stale reveal into an immutable event.
+    source_bytes = source.read_bytes()
+    corpus_path = job_root / "corpus" / "items.jsonl"
+    corpus_bytes = corpus_path.read_bytes() if corpus_path.is_file() else b""
+    key_material = {
+        "source": str(source),
+        "source_sha256": job.sha256_bytes(source_bytes),
+        "corpus_sha256": job.sha256_bytes(corpus_bytes),
+        "reference": ref,
+    }
+    key = job.sha256_bytes(
+        json.dumps(
+            key_material, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        ).encode("utf-8")
+    )
     cache = job_root / "cache" / "reveal" / f"{key}.json"
     if cache.is_file():
         return json.loads(cache.read_text(encoding="utf-8"))
@@ -779,22 +800,21 @@ def _reference_index(job_root: Path, ref: dict) -> dict:
     count_fields = [str(f) for f in ref.get("count_fields") or []]
     item_fields = [str(f) for f in ref.get("item_fields") or []]
     index: dict[str, dict] = {}
-    with source.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            if not line.strip():
-                continue
-            row = json.loads(line)
-            item_id = str(row.get(id_field))
-            if item_id not in eligible:
-                continue
-            entry = index.setdefault(item_id, {"rows": 0, "counts": {f: {} for f in count_fields},
-                                               "fields": {}})
-            entry["rows"] += 1
-            for field in count_fields:
-                value = str(row.get(field))
-                entry["counts"][field][value] = entry["counts"][field].get(value, 0) + 1
-            for field in item_fields:
-                entry["fields"].setdefault(field, row.get(field))
+    for line in source_bytes.decode("utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        item_id = str(row.get(id_field))
+        if item_id not in eligible:
+            continue
+        entry = index.setdefault(item_id, {"rows": 0, "counts": {f: {} for f in count_fields},
+                                           "fields": {}})
+        entry["rows"] += 1
+        for field in count_fields:
+            value = str(row.get(field))
+            entry["counts"][field][value] = entry["counts"][field].get(value, 0) + 1
+        for field in item_fields:
+            entry["fields"].setdefault(field, row.get(field))
     cache.parent.mkdir(parents=True, exist_ok=True)
     cache.write_text(json.dumps(index, sort_keys=True), encoding="utf-8")
     return index

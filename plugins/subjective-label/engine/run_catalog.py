@@ -43,7 +43,7 @@ OPERATION_KINDS = (
 @dataclass(frozen=True)
 class PlannedRun:
     run: str
-    phase: str
+    phase: str  # legacy-compatible P0-P5 capability tag; not route authority
     operation: str
     episode: str
     target: str
@@ -69,24 +69,46 @@ def plan_runs(
     round_weak: Iterable[int],
     executors: int,
     shards: int,
+    guideline_seed_count: int = 1,
+    test_reserve_count: int = 1,
+    embedding_build_count: int = 1,
 ) -> list[PlannedRun]:
     weak_counts = tuple(round_weak)
     for name, value in (
         ("discovery", discovery),
         ("executors", executors),
         ("shards", shards),
+        ("guideline_seed_count", guideline_seed_count),
+        ("test_reserve_count", test_reserve_count),
+        ("embedding_build_count", embedding_build_count),
         *((f"round_weak[{index}]", value) for index, value in enumerate(weak_counts)),
     ):
         if value < 0:
             raise ValueError(f"{name} must be non-negative")
 
+    for name, value in (("executors", executors), ("shards", shards)):
+        if value == 0:
+            raise ValueError(f"{name} must be at least 1")
+    if not weak_counts:
+        raise ValueError("round_weak must contain at least one calibration round")
+
     rows: list[tuple[str, str, str, str]] = []
     _append(rows, "P0", "corpus-contract", "contract", "job-v1")
     for index in range(1, discovery + 1):
         _append(rows, "P0", "discovery-search", "contract", f"query-{index:02d}")
-    _append(rows, "P0", "guideline-seed", "contract", "G-00")
-    _append(rows, "P0", "test-reserve", "contract", "test-v1")
-    _append(rows, "P0", "embedding-build", "contract", "all-minilm-l6-v2")
+    for index in range(1, guideline_seed_count + 1):
+        target = "G-00" if guideline_seed_count == 1 else f"G-00-{index:02d}"
+        _append(rows, "P0", "guideline-seed", "contract", target)
+    for index in range(1, test_reserve_count + 1):
+        target = "test-v1" if test_reserve_count == 1 else f"test-v1-{index:02d}"
+        _append(rows, "P0", "test-reserve", "contract", target)
+    for index in range(1, embedding_build_count + 1):
+        target = (
+            "all-minilm-l6-v2"
+            if embedding_build_count == 1
+            else f"all-minilm-l6-v2-{index:02d}"
+        )
+        _append(rows, "P0", "embedding-build", "contract", target)
 
     for round_index, weak_count in enumerate(weak_counts, start=1):
         episode = f"round_{round_index:02d}"
@@ -155,17 +177,25 @@ def _parse_round_weak(value: str) -> tuple[int, ...]:
 
 
 def _render_text(runs: list[PlannedRun]) -> str:
-    phase_counts = Counter(run.phase for run in runs)
-    lines = ["Phase  Runs", "-----  ----"]
-    for phase in ("P0", "P1", "P2", "P3", "P4", "P5"):
-        lines.append(f"{phase:<5}  {phase_counts[phase]:>4}")
-    lines.extend((f"TOTAL  {len(runs):>4}", "", "Run  Phase  Operation              Episode        Target"))
-    lines.append("---  -----  ---------------------  -------------  ------------------------")
+    tag_counts = Counter(run.phase for run in runs)
+    lines = ["P tag (compatibility only)  Runs", "--------------------------  ----"]
+    for tag in ("P0", "P1", "P2", "P3", "P4", "P5"):
+        lines.append(f"{tag:<26}  {tag_counts[tag]:>4}")
+    lines.extend((
+        f"TOTAL                       {len(runs):>4}",
+        "",
+        "Run  Compat tag (not authority)  Operation              Episode        Target",
+    ))
+    lines.append("---  --------------------------  ---------------------  -------------  ------------------------")
     for run in runs:
         lines.append(
-            f"{run.run:<48}  {run.phase:<5}  {run.operation:<21}  "
+            f"{run.run:<48}  {run.phase:<26}  {run.operation:<21}  "
             f"{run.episode:<13}  {run.target}"
         )
+    lines.extend((
+        "",
+        "P0-P5 are compatibility capability tags only; Run Specs own dependencies and Routes.",
+    ))
     return "\n".join(lines)
 
 
@@ -182,16 +212,46 @@ def main() -> int:
     )
     plan.add_argument("--executors", type=int, required=True, help="qualification candidates K, baseline included")
     plan.add_argument("--shards", type=int, required=True, help="production shards S")
+    plan.add_argument(
+        "--guideline-seeds",
+        type=int,
+        default=1,
+        help="commissioned guideline-seed Runs G (default: 1, set 0 when omitted)",
+    )
+    plan.add_argument(
+        "--test-reservations",
+        type=int,
+        default=1,
+        help="commissioned test-reserve Runs T (default: 1, set 0 when omitted)",
+    )
+    plan.add_argument(
+        "--embedding-builds",
+        type=int,
+        default=1,
+        help="commissioned embedding-build Runs E (default: 1, set 0 when omitted)",
+    )
     plan.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     args = parser.parse_args()
 
     try:
-        runs = plan_runs(args.discovery, args.round_weak, args.executors, args.shards)
+        runs = plan_runs(
+            args.discovery,
+            args.round_weak,
+            args.executors,
+            args.shards,
+            guideline_seed_count=args.guideline_seeds,
+            test_reserve_count=args.test_reservations,
+            embedding_build_count=args.embedding_builds,
+        )
     except ValueError as exc:
         parser.error(str(exc))
 
     if args.json:
-        print(json.dumps({"planned_count": len(runs), "runs": [asdict(run) for run in runs]}, indent=2))
+        print(json.dumps({
+            "planned_count": len(runs),
+            "phase_semantics": "compatibility capability tag only; not Workflow route authority",
+            "runs": [asdict(run) for run in runs],
+        }, indent=2))
     else:
         print(_render_text(runs))
     return 0

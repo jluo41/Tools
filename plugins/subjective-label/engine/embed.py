@@ -12,8 +12,10 @@ CLI subcommands
     stratify   stratified sample by cluster
 
 All subcommands take a --project-dir to scope caching. On a v2 job root
-(config.yaml schema_version: subjective-label/v2), embed, nearest, project, and
-stratify hold until G0 passes (engine/gates.py); legacy dirs warn and continue.
+(config.yaml schema_version: subjective-label/v2), input rows must resolve to
+exact text for canonical eligible items in the Page's development corpus;
+arbitrary text and sealed ids are refused. Operations also require G0 where
+their existing gate applies. Legacy dirs keep their existing input behavior.
 
 Config source: {project_dir}/config.yaml → embedding section
     model: "sentence-transformers/all-MiniLM-L6-v2"
@@ -71,6 +73,62 @@ def _read_config(project_dir: Path) -> dict:
                 "index": "faiss-flat"}
     cfg = _load_yaml(cfg_path)
     return cfg.get("embedding", {}) or {}
+
+
+def _canonical_v2_items(project_dir: Path, items: list[dict]) -> list[dict]:
+    """Bind v2 tool inputs to canonical eligible ids and their exact text."""
+    cfg_path = project_dir / "config.yaml"
+    if not cfg_path.is_file():
+        return items
+    config = _load_yaml(cfg_path)
+    if not isinstance(config, dict) or config.get("schema_version") != "subjective-label/v2":
+        return items
+
+    corpus_cfg = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
+    text_field = str(corpus_cfg.get("text_field") or "text")
+    corpus_path = project_dir / "corpus" / "items.jsonl"
+    try:
+        corpus_rows = [
+            json.loads(line)
+            for line in corpus_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"canonical v2 corpus is unavailable or invalid: {type(error).__name__}") from None
+
+    eligible: dict[str, str] = {}
+    for row in corpus_rows:
+        if not isinstance(row, dict):
+            raise ValueError("canonical v2 corpus rows must be objects")
+        if row.get("population_status") != "eligible":
+            continue
+        raw_id = row.get("item_id")
+        item_id = str(raw_id).strip() if raw_id is not None else ""
+        text = row.get(text_field)
+        if not item_id or not isinstance(text, str) or not text.strip():
+            raise ValueError("canonical eligible corpus rows need item_id and non-empty configured text")
+        if item_id in eligible:
+            raise ValueError(f"canonical eligible corpus has duplicate item_id {item_id!r}")
+        eligible[item_id] = text
+
+    canonical: list[dict] = []
+    for source in items:
+        if not isinstance(source, dict):
+            raise ValueError("v2 tool input rows must be objects")
+        raw_id = source.get("item_id", source.get("id"))
+        item_id = str(raw_id).strip() if raw_id is not None else ""
+        if not item_id or item_id not in eligible:
+            raise ValueError("v2 tool input is not a canonical eligible corpus item")
+        text = eligible[item_id]
+        for field in {"text", text_field}:
+            supplied = source.get(field)
+            if supplied is not None and supplied != text:
+                raise ValueError(f"v2 tool input text does not match canonical eligible item {item_id!r}")
+        row = dict(source)
+        row.update({"item_id": item_id, "id": item_id, "text": text,
+                    "population_status": "eligible"})
+        canonical.append(row)
+    return canonical
 
 
 # ── backends ────────────────────────────────────────────────────────────────
@@ -137,6 +195,7 @@ def cmd_embed(project_dir: Path, input_jsonl: Path, output_path: Path) -> None:
     for line in input_jsonl.read_text(encoding="utf-8").splitlines():
         if line.strip():
             items.append(json.loads(line))
+    items = _canonical_v2_items(project_dir, items)
 
     texts_to_encode = []
     idx_to_encode = []
@@ -180,6 +239,7 @@ def cmd_index(project_dir: Path, gallery_jsonl: Path) -> None:
     gallery = json.loads(gallery_jsonl.read_text(encoding="utf-8"))
     if not isinstance(gallery, list):
         raise ValueError("gallery.json must be a JSON array")
+    gallery = _canonical_v2_items(project_dir, gallery)
 
     # Ensure vectors exist for every gallery entry
     vecs = []
@@ -240,6 +300,7 @@ def cmd_nearest(project_dir: Path, query_jsonl: Path, output_jsonl: Path, k: int
     for line in query_jsonl.read_text(encoding="utf-8").splitlines():
         if line.strip():
             queries.append(json.loads(line))
+    queries = _canonical_v2_items(project_dir, queries)
 
     # Load/encode query vectors
     q_vecs = []
@@ -293,12 +354,14 @@ def cmd_cluster(project_dir: Path, input_jsonl: Path, output_jsonl: Path, n_clus
     for line in input_jsonl.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
-        it = json.loads(line)
+        items.append(json.loads(line))
+    items = _canonical_v2_items(project_dir, items)
+
+    for it in items:
         h = _sha1(f"{model_tag}::{it['text']}")
         p = vec_dir / f"{h}.npy"
         if not p.exists():
             raise FileNotFoundError(f"vector missing for {it['id']} — run `embed` first")
-        items.append(it)
         vecs.append(np.load(p))
 
     mat = np.vstack(vecs)
@@ -337,12 +400,14 @@ def cmd_project(project_dir: Path, input_jsonl: Path, output_dir: Path, method: 
 
     items = []
     vecs = []
-    to_encode: list[tuple[int, str]] = []
     paths = []
     for line in input_jsonl.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
-        it = json.loads(line)
+        items.append(json.loads(line))
+    items = _canonical_v2_items(project_dir, items)
+
+    for it in items:
         h = _sha1(f"{model_tag}::{it['text']}")
         p = vec_dir / f"{h}.npy"
         paths.append(p)
@@ -350,8 +415,10 @@ def cmd_project(project_dir: Path, input_jsonl: Path, output_dir: Path, method: 
             vecs.append(np.load(p))
         else:
             vecs.append(None)
-            to_encode.append((len(items), it["text"]))
-        items.append(it)
+
+    # Build the sparse cache-miss list after filtering to canonical v2 items.
+    missing_indices = [i for i, vector in enumerate(vecs) if vector is None]
+    to_encode = [(i, items[i]["text"]) for i in missing_indices]
 
     if to_encode:
         backend = _make_backend(cfg)
@@ -532,12 +599,15 @@ def cmd_stratify(project_dir: Path, input_jsonl: Path, cluster_jsonl: Path, outp
             cluster_map[r["id"]] = r["cluster"]
 
     items_by_cluster: dict[int, list] = {}
+    input_rows = []
     for line in input_jsonl.read_text(encoding="utf-8").splitlines():
         if line.strip():
-            it = json.loads(line)
-            c = cluster_map.get(it["id"])
-            if c is not None:
-                items_by_cluster.setdefault(c, []).append(it)
+            input_rows.append(json.loads(line))
+    input_rows = _canonical_v2_items(project_dir, input_rows)
+    for it in input_rows:
+        c = cluster_map.get(it["id"])
+        if c is not None:
+            items_by_cluster.setdefault(c, []).append(it)
 
     rng = random.Random(0)
     sampled = []

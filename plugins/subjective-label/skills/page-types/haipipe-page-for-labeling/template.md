@@ -290,7 +290,7 @@ provides: <the terminal deliverable, e.g. "D*, one labeled record per item with 
 ├── gates/                       p0-contract/receipt.json · g0/receipt.json
 ├── runs/ · results/             rlNN_<operation>_<target> Ticket ↔ Result, every phase
 ├── corpus/manifest.json         ids · text checksum · n_eligible · n_sealed
-├── corpus/items.jsonl           every row: population_status eligible | sealed
+├── corpus/items.jsonl           eligible development rows only
 ├── policy/versions/G_<t>/       closed, immutable · + cheatsheet.md · gallery.md (§1 quotes these)
 ├── gold/cumulative.jsonl        human-confirmed rows only
 ├── rounds/round_<t>/            one ROUND UNIT per round: card · manifest · evidence · prospect ·

@@ -42,7 +42,8 @@ For every item in a frozen human batch:
 8. Record proposed guideline edits and prior records potentially affected.
 
 Do not batch away human decisions merely to reduce interaction. A Session may pause and
-resume at the next unclosed item; preserve all event ids and phase state.
+resume at the next unclosed item; preserve all event ids, Run identity, and
+job-control state. A legacy P0-P5 tag is display metadata, not the resume key.
 
 ## Guideline work
 

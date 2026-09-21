@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -72,18 +73,36 @@ def confirmed_job(tmp_path: Path) -> tuple[Path, Path]:
     root, page = build_job(tmp_path)
     job.confirm_meaning(job_root=root, page_file=page, human_id="JL",
                         confirmed_at="2026-09-16T10:05:00+00:00", accept_current_schema=True,
+                        attest_as_human=True,
                         channel="test")
     return root, page
 
 
 def sealed_ids(root: Path) -> set[str]:
-    return {json.loads(l)["item_id"] for l in (root / "corpus" / "items.jsonl").read_text().splitlines()
-            if json.loads(l)["population_status"] == "sealed"}
+    protected = root / "test" / "sealed" / "manifest.protected.jsonl"
+    return {json.loads(line)["item_id"] for line in protected.read_text(encoding="utf-8").splitlines()
+            if line.strip()}
 
 
-def test_fence_marks_sealed_rows_and_create_imports_them(tmp_path: Path) -> None:
+def test_fence_and_page_corpus_omit_sealed_text(tmp_path: Path) -> None:
     root, _ = build_job(tmp_path)
-    assert len(sealed_ids(root)) == 4
+    protected_ids = sealed_ids(root)
+    assert len(protected_ids) == 4
+    source_bytes = (tmp_path / "source" / "corpus" / "items.jsonl").read_bytes()
+    page_bytes = (root / "corpus" / "items.jsonl").read_bytes()
+    source_rows = [json.loads(line) for line in source_bytes.splitlines()]
+    page_rows = [json.loads(line) for line in page_bytes.splitlines()]
+    assert len(source_rows) == len(page_rows) == 8
+    assert all(row["population_status"] == "eligible" for row in source_rows + page_rows)
+    raw_rows = [json.loads(line) for line in (tmp_path / "items.jsonl").read_text().splitlines()]
+    sealed_texts = {row["text"] for row in raw_rows if row["item_id"] in protected_ids}
+    assert all(text.encode("utf-8") not in source_bytes for text in sealed_texts)
+    assert all(text.encode("utf-8") not in page_bytes for text in sealed_texts)
+    protected_rows = [json.loads(line) for line in
+                      (root / "test" / "sealed" / "manifest.protected.jsonl").read_text().splitlines()]
+    assert all(set(row) == {"item_id", "text_hash"} for row in protected_rows)
+    assert not any(text in json.dumps(protected_rows) for text in sealed_texts)
+
     state = job.status(root)
     assert state["phase"] == "P0" and state["integrity_errors"] == []
     assert state["first_blocked_frontier"] == "G0 · human meaning confirmation"
@@ -193,6 +212,46 @@ def test_reveal_index_never_contains_sealed_ids(tmp_path: Path) -> None:
                      class_label="none", region=None, uncertainty="low")
     cache = next((root / "cache" / "reveal").glob("*.json"))
     assert not set(json.loads(cache.read_text())) & sealed_ids(root)
+
+
+def test_reveal_cache_tracks_source_bytes_when_size_and_mtime_are_unchanged(tmp_path: Path) -> None:
+    root, _ = confirmed_job(tmp_path)
+    ref = CONFIG["reveal"]["reference_observations"]
+    source = cal._repo_root(root) / ref["file"]
+    eligible_id = cal._eligible_ids(root)[0]
+
+    before = source.stat()
+    first = cal._reference_index(root, ref)
+    assert first[eligible_id]["counts"]["vote"] == {"No": 2, "Yes": 1}
+
+    rows = [json.loads(line) for line in source.read_text(encoding="utf-8").splitlines()]
+    for row in rows:
+        row["vote"] = {"No": "Nx", "Yes": "Yez"}[row["vote"]]
+    replacement = "".join(json.dumps(row) + "\n" for row in rows)
+    assert len(replacement.encode("utf-8")) == before.st_size
+    source.write_text(replacement, encoding="utf-8")
+    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+
+    second = cal._reference_index(root, ref)
+    assert source.stat().st_size == before.st_size
+    assert source.stat().st_mtime_ns == before.st_mtime_ns
+    assert second[eligible_id]["counts"]["vote"] == {"Nx": 2, "Yez": 1}
+
+
+def test_reveal_cache_tracks_frozen_corpus_identity(tmp_path: Path) -> None:
+    root, _ = confirmed_job(tmp_path)
+    ref = CONFIG["reveal"]["reference_observations"]
+    eligible_id = cal._eligible_ids(root)[0]
+    assert eligible_id in cal._reference_index(root, ref)
+
+    corpus_path = root / "corpus" / "items.jsonl"
+    rows = [json.loads(line) for line in corpus_path.read_text(encoding="utf-8").splitlines()]
+    for row in rows:
+        if row.get("item_id") == eligible_id:
+            row["population_status"] = "sealed"
+    corpus_path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+
+    assert eligible_id not in cal._reference_index(root, ref)
 
 
 

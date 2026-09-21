@@ -1,5 +1,18 @@
 # label-building-workflow · CHANGELOG
 
+## 0.10.0 · 2026-09-20
+
+Clarify that local CLI and Board receipts are caller-attested, not identity
+authentication, and document the guarded upgrade path for previously bound G0
+receipts. Add setup-only skill routing, distinguish class values from separate
+constructs, and state that a scratch check needs a temporary Page and writes
+temporary artifacts because there is no non-writing dry-run command; remove
+the entire scratch workspace afterward. Correct repository-root script paths
+and mark the historical example corpus as external. The engine now carries
+eligible corpus rows only into Page lanes, resolves managed v2 inputs against
+the canonical eligible corpus, and fails closed on missing or unknown job
+schemas.
+
 ## 0.9.0 · 2026-09-16
 
 Match the built engine. P0 names `engine/fence_source.py` as the way to build

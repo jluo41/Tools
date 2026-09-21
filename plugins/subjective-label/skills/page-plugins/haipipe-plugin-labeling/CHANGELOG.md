@@ -1,5 +1,12 @@
 # haipipe-plugin-labeling · CHANGELOG
 
+## 0.18.0 · 2026-09-20
+
+Show P2-P5 as unimplemented and held instead of presenting them as future
+steps in a completed lifecycle. Make the caller-supplied authority id and
+attestation language explicit and disclose that the local Board does not
+authenticate the actor.
+
 ## 0.17.0 · 2026-09-16
 
 Match the built Board surface and engine. The surface now has five Spaces:

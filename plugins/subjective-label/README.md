@@ -8,28 +8,36 @@ corpus under that frozen meaning.
 ```text
 subjective-label                         one user-facing umbrella
 ├── label-building                      Building side LAW: authority, human gates, verbs
-├── label-building-workflow             Building side ORDER: round steps, item resume, round receipts
+├── label-building-workflow             Building Run Spec guide: order, item resume, Run receipts
 ├── label-scanning                      Scanning side LAW
-├── label-scanning-workflow             Scanning side ORDER: test lock, runs, risk queue, audit loop
-└── subjective-label-workflow           the CROSSING: phase numbers P0-P5, gates G0-G6, handoff, invalidation
+├── label-scanning-workflow             Scanning Run Spec guide: test lock, risk queue, audit loop
+└── subjective-label-workflow           the Workflow: Run Specs, dependencies, gates, Routes, handoff
 ```
 
 The split follows one authority boundary:
 
 ```text
 🏗 Building   asks "is this what the human means?"
-              Contract → Round × N → Freeze → signed Label Handoff
+              contract Run → calibration Runs → handoff-freeze Run
 
 🔍 Scanning   asks "was that frozen meaning executed reliably?"
-              Test → Scan → Audit → D*
+              test Runs → production Runs → audit Runs → D*
 ```
+
+**A Workflow is a list of Runs.** P0-P5 remain compatibility capability tags
+on existing records and views; they do not own work or determine routing. Each
+Run Spec's dependencies, gates, and Routes define the executable graph.
 
 One identified human is the semantic authority. Models may retrieve, predict,
 diagnose, draft, and execute; their consensus never creates human gold.
+The current local CLI and Board record that authority as a caller attestation;
+they do not authenticate the person's identity. Treat G0 receipts as
+single-user workflow evidence, not identity proof or a production security
+boundary.
 
-## Six journey phases
+## Capability groups (P0-P5 compatibility tags)
 
-| phase | side | purpose |
+| compatibility tag | side | Run Spec grouping |
 |---|---|---|
 | P0 Contract | Building | establish one valid job |
 | P1 Round | Building | refine `D_t` and `G_t` |
@@ -38,8 +46,10 @@ diagnose, draft, and execute; their consensus never creates human gold.
 | P4 Scan | Scanning | create one terminal candidate per item |
 | P5 Audit | Scanning | support a bounded `D*` claim |
 
-Each phase's authority artifact, and the gates G0-G6 between phases, are
-declared in one place only: `skills/subjective-label-workflow/SKILL.md`.
+The Run Spec graph, its route predicates, and the Label Handoff crossing are
+declared in `skills/subjective-label-workflow/SKILL.md`. Gate evidence belongs
+to the Run Result/receipt it checks or to a named job control; a gate is not an
+extra Run or independent lifecycle unit.
 
 Pick, seal, judge, learn, measure, and decide are steps or verbs inside one
 Round; GOLD and SCORE are the two steps inside Test. "Another round" is a route.
@@ -66,7 +76,7 @@ exact handoff checksum and cannot edit Building artifacts.
 | `/label-building-workflow` | `label-building-workflow/` | the Building order: fence, contract, card, prepare, judge, learn, close |
 | `/label-scanning` | `label-scanning/` | the Scanning law: Test, Scan, Audit |
 | `/label-scanning-workflow` | `label-scanning-workflow/` | the Scanning order: gold, score, manifest, attempts, queue, audit, repair |
-| `/subjective-label-workflow` | `subjective-label-workflow/` | phase numbers, gates, authority artifacts, the crossing |
+| `/subjective-label-workflow` | `subjective-label-workflow/` | Run Specs, dependencies, gates, Routes, handoff and invalidation |
 | `/haipipe-page-for-labeling` | `page-types/haipipe-page-for-labeling/` | the Job Page type: one Page per corpus and target |
 | `/haipipe-plugin-labeling` | `page-plugins/haipipe-plugin-labeling/` | the 🏷 Labeling lane beside a Page: five Spaces and one write door |
 

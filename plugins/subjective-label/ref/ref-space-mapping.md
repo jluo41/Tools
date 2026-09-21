@@ -2,8 +2,11 @@
 
 This is the orientation contract for the Board Labeling surface of
 `haipipe-plugin-labeling` (`live/labeling.py`). It uses one location word:
-**Space = Workspace** (one concept). Workflow phases P0-P5 are phase state, not
-a Space. They show in `Run → Phases` and in the one-line `Next:` header.
+**Space = Workspace** (one concept). The current adapter retains P0-P5 in the
+`Run → Phases` view and `Next:` header as compatibility capability tags. They
+are not Workflow nodes, Run owners, or routing authority. The adapter may use
+them to choose a presentation Space only; Run eligibility and Routes come from
+the shared Run Spec graph and native Run receipts.
 
 ## Two levels
 
@@ -61,7 +64,7 @@ engine writer exists today. The Board's `Run → Workflow map` view projects thi
 table and adds how many Runs of each type the job has. A definition, not an
 inventory.
 
-| phase | Run type | in words | started by | Data | Labeling | Quality | Delivery | writes to |
+| compatibility tag | Run type | in words | started by | Data | Labeling | Quality | Delivery | writes to |
 |---|---|---|---|---|---|---|---|---|
 | P0 | `corpus-contract` | Set up the job | Chat: /subjective-label | shows · Contract, Schema | — | shows · Test (held-back count) | — | `gates/p0-contract/receipt.json` |
 | P0 | `discovery-search` | Search outside evidence | not built yet | — | — | — | — | `discovery/search_<n>/result.json` |
@@ -97,9 +100,9 @@ it, checked in this order (the first match wins):
 1. no `labeling/` job yet → `Data`
 2. HOLD → `Data`
 3. an integrity error → `Run`
-4. phase P0 → `Data`
-5. phase P1 → `Labeling`
-6. any later phase → `Run`
+4. compatibility tag P0 → `Data` (presentation only)
+5. compatibility tag P1 → `Labeling` (presentation only)
+6. any later compatibility tag → `Run` (presentation only)
 
 A `?space=&view=` URL wins. Next comes the browser's saved choice, keyed by
 Board source plus Page file. Only then does the next-step Space apply. An

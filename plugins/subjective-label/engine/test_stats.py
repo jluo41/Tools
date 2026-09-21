@@ -67,7 +67,14 @@ def v2_job(root: Path) -> Path:
 @pytest.fixture
 def fake_status(monkeypatch):
     """Replace job.status with a controllable fake; no real job is built."""
-    state = {"phase": "P0", "g0_receipt_valid": False, "calls": 0}
+    state = {
+        "phase": "P0",
+        "p0_contract_integrity_valid": True,
+        "hold": False,
+        "meaning_receipt_valid": False,
+        "g0_receipt_valid": False,
+        "calls": 0,
+    }
 
     def status(job_root):
         state["calls"] += 1
@@ -254,8 +261,21 @@ def test_run_engine_marks_parse_failure_without_raw_text(tmp_path, monkeypatch):
         return "Considering everything, the answer is HIGH because of the wording"
 
     monkeypatch.setitem(label.ENGINES, "fake", fake)
+    job_root = v2_job(tmp_path / "job")
+    monkeypatch.setitem(
+        sys.modules,
+        "job",
+        types.SimpleNamespace(
+            status=lambda _root: {
+                "p0_contract_integrity_valid": True,
+                "hold": False,
+                "meaning_receipt_valid": True,
+                "g0_receipt_valid": True,
+            }
+        ),
+    )
     items = [{"anchor_idx": 1, "id": "a1", "text": "item"}]
-    rows = asyncio.run(label.run_engine(tmp_path, "fake", "v01", "t", "sys", items,
+    rows = asyncio.run(label.run_engine(job_root, "fake", "v01", "t", "sys", items,
                                         label._make_parser(LABELS), "m", 1,
                                         tmp_path / "out.jsonl"))
     assert rows[0]["pred"] == "PARSE_ERROR"
@@ -336,11 +356,16 @@ def test_page_plugin_field_does_not_cross_newline_and_outcome_is_bounded(tmp_pat
     assert rows[0]["target"] == "—"
     assert len(rows[0]["outcome"]) <= 160
 
-    fake_job = types.SimpleNamespace(status=lambda r: {"phase": "P1"})
+    fake_job = types.SimpleNamespace(status=lambda r: {
+        "phase": "P1", "p0_contract_integrity_valid": True, "g0_passed": True,
+    })
     monkeypatch.setattr(page_plugin, "_job_module", lambda: fake_job)
     rendered = page_plugin.render(page)
     assert "<script>alert" not in rendered
     assert "&lt;script&gt;alert" in rendered
+    assert "Compatibility capabilities · not lifecycle progress" in rendered
+    assert "not implemented · HOLD" in rendered
+    assert 'class="phase past"' not in rendered and 'class="phase now"' not in rendered
 
 
 # ── fix 10 · G0 gate before model, embedding, or sampling work ──────────────
@@ -350,10 +375,10 @@ def test_require_gate_holds_until_g0_passes(tmp_path, fake_status):
     job = v2_job(tmp_path / "job")
     with pytest.raises(gates.GateHold):
         gates.require_gate(job, "G0")
-    fake_status.update(phase="P1", g0_receipt_valid=False)
+    fake_status.update(phase="P1", meaning_receipt_valid=True, g0_receipt_valid=False)
     with pytest.raises(gates.GateHold):
         gates.require_gate(job, "G0")
-    fake_status.update(phase="P1", g0_receipt_valid=True)
+    fake_status.update(phase="P0", g0_receipt_valid=True)
     gates.require_gate(job, "G0")
     with pytest.raises(gates.GateHold):
         gates.require_gate(job, "G9")
@@ -395,14 +420,13 @@ def test_v2_entry_points_hold_before_g0(tmp_path, fake_status, monkeypatch):
     assert fake_status["calls"] >= 5
 
 
-def test_legacy_project_dir_keeps_working_with_warning(tmp_path, fake_status, capsys):
+def test_project_without_schema_is_held_before_sampling(tmp_path, fake_status):
     legacy = tmp_path / "legacy"
     legacy.mkdir()
     (legacy / "config.yaml").write_text(yaml.safe_dump({"labels": {"values": LABELS}}))
-    picked = sample.sample([{"id": "a1", "text": "beta"}], {"beta": "beta"}, {},
-                           per_stratum=1, none_quota=0.0, job_root=legacy)
-    assert [p["id"] for p in picked] == ["a1"]
-    assert "legacy" in capsys.readouterr().err.lower()
+    with pytest.raises(_gates().GateHold, match="unsupported schema_version missing"):
+        sample.sample([{"id": "a1", "text": "beta"}], {"beta": "beta"}, {},
+                      per_stratum=1, none_quota=0.0, job_root=legacy)
     assert fake_status["calls"] == 0
 
 

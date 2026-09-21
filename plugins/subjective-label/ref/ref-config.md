@@ -2,10 +2,13 @@
 
 `config.yaml` contains tunable and declared project choices plus the immutable
 P0 authority binding. It does not contain observed scores, mutable artifact
-pointers, or per-item decisions. The `authority.meaning_receipt` written by
-the identified human at G0 is a deliberately bound semantic receipt: the
-canonical `gates/g0/receipt.json` rehashes it and closes the gate. It is not a
-general runtime cache and must never be edited in place.
+pointers, or per-item decisions. The `authority.meaning_receipt` written at G0
+is a deliberately bound semantic receipt: the canonical `gates/g0/receipt.json`
+rehashes it and closes the gate. It is not a general runtime cache and must
+never be edited in place. The stored `human_id` and caller attestation are not
+authenticated identity evidence; the CLI and local Board currently have no
+identity provider. Do not treat this receipt as proof of who acted in a
+multi-user or adversarial environment.
 
 ## 1. Full conceptual schema
 
@@ -36,7 +39,7 @@ authority:
   mode: single_human_semantic_authority
   creates_human_gold: true
   meaning_confirmed: false             # written true only by confirm_meaning
-  meaning_receipt: null                # written only by confirm_meaning
+  meaning_receipt: null                # caller-attested; not identity-authenticated
 
 labels:
   type: ordinal
@@ -180,7 +183,9 @@ These fields carry the words a person reads. The engine reads them as follows:
 
 The G0 meaning receipt binds the whole `construct`, `labels`, `regions`, and
 `uncertainty` blocks by checksum. Changing any meaning after G0 breaks that
-receipt: `status` reports an integrity error and the job is back at P0.
+receipt: `status` reports an integrity error and the compatibility tag is P0;
+the Workflow still resolves its Run frontier from the declared graph and
+receipts.
 
 `authority.human_id` must be set, `authority.creates_human_gold` must be
 `true`, `authority.mode` must be `single_human_semantic_authority`, and
@@ -259,8 +264,12 @@ Diagnostic enrichment is reported separately from the representative headline sa
 ```
 
 State points to immutable artifacts by id or checksum and does not duplicate
-their contents. `subjective-label-workflow` derives phase from the gate-granting
-artifacts; when this cache disagrees, the artifacts win.
+their contents. The current adapter may expose `phase`/P0-P5 as a compatibility
+projection from domain receipts; when this cache disagrees, the receipts win.
+That projection is not the Workflow frontier or routing authority. Resolve the
+next Run Spec from the Workflow Definition and the allocated Run
+Tickets/Results/runtime receipts. Keep legacy fields readable while adapters
+are migrated; do not let them authorize allocation or closure.
 
 ## 8. Migration from v1
 
