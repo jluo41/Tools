@@ -1,6 +1,6 @@
 # Page workflow actors
 
-One actor owns each current Page phase. Every producer reads
+Actors implement the selected Run or controller operation; the legacy phase labels below are dispatch coordinates, not Workflow units. Every producer reads
 `../haipipe-page-workflow/ref/producer-contract.md`; CHECK remains an
 independent fresh-context judge.
 
@@ -21,5 +21,5 @@ history.
 
 Agent types register at session start. If a new type is unavailable in the
 running session, dispatch a general-purpose stand-in whose first action is to
-read the exact phase agent file as its identity and then the shared producer
-contract. The receipt names the phase-role agent, not the stand-in.
+read the exact owner agent file as its identity and then the shared producer
+contract. The receipt names the owner-role agent, not the stand-in.

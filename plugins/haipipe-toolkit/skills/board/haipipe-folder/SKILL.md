@@ -3,16 +3,14 @@ name: haipipe-folder
 description: >-
   The neutral Folder contract shared by Board pages, workflow artifacts, and
   executable task units. Every Folder has a Page Face for reading and judgment
-  and a Task Face for intent, work, progress, and closure; a domain workflow
-  phase or a declared canonical family skill owns both faces and selects
+  and a Task Face for intent, work, progress, and closure; a declared resource owner or canonical family skill owns both faces and selects
   optional plugins such as Outline or Runs.
-  Use when defining a Folder kind, authoring a workflow-phase skill, deciding
-  whether something is a page or a task, filling a Phase × Run Map, or routing a legacy page-type.
-  Trigger: folder contract, page face, task face, folder kind, phase-owned
-  configuration, workflow phase, /haipipe-folder.
+  Use when defining a Folder kind, authoring a Folder owner skill, deciding
+  whether something is a page or a task, binding Run Specs to Folder resources, or routing a legacy page-type.
+  Trigger: folder contract, page face, task face, folder kind, Folder ownership, Run Spec, /haipipe-folder.
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-09-12"
+  version: "0.7.1"
+  last_updated: "2026-09-20"
 ---
 
 # /haipipe-folder · one work object, two faces
@@ -28,7 +26,7 @@ Folder.
 
 ```text
                          Folder kind
-                 owned by one phase or family
+                 owned by one resource/family skill
                     /                    \
        Page Face  /                      \  Task Face
   read · express · judge             intend · do · track · close
@@ -37,65 +35,48 @@ Folder.
 `primary_face` says which face is the normal entry, never which face exists.
 A page-primary Folder still owes executable closure. A task-primary Folder
 still owes a readable account of what it is, what happened, and what remains.
-Either face may be physically minimal when the phase has no work for it.
+Either face may be physically minimal when the owner has no work for it.
 
 ## Ownership
 
-One domain workflow phase normally owns the Folder kind. A stable base Folder
-whose kind is itself the family work unit may instead be owned by one declared
-canonical family skill. Ownership always includes both faces, the plugin
-profile, the gate, and the handoff. The four altitudes are:
+One declared resource or canonical family skill owns the Folder kind, both
+faces, selected plugins, closure and handoff. Its workflow declares the graph
+of bounded Run Specs. A Folder kind is resource identity; workflow progress is
+recorded on Runs and their dependencies.
 
 ```text
-door       invariants and user verbs across the family
-workflow   order, frontier, dispatch, receipts, and stop rules
-phase      one Folder kind: Page Face + Task Face + plugins + closure
-plugin     reusable storage/surface/writer/boundary capability
+door         family invariants and user verbs
+workflow     Run Specs, dependencies/routes, dispatch, receipts, completion
+Folder owner Page Face + Task Face + resource closure + plugins + handoff
+native Run   Ticket + bounded target + worker + Result + receipt
+plugin       reusable storage/presentation/writer capability
 ```
 
-### Stable address, phase-owned identity
+### Stable address and resource identity
 
-A workflow may grow one physical Folder through several sequential phase
-identities. That is an **in-place transition**, not several Folders pretending
-to be one. The address stays stable; exactly one `folder-kind` is current; and
-`workflow/phase.yaml` records the current phase plus an append-only transition
-history. The gate that closes phase A changes the identity to phase B only when
-B's input packet exists. A return edge records another transition instead of
-rewinding or erasing history.
+New fixed-kind Folders declare `folder-kind:` on their Page. If a separately
+governed identity record is needed, use `workflow/folder.yaml`:
 
 ```yaml
+schema: haipipe.folder-identity/v1
 current:
-  phase: B
-  folder-kind: <kind-of-phase-B>
+  folder-kind: knowledge
 history:
-  - {from: A, to: B, gate: <the gate that closed phase A>, at: <date>}
+  - {from: information, to: knowledge, reason: <explicit-resource-change>, at: <timestamp>}
 ```
 
-(The Design family no longer uses phases: a Design Folder keeps one
-`folder-kind: design` and records its work as `rdNN_*` Runs, so it is not an
-example of this pattern.)
+This record has no execution position or progress field. A Run completing does
+not automatically change the Folder kind. A resource-kind change requires an
+explicit owner action with resolved inputs and an append-only identity receipt.
+Keep the Page `folder-kind:` consistent. If subject, address or independent
+closure changes, create another Folder and bind exact Context/Evidence inputs.
+Insight's Meta/Question/DIKW Folders normally retain their separate identities;
+Design retains one `folder-kind: design` with native Design Runs.
 
-`workflow/` is control material, not product material. A purity law such as
-“a phase-A Folder has no phase-B product beside it” may permit `workflow/phase.yaml`
-without treating the Folder as realized. The phase contract must say so, and
-its checker must distinguish control metadata from produced artifacts.
-
-Use in-place evolution only when every phase concerns the same work object. If
-the subject, independent closure, or address changes, mint another Folder and
-bind it through the owning workflow plus explicit Context/Evidence addresses.
-A cross-Folder phase such as a round audit still owes a
-small addressable receipt Folder; it must not masquerade as an unrecorded verb.
-
-Do not create a separate `haipipe-page-for-<kind>` when `<kind>` is already a
-workflow phase. Put the Page Face in that phase skill. Do not create a private
-lifecycle in the phase: Page work uses `haipipe-page-workflow`; executable
-work uses the owning domain/task workflow.
-
-The same anti-duplication rule applies to a canonical family owner. When a
-stable Folder kind is already the family's work unit and has no meaningful
-domain-phase identity, the family skill owns both faces directly. Do not mint a
-fake workflow or phase, and do not add a parallel Page-Type skill merely to
-carry its Page Face.
+A Page Face belongs to the Folder owner. Do not create a duplicate
+`haipipe-page-for-<kind>` when the owner already supplies that face. Page work
+uses `haipipe-page-workflow`; executable work uses declared native Run owners.
+`workflow/` holds control records and does not imply a product or allocated Run.
 
 ## Runtime shape
 
@@ -106,9 +87,9 @@ A Folder may materialize only the lanes its owner selects:
 ├── <stem>.md             Page Face · what a reader opens
 ├── outline/              human plan and decision record, when selected
 ├── workflow/             machine intent/progress/receipts, when selected
-├── evidence/             evidence lanes selected by the phase
-├── delivery/             outward projections selected by the phase
-├── studio/               human authoring room selected by the phase
+├── evidence/             evidence lanes selected by the owner
+├── delivery/             outward projections selected by the owner
+├── studio/               human authoring room selected by the owner
 ├── scripts/config/       optional reusable implementation material
 ├── runs/                 authored Run tickets; the only execution door
 └── results/              Folder-local paired Results, when this dialect owns them
@@ -116,20 +97,28 @@ A Folder may materialize only the lanes its owner selects:
 
 Absence is meaningful. An owner that selects no addressable Runs does not
 scaffold empty runtime lanes. When the first Run opens, its authored ticket and
-generated Result acquire one logical address. Resolve the Result by dialect:
+generated Result acquire one logical address. Resolve the Ticket format and
+Result location from the owning Run Profile. These are shell-dialect examples:
 
 ```text
 Folder-local     <folder>/runs/<run>.sh ↔ <folder>/results/<run>/
-Job-backed Task  <job>/<task>/runs/<run>.sh ↔ <job>/results/<task>/<run>/
+Job-backed Task  <job>/<task>/runs/<run>.sh ↔ $OUTPUT_ROOT/<task>/results/<run>/
 ```
 
-The second form keeps generated output at the Job without weakening the Task
-Folder's identity; do not copy it under the Page. `scripts/`, config, and
+Page Writing uses Markdown Tickets (`runs/rp-*.md`) under the
+[interactive writing profile](../../page/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md).
+Design uses YAML Tickets (`runs/rdNN_<operation>_<slug>.yaml`) under
+[haipipe-design-workflow](../../design/haipipe-design-workflow/SKILL.md).
+Neither requires a shell wrapper merely to count as a Run.
+
+The Task owner resolves `$OUTPUT_ROOT` from its declared store or the Job.
+Existing records in older `results/<task>/` stores retain their resolver;
+do not copy or relocate them to imitate another dialect. `scripts/`, config, and
 notebooks are conditional supporting projections. `haipipe-plugin-runs` is the
 optional presenter over the logical Run spine. It does not replace the
 universal Task Face or own Execute, lifecycle, or closure authority.
 `haipipe-run` owns the shared Level-4 identity, pairing, receipt, lifecycle, and
-audit invariants beneath both physical dialects.
+audit invariants beneath these physical dialects.
 
 ## 🪞 Table projection · not a third Folder face
 
@@ -139,7 +128,7 @@ third authority beside the Page Face and Task Face:
 
 | Table | Row grain | Plan source | Display source | Current status |
 |---|---|---|---|---|
-| **Workflow Table** | Phase/Cycle | workflow declaration | compact Runs and human state | exists |
+| **Workflow Table** | bounded Run Spec | frozen workflow declaration | actual native Runs and their control state | exists |
 | **Task Tables** | Task folder | task-page `develops:` / `input:` / `output:` | tree, code, tickets, receipts, stores | exists as `/task-table` |
 | **Board Tables** | one Board Page/Page Folder | Page/Outline + cross-lane intent | Folder lanes, Tasks, Runs, Results, evidence | not implemented; future sibling |
 
@@ -158,14 +147,13 @@ lane, copy plan fields into `folderstat`, or call the Folder inventory a Board
 Table until that sibling contract defines its row grain, source authority, and
 write boundary.
 
-## Phase skill contract
+## Folder owner skill contract
 
-Every new phase-owned Folder skill declares these metadata rows:
+Every new workflow-associated Folder owner skill declares these metadata rows:
 
 ```yaml
 metadata:
   workflow: haipipe-<family>-workflow
-  phase: I4
   folder_kind: knowledge
   primary_face: page       # page | task
   page_ruling: none        # none | domain-gate | local
@@ -192,29 +180,28 @@ record, execution boundary, and terminal states. Closure is one cross-face
 assertion: neither face may report closed while the other still owes a
 load-bearing artifact or decision.
 
-The owning workflow publishes the complete Phase × Run Map defined by
-`haipipe-run`. This phase must make its row executable:
+The owning workflow publishes a Run Spec list and its dependency/Route graph
+under `haipipe-run`. The
+Folder contract binds the work it actually commissions:
 
-- when the row lists Run operations, add `### Run Profile` inside `## Task
-  Face` with ALLOWED, TARGET, TICKET, INPUTS, WORKER, RESULT, ACCEPT,
-  PROMOTION, and REOPEN;
-- make the profile's operations and cardinality agree exactly with the
-  workflow row;
-- when the row says `none`, omit empty `runs/`, `results/`, and Runs-presenter
-  lanes rather than manufacturing work;
-- keep the phase gate in `## Gate and Closure`; a human tick or phase receipt
-  does not become a Run merely because the Task Face records it.
+- Declare a Run Profile in `## Task Face`, or link the exact shared profile,
+  naming target, Ticket, inputs, worker, Result, acceptance, promotion and
+  reopening behavior for each selected operation.
+- Match the workflow's Spec targets, native identities and cardinalities.
+- With no commissioned Run, omit empty `runs/`, `results/` and presenter lanes.
+- Keep resource closure in `## Gate and Closure`. A register edit, Page CHECK,
+  human tick or control receipt does not itself allocate a Run.
 
-The workflow map is the index, this phase profile is the executable detail,
-and runtime receipts are actual inventory. A disagreement is a structural
-error, never a license to infer missing Runs.
+The Run Spec graph is the execution definition, the Folder profile binds its
+resources, and native receipts establish actual inventory. Record resource
+controls without synthetic Run ids.
 
 `page_ruling` tells the shared Page Workflow whether CHECK owes an owner-level
-person decision. `domain-gate` reuses the phase's named human gate receipt;
-`local` names a distinct Page-Face ruling in the phase contract; `none` means
+person decision. `domain-gate` reuses the owner's named human gate receipt;
+`local` names a distinct Page-Face ruling in the Folder contract; `none` means
 closure is mechanical apart from any selected plugin ticks.
 
-Run the structural gate after adding or revising a phase:
+Run the structural gate after adding or revising a Folder owner:
 
 ```bash
 python3 ../haipipe-board/cli/foldercontracts.py --check
@@ -222,9 +209,8 @@ python3 ../haipipe-board/cli/foldercontracts.py --check
 
 ## Canonical family-owner contract
 
-A canonical family owner is the narrow exception for a stable base Folder kind
-that is itself the family's durable work unit rather than one phase of a domain
-workflow. It declares:
+A family whose durable work unit is one stable Folder may declare ownership
+directly, without a separate workflow-associated Folder skill:
 
 ```yaml
 metadata:
@@ -235,16 +221,11 @@ metadata:
   legacy_page_type: task   # optional compatibility key
 ```
 
-It does not declare `workflow:` or `phase:` and does not manufacture
-`workflow/phase.yaml`. The canonical family skill must own both faces, the
-family lifecycle, selected plugins, cross-face closure, and any handoff. Its
-Page Face still runs through `haipipe-page-workflow`; its executable work runs
-through the family lifecycle. Page routing resolves the canonical owner by
-`folder_kind`, while `legacy_page_type` may point old `page-type:` values to
-the same owner.
-
-Use this form only when no domain workflow phase can truthfully name the Folder
-identity. A phase-varying Folder remains phase-owned.
+The skill owns both faces, selected plugins, cross-face closure and handoff.
+Its Page Face uses `haipipe-page-workflow`; execution uses the family's Run
+Specs and native workers. No extra lifecycle object or identity record is
+required. Both owner forms resolve by `folder_kind`; `legacy_page_type` is
+only a read alias for old Pages.
 
 ## Plugin selection
 
@@ -258,47 +239,44 @@ selected, scaffolded, or written for a new Folder.
 
 ## Compatibility
 
-During migration, a runtime Folder may still carry `page-type:`. Resolution is:
+Resolution uses one resource owner:
 
 ```text
-workflow/phase.yaml current.folder-kind: authoritative in-place identity
-folder-kind:       fixed phase- or canonical-family-owned identity in Page frontmatter
-page-type:         legacy lookup through owner metadata
-filename/base      families that have not migrated yet
+workflow/folder.yaml current.folder-kind   canonical identity record, if present
+workflow/phase.yaml current.folder-kind    read-only import only if canonical absent
+Page folder-kind                          fixed resource identity
+Page page-type                            legacy owner lookup
+filename/base                             families without a declared kind
 ```
 
-When `workflow/phase.yaml` exists, a missing/invalid `current` block or a
-conflicting Markdown `folder-kind:` is a named routing error. Falling back
-would let a stale Page Face silently select the wrong phase after D1→D2→D3.
+Malformed selected identity or a conflicting Page `folder-kind:` is a routing
+error; never guess from another source. A valid canonical record supersedes
+legacy bytes. Only the old file's Folder kind is imported; its phase field and
+transition history create no execution authority. New writers emit no Phase
+field. On an authorized identity edit, write the canonical record and retain
+old bytes as history. Remove the read adapter only after supported legacy
+records are inventoried/migrated; see the Insight workflow migration reference.
 
-Compatibility keys do not own semantics. `legacy_page_type` points the old key
-at the phase or canonical family skill that now owns its Page Face. Never write a new
-Application `page-type:` merely because the checker still accepts the key.
+Compatibility keys do not own semantics. `legacy_page_type` points at the
+current resource owner. New domain Pages write `folder-kind:`.
 
 ## Closing checks
 
-- One workflow phase owns the Folder kind and both faces; or, for one stable
-  family work unit with no phase identity, one declared canonical family skill
-  owns the Folder kind and both faces.
-- An in-place phase transition preserves one address, one current kind, and an
-  append-only phase history.
-- The two faces name the same subject, version, and closure boundary.
-- Every selected plugin has a purpose; empty capability folders do not exist.
-- Cross-Folder inputs use Context source addresses or Evidence Item
-  Supporting/Local Run bindings, never PageX or a private task-link lane.
-- Runs, when present, launch only through `runs/`, resolve one paired Result by
-  Folder dialect, and write only declared output.
-- The workflow's Phase × Run row and this phase's Run Profile agree on
-  operations and symbolic cardinality; planned counts remain distinct from
-  receipt-backed actual inventory.
-- The phase's gate and handoff are testable from named files.
-- Any table projection names its plan and display sources and remains
-  regenerable/read-only; it does not become a third Folder face or closure
-  authority.
+- One declared resource/family skill owns each Folder kind and both faces.
+- Resource identity is separate from Run progress and dependency state.
+- Both faces name the same subject, version and closure boundary.
+- Each selected plugin has a purpose; empty capability folders do not exist.
+- Cross-Folder inputs use exact Context source addresses or Evidence Item
+  Supporting/Local Run bindings.
+- Runs launch through native Tickets, pair one declared Result and receipt,
+  and write only their declared output.
+- Folder Run Profiles match workflow Specs; actual counts come from receipts.
+- Resource gates and handoffs are testable from named files.
+- Table projections name their authoritative sources and remain read-only.
 
 ## Files
 
-- `../haipipe-board/src/folder_contract.py` discovers and validates phase contracts.
+- `../haipipe-board/src/folder_contract.py` discovers and validates Folder owner contracts.
 - `../haipipe-board/cli/foldercontracts.py` is the executable inventory/gate.
 - `../../page/haipipe-page/SKILL.md` owns the shared Page frame and Page workflow entry.
 - `../../page/haipipe-plugin/SKILL.md` owns reusable plugin mechanics.

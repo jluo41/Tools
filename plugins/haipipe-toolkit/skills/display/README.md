@@ -24,6 +24,27 @@ _todo/                      🗃 parked, not deleted · retired 260816: the post
 ```
 
 Start at `haipipe-display/SKILL.md`.
-A board page's units follow `page/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md` (the
-page-side rules); a paper's units follow the paper stage.
-A board page's talk is not a renderer's job: it is the slide plugin's deck, authored from the page and framed in its own tab.
+Page DISPLAY Results, View pages, and Paper sections are callers; each supplies
+its unit path and owns the resulting acceptance decision. A Page Result unit uses
+`<page>/results/<re-run>/payload/<unit>/`. The Paper adapter may project that
+source unit into generated delivery files. The View caller keeps its unit at the
+View-owned path in the shared contract.
+
+A Board Page talk is authored by the `haipipe-plugin-delivery` Slides lane from
+the page and framed in its own tab; it is not a display renderer's job.
+
+## Unit and Run boundary
+
+The caller supplies each unit path. A Page DISPLAY Result owns
+`<page>/results/<re-run>/payload/<unit>/`; renderer skills do not write to the retired
+`outline/evidence/display/` or flat `display/` locations. A Paper adapter may project approved unit
+files into generated delivery output, while the Page Result remains the source unit.
+
+A parent Workflow is a list of Runs. One invocation producing one bounded unit may be one Run;
+renderer Steps, tool calls, compiles, reviews, and retries stay inside it. `origin.run` names the
+upstream source Run and remains provenance.
+
+The converters (`figure-to-svg`, `html-to-svg`, and `icon-to-svg`) produce standalone files by
+default and do not create or promote a display unit. If a converted asset will serve a Page, View,
+or Paper display, its caller places it in a supplied unit and follows that unit's intake, candidate,
+review, promotion, and acceptance rules.

@@ -1,3 +1,7 @@
+> Historical design snapshot. Current authority: `haipipe-task/SKILL.md`,
+> `haipipe-workflow/ref/plan-schema.md`, and this family's README.
+> Workflow units are Runs; P-B-E-R are commands. Insight and Design are independent families; Application is retired as their parent.
+
 task — Task-Type Specialist Series (DESIGN)
 ==============================================
 

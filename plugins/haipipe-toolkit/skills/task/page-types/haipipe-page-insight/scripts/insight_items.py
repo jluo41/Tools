@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only Insight item audit, table, and exact citation packet.
+"""Insight item allocation, input freezing, audit, and exact citation packets.
 
 Intent: validate materialized instance/item/version provenance and trace edges;
 never infer scientific correctness, execute a recipe, or approve a handoff.
@@ -26,6 +26,9 @@ STAGES = ("frozen", "evidence", "reasoned", "published")
 STATUSES = {"planned", "running", "complete", "failed", "blocked"}
 INSTANCE_SCHEMAS = {"haipipe.insight-instance/v1", "haipipe.insight-instance/v2"}
 INPUT_SCHEMAS = {"haipipe.insight-input/v1", "haipipe.insight-input/v2"}
+EVIDENCE_CONTRACT = "haipipe.insight-evidence/v1"
+BINDING_FIELDS = ("instance", "run", "base_run", "question", "target", "expected",
+                  "acceptance", "datasets")
 
 
 def digest(path):
@@ -128,6 +131,73 @@ def local_receipt(directory, value, errors, label):
         errors.append(f"{label}: {exc}")
 
 
+def validate_evidence(root, frozen, errors, ident, *, new_input=False):
+    """Check exact input bindings; native owners still own scientific acceptance."""
+    for key in ("supporting_results", "local_sources", "recipe_calls"):
+        if not isinstance(frozen.get(key, []), list):
+            raise ValueError(f"{key} must be a list")
+    supports = frozen.get("supporting_results", [])
+    for source in supports:
+        required(source, ("run", "path", "sha256"), errors, ident)
+        source_id = str(source.get("run", ""))
+        if not (re.fullmatch(r"b\d+j\d+t\d+r\d+", source_id)
+                or re.fullmatch(r"pj\d+t\d+r\d+", source_id)
+                or re.fullmatch(r"[a-z0-9][a-z0-9_/-]*#(?:ri|r)\d+_[a-z0-9_-]+@v\d{3,}", source_id)):
+            errors.append(f"{ident}: unqualified Supporting Run id")
+        if source_id == ident:
+            errors.append(f"{ident}: an RI cannot be its own Supporting Run")
+        binding(root, source, errors, ident)
+        if new_input:
+            required(source, ("ticket", "ticket_sha256", "receipt", "receipt_sha256"), errors, ident)
+            for key in ("ticket", "receipt"):
+                binding(root, {"path": source.get(key), "sha256": source.get(key + "_sha256")}, errors, ident)
+            if source.get("receipt"):
+                upstream_receipt = read_yaml(resolve(root, source["receipt"]))
+                if source_id not in (upstream_receipt.get("execution"), upstream_receipt.get("run_id"), upstream_receipt.get("run")):
+                    errors.append(f"{ident}: Supporting receipt execution identity mismatch")
+                if upstream_receipt.get("status") not in {"complete", "accepted", "passed"}:
+                    errors.append(f"{ident}: Supporting receipt is not complete")
+        if "#" in source_id:
+            upstream = read_yaml(resolve(root, source.get("path")))
+            if upstream.get("execution") != source_id:
+                errors.append(f"{ident}: Supporting Result execution identity mismatch")
+            if upstream.get("schema") == "haipipe.insight-result/v1" and upstream.get("outcome") != "accepted":
+                errors.append(f"{ident}: Supporting Insight Result is not accepted")
+    for source in frozen.get("local_sources", []):
+        binding(root, source, errors, ident)
+    if new_input and not supports:
+        required(frozen, ("local_evidence_reason",), errors, ident)
+        # Dataset manifests can justify inventory observations; they do not
+        # authorize numerical work that still needs an independent producer.
+        if not frozen.get("local_sources") and not frozen.get("datasets"):
+            errors.append(f"{ident}: no governed evidence for zero-support input")
+    for call in frozen.get("recipe_calls", []):
+        required(call, ("recipe_id", "owner", "entry", "entry_sha256", "code_version",
+                        "parameters", "parameter_contract", "receipt"), errors, ident)
+        binding(root, {"path": call.get("entry"), "sha256": call.get("entry_sha256")}, errors, ident)
+        required(call.get("parameters", {}), ("input_manifest", "output_root"), errors, ident)
+        if not new_input and "producer_execution" not in call:
+            # Existing frozen packets retain their recorded dialect. New
+            # freezes must resolve separate producer and consumer identities.
+            required(call, ("execution",), errors, ident)
+            continue
+        required(call, ("producer_execution", "consumer_insight_execution",
+                        "producer_ticket", "producer_ticket_sha256", "receipt_sha256"), errors, ident)
+        producer = call.get("producer_execution")
+        if producer == ident or call.get("consumer_insight_execution") != ident:
+            errors.append(f"{ident}: recipe producer and consumer identities must be distinct and exact")
+        if producer not in {source.get("run") for source in supports}:
+            errors.append(f"{ident}: recipe producer has no accepted Supporting Result binding")
+        binding(root, {"path": call.get("producer_ticket"),
+                       "sha256": call.get("producer_ticket_sha256")}, errors, ident)
+        binding(root, {"path": call.get("receipt"), "sha256": call.get("receipt_sha256")}, errors, ident)
+        receipt = read_yaml(resolve(root, call.get("receipt")))
+        if producer not in (receipt.get("execution"), receipt.get("run_id"), receipt.get("run")):
+            errors.append(f"{ident}: producing receipt identity mismatch")
+        if receipt.get("status") not in {"complete", "accepted", "passed"}:
+            errors.append(f"{ident}: producing receipt is not complete")
+
+
 def trace(result, frozen, errors, label):
     target = result.get("target")
     if target not in TARGETS:
@@ -209,6 +279,20 @@ def execution(root, manifest, item, directory):
         elif [a.get("attempt") for a in attempts] != list(range(1, len(attempts) + 1)):
             errors.append(f"{ident}: attempt trail must be contiguous and unique")
         frozen = {}
+        binding_path = directory / "binding.yaml"
+        if binding_path.exists():
+            allocated = read_yaml(binding_path)
+            if allocated.get("schema") != "haipipe.insight-binding/v1":
+                errors.append(f"{ident}: invalid allocation binding schema")
+            if runtime.get("binding_sha256") != digest(binding_path):
+                errors.append(f"{ident}: allocation binding hash mismatch")
+            if allocated.get("instance") != manifest["instance"] or allocated.get("run") != run:
+                errors.append(f"{ident}: allocation binding identity mismatch")
+            for key in ("base_run", "question", "target", "expected", "acceptance"):
+                if allocated.get(key) != item.get(key):
+                    errors.append(f"{ident}: allocation binding differs from RI {key}")
+            if [f"{d.get('id')}@{d.get('version')}" for d in allocated.get("datasets", [])] != item.get("datasets"):
+                errors.append(f"{ident}: allocation dataset binding differs from RI")
         if "frozen" in checkpoints or status == "complete":
             frozen = read_yaml(directory / "input.yaml")
             if frozen.get("schema") not in INPUT_SCHEMAS:
@@ -225,33 +309,19 @@ def execution(root, manifest, item, directory):
                 validate_base_run(root, frozen.get("base_run"), errors, ident)
             if runtime.get("input_sha256") != digest(directory / "input.yaml"):
                 errors.append(f"{ident}: frozen input hash mismatch")
+            if binding_path.exists() and any(frozen.get(key) != allocated.get(key) for key in BINDING_FIELDS):
+                errors.append(f"{ident}: frozen input differs from allocation binding")
             known = {f"{d['id']}@{d['version']}": d for d in manifest.get("datasets", [])}
             for data in frozen.get("datasets", []):
                 key = f"{data.get('id')}@{data.get('version')}"
                 if key not in known or data != known[key]:
                     errors.append(f"{ident}: unknown or changed dataset binding {key}")
                 binding(root, data, errors, f"{ident}/{key}", "manifest")
-            for source in frozen.get("supporting_results", []):
-                required(source, ("run", "path", "sha256"), errors, ident)
-                source_id = str(source.get("run", ""))
-                if not (re.fullmatch(r"b\d+j\d+t\d+r\d+", source_id)
-                        or re.fullmatch(r"pj\d+t\d+r\d+", source_id)
-                        or re.fullmatch(r"[a-z0-9][a-z0-9_/-]*#(?:ri|r)\d+_[a-z0-9_-]+@v\d{3,}", source_id)):
-                    errors.append(f"{ident}: unqualified Supporting Run id")
-                binding(root, source, errors, ident)
-                if "#" in source_id:
-                    upstream = read_yaml(resolve(root, source.get("path")))
-                    if upstream.get("execution") != source_id:
-                        errors.append(f"{ident}: Supporting Result execution identity mismatch")
-                    if upstream.get("schema") == "haipipe.insight-result/v1" and upstream.get("outcome") != "accepted":
-                        errors.append(f"{ident}: Supporting Insight Result is not accepted")
-            for source in frozen.get("local_sources", []):
-                binding(root, source, errors, ident)
-            for call in frozen.get("recipe_calls", []):
-                required(call, ("recipe_id", "owner", "entry", "entry_sha256", "code_version",
-                                "parameters", "parameter_contract", "execution", "receipt"), errors, ident)
-                binding(root, {"path": call.get("entry"), "sha256": call.get("entry_sha256")}, errors, ident)
-                required(call.get("parameters", {}), ("input_manifest", "output_root"), errors, ident)
+            evidence_contract = frozen.get("evidence_contract")
+            if evidence_contract is not None and evidence_contract != EVIDENCE_CONTRACT:
+                errors.append(f"{ident}: unsupported evidence contract")
+            validate_evidence(root, frozen, errors, ident,
+                              new_input=evidence_contract == EVIDENCE_CONTRACT)
             intended = set(item.get("datasets", []))
             used = {f"{d.get('id')}@{d.get('version')}" for d in frozen.get("datasets", [])}
             info["stale"] = intended != used or any(frozen.get(k) != item.get(k)
@@ -466,37 +536,124 @@ def bind_insight_run(root, *, base_run, base_ticket, datasets, stem, question,
             "datasets": list(datasets), "expected": expected, "acceptance": acceptance}
     ticket = {"schema": "haipipe.insight-run/v1", **item}
     version = "v001"
-    frozen = {"schema": "haipipe.insight-input/v2", "instance": manifest["instance"],
-              "run": run, "version": version, "base_run": base,
+    allocated = {"schema": "haipipe.insight-binding/v1", "instance": manifest["instance"],
+              "run": run, "base_run": base,
               "question": question, "target": target, "expected": expected,
               "acceptance": acceptance,
-              "datasets": [inventory[key] for key in datasets],
-              "supporting_results": [], "recipe_calls": []}
+              "datasets": [inventory[key] for key in datasets]}
     run_ticket = root / "runs" / f"{run}.yaml"
     directory = root / "results" / run / version
     if run_ticket.exists() or directory.exists():
         raise ValueError(f"allocated Insight Run already exists: {run}")
     manifest["schema"] = "haipipe.insight-instance/v2"
     manifest.setdefault("items", []).append(item)
-    now = datetime.now().astimezone().isoformat(timespec="seconds")
     _write_yaml(run_ticket, ticket)
-    _write_yaml(directory / "input.yaml", frozen)
+    _write_yaml(directory / "binding.yaml", allocated)
     runtime = {"schema": "haipipe.insight-runtime/v1",
                "execution": full_id(manifest["instance"], run, version),
                "family": "insight", "operation": "item", "status": "planned",
-               "input_sha256": digest(directory / "input.yaml"),
-               "checkpoints": {"frozen": {"at": now, "receipt": "input.yaml"}},
+               "binding_sha256": digest(directory / "binding.yaml"),
+               "checkpoints": {},
                "attempts": [{"attempt": 1, "status": "planned"}]}
     _write_yaml(directory / "runtime.yaml", runtime)
     _write_yaml(manifest_path, manifest)
     return {"insight_run": run, "base_run": base_run, "datasets": list(datasets),
             "execution": runtime["execution"], "ticket": str(run_ticket),
-            "input": str(directory / "input.yaml"), "runtime": str(directory / "runtime.yaml")}
+            "binding": str(directory / "binding.yaml"), "input": None,
+            "runtime": str(directory / "runtime.yaml")}
+
+
+def freeze_insight_input(root, *, run, version, evidence):
+    """Seal ready evidence once, or create a successor version of the same RI.
+
+    Never rewrite a frozen input, including old empty envelopes created by
+    earlier bind implementations. Those can use the next explicit version.
+    """
+    root = Path(root).resolve()
+    if not INSIGHT_RUN.fullmatch(str(run)) or not VERSION.fullmatch(str(version)):
+        raise ValueError("freeze requires an exact RI and vNNN version")
+    if not isinstance(evidence, dict):
+        raise ValueError("evidence must be a mapping")
+    allowed = {"supporting_results", "local_sources", "recipe_calls", "local_evidence_reason"}
+    if set(evidence) - allowed:
+        raise ValueError(f"evidence contains binding overrides or unknown keys: {sorted(set(evidence) - allowed)}")
+    manifest = read_yaml(root / "workflow/insight.yaml")
+    matches = [item for item in manifest.get("items", []) if item.get("run") == run]
+    if len(matches) != 1:
+        raise ValueError("freeze requires one allocated RI")
+    item = matches[0]
+    faults = []
+    validate_insight_ticket(root, item, item_ticket(root, item), faults)
+    directory = root / "results" / run / version
+    versions = sorted((p for p in directory.parent.iterdir()
+                       if p.is_dir() and VERSION.fullmatch(p.name)),
+                      key=lambda p: int(p.name[1:]))
+    ident = full_id(manifest["instance"], run, version)
+    if (directory / "input.yaml").exists():
+        raise ValueError("input is already frozen; use the next explicit version without rewriting it")
+    if directory.exists():
+        runtime = read_yaml(directory / "runtime.yaml")
+        if runtime.get("execution") != ident or runtime.get("checkpoints") or (directory / "result.yaml").exists():
+            raise ValueError("freeze requires a matching planned execution with no checkpoints or Result")
+        if runtime.get("status") not in {"planned", "blocked"}:
+            raise ValueError("freeze requires planned or blocked state")
+    else:
+        if not versions or int(version[1:]) != int(versions[-1].name[1:]) + 1:
+            raise ValueError("new publication must use the next monotonic version")
+        if not (versions[-1] / "input.yaml").is_file():
+            raise ValueError("freeze the existing planned version first")
+        runtime = {"schema": "haipipe.insight-runtime/v1", "execution": ident,
+                   "family": "insight", "operation": "item", "status": "planned",
+                   "checkpoints": {}, "attempts": [{"attempt": 1, "status": "planned"}]}
+    # Recover the immutable allocation from its binding file, or from a
+    # hash-verified old frozen input. No missing input is silently synthesized.
+    source_dir = directory if (directory / "binding.yaml").is_file() else versions[-1]
+    source_runtime = read_yaml(source_dir / "runtime.yaml")
+    source = source_dir / "binding.yaml"
+    hash_key = "binding_sha256"
+    if not source.is_file():
+        source, hash_key = source_dir / "input.yaml", "input_sha256"
+    if not source.is_file() or source_runtime.get(hash_key) != digest(source):
+        raise ValueError("allocation source is missing or its hash changed")
+    original = read_yaml(source)
+    allocated = {"schema": "haipipe.insight-binding/v1",
+                 **{key: original.get(key) for key in BINDING_FIELDS}}
+    if allocated["instance"] != manifest["instance"] or allocated["run"] != run:
+        faults.append("allocation identity differs from RI")
+    for key in ("base_run", "question", "target", "expected", "acceptance"):
+        if allocated.get(key) != item.get(key):
+            faults.append(f"allocation {key} differs from RI; commission a new RI")
+    inventory = {f"{d['id']}@{d['version']}": d for d in manifest.get("datasets", [])}
+    if [f"{d['id']}@{d['version']}" for d in allocated["datasets"]] != item.get("datasets"):
+        faults.append("allocation datasets differ from RI; commission a new RI")
+    for data in allocated["datasets"]:
+        if inventory.get(f"{data['id']}@{data['version']}") != data:
+            faults.append("dataset inventory changed after allocation")
+        binding(root, data, faults, ident, "manifest")
+    frozen = {**allocated, "schema": "haipipe.insight-input/v2", "version": version,
+              "evidence_contract": EVIDENCE_CONTRACT,
+              "supporting_results": [], "recipe_calls": [], **evidence}
+    validate_evidence(root, frozen, faults, ident, new_input=True)
+    if faults:
+        raise ValueError("; ".join(faults))
+    directory.mkdir(parents=True, exist_ok=True)
+    # Exclusive creation prevents a repeated freeze from replacing saved bytes.
+    with (directory / "input.yaml").open("x", encoding="utf-8") as stream:
+        stream.write(yaml.safe_dump(frozen, sort_keys=False, allow_unicode=True))
+    if not (directory / "binding.yaml").exists():
+        _write_yaml(directory / "binding.yaml", allocated)
+    runtime["binding_sha256"] = digest(directory / "binding.yaml")
+    runtime["input_sha256"] = digest(directory / "input.yaml")
+    runtime["checkpoints"] = {"frozen": {
+        "at": datetime.now().astimezone().isoformat(timespec="seconds"), "receipt": "input.yaml"}}
+    _write_yaml(directory / "runtime.yaml", runtime)
+    return {"execution": ident, "input": str(directory / "input.yaml"),
+            "input_sha256": runtime["input_sha256"], "runtime": str(directory / "runtime.yaml")}
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("check", "table", "cite", "bind"))
+    parser.add_argument("command", choices=("check", "table", "cite", "bind", "freeze"))
     parser.add_argument("folder", type=Path)
     parser.add_argument("--item")
     parser.add_argument("--version")
@@ -510,8 +667,16 @@ def main(argv=None):
     parser.add_argument("--target", choices=tuple(TARGETS))
     parser.add_argument("--expected")
     parser.add_argument("--acceptance")
+    parser.add_argument("--evidence", help="ready evidence mapping, relative to the instance or absolute")
     args = parser.parse_args(argv)
     try:
+        if args.command == "freeze":
+            if not (args.item and args.version and args.evidence):
+                raise ValueError("freeze requires --item, --version, and --evidence")
+            packet = freeze_insight_input(args.folder, run=args.item, version=args.version,
+                                         evidence=read_yaml(resolve(args.folder, args.evidence)))
+            print(json.dumps(packet, indent=2))
+            return 0
         if args.command == "bind":
             missing = [name for name in ("base_run", "base_ticket", "stem", "question",
                                           "target", "expected", "acceptance")

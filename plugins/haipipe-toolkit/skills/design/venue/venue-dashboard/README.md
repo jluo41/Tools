@@ -20,10 +20,9 @@ design_profile:
   narrative: required
   display: required
   section_edit: required
-  terminal: adopted
 ```
 
-## Phase use
+## Run guidance
 
 ### Commission and Generate
 
@@ -47,8 +46,9 @@ absorbed minimap concern.
 Dashboard copy settles to final wording: panel titles, KPI labels,
 action-list phrasing, drill-down captions.
 
-### Verify and adopt
+### Verify
 Dashboard spec document with panel layouts, widget specs, data
 bindings, and interaction rules. Judge every visible metric and interaction,
-render through `delivery/render/`, then adopt or decline. Executable build work,
+render inside the current Result for visual checks. Independent Verify pass
+makes the exact spec ready for Delivery. Executable build work,
 when commissioned, belongs to a downstream Task Folder.

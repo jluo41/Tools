@@ -3,22 +3,22 @@ fn-scaffold: Scaffold an algo-dev demo job
 
 Purpose: verify a newly developed algorithm class (forward / loss / metric) runs end-to-end on a TINY config.
 NOT for full training — see `/haipipe-task-for-fit` for that.
-Group letter default: **X** (X_algo).
+Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 
-Output: `tasks/X_algo/{NN}_test_<algo_name>/`.
+Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK Block. Scaffold a canonical `bNN_<block_name>/` if absent (see `../../../haipipe-task/fn/block.md`).
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: resolve the Block and Job; create missing canonical containers through the shared Task owner.
 
 
 Step 2 — Collect metadata
 --------------------------
 
-- 2-digit NN: next free in `X_algo/`.
+- Allocate the next unused Task index inside the selected Job and Run index inside that Task; preserve existing indices.
 - snake_case task_name: typically `test_<algo_name>`
   (e.g., `test_te_clm_lhm`, `test_te_diffusion`).
 - algo_class: the algorithm class under `code/hainn/algo/<family>/`.
@@ -29,23 +29,28 @@ Step 2 — Collect metadata
 Step 3 — Create skeleton
 -------------------------
 
-```
-X_algo/
-└── {NN}_test_<algo_name>/
-    ├── {NN}_test_<algo_name>.py
-    ├── configs/
-    │   └── algo_<algo_name>_tiny.yaml       from ref/config-seed.yaml
-    ├── runs/
-    │   └── algo_<algo_name>_tiny.sh
-    ├── results/                              loss.json, "ran" marker
-    └── notebooks/
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared code + config-defaults.yaml
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.py
+        ├── scripts/config/rNN_<run>.yaml
+        └── runs/rNN_<run>.sh
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
 
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/algo_<algo_name>_tiny.yaml`.
+Copy `ref/config-seed.yaml` to `scripts/config/rNN_<run>.yaml`.
 Fill in:
 - `_meta:` (purpose: "smoke-test <algo>").
 - `algo_class:` (e.g., `te_clm_lhm`).
@@ -55,8 +60,8 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/algo_<algo_name>_tiny.sh`.
-Set `TASK_NAME="{NN}_test_<algo_name>"`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/rNN_<run>.sh`.
+Set `TASK_NAME="<worker>"` (the worker filename without .py); config and Ticket share the exact `rNN_<run>` stem.
 
 
 Step 6 — Cross-skill link
@@ -73,7 +78,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded algo-dev demo for <algo_name> under X_algo.
+summary:   Scaffolded algo-dev demo for <algo_name> under the selected bNN Block / jNN Job.
 artifacts: [paths created]
 next:      /haipipe-nn-algo (refine algo)  OR  run the demo
 ```
@@ -102,7 +107,7 @@ For the first run after this scaffold, do ONE of:
      `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`
      (skips the gate for one run; logs a warning to stderr.)
 
-  3. **Permanent skip for this config** — add to `configs/<RUN>.yaml`:
+  3. **Permanent skip for this config** — add to `scripts/config/<RUN>.yaml`:
      ```yaml
      _meta:
        skip_review: true

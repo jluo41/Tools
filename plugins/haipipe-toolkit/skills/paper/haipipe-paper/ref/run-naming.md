@@ -1,189 +1,90 @@
-# Paper Run naming contract
+# Paper Run naming and ownership
 
-This reference is the Paper-family naming authority. It specializes the
-neutral `haipipe-run` contract without changing the shared Run lifecycle.
-Paper names must remain readable from the Paper Page that owns them; an
-ordinal such as `j02` is never enough to identify a new Page.
+The shared `haipipe-page/ref/page-run-families.md` owns RP/RE/RD naming;
+`haipipe-run` owns native Tickets and Results. This adapter adds Paper context
+and judgment targets. Read `haipipe-paper-workflow/ref/run-workflow.md` for
+Spec bindings and the compile/response profiles.
 
-## 1. Three identities, three scopes
+## Owner, worker and identity
 
-| Identity | Owner | Physical home | Purpose |
+| Work | Semantic owner / family | New identity and storage | Boundary |
 |---|---|---|---|
-| **Paper-local Run** | a Paper Section or Round Page's Evidence/Display lane | `<page>/runs/<PAPER_RUN_ID>.sh` + `<page>/results/<PAPER_RUN_ID>/` | one typed local Result whose identity carries the Paper lane and semantic Page |
-| **Page-owned interaction Run** | a Page owner | `<page>/runs/<RUNNAME>` + `<page>/results/<RUNNAME>/` | human Page interaction using the current `rp00` / `rpNN` grammar |
-| **Owner-native Task Run** | Task/Discovery/labeling owner | the owner's task Run store | delegated work projected into a Page; it keeps its owner-native `rNN`, `rlNN`, or global identity |
-| **Job-backed Run** | Task/Discovery owner | the owner's `bNNjNNtNNrNN` store | reusable external work that a Paper Page supports, never a Paper-local alias |
+| Page writing | exact Paper PageType + shared Page writing / `page` | `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, `rp-para-NN_Pxx[-Pyy]`; Page-native Ticket/Result | structure or bounded prose session; feedback is a Step |
+| Page Evidence | consuming Page's Evidence Item / `page` | `re-value-NN_<slug>`, `re-cite-NN_<slug>`, `re-display-NN_<slug>`; Page RE/native Ticket and Result | one local evidence lineage; a worker may execute it without changing its owner |
+| Page delivery | shared Page delivery owner / `page` | native RD target/version identity and paired receipt | generated Page artifact; does not authorize Page release |
+| Supporting work | Task, Discovery or other declared native owner | full native `rNN`, `rlNN`, or global Ticket/Result address | consumer-neutral computation or inquiry; never renamed for Paper |
+| Paper judgment | Paper Ideation/Story card owner / `paper` | declared judgment grammar below | one fixed idea, proposition, obligation or Section row |
 
-The owning folder is part of the identity. A bare `r01` is not a reference.
-When a Paper Page cites a Run outside its folder, carry the full owner path and
-the owner-native Run id.
+A Page Evidence worker can call Task or Display capabilities. That does not
+turn its local RE into a Task-owned Run. Independently commissioned Supporting
+work remains with its native owner and is a dependency. RE/RD lineage and the
+underlying native Ticket represent one execution and must not be counted twice.
+A local Evidence Result cannot satisfy a human RP writing prerequisite.
 
-## 2. Paper lane map
+## Paper context
 
-The physical group names remain semantic and stable. Their one-letter Run
-qualifiers are only a compact Paper-local namespace:
+`Ba-<desk>-Main`, `Bb-<desk>-Appendix` and `Bc-<desk>-Round` are shelves.
+Use `paper_lane: main | appendix | round` and the full semantic `page:` beside
+the Run's native identity. `RD<NN>` is a feedback Round Page identifier, not the
+Page Delivery family `rdNN_<target>`. Story/Section/Round Pages are persistent
+containers, not extra Run families or Run-number allocation authorities.
 
-| Physical shelf | Page identity | Paper lane | Display label |
-|---|---|---:|---|
-| `Ba-<desk>-Main/` | `S-<desk>-Main-<N>-<Title>` (unnumbered: title only) | `m` | `M` / Main |
-| `Bb-<desk>-Appendix/` | `S-<desk>-Appendix-<L>-<Title>` | `a` | `A` / Appendix |
-| `Bc-<desk>-Round/` | `RD<NN>-<event>-<date>` | `r` | `R` / Round |
-
-`Ba`/`Bb`/`Bc` are shelf/group tokens, not Run ids. `RD` remains the
-canonical Round Page token: it means **Round** for editor, reviewer, coauthor,
-and internal batches alike. Do not change existing `RD<NN>` pages to `RR`.
-
-The `Story<Letter>-<desk>-<idea-slug>` page is the Paper authority for the
-meaning and Section map. It has no reserved `s` Run lane. Its Discovery and
-Task work keeps the native `b…` identity in the external owner.
-
-## 3. Canonical Paper-local grammar
-
-New Paper-local Evidence or independently owned Display Runs use one readable
-lowercase ASCII id:
-
-```text
-PAPER_RUN_ID := p<L>-<page-slug>-<target>-r<NN>
-L            := m | a | r
-page-slug    := semantic tail of the owning Page id, lower-kebab-case
-target       := e<NN>-<type>-<slug> | f<NN>-<slug>
-```
-
-Examples:
-
-```text
-pm-introduction-e01-cite-prescribing-variation-r01
-pm-results-e13-display-cohort-overview-r01
-pa-robustness-e01-value-sensitivity-r01
-pr-rd01-misq-feedback-20260825-e01-cite-response-r01
-```
-
-The target repeats the typed Evidence Item (`E01-CITE-…`, `E13-DISPLAY-…`)
-in a normalized form, so a Run can be found without guessing what `t01`
-meant. `rNN` is the attempt ordinal for this Paper-local target. A retry with
-unchanged target, frozen input, and acceptance appends to the same Run; a
-material change gets a new id and `supersedes`.
-
-The reader-facing form is deliberately friendlier, but is not a second id:
-
-```text
-P M · Introduction · E01-CITE-prescribing-variation · R01
-P A · Robustness · E01-VALUE-sensitivity · R01
-P R · RD01-MISQ-feedback-20260825 · E01-CITE-response · R01
-```
-
-## 4. Page-owned interaction and delegated Task grammar
-
-The current Page-owned human interaction namespace is deliberately separate
-from Paper-local Evidence/Display Runs:
-
-```text
-PAGE_RUN_ID       := rp00_mermaid-structure | rp<NN>_p<NN>[-p<NN>]
-PAGE_PARAGRAPH_P  := P<NN>                         # Page-global address
-```
-
-Every Page-owned interaction begins with `rp00_mermaid-structure`, which
-freezes the Mermaid structure and the Page-global `P01…PN` paragraph address
-space. Later interaction Runs use `rpNN_pNN[-pNN]`; `P` does not reset when a
-new content division begins. A Paper Section records its semantic Page id and
-Paper lane beside the Page receipt, but does not reinterpret the Page Run id.
-
-Delegated paragraph drafting is an owner-native Task Run, not a second Page
-Run grammar. It may be `rNN`, `rlNN`, or another current Task identity, with
-the full owner path carried in the Page receipt:
+An example Page-local Evidence receipt projection is:
 
 ```yaml
-run: r01
-family: task
-operation: paragraph-writing
-page: S-MISQ-Main-Introduction
-paper_lane: main
-target: P01
-owner: tasks/<task-block>/runs/r01/
-```
-
-`rp00` and `rpNN` are Page-owned interaction Tickets. Task tickets and Results
-remain in their owner-native stores. Historical `rNN_page-writing...`,
-`rNN_page-division-writing...`, `rNN_page-evidence-item...`, and
-`rNN_page-display...` forms remain readable and unchanged; they are not current
-Page Runs and must not be renamed or used to satisfy a new Page Run
-prerequisite.
-
-Do not make the same attempt both a Paper-local Evidence Run and a Page-owned
-interaction Run. Evidence prepares a typed Result; Page interaction realizes
-or reviews Page content from the folded Result. They are different targets and
-may legitimately both use an ordinal in different namespaces.
-
-## 5. Collision and reference rules
-
-1. `pm-`, `pa-`, and `pr-` are reserved for new Paper-local Runs. `rp00` and
-   `rpNN` are reserved for Page-owned interaction; `rNN`/`rlNN` and global
-   forms remain owner-native Task identities; `bNNjNNtNNrNN` remains the
-   Job-backed identity.
-2. Uniqueness is `(owner Page path, Run id)`, not the numeric suffix alone.
-   A cross-Page reference must include the semantic Page id and the full Run
-   id; a cross-Folder reference also includes the owner-native path.
-3. The lane token does not replace the Page id. `m` means Main only after the
-   Page resolves to `S-<desk>-Main-…`; it never means “the first page”.
-4. `Story`, `Section`, and `Round` are Page identities/owners, not additional
-   Run families. Paper-local Evidence/Display, Page-owned interaction, and
-   owner-native Task work remain distinct lanes.
-5. A SURVEY reservation is a plan and does not count as an allocated Run.
-   LAND creates the Ticket, paired Result directory, and runtime receipt.
-
-## 6. Legacy `pjNNtNNrNN` handling
-
-The former Paper-local form is:
-
-```text
-pj<page-ordinal>t<item-ordinal>r<attempt>_<slug>
-```
-
-Examples in existing Paper folders such as
-`pj02t01r01_rx_variation` are **historical, read-only Runs**. The old `jNN`
-ordinal is not a new Page identity and must not be guessed or reused for a
-new Paper. No bulk rename is required or allowed as part of ordinary Paper
-work.
-
-If an authorized migration or an unchanged-contract rerun is needed, create a
-new canonical id, preserve the old file and Result, and record the relationship
-in the new receipt:
-
-```yaml
-run: pm-introduction-e01-cite-prescribing-variation-r01
-supersedes: pj02t01r01
-legacy_run: examples/…/S-MISQ-Main-Introduction/results/pj02t01r01_rx_variation/result.yaml
-```
-
-The old Result may be reused only after its receipt, hash, and present
-acceptance contract are checked. A legacy reference is never silently treated
-as a new `pm`/`pa`/`pr` Run.
-
-## 7. Minimum receipt fields
-
-Paper-local receipts add the lane and semantic owner to the neutral Run
-receipt:
-
-```yaml
-run: pm-introduction-e01-cite-prescribing-variation-r01
+run: re-cite-01_prescribing-variation
 family: page
 operation: evidence-item
 paper_lane: main
 page: S-MISQ-Main-Introduction
+item: E01-CITE-prescribing-variation
 target: E01-CITE-prescribing-variation
-ticket: runs/pm-introduction-e01-cite-prescribing-variation-r01.sh
-result: results/pm-introduction-e01-cite-prescribing-variation-r01/
-supersedes: null
+ticket: <exact-native-Ticket-address>
+result: results/re-cite-01_prescribing-variation/
 ```
 
-`item`, `story`, `section_kind`, frozen inputs/hashes, worker, status, and
-acceptance remain required by the owning Page/Evidence contract. This file
-defines naming and scope only; it does not replace those gates.
+Resolve the Ticket dialect from the shared Page/Run owner; the placeholders
+are not allocations. Frozen inputs/hashes, worker, status and acceptance remain
+required by that owner. The Page's accepted DISPLAY unit is reached through
+its Result, such as `results/re-display-01_<slug>/payload/Display1-<slug>/`.
 
-## 8. Paper judgment Runs (JL 260916)
+## Allocation and interaction
 
-Ideation and Story are judged, not written. Each card the Paper Plugin shows
-on those Spaces may keep its discussion in one Page-owned Run, in the same
+Load the current Page Run families before allocating. `rp-struct-01` combines
+SHAPE and SURVEY; Scratch, Section and paragraph counters are independent.
+Page-global `P01…PN` addresses do not restart at a Content division. Normal
+feedback appends a Step; same-target reopening appends a Version; materially
+changed goals/targets follow the owner's NEW_RUN rule. Sync, Page controller
+passes and a SURVEY reservation do not allocate a Run. LAND materializes only
+the decided work through its native owner.
+
+Uniqueness is `(owner folder, native Run id)`. Cross-folder references carry
+that full address and the exact Result/version. A reused Result is a dependency,
+not another execution. Delegated Task writing retains its own native identity;
+it does not stand in for required Page interaction/acceptance.
+
+## Existing Paper-local and compact identities
+
+Existing `pm-<page>-<target>-rNN`, `pa-...`, `pr-...`, `pjNNtNNrNN`,
+`rp00_mermaid-structure`, `rpNN_pNN[-pNN]` and `rNN_page-writing...` records
+retain their original paths, IDs and family fields. These are compatibility
+inputs, not new allocation grammars. Do not relabel their historical worker or
+owner based only on the prefix. Resolve the original Ticket/Result/receipt;
+missing ownership or acceptance is an explicit gap.
+
+New Page Evidence uses typed RE. No bulk rename or duplicate execution is
+needed. An accepted historical Result may be reused by exact path/hash when
+its contract still meets the present requirement. If genuinely new work is
+commissioned, allocate the current native identity and record `supersedes`
+only when it actually replaces the old target/result; a reuse pointer does
+not claim a replacement or fabricate a new receipt. Preserve frozen Round
+`sent/` and `released/` snapshots.
+
+## Paper judgment Runs
+
+Idea and Story cards support bounded judgment sessions. Page prose and structure
+use the shared RP contract when separately commissioned. Each card the Paper Plugin shows
+on those Spaces may keep its discussion in one Paper-owned judgment Run, in the same
 `runs/` + `results/` pair every Page has, with human feedback Steps in the
 journal exactly as `rp-para` keeps them:
 
@@ -208,4 +109,42 @@ result: results/rclaim-01_beyond-rating
 
 A judgment Run never selects an idea (the I3 receipt does), never releases a
 Section (G3 does), and never allocates a Task (the Task owner does). A
-Section's own `rp-struct-01` starts from its `rnarra` card, not instead of it.
+Section's `rp-struct-01` consumes the released C8 row and any relevant judgment
+Result; an `rnarra` session is not mandatory when no such work was commissioned.
+
+
+### Judgment Result and close rule
+
+The Paper Page owner authors `runs/<judge-id>.md` with the exact card/row,
+bounded question, named human authority, initial inputs and close rule. At
+allocation it creates `results/<judge-id>/runtime.yaml` in planned state.
+The paired Result consists of the Version journal and runtime outcome; a
+separate copied Story/Idea record is unnecessary.
+
+Use the existing human-feedback journal grammar: `vNNN.md` contains ordered
+`## Step sNNN` sections with `### Human feedback` and `### Saved result`.
+The saved result records the judgment, supporting references, limits, and
+proposed next route for the fixed target. Open work is append-only; a session
+restart resumes it. Same-goal reopening uses the next Version, and a material
+change of target or judgment question requires a new commissioned Run.
+
+Closure requires an explicit decision by the named human about this exact
+question and saved judgment. Append `## Version closure` with `### Human close`
+containing the person's identity, exact decision, scoped outcome and time.
+The outcome may be `settled`, `concern-recorded`, or `proposal-recorded` when
+that disposition satisfies the commissioned close rule. Unresolved required
+work remains waiting/blocked; an agent summary cannot supply human closure.
+This decision closes only the discussion. I3 admission, G3 release, evidence
+acceptance and Task allocation retain their existing authorities.
+
+The runtime records native `run`, `family: paper`, `operation: judgment`,
+`target`, `ticket`, `result`, `version`, `step`, `status`, and `outcome`, plus
+actual `started_at`/`finished_at` or null while unknown/unfinished. Actor and
+input provenance resolve from the Ticket and journal. Use `waiting-for-feedback`
+when waiting, and `complete` only after the scoped human close is saved. Failed
+or blocked work records its reason. Reopening preserves closed journals and
+clears the current unfinished finish time; history retains prior close times.
+
+The Paper/Run views read these native records. Their structural checks can
+show missing journals/closure; they do not judge the merits of a claim or
+infer release from a completed judgment Run.

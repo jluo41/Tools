@@ -242,7 +242,7 @@ The `.tar.gz` remains the handoff artifact; package it with the wire pair matchi
 ```
                 SageMaker                          Databricks
                 ─────────                          ──────────
-Input:          .tar.gz                            .tar.gz (same artifact!)
+Input:          .tar.gz                            .tar.gz (target-matched wire pair)
                     │                                  │
 Upload:         S3 bucket                          Unity Catalog Volume
                     │                                  │
@@ -295,7 +295,7 @@ Both repos follow the same config pattern: `config/<product>/<release>/{dev,prod
 Payload Formats
 ===============
 
-Two wire formats — all Fns handle both transparently:
+Two wire formats — select one Src2InputFn/Input2SrcFn pair per deployment target:
 
 **Databricks format** (dataframe_records — how Databricks Model Serving calls it):
 
@@ -320,8 +320,9 @@ Two wire formats — all Fns handle both transparently:
 ```
 
 Endpoint_Set.inference() passes the raw payload to TrigFn and Input2SrcFn.
-Each Fn unwraps `dataframe_records` if present, then proceeds identically.
-There is no platform-specific Fn — one Fn handles both formats.
+The selected Input2SrcFn accepts only its declared platform shape; its Src2InputFn is the matching inverse.
+Shared TrigFn retains the L14 unwrap so it can inspect triggers from either platform.
+A local wrapper uses the wire contract of the packaged pair; local does not imply a third universal decoder.
 
 ---
 

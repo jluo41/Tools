@@ -1,3 +1,8 @@
+## 1.2.0 — 2026-09-20
+
+- Separate RI allocation from final evidence freezing; add immutable binding.yaml and freeze CLI. Distinguish producer execution/Ticket/receipt from consumer RI. Preserve old frozen packets and support explicit next-version correction.
+- Migration: preserve existing records; see the scoped migration reference and current handoff contract.
+
 ## 1.1.1 — 2026-09-15
 
 - Make `/haipipe-insight task "<topic>" [<board>]` the preferred public entry

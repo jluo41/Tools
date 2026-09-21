@@ -241,9 +241,10 @@ Layer 4: YAML Config
 
 **WHERE to write:**
 
-```
-config/test-haistep-<cohort>/5-test-<family>/<model_name>.yaml
-```
+For Task execution, write `<task>/scripts/config/rNN_<run>.yaml` and a matching Ticket.
+For independent developer smoke tests, use the test harness's configured YAML path.
+`config/test-haistep-<cohort>/5-test-<family>/<model_name>.yaml` is a legacy workspace example, valid only if that harness exists and points there.
+Do not create a workspace-root config tree for a Task.
 
 Use one of the YAML templates from ref/overview.md "YAML Config Templates":
   - Template A: Time-Series Forecasting (TSForecast) -- model_tuner_name in ModelArgs

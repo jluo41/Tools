@@ -63,12 +63,39 @@ The unit ships both: the native source for a document that shares your preamble,
 ```
 
 `preview.tex` is the first compile's wrapper, and its package list IS the unit's dependency declaration: a reader who wants to `\input` your `float.tex` copies those lines into their preamble.
-Both compile from INSIDE the unit folder, so their `\input` paths stay relative and short:
+Compile each wrapper from its own directory so the source `\input` stays relative. Create the
+asset directory first; `-jobname=figure` and `-output-directory=../assets` place the standalone
+render at the contract path `assets/figure.pdf`:
 
 ```bash
-cd <unit-dir> && pdflatex -interaction=nonstopmode preview.tex
-cd <unit-dir>/recipe && pdflatex -interaction=nonstopmode asset.tex   # → assets/figure.pdf
+UNIT_DIR=/absolute/path/to/unit
+mkdir -p "$UNIT_DIR/assets"
+(cd "$UNIT_DIR" && pdflatex -interaction=nonstopmode preview.tex)
+(cd "$UNIT_DIR/recipe" && pdflatex -jobname=figure -output-directory=../assets -interaction=nonstopmode asset.tex)
 ```
+
+One invocation that produces one bounded TeX display unit may be one Run in its parent Workflow.
+Writing the source, compiling both wrappers, inspecting `preview.pdf`, and correcting the unit are
+Steps inside that Run. The caller supplies the unit directory and decides whether to promote and
+accept it.
+
+For a candidate comparison, keep a candidate-suffixed source and standalone wrapper in `recipe/`
+and compile the figure-only PDF into `candidates/`; do not overwrite `assets/figure.pdf`,
+`float.tex`, or `preview.pdf`:
+
+```bash
+UNIT_DIR=/absolute/path/to/unit
+CANDIDATE_ID=A
+cp "$UNIT_DIR/recipe/<name>.tex" "$UNIT_DIR/recipe/<name>-$CANDIDATE_ID.tex"
+# Copy asset.tex to asset-A.tex and change only its input to <name>-A.tex.
+mkdir -p "$UNIT_DIR/candidates"
+(cd "$UNIT_DIR/recipe" && pdflatex -jobname="$CANDIDATE_ID-figure" \
+  -output-directory=../candidates -interaction=nonstopmode "asset-$CANDIDATE_ID.tex")
+```
+
+Show `candidates/A-figure.pdf` for the composition choice. After the caller selects it, promote
+the source and rebuild both canonical PDFs; inspect the full `preview.pdf` before the authorized
+human owner records acceptance.
 
 ## 📏 The rules, each earned on a real unit
 
@@ -99,5 +126,6 @@ The trade is honest: TeX-native buys typographic unity and the full TeX language
   The unit folder every kind writes into; it wins any disagreement with this file.
 - `../haipipe-display/SKILL.md`
   The door that routes here.
-- `../../diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf5-display/display/`
-  Two worked units, `Display1-pipeline-tikz` and `Display2-small-paper-tikz`: the specimens these rules came from.
+- Historical specimens: `../../diagrams/BoardSkillBoard-260722/QPf-page-folder/QPf5-display/display/`
+  contains `Display1-pipeline-tikz` and `Display2-small-paper-tikz`. They are examples only; new
+  output goes to the unit directory supplied by the caller.

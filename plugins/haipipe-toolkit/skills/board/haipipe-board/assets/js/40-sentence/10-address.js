@@ -1,4 +1,4 @@
-  /* Automatic Content addresses + sentence-specific chat.
+  /* Automatic Content addresses + prompt copying.
 
      Only ## Content participates. C is a ### division. H is a terminal,
      addressable #### heading and never parents P/S in the address grammar.
@@ -34,11 +34,9 @@
       }
     }
     if (!box) return '';
-    var c = box.cloneNode(true);
-    c.querySelectorAll('.saddrow,.schatbar,button,input,select,textarea')
-      .forEach(function (x) { x.remove(); });
-    return c.innerText.replace(/\n{3,}/g, '\n\n').trim();
+    return window.__boardReadableText(box);
   }
+
   function directChild(parent, cls) {
     return Array.from(parent.children).find(function (x) {
       return x.classList && x.classList.contains(cls);
@@ -47,7 +45,7 @@
   function cleanLabel(el) {
     if (!el) return '';
     var c = el.cloneNode(true);
-    c.querySelectorAll('.caddr,.haddr,.schatbar,button').forEach(function (x) {
+    c.querySelectorAll('.caddr,.haddr,.hpath,.schatbar,button').forEach(function (x) {
       x.remove();
     });
     return c.textContent.replace(/\s+/g, ' ').trim();
@@ -58,7 +56,33 @@
                   '.sadd,.sedit,.spine,.nav,.gi,.idx')) return false;
     return !!sentenceText(p);
   }
-  function wireSentenceChats() {
+  function sentenceRail(p, sec, shortId, fullId, contentPath) {
+    p.classList.add('sentence-target');
+    p.dataset.sentenceId = shortId;
+    p.dataset.sentenceRef = fullId;
+    var bar = document.createElement('span');
+    bar.className = 'schatbar';
+    bar.dataset.sentenceRef = fullId;
+    var id = document.createElement('span');
+    id.className = 'sidchip';
+    id.textContent = shortId;
+    id.title = 'Generated sentence address: ' + fullId;
+    var copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'scopy';
+    copy.textContent = '⧉';
+    copy.title = 'Copy prompt for ' + fullId;
+    copy.setAttribute('aria-label', copy.title);
+    copy.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var context = [contentPath, apparatusText(p)].filter(Boolean).join('\n\n');
+      window.__boardCopyPrompt(copy,
+        window.__boardPromptText(sec, fullId, sentenceText(p), context));
+    });
+    bar.append(id, copy);
+    p.insertAdjacentElement('afterend', bar);
+  }
+  function wireSentenceCopies() {
     document.querySelectorAll('.schatbar').forEach(function (x) { x.remove(); });
     document.querySelectorAll('.caddr,.haddr').forEach(function (x) { x.remove(); });
     document.querySelectorAll('p.sentence-target').forEach(function (p) {
@@ -76,6 +100,9 @@
       delete h.dataset.headingRef;
     });
     document.querySelectorAll('section.slide.q').forEach(function (sec) {
+      sec.querySelectorAll('p.qlead').forEach(function (p, i) {
+        sentenceRail(p, sec, 'Opening', sec.id + ' / Opening' + (i ? ' / ' + (i + 1) : ''), '');
+      });
       var content = sec.querySelector('details.sect.content');
       if (!content) return;
       var divisions = Array.from(content.children).filter(function (x) {
@@ -128,103 +155,8 @@
           var fullId = sec.id + '.' + shortId;
           var contentPath = contentId + (contentTitle ? ' · ' + contentTitle : '') +
             (headingPath ? '\n' + headingPath : '');
-        p.classList.add('sentence-target');
-        p.dataset.sentenceId = shortId;
-        p.dataset.sentenceRef = fullId;
-
-        var bar = document.createElement('span');
-        bar.className = 'schatbar';
-        bar.dataset.sentenceRef = fullId;
-        var id = document.createElement('span');
-        id.className = 'sidchip';
-        id.textContent = shortId;
-        id.title = 'Generated sentence address: ' + fullId;
-        var comment = document.createElement('button');
-        comment.type = 'button';
-        comment.className = 'scomment';
-        comment.textContent = '＋';
-        comment.title = 'Comment on ' + fullId;
-        comment.setAttribute('aria-label', 'Comment on sentence ' + fullId);
-        comment.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          openSentenceComment(p, bar);
+          sentenceRail(p, sec, shortId, fullId, contentPath);
         });
-        var chatButton = document.createElement('button');
-        chatButton.type = 'button';
-        chatButton.className = 'schat';
-        chatButton.textContent = '💬';
-        chatButton.title = 'Chat about ' + fullId;
-        chatButton.setAttribute('aria-label', 'Chat about sentence ' + fullId);
-        chatButton.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var text = sentenceText(p);
-          if (window.__boardSentenceChat) {
-              window.__boardSentenceChat(
-                sec, fullId, text, apparatusText(p), contentPath
-              );
-          }
-        });
-        var more = document.createElement('button');
-        more.type = 'button';
-        more.className = 'smore';
-        more.textContent = '⋯';
-        more.title = 'Actions for ' + fullId;
-        more.setAttribute('aria-label', 'Actions for sentence ' + fullId);
-        more.setAttribute('aria-expanded', 'false');
-        var menu = document.createElement('div');
-        menu.className = 'smenu';
-        var menuRef = document.createElement('div');
-        menuRef.className = 'smenu-ref';
-        menuRef.textContent = fullId;
-        function menuAction(label, cls, fn) {
-          var action = document.createElement('button');
-          action.type = 'button';
-          action.className = cls;
-          action.textContent = label;
-          action.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            bar.classList.remove('menu-open');
-            more.setAttribute('aria-expanded', 'false');
-            fn();
-          });
-          menu.appendChild(action);
-        }
-        menu.appendChild(menuRef);
-        menuAction('＋ Comment', 'sm-comment', function () {
-          openSentenceComment(p, bar);
-        });
-        menuAction('💬 Chat', 'sm-chat', function () {
-          if (window.__boardSentenceChat) {
-              window.__boardSentenceChat(
-                sec, fullId, sentenceText(p), apparatusText(p), contentPath
-              );
-          }
-        });
-        menuAction('✎ Edit', 'sm-edit', function () {
-          openSentenceEdit(p, bar);
-        });
-        more.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var open = !bar.classList.contains('menu-open');
-          document.querySelectorAll('.schatbar.menu-open').forEach(function (x) {
-            x.classList.remove('menu-open');
-            var old = x.querySelector('.smore');
-            if (old) old.setAttribute('aria-expanded', 'false');
-          });
-          bar.classList.toggle('menu-open', open);
-          more.setAttribute('aria-expanded', open ? 'true' : 'false');
-        });
-        bar.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-        });
-        bar.append(id, comment, chatButton, more, menu);
-        p.insertAdjacentElement('afterend', bar);
-      });
       });
     });
   }

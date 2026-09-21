@@ -37,11 +37,16 @@ task execution / discovery work
    Pages are consumer-neutral.
 5. Seed topic/scope, proposed items, source candidates, and Aims. Do not
    pre-write K/W or claim a Run exists before its ticket and receipt exist.
-6. In SURVEY, name Task/Discovery sources by full Supporting Run id and freeze
+6. Allocate or resume the consumer RI with `insight_items.py bind`, even when
+   its Supporting Results already exist. This freezes the goal/base/dataset
+   binding and leaves the execution planned. In SURVEY, name Task/Discovery sources by full Supporting Run id and freeze
    any governed page-local source in the Local Input. LAND completes the
    Supporting Runs and one local Page Evidence Item Run per make-item; it never
    reads a producing Folder invisibly.
-7. Follow the item workflow's bind/evidence/reason/publish checkpoints and the
+7. After supporting and local Evidence Results are ready, use `freeze --item
+   <ri> --version <vNNN> --evidence <packet.yaml>` to seal interpretation input.
+   Producer calls retain distinct native execution/Ticket/receipt identities;
+   the RI owns the DIKW Result. Follow the item workflow checkpoints and the
    shared Page workflow. Content is Origin / Instance and Scope / Insight
    Items / Synthesis / Reusable Findings. Items close independently; update
    the Page synthesis from exact accepted Results. Return the generated item
@@ -59,10 +64,10 @@ task execution / discovery work
   InsightBoard, and an Application later reuses the settled Result through its
   own Supporting/local Run graph.
 - A Reusable Finding is consumer-neutral and unsigned. It may become evidence
-  for an Application-owned I1→I5 bridge, but it never binds directly to Design
+  for an Application Question→Wisdom evidence bridge, but it never binds directly to Design
   and never becomes a Design Handoff by being reused.
 - A source rerun reopens dependent Insight rows; it never silently updates a settled conclusion.
 
 Return the instance Page, item table, source status, exact completed item
-Results, and the next item checkpoint/Page phase. Every cited Run must have a
+Results, and the next item checkpoint or Page workflow action. Every cited Run must have a
 real Ticket and receipt.

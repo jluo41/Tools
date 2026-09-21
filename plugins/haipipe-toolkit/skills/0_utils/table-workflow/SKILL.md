@@ -9,8 +9,8 @@ description: >-
   for ordinary data tables or a single-Run status report.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.4"
-  last_updated: "2026-09-15"
+  version: "0.4.6"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md
 ---
 
@@ -27,6 +27,10 @@ cell     = one Run Spec × one member Workspace
 Skill and Run are not extra axes. The Run Spec is the planned execution node;
 skills and Workspace behavior bind through Cells. Actual Run Instances appear
 only in the runtime projections.
+
+A Workflow is a list of planned Run Specs. Routes connect the listed Specs and
+describe dependencies, ordering, and branches; they do not add new rows. A Run
+Spec can materialize zero or more actual Run Instances.
 
 ## Core ownership
 
@@ -131,36 +135,39 @@ references the row's Gate/Route; it never carries a conflicting copy.
 
 ## Worked Design table
 
-Design uses one Plugin with five Spaces and four Run Spec kinds; the cells
+Design uses one Plugin with five Spaces and three Run Spec kinds; the cells
 follow `haipipe-design-workflow`'s Space bindings:
 
 | Run Spec row | Goal | Design | Insight | Run (`runtime`) | Delivery |
 |---|---|---|---|---|---|
 | `commission` · `Design.commission` | read-only: the Brief line and the Insight board | human decision (Release or Hold); the goal and rules it pins | read-only: the insights the Commission run record pins by hash | read-only: release/hold row, person, time, words, route | empty |
-| `generate` · `Design.generate` | empty | read-only: the latest draft that passed the records check | empty | read-only: agent, time, verdict n/m, folded checks and draft text | read-only: the draft listed until one is adopted |
+| `generate` · `Design.generate` | empty | read-only: the latest draft that passed the records check | empty | read-only: agent, time, verdict n/m, folded checks and draft text | read-only: the exact draft, only after its independent Verify passes |
 | `verify` · `Design.verify` | empty | read-only: the rule marks of the draft it reviewed | empty | read-only: independent reviewer, time, verdict n/m, folded checks | empty |
-| `adopt` · `Design.adopt` | read-only: the adopted count | human decision (Adopt, Decline, Revise, Hold); item state and who is waited on | empty | read-only: decision row, person, time, words, draft hash | read-only: the adopted draft's text |
 
 ```text
-Design.commission ──release──▶ N × Design.generate          (one Commission per Design Item)
+Design.commission ──release──▶ N × Design.generate          (C decisions; at most one release per Item)
 Design.generate ──passes the records check──▶ J × Design.verify
 Design.generate ──fails the records check──▶ Design.generate (a person queues a revise)
-Design.verify ──pass──▶ Design.adopt
+Design.verify ──pass──▶ CLOSE (Delivery becomes ready)
 Design.verify ──fail──▶ Design.generate (revise)
 Design.verify ──fails the records check──▶ Design.verify (a person queues the review again)
-Design.adopt ──adopt/decline──▶ CLOSE
-Design.adopt ──revise──▶ Design.generate
-Design.commission / Design.adopt ──hold──▶ HOLD (a person's decision only)
+Design.commission ──hold──▶ HOLD (a person's decision only)
 
-Expected actual Runs per Design Item = 1 + N + J + 1
+Expected actual Runs per Design Item = C + N + J
 ```
 
-Commission and Adopt are decision Runs because each has a bounded question,
-explicit commission, human actor, durable decision Result/receipt, and its own
-close rule. An individual click/comment remains a Step or Gate inside that Run.
-The Design Space also carries the person's queue buttons (Queue Generate,
-Queue Verify, Queue revise, Queue again); a click there allocates a planned
-Generate or Verify Run, and never becomes a Run of its own.
+Count allocated Runs with receipts, including held, failed, blocked, and
+superseded Runs. A later release after a hold creates a new Commission Run;
+preserve the held decision. C=1 only when no hold preceded the release.
+
+Commission is the only human decision Run in the current Design workflow.
+It has a bounded question, explicit commission, human actor, durable decision
+receipt, and its own close rule. A click/comment remains a Step or Gate.
+Delivery is a read-only projection of the Verify-passed candidate, not a Run
+or another approval. A route back to Generate or Verify requires the person
+to queue the revise/review under the Design owner's rules; it is not permission
+for an automatic retry. Agent failures do not create a human HOLD decision.
+Run identities and Results remain those of the native Design owner.
 
 ## Synchronized projections
 
@@ -208,12 +215,13 @@ coordinate. See [`ref/skill-coverage.md`](ref/skill-coverage.md).
 
 The catalogue defines reusable Run Types, not Workflow rows or live instances.
 A Run Spec references one key and may override only fields its type allows.
-See [`ref/run-catalog.md`](ref/run-catalog.md).
+See the shared [Run catalogue](../../run/haipipe-run/ref/run-catalog.md).
+`ref/run-catalog.md` is a forwarding reference; this skill owns presentation.
 
 ## Design or audit procedure
 
 1. Resolve the one Plugin/work object and plural Workspace roster.
-2. Resolve the Workflow's directed Run Spec graph.
+2. Resolve the Workflow's Run Spec list and dependency/Route graph.
 3. Check each Run Spec against `haipipe-run`: independent closure, target,
    actor, action, Gate, Route, receipt, and cardinality.
 4. Materialize one Cell per Run Spec × member Workspace.

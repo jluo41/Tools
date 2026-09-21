@@ -12,9 +12,9 @@ if "`config_file'" == "" | "`step'" == "" | "`year'" == "" | "`results_dir'" == 
 // ws_root first: the config builds output paths from it
 global ws_root "`ws_root'"
 
-capture do "configs/`config_file'.do"
+capture do "scripts/config/`config_file'.do"
 if _rc != 0 {
-    display as error "ERROR: could not load configs/`config_file'.do"
+    display as error "ERROR: could not load scripts/config/`config_file'.do"
     exit 198
 }
 

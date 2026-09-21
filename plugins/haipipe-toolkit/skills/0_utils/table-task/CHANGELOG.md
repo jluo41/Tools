@@ -1,5 +1,17 @@
 # Changelog · task-table
 
+## 0.6.1 · 2026-09-20
+
+- Resolve the installed renderer independently from the target project and quote its path.
+- Correct primary receipt placement to Task-local results, with legacy Job-level placement flagged.
+- Distinguish an unexecuted Task status (Not run) from its Run status (Ready).
+
+## 0.6.0 · 2026-09-20
+
+- Define `/workflow-table` rows as independently closable Run Specs with
+  Workspace Cells, not Phase/Cycle contracts.
+- Correct the renderer path to the current `table-task` skill directory.
+
 ## 0.5.0 · 2026-09-18
 
 - Give every Task a status rolled up from its Runs (Done, Partial, Not run,

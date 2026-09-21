@@ -1,27 +1,27 @@
 fn-scaffold: Scaffold an evaluation job
 ================================================
 
-Score a trained ModelInstance on an AIData split; produce metrics under `results/<run>/`.
-Group letter default: **B** (evaluation).
+Score a trained ModelInstance on an AIData split; produce metrics under `$OUTPUT_ROOT/<task>/results/rNN_<run>/`.
+Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 
-Output: `tasks/B{NN}_<group>/{NN}_<job_name>/`.
+Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **B**; scaffold a new `B{NN}_<block_name>/` if needed.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: resolve the Block and Job; create missing canonical containers through the shared Task owner.
 
 
 Step 2 — Collect metadata
 --------------------------
 
-- 2-digit NN: next free in this group.
+- Allocate the next unused Task index inside the selected Job and Run index inside that Task; preserve existing indices.
 - snake_case task_name: descriptive
   (e.g., `eval_clm_h24`, `eval_event_horizon2h`).
 - Target ModelInstance: `modelinstance_name` + `modelinstance_version`
-  (from a sibling A-task or external).
+  (from a sibling training Task or external).
 - AIData split: `val | test_id | test_od`.
 - Metrics + horizon: what to compute.
 - `_meta:` block.
@@ -30,24 +30,28 @@ Step 2 — Collect metadata
 Step 3 — Create skeleton
 -------------------------
 
-```
-B{NN}_<group>/
-└── {NN}_<job_name>/
-    ├── {NN}_<job_name>.py
-    ├── configs/
-    │   └── eval_<target>.yaml              from ref/config-seed.yaml
-    ├── runs/
-    │   └── eval_<target>.sh
-    ├── results/
-    │   └── <run>/                           metrics.json, eval_log.txt (+ optional plots/, source_data.csv)
-    └── notebooks/
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared code + config-defaults.yaml
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.py
+        ├── scripts/config/rNN_<run>.yaml
+        └── runs/rNN_<run>.sh
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
 
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/eval_<target>.yaml`.
+Copy `ref/config-seed.yaml` to `scripts/config/rNN_<run>.yaml`.
 Fill in:
 - `_meta:` block.
 - `modelinstance_name` + `version` (pin to a specific trained model).
@@ -58,8 +62,8 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/eval_<target>.sh`.
-Set `TASK_NAME="{NN}_{job_name}"`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/rNN_<run>.sh`.
+Set `TASK_NAME="<worker>"` (the worker filename without .py); config and Ticket share the exact `rNN_<run>` stem.
 
 
 Step 6 — Cross-skill link
@@ -75,7 +79,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded evaluation job <NN>_<name> under B{NN}_<group>.
+summary:   Scaffolded evaluation job <NN>_<name> under the selected bNN Block / jNN Job.
 artifacts: [paths created]
 next:      run the eval, then /haipipe-task-for-display
 ```
@@ -104,7 +108,7 @@ For the first run after this scaffold, do ONE of:
      `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`
      (skips the gate for one run; logs a warning to stderr.)
 
-  3. **Permanent skip for this config** — add to `configs/<RUN>.yaml`:
+  3. **Permanent skip for this config** — add to `scripts/config/<RUN>.yaml`:
      ```yaml
      _meta:
        skip_review: true

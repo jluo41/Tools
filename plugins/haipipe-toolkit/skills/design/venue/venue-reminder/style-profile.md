@@ -20,7 +20,8 @@ v3: You're doing great with your routine. One more
 
 ## Drafting rules
 
-1. Draft 3-5 variants that rotate to avoid fatigue.
+1. For a rotating set, default to 3-5 variants; the released `unit.shape/count`
+   fixes the scope. A commissioned single example is not a completed rotating set.
 2. Each ≤ 200 chars.
 3. Vary the motivation slot; keep prompt + encouragement stable.
 4. Supportive tone — never nagging.
@@ -30,9 +31,10 @@ v3: You're doing great with your routine. One more
 ## Self-review checklist
 
 ```
-[ ] 3-5 rotating variants drafted
+[ ] Commissioned count met (rotating-set default: 3-5 variants)
 [ ] Each ≤ 200 chars
 [ ] Motivation varies across variants
 [ ] Tone is supportive, not nagging
-[ ] Card id, grant, and exact render version resolve in the Design Folder
+[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Any render manifest binds the exact source and picture inside its Result
 ```

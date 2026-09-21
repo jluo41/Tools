@@ -13,8 +13,8 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.14.0"
-  last_updated: "2026-09-19"
+  version: "0.15.2"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md
 ---
 
@@ -112,7 +112,7 @@ The skill-set folders use the same numbered family convention as
 ~~~text
 discovery/
 ├── haipipe-discovery/                         public door
-├── workflow-phases/haipipe-discovery-inquiry/ sole D1 phase
+├── workflow-phases/haipipe-discovery-inquiry/ D1 Run controller (compatibility path)
 ├── 1_search/                                  acquisition family + workers
 ├── 2_review/                                  per-Subject review family
 ├── 3_synthesize/                              cross-Result synthesis family
@@ -407,6 +407,13 @@ is held, an aggregated complete Result citation is not person-verified in its
 runtime receipt, or the checker fails. Missing work/gates report `blocked`;
 `inconclusive` is reserved for completed admissible evidence with verified
 aggregated Result citations that cannot establish the substantive answer.
+Before assigning Task confidence, apply the type-specific anchors and record
+its evidence basis and assessment receipt as defined in
+`ref/discovery-yaml-schema.md#confidence-and-evidence-axes`. Source-map Tasks
+retain `confidence: not-applicable`; record retrieval coverage and candidate
+dispositions in their respective records: coverage facts in the root Task
+Page's `## Source map` body and candidate decisions in `discovery.yaml#sources`.
+Do not assign source-map confidence or a completeness-confidence label.
 
 ## Maintenance · migrate or repair a legacy bank
 

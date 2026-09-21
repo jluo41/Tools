@@ -7,7 +7,7 @@
     "git_sha": "<producing-code-git-sha>"
   },
   "output": {
-    "artifact": "$OUTPUT_ROOT/results/t01_display_input_summary/<RUNNAME>/source_data.csv",
+    "artifact": "$OUTPUT_ROOT/t01_display_input_summary/results/<RUNNAME>/source_data.csv",
     "sha256": "<sha256-of-source_data.csv>",
     "row_count": 0,
     "approved_for_display_intake": true,
@@ -17,13 +17,20 @@
     {
       "artifact": "<upstream-task-result-or-report>",
       "sha256": "<upstream-artifact-sha256>",
-      "role": "source-result"
+      "role": "source-result",
+      "run": "bNNjNNtNNrNN"
     }
   ],
   "selection": {
-    "columns": ["<column>"],
-    "group_by": ["<grouping-column>"],
-    "filters": ["<filter-or-none>"],
+    "columns": [
+      "<column>"
+    ],
+    "group_by": [
+      "<grouping-column>"
+    ],
+    "filters": [
+      "<filter-or-none>"
+    ],
     "unit_of_analysis": "<one-row-means-what>"
   }
 }

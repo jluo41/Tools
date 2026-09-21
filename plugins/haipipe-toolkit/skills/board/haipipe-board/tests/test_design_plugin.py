@@ -14,7 +14,7 @@ from live.design import (
     render_design,
 )
 from tests.fixture_design_v2 import (
-    ItemSpec, audit, build_design_folder, build_insight_board, demo_specs, sms_criteria,
+    ItemSpec, audit, bind_insight_handoff, build_design_folder, build_insight_board, demo_specs, sms_criteria,
 )
 
 
@@ -136,7 +136,7 @@ class DesignItemsTest(unittest.TestCase):
                           "Page level", "Queue revise · agent", "New Design Item",
                           # the explanation reads as blocks, the insight as a flow (JL 260918)
                           "<th>Why this design</th>", "<th>From insight to design</th>", "<th>The bet</th>",
-                          "<th>Rules</th>", "<th>Steps</th>", "<table class=explain>",
+                          "<th>Rules</th>", "<th>Runs</th>", "<table class=explain>",
                           "<span class=rung>Wisdom</span>", "<b>full-W01</b>", "✅ signed",
                           # named criteria (length, optout) still mark their rules: audit M5
                           "5 of 5 pass",
@@ -218,7 +218,10 @@ class DesignActionsTest(unittest.TestCase):
                 page, action="add-item", title="Reminder before refill", type="sms",
                 audience="patients due a refill", job="refill", goal="Nudge without alarm",
                 stance="generate", basis="brief-only",
-                acceptance="≤ 160 characters\nends with 'Reply STOP to opt-out'\nno {NAME} placeholder\nwarm tone"))
+                acceptance=("≤ 160 characters\nends with 'Reply STOP to opt-out'\nno {NAME} placeholder\n"
+                            "semantic: warm tone | observe: read as the intended recipient | "
+                            "pass: plain words with no pressure | fail: threat or false urgency | "
+                            "not-verifiable: no recipient or context is supplied")))
             self.assertIsNone(err, err)
             self.assertEqual(out["item"], "ITEM03")
             item = {i["id"]: i for i in design_snapshot(page, board)["items"]}["ITEM03"]
@@ -339,7 +342,7 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
             rendered = render_design(snapshot, "goal")
             for label in ("Goal Space", "Design Space", "Insight Space", "Run Space", "Delivery Space",
                           "2 prescription review SMS designs for all patients", "2 wanted · 2 registered · 1 ready",
-                          "<th>their job</th>", "· design tasks", "Insight board", "1 of 1 insights signed"):
+                          "<th>their job</th>", "· design tasks", "Insight board", "1 of 1 insights currently eligible"):
                 self.assertIn(label, rendered)
             self.assertNotIn("line R1", rendered)  # the Brief's row id is a key, never a name on screen
 
@@ -401,9 +404,11 @@ class DesignSignalTest(unittest.TestCase):
         handoff = insight_board / "1-F-full" / "FW01-counsel" / "FW01-counsel.md"
         handoff.parent.mkdir(parents=True)
         handoff.write_text(
-            "# Counsel\npage-type: wisdom\nquestion-rung: wisdom\nSERVES QW1\n"
+            "# Counsel\nfolder-kind: wisdom\nstate: ✅ SETTLED\nquestion-rung: wisdom\nSERVES QW1\n"
             + ("signed: ✅ JL 260828\n" if signed else "signed: ⬜\n"), encoding="utf-8")
         (insight_board / "board.md").write_text("# Insight Board\nboard-kind: insight-board\n", encoding="utf-8")
+        if signed:
+            bind_insight_handoff(handoff)
         return root, page
 
     def test_signed_handoff_raises_no_warning(self):
@@ -413,7 +418,7 @@ class DesignSignalTest(unittest.TestCase):
             self.assertEqual(snapshot["insight"]["status"], "bound")
             rendered = render_design(snapshot)
             self.assertNotIn("design stays blocked", rendered)
-            self.assertIn("1 of 1 insights signed", rendered)      # Goal Space names the board
+            self.assertIn("1 of 1 insights currently eligible", rendered)  # Goal Space names the board
 
     def test_unsigned_handoff_warns_in_the_header(self):
         with TemporaryDirectory() as td:
@@ -442,7 +447,7 @@ class BatchAndDraftTest(unittest.TestCase):
             board, page, _runs = v2_fixture(Path(td))
             rendered = render_design(design_snapshot(page, board), "design")
             self.assertNotIn("Release all", rendered)            # both items already commissioned
-            self.assertNotIn("Adopt", rendered)                 # ready is terminal; there is no decision button
+            self.assertNotIn("data-action=adopt", rendered)     # historical labels are readable; no new decision button
             self.assertNotIn("Queue all", rendered)              # ready + generate failed: nothing queueable
             self.assertNotIn("mode <b>", rendered)               # mode is not a reader word
 
@@ -690,7 +695,7 @@ class AuditFixesTest(unittest.TestCase):
             item_id = self.new_item(page)
             perform_action(page, self.payload(page, action="commission-hold", item=item_id, actor="JL", words="wait"))
             item = self.item(page, board, item_id)
-            self.assertEqual(item["state"], "hold")
+            self.assertEqual(item["state"], "commission held")
             self.assertIn("data-action=commission-release", render_design(design_snapshot(page, board), "design"))  # N3
             out, err = perform_action(page, self.payload(page, action="commission-release", item=item_id,
                                                          actor="JL", words="now go"))

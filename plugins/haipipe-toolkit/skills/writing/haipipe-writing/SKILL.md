@@ -1,21 +1,19 @@
 ---
 name: haipipe-writing
 description: >-
-  The WRITING verb: co-draft scoped Page candidates with human feedback, turn
-  an approved outline and evidence packet into readable
-  prose, or revise prose someone already wrote for a weak-English reader,
-  recording every edit as a word-level change under the sentence it changed.
-  The core operations are `score`, `audit`, `rewrite`, and `check`; plan-aware
-  realization is an input path, not a second planning authority. Trigger:
-  write from an outline, draft from evidence, rewrite this, make this readable,
-  too long, sounds like AI, plain English, ✎, /haipipe-writing.
+  Draft, revise or evaluate scoped prose, including Page Section/Paragraph
+  candidates and standalone files. Preserve the author's meaning and edit
+  boundary, select requested writing/style/evaluation methods, and review the
+  candidate against a shared rubric. Use for outline-to-prose, plain English,
+  academic voice, humanize, writing feedback and prose evaluation.
+  Page owns planning, Run state and acceptance. Trigger: /haipipe-writing.
 metadata:
-  version: "0.18.0"
-  last_updated: "2026-09-13"
+  version: "0.20.0"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-writing · realize or rewrite prose, and leave a trail
+# /haipipe-writing · draft, revise and evaluate prose
 
 Prose in this repo is written by someone who already knows the subject.
 That is the starting point for both paths: an approved plan still needs prose,
@@ -23,11 +21,11 @@ and an existing draft still needs a reader-facing pass. The author cannot see
 their own jargon, and a long sentence reads as precise to the person who built it.
 
 **What this skill is FOR**: realizing an approved plan/evidence slice as prose,
-or rewriting authored prose so a person whose English is weak can follow it,
-and recording each edit next to the sentence it changed.
+revising authored prose for its intended reader, or evaluating a candidate.
+Return genuine changes and located findings in the host's record format.
 
 The plan and evidence remain owned by the host workflow. This skill owns prose
-realization, readability, and its `✎` trail; it does not create a competing
+realization, readability, evaluation and change trace; it does not create a competing
 outline, evidence ledger, or claim authority.
 
 ## 🚨 Highest-priority rule · surgical revision
@@ -56,6 +54,54 @@ smaller edit. Afterward, compare before and after and confirm that everything
 outside the declared boundary stayed unchanged. The existing draft is
 cumulative author work, not raw material for regeneration.
 
+## Run invocation and selected methods
+
+A Workflow is a list of Runs. Page Section and Paragraph Runs commission this
+same worker with different scopes. Read [ref/writing-request.md](ref/writing-request.md)
+for the shared input/return contract. Reuse the current Run/Version/Step;
+reading, drafting, evaluating, revising and tool calls are internal actions.
+Standalone file work needs no Page or Run allocation.
+
+The owning agent loads the skill and executes the scoped request; a YAML
+worker name is not an automatic model launcher. Page saves the returned
+candidate, changes, evaluation and unresolved findings in its existing record.
+Use clean Before/After for Page review, with the presenter computing the visual
+diff. Other hosts use their declared recording contract.
+
+When a method is selected, load [ref/method-adapter-contract.md](ref/method-adapter-contract.md)
+and only the selected method's catalog entry. The default catalog is
+[ref/writing-methods.yaml](ref/writing-methods.yaml); an explicit project catalog
+uses the same contract.
+Roles are writer, style and evaluator. External skills provide candidates,
+style choices or findings under the shared scope/preservation rules; they
+cannot change authoritative plans, Evidence, Page acceptance or delivery.
+Freeze the actual entry/version/hash in the host's effective packet. A required
+unavailable method blocks; an optional one is visibly skipped. No method is
+selected by default. An explicitly supplied DNA or anti-slop packet selects
+its existing adapter once. The retired HAI humanizer is not a second entry point.
+
+## Evaluate before returning
+
+Apply [ref/evaluation.md](ref/evaluation.md) and the shared
+[base rubric](ref/evaluation-rubric.md): Mechanics, Function, Evidence and
+Readability, with resolved host/venue/user criteria. Record actual spans,
+evidence, verdicts and the smallest fixes. A local edit checks its protected
+meaning and affected seam; a Section draft also checks coverage and argument
+across paragraphs. Do not turn a local check into a whole-Page review.
+
+Default: candidate → evaluate → at most one authorized revision pass →
+evaluate the revised candidate → return. The request can set another bounded
+revision budget. Stop on missing required inputs or no progress and report
+remaining findings. In evaluate mode, report without editing. No-op feedback
+creates no change card or invented second review pass.
+
+Self-review is labeled as such, including when it uses an external method.
+Token checks and style scores are diagnostics. They cannot prove semantic
+equivalence, factual truth, independent review or human acceptance. Preserve
+claims, causal strength, numbers, citations, terms, qualifiers and comments;
+return content/evidence decisions to their owner instead of fixing them through
+style. Academic voice retains evidence-tied hedging and legitimate passive voice.
+
 ## 🤝 Interactive Page writing
 
 When the host is a collaborative Page Writing Run, load
@@ -73,10 +119,11 @@ from interpretation. Do not turn `applied` into `accepted`.
 Use the existing effective policy/exemplar packet for a local turn; do not
 re-read the whole corpus, rescore the whole Page or run broad humanization
 after every comment. Whole-passage review happens when requested or at a
-checkpoint. Record genuine wording changes with the existing `wdiff.py`
-adapter where its host format supports it; the Step's before/after text and
-reasons are always required. Never inject diff apparatus into a preview
-sentence field that permits prose only.
+checkpoint. For each prose-changing Step, save clean Before/After text and its
+local reason. Use `wdiff.py` only where the host requires its record format;
+Page's presenter computes its own visual changes. For a Step with no prose
+change, record only the disposition and reason. Never inject diff apparatus
+into a preview sentence field that permits prose only.
 For material Page-hosted wording feedback, return the requested change type and
 the local editing reason to the host. During a record-first interactive Page
 Step, do not infer a broader preference or build a taxonomy; the host records
@@ -131,32 +178,16 @@ required style policy or approved exemplar routes to CONTEXT/HOLD.
 
 ## 🧭 1 · What it does, in one picture
 
-**The loop**: two input paths share one writing and checking contract. Only the
-candidate prose needs judgment; code computes the worklist, records the diff,
-and audits the result.
+Two input paths share the same scoped writing and evaluation contract:
 
 ```
-🧭 approved outline + folded evidence ──► paragraph/section contract
-📄 authored prose ──────────────────────► ranked worklist
-                         \\
-                          \\
-                           ▼
-                 1️⃣ realize or rewrite  🧠 JUDGMENT
-                           |
-                           ▼
-                    ✍️ candidate prose
-      |
-      | 2️⃣ wdiff.py apply   🤖 CODE · computes the diff, anchors the record
-      v
-📝 prose + ✎ record under the sentence it changed
-      |
-      | 3️⃣ wdiff.py check   🤖 CODE · every record well-formed and anchored
-      v
-✅ readable, and reviewable
+approved plan + evidence OR existing prose + bounded request
+  → candidate → rubric review → authorized revision → final review
+  → host saves candidate + evaluation + genuine change record
 ```
 
-🔒 the JUDGMENT is the realization/rewrite step, and ONLY that step
-🚫 a model never writes the diff and never places the record
+The writer judges meaning and readability. Tools compute the host's visual
+diff or durable change record; a model never hand-authors word-level marks.
 
 ## 🧩 Outline/evidence-aware realization
 
@@ -186,7 +217,7 @@ The realization worker:
    it does not rewrite, gate acceptance, or decide that text is human.
 6. Audits coverage, claim/evidence fit, protected numbers and citations, holes,
    and introduced AI tells. If the problem is the plan, evidence, or promise,
-   route back to the owning phase instead of repairing it in prose.
+   route back to the owning authority instead of repairing it in prose.
 
 For a Page-changing host response, return the direct Draft Space
 (`&lens=div`) and Evidence Space (`&lens=evidence`) links from
@@ -194,9 +225,9 @@ the same verified public Board URL using the host's user-check packet. A
 compact Page link or embedded Evidence iframe is secondary and never a
 substitute for those direct workspace views.
 
-For a first draft, the writing run/host receipt is the trace of realization. For
-a revision of existing prose, `wdiff.py` is the only writer of the word-level
-`✎` record.
+For a first draft, the host receipt traces realization; no fake Before/After.
+For a revision in a host using `✎`, `wdiff.py` computes that record. Page
+feedback stores clean text and uses its existing presenter.
 
 ### 🧬 Writing DNA is a frozen Run input
 
@@ -240,8 +271,9 @@ python3 cli/anti_slop.py compare --before <old.md> --after <new.md> \
 The report is a diagnostic Result artifact. A finding routes to CONTENT for a
 bounded revision; it is not an AI detector, an undetectability promise, or an
 acceptance threshold. If a revision changes prose, run the fact comparison,
-then let `wdiff.py` compute and place the `✎` record. Do not use an external
-auto-fix command or edit the Page directly from this audit.
+then use the host's recording contract (`wdiff.py` for `✎`, clean Before/After
+for Page Steps). Do not use an external auto-fix command or edit the Page
+directly from this audit.
 
 ## ⚖️ 2 · Why the diff is code
 
@@ -254,7 +286,7 @@ auto-fix command or edit the Page directly from this audit.
 
 ✅ wdiff.py apply    anchors under the FIRST new line, by position
 ✅ difflib           marks only the words that moved
-✅ score.py          flags a heading before anyone reads it
+✅ score.py --headings   ranks headings for review (headings only)
 ```
 
 This is the whole design argument.
@@ -269,9 +301,9 @@ They are not invented here. They were ruled by JL while rewriting `QB4` and they
 
 **The test**: can a reader who does not read English well follow this? That is harder than "is it correct", and it is the one that catches what correctness misses.
 
-- A shorter common word always beats a precise rare one. ✅ `settles a decision` ❌ `argues one choice to a close`
+- Prefer a common word when it preserves the exact meaning; keep defined technical terms. ✅ `settles a decision` ❌ `argues one choice to a close`
 - A heading names its CONSEQUENCE, not its mechanism. ✅ `A blank line decides what people see` ❌ `The opening paragraph ends at the first blank line`
-- One idea per sentence. A sentence past about 30 words is usually two.
+- One reader move per sentence. Inspect long sentences; split only when meaning and the host's sentence/Bullet mapping permit it.
 - A word this repo invented is explained where it is used, or it is not used.
 - A good/bad pair gets its own line, marked ✅ and ❌, never buried in a sentence.
 
@@ -297,6 +329,11 @@ They are not invented here. They were ruled by JL while rewriting `QB4` and they
 --host paper              > Note: ~~old~~ **new** · WHO · WHEN
 ```
 
+`check` validates Board `✎` records only. It does not validate legacy Paper
+Notes; zero reported problems is not proof those Notes were checked. Page
+candidates use clean Before/After and its presenter. Pass the actual author
+label and host timestamp explicitly when generating a record.
+
 🚫 the caller never converts the marks by hand. That was the arrangement until
    0.5.0, and it put a hand step inside the one tool built because this exact
    class of hand step gets done wrong.
@@ -307,7 +344,8 @@ They are not invented here. They were ruled by JL while rewriting `QB4` and they
 - `cli/wdiff.py`
   Computes the word-level diff and anchors the record. `record`, `apply`, `check`.
 - `cli/score.py`
-  Ranks prose against the weak-English test. Read-only, and it never rewrites.
+  Ranks prose for review. `python3 cli/score.py FILE` checks body text;
+  `python3 cli/score.py FILE --headings` checks headings only. Neither proves clarity.
 - `cli/holes.py`
   Audits placeholders both ways: unowned holes, and holes pointing at an owner that does not exist. Read-only.
 - `cli/anti_slop.py`
@@ -325,7 +363,7 @@ They are not invented here. They were ruled by JL while rewriting `QB4` and they
 - `ref/ai-tells.md`
   How a machine writes, in any register. Migrated 260801 out of the paper humanizer's Layer 1, which no paper owned.
 - `ref/weaving.md`
-  Paragraph-to-paragraph arc, hinges, and rhythm. Migrated 260801 out of `haipipe-paper-revise-content`, which still owns when the pass runs.
+  Paragraph-to-paragraph arc, hinges, and rhythm within the host's approved scope.
 - `ref/holes.md`
   What to do about what you do not know: never invent, every hole names an owner, sweep after writing. Migrated 260801 out of the paper DRAFT phase.
 - `ref/realize-from-plan.md`
@@ -342,6 +380,14 @@ They are not invented here. They were ruled by JL while rewriting `QB4` and they
   Versioned rules-as-data used by `cli/anti_slop.py`.
 - `ref/anti-slop-attribution.md`
   Provenance and license notices for adapted MIT-licensed material.
+- `ref/writing-request.md`
+  Shared Section/paragraph/file request, protected meaning and return contract.
+- `ref/method-adapter-contract.md`, `ref/writing-methods.yaml`
+  Resolve selected capabilities, permissions, inputs, outputs and method trace.
+- `ref/evaluation.md`, `ref/evaluation-rubric.md`
+  Bounded self-review and the common criteria also used by Page CHECK.
+- `ref/method-attribution.md`
+  Provenance and notice for the retained academic pattern material.
 
 ## 🔗 6 · It plugs into an apparatus that already exists
 
@@ -363,12 +409,12 @@ lines than it started with.
 
 ## 🧪 7 · Checking it
 
-**Three checkers, three questions**: none of them rewrites anything.
+**Read-only checks** answer different questions; the rubric supplies semantic review.
 
 ```
-cli/wdiff.py check FILE     is every record well-formed and anchored?
+cli/wdiff.py check FILE     are Board ✎ records well-formed and anchored?
 cli/holes.py       FILE     does every hole in ONE file have a real owner?
-cli/anti_slop.py   FILE     what exact AI-tell spans need a second look?
+cli/anti_slop.py audit FILE what exact AI-tell spans need a second look?
 cli/agree.py       DIR...   do TWO files stating one fact agree?
 tests/test_roundtrip.py     does what `apply` writes, `check` accept?
 ```
@@ -383,12 +429,12 @@ The plan-aware path does not own OUTLINE, EVIDENCE, venue selection, or final
 acceptance. A failed plan/evidence gate routes backward to its authority; it is
 not hidden by a fluent paragraph.
 
-`haipipe-paper-revise-humanizer` rewrites ACADEMIC prose for a venue: it keeps scholarly precision, evidence-tied claims, and a journal's voice, and it writes `%%` comments into LaTeX.
-This skill has a different reader (someone whose English is weak) and a different host (any file).
-They share machinery. They do not share judgment.
-So the machinery moved here and the judgment stayed there (JL 260801).
-This skill now holds the general AI-tell catalogue and the weaving method.
-The humanizer calls `cli/wdiff.py` for its diffs instead of writing them by hand.
-What stayed in `paper/` is everything a venue owns.
-How loudly a paper may claim, how it cites, which gates a claim must pass, how a funding proposal sounds, and the `%%` comment grammar LaTeX needs.
-`ref/change-record.md` §3 is where the two host dialects are written down together, so they cannot drift into two ideas.
+Writing is the common entry point for general and academic prose. Paper/Page
+supplies venue, content and source-of-record authority. Selected external
+methods add bounded capabilities through adapters. Writing protects scientific
+meaning and reports its review; the host owns acceptance and publication.
+
+The standalone HAI humanizer was retired in 0.20.0. Its retained provenance is
+in `ref/method-attribution.md`; an actual external academic-humanizer may be
+selected through the method catalog. `ref/change-record.md` §4 documents the
+legacy Paper notation and its checking limitation.

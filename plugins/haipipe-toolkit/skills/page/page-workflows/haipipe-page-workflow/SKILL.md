@@ -11,27 +11,33 @@ description: >-
   workflow, workflow table, run a page, Run Spec, SHAPE SURVEY LAND EMBED,
   page context, page content, /haipipe-page-workflow.
 metadata:
-  version: "0.61.0"
-  last_updated: "2026-09-15"
+  version: "0.62.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-page-workflow · route one persistent Page by authority
 
+At adoption, build, or release, apply `../../haipipe-page/ref/release-decisions.md`
+for profile precedence and reuse of existing human decisions.
+
 ## 🧬 Canonical ontology
 
-The Page workflow uses the neutral Run ontology. A **Workflow** owns the
-directed graph compiled from Run Spec Routes, entry rules, and legal terminal
-rules; it is not a second Route authority. A **Run Type** supplies reusable defaults and the allowed
+The Page workflow uses the neutral Run ontology. A **Workflow is a list of
+Runs**: the definition lists Run Specs and the runtime lists actual Instances.
+The Workflow owns the dependency graph compiled from Spec Routes, entry rules,
+and legal terminal rules; it is not a second Route authority. A **Run Type** supplies reusable defaults and the allowed
 action/result grammar. A **Run Spec** owns the bounded goal/target, actor,
-gates, routes, skill bindings, and Workspace bindings. A **Run Instance** owns
+gates, routes, and references to Cells that bind skills and Workspaces. A **Run Instance** owns
 the stable id, status, result, receipt, and attempt history. A **Workspace**
 owns presentation and interaction only. A Step is an internal action inside
 one Run and is never a workflow row.
 
 Fixed-scope Page writing is one persistent Run. Human feedback is an internal
 Step. Reopening the same target and goal creates a new Version in that Run;
-changing the goal or target is `NEW_RUN`. Acceptance is the Run exit gate,
+changing the goal or target is `NEW_RUN`. A separately commissioned later
+Section session may also receive a new `rp-sec-NN` under the Page profile.
+Acceptance is the Run exit gate,
 subject to the declared dependency and mechanical close semantics.
 
 The four interactive routes are:
@@ -108,9 +114,9 @@ analysis belongs in this path. A wording-only Step never edits the Page source,
 delivery, or plan metadata. If a required input is absent, return one blocker
 and stop instead of searching the whole repository.
 
-For an in-place Folder, the physical controller record `workflow/phase.yaml`
+For an in-place Folder, the resource identity record `workflow/folder.yaml`
 resolves the owning workflow and Folder kind before Page frontmatter or legacy
-names; its filename does not create Phase authority. The
+names; it records resource identity, never execution progress. The
 current evidence graph never creates a new `probe/` lane; a stored old lane and
 outbound-card history are historical read-only input.
 
@@ -277,8 +283,11 @@ Every user-facing completion after a Page-changing action follows
 `../../haipipe-page/ref/user-check-packet.md`. Routine writing returns the
 exact Run/Version/Step heading, saved selected paragraphs, a brief change
 explanation, and three final Draft Space, Evidence Space, and Current Run links.
-Formal delivery also provides current evidence surfaces and the Page-level PDF. Only the new `outline/evidence/display/`,
-`outline/evidence/bibex/` and `delivery/latex/` lanes are eligible. The workflow receipt remains the audit record; it is not the primary
+Formal delivery also provides current evidence surfaces and the Page-level PDF. DISPLAY evidence
+is a typed Result at `results/<re-run>/result.yaml` with its unit under
+`results/<re-run>/payload/<unit>/`; it appears in Outline's Evidence Space and is consumed by
+current Delivery exporters. `outline/evidence/bibex/` and `delivery/latex/` remain current lanes;
+`outline/evidence/display/` is migration-only. The workflow receipt remains the audit record; it is not the primary
 user-facing answer.
 
 ## 🧭 One Outline plugin serves three Workspaces
@@ -328,19 +337,24 @@ what work exists and whether it can close.
 ## 📊 Run Spec × Workspace projections
 
 The detailed map is `ref/workflow-table.md`. It is a Run Spec × Workspace
-projection, not a controller-owned Run inventory. A controller-only row records
-dispatch work without minting a Level-4 Run Instance.
+projection of actual Run units. Controller operations are listed separately below and never enter the Run inventory.
 
-| Run Spec or controller projection | Run Type | Bounded target / action | Actor | Entry / exit gate | Legal routes | Cardinality | Workspace projection | Controller labels |
+| Run Spec | Run Type | Bounded target / action | Actor | Entry / exit gate | Legal routes | Cardinality | Workspace projection | Controller labels |
 |---|---|---|---|---|---|---:|---|---|
-| controller/context | controller dispatch | resolve Page/Folder identity, policy, requirements, and fresh context | agent / hybrid | entry open; exit requires a resolved Context record or truthful HOLD | SELF / next dispatch, OUTLINE, HOLD | no Run Instance | Folder inspection and off-stage Context record | 00 CONTEXT / PREPARE |
 | rp-struct-01 | page.interactive-writing.structure | whole-Page map, Mermaid, ordered Bullets, paragraph jobs, Point roles, typed Evidence Item decisions | human / agent / hybrid | entry open; exit requires accepted Shape + Survey contract | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | exactly 1 initial Structure Run per Page | Draft, Evidence, and Run Spaces | 01 OUTLINE / SHAPE+SURVEY |
 | rp-scratch-NN_<target> | page.interactive-writing.scratch | rough human thinking for Section or whole paragraph group in the current Outline grammar; no B/symbol target | human | person manually triggers Finish Scratch; AI returns a non-empty Summary | SELF / Save, CLOSE / Finish Scratch, NEW_RUN | 0..N per target | Draft Space Scratch view and Run Space | 01 OUTLINE / SCRATCH |
 | rp-sec-NN | page.interactive-writing.section | one named Section's bounded candidate and review cycle | human / agent / hybrid | entry open; exit requires scoped acceptance and declared dependencies ready | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..S selected Section Runs | Draft Space and Run Space | 01 OUTLINE / SHAPE and 03 CONTENT / WRITE |
 | rp-para-NN_Pxx[-Pyy] | page.interactive-writing.paragraph | one fixed paragraph or contiguous paragraph group | human / agent / hybrid | entry open; exit requires acceptance, settled Bullets, and ready evidence obligations | SELF / next Step, NEW_VERSION, CLOSE / next Run, NEW_RUN | 0..K, 1 <= K <= N | paragraph Draft Space, Evidence Space, Run Space | 01 OUTLINE / SHAPE and 03 CONTENT / WRITE |
 | re-value-NN_<slug>, re-cite-NN_<slug>, re-display-NN_<slug> | page.evidence-item | one focal VALUE, CITE, or DISPLAY Result for one make-item | agent / automatic / hybrid | entry open; exit requires typed Result acceptance and any declared verification | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | exactly 1 Page RE per make-item, plus 0..N Supporting Runs | Evidence Space and paired Run/Result records | 02 EVIDENCE / LAND+EMBED |
 | rdNN_<target> | page.delivery | one declared web, LaTeX, Word, or render delivery target | agent / automatic | entry open; exit requires build receipt and current artifact | SELF / next attempt, CLOSE / next Run, NEW_RUN, HOLD | one per declared delivery target | delivery projection and build receipt | 03 CONTENT / WRITE |
-| controller/check | controller gate | judge one immutable built Page version and route the next authority | fresh agent / hybrid | entry open; exit is CLOSE or a named finding route | CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT, HOLD | no Run Instance | read-only Draft/Evidence/Run views plus check receipt | 04 CHECK / CHECK |
+
+### Controller operations (outside the Run list)
+
+| Operation | Responsibility | Record |
+|---|---|---|
+| Context | Resolve and freeze inputs for selected Runs | Context record and compatibility receipt; no Run Instance |
+| Adoption | Adopt the accepted candidate after the release decision | Release decision and references to the existing writing Results |
+| Check | Independently judge one immutable built version and route findings | Check receipt and owed decisions; no Run Instance unless separately commissioned |
 
 The formal API may serialize the controller labels as phase, cycle, and
 next_cycle. Those names do not change the Run Type, Run Spec, Run Instance, or
@@ -435,6 +449,13 @@ haipipe-page-workflow
 For the first three planning dispatches, append the exact
 `haipipe-plugin-outline/ref/...` material contracts needed by the Run Spec; do
 not append the presenter skill as an execution dependency.
+
+Paper's bounded work is declared in
+`paper/haipipe-paper-workflow/ref/run-workflow.md`. Resolve the exact Paper
+PageType through the Paper router; an Ideation Page loads
+`haipipe-paper-ideation`, which delegates semantic work to `haipipe-ideation`.
+That does not make every Page an Ideation consumer. Sync and gate recording
+remain controls; actual RP/RE/RD and supporting executions keep native IDs.
 
 Example for a paper Section Shape:
 
@@ -569,8 +590,7 @@ auditor is `../../../board/haipipe-board/src/page_lifecycle.py`.
 
 ## 🧾 Receipts and terminal states
 
-Every controller dispatch appends one receipt with the serialized `phase`
-RunType label, cycle, actor, role,
+Every controller dispatch appends one receipt with the adapter dispatch label (serialized as `phase`), cycle, actor, role,
 source/render versions, route, reason, artifacts, evidence, findings, and
 human-gate pointer. Dispatch receipts are workflow audit records; they are not
 Level-4 Runs or Results.

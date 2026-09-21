@@ -30,7 +30,7 @@ class InsightPageV2Test(unittest.TestCase):
             )
             self.assertIn("wisdom-handoff-unsigned", codes(board))
 
-    def test_current_phase_file_resolves_the_insight_folder_kind(self):
+    def test_canonical_identity_resolves_wisdom_signature_requirement(self):
         with TemporaryDirectory() as tmp:
             board = Path(tmp) / "Current-InsightBoard"
             write_page(
@@ -40,10 +40,19 @@ class InsightPageV2Test(unittest.TestCase):
             )
             write_page(
                 board,
-                "4-W-wisdom/W01-counsel/workflow/phase.yaml",
-                "current:\n  phase: I5\n  folder-kind: wisdom\n",
+                "4-W-wisdom/W01-counsel/workflow/folder.yaml",
+                "current:\n  folder-kind: wisdom\n",
             )
             self.assertIn("wisdom-handoff-unsigned", codes(board))
+
+    def test_invalid_or_conflicting_canonical_identity_is_a_visible_finding(self):
+        for content in ("current:\n  folder-kind: wisdom\ncurrent:\n  folder-kind: data\n",
+                        "current:\n  folder-kind: 'wisdom\n", "current:\n  folder-kind: data\n"):
+            with self.subTest(content=content), TemporaryDirectory() as tmp:
+                board = Path(tmp) / "Current-InsightBoard"
+                write_page(board, "4-W-wisdom/W01-counsel/W01-counsel.md", "# Counsel\nfolder-kind: wisdom\n")
+                write_page(board, "4-W-wisdom/W01-counsel/workflow/folder.yaml", content)
+                self.assertIn("folder-identity-invalid", codes(board))
 
     def test_current_question_requires_target_rung(self):
         with TemporaryDirectory() as tmp:

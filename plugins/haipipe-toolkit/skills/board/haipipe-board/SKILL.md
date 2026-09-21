@@ -7,8 +7,8 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "1.0.10"
-  last_updated: "2026-09-18"
+  version: "1.0.12"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md
 ---
 
@@ -28,24 +28,37 @@ how child work objects become Groups and Pages. Markdown is authoritative;
 | Page workflow | `haipipe-page-workflow` | `RUN` verb, workflow-pass routing, packet, receipt, stop conditions |
 | Sentence | `haipipe-sentence` | comment, edit, card |
 | Page lane | the matching plugin | Outline, Studio, Runs, Delivery, Folder, or domain lane |
-| Board Insight lane | `haipipe-plugin-insight-board` | whole `*-InsightBoard` control tower; read-only aggregate over Meta, Question registers, partitions, and I0–I5 |
+| Board Insight lane | `haipipe-insight` → `haipipe-insight-workflow` | independent Insight owner; Board presents resource Folders, Question registers, partitions, and native Runs through `ref/insight-space-mapping.md` |
+| Board Design lane | `haipipe-plugin-design-board` | Design task list and aggregate over Design Folders; `haipipe-design-workflow` owns native Design Runs |
 
 One-Page work always routes through `haipipe-page`, even when invoked from the
 Board. `haipipe-page` exposes the `RUN` verb; `haipipe-page-workflow` owns its
 grammar. This skill supplies Board chrome, aggregate checking, Board hosting
-and deterministic lifecycle adapters, but owns no Page phase. The shared Page
+and deterministic lifecycle adapters; the Page owner defines the Run Specs. The shared Page
 parser, renderer and live Outline/Evidence presenters are owned by
 `skills/page/haipipe-page`; old Board module paths are compatibility links.
 Standalone Page creation/build/serve uses that skill's `cli/page.py` without
 `board.md`. Board registration is optional and points at the same source.
 
-Keep the three run identities distinct. A **Page Run** reserves
-`rp00_mermaid-structure`, then uses `rpNN_pNN[-pNN]` from `rp01` for numbered paragraph
-groups; it is the Page-owned human-feedback Version/Step record. Historical
-records keep their original meaning but are not a second active namespace. A **Task Run** is delegated
-output work in its native family. The `RUN` verb invokes one **Page workflow
-pass** through the phase controller; that pass and its receipt are not a Page
-Run. Board hosts their projections without minting or renaming any identity.
+A **Workflow is a list of Runs**, declared as bounded Run Specs with dependencies
+and routes. Keep its runtime execution and owner-native Run identities distinct:
+
+- Page Writing Runs use `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, or
+  `rp-para-NN_Pxx[-Pyy]`; the initial Structure Run is `rp-struct-01`.
+  Feedback adds Steps/Versions inside the selected Run. Page Evidence and
+  Delivery Runs keep their own RE/RD identities. Load the canonical
+  [Page Run families](../../page/haipipe-page/ref/page-run-families.md) when naming them.
+- A Task or Discovery Run keeps its native family identity.
+- `RUN` starts one **Page Workflow Runtime execution** (`workflow_runtime_id`).
+  It follows the Page owner's Run Spec graph and coordinates actual Runs;
+  the runtime envelope is not an additional RP/RE/RD or Task Run. Controller
+  dispatch, snapshots and gate checks do not allocate Runs unless the owner
+  independently commissions them under the Run contract.
+
+Serialized `phase`, `cycle`, and `next_cycle` fields are controller coordinates,
+not Workflow units. Historical compact IDs such as `rp00_mermaid-structure`
+remain readable compatibility input; new allocation uses the canonical forms.
+Board hosts projections without minting or renaming their identities.
 
 A Page Folder with `page.toml` may use an ordinary source filename. Register
 its Board-relative Page Face path in the desired `## Pages` group, then build
@@ -59,6 +72,8 @@ to Board metadata, not to the independent Page's base contract.
 | omitted / generic | Board Pages discovered from the Board tree | Q decisions and S lifecycle Pages grouped by `board.md ## Pages` |
 | `task-block` | direct `jNN_*/tNN_*` Task tree | Block = Board, Job = Group, Task = Page, Run = execution record |
 | `discovery-block` | direct `jNN_*/tNN_*` Discovery tree | Block = Board, Job = Group, Discovery Task = Page, Paper/Source Run = execution record |
+| `design-board` | Brief and Design Folder tree | Design tasks and Items across Folders; `haipipe-plugin-design-board` presents native Design Runs |
+| `insight-board` | Insight-owned Meta, Question and DIKW Page tree | resource scope, questions, evidence and native Runs; `haipipe-insight` owns the work |
 
 A Task Block does not create another Task Page Type. Each Task Page declares
 `folder-kind: task`; `haipipe-task` owns both faces of that Folder. A Discovery
@@ -72,13 +87,15 @@ creating or changing Board structure.
 <board-folder>/
 ├── board.md                       Board identity, map, grouping, order
 ├── <N>-Q<group>-<slug>/           generic Board Group
-│   └── <page>/<page>.md           one Page Folder
+│   └── <page>/                    one Page Folder
+│       ├── <page>.md              Page Face
 │       ├── outline/               Context record, Draft, Evidence, Run Spaces
-│       ├── workflow/              Page-phase receipts
+│       ├── workflow/              owner-selected identity and control records
 │       ├── studio/                Chat and Draw
 │       ├── runs/                  optional Run tickets
 │       └── delivery/              rendered deliverables
 ├── diagram/                       Board-owned design context when applicable
+├── _runs/page/<page-id>/           Board-hosted Workflow Runtime JSON receipts
 └── board/                         generated site; never hand-edit
     └── insight.html               generated Board-level Insight plugin page, InsightBoards only
 ```
@@ -127,7 +144,7 @@ the Board-relative `jNN_<job>/tNN_<task>/tNN_<task>.md` path.
 | “preview this Board/Page” | `cli/preview.py`; read-only |
 | “open this existing Board” | VIEW: rebuild, open the HTTP Board URL, report status |
 | “create a Board” | OPEN: agree spine, close condition, and Page list before writing |
-| “add a question/group” | update `board.md` and the source tree, then rebuild |
+| “add a question/group” | resolve Board kind and existing members first; generic Q/S creation or the native owner updates its tree, then register order and rebuild |
 | “build/rebuild” | `cli/build.py <board-folder>` |
 | “serve” | read `fn/serve.md`, then use `cli/serve.py --root <selected-root>` |
 | “update one Page” | route to `haipipe-page` |
@@ -151,8 +168,8 @@ For Board edits and formal Page delivery, every substantive change belongs
 to one Page or to `board.md`. In the same round:
 
 1. update the owning source;
-2. update the owning Page's Aims and current `Now:` facts when their truth
-   changed;
+2. update targets and completion facts in the Page owner's declared records
+   when their truth changed; existing native/legacy Aims use their `Now:` fields;
 3. write the dated process record under `outline/<stem>-log.md`;
 4. rebuild the Board;
 5. run the checker and inspect the rendered result.
@@ -162,12 +179,15 @@ not a full Board rebuild per Step. An explicitly requested adoption-only pass
 may leave delivery unrefreshed and must say so; it is not formal Page closure.
 Do not call a generated view current until it is actually refreshed/inspected.
 
-Do not write `## States`, `## Files`, `## Discussion`, or `## Log` on a new
-Page. Current process records live under `outline/`; the Page surface remains
-`Opening → Outline → Content → Aims` plus allowed optional folds.
+Use the Page owner's current template. A new generic Page keeps the reading
+surface `Opening → Content` plus earned optional folds. Outline, Aims, and
+other process records live backstage in the Page Folder; do not add retired
+States, Files, Discussion, or Log sections to the reading surface. Native Page
+owners and existing compatibility surfaces retain their declared contracts.
 
-A decision that blocks work is first written to the owning Page's
-`Aims › Decision Now`; chat only points to that durable row. A decision the
+A decision that blocks work is first written to the Page owner's durable
+decision record (`Aims › Decision Now` where that native/legacy surface applies);
+chat points to that record. A decision the
 agent is authorized to make should be made and recorded, not parked as a human
 question.
 
@@ -196,13 +216,14 @@ python3 <skill>/status.py <board-folder> \
   --next "<one concrete next action>"
 ```
 
-Page focus adds the Page lifecycle row. Board and Group focus do not aggregate
-Page phases.
+Page focus adds a workflow readiness row using controller coordinates.
+Board and Group focus stay three lines. This row is not an active Run ID;
+use the Page's Run Space to identify the actual Runs and their receipts.
 
 ```markdown
 🧭 BOARD · QUEUE/FOCUS (deep-link)
 ✅ done · implementation
-⏱️ LAND · 🧭✅ 🧩✅ 🃏⏳ ✏️⬜ 🔍⬜ · ✋4
+⏱️ 🃏 EVIDENCE · 🧭✅ 🧩✅ 🃏⏳ ✏️⬜ 🔍⬜ · ✋4
 → one concrete next action
 ```
 
@@ -244,9 +265,10 @@ Page/Run workflow and its Markdown write. Historical signed review lanes stay
 preserved in Markdown and never publish as Content.
 See `haipipe-plugin-outline/ref/content-preview.md` for the SHAPE/CONTENT boundary.
 Render a Page's authored `<stem>-logic.mmd` as a safe derived Mermaid Structure
-before the plan and paragraph groups. While `rp00_mermaid-structure` is active,
+before the plan and paragraph groups. While the selected Structure Run
+(`rp-struct-01` initially) is active,
 expand that review artifact; if it is absent, render a blocker naming the
-expected source instead of hiding the card. After `rp00` completes, retain an
+expected source instead of hiding the card. After that Run completes, retain an
 existing map collapsed by default. The plan remains structural authority and
 the Mermaid file remains the reviewable derived source in both Board-hosted and
 standalone Page modes.
@@ -291,7 +313,7 @@ standalone Page modes.
 |---|---|
 | `ref/board-form.md` | creating or restructuring a Board, Group, or Page roster |
 | `ref/operations.md` | previewing, viewing, building, serving, moving, or closing |
-| `ref/page-template.md` | creating a generic Q or S Page |
+| `../../page/haipipe-page/ref/page-template.md` | creating a generic Q or S Page; canonical Page-owned template |
 | `ref/writing-rules.md` | writing or reviewing Page prose |
 | `ref/board-example.md` | a minimal current source-tree example is useful |
 | `ref/page-lifecycle.workflow.js` | maintaining the Board-hosted workflow-pass adapter; workflow law remains in `haipipe-page-workflow` |

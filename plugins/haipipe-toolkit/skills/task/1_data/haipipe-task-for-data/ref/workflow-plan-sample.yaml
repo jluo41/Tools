@@ -1,100 +1,116 @@
-# workflow-plan-sample.yaml — data-pipeline task script-level plan
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Plugin-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
 # Schema: task/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
-#
-# Typical data phases: Load → Build → Validate → Export
-# Heavy outputs to _WorkSpace/{1..4}-*Store/; light summaries to results/.
-
-# ─── Header ──────────────────────────────────────────────────────
 name: build-<STAGE>-<DATASET>
-purpose: "Run Stage <N> builder (<FnType>) for <DATASET>"
-skill: haipipe-task-for-data
-
-# ─── I: Input ────────────────────────────────────────────────────
+purpose: Run Stage <N> builder (<FnType>) for <DATASET>
 input:
   args:
-    config: scripts/config/rNN_<RUN>.yaml
+    config: scripts/config/rNN_<run>.yaml
     stage: <1|2|3|4>
     fn_type: <SourceFn|RecordFn|CaseFn|TfmFn|SplitFn>
-  files_in:
-    - scripts/<worker>.py
-    - scripts/config/rNN_<RUN>.yaml
+  files_in: &id001
+  - scripts/<worker>.py
+  - scripts/config/rNN_<run>.yaml
+  - _WorkSpace/<UPSTREAM_STORE>/<UPSTREAM_ASSET>
+owner: haipipe-task-for-data
+plugin:
+  id: <owning-plugin>
+  workspace_roster_ref: <plugin-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Run Stage <N> builder (<FnType>) for <DATASET>
+  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: haipipe-task-for-data
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: ok
+      store_path: _WorkSpace/<N>-<STORE>/<ASSET>
+    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: haipipe-task-for-data
+    worker_skill_chain:
+    - haipipe-task-for-data
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Load
+    label: load:upstream
+    required: true
+    prompt: Load upstream asset from _WorkSpace/<UPSTREAM_STORE>/
+    files_in:
     - _WorkSpace/<UPSTREAM_STORE>/<UPSTREAM_ASSET>
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: Load
-    detail: "load upstream data from _WorkSpace"
-    steps:
-      - label: "load:upstream"
-        type: agent
-        required: true
-        prompt: "Load upstream asset from _WorkSpace/<UPSTREAM_STORE>/"
-        files_in:
-          - _WorkSpace/<UPSTREAM_STORE>/<UPSTREAM_ASSET>
-        files_out: []
-
-  - title: Build
-    detail: "run the Fn builder"
-    steps:
-      - label: "build:transform"
-        type: agent
-        required: true
-        prompt: "Apply the stage-owned <FnType> transformation; SourceFn may attach pinned external data, Record aligns, Case derives features"
-        files_in: []
-        files_out: []
-
-      - label: "build:split"
-        type: agent
-        required: false
-        prompt: "Apply SplitFn if Stage 4 (train/val/test)"
-        files_in: []
-        files_out: []
-
-  - title: Validate
-    detail: "check output integrity"
-    steps:
-      - label: "validate:counts"
-        type: agent
-        required: true
-        prompt: "Row counts, schema check, no nulls in required cols"
-        files_in: []
-        files_out: []
-
-      - label: "validate:distributions"
-        type: agent
-        required: false
-        prompt: "Optional: check feature distributions, class balance"
-        files_in: []
-        files_out: []
-
-  - title: Export
-    detail: "write to _WorkSpace store + light summary"
-    steps:
-      - label: "export:store"
-        type: agent
-        required: true
-        prompt: "Serialize to _WorkSpace/<N>-*Store/<ASSET>"
-        files_in: []
-        files_out:
-          - _WorkSpace/<N>-<STORE>/<ASSET>
-
-      - label: "export:summary"
-        type: agent
-        required: true
-        prompt: "Write manifest.json + summary to results/<RUN>/"
-        files_in: []
-        files_out:
-          - results/<RUN>/manifest.json
-          - results/<RUN>/summary.txt
-
-# ─── O: Output ───────────────────────────────────────────────────
-output:
-  returns:
-    status: ok
-    store_path: _WorkSpace/<N>-<STORE>/<ASSET>
-  files_out:
+    files_out: []
+  - section: Build
+    label: build:transform
+    required: true
+    prompt: Apply the stage-owned <FnType> transformation; SourceFn may attach pinned external data, Record
+      aligns, Case derives features
+    files_in: []
+    files_out: []
+  - section: Build
+    label: build:split
+    required: false
+    prompt: Apply SplitFn if Stage 4 (train/val/test)
+    files_in: []
+    files_out: []
+  - section: Validate
+    label: validate:counts
+    required: true
+    prompt: Row counts, schema check, no nulls in required cols
+    files_in: []
+    files_out: []
+  - section: Validate
+    label: validate:distributions
+    required: false
+    prompt: 'Optional: check feature distributions, class balance'
+    files_in: []
+    files_out: []
+  - section: Export
+    label: export:store
+    required: true
+    prompt: Serialize to _WorkSpace/<N>-*Store/<ASSET>
+    files_in: []
+    files_out:
     - _WorkSpace/<N>-<STORE>/<ASSET>
-    - results/<RUN>/manifest.json
-    - results/<RUN>/summary.txt
+  - section: Export
+    label: export:summary
+    required: true
+    prompt: Write manifest.json + summary to $OUTPUT_ROOT/<task>/results/rNN_<run>/
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/manifest.json
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.txt
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
+output:
+  returns: *id002
+  files_out:
+  - _WorkSpace/<N>-<STORE>/<ASSET>
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/manifest.json
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.txt

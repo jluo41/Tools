@@ -385,6 +385,11 @@ class LabelingWriteDoorTest(unittest.TestCase):
         self.assertEqual(code, 400)
         self.assertIn("attestation", res["err"])
 
+    def test_meaning_confirmation_requires_board_origin(self):
+        code, res = self.handler().labeling_act(self.payload(action="confirm_meaning"))
+        self.assertEqual(code, 403)
+        self.assertIn("Board origin", res["err"])
+
     def test_page_without_canonical_job_is_refused(self):
         self.base.make_contract()
         code, res = self.handler().labeling_act(self.payload())
@@ -752,7 +757,7 @@ class LabelingReviewFixesTest(unittest.TestCase):
         self.assertEqual(_round_words("round_01"), "round 1")
         self.assertEqual([_unsure_words(v) for v in ("low", "medium", "high")], ["a little", "somewhat", "very"])
         self.assertEqual(_clean_keywords(["people", "don", "doesn", "fair"]), ["people", "fair"])
-        self.assertIn("step 4 of 6 (Test)", _later("P3 Test"))
+        self.assertIn("P3 Test · not implemented · HOLD", _later("P3 Test"))
         self.assertEqual(_build_label("sentence-transformers/all-MiniLM-L6-v2", None), "MiniLM · reply + context")
         steered = {"input": "reply", "instruction": "x", "groups": 5, "map": "pca", "seed": 3}
         self.assertEqual(_build_label("Qwen/Qwen3-Embedding-0.6B", steered),
@@ -776,7 +781,7 @@ class LabelingReviewFixesTest(unittest.TestCase):
         ref = _space_mapping_ref()
         self.assertIsNotNone(ref)
         headers, rows = _md_table(ref.read_text(encoding="utf-8"), "Workflow map")
-        self.assertEqual(headers[:4], ["phase", "Run type", "in words", "started by"])
+        self.assertEqual(headers[:4], ["compatibility tag", "Run type", "in words", "started by"])
         self.assertEqual(len(rows), 25)
         # the Run Space's plain words and the ref's `in words` column are one vocabulary
         self.assertEqual({r[1].strip("`"): r[2] for r in rows}, _RUN_WORDS)
@@ -784,7 +789,8 @@ class LabelingReviewFixesTest(unittest.TestCase):
                        {"operation": "round-prepare"}], "canonical": {"phase": "P1"}}
         body = _workflow_map(vm)
         self.assertEqual(body.count("<tr class=phaserow>"), 6)
-        self.assertIn("Step 2 of 6 · Round (now)", body)
+        self.assertIn("P1 · Round · compatibility capability", body)
+        self.assertNotIn("(now)", body)
         self.assertIn("Run embedding button", body)
         self.assertIn('<td data-label="On this job" class=num>2</td>', body)
         self.assertEqual(body.count("<tr class=live>"), 2)

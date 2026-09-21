@@ -10,9 +10,16 @@ This file defines current Board source shape. `SKILL.md` owns routing;
 | Generic | omit `board-kind` | Page-shaped Markdown below the Board root | Q/S Pages grouped and ordered by `## Pages` |
 | Task Block | `board-kind: task-block` | direct `jNN_*/tNN_*` Task tree | Block → Board, Job → Group, Task → Page |
 | Discovery Block | `board-kind: discovery-block` | direct `jNN_*/tNN_*` Discovery tree | Block → Board, Job → Group, Discovery Task → Page |
+| Design Board | `board-kind: design-board` | Brief and Design Folder tree | Design tasks, Items and native Runs through `haipipe-plugin-design-board` |
+| Insight Board | `board-kind: insight-board` | Meta, Question and DIKW Page tree | Insight-owned resources, questions and native Runs through `haipipe-insight` and the Board presenter |
 
 The kind changes discovery and projection only. It does not change the base
 Page contract or create a new Page Type.
+
+Design and Insight are independent family owners. Use their current Folder
+contracts and generators; Q/S templates and generic regrouping do not define
+their source trees. See `haipipe-plugin-design-board` and
+`haipipe-insight` → `haipipe-insight-workflow` for their native work.
 
 ## Generic Board tree
 
@@ -251,8 +258,12 @@ status. A Group route carries that Group and its Pages. A Page route keeps one
 Page focused while preserving Board navigation.
 
 All essential content and navigation must remain available without JavaScript.
-Scripts may enhance drawers, live navigation, Chat, terminal, comments, and
-plugin surfaces; they may not become the content source.
+The Page reading surface offers navigation, folding, evidence viewing, and
+`⧉ Copy prompt` for a passage or heading. It has no inline editor, Comment,
+or Chat button. Copied prompts carry the source path and quoted context;
+the reader pastes them into an agent conversation and adds a request.
+Scripts may enhance this reading surface and explicit plugin workspaces;
+they may not become the content source.
 
 ## Compatibility boundary
 

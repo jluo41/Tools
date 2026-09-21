@@ -1,3 +1,7 @@
+## 0.4.3 · 2026-09-20
+
+- Align plugin ordering with Outline, Delivery, and Folder ownership.
+
 ## 0.4.0 — 2026-09-03
 
 - Show `outline/skill/` as its own source-material row beside the Outline

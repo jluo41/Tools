@@ -23,11 +23,4 @@ function boardDirPath() {
   return boardPath().replace(/\/board\.md$/, '');
 }
 
-/* ─────────────────────────────────────────────────────────────
-   Comment layer — PURE ENHANCEMENT. The prose is already real HTML;
-   this script only ADDS "select -> comment -> highlight right away".
-   Strip this script block and the board still reads fine (just no commenting).
-
-   Comments go straight to the server, which writes each one beneath its
-   selected sentence in the source Markdown.
-   ───────────────────────────────────────────────────────────── */
+/* Page prose is read-only. Explicit plugin workspaces share the Board context. */

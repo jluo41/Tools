@@ -19,14 +19,20 @@
 ### ✅ 推荐做法：直接用 `presenter-mode-reveal` 模板
 
 ```bash
-cp -r templates/full-decks/presenter-mode-reveal examples/my-talk
+HTML_PPT=/path/to/html-ppt
+cd /path/to/your/project
+"$HTML_PPT/scripts/new-deck.sh" my-talk . presenter-mode-reveal
+open my-talk/index.html
 ```
+
+The scaffold copies the template into the project and rewrites its shared-asset
+links for that location.
 
 这个模板已经预设好所有必需元素：
 - 支持 S 键切换演讲者视图
 - 5 个主题可用 T 键循环（tokyo-night / dracula / catppuccin-mocha / nord / corporate-clean）
 - 左右键翻页
-- 每一页都有 150–300 字的示例逐字稿
+- 每一页都有示例逐字稿；长度按目标演讲时长调整
 - 底部有键位提示
 
 直接改内容即可。
@@ -43,7 +49,7 @@ html-ppt 的 **S 键演讲者视图是 `runtime.js` 内置的，所有 full-deck
   <h2>你的标题</h2>
   <p>内容...</p>
   <aside class="notes">
-    <p>这里是演讲时要说的话，150-300 字...</p>
+    <p>这里是演讲提示；长度按演讲时长调整...</p>
   </aside>
 </section>
 ```
@@ -70,11 +76,12 @@ html-ppt 的 **S 键演讲者视图是 `runtime.js` 内置的，所有 full-deck
 
 **差别**：正确版本把关键词加粗，过渡句独立成段，看一眼就能接上。
 
-### 铁律 2：每页 150–300 字
+### 铁律 2：用适合语言和时长的提示卡篇幅
 
-- **少于 150 字**：提示不够，讲到一半会卡
-- **多于 300 字**：你根本来不及扫完
-- **2–3 分钟/页** 是最舒服的节奏
+- 中文可先用每页 **150–300 个汉字**作为提示卡范围；英文可先用
+  **150–300 个单词**。根据用户指定的演讲总时长和页数调整，不把字数
+  机械换算成每页分钟数。
+- 用自然停顿分段，读一遍确认讲者能快速扫读；必要时增删提示。
 
 ### 铁律 3：用口语，不用书面语
 
@@ -204,7 +211,8 @@ html-ppt 的 **S 键演讲者视图是 `runtime.js` 内置的，所有 full-deck
 </aside>
 ```
 
-`.notes` 类默认 `display:none`，只在演讲者视图可见。
+`.notes` 类在观众画面中默认隐藏，在演讲者视图中显示。内容仍嵌在共享
+HTML 源文件中，任何拿到文件的人都能读取；不要在 notes 中写机密信息。
 
 ### ❌ 忘记引入 runtime.js
 
@@ -224,7 +232,7 @@ html-ppt 的 **S 键演讲者视图是 `runtime.js` 内置的，所有 full-deck
 
 ## 用 AI 生成逐字稿的标准 prompt
 
-> "请为每一张 slide 写一段 **150-300 字**的逐字稿，放在 `<aside class="notes">` 里。
+> "请按目标演讲时长和页数，为每张 slide 写可快速扫读的演讲提示，放在 `<aside class="notes">` 里。中文可先按每页 150–300 个汉字，英文可先按每页 150–300 个单词，再按实际时长调整。
 > 要求：
 > 1. 用**口语**，不要书面语（所以/但是/接下来，不是因此/然而/综上所述）
 > 2. 把**核心关键词**用 `<strong>` 加粗

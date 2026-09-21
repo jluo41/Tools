@@ -114,7 +114,7 @@ unowned process to make a card available.
 
 - dataset, config, seed, environment, and GPU set are recorded;
 - the final checkpoint can be loaded and its hash is recorded;
-- metrics cover the declared train/validation/test phases;
+- metrics cover the declared train/validation/test splits;
 - no partial or resumed attempt is mislabeled as the original Run;
 - the queue log records fallback, resume, preemption, and teardown events;
 - the next Run is running, safely queued, or the queue has a terminal record.

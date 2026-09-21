@@ -6,20 +6,20 @@ The diagnostic method for paragraph-to-paragraph arc, hinges, and rhythm.
 Migrated 2026-08-01 from `haipipe-paper-revise-content/ref/`. It moved because
 the method is prose craft and nothing in it is academic: a run of paragraphs has
 an arc, a seam, and a rhythm whether it sits in a manuscript, a board page, or a
-README. Its CALLERS stay where they are, and they keep their own recording
-grammar: `haipipe-paper-revise-content` writes `%% {CC-content}:` into LaTeX,
-`haipipe-writing` writes `> ✎` records via `cli/wdiff.py`.
+README. The old content worker is retired. The current host owns scope and
+recording: Page uses clean Before/After; `✎` hosts use `cli/wdiff.py`.
 
 This file carries no orchestration. When the pass runs, and what it may touch,
 belong to whichever hub loaded it.
-Paper-side rule sheet: `haipipe-paper-revise-content/ref/write-principles.md`
+The shared Writing request supplies the current plan/venue authority.
 
 The weave step (runs inside the content pass, after paragraph, before sentence)
 --------------------------------------------------------------------------------
 
-Diagnose the section's paragraph-to-paragraph flow, then fix directly and
-record each change in the host's own grammar (`%% {CC-content}:` on the paper
-side, `> ✎` on the board side). No gates and no waiting: the pass is automatic.
+When the commissioned scope includes paragraph flow, diagnose the selected
+seams and apply only authorized repairs. Record changes in the host's grammar.
+A local wording request does not authorize reordering or merging paragraphs;
+return a plan/claim change to its owner. Use the shared evaluation budget.
 
 1. **ARC** — write the section's one-line arc from the paragraph banners
    (`grep '^% Para '`): does the sequence of points tell the section's story
@@ -51,8 +51,8 @@ Role vocabulary for arc mapping (use consistently within one section):
 Boundaries (unchanged from the content worker's contract)
 -----------------------------------------------------------
 
-- Weave fixes MOVE and RESTITCH prose; they never change what a paragraph
-  claims (that is the paragraph step) and never invent numbers/citations
+- Authorized weave fixes MOVE and RESTITCH prose; they never change what a paragraph
+  claims or invent numbers/citations
   (flag `{VAL:?}` / `\cite{TOADD}` instead).
 - Any ids the host uses (paper banners and `Pn.Sn`, board `C.H.P.S`) are
   preserved through moves and renumbered mechanically after a split or merge.

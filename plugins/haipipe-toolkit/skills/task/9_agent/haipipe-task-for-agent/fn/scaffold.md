@@ -2,22 +2,22 @@ fn-scaffold: Scaffold an LLM-agent job
 =================================================
 
 Call an LLM agent (Claude / GPT) with prompts + tools for an analysis, summarization, or audit task.
-Group letter default: **F** (agent).
+Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 
-Output: `tasks/F{NN}_<group>/{NN}_<job_name>/`.
+Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **F**; scaffold a new `F{NN}_<block_name>/` if needed.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: resolve the Block and Job; create missing canonical containers through the shared Task owner.
 
 
 Step 2 — Collect metadata
 --------------------------
 
-- 2-digit NN: next free in this group.
+- Allocate the next unused Task index inside the selected Job and Run index inside that Task; preserve existing indices.
 - snake_case task_name: descriptive
   (e.g., `summarize_eval_logs`, `audit_patient_notes`).
 - Model: `claude-opus-4-8 | claude-sonnet-5 | claude-haiku-4-5-20251001`.
@@ -29,20 +29,22 @@ Step 2 — Collect metadata
 Step 3 — Create skeleton
 -------------------------
 
-```
-F{NN}_<group>/
-└── {NN}_<job_name>/
-    ├── {NN}_<job_name>.py
-    ├── prompts/
-    │   ├── system.md                       system prompt
-    │   └── user.md                         user prompt template (with {placeholders})
-    ├── configs/
-    │   └── agent_<name>.yaml               from ref/config-seed.yaml
-    ├── runs/
-    │   └── agent_<name>.sh
-    ├── results/
-    │   └── <run>/                           transcript.json, summary.md
-    └── notebooks/
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared code + config-defaults.yaml
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.py
+        ├── scripts/config/rNN_<run>.yaml
+        └── runs/rNN_<run>.sh
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
+Task-local prompts/system.md + prompts/user.md hold agent prompts.
 ```
 
 Note: `prompts/` is unique to agent tasks — keeps prompt content diff-friendly and out of the `.py`.
@@ -51,7 +53,7 @@ Note: `prompts/` is unique to agent tasks — keeps prompt content diff-friendly
 Step 4 — Seed config + prompts
 -------------------------------
 
-Copy `ref/config-seed.yaml` to `configs/agent_<name>.yaml`.
+Copy `ref/config-seed.yaml` to `scripts/config/rNN_<run>.yaml`.
 Fill in:
 - `_meta:` block.
 - `model:`, `max_tokens:`, `temperature:`.
@@ -65,8 +67,8 @@ Seed minimal `prompts/system.md` + `prompts/user.md` stubs.
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/agent_<name>.sh`.
-Set `TASK_NAME="{NN}_{job_name}"`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/rNN_<run>.sh`.
+Set `TASK_NAME="<worker>"` (the worker filename without .py); config and Ticket share the exact `rNN_<run>` stem.
 
 
 Step 6 — Cross-skill link
@@ -81,7 +83,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded agent job <NN>_<name> under F{NN}_<group>.
+summary:   Scaffolded agent job <NN>_<name> under the selected bNN Block / jNN Job.
 artifacts: [paths created including prompts/system.md, prompts/user.md]
 next:      edit prompts/, set inputs in config, then run.sh
 ```
@@ -91,7 +93,7 @@ MUST NOT
 ---------
 
 - Embed prompts inline in the `.py` — they live in `prompts/*.md`.
-- Skip transcript logging — `results/<run>/transcript.json` is mandatory
+- Skip transcript logging — `$OUTPUT_ROOT/<task>/results/rNN_<run>/transcript.json` is mandatory
   (every API call + tool call recorded for audit).
 - Hardcode an API key in the script — read from env var.
 - Create `README.md`.
@@ -111,7 +113,7 @@ For the first run after this scaffold, do ONE of:
      `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`
      (skips the gate for one run; logs a warning to stderr.)
 
-  3. **Permanent skip for this config** — add to `configs/<RUN>.yaml`:
+  3. **Permanent skip for this config** — add to `scripts/config/<RUN>.yaml`:
      ```yaml
      _meta:
        skip_review: true

@@ -22,11 +22,11 @@ design_profile:
   narrative: none
   display: none
   section_edit: none
-  terminal: adopted
 ```
 
-This is a venue reference pack, not a private lifecycle. Commission → Generate
-→ Verify → Adopt remains the only Design workflow.
+This is a venue reference pack, not a private lifecycle. The Design Workflow is a list of
+Commission, Generate and Verify Runs. Delivery is the ready projection after
+independent Verify passes.
 
 
 ## Venue template
@@ -54,7 +54,7 @@ template:
 ```
 
 
-## Phase use
+## Run guidance
 
 ### Commission · frame and bet
 
@@ -69,11 +69,12 @@ Follow the 4-slot template. Each slot is one sentence or phrase.
 Total ≤ 160 chars for single-segment SMS.
 Tone per audience profile (warm for patient, clinical for clinician).
 
-### Verify, preview, and adopt
+### Verify
 
 Check every candidate or variant for character count, actionable single CTA,
 opt-out, variable availability, audience language, and fidelity to the released
-Commission. Render only to `delivery/render/`; adoption names that exact render.
+Commission. Any preview stays inside the current Result and is a Step, not a
+Run. Independent Verify pass makes the exact message ready for Delivery.
 
 If a load-bearing premise or variable is missing, emit a BR00 need and its
 Insight register question. Do not substitute “common knowledge,” open a private

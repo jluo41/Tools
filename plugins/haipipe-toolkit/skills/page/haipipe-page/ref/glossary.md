@@ -18,8 +18,8 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   `<project>/diagram/<NN>-<Name>-<date>/`
 - **Page** — one question (Q) or one lifecycle stage (S), and the folder that
   holds everything it owns. `<board>/<group>/<PageId>-<slug>/<PageId>-<slug>.md`
-- **Folder kind** — the stable domain kind whose workflow phase or canonical
-  family skill owns the Folder and its Page Face. `workflow/phase.yaml`
+- **Folder kind** — the stable domain kind whose declared resource owner or canonical
+  family skill owns the Folder and its Page Face. `workflow/folder.yaml`
   `current.folder-kind` or the Page's `folder-kind:` field.
 - **Page Type** — the compatibility key used by an unmigrated Page. New Pages
   resolve their Page Face through Folder kind; `page-type:` and
@@ -120,8 +120,11 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   `<resolved-result>/payload/<citation>` or the named Supporting Result. The
   person's CITE verification is `Verified:` on the authored Evidence Item row,
   not a second citation-storage lane.
-- **receipt** — the machine-readable record of one phase pass: who acted, which
-  phase, which round, where it routed. `<board>/_runs/page/<page>/<stamp>.json`
+- **Run receipt** — native lifecycle, outcome and provenance for one allocated
+  Run; its owner resolves the path, conventionally `results/<run>/runtime.yaml`.
+- **controller receipt** — one Page dispatch/pass record, including operation
+  and route; legacy `phase/cycle` fields identify control progress. It is not
+  the receipt of a newly allocated Run. The Page controller owns its path.
 - **the bank** — Task and Discovery folders whose immutable Run/Result receipts
   are reused by later Pages. New Page work records a full Supporting Run id and,
   when needed, one Page-local `RE` lineage instead.
@@ -171,14 +174,14 @@ Read it as: **TERM** — what it is. `the path it actually names`.
 Defined once in `page-workflows/haipipe-page-workflow` §🔤; repeated here only
 as pointers, because that section is the authority.
 
-- **workflow** — which LOOP this is. Never repeats.
-- **phase** — which AUTHORITY is acting: `00 CONTEXT` · `01 OUTLINE` ·
-  `02 EVIDENCE` · `03 CONTENT` · `04 CHECK`. REPEATS, which is why it is not
-  called a step. Draft and Revise are writing movements, never phase ids.
-- **cycle** — the named pass inside a phase: PREPARE (CONTEXT) · SHAPE and
-  SURVEY (OUTLINE) · LAND and EMBED (EVIDENCE) · WRITE
-  (Adopt · Integrate · Build · Pre-check inside CONTENT) · CHECK. Never a letter
-  code, never a circled number.
+- **Workflow** — a list of Runs: planned Specs with dependencies/routes and
+  actual owner-native Instances. A runtime can execute or reuse selected work.
+- **phase** — retained controller/API dispatch label: `00 CONTEXT` ·
+  `01 OUTLINE` · `02 EVIDENCE` · `03 CONTENT` · `04 CHECK`. It is not a
+  semantic owner, Run, Step, or additional authority layer.
+- **cycle** — the named controller operation: PREPARE, SHAPE, SURVEY, LAND,
+  EMBED, WRITE, or CHECK. Operations participate in commissioned Runs or
+  control records; the label alone never allocates a Run.
 - **RP / Page Writing Run** — one independently commissioned Page writing
   session/round at a fixed scope. Its explicit kinds are
   `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, and

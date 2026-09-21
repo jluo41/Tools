@@ -1,3 +1,7 @@
+## 0.3.1 · 2026-09-20
+
+- Route candidate feedback into its existing Run and apply shared release rules.
+
 ## 0.3.0 · 2026-09-11
 
 - Route feedback-led drafting to the persistent Writing Run instead of full CONTENT drafting per chat; distinguish kept chat transcripts from durable feedback/output records.

@@ -1,8 +1,8 @@
 ---
 name: figure-to-svg
 description: >-
-  Turn a whole figure/diagram/infographic PNG into an editable master SVG that
-  recreates it — icons regenerated clean, plus real <text> labels at their
+  Reconstruct a whole figure/diagram/infographic PNG as an editable master SVG —
+  icons regenerated as look-alikes, plus real <text> labels at their
   original positions. Pass `svg` to hand-vectorize each icon for full
   editability. Use for /figure-to-svg, replicate this figure as svg, turn this
   diagram into an editable svg, or vectorize a multi-item figure. Also home of
@@ -12,17 +12,17 @@ description: >-
 
 # figure-to-svg
 
-Rebuild a figure image as an **editable SVG**: every label becomes real `<text>`, panels and
+Reconstruct a figure image as an **editable SVG**: every label becomes real `<text>`, panels and
 connectors become vector, and icons are embedded as transparent PNGs (default) or hand-vectorized
-(with `svg` flag). The output is a single master `.svg` that reads as a faithful copy of the
-source but can be edited, recolored, and rescaled — and survives PowerPoint's **Insert SVG →
+(with `svg` flag). Regenerated icons are look-alikes, not exact reproductions. The output is a
+reconstructed master `.svg` that can be edited, recolored, and rescaled — and survives PowerPoint's **Insert SVG →
 Convert to Shape** as editable shapes and text boxes (icons stay as pictures in default mode;
 with `svg` they become editable shapes too).
 
 ## Invocation
 
 ```
-/figure-to-svg <figure.png>          run the pipeline (DEFAULT: icons stay PNG — fast, faithful)
+/figure-to-svg <figure.png>          run the pipeline (DEFAULT: icons stay PNG — faster, approximate)
 /figure-to-svg <figure.png> svg      full vectorize: hand-author every icon as SVG via icon-to-svg
 /figure-to-svg <icon.png>            single icon/logo crop? hand it to /icon-to-svg instead
 /figure-to-svg lesson "<...>"        capture a craft gotcha            -> fn/lesson.md
@@ -41,9 +41,11 @@ The pipeline:
 split → regenerate → slice → transparentize → [vectorize if svg mode] → compose → review (loop until pass)
 ```
 
-Default mode (bare path) skips vectorize — icons embed as transparent PNGs. Text, panels, and
-connectors are still editable vector. Pass `svg` to hand-vectorize every icon for full
-editability (expensive: ~2× wall-clock, subagent fleet, context-exhaustion risk).
+Default mode embeds regenerated icon look-alikes as transparent PNGs; text, panels, and connectors
+remain editable vectors. This produces a reconstructed approximation, not a faithful copy. If exact
+icon artwork matters, locate the original vector assets or keep those source icons raster; ask
+whether an approximation is acceptable before regenerating them. Pass `svg` to hand-vectorize each
+icon (expensive: ~2× wall-clock, parallel icon work, context-exhaustion risk).
 
 The hard-won rules from past runs are **baked into the steps below** — you don't need to go read
 a lessons folder before starting. `lesson/` (in this skill) is the capture inbox and archive:
@@ -70,17 +72,27 @@ Everything lives under `<stem>_regenerated/` next to the source, one folder per 
 
 ```
 Figure1_regenerated/
+├── manifest.json          # full-figure inventory in original, global coordinates
+├── svg/                   # all vectorized icons, keyed by unique item id
+├── cropped_icon/          # all PNG crops, keyed by unique item id
+├── figures/ai_generated/  # exact Codex bridge output path for icon grids
 ├── subimages/part1/
 │   ├── part.png            # section crop + gen reference
 │   ├── manifest.json       # this part's inventory: panels, text, icons (grid cell ↔ id ↔ desc)
-│   ├── redraw_icon/        # gen_icon_grid.py output grids
-│   ├── cropped_icon/       # sliced + transparentized icons (PNG)
-│   ├── svg/                # vectorized icons
+│   ├── prompt.txt          # part-specific grid prompt
+│   ├── cropped_icon_raw/   # sliced icons before transparency
+│   ├── cropped_icon/       # part-local transparentized icons (PNG)
+│   ├── svg/                # part-local vectorized icons
 │   ├── part1_replica.svg   # composed part (PPT-safe) + _wrapped (diff) + _raster (PNG icons)
 │   └── part1_diff.png      # original | replica side-by-side
-├── Figure1_replica.svg     # assembled master (+ _wrapped + _raster variants)
+├── Figure1_replica.svg     # master composed from manifest.json (+ _wrapped + _raster variants)
 └── Figure1_replica_diff.png
 ```
+
+One source figure reconstructed into one master SVG is one bounded Run in the parent Workflow.
+Splitting parts, generating or vectorizing icons (including any parallel helper work), composing,
+and fresh-eyes review loops are internal Steps. Separate source figures with independent outputs
+and receipts are separate Runs.
 
 ## Step 1 — Split & analyze
 
@@ -131,12 +143,15 @@ neighbours inside every crop. Instead, regenerate each part's icons as ONE clean
 with `part.png` as the style reference:
 
 ```bash
-~/.cache/fig2svg-venv/bin/python scripts/gen_icon_grid.py <workspace> <part.png> part1_grid.png prompt.txt
+~/.cache/fig2svg-venv/bin/python scripts/gen_icon_grid.py <workspace> <workspace>/subimages/part1/part.png part1_grid.png <workspace>/subimages/part1/prompt.txt
 ```
 
 `gen_icon_grid.py` is a thin driver: it **shells out to the `codex` CLI** (native image
 generation) via the codex-image2 bridge — the Python only pins down cwd, reference image, output
 path, and logging so every call is reproducible.
+Set `<workspace>` to the `Figure1_regenerated/` root. The bridge writes each grid to
+`<workspace>/figures/ai_generated/<out_name>.png`; it does not write into a part's `redraw_icon/`
+directory.
 
 **Launch ALL grid calls in parallel** — one background call per grid, then collect. Each call
 takes 1.5–4 minutes and they are fully independent (different parts, different output paths);
@@ -152,9 +167,18 @@ lands. The prompt matters:
 ## Step 3 — Slice & transparentize
 
 ```bash
-~/.cache/fig2svg-venv/bin/python scripts/slice_grid.py   part1_grid.png cropped_icon_raw/ --grid 3x3
-~/.cache/fig2svg-venv/bin/python scripts/transparentize.py cropped_icon_raw/ cropped_icon/
+~/.cache/fig2svg-venv/bin/python scripts/slice_grid.py \
+  <workspace>/figures/ai_generated/part1_grid.png 3 3 \
+  <workspace>/subimages/part1/cropped_icon_raw \
+  '["01_wearables","02_sensor","03_phone","04_chart","05_badge","","","",""]'
+~/.cache/fig2svg-venv/bin/python scripts/transparentize.py \
+  <workspace>/subimages/part1/cropped_icon_raw \
+  <workspace>/subimages/part1/cropped_icon
 ```
+
+The final argument is a JSON array with one id per grid cell in row-major order;
+use an empty string for every unused cell. Keep the same ids in the manifest and
+the corresponding SVG/PNG filenames.
 
 - `slice_grid.py` divides the grid equally and keeps each cell's **central connected component**,
   which drops any neighbour-bleed.
@@ -165,13 +189,13 @@ lands. The prompt matters:
 ## Step 4 — Vectorize each icon (via icon-to-svg) — SVG MODE ONLY
 
 **Default mode skips this step entirely.** Set `"keep_raster": true` on every icon item and go
-straight to Step 5 — every compose variant embeds the transparent PNG crops. The result is
-visually faithful and the text/panels/arrows are still editable in PPT; only the icons stay
-pictures. This is the right trade-off for most paper→slides conversions: you want to fix a
-label or recolor a panel, not redraw an icon.
+straight to Step 5 — every compose variant embeds the transparent PNG crops. This preserves the
+regenerated appearance while text, panels, and arrows remain editable in PPT; the icons are still
+raster approximations. This is the right trade-off for most paper→slides conversions: you can fix
+a label or recolor a panel without redrawing every icon.
 
 **SVG mode** (user passed `svg` after the figure path, or said "vectorize the icons" / "全部矢量化"):
-for every sliced icon, use the **icon-to-svg** skill to hand-author a faithful SVG →
+for every sliced icon, use the **icon-to-svg** skill to hand-author an approximate vector SVG →
 `svg/<id>.svg`. The regenerated icons are the ideal input for it: pure-white background, no
 neighbours, no text, generous resolution.
 
@@ -202,7 +226,11 @@ when the user specifically needs to recolor or reshape individual icons.
 ## Step 5 — Compose
 
 ```bash
-~/.cache/fig2svg-venv/bin/python scripts/compose_svg.py manifest.json svg/ part1_replica.svg --crops cropped_icon/
+~/.cache/fig2svg-venv/bin/python scripts/compose_svg.py \
+  <workspace>/subimages/part1/manifest.json \
+  <workspace>/subimages/part1/svg \
+  <workspace>/subimages/part1/part1_replica.svg \
+  --crops <workspace>/subimages/part1/cropped_icon
 ```
 
 `compose_svg.py` sizes the canvas, paints panels (flat fill or measured `gradient`), draws
@@ -220,7 +248,19 @@ look. Ship the main one; diff the wrapped one.
 - Connectors are `arrow` primitives in source coordinates
   (`{"x1","y1","x2","y2","color","width","dashed","heads","curve"}`) — drawn on the master
   canvas beneath icons and text, so every arrow tweak is a JSON edit.
-- Assemble the master from the parts, sized to the original figure.
+- Do not leave assembly implicit or concatenate locally composed parts. Build
+  `<workspace>/manifest.json` with the original canvas width/height and one
+  complete inventory of panels, text, icons, and connectors. Convert each
+  part-local bbox to source coordinates by adding that crop's x/y origin; keep
+  icon ids unique across parts. Point it at the merged `svg/` and `cropped_icon/`
+  folders.
+- Compose the master once from that full-figure manifest:
+
+  ```bash
+  ~/.cache/fig2svg-venv/bin/python scripts/compose_svg.py \
+    <workspace>/manifest.json <workspace>/svg \
+    <workspace>/Figure1_replica.svg --crops <workspace>/cropped_icon
+  ```
 - **Deliverable = the editable master SVG.** PowerPoint ONLY via Insert SVG → right-click →
   Convert to Shape. **NEVER generate PPT with python/python-pptx** — that output was rejected
   outright ("rubbish, cannot be opened").
@@ -230,18 +270,37 @@ look. Ship the main one; diff the wrapped one.
 Render the diff for every part and the master:
 
 ```bash
-~/.cache/fig2svg-venv/bin/python scripts/render_diff.py part1_replica_wrapped.svg part.png part1_diff.png
+~/.cache/fig2svg-venv/bin/python scripts/render_diff.py \
+  <workspace>/subimages/part1/part1_replica_wrapped.svg \
+  <workspace>/subimages/part1/part.png \
+  <workspace>/subimages/part1/part1_diff.png
+~/.cache/fig2svg-venv/bin/python scripts/render_diff.py \
+  <workspace>/Figure1_replica_wrapped.svg <source-figure.png> \
+  <workspace>/Figure1_replica_diff.png
 ```
 
 Then dispatch a **FRESH subagent** — one with no context from this run — to judge each diff.
 This must not be you: after hours on the replica you see what you *meant*, not what's on the
-canvas; ownership bias is exactly what this gate exists to remove. Judge prompt:
+canvas; ownership bias is exactly what this gate exists to remove. Supply the exact source image,
+the matching replica render and diff at the same canvas dimensions/pixel scale, and the intended
+final display size. If the source and replica dimensions differ, record the crop/scale transform
+used to align them before judgment.
+If the intended display size is unavailable, the reviewer may report visible discrepancies but
+must mark readability-at-size as `not-verifiable`. List any approved approximations before review;
+an unlisted approximation is still an issue. This critical/major/minor scale is local to figure
+review and has no implied mapping to another owner's severity labels. Judge prompt:
 
-> *"Read `part1_diff.png` (left = original figure, right = SVG replica). List every visible
-> discrepancy: layout drift, wrong/missing colours or gradients, icons that don't read as the
-> same object, text that is mis-placed / mis-sized / wrong, missing elements (badges, arrows,
-> bands). Return JSON `{"verdict":"pass"|"revise","issues":[{"region","what","severity","fix_hint"}]}`.
-> Ignore any similarity scores; judge only with your eyes."*
+> *"Inspect the supplied source, replica render, and diff at the stated pixel dimensions. Judge
+> readability at the stated final display size. List every visible discrepancy: layout drift,
+> wrong/missing colours or gradients, icons that don't read as the same object, misplaced or
+> mis-sized text, and missing elements. Return JSON
+> `{"verdict":"pass"|"revise"|"not-verifiable","issues":[{"region":"...","what":"...","evidence":"visible location or comparison","severity":"critical|major|minor","fix_hint":"..."}]}`.
+> Use `critical` when the discrepancy changes data, claim, or figure meaning; `major` when it
+> materially impairs reading or comparison at the target size; and `minor` for a local difference
+> that does not change meaning or materially impair reading. Return `not-verifiable` for any
+> criterion whose required render, dimensions, or display context is missing. Pass only when no
+> unaccepted critical/major issue remains and every minor difference is within a listed tolerance
+> or explicitly accepted. Ignore similarity scores; judge only the supplied pixels."*
 
 Route each issue back to its step and **reopen**:
 
@@ -254,10 +313,20 @@ Recompose, re-diff, **re-judge with a fresh subagent** — loop until the verdic
 only remaining issues are deviations the user has explicitly accepted (record those in the final
 report). Never sign off on your own render, and never on a score alone.
 
+If the verdict is `not-verifiable`, return to the owner to supply the missing source, render,
+dimensions, or intended display size. Do not repeat the same review with unchanged inputs. A
+technical execution failure also remains unresolved until the failed condition changes or a
+justified retry is recorded.
+
+The fresh review is converter quality control, not caller acceptance. Return
+the master SVG and its known approximations as a standalone conversion. If it
+will become a Page, View, or Paper display, hand the output to that caller as a
+candidate; the caller places it in the supplied unit and decides promotion.
+
 ## Guidance
 
-- **`manifest.json` is the source of truth** per part. Every step reads/writes it; most
-  refinement is a JSON edit + re-running one script. The run is resumable at any step.
+- The root `manifest.json` is the master source of truth in original coordinates; each
+  part manifest is a local inventory. Refinement is a manifest edit plus a script rerun.
 - **Fonts** won't match exactly; approximate family/size/weight, prioritize position and colour,
   and note the substitution if the exact font matters.
 - **Don't fake fidelity.** A region too complex to redraw stays raster (`keep_raster`) — say

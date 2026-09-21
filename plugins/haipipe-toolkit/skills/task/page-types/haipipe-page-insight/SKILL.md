@@ -8,8 +8,8 @@ description: >-
   checkpoints, shared Task analysis calls, and exact RI/result citations. Application
   InsightBoard rung pages remain owned by haipipe-insight-workflow.
 metadata:
-  version: "1.1.1"
-  last_updated: "2026-09-15"
+  version: "1.2.0"
+  last_updated: "2026-09-20"
   outline:
     mode: fixed
     source: "this SKILL.md"
@@ -147,9 +147,9 @@ domain work. Neither replaces the other or adds a new universal Page section.
 ## Task Face and execution
 
 The Task Face owns item intent, dependency dispatch, input freezing,
-checkpoints, Result validation, and publication. Its workflow and Phase × Run
-Map live in `ref/workflow-table.md`; Page authoring still uses the shared Page
-workflow. DIKW is inside each item Result, not four new phase-owned Folders.
+checkpoints, Result validation, and publication. Its workflow and Workflow activities × Run ownership
+map live in `ref/workflow-table.md`; Page authoring still uses the shared Page
+workflow. DIKW is inside each item Result, not four separate Application Folders.
 
 Use the Insight instance dialect in `haipipe-run`: one `riNN` ticket points to
 one normal R ticket and resolves to versioned execution addresses in this
@@ -209,8 +209,8 @@ portable reference packet and historical single-chain aliases.
 
 RF is not a
 Design Handoff. It remains unsigned, consumer-neutral evidence. An Application
-registers its I1 QW need and contextualizes the exact item RF in a local,
-human-signed I5 Wisdom Folder. The relevant item's Wisdom target and current
+registers its QW need and contextualizes the exact item RF in a local,
+human-signed Wisdom Folder. The relevant item's Wisdom target and current
 accepted Result are tested, not whole-Page completion; unrelated open items
 do not block this bridge. An explicit no-answer cannot satisfy the bridge.
 
@@ -218,8 +218,11 @@ do not block this bridge. An explicit no-answer cannot satisfy the bridge.
 
 - `scripts/insight_items.py bind <folder> --base-run <rNN> --base-ticket <path>
   --dataset <id@version> --stem <stem> --question <text> --target <rung>
-  --expected <text> --acceptance <text>` allocates the next RI, freezes v001,
-  and leaves it planned. It does not execute the base R or fabricate a Result.
+  --expected <text> --acceptance <text>` allocates the next RI, freezes its
+  goal/base/dataset binding, and leaves it planned with no final evidence input. It does not execute the base R or fabricate a Result.
+- `scripts/insight_items.py freeze <folder> --item <ri> --version <vNNN>
+  --evidence <packet.yaml>` validates completed supporting/local evidence and
+  seals the interpretation input once. Revisions use the next explicit version.
 - `scripts/insight_items.py check <folder>` validates manifests, R→RI binding,
   ticket/Result
   pairing, immutable execution identities, source hashes, checkpoints, DIKW
@@ -228,7 +231,7 @@ do not block this bridge. An explicit no-answer cannot satisfy the bridge.
 - `scripts/insight_items.py table <folder>` returns one row per declared
   item; the current Result and checkpoint come from receipts.
 - `ref/instance-items.md`: runtime schema and exact reference packet.
-- `ref/workflow-table.md`: workflow, checkpoints, Phase × Run Map, reopening.
+- `ref/workflow-table.md`: workflow, checkpoints, Workflow activities × Run ownership, reopening.
 - `ref/task-calls.md`: reusable Task recipe and instance binding.
 - `ref/migration.md`: old Page-to-item mapping and compatibility.
 - `agents/openai.yaml`: existing discoverable entry, updated to item semantics.

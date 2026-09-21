@@ -25,8 +25,8 @@ These base fields follow `haipipe-run` and never disappear:
 | `result` | path | paired Result directory under resolved `$OUTPUT_ROOT` |
 | `inputs` | list | frozen authoritative paths and hashes |
 | `worker` | mapping | worker kind and name |
-| `started_at` | ISO 8601/null | written before expensive work |
-| `finished_at` | ISO 8601/null | written at terminal state |
+| `started_at` | RFC 3339/null | null until actual launch; non-null includes UTC offset |
+| `finished_at` | RFC 3339/null | null while unfinished; written at actual terminal state |
 | `supersedes` | Run id/null | prior Run when this is a materially new contract |
 | `failure` | string/null | truthful terminal reason |
 
@@ -36,6 +36,24 @@ account for every value that varied for this Run; at minimum it records the
 pinned configuration and Ticket arguments. `notebook`, `duration`,
 `exit_code`, and `headline` are useful Task-dialect extensions.
 
+
+Attempt history
+---------------
+
+New shell Tickets record `contract_sha256` (Ticket, config, worker, verified
+input hashes, target and arguments) and an integer `attempt` at launch.
+Each declared input must be a readable file; an explicit pinned hash must
+match its current bytes before launch or retry.
+Before an unchanged-contract retry, the Ticket preserves the previous receipt
+at `attempts/<six-digit-attempt>/runtime.yaml` and increments `attempt`.
+These archives are history, not additional Runs or current receipts.
+A missing/changed fingerprint requires owner recovery or a new commission;
+legacy receipts are never silently asserted to have frozen inputs.
+A complete/superseded Result cannot be overwritten by retry. Preserve any
+partial payload needed for recovery before retry; published outputs remain
+immutable. The native `.run-lock` excludes simultaneous writers. An abandoned
+lock requires confirmation that the prior process is no longer active before
+owner recovery removes it.
 
 Lifecycle and gate
 ------------------
@@ -67,7 +85,7 @@ operation: evidence-item
 target: E01-DISPLAY-effect
 status: running
 ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect.sh
-result: results/t01_example/r01_page-evidence-item_e01-display-effect/
+result: t01_example/results/r01_page-evidence-item_e01-display-effect/
 inputs:
   - path: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
     sha256: <64-hex>
@@ -100,7 +118,7 @@ operation: evidence-item
 target: E01-DISPLAY-effect
 status: complete
 ticket: t01_example/runs/r01_page-evidence-item_e01-display-effect.sh
-result: results/t01_example/r01_page-evidence-item_e01-display-effect/
+result: t01_example/results/r01_page-evidence-item_e01-display-effect/
 inputs:
   - path: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
     sha256: <64-hex>

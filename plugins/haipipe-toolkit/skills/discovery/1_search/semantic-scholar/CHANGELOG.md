@@ -3,6 +3,12 @@ semantic-scholar — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [0.1.2] — 2026-09-20
+
+- Separate citation and publication-type search filters from relevance,
+  methodological quality, and evidentiary strength. Require a query date when
+  citation counts influence candidate selection.
+
 ## [0.1.1] — 2026-09-04
 
 - Move the invocation hint under supported metadata and repair the canonical

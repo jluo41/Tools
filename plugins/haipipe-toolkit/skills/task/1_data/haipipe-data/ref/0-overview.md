@@ -260,7 +260,7 @@ _WorkSpace/
 +-- 3-CaseStore/            Layer 3 output: CaseSets
 |       {RecSetName}/@v{N}CaseSet-{TriggerFolder}/
 +-- 4-AIDataStore/          Layer 4 output: AIDataSets
-|       {aidata_name}/@{aidata_version}/
+|       {ParentSetName}/@v{N}AIData-{aidata_name}/
 +-- 5-ModelInstanceStore/   Layer 5 output: trained models
 |       {model_name}/
 +-- 6-EndpointStore/        Layer 6 output: deployment packages

@@ -36,7 +36,7 @@ primary durable product:
 | Request centers on | Enter through | Owner-native product |
 |---|---|---|
 | executable, independently testable work | `haipipe-task` | `rNN` Ticket → Result + receipt |
-| human shaping, interpretation, or acceptance | `haipipe-page` | `rpNN` interaction → accepted Page state |
+| human shaping, interpretation, or acceptance | `haipipe-page` | `rp-*` interaction → accepted Page state |
 
 Crossing the boundary uses one explicit handshake:
 
@@ -56,19 +56,21 @@ Page CONTENT/CHECK
 
 The Page cannot turn a candidate into a Task Run, rename a native Run, or copy
 its Result into a parallel answer store. The Task cannot accept paragraph
-wording, close an `rpNN`, or release the Page. A request that needs both doors
+wording, close an `rp-*` Run, or release the Page. A request that needs both doors
 may start at either one, but every handoff keeps these owner-native identities.
 
 The shared `runs/` and `results/` lanes carry disjoint namespaces:
 
 ```text
 runs/rNN_<run>.sh|.ps1|.cmd       Task Ticket
-runs/rp00_mermaid-structure.md    Page structure interaction
-runs/rpNN_pNN[-pNN].md            Page paragraph interaction
+runs/rp-struct-NN.md             Page structure interaction
+runs/rp-scratch-NN_<target>.md    Page Scratch capture
+runs/rp-sec-NN.md                Page Section session
+runs/rp-para-NN_Pxx[-Pyy].md      Page paragraph/group interaction
 results/<same-run>/runtime.yaml   receipt for the corresponding namespace
 ```
 
-`rNN` and `rpNN` counters never reserve, renumber, or consume one another.
+`rNN` and typed `rp-*` counters never reserve, renumber, or consume one another.
 
 Add the exact `task-type:` when a specialist owns the executable dialect.
 Only `folder-kind: task` and `task: .` identify a Task Page. Task Folder = Page
@@ -278,9 +280,9 @@ template. Then run the Page workflow and the Task tree checker. Before closure:
 - the SHAPE plan contains typed DISPLAY Items for the substantive tables,
   figures, and diagrams, and every Data/Result division has its required
   display;
-- every declared display resolves to
-  `outline/evidence/display/<stem>-Display<N>-<slug>/` with a current
-  preview and a provenance-bound intake;
+- every declared display resolves through its governed Result envelope to
+  the caller-authorized unit defined by the Page evidence/display contract,
+  with a current preview and provenance-bound intake;
 - every typed item has the declared Supporting/local Run graph and accepted
   Result;
 - every shown number resolves to a full Run id;

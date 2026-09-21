@@ -1,4 +1,11 @@
-# Anti-slop adapter for a HAI Paragraph Run
+# Anti-slop adapter for scoped Writing
+
+Catalog id: anti-slop, role: evaluator. Use
+[method-adapter-contract.md](method-adapter-contract.md) for selection and trace.
+The bundled cli/anti_slop.py is adapted external code; invocation does not
+require the upstream skills to be installed. Audit the exact selected Section,
+paragraph/group or file. Normalize located hits only after checking context.
+Statistics are diagnostic, not a semantic verdict or independent review.
 
 This adapter is the controlled seam between the ten external anti-AI-writing
 references in `Tools/references` and `haipipe-writing`. It adds a post-draft
@@ -28,10 +35,10 @@ approved Outline + folded Evidence + seam
   compare facts when prose changed
                  │
                  ▼
-  wdiff.py computes and records ✎
+  host records clean Before/After or a computed ✎
                  │
                  ▼
-  trace.md + runtime.yaml + CONTENT promotion
+  existing Step/trace + runtime projection → host review/adoption
 ```
 
 The order matters. Anti-slop sees the paragraph after the content contract and
@@ -57,7 +64,8 @@ their original files can be inspected and updated independently.
 
 ## Ticket input
 
-The field is optional and is frozen when a Paragraph Run is commissioned:
+The optional legacy field selects this adapter once, just like a methods entry
+with id anti-slop. Freeze one effective packet; report conflicting selections:
 
 ```yaml
 anti_slop:
@@ -78,7 +86,7 @@ reference per Run; the source name must resolve through the ten-item map in
 
 ## Result and trace
 
-When selected, the worker writes:
+For a delegated paragraph Result, the worker writes:
 
 ```text
 results/<RUNNAME>/
@@ -114,9 +122,10 @@ python3 <haipipe-writing>/cli/anti_slop.py compare \
   --check-facts --format json
 ```
 
-Then call `wdiff.py` with the old and new text. Never ask the audit tool to
-apply a replacement: doing so would bypass the word-level `✎` record and the
-Page Paragraph promotion guard.
+For Page interactive work, keep the review and method trace in the existing
+Step; link material diagnostic output. Use clean Before/After and the presenter.
+Other hosts use `wdiff.py` when they require a `✎` record. Never ask the audit
+tool to apply a replacement or bypass Page promotion.
 
 ## Routing
 

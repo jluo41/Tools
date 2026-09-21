@@ -1,5 +1,9 @@
 # Themes catalog
 
+There are 37 supported theme styles: 36 general themes in the showcase plus
+the `academic-report` house preset. That preset pairs
+`assets/themes/academic-report.css` with `assets/academic-report-extras.css`.
+
 Every theme is a short CSS file in `assets/themes/` that overrides tokens
 defined in `assets/base.css`. Switch themes by changing the `href` of
 `<link id="theme-link">` or by pressing **T** if the deck has a

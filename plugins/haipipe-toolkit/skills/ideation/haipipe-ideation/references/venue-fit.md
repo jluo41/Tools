@@ -34,7 +34,14 @@ Use the Venue Page authority vocabulary without modification:
 - `PACK PRESCRIPTION`: playbook or external skill guidance without enough
   direct observations;
 - `LOCAL DECISION`: this project's interpretation or target choice; and
-- `UNKNOWN`: a visible gap with a refresh route.
+- `UNKNOWN`: a visible gap with a refresh route; and
+- `OWN ESTIMATE`: a local estimate with its basis and uncertainty, explicitly
+  not a desk rule. Use only when the candidate assessment needs an estimate
+  that is neither established by official material nor a pack observation.
+
+`OWN ESTIMATE` is a Venue authority value and must be preserved unchanged in
+Fit. Do not translate it to `LOCAL DECISION`: the former estimates an uncertain
+fact, while the latter records a project's chosen interpretation or target.
 
 Journal skill packs, remembered policies, static rankings, and search snippets
 may suggest candidates. They are never `DESK RULE`. Volatile claims such as
@@ -47,11 +54,25 @@ acceptance odds from journal reputation.
 
 One fit card belongs to one Idea Card:
 
+Each immutable assessor snapshot uses this shape with its own non-null
+`assessment_binding`. The current Fit Card is a projection: copy that binding
+only when one assessment supports the projection; when multiple judgments
+contribute, keep the field null, list every raw snapshot and exact-byte hash in
+`assessment_receipts`, and point `review_resolution` to the resolution receipt
+and hash. Those links preserve reviewer identity, rubric version and frozen
+inputs without implying a single reviewer authored the combined result.
+
 ```yaml
 version: 2
 kind: idea-venue-fit
 id: i01-venue-fit
 idea_card: ../i01_idea.yaml
+assessment_binding: null  # one raw assessment's binding; null when several are projected
+assessment_receipts:
+  - assessment_id: "e01"
+    receipt: "workflow/venue-fit/i01_<timestamp>.yaml"
+    sha256: "sha256:<exact receipt bytes>"
+review_resolution: null  # {receipt, sha256} for multiple judgments; null for one
 broad_screen:
   status: complete | pending
   field: "..."
@@ -134,6 +155,8 @@ recommendation:
   alternatives: [v02, v03]
 human_target:
   status: open | selected | deferred | rejected
+  selection_receipt: null  # immutable I3 snapshot after an answer
+  contract_version: ""
   target: ""
   category: ""
   venue_contract: ""
@@ -151,10 +174,31 @@ silently treated as current.
 
 The listed dimensions are the default comparison surface. Add a
 discipline-specific dimension only when it changes the decision; do not create
-a numeric composite score that hides an off-fit or unknown requirement. One
-`off-fit` dimension does not mechanically force rejection, but the card must
-name why the mismatch can or cannot be repaired. `unknown` remains open and
-routes to Discovery or Venue refresh.
+a numeric composite score that hides an off-fit or unknown requirement. Apply
+these anchors to each dimension and cite the evidence that meets the anchor:
+
+- `strong`: current evidence directly supports the stated fit; no material
+  unresolved caveat remains.
+- `conditional`: the fit is supported if one or more named, verifiable
+  conditions are satisfied; state each condition and its owner.
+- `weak`: evidence shows a material mismatch, but a plausible, specific
+  repair exists and has not yet been demonstrated. Name the repair and what
+  evidence would show that it worked.
+- `off-fit`: cited binding evidence establishes an incompatibility that cannot
+  be repaired within the declared project constraints. Name the constraint
+  and why each plausible repair is unavailable.
+- `unknown`: evidence is missing, inaccessible, or materially conflicting, so
+  the dimension cannot yet be assessed. Name the missing input or resolver.
+
+Derive the overall summary without averaging: `off-fit` if a decision-critical
+dimension has a proven, unrepairable incompatibility; otherwise `unknown` if a
+decision-critical dimension is unknown; otherwise `weak` if any such dimension
+is weak; otherwise `conditional` if any such dimension is conditional;
+otherwise `strong`. A human may still choose to defer, repair, or reroute an
+off-fit candidate; the summary does not authorize selection or rejection.
+`unknown` stays open and routes to Discovery or Venue refresh. A non-decisive
+dimension may be excluded from the overall rule only when the reason and
+project constraint are recorded on the card.
 
 `nature_overlay` is populated only when a Nature-family target is actually
 under consideration. Its receipt comes from `haipipe-nature-paper-review` and
@@ -178,6 +222,12 @@ existence, modification time, or prior use. A visibly `PARTIAL` page can seed
 the broad screen and refresh request but not a target-selection gate.
 
 ## Selection and change control
+
+human_target is a read-only projection of one per-card I3 decision, using the
+exact mapping in [receipts.md](receipts.md#immutable-history-and-projections).
+Its by/at, intended target/category, contract version and accepted_conditions
+come from that receipt. Recommendation fields remain machine advice. A mismatch
+is a handoff HOLD; never repair it by independently changing the human target.
 
 A selected Idea may leave Ideation only when its broad screen and deep fit are
 complete, every candidate marked `profile: deep-fit` has a current Venue

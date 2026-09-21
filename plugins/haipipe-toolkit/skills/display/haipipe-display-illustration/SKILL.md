@@ -16,11 +16,19 @@ and a **local Codex app-server MCP bridge** as the raster renderer.
 
 ## Output: write into a display unit
 
-Output goes into a `displays/displayNN-<slug>/` unit per the shared contract:
-`../ref/display-unit-output-contract.md`.
+The caller supplies the unit path per the shared contract:
+`../ref/display-unit-output-contract.md`. For a Page DISPLAY Result, this is
+`<page>/results/<re-run>/payload/<unit>/`; View and other callers supply their own
+path. The bridge renders scratch candidates under `<work-root>/figures/ai_generated/`;
+only a caller-approved candidate is finalized into the supplied unit. This
+renderer never chooses the unit destination.
+
 THIS renderer's row: asset -> `assets/figure.png`; rebuild spec -> `recipe/prompt.md`
-(final prompt + bridge job + score) + `recipe/review_log.json`; finalize with
-`--display-unit <unit-dir>` (Step 7).
+(final prompt + bridge job + score) + `recipe/review_log.json`.
+
+One invocation that produces one bounded illustration unit may be one Run in the parent Workflow.
+Image generation, review rounds, retries, and finalization are internal Steps; the caller owns
+candidate selection, promotion, and any `accepted:` decision.
 
 For a new unit, read `intake/manifest.yaml` before planning the prompt.
 The manifest supplies approved narrative context and any facts the illustration may state.
@@ -58,9 +66,8 @@ rather than falling back to a shell/Python bitmap.
 - **RENDERER = `codex-image2`** — Native image generation bridge exposed through local Codex app-server
 - **OPTIONAL_TEXT_CRITIC = `mcp__codex__codex`** — Optional text-only second opinion for layout/style checks
 - **MAX_ITERATIONS = 5** — Maximum refinement rounds
-- **TARGET_SCORE = 9** — Minimum acceptable score (1-10)
-- **OUTPUT_DIR** — for a paper: the display unit `displays/displayNN-slug/` (asset -> `assets/figure.png`, iterations + receipts -> `recipe/`).
-  Only with no paper: the flat fallback `figures/ai_generated/`.
+- **TARGET_SCORE = 9** — Internal refinement target (1-10); never selects, promotes, or accepts an image
+- **OUTPUT_DIR** — final asset and recipe go to the caller-supplied unit; the bridge's locked scratch candidates stay under `<work-root>/figures/ai_generated/`.
 - **TEXT_LANGUAGE = `English`** — Default figure text language unless the user requests otherwise
 - **NATIVE_IMAGE_REQUIREMENT = `strict`** — Accept only native `imageGeneration` output; reject shell/Python fallbacks
 - **CANONICAL_HELPER = `python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py"`** — Preflight, finalize (`--display-unit`), verify, repair
@@ -133,7 +140,11 @@ Aim for the balance point: neither overly conservative nor flashy.
 
 **Not for:** photo-realistic scenes, or any display better served by a sibling renderer — see the sibling-routing table in `../ref/display-unit-output-contract.md`.
 
-## Workflow: MUST EXECUTE ALL STEPS
+## Procedure: MUST EXECUTE ALL STEPS
+
+A caller-directed invocation that produces one bounded display unit is one Run in its parent's
+Workflow. Pre-flight, planning, image generation, candidate review, finalization, and verification
+are Steps inside that Run; retries do not create new Runs.
 
 ### Step 0: Pre-flight Check
 
@@ -141,19 +152,18 @@ Render this checklist explicitly before starting:
 
 ```text
 📋 paper-illustration-image2 integration checklist:
-   [ ] 0. Resolve/scaffold the display unit (see the contract): displays/displayNN-slug/
+   [ ] 0. Resolve the caller-supplied display unit: <unit-dir>
    [ ] 1. Read intake/manifest.yaml and confirm all facts in the prompt are declared there
-   [ ] 2. preflight --workspace <paper-root> --json-out displays/displayNN-slug/recipe/preflight.json
+   [ ] 2. preflight --workspace <work-root> --json-out <unit-dir>/recipe/preflight.json
    [ ] 3. Confirm preflight JSON says ok=true before rendering
    [ ] 4. Render via mcp__codex-image2__generate_start + generate_status
-   [ ] 5. Finalize into the unit: finalize --workspace <paper-root> --display-unit displays/displayNN-slug --best-image <best_png> (Step 7)
-   [ ] 6. Verify: verify --workspace <paper-root> --display-unit displays/displayNN-slug
+   [ ] 5. After caller approval, finalize into the unit: finalize --workspace <work-root> --display-unit <unit-dir> --best-image <best_png> (Step 7)
+   [ ] 6. Verify: verify --workspace <work-root> --display-unit <unit-dir>
 ```
 
-1. Resolve the target display unit (`displays/displayNN-slug/`); scaffold it via
-   `Skill("haipipe-paper", "display scaffold ...")` if it does not exist.
-   Only when
-   there is no paper, fall back to creating `figures/ai_generated/`.
+1. Use the unit path supplied by the Page, View, Paper, or other caller. If the
+   unit does not exist, return the missing path so its owner can create it; do
+   not create a Paper-specific or parallel display folder.
 2. Confirm the request is suitable for a raster illustration:
    - architecture diagram
    - conceptual method figure
@@ -163,8 +173,8 @@ Render this checklist explicitly before starting:
 
 ```bash
 python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" preflight \
-  --workspace <paper-root> \
-  --json-out displays/displayNN-slug/recipe/preflight.json
+  --workspace <work-root> \
+  --json-out <unit-dir>/recipe/preflight.json
 ```
 
 5. If preflight is not `ok=true`, stop and say so clearly.
@@ -227,9 +237,8 @@ style audit, but do not block on it.
 Call `mcp__codex-image2__generate_start` with:
 
 - `prompt`: the final image prompt
-- `cwd`: the paper workspace (paper root)
-- `outputPath`: `figures/ai_generated/figure_vN.png`. NOTE: the bridge HARD-LOCKS output under `figures/ai_generated/`; it rejects any path outside it (so you cannot render straight into the unit).
-  Iterations render here as scratch; `finalize --display-unit` then promotes the accepted one to `displays/displayNN-slug/assets/figure.png` and writes review provenance to `recipe/`.
+- `cwd`: the caller-supplied workspace root
+- `outputPath`: `figures/ai_generated/figure_vN.png`. The bridge locks output under this scratch folder; it rejects paths outside it. Iterations stay here until the caller approves one, then `finalize --display-unit <unit-dir>` copies it into the unit and writes review provenance under `recipe/`.
 - `system`: a short instruction like `Academic paper figure. Prefer crisp English labels.`
 - `timeoutSeconds`: a bounded render timeout such as `180`
 
@@ -250,11 +259,12 @@ Review the generated image with a strict checklist:
 - do arrows point the right way?
 - does the figure look paper-ready rather than like a slide?
 
-Score it from 1-10.
+Record an internal 1-10 quality score. It helps prioritize revisions and never
+stands in for caller review or promotion.
 
 ## Step 6: Refine if Needed
 
-If score < 9, write a targeted refinement prompt:
+If score < 9, write a targeted refinement prompt and repeat Step 4:
 
 - say exactly what was wrong
 - say what to preserve
@@ -266,64 +276,71 @@ Keep refinement feedback concrete:
 - `Make the off-target branch thinner and secondary`
 - `Use cleaner English labels: "Candidate sgRNA library", not "sgRNA library 23 bp"`
 
-## Step 7: Finalize And Verify
+The score is advisory. When the candidate is ready for a decision, show the
+current image and review notes to the caller. Do not promote it until the caller
+explicitly approves that candidate.
 
-When accepted, finalize INTO THE DISPLAY UNIT (the contract path; see the "Output:
-write into a display unit" section above and
-`../ref/display-unit-output-contract.md`). Pass
-`--display-unit <displays/displayNN-slug>` so the helper writes
+## Step 7: Promote after caller approval, then verify
+
+After the caller explicitly approves promotion, finalize INTO THE DISPLAY UNIT
+at the caller-supplied path (see `../ref/display-unit-output-contract.md`). Pass
+`--display-unit <unit-dir>` so the helper writes
 `assets/figure.png` + `float.tex` (only from the caller-approved caption + label + placement, never
 invented or changed) + `recipe/review_log.json`,
-then compile `preview.pdf` from the paper root.
+then compile `preview.pdf` from the caller's asset-reference base.
 
 ```bash
-# Paper target — write into the display unit (DEFAULT for a paper):
-python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" finalize \
-  --workspace <paper-root> \
-  --display-unit <paper-root>/displays/displayNN-slug \
-  --best-image <paper-root>/figures/ai_generated/figure_vN.png \
+# Write into the caller-supplied display unit:
+python3 <skill-dir>/scripts/paper_illustration_image2.py finalize \
+  --workspace <work-root> \
+  --display-unit <unit-dir> \
+  --best-image <candidate-image-path> \
   --caption "Paper-ready caption." --label "fig:slug" --placement "t" \
-  --score 9 --review-summary "Accepted after strict review."
+  --score <internal-score> --review-summary "Caller approved candidate <candidate-id> for promotion."
 
 # also drop the rebuild spec the helper does not author:
-#   displays/displayNN-slug/recipe/prompt.md  (final prompt + bridge job + score)
+#   <unit-dir>/recipe/prompt.md  (final prompt + bridge job + internal score)
 
-# compile the unit preview from the paper ROOT so displays/ paths resolve:
-pdflatex -interaction=nonstopmode -output-directory displays/displayNN-slug \
-  displays/displayNN-slug/preview.tex
+# compile from the caller's asset-reference base; write preview.pdf into the unit:
+WORK_ROOT=/path/to/caller-asset-reference-base
+UNIT_DIR=/path/to/caller-supplied-unit
+(cd "$WORK_ROOT" && pdflatex -output-directory "$UNIT_DIR" "$UNIT_DIR/preview.tex")
 
-python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" verify \
-  --workspace <paper-root> --display-unit <paper-root>/displays/displayNN-slug \
-  --json-out <paper-root>/displays/displayNN-slug/recipe/verify.json
+python3 <skill-dir>/scripts/paper_illustration_image2.py verify \
+  --workspace <work-root> --display-unit <unit-dir> \
+  --json-out <unit-dir>/recipe/verify.json
 ```
 
-Fallback (NO paper / scratch only): omit `--display-unit`; the helper writes the
-flat `figures/ai_generated/{figure_final.png,latex_include.tex,review_log.json}`.
+Standalone scratch use is outside a HAI-Pipe display unit. If explicitly
+requested, omit `--display-unit`; the flat output remains a scratch candidate
+and carries no Page Result, caller promotion, or accepted decision.
 
-The unit's `float.tex` is `\input` by `0-lifecycle/4-display/4-display.tex`, so a
-correctly filed unit appears in the combined gallery automatically.
+The caller owns the Page or Paper projection. After promotion, return the unit
+path, the compiled preview, and review notes. The caller records any `accepted:`
+decision; the renderer never ticks it.
 
 ## Repair Path
 
 If rendering succeeded but final artifacts were skipped, repair the integration
 explicitly.
-For a paper, pass `--display-unit` so repair lands in the unit (an
-existing hand-edited `float.tex` is preserved, not clobbered):
+Pass `--display-unit` so repair lands in the caller's unit (an existing
+hand-edited `float.tex` is preserved, not clobbered):
 
 ```bash
 python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" finalize \
-  --workspace <paper-root> --display-unit <paper-root>/displays/displayNN-slug \
-  --best-image <paper-root>/displays/displayNN-slug/assets/figure.png \
+  --workspace <work-root> --display-unit <unit-dir> \
+  --best-image <candidate-image-path> \
   --caption "..." --label "fig:slug" --placement "t"
 
 python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" verify \
-  --workspace <paper-root> --display-unit <paper-root>/displays/displayNN-slug
+  --workspace <work-root> --display-unit <unit-dir>
 ```
 
-(No-paper fallback: omit `--display-unit` to repair into flat `figures/ai_generated/`.)
+If this is an explicitly standalone scratch request, omit `--display-unit`; that
+output remains outside Page, View, and Paper acceptance.
 
 ## Output Structure
 
 The display unit layout (asset -> `assets/figure.png`, rebuild spec -> `recipe/prompt.md`
-+ `recipe/review_log.json` + `recipe/verify.json`) and the no-paper flat fallback are
-the shared contract: `../ref/display-unit-output-contract.md`.
++ `recipe/review_log.json` + `recipe/verify.json`) is the shared contract:
+`../ref/display-unit-output-contract.md`.

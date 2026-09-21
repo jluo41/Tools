@@ -45,7 +45,8 @@ When the Run does not yet exist:
    `status: planned` receipt atomically.
 7. Run `bash -n` on the Ticket and the structural checker on the Block.
 
-Do not create generated Results in the Task Folder.
+Resolve generated Results through `$OUTPUT_ROOT` rather than assuming the authored Task root.
+In self-serving mode the resolved projection physically lies inside the Task Folder; it remains generated output.
 
 ## Execute
 
@@ -57,7 +58,12 @@ Before launch:
   explicit skip flag is present;
 - confirm the Result path belongs to this `<task>/<run>` identity.
 
-Execute the exact Ticket. The Ticket writes `running` before expensive work,
+Execute the exact Ticket. New Tickets check their frozen contract, exclude
+concurrent writers and archive the previous attempt receipt before a retry.
+Existing Tickets without this history mechanism require an owner-supported
+adapter before rerun; never overwrite failed evidence to imitate a fresh Run.
+A complete Result is reused or replaced by a new commission.
+The Ticket writes `running` before expensive work,
 applies its declared Result gate, then writes a truthful terminal receipt.
 
 ## Return

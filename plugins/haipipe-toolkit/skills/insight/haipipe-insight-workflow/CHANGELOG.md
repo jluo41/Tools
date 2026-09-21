@@ -1,5 +1,26 @@
 # haipipe-insight-workflow · version history
 
+## 1.3.2 — 2026-09-20
+
+- Require the pooling verdict to cite the predeclared shared threshold source
+  and support `POOL`, `SPLIT`, or `UNDETERMINED` without forcing an incomplete
+  comparison. Route `UNDETERMINED` to whole-extract-only counsel or a licensed
+  partial-final W non-answer with Question-owned GI6 receipts.
+- Migration: preserve existing Results, verdicts, and settled cells; use the
+  new route on new or reopened partition-major work.
+
+## 1.3.1 — 2026-09-20
+
+- Align managed Writing and reused Evidence examples; specify canonical registration and exact GI5/GI6 handoff records. Permit governed static local input at GI2; update partition Task paths and move conditional policy to references.
+- Migration: preserve existing records; see the scoped migration reference and current handoff contract.
+
+1.3.0 · 260920
+- Replace the six-label execution model with bounded Run Specs, dependencies,
+  actual native inventory, frozen definitions, receipt indexing and completion.
+- Distinguish registration-only completion from answering work; preserve
+  human signature authority over exact signed payloads.
+- Migration: `ref/migration.md`; no live Board rewrite.
+
 1.2.3 · 260916
 - Fix four bare `ref/partition.md` references to the umbrella's real path.
 
@@ -86,7 +107,7 @@
 - THE RETROACTIVITY LAW (F5/F6, the round's biggest): every contract bump ships a migration note; default owe-on-next-touch; a bump adding a HUMAN GATE blocks immediately; the bumping desk computes the blast radius by grep and lists it by id; the register never flips backward — "settled under 0.2.0, owing under 0.3.0" stays visible without rewriting history.
 - Marks-and-receipts section (F12/F3/F4/F14): a token's spelling includes its spacing, canonical forward, live boards re-spelled only in authorized sweeps that re-pad tables; a mark annotates adjacent and is not an edit, so marking a fenced line is legal; 🧊 carries staling event AND clearing condition, and an over-ripe 🧊 is a finding; a 🟡-final flip leaves a second receipt on the ANSWERING page, because a citation invisible from the cited end cannot carry staleness.
 - Derived-header extension referenced (F9/F13, ruled in for-question 0.4.1): all on-register restatements, status words by fixed mapping, authorization is per page.
-- Door 0.3.0 in step: the four stale ✅/🚫-only settle spots gained 🟡 final (F1, the patch-split defect); quiet passes are DECLARED (F11); ⬜ annotations named as register-pen state (F10); the AUTO CHARTER section (standing per-run authorization: charterable vs never-charterable classes). for-wisdom 0.3.1 seats signed: as the block's last line and blesses record-on-stated-decision (F2). 
+- Door 0.3.0 in step: the four stale ✅/🚫-only settle spots gained 🟡 final (F1, the patch-split defect); quiet passes are DECLARED (F11); ⬜ annotations named as register-pen state (F10); the AUTO CHARTER section (standing per-run authorization: charterable vs never-charterable classes). for-wisdom 0.3.1 seats signed: as the block's last line and blesses record-on-stated-decision (F2).
 
 0.4.0 · 260828 · JL (fieldtest round 3's law bin — 10 entries, first automated run)
 - §Phase receipts reconciled with §Marks (Fr3, my own 0.3.0 split-rule defect, second instance): a 🟡-final settle leaves TWO receipts, stated in both places now.

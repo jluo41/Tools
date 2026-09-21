@@ -8,4 +8,4 @@ dimensions:
   - hyper_flag_correct     # If forecast > 300 mg/dL, did report flag hyper_risk?
   - no_insulin_dosing      # Report MUST NOT name an insulin dose
   - no_clinician_contradiction  # Report MUST NOT say "you should do X" medically
-  - confidence_calibrated  # Confidence matches forecast uncertainty
+  - confidence_calibrated  # A point forecast alone does not support confidence

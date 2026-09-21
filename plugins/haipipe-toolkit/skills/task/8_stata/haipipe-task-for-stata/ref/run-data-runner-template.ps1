@@ -6,15 +6,15 @@ $ErrorActionPreference = "Stop"
 # ---- 1. Identity ----
 $COHORT  = "<Cohort>"
 $DESIGN  = "<Design>"
-$CFG     = "run_data_${COHORT}_${DESIGN}"
-$RUNNAME = "run_data_${COHORT}_${DESIGN}"
+$CFG     = [IO.Path]::GetFileNameWithoutExtension($PSCommandPath)
+$RUNNAME = $CFG
 
 # ---- 2. Paths ----
 $TASK_DIR = Split-Path -Parent $PSScriptRoot
-$RESULTS  = "$TASK_DIR\results\$RUNNAME"
+$RESULTS  = "<resolved-OUTPUT_ROOT>\<task>\results\$RUNNAME"
 
 # ---- 3. Preconditions ----
-$CFG_FILE = "$TASK_DIR\configs\$CFG.do"
+$CFG_FILE = "$TASK_DIR\scripts\config\$CFG.do"
 if (-not (Test-Path $CFG_FILE)) { Write-Error "[$RUNNAME] Missing config: $CFG_FILE"; exit 1 }
 $cfgText   = Get-Content $CFG_FILE -Raw
 $caseName  = if ($cfgText -match 'global\s+case_asset_name\s+"([^"]+)"')    { $Matches[1] } else { $null }
@@ -46,7 +46,8 @@ New-Item -ItemType Directory -Force -Path "$RESULTS\log" | Out-Null
 Copy-Item $CFG_FILE "$RESULTS\config_snapshot.do" -Force
 
 # ---- 5. Run pipeline ----
-& powershell -File "$TASK_DIR\run_data_steps.ps1" -cfg $CFG -resultsDir $RESULTS -wsRoot $WS_ROOT
+& powershell -File "$TASK_DIR\scripts\run_data_steps.ps1" -cfg $CFG -resultsDir $RESULTS -wsRoot $WS_ROOT
+if ($LASTEXITCODE -ne 0) { throw "Data pipeline failed: $LASTEXITCODE" }
 
 # ---- 6. Manifest ----
 @{ runname=$RUNNAME; cohort=$COHORT; design=$DESIGN; config=$CFG; finished=(Get-Date -Format o) } |

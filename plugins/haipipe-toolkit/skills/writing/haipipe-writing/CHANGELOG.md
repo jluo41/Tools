@@ -1,3 +1,21 @@
+## 0.20.0 · 2026-09-20
+
+- Make Writing the common Section/Paragraph/file entry for draft, revise and evaluate.
+- Add the scoped request, selected-method catalog/adapters, shared four-axis rubric,
+  candidate-specific evaluation and bounded revision; Page retains lifecycle and acceptance.
+- Retire the standalone HAI humanizer after moving preservation/venue constraints,
+  provenance and useful rhythm percentages into shared Writing. External academic
+  humanization is selected through an available skill entry, never assumed installed.
+- Correct unsupported examples, current owner references, no-op records, tool usage
+  and legacy Paper Note checking claims. Keep Page clean Before/After and Board diffs.
+- Restore the misplaced 0.19.0 entry to the local release sequence; its stated
+  record-first behavior was already present in SKILL.md.
+
+## 0.19.0 · 2026-09-13
+
+- Keep the Writing worker record-first between interactive Steps and require
+  host approval before optional heavy work or delegated analysis.
+
 ## 0.18.0 · 2026-09-13
 
 - Clarify that interactive Page Steps record only the local editing reason;
@@ -297,7 +315,3 @@ division whose headings had just been repaired.
 Not built yet: an end-to-end driver for the `realize` and `rewrite` paths. Today
 the host or a person/model supplies the candidate prose and calls `wdiff apply`
 per sentence or rewritten run.
-## 0.19.0 · 2026-09-13
-
-- Keep the Writing worker record-first between interactive Steps and require
-  host approval before optional heavy work or delegated analysis.

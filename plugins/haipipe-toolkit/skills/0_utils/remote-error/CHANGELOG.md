@@ -6,6 +6,23 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.10.1] - 2026-09-20
+
+- Select the CMS profile only from confirmed project context; keep generic debugging engine-neutral.
+- Move CMS status and gate rules into the profile and preserve project ID conventions.
+- Make report sections conditional and reuse granted scope without forced questions or new sessions.
+- Distinguish local edits and checks from evidence of remote success.
+- Use valid language-specific comments or a diff fence for before/after snippets.
+
+## [0.10.0] - 2026-09-20
+
+- Treat READ, REASON, FIX, LINES, and LESSON as Steps inside one debugging
+  round; keep a session label separate from any remote Run ID.
+- Make the report template engine-neutral and keep paths, IDs, statuses, and
+  gates in the selected profile.
+- Define the remote-error chat sections as a scoped response-format exception.
+
+
 ## [0.9.0] - 2026-08-29
 
 The WHAT block must be the repo file, byte for byte. JL: "you didn't change

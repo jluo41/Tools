@@ -6,8 +6,8 @@ description: >-
   from questions and evidence needs to its intended argument, or to plan a
   new telling. Execution release and receipt handling use the Paper workflow.
 metadata:
-  version: "0.9.2"
-  last_updated: "2026-09-08"
+  version: "0.9.3"
+  last_updated: "2026-09-20"
   group-token: "Story<Letter>-<desk>-<idea-slug>"
   outline:
     mode: fixed
@@ -19,8 +19,9 @@ metadata:
 # /haipipe-paper-story · the prospective blueprint for one paper
 
 For a discussion or content-structure sketch, apply this contract directly.
-For an actual Page edit or build, load `haipipe-page`, the Page workflow and
-current phase, then this semantic contract. Their lifecycle records describe
+For a Page edit or build, load `haipipe-page`, `haipipe-page-workflow`, the
+current Run Workflow/Spec owner, `haipipe-paper-workflow`, then this semantic
+contract and relevant references. Their lifecycle records describe
 how the Story is authored; this skill defines what the Story says.
 For workflow, Section, or compiler integration, also read
 [ref/integration.md](ref/integration.md).
@@ -414,7 +415,7 @@ content, not whether the future study has finished.
 
 An Aim may be satisfied by clearly describing an unresolved research need;
 that does not answer the RQ or establish its E-row. CHECK remains the shared
-Page phase, not a ninth Content division or automatic approval.
+Page controller check, not a ninth Content division or automatic approval.
 
 ## ✅ Story CHECK · does the paper read clearly from start to finish?
 

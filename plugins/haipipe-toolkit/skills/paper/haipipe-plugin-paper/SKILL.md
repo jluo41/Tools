@@ -7,8 +7,8 @@ description: >-
   than one Page's outline. Trigger: Paper Plugin, paper plugin, paper console,
   paper work console, paper spaces, /haipipe-plugin-paper.
 metadata:
-  version: "0.2.2"
-  last_updated: "2026-09-18"
+  version: "0.3.0"
+  last_updated: "2026-09-20"
 ---
 
 # /haipipe-plugin-paper · the Paper-level work console
@@ -85,17 +85,17 @@ Paper-<Slug>/
 **Markdown is the only truth source (JL 260918).** The route is Markdown →
 HTML on every GET: every word a Space shows is read from a `.md` file of the
 paper, the task home, or the discovery home at that moment, so a Markdown edit
-is live on reload and the HTML is never an input to anything. The only
-non-Markdown files read are machine receipts their engines generate and nobody
-authors: `delivery/build-manifest.json` and `paper-build.toml`
-(haipipe-paper-assemble), each Run's `runtime.yaml`, a Discovery Task's
-`discovery.yaml`, and pair manifests. A receipt is shown, never edited.
+is live on reload and the HTML is never an input to anything. The route also reads authored configuration (`paper-build.toml`,
+`discovery.yaml`) and generated receipts (`delivery/build-manifest.json`,
+Run `runtime.yaml`, and pair manifests). Config stays with its owner; receipts
+are shown, never edited through this presentation layer.
 
 Every Space ends with a `backend Markdown` card that names the exact files
 it was read from (✓ present · ⬜ absent), so a reader can always trace a word
 to its file. The only words that are not read from a file are the plugin's own
-labels, briefs and empty-state hints, which live in `live/paper.py` and are
-versioned with the board skill.
+labels, briefs and empty-state hints. Page rendering copy lives in
+`live/paper.py`; drawer registration and its hint live in
+`assets/js/10-drawer/09-plugin-paper.js`. Both are versioned with the Board skill.
 
 `board.md`, Story00, StoryA, Section Pages, Round Pages, delivery receipts,
 and owner-native Run records remain authoritative. The Plugin stores nothing:
@@ -222,7 +222,7 @@ Idea pool         one collapsed Idea Card per idea (Discussion = ridea Run), the
                   Evidence Items with their Verified tick, the table fields,
                   and the division link. Source: the page's Ideas (ranked)
                   table when Content carries one, else the plan's
-                  `Idea <n>: <title>` divisions (a P0 page before Content)
+                  `Idea <n>: <title>` divisions (an Ideation Page before Content)
 Evidence items    outline/<stem>-evidence-items.md with each Verified tick;
                   novelty and prior-art checks are its CITE items
 Admission         workflow/selection.yaml · handoff/paper-ideation.yaml ·
@@ -367,36 +367,28 @@ Rounds & Venue    one card per Bc-<desk>-Round page (kind, received, due, base
 Delivery reads only what haipipe-paper-assemble wrote and what the pages
 carry; it builds nothing on open. The build is one command, shown in place.
 
-## 🔁 Workflow and Run-Type grammar
+## Workflow, Run Specs and control records
 
-`Workflow`, `Space`, `Workspace`, `Run-Type`, and `Run` are distinct:
+`haipipe-paper-workflow/ref/run-workflow.md` is the canonical Spec list and
+compatibility map. A Workflow Definition lists bounded Run Specs and routes;
+its Runtime lists actual native Runs and receipts. Run Types are reusable
+contracts. Spaces/Workspaces present these records. A Step stays inside a Run.
 
-```text
-Space / Workspace     where a record is viewed
-Workflow              how owned records move and which gate is tested
-Run-Type              a bounded kind of work with owner, input, output, and gate
-Run                   one concrete execution or human session of a Run-Type
-Result / receipt       what that Run actually left behind
-```
+The map at `ref/space-mapping.md` projects the canonical Spec templates and
+explicit control actions across the five Spaces. It does not allocate work
+or prove execution. Resolve actual target, owner, type, dependency and receipt
+from the Runtime/native owner; keep planned, managed and reused records distinct.
 
-The Paper Plugin must use `Run-Type` for executable coordination rows. It must
-not label these rows as generic `Phase` records in the UI:
+Paper judgment Specs are `idea`, `claim`, `obligation`, and `narrative`; shared
+native Specs are `support`, `structure`, `write`, `evidence`, and `deliver`;
+Paper delivery/response Specs are `compile` and `response`. Selection (I3),
+setup, G0–G5, sync and Story/Section routes remain control actions. In particular,
+`paper.section.route` records G3 and links the selected Section Specs; it is
+not a missing extra Run or a replacement for Section writing.
 
-| Run-Type | Owner / route | Expected handoff |
-|---|---|---|
-| `paper.setup` | Board setup | confirmed folder, Page, and per-Section session plan |
-| `paper.ideation.generate` | Story00 / Ideation | candidate Idea records |
-| `paper.ideation.test` | Ideation | novelty, feasibility, and evidence checks |
-| `paper.ideation.select` | Story00 → StoryA | one human-approved admission |
-| `paper.story.shape` | StoryA | C1–C8 prospective blueprint |
-| `paper.story.review` | StoryA / claims | checked claim and evidence boundary |
-| `paper.story.route` | Story C6–C8 | Discovery, Task, and Section routes |
-| `paper.section.route` | Story → Section Page | independently releasable Section work |
-| `paper.compile` | Paper assembler | DRAFT or submission-ready delivery receipt |
-| `paper.round.respond` | Round → Story/Section | one checked disposition per concern |
-
-These rows are planned Run-Types or Run Specs until a native owner allocates
-an actual Run. A visible row is not proof that execution occurred.
+Keep the definition view separate from allocated native Runs. A visible row
+never creates a receipt. The old `paper.*` Run-Type labels remain explained by
+the canonical compatibility table; do not use Phase records as workflow units.
 
 ## 🚦 Gates and ownership
 

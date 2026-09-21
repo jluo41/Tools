@@ -1,247 +1,115 @@
 ---
 name: haipipe-insight-workflow
 description: >-
-  The InsightBoard Workflow Runtime over six RunType-owned Folder kinds: I0 Meta →
-  I1 Question → I2 Data → I3 Information → I4 Knowledge → I5 Wisdom. Owns
-  GI0-GI6 runtime control keys, derived partition-by-DIKW Question Groups, the
-  CELL frontier, climb order, dispatch, receipts, and stops; each RunType skill owns both Folder faces and
-  its plugins. Use to run or inspect an InsightBoard. Trigger: insight
-  workflow, climb ladder, next rung, frontier cell, /haipipe-insight-workflow.
+  Plan and execute an InsightBoard as bounded owner-native Runs
+  with explicit dependencies, Results, receipts, and completion rules. Owns
+  GI0-GI6 assertions, question/partition projections, Run dispatch, and
+  person-signed handoff settlement. Use to run, resume, or inspect an
+  InsightBoard, answer its registered questions, or report blocked work.
 metadata:
-  version: "1.2.3"
-  last_updated: "2026-09-16"
+  version: "1.3.2"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# /haipipe-insight-workflow · run the cell, record control, mint the next RunType
+# /haipipe-insight-workflow · execute Runs and record their dependencies
 
-Load `haipipe-insight` and `haipipe-folder` first. This is the only authority
-for I0-I5 RunType ordering and GI0-GI6 control keys, and it signs the W handoff
-that `haipipe-design-workflow` takes as its Brief.
-This workflow never edits a Page Face itself; the selected RunType delegates Page
-work to `haipipe-page-workflow`.
+Load `haipipe-insight`, `haipipe-folder`, and `haipipe-run`. This controller
+owns the selected Run Spec graph, requested answer targets, GI0-GI6 assertion
+policies, and aggregate Runtime. Folder skills own their resources; native
+Run owners keep their Tickets, Results, receipts and closure rules. The
+controller verifies and records a person-signed W handoff plus GI6 settlement.
+Design consumes its exact signed version as Insight input and owns its own Brief.
 
-Read `../haipipe-insight/ref/question-groups.md` before registration, status,
-or dispatch, and `../haipipe-insight/ref/page-v2-adapter.md` before running or
-checking a rung Page. These references own the two-dimensional group projection
-and the boundary between Page CLOSE and GI advancement.
-Read `../../task/haipipe-workflow/ref/workflow-runtime.md` when creating,
-resuming, or auditing the board's `workflow_runtime_id` and its control records.
+Read [`ref/run-workflow.md`](ref/run-workflow.md) before planning, dispatch,
+resume, or status; it defines concrete Spec templates, native Run inventory,
+storage, control records and completion. Read
+`../haipipe-insight/ref/question-groups.md` for register projections,
+`../haipipe-insight/ref/page-v2-adapter.md` for Page/evidence boundaries, and
+`ref/migration.md` when encountering old paths, fields or receipts.
 
-This is the Application InsightBoard workflow. Task-side topic instances use
-the item/checkpoint workflow table owned by `haipipe-page-insight/ref/`.
-Independent questions there are item Runs inside one Page, not this ladder's
-separate rung Folders.
+Task-side topic/data instances keep `haipipe-page-insight`'s `riNN` item
+workflow. An InsightBoard Runtime references an accepted Task item Result as a
+Supporting Run dependency; it does not copy or recount that execution.
 
-## 🔤 Terminology law
-
-An **Insight RunType** is one domain rung, `I0`-`I5`: Meta, Question, Data,
-Information, Knowledge, or Wisdom. The numeric label identifies reusable
-RunType vocabulary, not a runtime instance. `GI0`-`GI6` are stable runtime
-control keys; they are assertions/evaluations, not a second Gate identity.
-`workflow_runtime_id` identifies one board execution, while concrete work
-keeps its owner-native Run identity. Scope, ask, observe, derive, claim, and
-hand off are prose aliases only.
-
-## 🧭 Workflow Runtime
-
-The Application Insight workflow has one aggregate Runtime per execution:
+## Workflow model
 
 ```text
-Workflow Definition = I0..I5 RunTypes + Run Specs + GI policies + Routes
-Workflow Runtime    = workflow_runtime_id
-                      + concrete owner-native Runs
-                      + GI evaluations + route decisions + CELL frontier
-Question Group      = partition × DIKW target (derived view, never a Run)
+Workflow Definition = bounded Run Specs + dependency/Route graph + completion rules
+Workflow Runtime    = workflow_runtime_id + actual owner-native Run instances
+                      + receipt references + control records + ready/waiting work
+Question Group      = partition × DIKW target, a derived scheduling/status view
 ```
 
-The Runtime opens or resumes one `workflow_runtime_id`, selects one runnable
-Question Group/CELL, materializes the owner-native Run when work is needed,
-records the GI evaluation and route, then advances or holds the frontier. A
-Page workflow pass may be nested inside a Run; it is not silently promoted to
-an Insight Run or counted as a new Gate.
+There is no Phase object or current-Phase state. Meta, Question, Data,
+Information, Knowledge and Wisdom are Folder kinds, not Run Types. Their
+contracts describe inventory, registration, observations, derivations, claims
+and counsel. Select work from missing targets and dependencies; a Folder may
+need zero, one, or several native Runs. A Run Spec has one bounded target and
+close rule; only an allocated native Ticket and receipt establish a Run.
 
-## 🗺 The six Insight RunTypes · legacy phase labels
+The runtime enumerates Supporting Runs, Page Evidence Runs and explicitly
+commissioned Page Writing/Delivery Runs. Page passes, registration, GI checks,
+signature recording and settlement are controller/resource actions without
+Run ids. A control-only execution may have an empty Run inventory. Completed
+Results are reused by exact address; a Page pass never becomes a wrapper Run.
 
-Each RunType is represented by the Folder kind it owns. Its RunType skill
-carries both faces, plugin profile, control policy, and handoff; the ladder is
-the domain spine. Existing `phase` fields remain compatibility/display labels.
+## 🚚 Dispatch by ready Run
 
-```text
-RunType                   authority page              what the RunType produces
-──────────────────────────────────────────────────────────────────────────────
-I0 Meta (scope)           MT00-meta                   the inventory: sources, grain,
-                                                      window, freshness, limits ·
-                                                      the PARTITION REGISTER
-I1 Question (ask)         MT01-MT04 registers         the question matrix: one row
-                          ← the scoreboard hub        per question, one column per
-                                                      partition, a state per CELL
-I2 Data (observe)         the D page                  run-bound observations, every
-                                                      value bound to a named Run Result
-I3 Information (derive)   the I page                  rates and contrasts from
-                                                      named D rows
-I4 Knowledge (claim)      the K page                  propositions with strength,
-                                                      rivals, boundary
-I5 Wisdom (hand off)      the W page                  counsel + the SIGNED Design
-                                                      Handoff
-   ↺ I1→I2→I3→I4→I5→I1 is the CLIMB LOOP · exits through the register at GI6
-```
+Use `ref/run-workflow.md` as the execution procedure. Resolve the request's
+cells, reuse exact accepted inputs, and freeze a concrete Run Spec graph.
+Prefer already-computed targets (`⬜ calc`) where no new computation is needed.
+Select a ready native Run by its target and dependencies; load the exact worker
+and Folder owner. Before dispatch, verify its Ticket, release, input pins and
+Result/receipt paths. A missing input is a named blocker.
 
-Two positions deliberately did not become RunTypes: the pooling verdict is I4
-Knowledge work in X and part of GI4; SETTLE is I1 register work and GI6. A
-position with no independently owned Folder kind is a control record or
-Task-Face act.
+A bounded Page pass uses `mode: copilot` and reports its native child Runs to
+the aggregate Runtime. It allocates no RP merely because the controller ran;
+an RP requires an actual selected writing goal. The dispatcher can also perform
+an explicit control-only action, such as registration or a CHECK over an
+existing Page. Report that action without inventing a Run.
 
-Each RunType performs one EPISTEMIC OPERATION and each GI control is an
-AUTHORITY TRANSFER: passing GI<n> is the moment the rung below becomes citable
-and nothing else does — the Climb Law read as a process instead of a
-structure. That is why the aliases are verbs of knowing (scope, ask, observe,
-derive, claim, hand off), not verbs of doing.
+After native Results and receipts land, evaluate the relevant Page/GI
+conditions. Settle one cell only after its Page CHECK/CLOSE and exact predicates
+pass. When requested answer targets are terminal, requested control actions meet
+their own acceptance rules, and the completion policy passes,
+close the Runtime. A required unresolved gate leaves it `held`, never complete.
 
-## ✚ Question Groups · partition × DIKW target
+## Folder ownership
 
-The board exposes a derived Question Group for each eligible intersection of a
-partition scope and requested rung: `QG-F-D`, `QG-B-I`, `QG-C-K`, or
-`QG-F-W`. The group is a scheduling/status view only. Its members are Queue
-cells whose question target matches its rung and whose column matches its
-partition. MT00 plus MT01-MT04 remain the record; no group Folder or state file
-exists.
+| Kind | Owner | Persistent resource |
+|---|---|---|
+| Meta | `haipipe-insight-meta` | MT00 source inventory, grain, window, freshness, limits and partition register |
+| Question | `haipipe-insight-question` | MT01–MT04 stable questions and per-partition Queue cells |
+| Data | `haipipe-insight-data` | observations from exact accepted source evidence |
+| Information | `haipipe-insight-information` | reproducible derivations from accepted parent rows |
+| Knowledge | `haipipe-insight-knowledge` | bounded claims, rivals, strength and pooling verdict |
+| Wisdom | `haipipe-insight-wisdom` | contextual counsel and person-signed Design Handoff |
 
-The CELL remains the atomic transition, so `QI5` may be ✅ in `QG-F-I`, 🟡 in
-`QG-B-I`, and ⬜ in `QG-D-I` at once. A group may batch visibility but never
-advance all members together. "What RunType is this board in" therefore has no
-one-number answer: report the Question Groups and their member-cell frontiers.
+Each owner selects its native Run work through `ref/run-workflow.md`; ownership
+alone creates no Run. A pooling verdict is Knowledge about exchangeability and
+ends as `POOL`, `SPLIT`, or a supported `UNDETERMINED` result. Missing or stale
+inputs keep GI4 held; a completed but inconclusive comparison is not forced
+into either branch.
+SETTLE is a Question-owned resource update. GI0-GI6 are stable predicate keys,
+not execution positions. Passing a predicate authorizes only the exact
+resource/version/target named in its receipt.
 
-A subgroup passes through three moments, each owned by one RunType:
+## Question Groups and partitions
 
-```text
-noticed   I3/I4   an I page's partition column diverges, or a K boundary names a cut
-asked     I1      a register row: does this cut deserve its own ladder?
-born      I0      one MT00 partition-register row (letter · filter · config) +
-                  one group folder beside X · the door's `partition` verb
-```
+A Question Group is a derived `partition × DIKW target` view of Queue cells;
+its state never allocates a Run or settles its members together. Load
+[`ref/partition-policy.md`](ref/partition-policy.md) for audience eligibility,
+COLUMN/X/F-only routing, pooling, or late partition arrival. MT00 alone
+registers a partition; Question owns its asks and cell state. X owns comparisons,
+has no raw D rows, and every partition-major W depends on the current verdict.
 
-The ladder notices, the register asks, Meta births — a partition is born at I0 and nowhere else, and it is a CONFIG, never a code change (`../haipipe-insight/ref/partition.md`).
+## 🔁 Semantic dependencies across answer targets
 
-**The partition test, at I0.** A partition is an AUDIENCE stratum: a grouping of the unit the counsel is FOR — in an SMS application, the humans receiving it. Not every cut of the data qualifies; birth requires three yeses, each mechanically checkable:
-
-```text
-① disjoint + stable    no counsel unit sits in TWO groups, and none drifts across a
-                       boundary mid-window · partitions need NOT be exhaustive: a unit
-                       in no group is read by the template alone, and a coverage gap
-                       is legal where an overlap never is
-② exogenous            not a knob the design chooses (send time, variant, channel
-                       are the ARM axis: the design bets on them, nobody serves them)
-③ addressable          the DesignBoard could give this group its own DS page
-                       (audience × job × venue) — a group no design could target
-                       separately can never SPLIT, so it never needed its own ladder
-```
-
-The test applies to SUBGROUP partitions only: the template F deliberately contains them all, fails ① by construction, and is seated on MT00's partition register as the TEMPLATE row, not as a partition that passed.
-
-The failures route, they are not discarded — and TIME is the canonical case, wearing three guises with three existing homes:
-
-```text
-time as send-knob      weekday/hour of send        fails ② → arm axis, an I column
-                                                   (A00's QI4/QI9), a design bet
-time as pattern        engagement over the window  an I column, never a group
-time as epoch          a new window / next round   a NEW EXTRACT → a NEW InsightBoard
-                                                   (the one-dataset law), with MT00's
-                                                   freshness rule owning the seam
-```
-
-The second named case is the COVARIATE, and it fails ① rather than ②:
-
-```text
-a covariate            a ZIP attribute, an income     fails ① → an I COLUMN, never a
-                       band, a drug class, an         group · `../haipipe-insight/ref/partition.md` names
-                       exposure history               the failure: a board past a
-                                                      handful of audiences is almost
-                                                      always misreading covariates as
-                                                      audiences
-```
-
-A covariate cuts ACROSS every audience instead of partitioning it, so its rows are already counted in the groups it overlaps and no arithmetic can separate them. The tell is mechanical and now checked (`partition-cross-cutting`): a candidate filtering on a column NO sibling partition filters on shares no axis with them, which is what slicing across looks like on disk. Registered anyway, it corrupts the X group specifically, because a contrast that subtracts mirrored I rows double-counts the people two overlapping groups share.
-
-**Clause ① has an arithmetic proof, and it is now a checker rule.** Disjoint subgroups of ONE extract cannot cover more than that extract, so partition percentages summing above 100% is a breach nobody has to argue about (`partition-sum-over-100`). A00 registered two covariate partitions on 260828 and ran to 136.79% with the board checker green for the whole window; a human reader caught it, which is the case these two rules exist to remove.
-
-The deep reason: the partition axis exists so the pooling verdict can ask "one counsel or several," and counsel is PER-AUDIENCE — the insight lane's partition columns mirror the design lane's DS-page audience axis. A dimension that could never become an audience can never split the counsel, so making it a partition buys mirrors nobody will consume.
-
-**The routing test, at I1.** The two axes never mix inside one question because registration classifies it once, by one mechanically checkable property — how many partition groups its `what-would-answer` field needs rows from:
-
-```text
-rows from ONE group      → a COLUMN question: asked identically of every partition,
-                           one cell per column, answered on each partition's own ladder
-rows from TWO OR MORE    → an X question: registered once, dot cells on every partition
-                           column, answered only in the X group — "how far apart", "do
-                           they genuinely differ", "pool or split"
-rows from the EXTRACT    → an F-ONLY question: a property identical in every partition
-itself, no cut of it       (the variant catalog, the extract's shape, what a next round
-                           should learn) · answered ONCE on the template ladder and
-                           refused `🚫 F-only` on every partition column, because
-                           re-deriving an invariant per partition invites drift
-```
-
-A question id is partition-free either way (`QI5` spans all columns; there is no
-`QI5-B`). Its B cell belongs to `QG-B-I`; its F cell belongs to `QG-F-I`.
-"Subgroup" is never a kind of question: it is either the partition axis of a
-Question Group or the subject of an X question about several groups. X is a
-derived cross scope, and `QG-X-D` is invalid because X owns no raw rows.
-
-**The instrument shadow.** Both tests above have a mechanical shadow in the task layer, because every ladder topic is backed by ONE task folder and the reuse pattern must agree with the classification:
-
-```text
-a COLUMN question   the SAME folder runs once per partition config — one call may
-                    even produce every column's numbers at once (A00's ⬜calc cells)
-a PARTITION         configs/<partition>.yaml over the same code · needing DIFFERENT
-                    CODE for a subgroup disproves the partition or the topic
-an X question       its OWN folder, reading the siblings' outputs — a contrast is
-                    a new derivation, never a re-filter
-a NEW EXTRACT       the next board re-runs the SAME folders under a new source
-                    config — the topic library is an instrument bank that travels
-```
-
-The split underneath: the task folder holds the CONVERGENT reasoning (code, one logic for every group and every extract), the page holds the DIVERGENT reasoning (this group's numbers, read in this group's context). Computation is reused; interpretation never is — a mirror page restates no sibling's prose, it re-reads its own numbers.
-
-**How the ladders cross.** Only in X, and X is a mini-ladder with no D of its own — its raw material is the siblings' MIRRORED I rows, which is why its two contract exceptions exist:
-
-```text
-XI  contrast        I-from-mirrored-I: the one legal same-rung citation
-XK  heterogeneity   claims the difference, with strength and boundary
-XK  pooling verdict K-from-K: a claim about claims — POOL or SPLIT
-                    └─▶ conditions EVERY W page: under POOL the non-template W
-                        defers by id and exports no handoff; under SPLIT the
-                        partition W may counsel its own action
-```
-
-**The escalation ladder.** A subgroup earns first-class standing in three steps, each with its own trigger, and skipping one is the defect:
-
-```text
-L0  a segment column inside an I page      rung-major default · costs one column
-      │ trigger: readers keep asking K questions about the segment
-L1  a PARTITION with its own ladder        partition-major · born at I0 · mirrors F
-      │ trigger: a SPLIT verdict + the subgroup has its OWN consumer
-L2  a child InsightBoard                   the verdict page is its birth certificate
-```
-
-**Late arrival** (a partition added after siblings have climbed) has four consequences, all mechanical:
-
-```text
-① its cells are born ⬜ and NEVER inherit a sibling's refusal — a 🚫 reason is
-  re-earned per partition (A00, 260827: three `thin` marks did not survive the
-  D partition's arrival; the defect class's sixth instance)
-② the X group REOPENS: contrast, heterogeneity and the pooling verdict must be
-  recomputed with the new column
-③ a reopened verdict stales every W page's verdict citation, template included —
-  the W pages are re-conditioned, and re-signed if their counsel moves
-④ every OTHER partition's D/I/K pages are untouched
-```
-
-A partition may become its own board only by citing a SPLIT verdict; `../haipipe-insight/ref/partition.md` stays the grammar's single source.
-
-## 🔁 The climb, and its one cross-chain order
-
-The door's lap (`haipipe-insight` §The lap, step by step) is HOW a cell moves; this file owns WHERE a cell may move to. Within one chain the order is fixed by the Climb Law: D before I before K before W, no rung skipped. Across chains, a rung-major board has no constraint; a partition-major board has exactly one, because X consumes the mirrored ladders and every W cites the verdict:
+The Climb Law constrains evidence dependencies: I cites accepted D, K cites
+accepted I, and W cites accepted K. It does not require a new Run for an
+already accepted parent. A partition-major board adds a dependency because X
+consumes mirrored results and every W cites the pooling verdict:
 
 ```text
 F's D/I/K first ─▶ each partition's D/I/K mirror, in parallel ─▶ X group
@@ -251,78 +119,56 @@ F's D/I/K first ─▶ each partition's D/I/K mirror, in parallel ─▶ X group
                                                  included, all citing the verdict
 ```
 
-This is the only authoritative Insight order; the crossing workflow delegates here.
+Compile these prerequisites into the selected Run Specs. They constrain when
+a target is ready; independent work may proceed concurrently under its owner.
 
-### Pre-climbed external parent · Task RF bridge
+### Task RF bridge
 
-One narrow bridge preserves the Climb Law without duplicating a
-consumer-neutral chain. A settled Task Insight item Result has already climbed
-`D → I → K → W → RF` under its own Task-only contract. An Application may use
-that completed chain as an **external parent** for a local I5 Folder:
-
-```text
-Task instance/riNN@version/RF    Application InsightBoard          DesignBoard
-R + new dataset → RI → D/I/K/W/RF ─▶ I1 QW → I5 contextual W ─✋─▶ X1 handoff
-```
-
-This is not permission to skip a rung inside an Application chain. It is a
-cross-scope authority bridge with five mechanically readable assertions:
-
-1. the source is a task-side Insight instance and the selected item execution
-   has `target: wisdom`;
-2. that item Result is independently CHECK-accepted against its exact source
-   versions, with current applicability; unrelated open items do not block it;
-3. the borrowed RF traces through named D/I/K/W rows in that exact Result;
-4. the Application I1 QW row records instance, `riNN`, base-R pointer, frozen
-   dataset binding, execution version, RF id, Result path/hash, and the local
-   I5 W Folder; a bare R is not an RI evidence address;
-5. the W Folder's Evidence Item graph binds that exact Supporting Result and
-   completes its local Evidence Run. Page navigation alone is not evidence.
-
-Legacy one-chain Page/RF references require a verified exact alias using
-`haipipe-page-insight/ref/migration.md`; never select a new item by text or
-`latest`.
-
-When all five hold, GI4 reads the external chain as the K/W parent and no
-local I2-I4 Folders are minted: their evidence authority remains in the Task
-Page. I5 still performs the Application operation—applicability, counsel,
-forbidden overreach, `serves:`, and human signature—and GI6 still settles the
-I1 row. The RF itself never satisfies X1 or any Design gate. A stale,
-below-Wisdom, incomplete, or untraceable item Result fails the bridge assertion
-and routes through the ordinary local climb.
+For a Task Wisdom RF input, load [`ref/task-rf-bridge.md`](ref/task-rf-bridge.md)
+and check all five assertions. The exact accepted Task item owns its D/I/K/W
+chain; local Wisdom adds board applicability and counsel, then owes GI5 and
+Question-owned GI6. A bare R, below-Wisdom RF, stale Result, or incomplete chain
+cannot satisfy this bridge.
 
 ## 🚦 Runtime control keys · GI0-GI6
 
-There is no standalone Gate object. Each GI key names a testable assertion;
-the Runtime records its actual evaluation, authority, evidence, and resulting
-route. Controls are per-CELL except GI0, which is per-board, and GI4's verdict
+Each GI key names a testable resource assertion. Its owning Folder log records
+the evaluation, authority, exact evidence and resulting action; the Runtime
+indexes it under `resource_controls`. Run-owned gates/routes remain on native
+Run receipts and are indexed under `control`. No GI check gets a synthetic Run id. Controls are per-CELL except GI0, which is per-board, and GI4's verdict
 clause, which is per-column-set.
 
 ```text
-GI0  Meta → Question      MT00 has Page CHECK/CLOSE and its sources resolve through
+GI0  inventory ready      MT00 has Page CHECK/CLOSE and its sources resolve through
                           accepted Results or governed frozen local inputs · the four
                           registers exist · on partition-major the partition register
                           and the shared-threshold pointer exist
-GI1  Question → Data      the cell's row carries target, raiser, what-would-answer,
+GI1  question registered      the cell's row carries target, raiser, what-would-answer,
                           and a state cell · its partition group exists on disk
-GI2  Data → Information   the D Page reached CHECK/CLOSE; every value is bound by
-                          path to an accepted source Result backed by a named run,
-                          represented as a Supporting Result, frozen Local Input,
-                          and ready typed local Result
-GI3  Information → Knowledge   the I Page reached CHECK/CLOSE and derives only from
+GI2  observations citable   the D Page reached CHECK/CLOSE; every value is bound by
+                          path to either accepted Supporting Result → frozen Local Input →
+                          ready typed local Result, or governed static local source →
+                          frozen Local Input → ready typed local Result. The latter
+                          owes no Supporting Run; Data owns both acceptance branches
+GI3  derivation citable   the I Page reached CHECK/CLOSE and derives only from
                           exact version/hash-pinned D parent rows (X contrast:
                           mirrored I rows, the one exception)
-GI4  Knowledge → Wisdom   the local K Page reached CHECK/CLOSE and cites exact
+GI4  parent/verdict ready   the local K Page reached CHECK/CLOSE and cites exact
                           version/hash-pinned I parent rows · OR the pre-climbed
-                          external-parent bridge passes all five assertions above ·
-                          on partition-major the X group's pooling verdict exists and
-                          is current against the partition register — a late
+                          external-parent bridge passes all five bridge assertions ·
+                          on partition-major the X group's current POOL, SPLIT, or
+                          UNDETERMINED verdict cites the predeclared shared thresholds
+                          and is current against the partition register — a late
                           partition voids this gate
-GI5  Wisdom → signed      ✋ the handoff's `signed:` row reads `✅ <initials> <YYMMDD>`
+GI5  handoff authorized      ✋ the handoff's `signed:` row reads `✅ <initials> <YYMMDD>`
                           (haipipe-insight-wisdom) · `⬜` blocks · no machine
-                          writes it · under POOL a non-template W closes as a DEFERRAL
-                          by id, exports no handoff, and owes no signature
-GI6  settle               the register cell flips ✅, or 🚫 with a reason, or 🟡 <page>
+                          writes it · receipt pins the exact Page and dependencies
+                          (`ref/handoff-record.md`) · under POOL a non-template W closes as a DEFERRAL
+                          by id, exports no handoff, and owes no signature · a
+                          licensed UNDETERMINED partial-final non-answer likewise
+                          has no GI5 pass or Design handoff; Question records GI6
+                          under its two-receipt rule
+GI6  answer settled               the register cell flips ✅, or 🚫 with a reason, or 🟡 <page>
                           final when the page states why the remainder cannot close
                           (haipipe-insight-question) — always citing the closing page ·
                           gaps remain → the next lap
@@ -334,153 +180,92 @@ its Local Run when the focal evidence changes.
 
 The DERIVED-HEADER rule (`haipipe-insight-question`) covers every on-register
 restatement of the Queue — headers, Diagrams, Openings, status words, and counts.
-Reconciling one is I1 Task-Face work citing the Queue.
+Reconciling one is Question Task-Face work citing the Queue.
 
-**The two Insight cross-RunType authority controls never have an auto mode**. A new
+**New computation release and handoff signing remain person-reserved.** A new
 Supporting computation is released through the owning Page Evidence Item's
-SURVEY `Decide`; there is no separate active Probe phase or lane. Handoff
+SURVEY `Decide`; legacy Probe records are read-only history. Handoff
 signing is GI5. Page Workflow may also require local Shape approval, CITE
 verification, or Page acceptance while authoring that Folder. Those nested
 Page-Face controls may pause a copilot pass, but they do not create extra Insight
 transitions or GI numbers. Every dispatch pins `mode: copilot`. A blocked gate
-is a clean stop: report the Question Group, cell, waiting artifact, and the
-person's owed decision.
+is a clean stop: report the affected Run id/Spec, target cell, exact waiting artifact and
+person's owed decision; preserve other independently ready work in the frontier.
 
-For the shared Page Workflow's owner RULING, I0-I4 declare none beyond their
-mechanical GI closure; I5 reuses the GI5 signature receipt. This never creates
+For the shared Page Workflow's owner RULING, Meta, Question, Data, Information and Knowledge declare none beyond their
+mechanical GI closure; Wisdom reuses the GI5 signature receipt. This never creates
 a duplicate human tick. Historical Probe records remain read-only migration
 input.
 
 ## 🗃 Group mapping
 
 ```text
-I0        0-MT-meta/MT00-meta/
-I1        0-MT-meta/MT01-MT04/
-I2-I4     rung-major:       1-D-data/ · 2-I-information/ · 3-K-knowledge/
+Meta        0-MT-meta/MT00-meta/
+Question        0-MT-meta/MT01-MT04/
+D/I/K     rung-major:       1-D-data/ · 2-I-information/ · 3-K-knowledge/
           partition-major:  <N>-<L>-<partition>/ with the partition letter prefixed
                             to every page id · X-cross/ for the contrast and verdict
                             (index-free, letters sort last · legacy: 9-X-cross/)
-I5        rung-major 4-W-wisdom/, or each partition group's W page
+Wisdom        rung-major 4-W-wisdom/, or each partition group's W page
 ```
 
 These are disk groups, not Question Groups. The derived projection cuts across
 them: an MT02 column exposes `QG-<partition>-I`, while partition group B exposes
 `QG-B-D`, `QG-B-I`, `QG-B-K`, and `QG-B-W`.
 
-## 🚚 Dispatch: one page at a time
-
-```text
-select   the earliest RUNNABLE Question Group, then one frontier cell whose gate
-         is open and whose inputs exist; prefer cells
-         the register marks `⬜ calc` (computed, unauthored — I1 Question)
-         before cells needing new runs, because authoring is cheaper than running
-load     the matching haipipe-insight-<folder-kind> RunType skill
-run      one haipipe-page-workflow PASS over that ONE Page inside the current
-         Workflow Runtime · mode: copilot always;
-         allocate no rpNN unless a human selected an interactive Page-writing goal
-fold     move the register cell ONLY after Page CHECK emits CLOSE and the matching
-         GI assertion passes; a Page Run close changes neither condition
-         · every other terminal is a named
-         non-settlement and the cell does not move
-repeat   until every cell is settled or a gate blocks
-```
-
-A cell whose inputs do not exist is not runnable, and naming WHY is this skill's answer, never scaffolding the missing input silently.
-
 ## 🧾 Runtime records
 
-A transition leaves one dated Runtime control record in the granting Folder's canonical
-`outline/<stem>-log.md` — except a 🟡-final settle, which leaves TWO (§Marks):
-MT00 records GI0 and every partition birth; the Question register records GI1
-and GI6; the closing rung Folder records GI2-GI4; and the W Folder records GI5.
-No embedded Page log section and no separate receipt store is authoritative.
+The aggregate envelope and frozen definitions live under
+`<board>/_runs/insight/<workflow_runtime_id>/`; native Tickets, Results and
+Run receipts remain in their owners' stores. The Runtime indexes rather than
+duplicates their authority. `ref/run-workflow.md` defines the envelope.
+
+A GI/resource update leaves one dated control receipt in the granting Folder's
+`outline/<stem>-log.md`, except a 🟡 final settlement, which leaves two (see migration rules).
+MT00 records GI0 and partition registration; Question registers record GI1 and
+GI6; answer Folders record GI2-GI4; Wisdom records GI5. Include the runtime id,
+exact target, evidence/version/hash, assertion, actor, outcome and next action.
+For GI5/GI6 and Design eligibility, use [`ref/handoff-record.md`](ref/handoff-record.md).
+Link any consumed native Run receipt; the Folder log cannot replace it.
 
 ## ⏱ Advancement is never scheduled
 
 A gate test may be run any time; a gate may only be DECLARED passed by the human tick or CHECK verdict it names. Nothing here may be wired to a timer or a loop that advances cells on wall-clock time.
 
-## 🔀 Resolving the Runtime frontier
+## 🔀 Status
 
-Per cell: report the current RunType plus the highest GI control whose
-assertion currently holds. Per Question Group:
-derive `EMPTY | RUNNABLE | BLOCKED | SETTLED` from its cells. Per board: read
-the register matrix whole and include the `workflow_runtime_id`. A board-level
-scalar RunType is a lie this workflow refuses to mint; the crossing workflow
-reports the group/cell frontier unchanged.
+Report the `workflow_runtime_id`, frozen definition revision and actual Runs:
+full native id, Spec, owner, target, managed/reused participation, state, exact
+Result, receipt, dependencies and next action. Unallocated Specs have no Run id.
+List control-only work and unresolved person decisions explicitly.
 
-## 🌐 The machine is content-free
+Then project Question Groups as `EMPTY | RUNNABLE | BLOCKED | SETTLED` from
+their cells and ready/waiting work. A CELL/Folder kind never substitutes for a
+Run identity. Multiple cells may cite the same Run; count it once.
 
-Nothing in this file names SMS, messages, or any domain. Domain content enters at exactly three declared points, and substituting all three re-instantiates the whole machine unchanged:
+## Version changes and historical marks
 
-```text
-① the EXTRACT       MT00: source, unit, grain, window — a CGM stream, a wearable
-                    feed, a claims table are all one `source:` line away
-② the QUESTIONS     MT01-MT04: what is asked is the board's; Question Groups are
-                    their derived partition × target-rung projection
-③ the VENUE PACKS   the design side's 8 packs (sms · email · dashboard · report ·
-                    push · reminder · checklist · ui-card) — the counsel's outlet
-```
-
-The counsel UNIT is whatever MT00's unit-and-grain declares — a patient for SMS, a patient or a patient-event for a wearable board, a provider for a provider-facing one — and the partition test reads "audience" against THAT unit. An observational extract with no arms changes only which questions the registers hold; the Climb Law, the gates, and the verdict machinery do not notice.
-
-## 📜 Contract bumps have a blast radius
-
-A version bump edits no page, yet it can move the frontier: a new closing check un-closes every page that fails it, and the register then contradicts its own pages with nobody having touched either. Two rules make that safe:
-
-```text
-① every bump SHIPS ITS MIGRATION NOTE, the way ../haipipe-insight/ref/partition.md grandfathers
-  9-X-cross/ by name: what happens to artifacts settled under the older version.
-  The default is OWE-ON-NEXT-TOUCH — settled cells stay settled, the page owes the
-  new check when next opened. The exception is a bump that ADDS A HUMAN GATE
-  (a signature, a release): that blocks immediately, because the risk it guards
-  is live from the moment it is law.
-② the bumping desk COMPUTES THE BLAST RADIUS before shipping: grep the live
-  boards for every artifact the new check fails, AND the sibling law for every
-  version pin the bump stales, and list both in the migration note by id. A bump
-  that names FW01 and silently un-closes FW02 shipped half a migration — and
-  sibling citations are best written UNPINNED, so there is nothing to stale.
-  A patch that lands a rule must grep the family for every sentence stating the
-  OLD rule: two rounds running, a rule split across files was updated in some
-  and contradicted by the rest.
-```
-
-The register never flips backward on a bump: an affected cell KEEPS its mark and gains the blocked reading at the gate the new check guards, so "settled under 0.2.0, owing under 0.3.0" is visible without rewriting history.
-
-## 🧾 Marks, spelling and receipts
-
-```text
-token spelling     a mark's spelling INCLUDES its spacing: `🚫 F-only` is the token,
-                   `🚫Fonly` is not it. Canonical forward; a live board is re-spelled
-                   only in an authorized sweep, and its tables re-pad in the same
-                   sweep — two spellings in one column defeats the mark
-a mark is not an edit   🧊 and its kin annotate ADJACENT to a sentence; the sentence
-                   itself stays byte-identical. Marking a fenced line is therefore
-                   legal where editing it is not
-🧊 lifecycle       the mark names its staling event AND its clearing condition; it
-                   clears when that condition lands, and a 🧊 whose clearing
-                   condition has already occurred is a finding, not a mark
-🟡-final receipts  the flip leaves TWO receipts, whoever flips — a person, a lap, or
-                   a charter: one record in the register's
-                   outline/<register-stem>-log.md QUOTING the licensing sentence,
-                   and one record in the ANSWERING Folder's
-                   outline/<answering-stem>-log.md naming the QUESTION id and the
-                   word final (the shape the checker scans) — staleness travels by
-                   citation, and a citation invisible from the cited end cannot travel
-```
+Read [`ref/migration.md`](ref/migration.md) when touching an older contract or
+stale record. Preserve old Results, signatures and settled marks. A changed
+current-use payload holds its dependent handoff until owners recheck it; never
+rewrite history to align a projection. Partial-final settlement leaves reciprocal
+register and answering-Page receipts quoting the licensing sentence.
 
 ## 🛑 Stop rules
 
 - GI5 is the outward-export boundary: after signature, never compose or design
-  in this lane. The dispatcher must still perform the I1-owned GI6 register
+  in this lane. The dispatcher must still perform the Question-owned GI6 register
   settlement, leave its receipt, and only then stop that cell.
-- STOP at any gate: report and end, never wait in a loop.
-- STOP on contradiction: a cell that derives to two RunTypes at once (the register says answered, the page says 🔴) is reported as a defect, never repaired silently.
+- HOLD the affected target at an unresolved gate. Continue only independent
+  ready work already in scope; if none remains, record blockers and return.
+- STOP on contradiction: conflicting Queue, Page or receipt state is a named
+  defect with exact sources; never overwrite history to make projections agree.
 - **Known-stale is marked, not repaired.** A line known stale but deliberately left (a frozen handoff, a fenced page) is marked `🧊 <staling event>` where it stands, so frozen debt is distinguishable from unnoticed drift; an unmarked stale line remains a finding.
 - **Refusal is convergence.** A 🚫 with a reason is a terminal state equal in rank to ✅: the lane terminates because refusing is answering, and a board rich in refusal reasons (thin, F-only, defer, no-measure) is converging, not failing. The defect is the cell that can neither answer nor refuse.
 
 ## ↩ Return
 
-The Question Groups in MT00/rung order, their member cells and derived states,
-the Pages dispatched this pass with their CHECK/CLOSE and GI outcomes, the gate
-now blocking with the person's owed decision, and the next runnable cell once
-that gate clears.
+Runtime id and definition revision; actual Run inventory with native receipt
+links; new/reused exact Results; unallocated Specs; requested cell settlements;
+derived Question Group status; held dependencies/person decisions; next ready
+Run or control action. State whether the Runtime is held or complete and why.

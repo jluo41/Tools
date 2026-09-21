@@ -31,12 +31,12 @@ A Space is a read-only UI projection; a workflow is the lifecycle that
 changes the Page records behind it. They are related, but they are not
 additional folders:
 
-| Workflow phase | Primary Space | Authoritative files |
+| Compatibility dispatch → owning work | Primary Space | Authoritative files |
 |---|---|---|
-| SHAPE + SURVEY | Draft Space | `outline/*-outline-v*.md`, `*-logic.mmd`, `*-evidence-items.md` |
-| LAND | Run Space + Evidence Space | `runs/re-*.md`, `results/re-*/result.yaml`, supporting references |
-| EMBED | Draft Space + Evidence Space | Page Markdown plus resolved label bindings |
-| CHECK | Delivery Space | delivery receipts, manifests, and final artifact hashes |
+| SHAPE + SURVEY → Structure RP | Draft Space | `outline/*-outline-v*.md`, `*-logic.mmd`, `*-evidence-items.md` |
+| LAND → typed RE and Supporting Runs | Run Space + Evidence Space | `runs/re-*.md`, `results/re-*/result.yaml`, supporting references |
+| EMBED → evidence interpretation within the owning Run | Draft Space + Evidence Space | current Outline candidate plus selected Result label bindings |
+| CHECK → independent controller judgment | Draft + Evidence + Run + Delivery Spaces | exact candidate, plan, selected Results, acceptance records, receipts, and artifact hashes |
 
 The plugin documents define the protocol. Each Page stores only its current
 plan, process records, Run tickets, Results, and receipts. The browser never
@@ -62,14 +62,24 @@ Markdown stem.
 
 | Run Spec | Draft | Evidence | Run (`runtime`) | Delivery |
 |---|---|---|---|---|
-| `context` | `read · PageContext · outline/<stem>-context.md` | `—` | `read-only · ContextReceipt · workflow/receipts/context-*.yaml` | `—` |
 | `structure` | `action · OutlinePlan + Mermaid · outline/<stem>-outline-v*.md + <stem>-logic.mmd` | `review · EvidenceItemPlan · outline/<stem>-evidence-items.md` | `run · StructureRun · runs/rp-struct-* + results/rp-struct-*/` | `—` |
 | `scratch` | `input · ScratchNote · outline/<stem>-outline-v*.md#Scratch` | `—` | `run · ScratchResult · runs/rp-scratch-* + results/rp-scratch-*/` | `—` |
 | `section-writing` | `review · WritingResult · outline/<stem>-outline-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · SectionWritingRun · runs/rp-sec-* + results/rp-sec-*/` | `read · PageDraft · <stem>.md` |
 | `paragraph-writing` | `review · WritingResult · outline/<stem>-outline-v*.md` | `review · EvidenceBinding · results/re-*/result.yaml` | `run · ParagraphWritingRun · runs/rp-para-* + results/rp-para-*/` | `read · PageDraft · <stem>.md` |
 | `evidence-item` | `review · EvidenceBinding · outline/<stem>-evidence-items.md` | `action · EvidenceResult · results/re-{value,display,cite}-*/result.yaml` | `run · EvidenceRun · runs/re-* + results/re-*/` | `review · ArtifactDependency · delivery/**/build-manifest.json` |
 | `delivery` | `read · PageSource · <stem>.md` | `read · EvidenceResult · results/re-*/result.yaml` | `run · DeliveryRun · runs/rd*.md + results/rd*/` | `write · DeliveryArtifact · delivery/{web,latex,word,render}/` |
-| `check` | `review · OutlineCheck · outline/<stem>-outline-v*.md + <stem>.md` | `review · EvidenceCheck · results/re-*/result.yaml` | `read-only · CheckReceipt · workflow/receipts/` | `review · DeliveryCheck · delivery/**/build-manifest.json` |
+
+Context collection, Content adoption, and whole-Page Check are controller
+operations outside this Run Spec table. Their records remain inspectable:
+
+| Controller operation | Records and coverage |
+|---|---|
+| Context | `outline/<stem>-context.md` and the selected Folder identity/owner contract |
+| Adoption | Accepted Writing Results → `<stem>.md`, plus release provenance |
+| Check | Selected Draft/version, bound Evidence Results, Run acceptance and Step integrity, and Delivery build/source agreement; owner ruling when required |
+
+A separately commissioned operation may become a Run only under a complete
+explicit Run Spec; its compatibility label alone never creates a row.
 
 This table does not allocate Runs and does not move ownership. The Run Spec
 still owns target, actor, Gates, Routes, Result/receipt, and cardinality; the
@@ -84,7 +94,7 @@ model for these Spaces.
 
 ```text
 <page-folder>/
-├── <page>.md                         Page product: Opening · Content · Aims
+├── <page>.md                         Page product: Opening · Content
 ├── page.toml                          optional source/title manifest
 ├── outline/
 │   ├── <stem>-outline-v*.md           Draft plan + candidate prose / Shape authority

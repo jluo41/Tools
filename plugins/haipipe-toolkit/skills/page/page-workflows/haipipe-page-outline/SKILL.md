@@ -14,8 +14,8 @@ description: >-
   check, read, or approve the outline, fold evidence into the plan,
   /haipipe-page-outline.
 metadata:
-  version: "0.46.0"
-  last_updated: "2026-09-15"
+  version: "0.46.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -562,6 +562,14 @@ shared compact writing packet; it is not a full-outline approval request.
 
 ### 🧑 The tick governs the fork; mode governs whether work waits
 
+The tick rules below apply to the legacy/noninteractive Shape approval profile.
+For an interactive Page, first apply
+`../../haipipe-page/ref/release-decisions.md`: durable acceptance of the exact
+required Structure/Writing versions plus an explicit release instruction
+satisfies that release decision even when historical `approved:` is blank.
+Unaccepted work, stale evidence, or a different accepted version still blocks
+release. Never request the same human decision again merely to fill a legacy field.
+
 - **A person reads the 🧭 tab and ticks `approved:`.** The job there is to
   BREAK the plan: the division that argues nothing, the figure that shows the
   wrong thing, the answer that dodges its ask. The tick means "I tried to
@@ -711,8 +719,9 @@ then `cycle: LAND`.
 SHAPE  any of the five ❌                     fix the plan here; no tick yet
 SHAPE  five pass, items owed                   OUTLINE / SURVEY
 SHAPE  five pass, every make folded and others durably decided  CONTENT / WRITE
-SHAPE  G>=1 approved ⬜ in copilot release      HOLD
-SHAPE  G>=1 approved ⬜ in auto release         record owed; HOLD before CONTENT
+SHAPE  legacy profile G>=1 approved ⬜, copilot HOLD
+SHAPE  legacy profile G>=1 approved ⬜, auto    record owed; HOLD before CONTENT
+SHAPE  interactive profile release            apply release-decisions.md to exact accepted versions
 SURVEY route ambiguous                         OUTLINE / SURVEY
 SURVEY Decide open without durable policy      HOLD at OUTLINE / SURVEY
 SURVEY every make graph classified + allowed  EVIDENCE / LAND

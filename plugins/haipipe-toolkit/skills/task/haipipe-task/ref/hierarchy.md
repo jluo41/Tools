@@ -181,10 +181,14 @@ siblings after deletion.
 - Shared config in `scripts/config/` does not use an `rNN_` prefix.
 - Prompts are config and resolve relative to the config that names them.
 - A Ticket derives Block, Job, Task, and Run identity from its own real path.
-- A Ticket writes `runtime.yaml` atomically at `planned`, `running`, and a
-  truthful terminal state.
+- The scaffolder writes `runtime.yaml` atomically at `planned`; the Ticket
+  owns its `running` and truthful terminal updates.
 - `complete` requires process success plus the declared Result gate.
-- Light Result artifacts live below `<task>/results/<run>/`, beside the Task's `runs/` and `scripts/` (JL ruling 260909; before it they sat at the Job level under `<task>/results/<run>/`).
+- Light Result artifacts live below `$OUTPUT_ROOT/<task>/results/<run>/`.
+  In self-serving mode this is beside the authored Task's `runs/` and
+  `scripts/`; consumer-serving mode resolves the same suffix in its declared
+  mirrored store. Historical Job-level `results/<task>/<run>/` remains
+  readable through its recorded resolver.
 - Model weights, large arrays, raw tables, and other heavy artifacts live in
   `_WorkSpace/`; the Result stores pointers and checksums.
 
@@ -233,7 +237,11 @@ deliberately broken scratch copy before trusting a zero-finding run.
 - A Job contains at least one Task Folder and a Task Folder contains at least
   one `rNN_` Ticket.
 - Block/Job/Task/Run names must pass the grammar and stranger test.
-- Generated Results live in the Task Folder's `results/`, never at the Job level and never under `scripts/`.
+- Current generated Results use `$OUTPUT_ROOT/<task>/results/`, never
+  `scripts/`; this lies inside the authored Task Folder only in self-serving
+  mode. A Page-authorized display unit may use the destination specified by
+  the Page evidence/display contract, with its path and hashes in the Task
+  Result envelope; `result.yaml` and `runtime.yaml` stay in the Task store.
 - A Task never contains `src/`; a Job never contains `scripts/`.
 - The documentation surface is `board.md`, the Task Page, and `diagram/`, not a
   root README.

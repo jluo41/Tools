@@ -9,8 +9,8 @@ description: >-
   show the pdf docx deck together,
   /haipipe-plugin-delivery.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-15"
+  version: "0.6.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

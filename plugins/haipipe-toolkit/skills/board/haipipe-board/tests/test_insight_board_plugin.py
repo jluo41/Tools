@@ -6,12 +6,19 @@ with a signed handoff.  When the real A00 board is present it is read too,
 because the parsers exist for that board's exact formatting.
 """
 
+from __future__ import annotations
+
 import unittest
+import hashlib
+import os
+import yaml
+from unittest.mock import patch
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from live.insightboard import (
-    _append_question_row,
+    _prepare_question_row,
+    _task_calls,
     _board_by_name,
     _cell_view,
     _parse_register,
@@ -74,6 +81,42 @@ def board_fixture(root: Path) -> Path:
     return board
 
 
+def current_handoff_fixture(board: Path, extra_dependency: Path | None = None):
+    """Synthetic owner receipts; no real person approval or scientific claim."""
+    source = board / "1-F-full/FW01-what-to-send/FW01-what-to-send.md"
+    folder = source.parent
+
+    def pin(path):
+        return {"path": os.path.relpath(path, folder), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+
+    def log_record(path, anchor, data):
+        body = "```yaml\n" + yaml.safe_dump(data, sort_keys=False, allow_unicode=True) + "```"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"# Log\n\n### {anchor}\n\n{body}\n", encoding="utf-8")
+        return {"path": os.path.relpath(path, folder) + "#" + anchor,
+                "sha256": hashlib.sha256(body.encode()).hexdigest()}
+
+    page_pin = {**pin(source), "version": "v001"}
+    dependencies = [pin(board / "0-MT-meta/MT00-meta/MT00-meta.md"),
+                    pin(board / "1-F-full/FD01-extract-shape/FD01-extract-shape.md")]
+    if extra_dependency:
+        dependencies.append(pin(extra_dependency))
+    common = {"status": "passed", "actor": "fixture-person", "workflow_runtime_id": "fixture-workflow",
+              "page": page_pin}
+    gi5 = log_record(folder / "outline/FW01-what-to-send-log.md", "signed-fixture", {
+        **common, "key": "GI5", "authority": "haipipe-insight-wisdom", "signature": "JL 260902",
+        "dependencies": dependencies})
+    gi6 = log_record(board / "0-MT-meta/MT04-question-wisdom/outline/MT04-question-wisdom-log.md",
+                     "settled-fixture", {**common, "key": "GI6", "authority": "haipipe-insight-question",
+                     "target": {"question": "QW1", "partition": "F"}, "signature_receipt": gi5})
+    index = folder / "workflow/handoff.yaml"
+    index.parent.mkdir(parents=True, exist_ok=True)
+    index.write_text(yaml.safe_dump({"schema": "haipipe.insight-handoff/v1", "page": page_pin,
+                                    "dependencies": dependencies, "gi5": gi5, "gi6": [gi6]},
+                                   sort_keys=False), encoding="utf-8")
+    return source, index
+
+
 class InsightBoardPluginTest(unittest.TestCase):
     def test_register_cells_and_partitions(self):
         with TemporaryDirectory() as td:
@@ -103,10 +146,11 @@ class InsightBoardPluginTest(unittest.TestCase):
             self.assertEqual([p["id"] for p in view["primary"]], ["FW01", "FD01"])
             self.assertEqual(view["receipt"]["status"], "ok")
             gates = {g["key"]: g["state"] for g in view["gates"]}
-            self.assertEqual(gates["GI5"], "passed")
+            self.assertEqual(gates["GI5"], "held")  # historical signature alone is not current authority
             self.assertEqual(gates["GI6"], "passed")
             handoffs = handoff_records(board, snap["pages"])
             self.assertEqual([(h["signed"], h["signature"]) for h in handoffs], [(True, "JL 260902")])
+            self.assertFalse(handoffs[0]["bindable"])
             refused = _cell_view(snap, "QW1", "B")
             self.assertIsNone(refused["page"])
             self.assertEqual(refused["cell"]["note"], "F-only")
@@ -124,10 +168,12 @@ class InsightBoardPluginTest(unittest.TestCase):
                 self.assertIn(f'data-space="{space}"', html)
             self.assertIn("DO send", html)                 # the answer's rows are shown
             self.assertIn("signed", html.lower())
-            self.assertIn("Workflow map", html)            # Run Space: run types × Spaces (JL 260918)
-            self.assertIn("I5 Wisdom", html)
-            self.assertIn("Folder on this board", html)    # the map names the folder each run type lands in
-            self.assertIn("Folder tree × Run type", html)  # the folder tree replaced the Folders table (260918)
+            self.assertIn("Workflow map", html)
+            self.assertIn("Run Spec templates", html)
+            self.assertIn("Wisdom", html)
+            self.assertNotIn("I5 Wisdom", html)
+            self.assertIn("Folder on this board", html)
+            self.assertIn("Folder tree × Folder kind", html)
             self.assertIn("0-MT-meta/MT00-meta/", html)
             self.assertNotIn('data-view="folders"', html)
             self.assertNotIn("Identity chain", html)
@@ -135,7 +181,85 @@ class InsightBoardPluginTest(unittest.TestCase):
             self.assertEqual(_board_by_name(root, "Demo-InsightBoard"), board)
             self.assertIsNone(_board_by_name(root, "%2Fexa"))
             groom = groom_snapshot(board, snap)
-            self.assertTrue(groom["bindable_handoffs"])
+            self.assertFalse(groom["bindable_handoffs"])
+
+    def test_runtime_inventory_counts_shared_native_run_once_and_refreshes(self):
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            board = board_fixture(root)
+            self.assertEqual(board_snapshot(board, root)["workflow_runtimes"], [])
+            path = board / "_runs/insight/demo-execution/runtime.yaml"
+            path.parent.mkdir(parents=True)
+            run = {
+                "run_id": "board/page/rp-para-01_P01", "run_spec_id": "write.BI01.P01",
+                "owner": "haipipe-page-workflow", "status": "running",
+                "participation": "managed", "target": "one paragraph",
+                "consumers": [{"question": "QI3", "partition": "B"},
+                              {"question": "QI4", "partition": "B"}],
+                "ticket": "page/runs/rp-para-01_P01.yaml",
+                "result": "page/results/rp-para-01_P01/",
+                "receipt": "page/results/rp-para-01_P01/runtime.yaml",
+            }
+            data = {"schema": "haipipe.workflow-runtime/v1",
+                    "workflow_id": "haipipe-insight-workflow",
+                    "workflow_runtime_id": "demo-execution", "status": "running",
+                    "definition_ref": "definition-v001.yaml", "runs": [run], "frontier": []}
+            path.write_text(yaml.safe_dump(data))
+            before = path.read_bytes()
+            snap = board_snapshot(board, root)
+            record = snap["workflow_runtimes"][0]
+            self.assertEqual(record["error"], "")
+            self.assertEqual(len(record["runs"]), 1)
+            rendered = render_insight_board(snap, "run", "QD1", "F")
+            self.assertIn("1 recorded Runs", rendered)
+            self.assertIn(run["run_id"], rendered)
+            self.assertEqual(path.read_bytes(), before, "presenter must not edit receipts")
+            data.update(status="complete", runs=[], resource_controls=[{
+                "key": "GI1", "target": {"question": "QI5", "partition": "B"},
+                "status": "passed", "receipt": "register/outline/register-log.md#added-QI5",
+            }])
+            path.write_text(yaml.safe_dump(data))
+            snap = board_snapshot(board, root)
+            record = snap["workflow_runtimes"][0]
+            self.assertEqual(record["status"], "complete")
+            self.assertEqual(record["runs"], [])
+            rendered = render_insight_board(snap, "run", "QD1", "F")
+            self.assertIn("0 recorded Runs", rendered)
+            self.assertIn("register/outline/register-log.md#added-QI5", rendered)
+            path.unlink()
+            self.assertEqual(board_snapshot(board, root)["workflow_runtimes"], [])
+
+    def test_invalid_runtime_never_presents_duplicate_or_unallocated_rows_as_runs(self):
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            board = board_fixture(root)
+            path = board / "_runs/insight/demo-execution/runtime.yaml"
+            path.parent.mkdir(parents=True)
+            run = {"run_id": "task/r01", "run_spec_id": "support.target",
+                   "owner": "haipipe-task", "status": "complete",
+                   "ticket": "runs/r01.sh", "result": "results/r01/",
+                   "receipt": "results/r01/runtime.yaml"}
+            base = {"schema": "haipipe.workflow-runtime/v1",
+                    "workflow_id": "haipipe-insight-workflow",
+                    "workflow_runtime_id": "demo-execution", "frontier": []}
+            for rows in ([run, run], [{"run_spec_id": "support.target"}], "invalid"):
+                with self.subTest(rows=rows):
+                    path.write_text(yaml.safe_dump(dict(base, runs=rows)))
+                    snap = board_snapshot(board, root)
+                    self.assertTrue(snap["workflow_runtimes"][0]["error"])
+                    self.assertEqual(snap["workflow_runtimes"][0]["runs"], [])
+            path.write_text("runs: [\n")
+            self.assertTrue(board_snapshot(board, root)["workflow_runtimes"][0]["error"])
+
+    def test_current_folder_kind_register_is_read_without_legacy_page_type(self):
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            board = board_fixture(root)
+            path = board / "0-MT-meta/MT01-question-data/MT01-question-data.md"
+            path.write_text(path.read_text().replace("page-type: question", "folder-kind: question"))
+            snap = board_snapshot(board, root)
+            self.assertEqual(snap["by_id"]["MT01"]["page_type"], "question")
+            self.assertIn("QD1", snap["question_ids"])
 
     def test_register_question_appends_a_grid_row_and_a_log_line(self):
         with TemporaryDirectory() as td:
@@ -148,7 +272,7 @@ class InsightBoardPluginTest(unittest.TestCase):
             self.assertEqual(qd2["question"], "how many rows per week?")
             self.assertEqual(qd2["cells"]["F"]["raw"], "⬜ open")
             self.assertEqual(qd2["cells"]["B"]["raw"], "⬜ open")
-            text = (board / "0-MT-meta/MT01-question-data/MT01-question-data.md").read_text(encoding="utf-8")
+            text = (board / "0-MT-meta/MT01-question-data/outline/MT01-question-data-log.md").read_text(encoding="utf-8")
             self.assertRegex(text, r"(?m)^\d{6} · Registered `QD2` on F, B from the Insight Board · origin: curiosity-driven · born from: FD01 · D1")
             self.assertIn("give Claude Code", render_insight_board(snap, "insight", "QD2", "B"))
             with self.assertRaises(ValueError):
@@ -162,7 +286,8 @@ class InsightBoardPluginTest(unittest.TestCase):
             src = REAL_BOARD / "0-MT-meta/MT02-question-information/MT02-question-information.md"
             copy = Path(td) / "MT02-question-information.md"
             copy.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
-            qid = _append_question_row(copy, "I", "does send hour change the salience lead in the young-female cut?", "C")
+            qid, text = _prepare_question_row(copy, "I", "does send hour change the salience lead in the young-female cut?", "C")
+            copy.write_text(text, encoding="utf-8")
             self.assertEqual(qid, "QI19")
             page = {"text": copy.read_text(encoding="utf-8"), "id": "MT02", "rung": "information",
                     "page_type": "question", "path": copy}
@@ -175,6 +300,178 @@ class InsightBoardPluginTest(unittest.TestCase):
                              {"F": "·", "B": "·", "C": "⬜ open", "D": "·", "E": "·", "G": "·", "X": "·"})
             self.assertEqual(rows[-2]["id"], "QI18")                       # QI18 row untouched
             self.assertEqual(rows[-2]["cells"]["C"]["raw"], "🟡 CI16 final")
+
+    def test_empty_register_creates_first_question_and_zero_run_control_receipt(self):
+        with TemporaryDirectory() as td:
+            board = board_fixture(Path(td))
+            path = board / "0-MT-meta/MT01-question-data/MT01-question-data.md"
+            path.write_text(path.read_text().replace(
+                "QD1  what does the extract   Data/1  ✅ FD01  🚫 F-only\n     hold?\n", ""))
+            qid, _ = register_question(board, "D", "What observations are available?", "F")
+            self.assertEqual("QD1", qid)
+            runtime_path, = (board / "_runs/insight").glob("*/runtime.yaml")
+            runtime = yaml.safe_load(runtime_path.read_text())
+            self.assertEqual([], runtime["runs"])
+            self.assertEqual([], runtime["requested_answer_targets"])
+            self.assertEqual("complete", runtime["status"])
+            self.assertEqual("passed", runtime["output"]["acceptance"])
+            control, = runtime["resource_controls"]
+            self.assertEqual("registration", control["key"])
+            log_path, anchor = control["receipt"].split("#")
+            log = (board / log_path).read_text()
+            self.assertIn(f"### {anchor}", log)
+            self.assertIn(runtime["workflow_runtime_id"], log)
+            self.assertIn("actor: board-ask", log)
+            self.assertEqual("⬜ open", board_snapshot(board, Path(td))["questions"][0]["cells"]["F"]["raw"])
+
+    def test_registration_indexes_existing_runtime_without_closing_it(self):
+        with TemporaryDirectory() as td:
+            board = board_fixture(Path(td))
+            runtime_path = board / "_runs/insight/session-one/runtime.yaml"
+            runtime_path.parent.mkdir(parents=True)
+            request = {"action": "register-question", "level": "D", "question": "What is missing?", "partitions": ["F"]}
+            runtime = {"workflow_id": "haipipe-insight-workflow", "workflow_runtime_id": "session-one",
+                       "status": "held", "requested_controls": [request], "resource_controls": [],
+                       "requested_answer_targets": [{"question": "QD1", "partition": "F"}], "runs": []}
+            runtime_path.write_text(yaml.safe_dump(runtime))
+            register_question(board, "D", "What is missing?", "F", workflow_runtime_id="session-one", actor="fixture-agent")
+            saved = yaml.safe_load(runtime_path.read_text())
+            self.assertEqual("held", saved["status"])
+            self.assertEqual(runtime["requested_answer_targets"], saved["requested_answer_targets"])
+            self.assertEqual("fixture-agent", saved["resource_controls"][0]["actor"])
+            with self.assertRaisesRegex(ValueError, "exact registration"):
+                register_question(board, "D", "A different ask?", "F", workflow_runtime_id="session-one")
+
+    def test_concurrent_registration_is_held(self):
+        with TemporaryDirectory() as td:
+            board = board_fixture(Path(td))
+            (board / ".insight-registration.lock").mkdir()
+            with self.assertRaisesRegex(ValueError, "locked"):
+                register_question(board, "D", "What is missing?", "F")
+            self.assertFalse((board / "_runs").exists())
+
+    def test_handoff_receipt_append_is_stable_but_duplicate_anchor_is_invalid(self):
+        with TemporaryDirectory() as td:
+            board = board_fixture(Path(td))
+            source, index = current_handoff_fixture(board)
+            record = yaml.safe_load(index.read_text())
+            log = source.parent / record["gi5"]["path"].split("#")[0]
+            with log.open("a") as stream:
+                stream.write("\n### unrelated-record\n\nAn unrelated owner action.\n")
+            self.assertTrue(handoff_records(board)[0]["bindable"])
+            with log.open("a") as stream:
+                stream.write("\n### signed-fixture\n\nDuplicate anchor.\n")
+            self.assertFalse(handoff_records(board)[0]["bindable"])
+
+    def test_reopened_queue_blocks_old_gi6_even_when_signed_page_is_unchanged(self):
+        with TemporaryDirectory() as td:
+            board = board_fixture(Path(td))
+            current_handoff_fixture(board)
+            self.assertTrue(board_snapshot(board, Path(td))["handoffs"][0]["bindable"])
+            register = board / "0-MT-meta/MT04-question-wisdom/MT04-question-wisdom.md"
+            register.write_text(register.read_text().replace("✅ FW01", "⬜ open"))
+            result = board_snapshot(board, Path(td))["handoffs"][0]
+            self.assertFalse(result["bindable"])
+            self.assertIn("register cell", result["eligibility_reason"])
+
+    def test_identity_errors_block_ask_without_changing_page_or_log(self):
+        with TemporaryDirectory() as td:
+            board = board_fixture(Path(td))
+            path = board / "0-MT-meta/MT01-question-data/MT01-question-data.md"
+            path.write_text(path.read_text().replace("page-type: question", "folder-kind: question"))
+            identity = path.parent / "workflow/folder.yaml"
+            identity.parent.mkdir()
+            before = path.read_bytes()
+            for text in ("current: [\n", "current:\n  folder-kind: wisdom\n"):
+                identity.write_text(text)
+                with self.assertRaises(ValueError):
+                    register_question(board, "D", "Must not be written", "F")
+                self.assertEqual(before, path.read_bytes())
+                self.assertFalse((path.parent / "outline/MT01-question-data-log.md").exists())
+                snap = board_snapshot(board, Path(td))
+                self.assertTrue(snap["by_id"]["MT01"]["identity_error"])
+                checks = groom_snapshot(board, snap)["checks"]
+                self.assertTrue(any(c["code"] == "folder-identity-invalid" for c in checks))
+                self.assertFalse(any(c["code"] == "insight-check-clean" for c in checks))
+
+    def test_identity_only_changes_and_removal_refresh_board(self):
+        with TemporaryDirectory() as td:
+            board = board_fixture(Path(td))
+            path = board / "0-MT-meta/MT01-question-data/workflow/folder.yaml"
+            path.parent.mkdir()
+            path.write_text("current:\n    folder-kind: question\n")
+            self.assertIn("QD1", board_snapshot(board, Path(td))["question_ids"])
+            path.write_text("current: [\n")
+            self.assertNotIn("QD1", board_snapshot(board, Path(td))["question_ids"])
+            path.unlink()
+            self.assertIn("QD1", board_snapshot(board, Path(td))["question_ids"])
+
+    def test_current_handoff_requires_exact_receipts_and_dependency_bytes(self):
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            board = board_fixture(root)
+            external = root / "accepted-evidence.yaml"
+            external.write_text("version: 1\n")
+            _, index = current_handoff_fixture(board, external)
+            snap = board_snapshot(board, root)
+            self.assertTrue(snap["handoffs"][0]["bindable"])
+            self.assertIn("1 Wisdom page ready for design", render_insight_board(snap, "delivery", "QW1", "F"))
+            # A change outside the board also invalidates the cached eligibility.
+            external.write_text("version: 2\n")
+            snap = board_snapshot(board, root)
+            self.assertFalse(snap["handoffs"][0]["bindable"])
+            self.assertTrue(snap["handoffs"][0]["signed"])
+            self.assertIn("changed", snap["handoffs"][0]["eligibility_reason"])
+            current_handoff_fixture(board, external)
+            data = yaml.safe_load(index.read_text())
+            data["gi6"] = []
+            index.write_text(yaml.safe_dump(data))
+            self.assertFalse(board_snapshot(board, root)["handoffs"][0]["bindable"])
+
+    def test_held_page_with_historical_signature_is_not_design_bound(self):
+        from live.design import _insight_bindings
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            board = board_fixture(root)
+            source, _ = current_handoff_fixture(board)
+            with patch("live.design._declared_insight_boards", return_value=[board]):
+                self.assertEqual("bound", _insight_bindings(board / "board.md", root)["status"])
+                source.write_text(source.read_text().replace("state: ✅ SETTLED", "state: 🛑 held"))
+                self.assertEqual("blocked", _insight_bindings(board / "board.md", root)["status"])
+            handoff = handoff_records(board)[0]
+            self.assertTrue(handoff["signed"])
+            self.assertEqual("stale", handoff["eligibility"])
+
+    def test_modern_task_config_uses_job_store_and_native_override_addresses(self):
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            board = board_fixture(root)
+            job = root / "tasks/b01_block/j01_job"
+            task = job / "t01_task"
+            config = task / "scripts/config/r01_counts.yaml"
+            config.parent.mkdir(parents=True)
+            config.write_text("store: stale-config-value\n")
+            (job / "src").mkdir()
+            (job / "src/config-defaults.yaml").write_text("store: _WorkSpace/Store/Demo-InsightBoard\n")
+            ticket = task / "runs/r01_counts.sh"
+            ticket.parent.mkdir()
+            ticket.write_text("# fixture only\n")
+            receipt = root / "_WorkSpace/Store/Demo-InsightBoard/b01_block/j01_job/t01_task/results/r01_counts/runtime.yaml"
+            receipt.parent.mkdir(parents=True)
+            receipt.write_text("status: complete\n")
+            snap = board_snapshot(board, root)
+            calls = _task_calls(snap)
+            self.assertEqual(1, len(calls))
+            self.assertEqual(receipt, calls[0]["receipt"])
+            self.assertTrue(calls[0]["ran"])
+            override = root / "other-store/exact/runtime.yaml"
+            override.parent.mkdir(parents=True)
+            override.write_text("status: complete\n")
+            snap["workflow_runtimes"] = [{"runs": [{"ticket": str(ticket), "receipt": str(override)}]}]
+            calls = _task_calls(snap)
+            self.assertEqual(1, len(calls))
+            self.assertEqual(override, calls[0]["receipt"])
+            self.assertEqual("native-receipt", calls[0]["source"])
 
     def test_page_level_insight_surface(self):
         with TemporaryDirectory() as td:

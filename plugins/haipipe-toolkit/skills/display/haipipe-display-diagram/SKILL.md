@@ -15,10 +15,15 @@ Generate publication-quality **architecture diagrams**, **workflow pipelines**, 
 
 ## Output: write into a display unit
 
-The diagram goes into a `displays/displayNN-<slug>/` unit per the shared contract:
-`../ref/display-unit-output-contract.md`.
+The diagram goes into the caller-supplied unit directory per the shared contract:
+`../ref/display-unit-output-contract.md`. For a Page DISPLAY Result, the caller
+supplies `<page>/results/<re-run>/payload/<unit>/`; a View or other caller
+supplies its own unit path.
 THIS renderer's row: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you
 rasterize/convert for LaTeX); rebuild spec -> `recipe/<name>.json` (the FigureSpec).
+
+One invocation that produces one bounded diagram unit may be one Run in the parent Workflow.
+Spec edits, render calls, compilation, review, and retries remain internal Steps.
 
 For a new unit, read `intake/manifest.yaml` before drafting the FigureSpec.
 The manifest provides the approved narrative context and any real numeric facts that appear in a
@@ -121,17 +126,43 @@ Start from a template based on the diagram type:
 ### Step 3: Render and Validate
 
 ```bash
+UNIT_DIR=/path/to/caller-supplied-unit
+WORK_ROOT=/path/to/caller-asset-reference-base
+
 # Validate first (the FigureSpec lives in the unit's recipe/)
-python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" validate displays/displayNN-slug/recipe/spec.json
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" validate "$UNIT_DIR/recipe/spec.json"
 
 # Render to SVG (into the unit's assets/)
-python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render displays/displayNN-slug/recipe/spec.json --output displays/displayNN-slug/assets/figure.svg
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render "$UNIT_DIR/recipe/spec.json" --output "$UNIT_DIR/assets/figure.svg"
 
 # Convert to PDF for LaTeX inclusion
-rsvg-convert -f pdf displays/displayNN-slug/assets/figure.svg -o displays/displayNN-slug/assets/figure.pdf
+rsvg-convert -f pdf "$UNIT_DIR/assets/figure.svg" -o "$UNIT_DIR/assets/figure.pdf"
+
+# Compile and inspect the complete display unit, including its caption.
+(cd "$WORK_ROOT" && pdflatex -output-directory "$UNIT_DIR" "$UNIT_DIR/preview.tex")
 ```
 
+For an explicit comparison, keep the variant spec and render outside the active asset paths:
+
+```bash
+cp "$UNIT_DIR/recipe/spec.json" "$UNIT_DIR/recipe/spec-A.json"
+# Edit spec-A.json for the proposed variant.
+mkdir -p "$UNIT_DIR/candidates"
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render \
+  "$UNIT_DIR/recipe/spec-A.json" \
+  --output "$UNIT_DIR/candidates/A-figure.svg" --preview
+rsvg-convert -f pdf "$UNIT_DIR/candidates/A-figure.svg" \
+  -o "$UNIT_DIR/candidates/A-figure.pdf"
+```
+
+Inspect `candidates/A-figure.pdf` itself; the active `preview.pdf` still shows the active asset.
+After the caller selects a candidate, promote its SVG/PDF into `assets/` and rebuild the canonical
+unit preview before recording any human acceptance.
+
 If validation fails, inspect the error (missing field, duplicate ID, overlap warning, invalid hex color) and fix the JSON.
+Open `preview.pdf` and check label fit, edge clarity, and caption/asset pairing.
+Compilation failure or a visible defect is a HOLD; the renderer does not promote
+the unit or record `accepted:`.
 
 ### Step 4: Visual Review
 
@@ -166,7 +197,11 @@ mcp__codex__codex:
     Score each axis 1-10 and list specific issues to fix.
 ```
 
-Iterate until all three axes ≥ 7/10.
+Use the scores to prioritize internal edits. A score of 7/10 is not an
+acceptance decision. If the caller asked to compare alternatives, keep this
+variant in `candidates/` and wait for the caller to choose one. For a single
+caller-directed render, leave it selected in `assets/` but pending the human
+`accepted:` decision after the compiled unit preview is inspected.
 The ARIS tech report figures went through 5 rounds of this loop to reach C:7/R:7/S:8.
 
 ## Schema Quick Reference
@@ -234,8 +269,9 @@ editable SVG in `assets/figure.svg` -> optional PDF in `assets/figure.pdf`.
 
 Sibling display renderers and when to use each: see the sibling-routing table in the
 contract (`../ref/display-unit-output-contract.md`).
-`/mermaid-diagram` is a lighter alternative for simple flowcharts; in the ARIS
-`/paper-writing` Workflow 3, this skill handles Phase 2b when `illustration: figurespec`.
+`/mermaid-diagram` is a lighter alternative for simple flowcharts. ARIS
+`/paper-writing` routes FigureSpec illustration requests to this skill; the
+numbered authoring instructions here remain Steps inside the renderer Run.
 
 ## Review Tracing
 

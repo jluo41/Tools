@@ -1,5 +1,5 @@
 # =============================================================================
-# Template for configs/<NAME>.yaml — LLM agent task
+# Template for scripts/config/<NAME>.yaml — LLM agent task
 # =============================================================================
 
 _meta:
@@ -8,9 +8,9 @@ _meta:
   note: |
     <e.g., Used Opus 4.7; expect ~3k tokens output; cost ≈ $0.10>
   input: |
-    <e.g., Each run's results/<run>/eval_log.txt; prompts/system.md + user.md>
+    <e.g., Each run's $OUTPUT_ROOT/<task>/results/rNN_<run>/eval_log.txt; prompts/system.md + user.md>
   output: |
-    results/<run>/{transcript.json, summary.md}
+    $OUTPUT_ROOT/<task>/results/rNN_<run>/{transcript.json, summary.md}
 
 
 # =============================================================================
@@ -28,7 +28,7 @@ prompts:
 tools: []                               # e.g. [Read, Bash] for tool-use loops
 
 inputs:                                 # context to inject into user.md placeholders
-  eval_log_dir: tasks/B01_evaluation_clm/
+  eval_log_dir: <resolved-upstream-task-result>/
   date_range:   2026-05-01..2026-05-24
 
 api:

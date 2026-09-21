@@ -36,7 +36,7 @@ _SIGNED = re.compile(r"(?im)^\s*signed:\s*(✅|⬜)\s*(.*?)\s*$")
 _UNIT_CHECKER = (Path(__file__).resolve().parents[3] / "design"
                  / "haipipe-design-unit" / "scripts" / "check_unit.py")
 _STEP = {"commission": "Commission", "generate": "Generate",
-         "verify": "Verify", "adopt": "Delivery"}  # adopt is legacy storage only
+         "verify": "Verify", "adopt": "Adopt (historical)"}
 _ITEM_FIELDS = ("type", "audience", "job", "goal", "stance", "basis", "mode",
                 "expected", "falsified")
 _ITEM_LISTS = ("acceptance", "evidence")
@@ -318,13 +318,13 @@ def _fold_state(runs: list[dict], human: str = "person") -> tuple[str, str, str]
         if run["status"] == "superseded":
             continue
         if run["status"] == "blocked":
-            state, glyph, waiting = "hold", "⏸", f"{human} · {run['failure'] or 'blocked'}"
+            state, glyph, waiting = "blocked", "⏸", f"{human} · resolve {run['id']}: {run['failure'] or 'blocked; inspect the Run record'}"
             continue
         if run["kind"] == "commission":
             if run["outcome"] == "release":
                 state, glyph, waiting = "commissioned", "⬜", f"{owner} · queue the draft"
             elif run["outcome"] == "hold":
-                state, glyph, waiting = "hold", "⏸", f"{owner} · release or hold"
+                state, glyph, waiting = "commission held", "⏸", f"{owner} · release or hold"
             else:
                 state, glyph, waiting = "commission open", "⬜", f"{owner} · release or hold"
         elif run["kind"] == "generate":
@@ -341,6 +341,13 @@ def _fold_state(runs: list[dict], human: str = "person") -> tuple[str, str, str]
         elif run["kind"] == "verify":
             if run["status"] == "complete" and run["verdict"] == "pass":
                 state, glyph, waiting = "ready", "✅", ""
+            elif run["status"] == "complete" and run["verdict"] == "unresolved":
+                owners = sorted({str(c.get("next_owner")) for c in run["checks"]
+                                 if c.get("status") == "unresolved" and c.get("next_owner")})
+                owner_text = ", ".join(owners) if owners else human
+                state, glyph, waiting = "verify unresolved", "⏸", (
+                    f"{owner_text} · resolve the recorded evidence/criterion gap; "
+                    "preserve this Result and review only after inputs or criteria change")
             elif run["status"] == "complete":
                 state, glyph, waiting = "verify failed", "✗", f"{human} · queue a revise"
             elif run["status"] == "failed":
@@ -362,10 +369,17 @@ def _fold_state(runs: list[dict], human: str = "person") -> tuple[str, str, str]
             elif run["outcome"] == "revise":
                 state, glyph, waiting = "generated", "⬜", f"{human} · queue the review"
             elif run["outcome"] == "hold":
-                state, glyph, waiting = "hold", "⏸", f"{owner} · release or hold"
+                state, glyph, waiting = "legacy hold", "⏸", f"{owner} · historical decision; register a new item to continue"
             else:
                 state, glyph, waiting = "generated", "⬜", f"{human} · queue the review"
     return state, glyph, waiting
+
+
+def _unit_gate():
+    spec = importlib.util.spec_from_file_location("design_unit_gate", _UNIT_CHECKER)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _audit(folder: Path) -> list[str]:
@@ -373,9 +387,7 @@ def _audit(folder: Path) -> list[str]:
     if not _UNIT_CHECKER.is_file():
         return ["check_unit.py not found beside haipipe-design-unit"]
     try:
-        spec = importlib.util.spec_from_file_location("design_unit_gate", _UNIT_CHECKER)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        module = _unit_gate()
         return [str(issue).replace(str(folder) + "/", "") for issue in module.audit_folder(folder)]
     except Exception as exc:  # noqa: BLE001 - a presenter never crashes on the checker
         return [f"checker unavailable: {exc}"]
@@ -528,12 +540,26 @@ def _verified_design(item: dict) -> dict | None:
         return None
     targets = verify.get("targets") or []
     target_path = str(targets[0].get("path") or "") if targets else ""
+    target_file = (verify["ticket_path"].parent.parent / target_path).resolve() if target_path else None
     candidate = next((r for r in reversed(runs)
                       if r["kind"] == "generate" and r["status"] == "complete"
                       and r.get("artifacts")
-                      and (not target_path or target_path.startswith(f"results/{r['id']}/"))), None)
+                      and target_file == (r["result_dir"] / "result.yaml").resolve()), None)
     if candidate is None:
         return None
+    # A completion receipt describes a past event; Delivery must still bind
+    # the exact reviewed bytes. Recheck the two Results before exporting them.
+    try:
+        gate = _unit_gate()
+        for run in (candidate, verify):
+            problems = gate.validate(run["ticket_path"], run["result_dir"] / "result.yaml", historical=True)
+            if problems:
+                raise ValueError(f"{run['id']}: {'; '.join(problems)}")
+        _, _, _, _, config, _ = gate.context(verify["ticket_path"], historical=True)
+        if config["review_mode"] != "independent":
+            raise ValueError(f"{verify['id']}: Delivery requires independent review")
+    except (OSError, ImportError, AttributeError, TypeError, KeyError) as exc:
+        raise ValueError(f"Delivery records check unavailable: {exc}") from exc
     art = candidate["artifacts"][0]
     return {"run": candidate["id"], "text": art["text"], "sha256": art["sha256"],
             "verification": verify["id"]}
@@ -647,26 +673,54 @@ def _insight_space(items: list[dict], insight: dict) -> dict:
 _PICTURE = (".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg")
 
 
-def _renders(folder: Path) -> dict[str, list[dict]]:
-    """delivery/render/manifest.json: the rendered pictures of drafts, by item (a UI screen's picture)."""
+def _renders(folder: Path, runs: list[dict]) -> dict[str, list[dict]]:
+    """Read Result-local evidence first; retain old Delivery manifests as history."""
     try:
         import json
         rows = json.loads(_read(folder / "delivery" / "render" / "manifest.json") or "[]")
     except ValueError:
-        return {}
+        rows = []
     out: dict[str, list[dict]] = {}
     for row in rows if isinstance(rows, list) else []:
         if isinstance(row, dict) and row.get("item") and row.get("render"):
             path = folder / "delivery" / "render" / str(row["render"])
             out.setdefault(str(row["item"]), []).append(
                 {**row, "path": path, "picture": path.suffix.lower() in _PICTURE and path.is_file()})
+    gate = None
+    for run in runs:
+        if run["kind"] != "generate" or run["status"] != "complete":
+            continue
+        manifest = _yaml(run["result_dir"] / "result.yaml")
+        if "render_manifest" not in manifest:
+            continue
+        # An invalid current manifest must not silently fall back to an old picture.
+        for item_rows in out.values():
+            item_rows[:] = [row for row in item_rows if row.get("candidate") != run["id"]]
+        try:
+            gate = gate or _unit_gate()
+            subjects = {path: run["id"] for _, path in
+                        gate.artifact_records(run["result_dir"], manifest.get("artifacts"))}
+            for row in gate.render_records(run["result_dir"], manifest, subjects, run["item"]):
+                out.setdefault(run["item"], []).append(
+                    {**row, "picture": row["path"].suffix.lower() in _PICTURE})
+        except (OSError, ValueError, TypeError, KeyError, ImportError, AttributeError):
+            # The folder audit reports the error; the presenter shows no false preview.
+            continue
     return out
 
 
 def _render_for(rows: list[dict], run: str) -> dict | None:
     """The picture of exactly this draft; a picture of an older draft is never shown for a newer one."""
-    hits = [r for r in rows if r.get("candidate") == run and r["picture"]]
-    return max(hits, key=lambda r: int(r.get("version") or 0)) if hits else None
+    def version(row):
+        # Historical Delivery manifests also used numeric strings or no version.
+        # New Result manifests already enforce a positive integer in the gate.
+        try:
+            return int(row.get("version") or 0)
+        except (TypeError, ValueError, OverflowError):
+            return -1
+    hits = [r for r in rows if r.get("candidate") == run and r["picture"]
+            and version(r) >= 0]
+    return max(hits, key=version) if hits else None
 
 
 def design_picture(root: Path, item: dict, alt: str = "") -> str:
@@ -702,7 +756,7 @@ def design_snapshot(page_src: Path, server_root: Path | None = None) -> dict:
     runs = _load_runs(folder) if current else []
     human = next((r["actor"] for r in runs if r["mode"] == "human" and r["actor"] != "not recorded"), "person")
     known = {item["id"] for item in items}
-    renders = _renders(folder)
+    renders = _renders(folder, runs)
     for item in items:
         item["runs"] = [run for run in runs if run["item"] == item["id"]]
         item["state"], item["glyph"], item["waiting"] = _fold_state(item["runs"], human)
@@ -714,7 +768,14 @@ def design_snapshot(page_src: Path, server_root: Path | None = None) -> dict:
                            "verdict": latest["verdict"]} if latest else None)
         # A passed Verify is the delivery gate.  Keep the old projection for
         # callers that still inspect it, but never use it as a new workflow.
-        item["ready"] = _verified_design(item)
+        try:
+            item["ready"] = _verified_design(item)
+            delivery_error = "no valid independent Verify target" if item["state"] == "ready" and not item["ready"] else ""
+        except ValueError as exc:
+            item["ready"], delivery_error = None, str(exc)
+        if delivery_error:
+            item["state"], item["glyph"] = "records invalid", "⚠"
+            item["waiting"] = f"{human} · inspect recorded candidate and review: {delivery_error}"
         item["adopted"] = None
         shown = shown_design(item)
         item["render"] = _render_for(renders.get(item["id"], []), shown["run"]) if shown else None
@@ -822,10 +883,10 @@ def _signal_line(insight: dict) -> str:
         label = _escape(board["title"])
         if board["live_url"]:
             label = f'<a href="{_escape(board["live_url"])}">{label}</a>'
-        parts.append(f'{label} · {len(board["bindable"])} of {len(board["handoffs"])} insights signed')
+        parts.append(f'{label} · {len(board["bindable"])} of {len(board["handoffs"])} insights currently eligible')
     line = " · ".join(parts)
     if insight["status"] == "blocked":
-        line += ' · <span class=bad>no signed insight, design stays blocked</span>'
+        line += ' · <span class=bad>no current signed and settled insight, design stays blocked</span>'
     return line
 
 
@@ -877,8 +938,7 @@ def _run_rows(root: Path, runs: list[dict], acceptance: list[str] | None = None)
         status_cls = ("bad" if status in ("failed", "blocked") or (run["kind"] == "verify" and run["verdict"] == "fail")
                       else "mut" if status == "superseded" else ("ok" if status == "complete" else ""))
         status_text = "planned · queued for agent" if status == "planned" and run["mode"] == "agent" else status
-        # ``adopt`` is a historical Run kind. Render it as Delivery so old
-        # records remain readable without reviving the removed workflow.
+        # Explain historical outcomes without changing the recorded Run identity.
         outcome = {"adopt": "ready", "decline": "not delivered"}.get(run["outcome"], run["outcome"])
         if run["kind"] in ("generate", "verify") and run["checks"]:
             outcome = f'{run["verdict"] or status} {run["checks_passed"]}/{len(run["checks"])}'
@@ -894,7 +954,7 @@ def _run_rows(root: Path, runs: list[dict], acceptance: list[str] | None = None)
         if run["words"] and run["kind"] != "adopt":
             detail = f'<div class=mut>“{_escape(run["words"])}”</div>' + detail
         rows.append(
-            f'<tr><td>{_href(root, run["ticket_path"], run["id"].replace("_adopt_", "_delivery_"))}</td>'
+            f'<tr><td>{_href(root, run["ticket_path"], run["id"])}</td>'
             f'<td>{_escape(run["step"])}{(" · revise of " + _escape(base.split("_")[0])) if base else ""}</td>'
             f'<td>{_escape(run["actor"])} <span class=mut>{_escape(run["mode"])}</span></td>'
             f'<td class=mut>{_escape(run["finished"] or run["started"] or "—")}</td>'
@@ -906,7 +966,7 @@ def _run_rows(root: Path, runs: list[dict], acceptance: list[str] | None = None)
 
 def _held_at(item: dict) -> str:
     """For an item on hold: the Commission that held it, else ``""``."""
-    if item["state"] != "hold":
+    if item["state"] != "commission held":
         return ""
     last = next((r for r in reversed(item["runs"]) if r["kind"] == "commission"
                  and r["status"] != "superseded"), None)
@@ -942,6 +1002,16 @@ def _actions(item: dict, human: str) -> tuple[str, str]:
         return f'{feedback}<button class=do data-action=queue-revise>Queue revise · agent</button>', "Queue a revise, with feedback"
     if state == "ready":
         return '<span class="ok">ready for Delivery</span>', ""
+    if state == "blocked":
+        return (f'<span class=bad>{_escape(item["waiting"])}</span>'
+                '<span class=mut>Repair the named inputs or records through the Design workflow; '
+                'the caller must resolve the blocked Run before work resumes.</span>'), ""
+    if state == "records invalid":
+        return (f'<span class=bad>{_escape(item["waiting"])}</span>'
+                '<span class=mut>Inspect the records check before handing off this design. '
+                'Preserve the recorded versions; changed content needs a new Run.</span>'), ""
+    if state == "legacy hold":
+        return '<span class=mut>Historical decision; register a new Design Item to continue.</span>', ""
     if state in ("generate queued", "verify queued", "generating", "verifying"):
         return '<span class=mut>queued for the agent</span>', ""
     return "", ""
@@ -1088,8 +1158,8 @@ def _bet_changed(item: dict, released: dict) -> bool:
         or (frozen_rules is not None and list(frozen_rules) != list(item["acceptance"])))
 
 
-def _step_chain(item: dict) -> str:
-    """Commission → Generate → Verify → Adopt as it happened, then who is waited on."""
+def _run_chain(item: dict) -> str:
+    """Actual Runs in order, retaining historical identities, then who is waited on."""
     chips = []
     for r in item["runs"]:
         if r["status"] == "superseded":
@@ -1101,7 +1171,7 @@ def _step_chain(item: dict) -> str:
                  "✗" if out in ("fail", "failed", "decline", "blocked") else
                  "↺ revise" if out == "revise" else "⏸ hold" if out == "hold" else "…")
         who = f' {_escape(r["actor"])}' if r["mode"] == "human" else ""
-        chips.append(f'<span class=s title="{_escape(r["id"].replace("_adopt_", "_delivery_"))}">{_escape(r["step"])} {glyph}{who}</span>')
+        chips.append(f'<span class=s title="{_escape(r["id"])}">{_escape(r["step"])} {glyph}{who}</span>')
     if item["waiting"]:
         chips.append(f'<span class="s next">next: {_escape(item["waiting"])}</span>')
     return " → ".join(chips) or '<span class=mut>not started</span>'
@@ -1126,7 +1196,7 @@ def _explain(item: dict, root: Path | None = None) -> str:
         rows.append(("The bet", bet))
     head, rules = _rule_checks(item)
     rows.append(("Rules", f'<div class=mut>{head}</div><ul class=checks>{rules}</ul>'))
-    rows.append(("Steps", f'<div class=steps>{_step_chain(item)}</div>'))
+    rows.append(("Runs", f'<div class=steps>{_run_chain(item)}</div>'))
     return ("<table class=explain>" + "".join(f"<tr><th>{k}</th><td>{v}</td></tr>" for k, v in rows)
             + "</table>")
 
@@ -1336,7 +1406,7 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
                        f'<code>{_escape(snapshot["register"].relative_to(snapshot["folder"]).as_posix())}</code>.</div>')
     if snapshot["unassigned"]:
         design_html += ('<h2>Runs without an item</h2>'
-                        '<table><tr><th>run</th><th>step</th><th>who</th><th>when</th><th>status</th><th>outcome</th><th>next</th></tr>'
+                        '<table><tr><th>run</th><th>Run type</th><th>who</th><th>when</th><th>status</th><th>outcome</th><th>next</th></tr>'
                         f'{_run_rows(root, snapshot["unassigned"])}</table>')
     if snapshot["current"]:
         numbers = [int(i[4:]) for i in ids if i[4:].isdigit()]
@@ -1387,12 +1457,12 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
                         f'<span class=mut>{_escape(item["glyph"])} {_escape(item["state"])}'
                         f'{(" · waiting on " + _escape(item["waiting"])) if item["waiting"] else ""}</span></h2>')
         if item["runs"]:
-            run_html.append('<table><tr><th>run</th><th>step</th><th>who</th><th>when</th>'
+            run_html.append('<table><tr><th>run</th><th>Run type</th><th>who</th><th>when</th>'
                             f'<th>status</th><th>outcome</th><th>next</th></tr>{_run_rows(root, item["runs"], item["acceptance"])}</table>')
         else:
             run_html.append('<div class=empty>No Run yet. The first Run is a Commission a person releases.</div>')
     if not items and snapshot["runs"]:
-        run_html.append('<table><tr><th>run</th><th>step</th><th>who</th><th>when</th><th>status</th><th>outcome</th><th>next</th></tr>'
+        run_html.append('<table><tr><th>run</th><th>Run type</th><th>who</th><th>when</th><th>status</th><th>outcome</th><th>next</th></tr>'
                         f'{_run_rows(root, snapshot["runs"])}</table>')
     if not run_html:
         run_html.append('<div class=empty>No Design Run records are present in this folder.</div>')

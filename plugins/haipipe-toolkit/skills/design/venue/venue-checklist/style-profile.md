@@ -43,5 +43,6 @@ Weekly Panel Review
 [ ] Each item starts with action verb
 [ ] Each item has clear done/not-done state
 [ ] Order is logical (if sequential)
-[ ] Card id, grant, and exact render version resolve in the Design Folder
+[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Any render manifest binds the exact source and picture inside its Result
 ```

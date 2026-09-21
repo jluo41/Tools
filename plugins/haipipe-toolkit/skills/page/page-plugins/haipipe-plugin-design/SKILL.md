@@ -15,8 +15,8 @@ description: >-
   skills. Trigger: design plugin, design tab, design items, design folder,
   goal space, insight space, /haipipe-plugin-design.
 metadata:
-  version: "0.11.0"
-  last_updated: "2026-09-18"
+  version: "0.11.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -60,8 +60,8 @@ unrelated designs. A folder no board holds gets the list of boards.
 ## Plain words on the surface (JL 260916)
 
 Every word a reader sees must be understood at first glance. `Space` is the
-only word for a plugin surface. Steps are called by their Run words and
-nothing else: **Commission, Generate, Verify, Delivery**. On screen every
+only word for a plugin surface. The Runs list shows **Commission, Generate, Verify** under their real ids.
+Delivery is the ready projection; Steps are actions inside a Run. On screen every
 contract word is translated, and the contract word never appears beside it:
 
 | in the files | on the screen |
@@ -136,7 +136,7 @@ the role on a Design Folder that an Evidence Item plays on an Outline page:
 |---|---|
 | Evidence Item `E01` | Design Item `ITEM01` |
 | expectation + acceptance | goal, expected outcome + rules |
-| one Page Evidence Run | rd commission → generate → verify → delivery |
+| one Page Evidence Run | distinct rd Commission, Generate and Verify Runs |
 | Result | draft + `checks.yaml` |
 | accepted | ready for Delivery (Verify verdict `pass`) |
 
@@ -163,7 +163,7 @@ the role on a Design Folder that an Evidence Item plays on an Outline page:
                                    RULES             2 of 2 pass · independent review rd03
                                                      ✓ ≤ 160 characters including the opt-out suffix
                                                      ✓ ends with 'Reply STOP to opt-out' verbatim
-                                   STEPS             Commission ✓ JL → Generate ✓ → Verify ✓ → Delivery
+                                   RUNS              Commission ✓ JL → Generate ✓ → Verify ✓
   ↑ the design and its handoff (left, stays in view) ↑ its explanation (right, scrolls)
 ▸ ITEM02 · Name the visit   Hi, it's Dr. {NAME}'s office, after your visit on…   ✅ ready
 ```
@@ -202,7 +202,7 @@ wall:
    criteria in words instead. When the register changed after release, the
    line says "the register changed after release; drafts still follow the
    released goal and rules".
-5. **Steps**: the item's Runs as chips in order, `✗` for a run that failed
+5. **Runs**: the item's Runs as chips in order (historical Adopt keeps its original id and is labeled historical), `✗` for a run that failed
    the records check, superseded runs skipped, ending in `next: <who is
    waited on>`.
 
@@ -259,10 +259,12 @@ receipts, and the audit trail stay in Run Space; item reasoning stays in
 Design Space. A retired historical item remains folded under its record.
 
 A **screen** (a UI design) is read as its picture. When
-`delivery/render/manifest.json` lists a picture for the exact draft an item
+the Generate Result pins `render_manifest` for a picture of the exact draft an item
 shows (`candidate` = that Generate run), the Design Space card puts the
 picture on the left, with the HTML one click away, and Delivery Space shows
-the folder's screens as a picture gallery instead of the table. A picture of
+the folder's ready screens as a picture gallery instead of the table. The presenter
+checks manifest, source and image hashes. Existing `delivery/render/manifest.json`
+is a legacy fallback only when that candidate has no Result-local manifest. A picture of
 an older draft is never shown for a newer one. An acceptance rule with the
 word render, rendered or rendering (for example "judged on the render") and
 no quoted phrase compiles to a `visual` check.
@@ -297,7 +299,7 @@ with two spaces); the roles are `evidence`, `handoff`, `inspiration`,
 
 `expected` and `falsified` judge design quality: what a reader can do or
 understand with the draft. They may name what a later experiment will check,
-but the design phase judges design quality only, so no experiment words (arm,
+but Design Runs judge design quality only, so no experiment words (arm,
 allocation, power, winner, field) belong in them.
 
 The bindings are checked when the item is added: a `challenge` stance goes
@@ -312,9 +314,9 @@ register says `goal` where the config says `move`, and the config's own `goal`
 is the same goal sentence). The Commission pins its config (goal sentence,
 stance, basis, mode, expected, falsified, the compiled criteria, and the raw
 rule text) and the item's evidence files with sha256. It does not pin the
-Brief version or venue packs. Generate and Verify copy the released config and
-evidence list, so an edit to the register after release reaches only a new
-Commission, which means a new item (one Commission per item). The card then
+Brief version or venue packs. Generate and Verify inherit the released design fields and
+evidence list, deriving only review_mode and the permitted operation mode, so an edit to the register after release reaches only a new
+Commission, which means a new item (at most one release per item). The card then
 says "the register changed after release; drafts still follow the released
 goal and rules".
 
@@ -342,7 +344,7 @@ register. Every `rdNN_*` run record names the item it serves with
 order:
 
 ```text
-not commissioned → commission open → commissioned | hold
+not commissioned → commission open → commissioned | commission held
   → generate queued → generating → generated | generate failed
   → verify queued → verifying → ready | verify failed | verify invalid
 queued run out of date: a queued run whose pinned file changed since it was queued
@@ -370,13 +372,14 @@ board.md  reads:                        the Insight board (Goal Space, Insight S
 outline/<stem>-design-items.md          the register (goal, evidence, rules)
 outline/feedback/<run>.md               the feedback a revise Generate was queued with
 outline/<stem>-draft-request.md         an open request for the agent to draft items
-runs/rdNN_<step>_<slug>.yaml            run record: item, target, actor, config ref, pinned inputs
+runs/rdNN_<operation>_<slug>.yaml       run record: item, target, actor, config ref, pinned inputs
 scripts/config/<run>.yaml               goal, design_intent, criteria, the rule text, unit
 results/<run>/runtime.yaml              status, actor/worker, times, route, failure
 results/<run>/result.yaml + checks.yaml verdict, artifacts, per-criterion checks
 results/<run>/content/*                 the draft bytes
 results/<run>/decision.yaml             Commission release/hold, when present
-delivery/render/                        screen pictures (manifest.json), when present
+results/<run>/render/                   pictures and manifest pinned by result.yaml
+delivery/render/                        legacy display manifests, when present
 ```
 
 It never infers a state from a file name, never counts files as progress,
@@ -395,7 +398,7 @@ The card's flow is drawn per item from its own evidence pages, so it differs
 from folder to folder and is not a static diagram. An empty state is one sentence that names the file or Run that would
 fill it.
 
-## Actions · the two human gates and the agent queue
+## Actions · Commission decisions and the agent queue
 
 The tab writes through one endpoint, `POST /_board/design-act`, implemented
 in `live/design_actions.py`. Each action writes exactly the contract's files
@@ -405,11 +408,13 @@ waited on:
 
 | Item state | Button | Writes |
 | --- | --- | --- |
-| not commissioned · commission open · hold (held at Commission) | Release commission · Hold (name + words) | `rdNN_commission_*` run record, `decision.yaml`, complete receipt; the config compiled from the register and the item's evidence files, pinned with sha256. One Commission per item: a second Release is refused, and a held Commission can be released later |
+| not commissioned · commission open · commission held | Release commission · Hold (name + words) | `rdNN_commission_*` run record, `decision.yaml`, complete receipt; the config compiled from the register and the item's evidence files, pinned with sha256. At most one release per item: a second Release is refused; releasing after hold creates a new Commission Run and preserves the old decision |
 | commissioned · revise requested | Queue Generate · agent | planned `rdNN_generate_*` run record, a copy of the released config, and a receipt for `haipipe-designer-agent` |
-| generated · verify invalid | Queue Verify · independent agent | planned `rdNN_verify_*` run record targeting the complete Generate Result; refused when that draft already has a review |
+| generated · verify invalid | Queue Verify · independent agent | planned `rdNN_verify_*` run record targeting the complete Generate Result; refused when that draft already has a completed valid independent review |
 | generate failed · verify failed | Queue revise · agent (feedback) | planned Generate run record with `base` + `feedback` inputs, the feedback saved at `outline/feedback/<run>.md` (a challenge bet stays in challenge mode); refused for a draft that passed its review |
 | queued run out of date | Queue again with today's insight files | the old queued run marked `superseded` (reason: the files that changed) and a fresh run that pins today's bytes; a revise keeps its base and feedback |
+| blocked | named Run, reason and repair owner; no Commission button | the caller resolves the input/record problem through the Design workflow before work resumes |
+| records invalid | recorded candidate/review mismatch and repair owner; no queue button | inspect the records check; preserve recorded versions, and use a new Run for changed content |
 | ready | ready for Delivery | no decision Run; the passed Verify pins the exact candidate for handoff |
 | generate queued · verify queued · generating · verifying | none ("queued for the agent") | — |
 | any | New Design Item | one block appended to the register, after the binding check above |
@@ -419,11 +424,15 @@ waited on:
 The independent Verify is the Delivery gate. A passed candidate is ready
 without another human decision; a failed draft or failed review can still be
 revised through the normal Generate queue. The writer refuses a second open
-run for one item and a second review of a draft that already has one.
+run for one item and a second review of a draft that already has a completed valid review.
 
-`delivery/render/` is optional display material for a ready candidate (for
-example a screen picture or a copied text render). It is not a decision
-receipt and it never changes the Verify result.
+Workers render only inside their own Result and pin the optional render manifest
+before completion. The presenter reads this evidence directly; Delivery shows it
+only for the exact Verify-passed candidate. Existing `delivery/render/` files are
+legacy display material and never authorize new worker writes outside a Result.
+Before handoff, the presenter revalidates the exact Generate and independent
+Verify Results. Broken artifact, checks, config or render pins show `records
+invalid`; Page/Board ready counts, Delivery and CSV all exclude that candidate.
 
 Any form that asks for a name, words, or feedback is folded by default under
 one line that names the choice (`Release or hold the commission`, `Queue a
@@ -499,7 +508,7 @@ owner:
 | Verify a draft | `haipipe-design-workflow` → `Design.verify` (fresh reviewer) |
 | Hand off a passed design | Delivery Space (read only; no second decision) |
 | Sign an insight | the Insight plugin, never this tab |
-| Render a preview | `haipipe-plugin-delivery/ref/render.md` |
+| Render a Design screen preview | `haipipe-design-unit` within the current Result; no extra Run |
 | Inspect Page acceptance | Page CHECK, not this plugin |
 
 Selecting an item or a Space is local presentation state and writes nothing.
@@ -531,7 +540,7 @@ From one tab, without opening a file, the reader can answer:
    what it expects a reader to do, and what would show that wrong.
 4. Which insights support each item, what they say, whether they are signed
    and pinned, what is still missing, and what else the board offers.
-5. For each item: which step is it at, who acted, when, with what outcome, and
+5. For each item: which Run is it at, who acted, when, with what outcome, and
    who is it waiting on now?
 6. Which exact draft (hash) is ready for Delivery, verified by whom, and does
    the records check pass on the folder as it stands? (Run Space)

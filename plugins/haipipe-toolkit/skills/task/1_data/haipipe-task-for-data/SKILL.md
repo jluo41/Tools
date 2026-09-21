@@ -141,9 +141,9 @@ Cross-references
 
 Pipeline code (Fn authoring, review, inspection):
 - `/haipipe-data` — orchestrator for all stages
-- `/haipipe-data-source` — Stage 1 SourceFn/HumanFn
-- `/haipipe-data-record` — Stage 2 RecordFn/TriggerFn
-- `/haipipe-data-case` — Stage 3 CaseFn
+- `/haipipe-data-source` — Stage 1 SourceFn
+- `/haipipe-data-record` — Stage 2 HumanFn/RecordFn
+- `/haipipe-data-case` — Stage 3 TriggerFn/CaseFn
 - `/haipipe-data-aidata` — Stage 4 TfmFn/SplitFn
 
 CLI scripts (direct execution):
@@ -211,7 +211,7 @@ When `/haipipe-task plan` targets an existing job of this type, the generated pl
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type
-../../haipipe-task/ref/workflow-template.yaml  ← task-level template (Run/Gate1/Gate2)
+../../haipipe-task/ref/workflow-template.yaml  ← authoritative Run Spec template with entry/exit gates
 ```
 
 Schema source of truth:

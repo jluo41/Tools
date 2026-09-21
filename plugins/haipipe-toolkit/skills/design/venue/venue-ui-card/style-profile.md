@@ -39,8 +39,9 @@ Drafting guide for in-app card/widget artifacts.
 1. Card must fit one screen — no scroll for core content.
 2. Hierarchy: header (hook) → body (detail) → action (CTA).
 3. Max 2 action buttons. Primary action left, secondary right.
-4. Data elements (numbers, lists) are live — specify data source.
-5. ASCII wireframe required in draft; production rendering later.
+4. Show sample data and name the source with `data-bind`; do not claim live integration.
+5. A wireframe may guide drafting. Visual checks require the actual HTML screen
+   rendered into the current Result, with picture/manifest hashes pinned.
 
 
 ## Audience pairing
@@ -61,5 +62,6 @@ audience=dev         → interface spec, data binding, events
 [ ] Body provides enough context to act
 [ ] CTA is specific (not "Learn More")
 [ ] Data sources specified for live elements
-[ ] Card id, grant, and exact render version resolve in the Design Folder
+[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Any render manifest binds the exact source and picture inside its Result
 ```

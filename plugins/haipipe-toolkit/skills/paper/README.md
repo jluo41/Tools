@@ -8,24 +8,18 @@ are defined by `haipipe-paper-story`; retired Page names are not aliases.
 
 ## Active architecture
 
-The journey is owned by `haipipe-paper-workflow`, each position named by
-its authority page; the venue bank is a library outside the journey:
+`haipipe-paper` routes requests to the relevant owner. A Workflow is a list of
+Runs: `haipipe-paper-workflow/ref/run-workflow.md` defines bounded Specs,
+dependencies, routes and completion; the Runtime indexes actual native Runs.
+Ideation/Story/Section/Round/Venue Pages hold content. G0–G5, sync, routing and
+Page controller passes are controls. Step and Version stay inside a Run.
 
-```text
-P0 Ideation (ideate)        Story00-ideation · the repo is minted with this page ·
-                            sends one idea to its Story
-P1 Story (establish)        Story<Letter>-<desk>-<idea-slug> · one idea, one prospective paper
-                            Seed C1–C5 · Discovery Roadmap C6 · Task Roadmap C7
-                            Section Narrative C8 · derived compile-order block
-P2 Evidence/Execution       a work lane, not a page · Discovery blocks, Task
-                            blocks, Runs in examples/<Project>/ · receipts land
-   ↺ P1↔P2 = the settle loop   back on the Story (G2)
-P3 Section (realize)        one page per §8 row · a person releases each row (G3)
-   Compile (a verb)         haipipe-paper-assemble · anytime · G4 READY vs DRAFT
-P4 Round (respond)          in the desk's Bc group · routes each concern once →
-                            Story C5–C8 / owning Section · gates G0-G5 in
-                            the workflow file
-```
+Use `haipipe-ideation` for generation/testing/selection and
+`haipipe-paper-ideation` for the Paper Page projection. Both Paper and Page
+entrypoints load the adapter when that Page is involved. Discovery/Task execute
+external supporting work; Page RP/RE/RD own writing, local evidence and Page
+delivery. The assembler composes Section outputs; Round routes feedback back
+to its exact owner. Skills are loaded as needed, not all at once.
 
 Each Page runs the shared workflow and owns the evidence it uses:
 
@@ -39,7 +33,7 @@ Evidence Item graph
 <page-dir>/
 ├── <page>.md
 ├── outline/     plan + nested Evidence Workspace (CITE/VALUE/DISPLAY + Run lineage)
-├── workflow/    machine-readable phase receipts
+├── workflow/    controller/Run receipts
 ├── scripts/     optional owned implementation
 ├── runs/        optional Page-owned interaction or Paper-local Run tickets
 ├── results/     Folder-local Results
@@ -52,13 +46,10 @@ Evidence Workspace. Supporting Run Results and the single Page-local Run
 provide the material; no `pagex/`, `probe/`, or standalone value lane is a
 current write target.
 
-Paper-local Evidence/Display Run ids are governed by
-`haipipe-paper/ref/run-naming.md`: `pm-…` (Main), `pa-…` (Appendix), and
-`pr-…` (Round). Page-owned interaction starts with
-`rp00_mermaid-structure` and continues as `rpNN_pNN[-pNN]`; delegated
-paragraph writing keeps its owner-native Task identity (`rNN`, `rlNN`, or
-global). Existing `pjNNtNNrNN` and `rNN_page-writing...` files are historical
-and read-only.
+New local work uses the shared typed RP/RE/RD grammar. Read
+`haipipe-paper/ref/run-naming.md` for Paper judgment IDs, owner/worker boundaries
+and historical `pm-/pa-/pr-/pj...` or compact `rp00/rpNN` records. Existing
+identities are not renamed; reused Results keep their exact native address.
 
 There is no View layer and no Paper-level Literature, Value, or Display Page
 Type or plugin. CITE, VALUE, and DISPLAY are typed Results presented in the
@@ -91,18 +82,17 @@ paper/
 │   ├── SKILL.md              the Paper Board-level work console contract
 │   └── ref/                   Space mapping and presentation references
 ├── haipipe-paper-workflow/
-│   └── SKILL.md              the journey gate machine (Ideation → Story →
-│                             Evidence/Execution → Section → Compile → Round)
+│   └── SKILL.md              Run Spec list, native Runtime index and G0–G5 controls
 ├── haipipe-paper-assemble/
 │   ├── SKILL.md              complete-paper source-driven DOCX/PDF contract
 │   └── ref/                   config example and assembly references
-├── workflow-phases/          Paper journey contracts with a Page carrier
-│   ├── haipipe-paper-ideation/     P0 · candidate ideas and selection
-│   ├── haipipe-paper-story/        P1 · Paper Story prospective blueprint
+├── workflow-phases/          retained compatibility path for self-owned PageTypes
+│   ├── haipipe-paper-ideation/     Idea portfolio projection
+│   ├── haipipe-paper-story/        Paper Story prospective blueprint
 │   ├── haipipe-paper-section/
 │   └── haipipe-paper-round/
 │                             (retired literature/value/display/dash Page Types deleted 260822)
-├── haipipe-paper-venue/   the one non-phase Page Type: a QBv bank record
+├── haipipe-paper-venue/   shared Venue PageType: a QBv bank record
 ├── venue/                    the shared QBv desk bank (bank/), prose playbooks,
 │                             and the literature bank
 ```
@@ -110,7 +100,7 @@ paper/
 ## Contract and validation status
 
 Read the owning skills for current versions and gates; this index does not
-duplicate their status tables. Story remains a `0.9.1` design draft. Neither
+duplicate their status tables. Story remains a v0.x design draft. Neither
 skill promotion nor outline promotion is implied by editing or passing tests.
 
 The example `examples/Project-Personality-OpioidRx/papers/Paper-AgreeablePrescriptionDiscretion`

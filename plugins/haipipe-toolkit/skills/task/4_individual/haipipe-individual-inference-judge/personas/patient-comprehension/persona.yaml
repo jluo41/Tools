@@ -3,7 +3,7 @@ rubric: patient-comprehension
 target_audience: patient
 model: claude-haiku-4-5-20251001
 
-# Dimensions this judge scores on (1-5):
+# Required dimensions; each score is 1-5 or explicitly unavailable.
 dimensions:
   - clarity            # Is the message readable for the audience?
   - actionability     # Does it tell the patient what to do?

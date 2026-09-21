@@ -147,7 +147,7 @@ Execution model — Databricks notebooks
 Unlike other task-types that use papermill for local execution, raw extraction tasks run on **Databricks**.
 The run script only converts the `.py` to `.ipynb` — it does NOT execute locally.
 
-Workflow:
+Extraction Run procedure:
   1. `runs/<RUN>.sh` converts `.py` → `.ipynb` and writes `runtime.yaml`
   2. User uploads `.ipynb` to Databricks workspace (browser Import when no
      CLI is allowed; keep converted stage notebooks in the group's
@@ -160,7 +160,12 @@ Workflow:
      `_WorkSpace/0-RawDataStore/<cohort>/` (Pattern 2 skips this — PHI
      stays on the volume and Stage 1 reads it there)
 
-The run-script template is `ref/run-databricks-sh-template.sh` — convert-only, no papermill execute.
+The run-script template is `ref/run-databricks-sh-template.sh`: conversion is a Step inside the extraction Run.
+Its successful exit means notebook preparation only; the Run remains blocked awaiting external execution.
+Read `../../haipipe-task/ref/databricks-execution.md` before the upload/run handoff.
+Bind the external job/run id, config hash, cluster logs, output manifest, and Result checks to the same bNNjNNtNNrNN receipt.
+No separate converter Run is allocated by default. Only actual cluster completion plus the Result gate can close extraction.
+On timeout preserve the external run id and report still-running; inspect it before any retry.
 
 
 Task naming within a cohort extraction Job

@@ -1,84 +1,112 @@
 # <Target>: <what it rewards and refuses>
 
-state: 🔴 OPEN · <what is verified and what remains open>
+state: 🔴 OPEN · contract partial until sources and Page CHECK are recorded
 page-type: venue
 owner: <owner>
 method: <how this target is researched and refreshed>
 
 ## Opening
 
-<One paragraph: what this desk is, which categories it publishes, and what it
-buys. No paper is named — this page serves any paper that ever targets the desk.>
+<One target and category, audience, profile, and scope. This bank Page serves
+multiple papers; no individual paper's target decision is made here.>
+
+### Versioned contract
+
+```yaml
+versioned_contract:
+  schema_version: 1
+  contract_version: "<local version, not a verification claim>"
+  target: "<one exact desk/agency/jurisdiction>"
+  category: null
+  profile: null
+  state: partial
+  verified_at: null
+  refresh_due: null
+  official_source_results: []
+  page_check_receipt: null
+  blocking_unknowns:
+    - "Confirm category and pack-backed/cfp-only profile."
+    - "Collect official-source Results for binding rules and their enforcement dates."
+    - "Record Page CHECK acceptance of this contract version."
+  contract_locator: "<this-page>.md#versioned-contract"
+```
+
+<Set profile to pack-backed or cfp-only using actual source coverage. Null
+fields are explicit partial-state gaps, never defaults for a current contract.
+Follow the skill's consumer preflight before any current/deep-fit claim.>
 
 ### Writing Style
 
-Distinguish DESK RULE, PACK OBSERVATION, PACK PRESCRIPTION, and UNKNOWN inline.
-Every number names its source and access date. Write "the pack refuses X",
-never "do not do X" — a reference, not a rulebook.
+Type every statement as DESK RULE, PACK OBSERVATION, PACK PRESCRIPTION,
+LOCAL DECISION, OWN ESTIMATE or UNKNOWN. Every number names its source and
+access date, or the estimate's basis and uncertainty. Existing pack advice
+remains informative unless a current official-source Result establishes a rule.
 
 ## Content
 
-<The division list is RESOLVED from paper/venue/<pack>/<outlet>/ — one
-style.md per unit, one division, in the desk's own reading order. A desk with
-no pack tree (grant, patent) resolves from the target's own document units.>
+### 1 · Target identity and scope
 
-**Division map:** desk taste → venue structure → submission rules. Keep the
-three figures in this order inside the Content map or the relevant visual
-Evidence Item; `Diagram` is not a Page section.
+<Exact target, article/application category, audience, profile and coverage.
+For a family summary, keep a specific-target gap visible until resolved.>
 
-### 1 · What the desk buys, and what it will not
+### 2 · Fit and desk rejection
 
-<The taste test, sourced. Rewarded contributions, permitted methods,
-desk-reject signals — the desk's own words where it publishes them.>
+<Sourced contributions rewarded, permitted methods, published or observed
+rejection signals. Separate the desk's rule from the pack's interpretation.>
 
-### 2 · What arriving here costs
+### 3 · Venue structure
 
-<Fees, review clock, reported odds. An unpublished fact is an UNKNOWN row
-with an owner, never a deleted one.>
+<Target reading order, required components, sourced total/per-unit limits,
+resolver gaps and desk/pack conflicts. Diagrams live here or as visual Evidence
+Items; do not create a separate Diagram Page section.>
 
-### 3 · Which sibling outlet a paper leans to, and what pins it here
+### 4 · Unit guidance
 
-<Only when a family shares a pack. What the primary claim is at each desk,
-and what the pin costs downstream.>
+<Repeat one comparable record per real section/document unit. Retain stable
+Sec- identifiers used by existing Section bindings; the number of units varies.>
 
-### 4 · Sec-0-<Unit>: <what the pack found, in one line>
+#### <Sec-id / target-unit> · <job in the document>
 
-<One division per desk reading unit, numbered to join `S-Main-<n>`; the
-resolver wins when desk and index part. Repeat this division shape per unit.>
+- Job and source: <reader purpose and exact source locator>.
+- Shape, budget, displays/citations: <each value carries its authority/source>.
+- Moves and anti-patterns: <observed or prescribed, with their distinct labels>.
+- Gaps: <missing facts and next source/owner>.
 
-#### 4.1 · The moves, as slots
+<PACK-BACKED: cite the relevant style.md and named exemplars for actual
+observations. Quote only what the sources support.>
 
-#### 4.2 · What the pack refuses
+<CfP-ONLY: use the target's own document units. Say "exemplar observations:
+not available"; omit pack-found/refuses/exemplar-language sections. Include
+sourced DESK RULEs, visible UNKNOWNs, or clearly marked OWN ESTIMATEs only.>
 
-#### 4.3 · Format values
+### 5 · Submission rules
 
-<Each number names its style.md line or exemplar. `not recorded by the pack`
-is a finding and is printed.>
+<Only sourced DESK RULEs with enforcement moment: submission, revision,
+acceptance or publication. Cover format, anonymity, references, disclosures,
+portal and files where relevant. Missing official evidence stays UNKNOWN.>
 
-#### 4.4 · The language, in the papers' own words
+### 6 · Cost, clock and odds
 
-### <last> · Before you upload: the binding rules as a list you can run
+<Fees, timings and published acceptance information with dates/sources.
+Unpublished information stays UNKNOWN; never infer odds from file counts.>
 
-<Only DESK RULES, each with its enforcement moment: at-submission,
-at-revision, at-acceptance, at-publication.>
+### 7 · Gaps and handoff
+
+<Contract state/version, conflicts, blocking unknowns with owner/refresh route,
+and what consumers can do now. Partial supports a broad screen; current must
+pass consumer preflight. Ideation/Story own their target decisions and bind the
+exact version consumed.>
 
 ## Aims
 
-### A1 · <mirror division 1's name>
+<One Aim group per Content division, matching its name. Give Done when / Now
+for each. Keep one Page-wide group for shared requirements.>
 
-- ⬜ A1.1 · <what done looks like for the taste division>
-  **Done when:** rejection tests resolve to current desk sources.
-  **Now:** <current fact>
+### P · Page-wide contract
 
-<One Aim group per Content division, same names behind an emoji, plus one `P`
-group for page-wide targets that belong to no single unit.>
+- ⬜ P1 · Statements have authority/source and applicable enforcement date.
+- ⬜ P2 · Contract fields and state are honest; unknowns have a refresh route.
+- ⬜ P3 · Page CHECK names the rendered Page and exact contract version.
 
-### P · Targets that belong to no single section
-
-- ⬜ P1 · Every venue statement is typed and sourced; every desk rule carries
-  its enforcement moment.
-  **Done when:** a walk of the page finds no bare number and no untyped claim.
-  **Now:** <current fact>
-
-<!-- File inventories belong under outline/<stem>-files.md; change history
-belongs under outline/<stem>-log.md. They are records, not Page sections. -->
+<!-- Inventories and logs remain under outline/<stem>-files.md and
+outline/<stem>-log.md. They are not authored Page sections. -->

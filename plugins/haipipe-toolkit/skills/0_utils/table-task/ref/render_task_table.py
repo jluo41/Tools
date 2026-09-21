@@ -41,9 +41,10 @@ WHAT ELSE IT READS, and only this:
     scripts/ scripts/config/   the task's code and configs (legacy config/,
                                configs/ read and flagged S10); each config is
                                one Config Catalog row
-    runs/*.sh|*.ps1|*.cmd      tickets = planned Runs; the script a ticket
+    runs/*.sh|*.ps1|*.cmd      authored Tickets; the script a ticket
                                names is the task's main script
-    <job>/results/<task>/<run>/runtime.yaml   the receipt = an actual Run
+    <task>/results/<run>/runtime.yaml         the receipt = an actual Run
+    <job>/results/<task>/<run>/runtime.yaml   legacy fallback, flagged S-results
     <job>/src/config-defaults.yaml `store:`   the job's mode (② consumer-
                                serving); a `store:` in a task config is DERIVED
 Nothing from git, boards, or another table. A future Board Table is outside
@@ -74,7 +75,7 @@ named in a newer receipt's `supersedes:` renders Superseded and does not count.
 Two appendix surfaces from the same scan:
     Config Catalog one config           task · config · purpose · mode · input · output
     Runs Overview  one Run              bNNjNNtNNrNN · task · config · ticket ↔ receipt · status
-                                        (`all` shows receipts only; `--surface run` shows planned too)
+                                        (includes explicitly marked recovery rows on both surfaces)
     Store Slots    one (job, store)     where a consumer-serving job writes
 """
 import argparse
@@ -101,14 +102,15 @@ GEN_LINE = re.compile(r"^(<!-- generated .*-->|generated: .*)$")
 HEAD_PREFIX = re.compile(r"^(?:\d+[_-])?[A-Za-z0-9_.\-]+\s*(?:[:—–-]+|--)\s+")
 
 STATUS = {"ok": "Done", "complete": "Done", "completed": "Done",
-          "running": "Running", "failed": "Failed", "aborted": "Failed",
+          "running": "Running", "waiting-for-feedback": "Waiting",
+          "failed": "Failed", "aborted": "Failed",
           "planned": "Ready", "blocked": "Held", "superseded": "Superseded",
           # the Run executed and recorded that its input data is not on this
           # machine (code/haiutils/haistep/run_raw_table.py ABSENT_PRESENCE)
           "expected_missing": "No data", "external_required": "No data",
           "not_present": "No data", "drop_missing": "No data",
           "external_not_mounted": "No data"}
-RUN_ORDER = ("Done", "Running", "Failed", "Held", "No data", "Ready", "Superseded", "?")
+RUN_ORDER = ("Done", "Running", "Waiting", "Failed", "Held", "No data", "Ready", "Superseded", "?")
 
 # TASK STATUS (JL 260918): one word per Task, rolled up from its Runs. A Run
 # named in a newer receipt's `supersedes:` is left out. First match wins:
@@ -118,12 +120,13 @@ RUN_ORDER = ("Done", "Running", "Failed", "Held", "No data", "Ready", "Supersede
 #   any Run status unknown     → Unknown
 #   any Run Held               → Held
 #   any Run No data            → No data   (the input is not on this machine)
+#   any Run Waiting            → Waiting
 #   some Done, some Ready      → Partial   (tickets still waiting)
 #   every Run Ready            → Not run
 #   every Run Done             → Done
-TASK_ORDER = ("Done", "Partial", "Not run", "Running", "Failed", "Held", "No data", "Unknown", "No runs")
+TASK_ORDER = ("Done", "Partial", "Not run", "Running", "Waiting", "Failed", "Held", "No data", "Unknown", "No runs")
 TASK_MARK = {"Done": "✅", "Partial": "🟡", "Not run": "⬜", "Running": "🏃", "Failed": "❌",
-             "Held": "⏸️", "No data": "📭", "Unknown": "❓", "No runs": "⚪"}
+             "Held": "⏸️", "Waiting": "⏳", "No data": "📭", "Unknown": "❓", "No runs": "⚪"}
 TASK_MEANS = {"Partial": "some tickets not run yet", "No data": "input not on this machine",
               "Unknown": "a receipt status this table does not know"}
 IN_KEYS = ("worklist", "payload", "inputs", "input", "source", "base")
@@ -460,17 +463,40 @@ def scan_task(t, j, job_addr, findings):
         iosrc = csrc if not fld("input") else iosrc
     src_note = dsrc if dsrc == "page" and iosrc == "page" else " · ".join(s for s in (dsrc, iosrc) if s and s != "page")
 
-    receipts = {}
-    for res_root, dialect in ((j / "results" / t.name, "job"), (t / "results", "task-local")):
+    receipts, receiptless, conflicting = {}, {}, set()
+    result_roots = [(j / "results" / t.name, "job"), (t / "results", "task-local")]
+    store = flat_yaml(j / "src" / "config-defaults.yaml").get("store", "")
+    if store and store not in {"null", "~"}:
+        store_path = Path(store).expanduser()
+        if not store_path.is_absolute():
+            ancestors = [j, *j.parents]
+            checkout = next((a for a in ancestors if (a / "pyproject.toml").is_file()
+                             and (a / "code").is_dir()), None)
+            checkout = checkout or next((a for a in ancestors if (a / ".git").exists()), None)
+            if checkout is None:
+                findings.append(f"S-store {addr}: cannot resolve relative declared store without checkout root")
+                store_path = None
+            else:
+                store_path = checkout / store_path
+        if store_path is not None:
+            output_root = store_path / j.parent.name / j.name
+            result_roots.extend(((output_root / "results" / t.name, "legacy-store"),
+                                 (output_root / t.name / "results", "declared-store")))
+    for res_root, dialect in dict.fromkeys(result_roots):
         if not res_root.is_dir():
             continue
         if dialect == "job":   # JL 260909: Results live inside the Task that owns the Run (haipipe-task S12 flipped the same day)
-            findings.append(f"S-results {addr} {t.name}: results/ at the job level; the law is <task>/results/<run>/")
+            findings.append(f"S-results {addr} {t.name}: historical job-level Results; preserve their recorded resolver")
         for run_dir in subdirs(res_root):
             r = run_dir / "runtime.yaml"
             if r.is_file():
+                previous = receipts.get(run_dir.name)
+                if previous and previous["path"] != r:
+                    conflicting.add(run_dir.name)
+                    findings.append(f"R-duplicate {addr} {run_dir.name}: multiple runtime receipts")
                 receipts[run_dir.name] = dict(path=r, **flat_yaml(r))
             else:
+                receiptless[run_dir.name] = run_dir
                 findings.append(f"R01 {addr} {t.name}/{run_dir.name}: results folder without runtime.yaml")
 
     runs, seen, off = [], set(), []
@@ -480,6 +506,8 @@ def scan_task(t, j, job_addr, findings):
             off.append(tk.name)
         seen.add(tk.stem)
         cfg = config_by_stem.get(tk.stem)
+        if tk.stem not in receipts:
+            findings.append(f"R01 {addr} {t.name}/{tk.stem}: Ticket without runtime receipt")
         runs.append(run_row(addr, raddr, tk.stem, tk, receipts.get(tk.stem), t,
                             cfg["path"] if cfg else "? (config not found)"))
     if off:
@@ -492,11 +520,22 @@ def scan_task(t, j, job_addr, findings):
             runs.append(run_row(addr, prefix(stem, "r")[0], stem, None, rec, t,
                                 cfg["path"] if cfg else "? (config not found)"))
 
-    # a newer receipt's `supersedes:` retires the Run it names, whatever that Run said
+    for stem, directory in receiptless.items():
+        if stem not in seen and stem not in receipts:
+            row = run_row(addr, prefix(stem, "r")[0], stem, None, None, t, "? (config not found)")
+            row.update(result=str(directory), source="Result without Ticket or receipt")
+            runs.append(row)
+    for row in runs:
+        if row["run"] in conflicting:
+            row.update(status="Held", source="conflicting runtime receipts")
+
+    # Supersession is lineage; it cannot hide missing or conflicting records.
     replaced = {old: stem for stem, rec in receipts.items() for old in supersedes_of(rec["path"])}
     for r in runs:
         if r["run"] in replaced:
-            r["status"], r["superseded_by"] = "Superseded", replaced[r["run"]]
+            r["superseded_by"] = replaced[r["run"]]
+            if r["status"] != "Held":
+                r["status"] = "Superseded"
 
     return dict(addr=addr, name=t.name, path=t, page=page if page.is_file() else None,
                 state=state, owner=owner, develops=develops or "?", inp=inp or "—", out=out or "—",
@@ -514,7 +553,7 @@ def task_status(runs):
     elif not live:
         word = "Done"        # every Run was superseded by another in this Task
     else:
-        word = next((w for w in ("Running", "Failed", "?", "Held", "No data") if w in live), None)
+        word = next((w for w in ("Running", "Failed", "?", "Held", "No data", "Waiting") if w in live), None)
         word = "Unknown" if word == "?" else word
         if word is None:
             ready = live.count("Ready")
@@ -530,14 +569,20 @@ def task_label(s, mark=True):
 
 def run_row(taddr, raddr, stem, ticket, rec, t, config):
     if rec is None:
-        status, started, ended, exit_code, result, src = "Ready", "", "", "", "", "ticket only"
+        status, started, ended, exit_code, result, src = "Held", "", "", "", "", "missing runtime receipt"
     else:
         raw = rec.get("status", "")
         status = STATUS.get(raw.lower(), f"? ({raw})" if raw else "? (no status)")
         started = rec.get("started") or rec.get("started_at") or ""
         ended = rec.get("ended") or rec.get("finished_at") or ""
         exit_code, src = rec.get("exit_code", ""), "receipt"
-        result = str(rec["path"].parent.relative_to(t.parent.parent))
+        try:
+            result = str(rec["path"].parent.relative_to(t.parent.parent))
+        except ValueError:
+            result = str(rec["path"].parent)
+        if ticket is None:
+            status, src = "Held", "receipt without Ticket"
+
     return dict(addr=taddr + raddr, task=t.name, config=config, run=stem,
                 ticket=f"runs/{ticket.name}" if ticket else "⬜ none", status=status,
                 started=started[:16], ended=ended[:16], exit_code=str(exit_code),
@@ -762,7 +807,7 @@ def render(root, blocks, findings, which, fmt, depth="run"):
                   f"generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
                   f"blocks {len(blocks)} · jobs {n_jobs} · tasks {len(tasks)} ({task_counts(tasks)}) "
                   f"· tickets {sum(len(t['tickets']) for t in tasks)} "
-                  f"· configs {len(configs)} ({declared_config_descriptions} described) · receipts {receipts} "
+                  f"· configs {len(configs)} ({declared_config_descriptions} described) · paired receipts {receipts} "
                   f"· runs {fmt_counts(run_counts(runs))}",
                   f"Develops: {typed} typed on the page, {len(tasks) - typed} _in italics_ = the code's own docstring, "
                   f"not yet confirmed by a person", ""]
@@ -779,8 +824,8 @@ def render(root, blocks, findings, which, fmt, depth="run"):
             lines += (["## Config Catalog · one row per configuration", "", md_table(CONFIG_HDR, rows), ""] if fmt == "md"
                       else ["# Config Catalog", tsv_table(CONFIG_HDR, rows), ""])
     if which in ("all", "run"):
-        rows = run_rows(blocks, receipts_only=(which == "all"))
-        title = "Runs Overview · one row per receipt" if which == "all" else "Runs Overview · one row per Run (ticket ↔ receipt)"
+        rows = run_rows(blocks, receipts_only=False)
+        title = "Runs Overview · one row per Run (including recovery records)"
         if rows or which == "run":
             lines += ([f"## {title}", "", md_table(RUN_HDR, rows), ""] if fmt == "md"
                       else [f"# {title}", tsv_table(RUN_HDR, rows), ""])

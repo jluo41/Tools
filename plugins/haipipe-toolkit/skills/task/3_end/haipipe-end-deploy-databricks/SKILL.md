@@ -19,12 +19,24 @@ Consumes an Endpoint_Set built by `haipipe-end-endpointset` (canonical input = t
 **Backing repo:** `platforms/platform-databrick-inference/` (submodule of the main repo).
 Contains `opt_program/mlflow_model.py` (MLflow wrapper), `opt_program/mlflow_packaging.py` (UC registration), `scripts/build_endpoint/` (deploy pipeline), and per-product configs under `config/<product>/<version>/dev.yaml`.
 
-> Status: active. Deployment scripts implemented and tested with CGM + MIMIC
-> endpoints. See `platforms/platform-databrick-inference/CLAUDE.md` for full reference.
+> Historical deployments used CGM and MIMIC endpoints. Current availability
+> depends on the workspace prerequisites below; inspect the platform guide.
 
   Function axis:  dashboard | deploy | test | monitor | teardown | review
 
 ---
+
+Workspace prerequisites
+----------------------
+
+This skill describes the adapter contract. Availability in the current project
+requires `platforms/platform-databrick-inference/`, its scoped guide, referenced scripts, compatible
+runtime dependencies, deployment config, and the selected platform's credentials
+and permissions. Inspect those paths before constructing a live command.
+If a prerequisite is absent, return blocked with its exact missing path or setting;
+prior deployment history is not proof that this workspace is deploy-ready.
+Use the Endpoint_Set wire pair matching this platform and the project's actual
+serving host. Do not infer host permissions or installed API behavior from examples.
 
 Commands
 --------

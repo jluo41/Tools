@@ -3,6 +3,11 @@ haipipe-discovery-review — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.7.1 · 2026-09-20
+
+- Define source-level confidence as confidence in faithful extraction, and
+  separate it from study appraisal, retrieval coverage, and Task synthesis.
+
 ## 0.7.0 · 2026-09-08
 
 - Add external review procedures for extraction, appraisal, citation tracing,

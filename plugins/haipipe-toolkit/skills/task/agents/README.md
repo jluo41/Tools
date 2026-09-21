@@ -16,14 +16,14 @@ Orchestrator dispatches creator + reviewer in loops. Creator never
 reviews. Reviewer never creates. They loop until reviewer says pass.
 
 
-The 4-phase lifecycle
+The four lifecycle commands
 ---------------------
 
 ```
-Phase 1: PLAN      creator drafts plan.yaml        → reviewer checks plan     → loop if revise
-Phase 2: BUILD     creator writes/fixes code+config → reviewer checks code     → loop if revise
-Phase 3: EXECUTE   (run, not creator)               → reviewer checks results  → loop if fail
-Phase 4: REPORT    creator drafts report.yaml       → reviewer checks report   → loop if revise
+Command 1: PLAN      creator drafts plan.yaml        → reviewer checks plan     → loop if revise
+Command 2: BUILD     creator writes/fixes code+config → reviewer checks code     → loop if revise
+Command 3: EXECUTE   (run, not creator)               → reviewer checks results  → loop if fail
+Command 4: REPORT    creator drafts report.yaml       → reviewer checks report   → loop if revise
 ```
 
 
@@ -56,8 +56,8 @@ Agent details
 | Agent | Stages | What it does |
 |-------|--------|-------------|
 | `haipipe-task-orchestrator-agent` | all | Clean-context dispatch target. Routes to creator/reviewer per stage and returns the Run/Result receipt. |
-| `haipipe-task-creator-agent` | 1, 2, 4 | Plan: drafts IPO plan. Build: writes/fixes code. Report: drafts report and Run audit. |
-| `haipipe-task-reviewer-agent` | 1, 2, 4 | Plan: checks IPO. Build: Gate 1 code review. Report: accuracy + Gate 2 Result audit. |
+| `haipipe-task-creator-agent` | 1, 2, 4 | Plan: drafts Run Specs. Build: writes/fixes code. Report: drafts report and Run audit. |
+| `haipipe-task-reviewer-agent` | 1, 2, 4 | Plan: checks Run Specs. Build: Gate 1 code review. Report: accuracy + Gate 2 Result audit. |
 
 
 Shared across task

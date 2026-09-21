@@ -20,7 +20,6 @@ design_profile:
   narrative: none
   display: none
   section_edit: none
-  terminal: adopted
 ```
 
 
@@ -43,15 +42,19 @@ template:
 ```
 
 
-## Phase use
+## Run guidance
 
 ### Commission and Generate
 
-Use one narrow grant for the prompt and motivation. The motivation slot cycles
+Use one narrow input scope for the prompt and motivation. The motivation slot cycles
 through variants of the same released wager; a different thesis needs a new
 Commission.
 
-### Verify and adopt
-Draft a set of 3-5 reminder variants that rotate. Each follows
-the template but varies the motivation slot. Judge each variant, render the
-set to `delivery/render/`, then adopt or decline.
+For a commissioned rotating set, draft the frozen number of variants (default
+3-5); each follows the template and varies the motivation slot. A commissioned
+single example stays a single example, rather than expanding into a set.
+
+### Verify
+Check the frozen `unit.shape/count` and judge every commissioned reminder.
+Render inside the current Verify Result if needed; do not draft replacement
+variants. Independent Verify pass makes that exact Unit ready for Delivery.

@@ -1,3 +1,8 @@
+## 0.5.0 — 2026-09-20
+
+- Make emoji optional and prioritize readable, accessible labels.
+- Correct the current package tree path from `Tools/plugins/` to `plugins/`.
+
 ## 0.4.0 — 2026-09-07
 
 - Reversed the universal reply-format rule after JL explicitly retired it.

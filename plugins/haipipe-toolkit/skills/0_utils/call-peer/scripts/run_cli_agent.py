@@ -26,20 +26,16 @@ import stat
 import subprocess
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-
-def _repo_root() -> Path:
-    here = Path(__file__).resolve()
-    for candidate in (Path.cwd(), *here.parents):
-        if (candidate / "pyproject.toml").is_file() and (candidate / "code").is_dir():
-            return candidate.resolve()
-    raise RuntimeError("Could not find the Physician-SPACE repository root")
+UTC = timezone.utc
 
 
-ROOT = _repo_root()
+# The target workspace is independent of the installed skill's location.
+# Keep ROOT as a compatibility alias for the paired CLI and registry helpers.
+ROOT = Path.cwd().resolve()
 SCHEMA = "haipipe.agent-cli-receipt/v1"
 
 

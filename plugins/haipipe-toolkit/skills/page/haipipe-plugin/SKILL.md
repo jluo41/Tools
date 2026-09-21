@@ -8,8 +8,8 @@ description: >-
   plugin, plugin folder, plugin roster, plugin tab, add a plugin,
   /haipipe-plugin.
 metadata:
-  version: "1.10.0"
-  last_updated: "2026-09-15"
+  version: "1.10.1"
+  last_updated: "2026-09-20"
 ---
 
 # /haipipe-plugin · a page's material, as one contract

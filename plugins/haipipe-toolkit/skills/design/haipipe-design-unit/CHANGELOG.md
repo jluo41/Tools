@@ -2,6 +2,19 @@
 
 ## 0.4.0 current · 2026-09-20 (version unchanged at 0.4.0)
 
+- One Ticket produces one Result; current caller duties end at independent
+  Verify and ready Delivery. Historical Adopt receipts remain audit-only.
+- Optional Result-local render manifests bind source and image hashes, Item,
+  Generate Run and version. Verify may render only into its own Result; images
+  do not add content artifacts. The checker validates both local and target
+  render evidence, and the presenter reads it without writing a projection.
+- The renderer requires an explicit Result directory, rejects closed Results,
+  escapes and overwritten versions, and measures the actual Playwright viewport
+  using local Chrome. Horizontal/left clipping and vertical overflow cannot
+  pass `fits_one_screen`. Fresh-context UI validation exposed the old mismatch.
+- Resolve venue guides from the current Design tree and distinguish named hold
+  diagnostics, human Commission holds, and blocked runtime receipts.
+
 - `render_screen.py` measures form controls: a control's shown text (its
   value, its chosen option, or its placeholder) joins the weakest-contrast
   sweep, which walked past it before, and every field's edge against what it

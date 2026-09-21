@@ -1,3 +1,7 @@
+## 0.6.1 · 2026-09-20
+
+- Define Render profile ownership and exact Evidence Result selection for delivery exports.
+
 # Changelog · haipipe-plugin-delivery
 
 ## 0.6.0 — 2026-09-15

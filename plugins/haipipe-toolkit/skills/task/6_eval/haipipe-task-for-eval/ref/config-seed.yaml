@@ -1,5 +1,5 @@
 # =============================================================================
-# Template for configs/<NAME>.yaml — evaluation task
+# Template for scripts/config/<NAME>.yaml — evaluation task
 # =============================================================================
 
 _meta:
@@ -10,7 +10,7 @@ _meta:
   input: |
     <e.g., ModelInstance clm_d128_l12/@v0007 + AIData EventGlucose/@v0001 test_id>
   output: |
-    results/<run>/metrics.json — keys: mae, rmse, samples, horizon
+    $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json — keys: mae, rmse, samples, horizon
 
 
 # =============================================================================

@@ -1,14 +1,14 @@
 ---
 name: haipipe-paper-workflow
 description: >-
-  The paper-level journey: Ideation → Story → Evidence/Execution → Section →
-  Compile → Round, with checkable human gates. Use when asking where a paper
+  The Paper Workflow: bounded Run Specs, native Run receipts, dependencies,
+  and checkable human gates across Ideation, Story, Sections and delivery. Use when asking where a paper
   is, how its research plan connects to execution, whether work may be released, or what may be
-  compiled next. Trigger: paper journey, workflow, phase gate,
+  compiled next. Trigger: paper journey, workflow, Run routing, gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "1.2.1"
-  last_updated: "2026-09-13"
+  version: "1.3.1"
+  last_updated: "2026-09-20"
 ---
 
 # /haipipe-paper-workflow · read the journey, test the gate, mint the next work
@@ -18,71 +18,41 @@ cross-paper authority. It says which artifact owns each decision and when the
 next artifact may be released. It does not write a Page, execute a Task or
 Discovery, run a Page lifecycle, or judge manuscript prose.
 
-## 🔤 Two meanings of workflow
+## Workflow = a list of Runs
 
-A **journey phase** is one position in the paper journey below. A **Page phase**
-is one step of the shared Page lifecycle:
+A Workflow Definition lists bounded Run Specs and their dependency/Route graph.
+A Workflow Runtime lists the actual owner-native Runs selected from those Specs.
+Read [ref/run-workflow.md](ref/run-workflow.md) before planning, dispatch,
+resume or status: it owns the Spec templates, identities, controls, Runtime
+storage and completion rules. Page containers and G0–G5 gates do not become
+Runs; Steps and Versions remain internal to a bounded Run.
 
-```text
-Page lifecycle:   00 CONTEXT → 01 OUTLINE → 02 EVIDENCE → 03 CONTENT → 04 CHECK
-Paper journey:    P0 Ideation → P1 Story → P2 Evidence/Execution →
-                  P3 Section → Compile → P4 Round
-```
+Paper Pages hold the idea portfolio, prospective Story, manuscript Sections,
+Venue reference and feedback Round. Discovery and Task remain external work
+owners. A Story may have planned research, accepted evidence and released
+Sections at the same time; status comes from their Runs and receipts.
 
-`P2 Evidence/Execution` is a work lane, not a Paper Page Type. Discovery
-blocks, Task blocks, and Runs keep their own native contracts. The Story
-Content explains the paper's knowledge needs, evidence basis, and intended
-argument through C1–C8. Assignments, releases, state and receipts remain in
-the shared workflow records and native owners. Seed, Discovery Roadmap, Task
-Roadmap, and Section Narrative are substantive Story content; they do not
-require separate Paper Pages. `haipipe-paper-story` alone owns that shape.
-
-## 🗺 Active paper journey
+Select the relevant Specs rather than executing a fixed sequence:
 
 ```text
-position                    authority / home                 produces
-──────────────────────────────────────────────────────────────────────────────
-P0 Ideation                 Story00-ideation in A1-Story     ranked candidate
-                                                              directions, venue fit,
-                                                              and an I3-authorized
-                                                              Story + target projection
-P1 Story                    Story<Letter>-<desk>-<idea-slug> in A1-Story       prospective paper:
-                                                              Seed + RQs + evidence
-                                                              basis + Discovery/Task
-                                                              Roadmaps + Section Narrative
-P2 Evidence / Execution     external Discovery blocks,        released and landed
-                            Task blocks, and Run receipts     evidence; no Paper
-                                                              phase page is minted
-P3 Section                  Ba/Bb Section Pages               one checked manuscript
-                                                              or appendix unit per row
-Compile                     haipipe-paper-assemble             generated delivery
-                                                              projection; DRAFT or
-                                                              SUBMISSION-READY
-P4 Round                    Bc Round Pages                     frozen feedback cycle,
-                                                              response, and next route
+Ideation native work / bounded idea judgments → I3 + G0 → Story work
+Story claim/obligation/narrative judgments → G1 → native Supporting Runs
+native accepted Results → G2 → affected Story rows / Page Evidence Runs
+reviewed C8 row → G3 → selected Page Structure/Writing/Evidence/Delivery Runs
+current Section deliveries → manuscript compile Run → G4 readiness control
+feedback batch → response work + affected owner Runs → G5 closure
 ```
 
-The live shape is deliberately overlapping:
+Arrows include control predicates, not extra Run nodes. Accepted dependencies
+can be reused. Section work may proceed as soon as its row is released, while
+other research continues. A compile before the intended set is ready remains
+DRAFT. A full Page controller pass is a Workflow Runtime, not an RP Run.
 
-```text
-Idea pool ──G0──▶ Story blueprint ──G1──▶ Discovery/Task/Run work
-                         ▲                       │
-                         └──────G2 receipts─────┘
-                                  │ G3, per Section row
-                                  ▼
-                           Section Page 00–04
-                                  │
-                     Compile anytime; G4 for ready status
-                                  │
-                                  ▼
-                              Round ──▶ Story or Section
-```
-
-The former “run to 70%” is a useful human readiness signal, not a global
-arithmetic gate. A person may release a Section as soon as that row has a
-stable reader question, claim/evidence bindings, and a workable outline;
-other Discovery/Task/Run work may continue in parallel. A compile made before
-all intended Sections are CHECK-closed is explicitly a DRAFT.
+The physical `workflow-phases/` path is a retained compatibility address for
+four Paper PageType skills. P0–P4 labels are historical controller metadata;
+they do not define workflow units. Each Paper Workflow remains a list of
+owner-native Runs; Page controller steps and compatibility paths do not add
+Run identities.
 
 ## 🧩 Ownership map
 
@@ -126,7 +96,7 @@ G0  Ideation → Story
     second selection receipt. Page Shape approval and Page CHECK acceptance
     remain separate Page decisions and cannot substitute for I3 or G0.
     Read the Ideation sync's `paper_page` surfaces separately: a current
-    working projection is evidence of the latest P0 display, while release and
+    working projection is evidence of the latest Ideation display, while release and
     delivery are current only with their own matching Page-owned receipts. G0
     validates the latest semantic handoff and reciprocal Story binding; it does
     not silently promote a stale Page release or delivery. If
@@ -135,7 +105,7 @@ G0  Ideation → Story
     Page, projection receipt, or selection receipt. A stale release surface is
     a Page publication issue, not a second I3 selection state; only apply a
     stricter G0 policy when the named Paper contract explicitly requires a
-    released P0 view.
+    released Ideation view.
 
 G1  Story → Evidence/Execution
     The reviewed Story plan names Seed identity and RQs, C5 evidence basis and
@@ -207,22 +177,16 @@ evidence remain with the owners. A
 Section's Page workflow still uses the common Evidence graph:
 `Supporting Run → Local Input → Local Run → typed Result`.
 
-### 🪪 Paper Run naming
+### Paper Run naming
 
-The Paper-specific Run dialect is defined in
-[`../haipipe-paper/ref/run-naming.md`](../haipipe-paper/ref/run-naming.md).
-Use `pm-<page>-<target>-rNN`, `pa-<page>-<target>-rNN`, or
-`pr-<round>-<target>-rNN` for new Paper-local Evidence/Display Runs. The
-Section's Page-owned interaction follows the shared Page contract:
-`rp00_mermaid-structure` first, then `rpNN_pNN[-pNN]`, with Page-global
-`P01…PN` addresses. Delegated paragraph writing remains an owner-native Task
-Run (`rNN`, `rlNN`, or another current Task identity); historical
-`rNN_page-writing...` forms are read-only and are never bulk-renamed. `Ba`/`Bb`/
-`Bc` are shelf tokens, and `RD<NN>` is the Round Page token, not a Run id.
-Existing `pjNNtNNrNN` files are read-only historical Runs and are never
-bulk-renamed.
+Load [`../haipipe-paper/ref/run-naming.md`](../haipipe-paper/ref/run-naming.md).
+New Page work uses typed RP, RE and RD identities from the shared Page owner;
+external Supporting Runs retain their native identity. Paper judgment and
+compile/response profiles are declared in the Run Spec reference. Existing
+`pm-/pa-/pr-`, compact `rp00/rpNN`, and `pj...` receipts stay readable without
+renumbering and are not new allocation grammars. `RD<NN>` names a Round Page.
 
-## 🧾 Receipts and phase reading
+## 🧾 Receipts and work status
 
 The existing Story `outline/` log and shared `workflow/` receipts may record
 G0, G1, G2 interpretations and G3 Section releases. The Paper-side G0 record,
@@ -236,15 +200,11 @@ hashes. The Paper-side G3 release is not a substitute for Page release or
 CHECK; G4 may consume a Section only after the current Page release/CHECK
 contract is satisfied. There is no separate child control-page receipt store.
 
-The current position is read, not guessed from a folder name:
-
-- before G0: P0 Ideation;
-- after G0 but before work release: P1 Story;
-- while released work lacks settled receipts: P2 Evidence/Execution;
-- once individual rows are released: P3 Section may run in parallel;
-- after a build: read its DRAFT/ready receipt, not a phase number;
-- after feedback arrives: P4 Round, with each concern routed back to Story or
-  a Section.
+Read the Runtime and exact native receipts for status. List each current
+bounded goal, owner, accepted Result/version and remaining dependency or gate.
+Show planned, managed and reused work distinctly. Report DRAFT/ready from the
+build manifest; report response coverage from the Round ledger. A status read
+neither allocates a Run nor asks for decisions already recorded.
 
 ## 🧭 Current boundary
 
@@ -256,8 +216,8 @@ not resolve retired child Page names or hidden compatibility paths.
 
 ## ✅ Completion checks
 
-- The active journey names only Ideation, Story, Evidence/Execution, Section,
-  Compile, and Round.
+- The Workflow names concrete Run Specs and their routes; the Runtime indexes
+  actual native Runs once, with their receipts and reuse/managed status.
 - Each selected idea has one Story blueprint whose Content follows the Story contract.
 - Every Story admitted through G0 traces its target/category and Venue contract
   to the final handoff and sole I3 selection receipt, and binds back to them.
@@ -275,7 +235,7 @@ not resolve retired child Page names or hidden compatibility paths.
   of its planned research. Story skill and new outlines remain v0.x pending
   the user's explicit authorization for each promotion.
 - Every landed receipt points back to a Story row without copying its result.
-- Every Section row is independently releasable and runs Page 00–04.
+- Every Section row is independently releasable and uses the shared Page Workflow.
 - Compile reads Story's machine-readable section order and Section-owned
   delivery fragments; it never reads a retired child page.
 - Static validation and a fresh-context field test pass after this skill edit.

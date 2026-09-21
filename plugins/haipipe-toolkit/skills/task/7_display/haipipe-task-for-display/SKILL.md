@@ -58,7 +58,7 @@ tasks/b<NN>_<display-input-block>/
         │   └── config/r01_<kind>_<name>.yaml
         └── runs/r01_<kind>_<name>.sh
 
-$OUTPUT_ROOT/results/t01_display_input_summary/r01_<kind>_<name>/
+$OUTPUT_ROOT/t01_display_input_summary/results/r01_<kind>_<name>/
 ├── source_data.csv
 ├── provenance.json
 ├── runtime.yaml
@@ -114,7 +114,7 @@ When `/haipipe-task plan` targets an existing job of this type, the generated pl
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type
-../../haipipe-task/ref/workflow-template.yaml  ← task-level template (Run/Gate1/Gate2)
+../../haipipe-task/ref/workflow-template.yaml  ← authoritative Run Spec template with entry/exit gates
 ```
 
 Schema source of truth:

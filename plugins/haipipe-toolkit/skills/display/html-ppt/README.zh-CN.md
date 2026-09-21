@@ -1,7 +1,7 @@
 # html-ppt · HTML PPT 工作室
 
 > 一款专业级的 AgentSkill，让 AI 做出真正能打的 HTML 演示文稿。
-> **36 套主题**、**15 套完整 deck 模板**、**31 种页面布局**、**47 个动效**
+> **37 种主题样式**（36 个画廊主题 + `academic-report` 默认风格）、**15 套完整 deck 模板**、**31 种页面布局**、**47 个动效**
 > (27 个 CSS + 20 个 Canvas FX)，加上全新的 **演讲者模式** —— 像素级
 > 完美预览 + 逐字稿提词器 + 计时器。纯静态 HTML/CSS/JS，无需构建。
 
@@ -11,7 +11,7 @@
 
 ![html-ppt 封面 · 实时预览](docs/readme/hero.gif)
 
-> 一行命令装好 **36 主题 × 20 Canvas FX × 31 布局 × 15 完整 deck + 演讲者模式**。
+> 一行命令装好 **37 种主题样式 × 20 Canvas FX × 31 布局 × 15 完整 deck + 演讲者模式**。画廊展示 36 个通用主题；`academic-report` 是单独的默认风格。
 > 上图里的每一个预览都是真实的 iframe 加载真实模板文件 —— 不是截图，不是色卡。
 
 ## 🎤 演讲者模式（全新）
@@ -19,6 +19,8 @@
 在任何 deck 里按 `S` 键，弹出一个独立的演讲者窗口，包含 4 个**可拖拽、
 可调整大小的磁吸卡片**：当前页预览、下一页预览、逐字稿、计时器。两个窗口
 通过 `BroadcastChannel` 双向同步翻页。
+
+Notes 只在观众画面隐藏，仍保存在共享 HTML 文件中；不要在其中放机密信息。
 
 ![演讲者模式 · 4 个磁吸卡片](docs/readme/presenter-mode.png)
 
@@ -33,12 +35,12 @@ idx:N})` 通知 iframe，iframe 只是切换 `.is-active` class —— **不重�
 
 **逐字稿 3 条铁律：**
 1. **提示信号，不是讲稿** — 关键词加粗，过渡句独立成段
-2. **每页 150–300 字** — 约 2–3 分钟/页的节奏
+2. **按演讲时长控制篇幅。** 中文逐字稿可先按每页 150–300 个汉字整理成提示卡；英文可按 150–300 个单词。这个范围不保证对应固定时长。
 3. **用口语，不用书面语** — "所以" 不是 "因此"，"这个" 不是 "该"
 
-详见 [`references/presenter-mode.md`](references/presenter-mode.md)，或直接复制
-`templates/full-decks/presenter-mode-reveal/` 这个现成模板 —— 每一页都带完整
-150–300 字的示例逐字稿。
+详见 [`references/presenter-mode.md`](references/presenter-mode.md)，或通过
+`new-deck.sh` 脚手架使用 `templates/full-decks/presenter-mode-reveal/` 这个现成模板 —— 每一页都带完整
+示例逐字稿。
 
 ## 一行命令安装
 
@@ -59,7 +61,7 @@ npx skills add https://github.com/lewislulu/html-ppt-skill
 | | 数量 | 位置 |
 |---|---|---|
 | 🎤 **演讲者模式** | **新增** | `S` 键 / `?preview=N` |
-| 🎨 **主题** | **36** | `assets/themes/*.css` |
+| 🎨 **主题样式** | **37** | `assets/themes/*.css`（36 个画廊主题 + `academic-report` 默认风格） |
 | 📑 **完整 deck 模板** | **15** | `templates/full-decks/<name>/` |
 | 🧩 **单页布局** | **31** | `templates/single-page/*.html` |
 | ✨ **CSS 动画** | **27** | `assets/animations/animations.css` |
@@ -67,7 +69,7 @@ npx skills add https://github.com/lewislulu/html-ppt-skill
 | 🖼️ **Showcase deck** | 4 | `templates/*-showcase.html` |
 | 📸 **验证截图** | 56 | `scripts/verify-output/` |
 
-### 36 套主题
+### 36 个画廊主题 + 1 个默认风格
 
 `minimal-white`、`editorial-serif`、`soft-pastel`、`sharp-mono`、`arctic-cool`、
 `sunset-warm`、`catppuccin-latte`、`catppuccin-mocha`、`dracula`、`tokyo-night`、
@@ -78,11 +80,11 @@ npx skills add https://github.com/lewislulu/html-ppt-skill
 `corporate-clean`、`academic-paper`、`news-broadcast`、`pitch-deck-vc`、
 `magazine-bold`、`engineering-whiteprint`
 
-![36 主题 · 其中 8 个](docs/readme/themes.png)
+![36 个画廊主题 + academic-report 默认风格](docs/readme/themes.png)
 
-每个主题都是一份纯 CSS token 文件 —— 只需要换一行 `<link>` 就能给整份 deck
-换皮。在 `templates/theme-showcase.html` 里可以浏览全部（每一页用独立 iframe
-渲染，避免样式互相污染）。
+36 个画廊主题都是纯 CSS token 文件 —— 只需要换一行 `<link>` 就能给整份 deck
+换皮。另有 `academic-report` 默认风格，配合 `assets/academic-report-extras.css`
+使用。在 `templates/theme-showcase.html` 里可以浏览 36 个画廊主题。
 
 ![15 套完整 deck 模板](docs/readme/templates.png)
 
@@ -107,8 +109,8 @@ npx skills add https://github.com/lewislulu/html-ppt-skill
 - `weekly-report` — 周报
 - `xhs-post` — 小红书图文（9 页 3:4）
 - `course-module` — 教学模块
-- **`presenter-mode-reveal`** 🎤 — 完整分享模板，**每一页都带 150-300 字
-  的示例逐字稿**，围绕 `S` 键演讲者模式专门设计
+- **`presenter-mode-reveal`** 🎤 — 完整分享模板，**每一页都有演讲提示示例**，
+  围绕 `S` 键演讲者模式专门设计
 
 每个模板都是自包含的文件夹，用 scoped `.tpl-<name>` CSS，所以多个模板可以
 同时加载不会互相污染。在 `templates/full-decks-index.html` 可以看全套 gallery。
@@ -154,18 +156,22 @@ chart-pie · chart-radar · arch-diagram · process-steps · cta · thanks
 ## 快速开始（手动 / 安装后 / git clone 后）
 
 ```bash
-# 从 base 模板新建一个 deck
-./scripts/new-deck.sh my-talk
+# 先进入自己的项目目录，再调用已安装 skill 的脚手架
+cd /path/to/your/project
+HTML_PPT=/path/to/html-ppt
+"$HTML_PPT/scripts/new-deck.sh" my-talk
+# 也可以直接用完整 deck 模板：
+# "$HTML_PPT/scripts/new-deck.sh" my-talk . presenter-mode-reveal
 
 # 浏览所有内容
-open templates/theme-showcase.html         # 全部 36 主题（iframe 隔离）
-open templates/layout-showcase.html        # 全部 31 布局
-open templates/animation-showcase.html     # 全部 47 动效
-open templates/full-decks-index.html       # 全部 15 个完整 deck
+open "$HTML_PPT/templates/theme-showcase.html"         # 36 个画廊主题（iframe 隔离）
+open "$HTML_PPT/templates/layout-showcase.html"        # 全部 31 布局
+open "$HTML_PPT/templates/animation-showcase.html"     # 全部 47 动效
+open "$HTML_PPT/templates/full-decks-index.html"       # 全部 15 个完整 deck
 
 # 用 headless Chrome 导出 PNG
-./scripts/render.sh templates/theme-showcase.html
-./scripts/render.sh examples/my-talk/index.html 12
+"$HTML_PPT/scripts/render.sh" "$HTML_PPT/templates/theme-showcase.html"
+"$HTML_PPT/scripts/render.sh" my-talk/index.html 12
 ```
 
 ## 键盘快捷键
@@ -191,7 +197,7 @@ html-ppt-skill/
 ├── README.md                     英文 README
 ├── README.zh-CN.md               本文件
 ├── references/                   详细文档
-│   ├── themes.md                 36 主题 + 使用场景
+│   ├── themes.md                 37 种样式 + 使用场景
 │   ├── layouts.md                31 布局
 │   ├── animations.md             27 CSS + 20 FX 目录
 │   ├── full-decks.md             15 完整 deck 模板
@@ -201,7 +207,7 @@ html-ppt-skill/
 │   ├── base.css                  共享 tokens + 基础组件
 │   ├── fonts.css                 web 字体引入
 │   ├── runtime.js                键盘导航 + 演讲者模式 + 总览
-│   ├── themes/*.css              36 主题 token 文件
+│   ├── themes/*.css              37 种主题样式（含默认风格）
 │   └── animations/
 │       ├── animations.css        27 个命名 CSS 动画
 │       ├── fx-runtime.js         进入 slide 自动初始化 [data-fx]

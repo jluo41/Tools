@@ -1,7 +1,7 @@
 """`plan-shape-off-type` · does a plan obey its Folder Page Face?
 
-Phase-owned Folder contracts, canonical family owners, and legacy Page Types
-declare a mode in an `outline:` block under `metadata:`. Workflow phases
+Folder owner contracts, canonical family owners, and legacy Page Types
+declare a mode in an `outline:` block under `metadata:`. Folder owners
 resolve first; a canonical family owner may retain a legacy key without
 shipping another Page-Type skill; Page-Type folders remain the fallback for
 families not yet migrated.
@@ -73,16 +73,16 @@ def type_outline(kind: str, skills_root: pathlib.Path) -> dict:
     finds nothing and reported all eleven types as having none (260819)."""
     if not kind:
         return {}
-    phase = resolve_folder_contract(
+    folder_owner = resolve_folder_contract(
         skills_root, folder_kind=kind, legacy_page_type=kind
     )
     canonical = _canonical_owners(kind, skills_root)
-    hits = ([phase.path] if phase else canonical
+    hits = ([folder_owner.path] if folder_owner else canonical
             # Insight is the first Page Type using the shorter public name;
             # keep the legacy fallback for remaining unmigrated variants.
             or list(skills_root.glob("*/page-types/haipipe-page-%s/SKILL.md" % kind))
             or list(skills_root.glob("*/page-types/haipipe-page-for-%s/SKILL.md" % kind))
-            # paper ships its types as journey-phase skills since 260831
+            # Retained Paper source path; these skills own PageTypes, not Phases.
             or list(skills_root.glob("*/workflow-phases/haipipe-paper-%s/SKILL.md" % kind))
             or list(skills_root.glob("paper/haipipe-paper-%s/SKILL.md" % kind)))
     if not hits:

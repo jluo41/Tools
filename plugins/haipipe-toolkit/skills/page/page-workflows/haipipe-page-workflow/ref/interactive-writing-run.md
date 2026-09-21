@@ -101,7 +101,8 @@ The workflow owns the conversation history and review state. It invokes:
 - `haipipe-page-outline`: change Bullets, Evidence Item requirements, and the
   embedded `Draft:` fields in the selected Outline Markdown under SHAPE
   authority;
-- `haipipe-writing`: produce or revise the scoped prose under those contracts;
+- `haipipe-writing`: produce, revise or evaluate scoped prose under the shared
+  request, selected methods and rubric described below;
 - `haipipe-page-evidence`: commission supporting/local work and bind Results;
 - `haipipe-page-content`: after every planned Page Run and required evidence
   Task Result is complete, adopt all agreed wording and produce delivery once;
@@ -114,6 +115,30 @@ because they serve a paper. They retain their own Run contracts when they are
 independently commissioned. A routine build need not become a ceremonial Run.
 
 ## Small, Markdown-first storage
+
+For Section and Paragraph Runs, the agent invokes Writing using
+`../../../../writing/haipipe-writing/ref/writing-request.md`.
+The Ticket freezes selected methods and the base rubric identity; the Step
+adds its exact baseline, original feedback and editable scope. Use default
+native writing and self-review when no external method is selected. A supplied
+DNA or anti-slop packet selects its adapter once. Resolve only selected methods
+under `../../../../writing/haipipe-writing/ref/method-adapter-contract.md`.
+
+Writing returns candidate, actual changes, evaluation, method trace and
+unresolved findings. The host saves the candidate under the existing source
+writer/concurrency rules and stores its review in the same Version/Step.
+Evaluation follows `../../../../writing/haipipe-writing/ref/evaluation.md`:
+draft → review → at most one authorized revision pass by default → final
+review. The Run may declare another bounded budget. A local wording Step
+checks only the changed span, preservation and relevant seam. Self-review
+does not pass human acceptance or replace independent Page CHECK. Missing
+required inputs or exhausted revision budget remain visible in the return.
+
+The existing worker_skill_chain and runtime worker fields select/record the
+worker. The agent executes the skill instructions; these fields do not create
+a scheduler or trigger background model calls. Draft feedback remains pending
+until the agent completes its Step. Evaluate-only requests return findings
+without changing prose; no-op acceptance/navigation creates no change card.
 
 ```text
 <folder>/
@@ -209,9 +234,12 @@ before resuming.
    because one chat turn was received.
 3. **Complete the scoped cycle.** Choose `local-edit`, `paragraph-rewrite`, or
    `structure` from the user's request, not the model's preference. For a
-   Section-level Run, produce the candidate, obtain the configured review and
-   rating, diagnose the issues, revise, and review/diagnose the revised
-   candidate before reporting the result. For `rp-struct-01`, SHAPE updates
+   Section-level Run, produce the candidate, obtain the configured rubric review
+   and any defined rating, diagnose the issues, revise within the recorded
+   budget, and review/diagnose the revised candidate before reporting the result.
+   Paragraph Runs use the same base rubric at their fixed scope. Save located
+   findings and actual evaluator/method identity; do not invent a numerical
+   rating scale. For `rp-struct-01`, SHAPE updates
    Mermaid and Outline Bullets together, while SURVEY updates typed Evidence
    Item route decisions in that same Run; neither cycle creates a second
    planning Run. For a paragraph Run, keep the fixed target
@@ -264,7 +292,7 @@ labels, the exact review scope, the next proposed `vNNN/sNNN`, and the Bullet
 until the person supplies feedback, acceptance, or an explicit close. A
 pre-Step packet is a review surface, not a new journal record.
 
-Between Steps and Runs, follow `ref/interactive-execution-policy.md`.
+Between Steps and Runs, follow [`interactive-execution-policy.md`](interactive-execution-policy.md).
 Lightweight record-first work proceeds without a gate. Heavy builds, exports,
 broad checks, delegated Task Runs, and sub-agent analysis require a scoped
 approval request before dispatch.

@@ -1,102 +1,67 @@
-# ─── Task Workflow Template ──────────────────────────────────────
-# Generic IPO template for one canonical haipipe Task Folder / Page Folder.
-# Copy to <job>/tNN_<task>/workflow/plan.yaml and fill in the blanks.
-#
-# Schema: task/haipipe-workflow/ref/plan-schema.md
-# Concepts: task/haipipe-workflow/ref/concepts.md
-# Lifecycle: Plan → Build → Execute → Report
-#
-# Type-specific samples (if the specialist has one):
-#   haipipe-task-for-<type>/ref/workflow-plan-sample.yaml
-
-# ─── Header ──────────────────────────────────────────────────────
-name: <TASK_NAME>                        # kebab-case, e.g. eval-band4-vs-20arm
-purpose: "<one line: what and why>"
-skill: <TASK_TYPE_SKILL>                 # e.g. haipipe-task-for-eval
-task_folder: <PATH_TO_tNN_TASK_FOLDER>  # relative to project root; this is also
-                                        # the Page Folder, never the parent Job.
-
-# ─── I: Input ────────────────────────────────────────────────────
+# Resolve placeholders against the Run catalogue and any declared Plugin.
+# A standalone definition without Workspace surfaces omits plugin and cells.
+# Notebook output is required only when the Run notebook policy enables it.
+name: <task-workflow>
+purpose: Execute one bounded Task Run
 input:
   args:
-    config: scripts/config/<RUN>.yaml   # the frozen config for this Task
-    # add task-specific args here
-  files_in:
-    - scripts/<SCRIPT>.py                # main computation script
-    - scripts/config/<RUN>.yaml          # per-Run config
-    # - _WorkSpace/...                   # upstream data dependencies
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: Run
-    detail: "<what the script does end-to-end>"
-    steps:
-      - label: "run:<SCRIPT_NAME>"
-        type: agent                      # agent | skill | workflow
-        required: true                   # true = must run, false = optional
-        prompt: |
-          <What this step does. Be specific about computation.>
-        files_in:
-          - scripts/<SCRIPT>.py
-          - scripts/config/<RUN>.yaml
-          # - _WorkSpace/...             # upstream dependencies
-        files_out:
-          - $OUTPUT_ROOT/<task>/results/<RUN>/<OUTPUT>
-          - $OUTPUT_ROOT/notebooks/<task>/<RUN>.ipynb
-
-  - title: Gate1
-    detail: "pre-run code quality review"
-    steps:
-      - label: "gate1:code-review"
-        type: agent
-        required: true
-        agentType: haipipe-task-reviewer-agent
-        prompt: "gate 1: review <SCRIPT>.py for intent-vs-implementation bugs"
-        files_in:
-          - scripts/<SCRIPT>.py
-          - scripts/config/<RUN>.yaml
-        files_out:
-          - CODE_REVIEW.md
-        schema:
-          name: VERDICT
-          type: object
-          required: [verdict]
-          properties:
-            verdict: { type: string, enum: [pass, warn, fail] }
-            issues: { type: array, items: { type: string } }
-
-  - title: Gate2
-    detail: "post-run result audit"
-    steps:
-      - label: "gate2:result-audit"
-        type: agent
-        required: true
-        agentType: haipipe-task-reviewer-agent
-        prompt: "gate 2: audit results of <RUN>"
-        files_in:
-          - $OUTPUT_ROOT/<task>/results/<RUN>/*
-          - workflow/plan-script-<SCRIPT_NAME>.yaml
-        files_out:
-          - RUN_AUDIT.md
-        schema:
-          name: VERDICT
-          type: object
-          required: [verdict]
-          properties:
-            verdict: { type: string, enum: [pass, warn, fail] }
-            findings: { type: array, items: { type: string } }
-
-# ─── O: Output ───────────────────────────────────────────────────
+    config: scripts/config/rNN_<run>.yaml
+  files_in: &id001
+  - scripts/<worker>.py
+  - scripts/config/rNN_<run>.yaml
+  - runs/rNN_<run>.sh
+owner: haipipe-task
+plugin:
+  id: <owning-plugin>
+  workspace_roster_ref: <plugin-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Execute one bounded Task Run
+  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: haipipe-task
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload:
+      status: complete
+      artifacts:
+      - $OUTPUT_ROOT/<task>/results/rNN_<run>/
+    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: haipipe-task
+    worker_skill_chain:
+    - <resolved-specialist>
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
 output:
   returns:
-    status: ok                           # ok | failed
-    gate1_verdict: <pass | warn | fail>
-    gate2_verdict: <pass | warn | fail>
-    headline: "<one-line result summary>"
+  - status
+  - artifacts
+  - receipts
   files_out:
-    # Union of all step files_out:
-    - $OUTPUT_ROOT/<task>/results/<RUN>/<OUTPUT>
-    - $OUTPUT_ROOT/notebooks/<task>/<RUN>.ipynb
-    - CODE_REVIEW.md
-    - RUN_AUDIT.md
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  - $OUTPUT_ROOT/<task>/notebooks/rNN_<run>.ipynb

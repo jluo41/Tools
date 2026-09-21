@@ -32,6 +32,13 @@ No scripts, separate prompt file, or parallel status ledger is required.
 
 ## One authored Ticket, including the prompt
 
+The selected writer uses
+`../../../../writing/haipipe-writing/ref/writing-request.md`.
+This delegated profile preserves its existing Ticket/Result identity; it does
+not convert interactive Section/Paragraph Runs into per-paragraph Task Runs.
+Use the shared method adapter and evaluation contracts for selected capabilities
+and scoped self-review. Runtime worker metadata is not a model launcher.
+
 Use this structure, replacing sample values with current addressed inputs.
 The Ticket is a frozen commission derived from Context and Outline, not a
 second plan. Retain the referenced content in versioned storage or the Ticket
@@ -46,6 +53,13 @@ target: C1.P2
 page: <owning Page path>
 result: results/r02_page-writing_c01-p02/
 worker: haipipe-writing
+writing:
+  mode: draft
+  scope: paragraph
+  methods: []
+  evaluation:
+    rubric: haipipe-writing/base-v1
+    max_revision_passes: 1
 ---
 
 ## Inputs
@@ -88,7 +102,7 @@ Write only C1.P2 using the inputs above in three passes:
    Decision to understand the approved organization, but do not create or
    rewrite one from raw feedback. If the job is unclear or support is missing—
    or the approved claim is stronger than its Evidence Result—report the
-   specific gap and owning phase instead of drafting around it or silently
+   specific gap and owning authority instead of drafting around it or silently
    weakening the claim.
 2. Revise the supplied SHAPE candidate when present, or draft a neutral,
    evidence-bound paragraph in the approved order. Preserve useful reviewed
@@ -106,6 +120,14 @@ Write only C1.P2 using the inputs above in three passes:
 
 Return one paragraph with the owner's sentence/trace notation and keep the
 content map and style decisions recoverable in `trace.md`.
+
+Apply the shared base rubric to this candidate and the declared requirements.
+Save located findings, candidate/rubric hashes and actual reviewer/method
+identities in the trace. In draft/revise mode, make up to the configured number
+of in-scope revision passes, then review the final candidate again. Evaluate
+mode makes no edits. Return remaining issues at budget exhaustion or missing
+input; self-review never supplies human acceptance. See
+`../../../../writing/haipipe-writing/ref/evaluation.md` for the record.
 
 If the Ticket names the anti-slop adapter, run its read-only audit after Pass C
 and record the JSON report in the Result. Treat findings as a bounded CONTENT

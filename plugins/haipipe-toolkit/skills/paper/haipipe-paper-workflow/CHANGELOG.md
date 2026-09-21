@@ -1,3 +1,11 @@
+## 1.3.1 · 2026-09-20
+
+- Clarify that Paper Workflow units are owner-native Runs; compatibility controller labels do not add Runs.
+
+## 1.3.0 · 2026-09-20
+
+- Define the Paper Workflow as bounded Specs and actual owner-native Runs. Separate gates/controller decisions from Runs; document compile/response receipts and canonical RP/RE/RD integration.
+
 ## 1.2.1 · 2026-09-13
 
 - Made G0 read the Paper Ideation sync's working, release, and delivery

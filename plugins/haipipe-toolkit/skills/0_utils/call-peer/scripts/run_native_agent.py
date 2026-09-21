@@ -12,33 +12,33 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import json
 import os
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-
-def _repo_root() -> Path:
-    here = Path(__file__).resolve()
-    for candidate in (Path.cwd(), *here.parents):
-        if (candidate / "pyproject.toml").is_file() and (candidate / "code").is_dir():
-            return candidate.resolve()
-    raise RuntimeError("Could not find the Physician-SPACE repository root")
+UTC = timezone.utc
 
 
-ROOT = _repo_root()
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from haiutils.agent_sdk import (  # noqa: E402
-    SessionSpec,
-    campaign_sdk_home,
-    neutral_workdir,
-    package_version,
-    run_turn,
-)
+def _load_sdk():
+    """Load the optional SDK bridge only for an explicitly selected SDK call."""
+    configured = os.environ.get("HAIPIPE_SDK_ROOT")
+    if configured:
+        root = Path(configured).expanduser().resolve()
+        if not root.is_dir():
+            raise ValueError("HAIPIPE_SDK_ROOT must name an existing SDK import directory")
+        sys.path.insert(0, str(root))
+    try:
+        return importlib.import_module("haiutils.agent_sdk")
+    except ImportError as exc:
+        raise RuntimeError(
+            "SDK mode requires haiutils.agent_sdk in this Python environment. "
+            "Install the bridge or set HAIPIPE_SDK_ROOT to its import directory. "
+            "Ordinary run_paired_cli.py calls do not require this SDK."
+        ) from exc
 
 
 SCHEMA = "haipipe.agent-sdk-delegation-receipt/v1"
@@ -159,6 +159,7 @@ def _base_record(
     model: str,
     call_store: Path,
     out_dir: Path,
+    sdk: Any,
 ) -> dict[str, Any]:
     return {
         "schema": SCHEMA,
@@ -168,7 +169,7 @@ def _base_record(
         "transport": "claude_agent_sdk" if args.provider == "claude" else "openai_codex_sdk",
         "profile": "heavy",
         "sdk_package": "claude-agent-sdk" if args.provider == "claude" else "openai-codex",
-        "sdk_version": package_version(args.provider),
+        "sdk_version": sdk.package_version(args.provider),
         "requested_model": model,
         "campaign_id": args.campaign_id,
         "query_id": args.query_id,
@@ -191,6 +192,7 @@ def _base_record(
 
 def main() -> int:
     args = _parser().parse_args()
+    sdk = _load_sdk()
     model = args.model or DEFAULT_MODELS[args.provider]
     call_store = args.call_store.resolve()
     out_dir = args.out_dir.resolve()
@@ -205,18 +207,18 @@ def main() -> int:
 
     prompt = _read_prompt(args)
     system_prompt, supplied_skills = _read_system_prompt(args)
-    base = _base_record(args, prompt, system_prompt, supplied_skills, model, call_store, out_dir)
+    base = _base_record(args, prompt, system_prompt, supplied_skills, model, call_store, out_dir, sdk)
     _write_text(out_dir / "prompt.md", prompt + "\n")
     _write_text(out_dir / "system_prompt.md", system_prompt + "\n")
     _write_json(out_dir / "request.json", base)
 
-    spec = SessionSpec(
+    spec = sdk.SessionSpec(
         provider=args.provider,
         model=model,
         campaign_id=args.campaign_id,
         query_id=args.query_id,
-        sdk_home=campaign_sdk_home(call_store, args.provider, model, args.campaign_id),
-        neutral_cwd=neutral_workdir(args.provider, args.campaign_id, args.query_id),
+        sdk_home=sdk.campaign_sdk_home(call_store, args.provider, model, args.campaign_id),
+        neutral_cwd=sdk.neutral_workdir(args.provider, args.campaign_id, args.query_id),
         system_prompt=system_prompt,
         web_mode=args.web,
         session_id=args.resume_session,
@@ -224,7 +226,7 @@ def main() -> int:
     )
 
     try:
-        turn = run_turn(
+        turn = sdk.run_turn(
             spec,
             prompt,
             call_store,

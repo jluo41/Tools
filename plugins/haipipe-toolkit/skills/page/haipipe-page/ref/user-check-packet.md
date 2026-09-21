@@ -143,9 +143,11 @@ result before saying it is available. The live Outline reads Markdown: a local
 preview save does not require a full Board/PDF build. Perform narrow mapping,
 evidence-boundary and unchanged-scope checks. Only refresh affected generated
 surfaces needed for this response; remaining work is named, not falsely
-reported as complete. Verify all three exact routes against the configured
-public origin. If unavailable, end with a concise unavailable status, never a
-made-up live link or a localhost/raw-HTML substitute.
+reported as complete. Use exact routes previously verified against the configured
+public origin while their origin and routing remain unchanged. A new or changed
+route needs a lightweight HTTP check; a routine writing Step does not need browser
+automation or a full rebuild. If a route is unavailable, say so concisely rather
+than inventing a live link or substituting a localhost/raw-HTML URL.
 
 ## The four surfaces (JL 260907: "在写 page 的时候，response 里要强调")
 
@@ -211,7 +213,7 @@ human `accepted:` gate is still open, link it and label it `current draft ·
 acceptance pending`. Human acceptance is a separate gate and does not hide a
 usable draft preview. If a DISPLAY Result's `preview.pdf` is missing or stale,
 write `not current` with the blocking step. If the Page has no Content yet,
-surface 3 reads `no Content yet · phase <PHASE>` and surface 4 is omitted. If
+surface 3 reads `no Content yet · <current Run or named blocker> · <next action>` and surface 4 is omitted. If
 the Page PDF build failed, write `not current` with the build failure and, when
 useful, label the last successful file explicitly as `stale`, never as latest.
 

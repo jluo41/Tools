@@ -61,13 +61,34 @@ selection rule:
 ```md
 ## Source map
 
-Coverage: arXiv API + OpenAlex journal index, 2026-09-01.
-Not searched: PubMed and top-venue pass.
-Admission: canonical identity resolved and directly relevant to the Topic.
+Coverage: Semantic Scholar (S2) topic search + arXiv API, 2026-09-01.
+Queries: "adaptive sampling" and "rare phenotype"; no citation-count filter.
+Not searched: PubMed and citation-chain follow-up.
+Admission: before screening, include studies that evaluate an adaptive method
+for rare-phenotype detection; exclude generic sampling work with no such
+application. Resolve canonical identity before opening a Paper Run.
+Retrieval order: S2 citation count as indexed on 2026-09-01; used only to order
+the S2 first-pass queue, not as an admission or quality criterion. arXiv
+results remain in provider relevance order.
+Boundary: first 30 unique candidates per channel; this is not exhaustive
+coverage beyond the listed channels and screening limit.
 ```
 
 A silent cap reads as complete coverage when it was not; always name the
-boundary.
+boundary. Freeze the candidate rule at SCOPE and record it on the Task Page.
+Provider rank, citation count, venue, and publication date describe retrieval
+or source metadata. They do not, alone, establish relevance, study quality, or
+support for a claim.
+
+Keep one admission-decision receipt per screened candidate in the Task source
+map. Each receipt names the frozen rule version/hash, candidate disposition
+and rationale, evaluator, and timestamp. Link admitted candidates to their full
+readable/compact Run identity. For excluded or unresolved candidates, retain
+the exact result record that was screened by URI and SHA-256; these candidates
+have no owning Run. Task outcome and any applicable confidence judgment link to the single
+`discovery.yaml#report.assessment` receipt, which lists hashes of the frozen
+scope, closed Page, and candidate decision set, plus all considered Run
+identities.
 
 ## Topic source index
 

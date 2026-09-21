@@ -109,7 +109,7 @@ Each verb's detailed contract lives in its cited `fn/` file.
 /haipipe-task <task-folder-path>                  full lifecycle
 /haipipe-task <job-path>                          iterate direct Task Folders
 /haipipe-task <block-path>                        iterate every Task Folder
-/haipipe-task <phase> <job-or-block-path>         iterate one phase
+/haipipe-task <command> <job-or-block-path>       iterate one command
 
 /haipipe-task job <type> [args...]                scaffold a Job through a specialist
 /haipipe-task block <block-path|name>             scaffold a Block (`fn/block.md`)
@@ -120,21 +120,23 @@ Each verb's detailed contract lives in its cited `fn/` file.
 /haipipe-task digest <...>                         session digest (`fn/digest.md`)
 ```
 
-## Four phases
+## Four lifecycle commands
 
 All lifecycle work targets one exact `tNN_<task>/` Task Folder.
 
 ```text
-Plan     workflow/plan.yaml + workflow/plan-script-<worker>.yaml
+Plan     workflow/plan.yaml (authoritative Run Specs)
 Build    scripts/<worker>.py + scripts/config/<run>.yaml
          + runs/<run>.sh + CODE_REVIEW.md
 Execute  $OUTPUT_ROOT/<task>/results/<run>/{runtime.yaml, metrics.json, ...}
          + $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
-Report   workflow/report.yaml + workflow/report-script-<worker>.yaml
+Report   workflow/report.yaml (actual Runs and receipts)
          + RUN_AUDIT.md
 ```
 
-Plan and Report use the IPO schema from `haipipe-workflow`. Build changes only
+A Workflow is a list of Runs: `run_specs` defines the roster and routes form its execution graph.
+Plan and Report use the Run Spec / Run Instance schema from `haipipe-workflow`.
+P-B-E-R are lifecycle commands; their steps and review gates do not automatically allocate Runs. Build changes only
 authored Task files. Execute changes only generated projections. Report reads
 the Plan, code review, Run receipt, and Results before making claims.
 
@@ -166,8 +168,9 @@ data-dependent artifact lands under `$OUTPUT_ROOT`; authored code, config, and
 Tickets remain in the Task Folder. `CODE_REVIEW.md` stays with the Task code.
 
 The one Page-authority exception is a PHI-safe DISPLAY unit admitted by LAND
-under `outline/evidence/display/<unit>/`. Its Result envelope and receipt still
-live under `$OUTPUT_ROOT/<task>/results/<run>/` and record the projection hash.
+at the caller-authorized destination in the Page evidence/display contract.
+Its Result envelope and receipt still live under
+`$OUTPUT_ROOT/<task>/results/<run>/` and record the unit path and hashes.
 
 ## Question and Insight routing
 

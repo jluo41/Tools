@@ -9,8 +9,8 @@ description: >-
 argument-hint: "--report-dir <path> --persona <name_or_path> [--model X]"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-07-04"
+  version: "0.1.2"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -57,7 +57,7 @@ scripts/
   judge_report_cli.py   end-to-end CLI: report.json + judge persona → judgment
 
 tests/
-  (smoke against the report.json from 18/patient-friendly/<ts>/ — when written; dir not yet on disk)
+  test_judgment_contract.py  offline parser and verdict-policy checks
 ```
 
 ---
@@ -104,7 +104,9 @@ External judge libraries (clinical IRB rubrics, Samsung-internal red-team panels
 Required fields in `persona.yaml`:
 - `rubric`            (label, e.g. `safety-review`, `patient-comprehension`)
 - `target_audience`   (who the report under judgment was written for)
-Optional: `model`, `dimensions` (advisory list of dimension names), `weights`, anything else.
+- `dimensions`        (non-empty, unique list; every declared dimension must be scored)
+Optional: `model` and additional metadata. The shared score aggregation uses
+the arithmetic mean; it does not currently apply rubric weights.
 
 ---
 
@@ -116,7 +118,7 @@ Output schema (XML the judge emits)
   <rubric_dimensions>
     <dimension>
       <name>...</name>
-      <score>1-5</score>
+      <score>1-5 | unavailable</score>
       <reasoning>...</reasoning>
     </dimension>
     <!-- one per dimension, schema-defined per persona -->
@@ -132,16 +134,20 @@ Output schema (XML the judge emits)
   </issues>
 
   <overall_verdict>pass | warn | fail</overall_verdict>
-  <overall_score>4.2</overall_score>
+  <overall_score>4.2 | unavailable</overall_score>
   <summary>One paragraph synthesis.</summary>
 </judgment>
 ```
 
 `pydantic Judgment` enforces:
-- score 1-5 (int)
-- overall_score 0.0-5.0 (float)
+- score 1-5 (int) or null in JSON when the rubric explicitly says unavailable
+- overall_score is the mean of assessed scores, or null when none are assessed
 - severity ∈ {info, warning, critical}
 - overall_verdict ∈ {pass, warn, fail}
+- Missing, duplicate, unexpected, or malformed dimensions/issues are rejected;
+  the parser does not fill in or downgrade invalid values.
+- Shared verdict rule: fail for any score ≤2 or critical issue; otherwise warn
+  for any unavailable dimension or score 3; otherwise pass.
 
 ---
 
@@ -175,3 +181,16 @@ Future
 - per-batch driver (separate skill, not under task/4_individual) for cohort eval
 - inter-judge agreement metrics (Cohen's κ across judges) for the same
   report — useful for rubric calibration
+
+## Bound forecast evidence
+
+The CLI reads report.json, forecast.json and meta.json from the same report directory.
+It verifies both file hashes and the recorded selected window before sending raw
+forecast context plus deterministic summary/threshold comparisons to the judge.
+A mismatched bundle raises before any model call. A legacy bundle without evidence
+binding remains `unavailable`; it may be judged for readability/summary consistency,
+but a passing result is capped at warn and cannot claim independent forecast accuracy.
+Deterministic forecast mismatches force fail regardless of the model verdict.
+Window selection follows the endpoint's last-returned-window contract; without window
+timestamps, chronology is not independently established. Verification details are saved
+in the judge meta.json. This is software evidence checking, not clinical validation.

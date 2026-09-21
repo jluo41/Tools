@@ -217,7 +217,7 @@ class Displays:
             unit_dir = os.path.dirname(f)
             unit = os.path.basename(unit_dir)
             tex = open(f, encoding="utf-8", errors="replace").read()
-            m = re.search(r"\\begin\{(table|figure)", tex)
+            m = re.search(r"\\begin\{(table|figure|algorithm)", tex)
             lab = re.search(r"\\label\{([^}]+)\}", tex)
             assets = os.path.join(unit_dir, "assets")
             # THE UNIT'S OWN CAPTION. Without it the .docx printed
@@ -244,7 +244,11 @@ class Displays:
                 # turn a \ref inside the caption into its number first.
                 "caption": cap,
                 "note": note,
-                "kind": m.group(1) if m else "unknown",
+                # Word places algorithm blocks as a raster figure. Its source
+                # environment is retained in LaTeX, while the reader-facing
+                # Word reference shares the figure sequence.
+                "kind": ("table" if m and m.group(1) == "table" else
+                         "figure" if m else "unknown"),
                 "label": lab.group(1) if lab else None,
                 "body": os.path.join(assets, "table-body.tex"),
                 "pdf": next((os.path.join(assets, n) for n in ("figure.pdf",)
@@ -587,9 +591,11 @@ class Inline:
     A run is (text, bold). A comment is (anchor_text_or_None, kind, body)."""
 
     CITE = re.compile(r"\\cite[a-z]*\{([^}]*)\}")
-    REF = re.compile(r"\\ref\{([^}]*)\}")
+    REF = re.compile(r"\\(?:auto|C|c)?ref\{([^}]*)\}")
     BRACKET_REF = re.compile(r"\b(Table|Figure)\s+\[([^\]]+)\]")
-    DISPLAY_PLACEHOLDER = re.compile(r"/(table|figure)\{([^}]+)\}")
+    DISPLAY_PLACEHOLDER = re.compile(
+        r"(?:\\|/)(table|figure|algorithm)\s*\{\s*([^}]+?)\s*\}"
+    )
     QREF = re.compile(r"\s*\[Q-[A-Za-z0-9]+-\d+\]")
     VALHOLE = re.compile(r"\{VAL:\?[^}]*\}")
 
@@ -657,22 +663,25 @@ class Inline:
         return f"{kind} [{slug}]"
 
     def _display_placeholder(self, m):
-        kind, slug = m.group(1).capitalize(), m.group(2)
+        kind, slug = m.group(1).capitalize(), m.group(2).strip()
         self.report.append(("placeholder-ref",
-                            f"{kind} [{slug}] is pending and has no Display Result"))
+                            f"{kind} [{slug}] is a pending Page display label"))
         self.pending.append(("Display", f"placeholder reference {kind} [{slug}], unresolved"))
         return f"{kind} [pending: {slug}]"
 
     def render(self, text):
         self.pending, self.cited = [], getattr(self, "cited", set())
-        t = text
-        for hole in self.VALHOLE.findall(t):
-            self.report.append(("owed-value", f"{hole} shipped to the reader"))
-        t = self.CITE.sub(self._cite, t)
-        t = self.REF.sub(self._ref, t)
-        t = self.BRACKET_REF.sub(self._bracket_ref, t)
-        t = self.DISPLAY_PLACEHOLDER.sub(self._display_placeholder, t)
-        t = self.QREF.sub("", t)                 # the bracket is bookkeeping
+        parts = re.split(r"(`[^`\n]*`)", text)
+        for i in range(0, len(parts), 2):
+            for hole in self.VALHOLE.findall(parts[i]):
+                self.report.append(("owed-value", f"{hole} shipped to the reader"))
+            prose = parts[i]
+            prose = self.CITE.sub(self._cite, prose)
+            prose = self.REF.sub(self._ref, prose)
+            prose = self.BRACKET_REF.sub(self._bracket_ref, prose)
+            prose = self.DISPLAY_PLACEHOLDER.sub(self._display_placeholder, prose)
+            parts[i] = self.QREF.sub("", prose)   # the bracket is bookkeeping
+        t = "".join(parts)
         # Inline code is operational text, not typography. Stash it before the
         # prose smart-dash pass so CLI flags such as `--execute` remain exactly
         # executable in the DOCX and its PDF twin.

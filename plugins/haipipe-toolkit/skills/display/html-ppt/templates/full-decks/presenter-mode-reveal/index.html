@@ -122,8 +122,8 @@
       <div class="rule-row">
         <span class="num red">02</span>
         <div>
-          <b>每页 <span class="accent">150–300 字</span>，不多不少</b>
-          <p class="dim">少于 150 字提示不够，多于 300 字你没时间读。按 2–3 分钟/页的节奏控制。</p>
+          <b>按目标演讲时长调整提示卡篇幅</b>
+          <p class="dim">中文可先按每页 150–300 个汉字，英文可先按 150–300 个单词；按总时长和页数调整。</p>
         </div>
       </div>
       <div class="rule-row">
@@ -138,7 +138,7 @@
       <p>进入最核心的一部分——逐字稿怎么写。我总结了 3 条铁律。</p>
       <p><strong>第一条，逐字稿不是讲稿</strong>。很多人一听"逐字稿"就以为要把每句话一字不差写下来。错。如果你照着稿念，观众会立刻看出来，信任感瞬间崩塌。</p>
       <p>逐字稿的真实作用是<em>"提示信号"</em>——把核心要点加粗，把过渡句单独成段，把数据和专有名词列清楚。这样你讲的时候<strong>瞄一眼就能接得上</strong>，但说出来的还是你自己的话。</p>
-      <p><strong>第二条，每页控制在 150 到 300 字</strong>。这个是我做了十几场分享摸出来的经验值。少于 150 字提示不够，讲到一半卡住；多于 300 字你根本来不及扫完。按一页讲 2 到 3 分钟算，这个字数刚好。</p>
+      <p><strong>第二条，篇幅按语言和演讲时长调整</strong>。中文可先按每页 150 到 300 个汉字，英文可先按 150 到 300 个单词；再根据总时长、页数和讲者扫读习惯增删提示。</p>
       <p><strong>第三条，用口语写</strong>。这条最多人栽跟头。你写"因此"，讲出来会变成"所以"；你写"该方案"，讲出来会变成"这个方案"。<em>写的时候读一遍</em>，不拗口才对。</p>
       <p>这三条配合起来，你会发现讲 PPT 突然变成了一件很舒服的事。</p>
     </aside>
@@ -152,9 +152,11 @@
 <span class="comment"># 安装 html-ppt skill</span>
 <span class="cmd">npx</span> skills add <span class="flag">https://github.com/lewislulu/html-ppt-skill</span>
 
-<span class="comment"># 复制演讲者模式模板</span>
-<span class="cmd">cp -r</span> templates/full-decks/presenter-mode-reveal examples/my-talk
-<span class="cmd">open</span> examples/my-talk/index.html
+<span class="comment"># 在自己的项目目录运行，先设置已安装 skill 的路径</span>
+<span class="cmd">HTML_PPT=/path/to/html-ppt</span>
+<span class="cmd">cd /path/to/your/project</span>
+<span class="cmd">"$HTML_PPT/scripts/new-deck.sh"</span> my-talk . presenter-mode-reveal
+<span class="cmd">open</span> my-talk/index.html
 
 <span class="comment"># 键盘操作</span>
 <span class="flag">S</span>  <span class="comment">→ 进入演讲者视图</span>
@@ -162,16 +164,16 @@
 <span class="flag">← →</span> <span class="comment">→ 翻页</span>
 <span class="flag">R</span>  <span class="comment">→ 重置计时器</span>
     </div>
-    <p class="lede mt-m tc">关键是：<strong>每一页 &lt;aside class="notes"&gt; 里写 150–300 字逐字稿</strong>。</p>
+    <p class="lede mt-m tc">关键是：<strong>每一页的 &lt;aside class="notes"&gt; 都能让讲者快速扫读</strong>。</p>
     <div class="deck-footer">
       <span class="mono">#thanks · Q&amp;A</span>
       <span class="slide-number" data-current="6" data-total="6"></span>
     </div>
     <aside class="notes">
       <p>最后我演示一下这个 skill 怎么用，给大家省点时间自己摸索。</p>
-      <p>第一步，装 html-ppt skill，一行命令。第二步，把我这个 <code>presenter-mode-reveal</code> 模板复制到你自己的 examples 目录。第三步，打开 html，按 S。</p>
+      <p>第一步，装 html-ppt skill。第二步，在自己的项目目录运行 <code>"$HTML_PPT/scripts/new-deck.sh" my-talk . presenter-mode-reveal</code>，脚手架会复制模板并改好共享资源路径。第三步，打开生成的 <code>my-talk/index.html</code>，按 S。</p>
       <p>键盘操作我列在这里了。<strong>S 进入演讲者视图、T 切换主题、左右键翻页、R 重置计时器</strong>。主题默认带 5 个——tokyo-night、dracula、catppuccin-mocha、nord、corporate-clean——基本覆盖了深色技术分享、浅色商务汇报两种常见场景。</p>
-      <p>最关键的一步——<em>每一页底部的 <code>&lt;aside class="notes"&gt;</code> 里，老老实实写 150 到 300 字的逐字稿</em>。这是整个方法论的交付物。AI 可以帮你写初稿，但你一定要自己过一遍，读出来听听是不是你会说的话。</p>
+      <p>最关键的一步——<em>按语言、总时长和页数写可扫读的提示</em>。中文可先按每页 150–300 个汉字，英文可先按 150–300 个单词，再按实际演讲调整。这不是固定时长换算。AI 可以帮你写初稿，但你一定要自己过一遍，读出来听听是不是你会说的话。</p>
       <p>好，我今天就讲到这里。如果你做下一场分享的时候想起了这个"演讲者视图 + 逐字稿"的组合，并且觉得讲得比以前顺——那就是我最大的收获。谢谢大家，有问题现在开始。</p>
     </aside>
   </section>

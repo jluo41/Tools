@@ -12,8 +12,8 @@ description: >-
   Folder for one line. Trigger: design board, board-level design, design
   tasks, all design items, who is waiting, /haipipe-plugin-design-board.
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-18"
+  version: "0.7.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -45,8 +45,9 @@ Brief", never roster; "signed insight", never handoff; "draft", never
 candidate; "run record", never Ticket; "records check", never check_unit; no
 DU and no Brief line id such as `R1`. An insight page shows as its label and
 title (`full-W01 · Send salience`), never its file id `FW01`; the file keeps
-`FW01` (JL 260918). Steps are Commission,
-Generate, Verify, Adopt. Folders carry their full name: the group is
+`FW01` (JL 260918). The Workflow is a list of Runs: Commission,
+Generate and Verify. Delivery is their ready projection; internal Steps do not
+add Runs. Folders carry their full name: the group is
 `2-Design/` and each Design Folder is `Design-NN-<audience>-<job>-<venue>/`
 (the Board engine's `Design-` page branch), never `DS`; each part is the first three content words of that Brief cell, filler words
 (with, within, a, the, of, for, or, under, …) dropped, so the name says the goal:
@@ -61,8 +62,8 @@ each promise started?" It is the list of design tasks read from the Brief:
 ```text
 Design tasks · from the Brief
 design task                                               how many                               insight board     folder                                               status
-Prescription review SMS for all patients                  10 wanted · 10 registered · 1 adopted  (board default)   Design-01-all-patients-prescription-review-sms       1 adopted · 9 verified
-Refill review app card for patients with a refill due …   1 wanted · 1 registered · 0 adopted    (board default)   Design-02-patients-refill-due-refill-review-ui-card  1 verified
+Prescription review SMS for all patients                  10 wanted · 10 registered · 1 ready  (board default)   Design-01-all-patients-prescription-review-sms       1 ready · 9 generated
+Refill review app card for patients with a refill due …   1 wanted · 1 registered · 0 ready    (board default)   Design-02-patients-refill-due-refill-review-ui-card  1 generated
 Prescription review SMS for young male, age 35 or under   1 wanted                               (board default)   —                                                    no folder yet  [New Design Folder]
 
 ▸ New design tasks   subgroups (one per line) · their job · venue · how many · insight board · open folders
@@ -85,7 +86,7 @@ R2 … in order, as keys in the file, never names on screen. A folder on disk
 that no line names is listed as "folders the Brief does not list".
 
 The header above the Spaces is one line that counts the whole programme,
-`Board level · 3 design tasks · 12 wanted · 11 registered · 1 adopted ·
+`Board level · 3 design tasks · 12 wanted · 11 registered · 1 ready ·
 waiting on JL: 10 · on agent: 0`; a red line is added only when the records
 check has findings.
 
@@ -105,23 +106,29 @@ an item uses is hidden. When no design rests on a signed insight, a red line
 says so at the top.
 
 **Run Space** answers "who is the programme waiting on, and what ran last?"
-First the queue: every item that waits, the person's rows first (`JL · adopt`),
+First the queue: every item that waits, the person's rows first (`JL · queue the review`),
 then the agent's (`agent · verify`). Then every Run across folders, newest
-first, with folder, step, actor and mode, status, outcome. It ends with the
+first, with folder, original Run ID, Run type, actor and mode, status, outcome.
+The queue names the next action; it does not allocate a Run. Historical
+`rdNN_adopt_*` IDs remain unchanged in text, links, and tooltips, with their
+Run type labeled `Adopt (historical)`. It ends with the
 records check across folders.
 
 **Delivery Space** answers "what designs do we have?" One heading per
 folder (its title, linked to the folder's Delivery Space), then one table,
 one row per item: item (id, linked to its card, and title) · design (the
-adopted draft, else the latest draft that passed the records check; a failed
-draft is never listed). No adoption status, hash, or receipt. A folder of
+exact draft whose independent Verify passed; failed or unverified drafts are
+never listed). Hashes and receipts stay in Run Space. A folder of
 screens shows as a picture gallery instead of the table. A declined item
 leaves the list and is folded under "Declined, kept for the record · N". At
 the top, **↓ Download all designs**: `GET /_board/design-bundle?path=<board.md>`
-returns a csv with one row per item that has a design, columns `line, who,
+returns a csv with one row per ready item, columns `line, who,
 their_job, venue, folder, item, title, state, text, draft_run, sha256,
-render`. The send system takes the rows whose `state` is `adopted`; the other
-rows, declined ones included (state `declined`), are there to read. The
+render`. Every row has `state=ready` and identifies the exact verified draft.
+If the candidate or its review records no longer validate against the current
+files, the item shows `records invalid` and is excluded from ready counts and CSV.
+This is a design handoff, not authorization to send; downstream owners decide
+distribution. Failed, unverified and historically declined items are excluded. The
 static twin has no download link.
 
 ## The two Board-level writes
@@ -142,7 +149,9 @@ or when the named Insight board does not resolve from this board (a sibling
 name, or a relative path as on `reads:`); a refusal writes nothing.
 
 **`new-folder`** `{row}` opens a Design Folder for one line whose folder
-cell is empty:
+cell is empty. `row` is the parsed Brief row key returned by the snapshot,
+such as `R3`; it is neither the row's display title nor an integer position.
+For example, submit `{"row":"R3"}` for the row whose `id` is `R3`:
 
 ```text
 2-Design/Design-NN-<audience>-<job>-<venue>/
@@ -160,7 +169,7 @@ refused because the line already names its folder; refusals name the task by
 its full name, never by `R3`. Those cells and lines are the only Brief edits
 this plugin makes; the Brief's prose, needs, and signed inputs stay with
 `haipipe-design-brief`. Every other action (register a Design Item, release a
-Commission, queue Generate/Verify, adopt) lives on the Page level and is
+Commission, queue Generate/Verify) lives on the Page level and is
 reached by the link in the row.
 
 ## Reads (and owns nothing)
@@ -193,7 +202,8 @@ checker knows `design-board` and `insight-board` as kinds), whose folder name
 carries `DesignBoard` as a `-` or `_` separated token (`RefillFraming-DesignBoard`,
 `B01_DesignBoard-AuthenUI-260917`), or which holds `2-Design/`. The board
 checker audits every folder that holds Design runs, including a folder with
-only Commission and Adopt runs.
+only Commission Runs. Historical `rdNN_adopt_*` decisions remain readable for
+audit, under their real ids and labeled historical; current writers do not create them.
 
 A bare `/_board/design-board` opens the server's only DesignBoard, or, with
 several, answers 200 with a list of them; a link that names no DesignBoard
@@ -213,6 +223,6 @@ From the Board level alone, the reader can answer:
    which other pages the designs rest on.
 4. Who is the programme waiting on right now, person or agent, for which item?
 5. What ran most recently, where, by whom, with what outcome?
-6. What is adopted, and what is not, board-wide? (the csv's `state` column)
+6. Which exact drafts are ready for Delivery, board-wide? (ready counts and CSV)
 
 See `ref/space-mapping.md` for the Space ↔ file map at board grain.

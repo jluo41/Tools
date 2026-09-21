@@ -56,8 +56,8 @@ The RUNNAME spine — Stata projection
 Python projection                    Stata projection
 ─────────────────────────────────    ──────────────────────────────────────────────
 {task}.py        (cell source)    →   {task}.do        (dispatcher) + scripts/*.do (lib)
-configs/<run>.yaml (_meta+params) →   configs/<run>.yaml (_meta ONLY)
-                                       + configs/<cfg>.do  (Stata globals — source of truth)
+scripts/config/<run>.yaml (_meta+params) →   scripts/config/<run>.yaml (_meta ONLY)
+                                       + scripts/config/<cfg>.do  (Stata globals — source of truth)
 runs/<run>.sh    (entry)          →   runs/<run>.ps1   (PowerShell entry)
 notebooks/<run>.ipynb (record)    →   results/<run>/log/*.txt  (Stata logs — the record)
 results/<run>/   (light out)      →   results/<run>/   (+ runtime.yaml)
@@ -68,30 +68,26 @@ Two deliberate departures from the Python mold:
 
 1. **No `notebooks/` folder.** The execution record is the Stata `.log`. `results/<run>/log/<step>[-<year>].txt` is the per-step log. The `runtime.yaml` `notebook:` field is repurposed to point at that log dir.
 
-2. **Config is a two-file pair.** Stata cannot read YAML, so the real parameters stay in `configs/<cfg>.do` (Stata globals). A sibling `configs/<run>.yaml` carries ONLY the `_meta:` discipline block (purpose / note / input / output) plus a `stata_config:` pointer to the `.do`. The `.ps1` snapshots BOTH into `results/<run>/`.
+2. **Config is a two-file pair.** Stata cannot read YAML, so the real parameters stay in `scripts/config/<cfg>.do` (Stata globals). A sibling `scripts/config/<run>.yaml` carries ONLY the `_meta:` discipline block (purpose / note / input / output) plus a `stata_config:` pointer to the `.do`. The `.ps1` snapshots BOTH into `results/<run>/`.
 
 
-runtime.yaml — OPTIONAL task-log integration
----------------------------------------------
+runtime.yaml — controller-owned Run receipt
+--------------------------------------------
 
-Under the Stata dialect the execution record is the per-step Stata log + `summary.txt`; runners stay THIN and write no bookkeeping (see the script style contract below).
-`results/<run>/runtime.yaml` is OPTIONAL — add one after a run (by hand or tooling, never in the runner hot path) only when a unified `task-log.md` (regeneration tooling retired; keep the log by hand) is wanted.
-Flat schema:
-
-```yaml
-status:     ok                              # running | ok | failed
-started:    2026-02-23T13:52:27-05:00       # ISO 8601
-ended:      2026-02-23T17:19:00-05:00
-duration:   3h26m
-git_sha:    8d8d6d1
-host:       jjluo-pc/floyd
-exit_code:  0
-cmd:        powershell A01_cms_pipeline/runs/run_cms_2015.ps1
-config:     configs/run_cms_2015.yaml
-notebook:   results/run_cms_2015/log/       # repurposed -> per-step log dir
-headline:   Bene_Info-2015 11,783,927 x 121
-```
-
+Current Task execution requires `$OUTPUT_ROOT/<task>/results/<run>/runtime.yaml`.
+The Task controller/scaffolder writes planned status before dispatch, running
+before execution, and complete only after checking required logs, snapshots,
+summary and domain outputs. It uses the same Run identity, config/script/input
+hashes, timestamps, exit status, Result paths and failure fields as the shared
+Task receipt. See `../../../haipipe-task/ref/run-sh-template.sh` for the fields.
+Stata keeps per-step logs as its engine evidence; it has no notebook requirement.
+The controller cites those logs in the receipt and `notebook` may be null.
+Keep this bookkeeping outside thin cms/case Tickets and workers; the parent
+controller owns it. Manual server execution returns evidence to that same
+controller; pending external execution cannot pass the Run gate.
+Legacy logs without a receipt are inspectable, but never silently count as a
+complete current Run. Backfilled facts must come from original evidence, and
+unknown timestamps or exit status remain explicitly unknown.
 
 Anatomy of a Stata job
 -------------------------------
@@ -118,7 +114,7 @@ jNN_{L}_{kind}_{subject}/           NESTED (current production, 260831)
 │   ├── runs/rNN_*.ps1              thin tickets, one per run identity
 │   └── tNN_*.md                    the page a reader opens
 │   └── results/<run>/              log/*.txt · report artifacts · config_snapshot.do (inside the Task, JL 260909)
-└── workflow/ · diagram/ · ISSUES.md
+    └── workflow/ · diagram/ · ISSUES.md   inside each tNN Task
 
 TWO WORDS ON PURPOSE (JL 260831): `src/` is the JOB's shared code, `scripts/` is
 the TASK's own. The name alone says the level, so no one walks the path to find out.
@@ -141,7 +137,7 @@ the ruling removed, and it is why this shape is not scaffolded any more.
 ├── configs/
 │   ├── <cfg>.do               ← Stata globals (keep-vars, flags; paths built from ${ws_root}) — SOURCE OF TRUTH
 │   └── <run>.yaml             ← _meta: block + stata_config: pointer  (NEW under this dialect)
-├── run_{stage}_year.ps1       ← intra-run ORCHESTRATOR at task root (<=30 lines: phases + parallelism)
+├── run_{stage}_year.ps1       ← intra-run ORCHESTRATOR at task root (about 30 lines plus required checks: phases + parallelism)
 ├── runs/
 │   └── <run>.ps1              ← THIN per-run entry (a few lines); one per run identity; pairs with results/<run>/
 ├── sbatch/
@@ -157,8 +153,8 @@ Three ref templates seed them: `run-ps1-template.ps1` (the thin per-run entry), 
 
 Roles, precisely:
 
-- **dispatcher `.do`** — `do {task}.do <config> <step> [<year>] <results_dir> <ws_root>`. Sets `global ws_root` FIRST, loads `configs/<cfg>.do`, sets up dirs, opens a per-step log, dispatches to `scripts/<step>.do`, skips if output exists (idempotent), closes log. Code paths (`configs/`, `scripts/`) are job-relative; the DATA root arrives absolute as `<ws_root>`. The file name is FREE — nothing references it by a hardcoded path.
-- **`run_{stage}_year.ps1`** — the engine for one run: `$stata` variable at top (one editable line), resolves `ws_root` by walking up to `pyproject.toml`, runs Stata with the working dir set to `$PSScriptRoot` (the task folder), and sequences the dispatcher's steps in dependency-correct phases (within-phase parallelism via `Start-Process ... -PassThru | Wait-Process`). <=30 lines — see the script style contract below.
+- **dispatcher `.do`** — `do {task}.do <config> <step> [<year>] <results_dir> <ws_root>`. Sets `global ws_root` FIRST, loads `scripts/config/<cfg>.do`, sets up dirs, opens a per-step log, dispatches to `scripts/<step>.do`, skips if output exists (idempotent), closes log. Code paths (`configs/`, `scripts/`) are job-relative; the DATA root arrives absolute as `<ws_root>`. The file name is FREE — nothing references it by a hardcoded path.
+- **`run_{stage}_year.ps1`** — the engine for one run: `$stata` variable at top (one editable line), resolves `ws_root` by walking up to `pyproject.toml`, runs Stata with the working dir set to `$PSScriptRoot` (the task folder), and sequences the dispatcher's steps in dependency-correct phases (within-phase parallelism via `Start-Process ... -PassThru | Wait-Process`). about 30 lines plus required checks — see the script style contract below.
 - **`runs/<run>.ps1`** — the RUNNAME entry, THIN: one comment line + one call into the orchestrator with this run's parameters (`& "$PSScriptRoot\..\run_<stage>_year.ps1" -cfg <cfg> -year <year>`). One file per run identity so run ↔ `results/<run>/` pairing stays 1:1.
 - **`sbatch/`** — fans across runs: `foreach ($y in 2015..2020) { & "$PSScriptRoot\..\runs\run_<stage>_$y.ps1" }`. No logic of its own.
 
@@ -196,7 +192,7 @@ A5  Stata exe resolution -- two accepted patterns, either OK for ANY stage:
 A6  Output paths from the ABSOLUTE _WorkSpace (pyproject.toml walk-up).
     Never a relative "_WorkSpace", never ..\.. depth counting. Genuinely
     fixed raw inputs (G:\CMS\DATA) stay absolute in the config.
-A7  Run from the task folder ($PSScriptRoot); configs/ + scripts/ relative;
+A7  Run from the tNN Task folder; scripts/config/ + scripts/ relative;
     nothing hardcodes the folder's own name.
 A8  Dead %TEMP% on the server. (a) NEVER run a .do via the editor's "Do"
     button -- it stages to %TEMP%\pNNNN.do and fails (`command E is
@@ -215,7 +211,7 @@ B1  Header = 1-2 comment lines (what + args/usage). No banner blocks, no
     ===/--- separator walls, no ASCII-art in code, no "// CHANGE (n)" patch
     markers, no commented-out alternatives left behind.
 B2  Size budget (scoped by topology):
-    ORCHESTRATED (cms/case): orchestrator <= ~30 lines; runs/ entry 2-3
+    ORCHESTRATED (cms/case): orchestrator about 30 lines plus required checks; runs/ entry 2-3
       lines (comment + call orchestrator -- thin dispatch only).
     SELF-ORCHESTRATING (data/reg): runs/ IS the orchestrator, no fixed
       limit but stays focused (data: ~60-105 lines; reg: ~30-40 lines).
@@ -236,7 +232,9 @@ B6  Comment budget: ref TEMPLATES carry a ~4-line header (contract + what to
     scaffolded INSTANCES trim to a 1-2 line header + the phase labels.
 ```
 
-The settled good example (ProjB `A01_cms_pipeline`):
+Historical illustration (ProjB `A01_cms_pipeline`), retained to explain the old flat layout.
+For new work use the current ref templates: canonical Task paths, config-owned year,
+resolved output root, and child ExitCode checks are required. Do not copy this old snippet verbatim:
 
 ```powershell
 # run_cms_year.ps1 (orchestrator, task root)
@@ -315,14 +313,14 @@ Re-running a finished pipeline is cheap; to recompute, delete the specific `.dta
 Steps with no persistent output (`shared_*`, `describe`, `summary`, `*_erase`) always run.
 
 
-Describe / QC run (every stage ships one)
+Describe / QC Step
 ------------------------------------------
 
-Beyond its build steps, every Stata task SHIPS a read-only **describe** run that emits a human-readable QC report so a reviewer can confirm the output is correct without opening Stata.
-Two pieces:
+cms/case/data include a read-only **describe Step** within the variant Run; reg adds it when requested. It emits human-readable QC evidence.
+A separate describe-only Run needs its own explicit goal and Ticket:
 
 - **`describe` dispatch step** → `scripts/d-<Stage>-Describe.do`. Walks the stage's asset and `file write`s a report into `${results_dir}` (e.g. `case-describe.txt`). No persistent data output, so it is NOT in the skip list — it always runs.
-- **`runs/run_describe_<...>.ps1`** — a describe-ONLY run: same thin shape as any runs/ entry, runs just the `describe` step on the already-built asset (no rebuild). For per-year stages the year arg is a dummy; the worker loops the `year-*` dirs it finds under the asset path.
+- **Optional `runs/rNN_describe_<...>.ps1`** — a separately commissioned describe-only Run: same thin shape as any runs/ entry, runs just the `describe` step on the already-built asset (no rebuild). For per-year stages the year arg is a dummy; the worker loops the `year-*` dirs it finds under the asset path.
 
 ⚠️ **No SSC dependencies in describe** (it must run on a clean CMS server).
 Use built-ins: `egen tag()` + `count` for distinct counts — NEVER `distinct` (SSC; aborts `r(199)`).
@@ -341,6 +339,14 @@ reg   coefficient sanity: trait coef + SE + N per spec from the logs
 ```
 
 
+Current path rule: launch from the tNN Task root, load `scripts/config/rNN_*.do`,
+and call `scripts/<dispatcher>.do` / `scripts/<worker>.do`. Task-local
+orchestrators under scripts/ resolve the Task as their parent; shared
+orchestrators under Job src/ receive the Task path explicitly. The caller
+resolves RESULT_STORE, then Job store declaration, then Job root; every light
+output uses `$OUTPUT_ROOT/<task>/results/<run>/`. Legacy snippets below describe
+older entry locations only and must be translated through this rule.
+
 Runtime portability — three CWD/location-independence rules
 ------------------------------------------------------------
 
@@ -349,7 +355,7 @@ Three rules (all baked into the ref templates — do NOT re-derive them per task
 
 1. **Stata exe = one resolvable location.** Either a hardcoded line (`$stata = "C:\...\StataMP-64.exe"` -- cms-stage server pattern) or a `Resolve-StataExe` function (~10 lines, checks `$env:HAIPIPE_STATA` then scans Program Files -- data/reg/case pattern for multi-machine dev). See rule A5 for when each is preferred.
 
-2. **Run from the task folder; keep code paths relative.** The orchestrator sets the Stata working dir to `$PSScriptRoot` (the task root) and calls the dispatcher by bare name; the dispatcher loads `configs/<cfg>.do` and `scripts/<step>.do` relative to that. NO path hardcodes the folder name, so the folder can be renamed with a pure `mv`.
+2. **Run from the task folder; keep code paths relative.** The orchestrator sets the Stata working dir to `$PSScriptRoot` (the task root) and calls the dispatcher by bare name; the dispatcher loads `scripts/config/<cfg>.do` and `scripts/<step>.do` relative to that. NO path hardcodes the folder name, so the folder can be renamed with a pure `mv`.
 
 3. **Anchor the DATA root absolute via `ws_root`.** The per-run `.ps1` walks up to the `pyproject.toml` marker, forms `<repo>/_WorkSpace`, and passes it as `-wsRoot`. The dispatcher sets `global ws_root` and the config builds ALL output paths from `${ws_root}` (e.g. `global output_root "${ws_root}"`). NEVER write a relative `_WorkSpace` in the config — outputs would land wherever the CWD happens to be (a classic bug: 50+ GB/year under the task folder).
 
@@ -397,7 +403,8 @@ Author convention: the dispatcher `.do` carries a 1-2 line header comment (args 
 Project-local letter convention (cms/case/data/reg)
 ----------------------------------------------------
 
-The skill's default group letters (A=training, B=eval, C=display, D=data, E=individual, F=agent, X=algo) describe the ML/CGM world.
+Historical letter-only names below describe existing trees; current hierarchy prefixes are bNN/jNN/tNN/rNN for all domains.
+Do not scaffold the historical names below. Stage/cohort names belong in suffixes.
 The CMS/Stata project uses a DIFFERENT, domain-native pipeline ontology that mirrors `CMS-Stata-Project`'s cms → case → data → reg pipelines:
 
 ```
@@ -419,7 +426,7 @@ Document it in the project's `diagram/` so an auditor reading `tasks/{letter}{NN
 
 ### Job `{LNN}` stage-letter alphabet
 
-Stata JOBS use `{L}{NN}_{stage}_pipeline[_<study>]`, where the leading letter `L` encodes the pipeline STAGE (so alphabetical sort = pipeline order), and `NN` is a stable study/cohort id (or a within-stage sequence where no study axis exists):
+Legacy Stata jobs used `{L}{NN}_{stage}_pipeline[_<study>]`, where the leading letter `L` encodes the pipeline STAGE (so alphabetical sort = pipeline order), and `NN` is a stable study/cohort id (or a within-stage sequence where no study axis exists):
 
 ```
 L   stage   produces                  store

@@ -173,7 +173,7 @@ MUST DO
 
 1. Source env.sh before any hai-remote-sync invocation.
 2. Always dry-run before a real push or pull.
-3. Surface SSO URL on credential errors.
+3. Surface the selected backend's credential hint (GDrive/rclone refresh, S3/AWS SSO, or an explicitly unresolved backend).
 4. Honor ExternalStore version pins via the path form: `--path ExternalStore/@{version}/...` (the CLI has NO --version flag; versioning is path-based per ref/store-map.md).
 
 ---

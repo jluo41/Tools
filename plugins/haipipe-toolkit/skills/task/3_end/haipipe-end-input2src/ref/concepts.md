@@ -123,12 +123,11 @@ def Input2SrcFn(payload_input_json, SPACE):
 
     Inverse of Src2InputFn. Output must match ProcName_to_columns schema.
     """
-    # Handle both payload formats
-    if 'dataframe_records' in payload_input_json:
-        records = payload_input_json['dataframe_records']
-        record = records[0] if records else {}
-    else:
-        record = payload_input_json
+    # Databricks-only implementation; SageMaker uses its own flat decoder.
+    records = payload_input_json.get('dataframe_records')
+    if not isinstance(records, list) or len(records) != 1 or not isinstance(records[0], dict):
+        raise ValueError('Expected one Databricks dataframe_records record')
+    record = records[0]
 
     # Extract patient demographics -> Ptt table
     patient_id = str(record.get('patient_id', ''))
@@ -293,7 +292,7 @@ MUST DO
 3. Include all exported vars in MetaDict too
 4. Output dict keys must exactly match ProcName_List entries
 5. All DataFrame columns must match ProcName_to_columns schema
-6. Handle both payload formats (dataframe_records and legacy flat)
+6. Accept only the selected platform shape and reject the other shape; round-trip with the matching Src2InputFn
 7. Parse timestamps with pd.to_datetime() -- not raw strings
 
 ---

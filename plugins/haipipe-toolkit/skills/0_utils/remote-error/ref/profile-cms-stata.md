@@ -3,9 +3,11 @@
 The CMS secure server. Stata batch mode plus Windows PowerShell 5.1, driving CMS
 Medicare claims that never leave that machine.
 
-Load this profile when the pasted error carries an `r(nnn)` Stata code, a `.do`
-or `.ps1` path, or a `results/<run>/log/` path. Home repo: `Physician-SPACE`,
-project `examples/Project-Personality-OpioidRx`.
+Load this profile only when the user or verified project configuration names
+the CMS secure-server environment. Stata `r(nnn)`, `.do`, `.ps1`, or log-path
+shapes alone do not establish CMS. Home repo: `Physician-SPACE`, project
+`examples/Project-Personality-OpioidRx`; unrelated projects use their own
+profile or the generic method.
 
 Two skills own the other half of this environment and should be read alongside:
 `haipipe-task-for-stata` (scaffold a task folder, run the pre-flight gate, write
@@ -19,6 +21,9 @@ and the full register naming rules).
 ```
 register default   _WorkSpace/0-CMS-Store/Issue-From-CMS-Server/
 register index     SERVER-READY-CHECK.md
+issue file         ${REGISTER}/<YYMMDD>/issue-00N-<slug>.md
+daily findings     ${REGISTER}/<YYMMDD>/FINDINGS.md
+issue template     ../ref/issue-file-template.md
 status file        <task-folder>/ISSUES.md
 static gate        python3 tasks/_tools/check_server_ready.py <UNIT>    19 rules
 lessons file       tasks/LESSON.MD
@@ -31,7 +36,7 @@ canonical root     tasks/00_cms-stata-template/
 
 ---
 
-## Phase 1: where the error actually is
+## Step 1: where the error actually is
 
 Three artifacts, and most people open only the first:
 
@@ -49,7 +54,7 @@ Success is the `.done-*` marker file, never the exit code.
 
 ---
 
-## Phase 2: the code table
+## Step 2: the code table
 
 ```
 r(198)  invalid syntax     often a PARSER rule, not a bad value.
@@ -79,7 +84,7 @@ a merge on keys stored at different string widths: str16 against str10 gives
 
 ---
 
-## Phase 3: the hard limits
+## Step 3: the hard limits
 
 ```
 ASCII only, no CRLF          Windows PowerShell 5.1 is the shell
@@ -101,7 +106,7 @@ fails until you do.
 
 ---
 
-## Phase 4: the gate, and what it cannot see
+## Step 4: the gate, and what it cannot see
 
 ```bash
 python3 tasks/_tools/check_server_ready.py <UNIT>
@@ -117,7 +122,15 @@ never "this will run".
 
 ---
 
-## Phase 5: the ID prefixes
+## CMS status and local verification
+
+A local fix is `🟠 FIXED`; it becomes `✅ CLOSED` only after a clean remote run.
+The remaining states are `🔴 OPEN`, `🟡 PARTIAL`, and `⚪ KNOWN`. Use this
+vocabulary only for this profile. Report the actual static gate verdict as
+`<UNIT> n/<total>`; if the checker is unavailable, say so and leave that
+verification pending. Never substitute a successful local edit for a gate.
+
+## Step 5: the ID prefixes
 
 Ruled by JL 260822, replacing a flat `S01..S37` counter that told a reader
 nothing about where to look. Six characters, always.

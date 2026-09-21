@@ -1,14 +1,33 @@
-# approve-rules · what an agent checks before 🧭 `approved:`
+# approve-rules · what a reviewer checks before 🧭 `approved:`
 
-Seeded 260818. This is the SPLIT tick: an agent can establish that a plan is
-COMPLETE and CONSISTENT; only a person can say it is the plan they want.
+Seeded 260818. This is the SPLIT tick: a reviewer can report structural checks
+and evidence-bound readings against this frozen contract; only a person can
+approve the plan's direction.
 
 ```text
-🤖 the agent half   is the plan complete, consistent and legal?
+🤖 the reviewer half   are deterministic checks complete, and what do the
+                        cited passages show under the frozen semantic rules?
 🧑 the human half   is this the DIRECTION I want?   ← re-judged every time
 ```
 
 ## Rules
+
+Each rule has a judgment class even when this legacy list does not yet encode
+it per row:
+
+- **deterministic**: exact structure/string/hash/predicate recomputed from the
+  pinned artifact by a named checker;
+- **semantic**: a reviewer compares cited evidence to a frozen criterion and
+  records the relevant passage, finding, and uncertainty; a fresh context can
+  improve independence but does not make the reading mechanically certain;
+- **human decision**: direction, preference, waiver, release, or acceptance
+  chosen by the named person. An agent may prepare options, never write this
+  decision.
+
+Classify each new rule and state its scope. A semantic criterion must include
+an observation method and at least one pass, fail, and not-verifiable boundary
+example. If the artifact or criterion does not support a decision, report
+`not verifiable`; do not manufacture a verdict or retry the unchanged input.
 
 ```text
 R1  EVERY SECTION IS ACCOUNTED FOR. Each `## C<n>` in the plan maps to a real
@@ -66,29 +85,14 @@ R11 DIVISION HEADINGS ARE SHORT NAMES, NOT SUMMARY SENTENCES. Each division
     actual object names are required to understand the division.
 ```
 
-⚖️ **Why two fields and not one** (resolved 260818, after the first live run).
-An earlier draft of R10 had the agent write `approved: ✅ auto`. Three shipped
-contracts forbid exactly that, in the same words: `QPw00-page-loop`'s own
-Diagram ("a PERSON ticks `approved:`; no machine may"), `QPw1-outline §3`, and
-`haipipe-page-check:141`. The first approver run read all three and reported the
-collision before it could bite, because its verdict happened to be ⬜.
+## Check result and workflow release
 
-So the ruling and the law both hold, on separate lines:
-
-```text
-🧑 JL 260818  "human not to approve, they to break"
-              ⇒ the RUN proceeds on `checked: ✅` alone. It does not wait
-                for `approved:`, and a plan nobody objected to is not blocked.
-🔒 three contracts
-              ⇒ `approved:` stays a person's word, and no machine writes it.
-                It is now OPTIONAL: the blanket "the whole thing is good".
-🛑 either way
-              ⇒ a person's 🛑 outranks every rule pass beneath it, reverts
-                `checked:`, and needs no rule to justify itself.
-```
-
-What a 🛑 costs is one re-plan. What the blocking gate cost was every plan
-waiting on one reader.
+R1–R11 determine the machine `checked:` result. They do not release CONTENT
+or satisfy a person-reserved gate. Follow `README.md` for the check/release
+boundary and the canonical Page Outline gate. A checked v0 plan can support
+permitted evidence work while human approval is owed; CONTENT remains held.
+A person's 🛑 stays durable and reopens the affected check. Historical
+two-field discussions are recorded in `../CHANGELOG.md`.
 
 ## 🚫 NOT rules · these are the human half
 

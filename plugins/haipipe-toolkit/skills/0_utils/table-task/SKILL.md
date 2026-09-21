@@ -1,25 +1,17 @@
 ---
 name: task-table
 description: >-
-  Render a block/job/task/run tree as a structure tree plus two-lens tables: the display lens says
-  what exists, has run, and where each task stands (a status rolled up from its
-  runs), while the plan lens says what every task DEVELOPS,
-  reads, and writes. Generated from the tree by ref/render_task_table.py, never
-  typed: the three words a person owns (develops:, input:, output:) live on the
-  task page and the table projects them, falling back to the code's own
-  docstring headline and config out_* keys. Shape: a block is a section, a job
-  is one table, a task folder is one row; Config Catalog, Runs Overview, and
-  Store Slots are appendices. A config never multiplies a Task row.
-  Use when a tasks/ tree needs a one-page tree and plan of what each task builds,
-  when checking a table on disk still matches the tree, or when handing a
-  restructured tree to a colleague. Not for a Phase/Cycle design contract
-  (that is /workflow-table) and not for the naming audit (that is
-  haipipe-task/ref/check_task_tree.py). Trigger: task table, what does each
-  task develop, render the tasks, task status tree, TASK-TABLE.md, /task-table.
+  Render a block/job/task/run tree and Task Table from folder structure,
+  task pages, configs, code, and receipts. Show what each task develops,
+  reads, writes, and its observed status. Each Task Folder gets one row;
+  Config Catalog, Runs Overview, and Store Slots are appendices.
+  Use for task status trees, TASK-TABLE.md, checking a saved table for drift,
+  or summarizing a restructured task tree. Use workflow-table for Workflow
+  Run Specs and Workspace bindings; use the owning task skill for naming audits.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.0"
-  last_updated: "2026-09-18"
+  version: "0.6.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -34,8 +26,9 @@ prints only the tree, stopped at the task level: the answer to "what is the
 status?" for a whole block.
 
 `/workflow-table` is typed by a designer and says what MAY happen: one row per
-Phase/Cycle contract. `/task-table` is its mirror image: generated from disk,
-it says what each task IS GOING TO DEVELOP and what it has done. The minimum
+independently closable Run Spec, with Cells binding it to member Workspaces.
+`/task-table` is a complementary projection generated from disk; it says what
+each task IS GOING TO DEVELOP and what it has done. The minimum
 unit is the **Task Folder**: one Task Table row remains one task even when that
 folder owns several configs and Runs. Use it when a tree needs one answer to:
 
@@ -81,7 +74,7 @@ missing `purpose:`, `description:`, or `headline:` is rendered as
   owner:
   develops: what a third platform would add to NPI2Photo, before adding it
   input: @review/RateMDs/v2026-08/_campaign_chunks + @platforms/RateMDs/v2026-08/urls_npi_matched.parquet
-  output: results/t05_ratemds_photo_probe/<run>/probe.json
+  output: results/<run>/probe.json
   ```
 
   The table reads these lines. When `develops:` is missing it falls back to
@@ -95,32 +88,39 @@ missing `purpose:`, `description:`, or `headline:` is rendered as
   `haipipe-task` ref/block-job-task-run.md defines them. A folder off that
   grammar is still rendered, with a `N1` finding; names are checked, never used
   as a filter.
-- **A ticket is a planned Run; a receipt is an actual one.** `runs/<stem>.sh`
-  pairs with `<job>/results/<task>/<stem>/runtime.yaml` by stem. Ticket
-  without receipt = `Ready`. Receipt without ticket = orphan finding. The
+- **An allocated Run has a Ticket and receipt.** `runs/<stem>.sh` pairs by
+  stem with `$OUTPUT_ROOT/<task>/results/<stem>/runtime.yaml` under the Task
+  owner's resolver. Preserve historical stores through their recorded paths.
+  A planned receipt = `Ready`; a Ticket without receipt = `Held` with an
+  incomplete-allocation finding. Receipt without Ticket = an orphan finding. The
   receipt's `status` is normalised the way `haipipe-run` does
   (`ok`/`complete` → Done, `running` → Running, `failed` → Failed,
   `expected_missing`/`external_required` → No data, absent → `? (no status)`);
-  a process exit code alone is never promoted to Done. A Run named in a newer
+  `waiting-for-feedback` → Waiting. A process exit code alone is never
+  promoted to Done. A Run named in a newer
   receipt's `supersedes:` renders `Superseded` and stops counting.
 - **A task's status is rolled up from its Runs, never typed.** First match
   wins over the Runs that still count: no ticket and no receipt → `⚪ No runs`;
   any Running → `🏃 Running`; any Failed → `❌ Failed`; any unknown receipt
   status → `❓ Unknown`; any Held → `⏸️ Held`; any No data → `📭 No data`
-  (the input is not on this machine); some Done and some Ready → `🟡 Partial`;
-  every Run Ready → `⬜ Not run`; every Run Done → `✅ Done`. `N/M` after the
-  word is Runs Done out of the Runs that count. This is the runtime status; the
+  (the input is not on this machine); any Waiting → `⏳ Waiting`;
+  some Done and some Ready → `🟡 Partial`; every Run Ready → `⬜ Not run`;
+  every Run Done → `✅ Done`. `N/M` after the
+  word is Done out of observed current Run rows, including explicitly marked
+  recovery rows; it is not a validated allocation total. A requested actual
+  inventory separates valid Ticket/receipt pairs from incomplete records. This is the runtime status; the
   page's `state:` line stays a separate, typed column.
 
 ## 🧭 Table family boundary
 
 `Task Tables` is the task-folder member of the Tables family. It is not a
-Phase/Cycle design table and it is not the future Board Page/Page Folder table:
+Workflow Run Spec design table and it is not the future Board Page/Page Folder
+table:
 
 | Sibling | Owns | Does not replace |
 |---|---|---|
-| `/workflow-table` | Phase/Cycle plan, Run demand, Human Actions, Skill Coverage | concrete task inventory |
-| `/task-table` | one row per task folder, with plan and observed runtime lenses | workflow phase contract |
+| `/workflow-table` | Run Spec graph, Workspace Cells, Run demand, Human Actions, Skill Coverage | concrete task inventory |
+| `/task-table` | one row per task folder, with plan and observed runtime lenses | Workflow Run Spec graph |
 | future `/board-table` | Board Page/Page Folder-level join of Page Face, Task Face, plugin lanes, and Runs | current `folderstat` inventory or Outline authority |
 
 No `board-table` skill or unified Board Table is installed yet. Do not invent
@@ -190,7 +190,7 @@ Two appendix surfaces come from the same scan:
 | Surface | One row = | Columns |
 |---|---|---|
 | **Config Catalog** | one configuration file | Task · Config · Purpose · Mode · Input · Output · Purpose source |
-| **Runs Overview** | one Run with a receipt (`--surface run` adds planned tickets) | Run (`bNNjNNtNNrNN`) · Task · Config · Ticket · Status · Started · Ended · Exit · Result · Source |
+| **Runs Overview** | one logical Run, including explicitly marked recovery rows on both `all` and `run` surfaces | Run (`bNNjNNtNNrNN`) · Task · Config · Ticket · Status · Started · Ended · Exit · Result · Source |
 | **Store Slots** | one consumer-serving job | Store · Job · Provenance · Outputs declared by its tasks · Runs Done |
 
 A `⚠ Findings` block closes the report with what the scan tripped over, one
@@ -225,7 +225,7 @@ the block-by-block, job-by-job detail. Nothing else.
 | every `scripts/config/*` file | Config Catalog: `purpose:`/`description:`/`headline:` from the config or `_meta` block, `mode:`, and per-config Input/Output; missing purpose is `? (not declared)` |
 | newest `scripts/config/*.yaml`, top-level or simple `_meta` fields | Input fallback = `worklist`/`payload`/`inputs`/`source`/`base`; Output fallback = `entry` + `out_tier/out_platform/out_vintage`, or `entry` + `out_dimension/vintage/out_name`, or `output`, or `store` |
 | `runs/*.sh` `*.ps1` | tickets, the Runs column |
-| `<job>/results/<task>/<run>/runtime.yaml` | receipts: status, started, ended, exit_code |
+| `<task>/results/<run>/runtime.yaml` | receipts: status, started, ended, exit_code |
 | `<job>/src/config-defaults.yaml` `store:` (declared) or a task config `store:` (derived) | Mode and the Store Slots surface |
 
 Nothing from git, from a board page, or from another table. If a value is not
@@ -235,29 +235,36 @@ facts. A future Board Table is outside this scan.
 
 ## 🛠️ Commands
 
-```bash
-G="$(git rev-parse --show-toplevel)/Tools/plugins/haipipe-toolkit/skills/0_utils/task-table/ref/render_task_table.py"
+Resolve `TABLE_TASK_SKILL_DIR` from this loaded SKILL.md, following installation
+symlinks. Set its absolute path in the command environment; do not derive it
+from the target project's Git root. Verify Python 3 and the renderer exist.
+Replace placeholders below with quoted paths, including the tasks directory.
 
-python3 $G <tasks-dir>                       # print Task + Config + Run + Store surfaces
-python3 $G <tasks-dir> --surface task        # one surface: tree | task | config | run | store
-python3 $G <tasks-dir> --surface tree --depth task   # status tree only, stopped at tasks
-python3 $G <tasks-dir> --surface config      # one row per configuration
-python3 $G <tasks-dir> --out auto            # write <tasks-dir>/TASK-TABLE.md
-python3 $G <tasks-dir> --format tsv          # machine-readable
-python3 $G <tasks-dir> --check <tasks-dir>/TASK-TABLE.md            # exit 1 on drift
-python3 $G <tasks-dir> --check <mutated copy> --expect-fail         # GATE-1 proof
+```bash
+: "${TABLE_TASK_SKILL_DIR:?Set the absolute directory of the loaded task-table skill}"
+G="$TABLE_TASK_SKILL_DIR/ref/render_task_table.py"
+
+python3 "$G" <tasks-dir>                       # print Task + Config + Run + Store surfaces
+python3 "$G" <tasks-dir> --surface task        # one surface: tree | task | config | run | store
+python3 "$G" <tasks-dir> --surface tree --depth task   # status tree only, stopped at tasks
+python3 "$G" <tasks-dir> --surface config      # one row per configuration
+python3 "$G" <tasks-dir> --out auto            # write <tasks-dir>/TASK-TABLE.md
+python3 "$G" <tasks-dir> --format tsv          # machine-readable
+python3 "$G" <tasks-dir> --check <tasks-dir>/TASK-TABLE.md            # exit 1 on drift
+python3 "$G" <tasks-dir> --check <mutated copy> --expect-fail         # GATE-1 proof
 ```
 
 `--check` prints `✅ matches` and exits 0, or the diff plus `❌ DRIFT` and
 exits 1. `--expect-fail` only inverts the exit code: the proof PASSES when
 you see `❌ DRIFT` **and** exit 0. `<tasks-dir>` may also be one block
-folder; the path works from any directory inside the repo, and the script
-resolves nothing by `parents[N]`.
+folder. The installed renderer path is independent of the target directory;
+the script resolves nothing by `parents[N]`.
 
 ## 🔁 Render, then keep it true
 
-1. **Render** `--out auto` once the tree exists. The first honest table of a
-   restructured tree says `Ready` on every Task row and shows
+1. **Render** `--out auto` once the tree exists. Unexecuted Tickets paired
+   with planned receipts say `Not run` on each Task row and `Ready` on its
+   Run rows. Missing receipts produce `Held` rows and findings. It shows
    `? (not declared)` for configs without a purpose: that is missing plan
    content, shown as such.
 2. **Fill the page heads**, not the table. A `develops:` line on `tNN_<task>.md`
@@ -301,9 +308,9 @@ person who owns the task writes its `develops:` line.
 
 ## 📚 Related contracts
 
-- `/workflow-table` is the typed sibling: one row per Phase/Cycle contract,
-  with Skill Coverage. Its Runs Overview row shape (`bNNjNNtNNrNN`) is reused
-  here verbatim rather than redesigned.
+- `/workflow-table` is the typed sibling: one row per independently closable
+  Run Spec, with Workspace Cells and Skill Coverage. Its Runs Overview row
+  shape (`bNNjNNtNNrNN`) is reused here verbatim rather than redesigned.
 - `haipipe-folder` is why a task row can carry a plan: a task folder has a
   Page Face (`tNN_<task>.md`, where `develops:` lives) and a Task Face (the
   code and runs the other columns read). Config files remain inside that Task

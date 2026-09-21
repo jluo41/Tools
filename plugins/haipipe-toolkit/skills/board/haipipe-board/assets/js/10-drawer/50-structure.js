@@ -308,7 +308,7 @@
     var def = window.boardPlugins ? window.boardPlugins.getDefault(page) : null;
     fab.innerHTML = def ? def.label
                   : !tgt ? '\u{1F916} Board chat'
-                  : (tgt.group ? '\u{1F916} Group chat' : '\u{1F916} Chat');
+                  : (tgt.group ? '\u{1F916} Group chat' : 'Plugins');
   }
   window.addEventListener('hashchange', fabLbl);
   window.addEventListener('board:updated', fabLbl);   // router swap (QC9 split site)
@@ -367,11 +367,11 @@
     });
   }
   function rewire() {
-    safewire([marks, paint, wireDadd, wireQBtns, wireStruct]);
+    safewire([wireDadd, wireQBtns, wireStruct]);
     try {
       if (window.__boardWireSentenceChats) window.__boardWireSentenceChats();
     } catch (e) { console.warn('board wire failed:', e); }
   }
   window.__boardRewire = rewire;
-  safewire([marks, paint, wireDadd]);
+  safewire([wireDadd]);
 })();

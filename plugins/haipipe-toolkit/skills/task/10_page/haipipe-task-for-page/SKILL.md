@@ -21,7 +21,7 @@ metadata:
 
 # /haipipe-task-for-page · one job answers one page's numbers with code
 
-Load `haipipe-task` first (the hierarchy, the four phases, and Run/Result law); this
+Load `haipipe-task` first (the hierarchy, the four lifecycle commands, and Run/Result law); this
 file owns the delta for `task-type: page`. The consumer side is a typed row in
 `outline/<stem>-evidence-items.md`; SURVEY maps this job's full Run id as a
 Supporting Run and LAND consumes its Result. This job never edits the Page,
@@ -49,20 +49,23 @@ EXITS    Report: every question answered in values.yaml + its Run/Result receipt
 ## 🧱 One job per page, linked where the page already looks
 
 ```text
-project or Application                          any Folder's Page Face
+project or owning family                          any Folder's Page Face
 tasks/                                           <page>/
 └── b<NN>_page_service/         one service      ├── outline/<stem>-evidence-items.md
     ├── j01_values_<pageA>/     block per project│     E<NN>-VALUE-<slug> · Supporting Runs
-    │   ├── t01_collect_values/                  ├── runs/pj<JJ>t<EE>r<RR>.sh
-    │   │   ├── t01_collect_values.md            └── results/pj<JJ>t<EE>r<RR>/
+    │   ├── t01_collect_values/                  ├── runs/<owner-native-Run-Ticket>
+    │   │   ├── t01_collect_values.md            └── results/<owner-native-Run>/
     │   │   ├── scripts/
     │   │   │   ├── collect_values.py
     │   │   │   └── config/r01_<batch>.yaml
-    │   │   └── runs/r01_<batch>.sh
-    │   ├── workflow/  plan.yaml · report.yaml · proposals.md
-    │   ├── results/t01_collect_values/r01_<batch>/values.yaml
+    │   │   ├── runs/r01_<batch>.sh
+    │   │   └── workflow/  plan.yaml · report.yaml · proposals.md
+    │   └── [OUTPUT_ROOT]/t01_collect_values/results/r01_<batch>/values.yaml
     └── j02_values_<pageB>/
 ```
+
+`[OUTPUT_ROOT]` denotes the generated projection after output-root resolution; it is not a literal directory to scaffold.
+The consumer-side Ticket/Result labels above are owned by that consumer and are never allocated by this Task.
 
 - **The Evidence Item is not copied here.** Its `E<NN>-VALUE-<slug>` id stays
   Page-local. This task-side executor produces a consumer-neutral Result; the
@@ -70,12 +73,12 @@ tasks/                                           <page>/
   the Local Page Run selects the needed `values.yaml` rows.
 - **One job per Page Face, one service block per project**; three served Pages
   hold three sibling jobs, whether their owning Folder belongs to Paper,
-  Application, or another Board family. The canonical stranger-test names are
+  Insight, Design, or another Board family. The canonical stranger-test names are
   `b<NN>_page_service` and `j<NN>_values_<page-stem>`. A project with an
   established compatible service block may reuse it; legacy
   `b<NN>_paper_service` remains readable but is never required for non-Paper
-  work. A run config is one batch (`r01_<batch>.yaml`), and a refresh is a new
-  run of the same ticket, never a new Folder.
+  work. A run config is one batch (`r01_<batch>.yaml`), and a refresh allocates a new
+  rNN config/Ticket pair using the same worker, never a new Folder.
 - **The Page links Results, not a whole Folder copy.** SURVEY records the
   exact Supporting Run id; Context Workspace may separately list the related
   Task Page when it helps a reader. There is no PageX, `task/`, or Probe lane.
@@ -90,7 +93,7 @@ LAND         validates the Supporting Result, freezes it into Local Input, and
              executes the Page-local Evidence Item Run; changed values reopen EMBED
 ```
 
-A phase producer still never calls this specialist directly, and this job
+An owning controller/producer still never calls this specialist directly, and this job
 never learns which page sentence wants which answer: it sees stripped
 questions and serves `values.yaml` rows to whoever binds them.
 
@@ -102,7 +105,7 @@ Every row resolves or is `owed` — a computed row with an unresolvable
 `source:` raises at run time, never defaults.
 
 ```yaml
-# $OUTPUT_ROOT/results/t01_collect_values/r01_intro_batch/values.yaml
+# $OUTPUT_ROOT/t01_collect_values/results/r01_intro_batch/values.yaml
 computed: "260831 1710"
 upstream:                            # every folder this run read, pinned
   - examples/ProjB/tasks/R01_Reg_TraitOpioid · report.yaml 260828
@@ -144,14 +147,14 @@ DIRECTION; direction belongs to the page's prose after EVIDENCE lands.
 
 ## 🔁 A rerun is the refresh, and staleness is mechanical
 
-Upstream reran → rerun this job's ticket → `values.yaml` regenerates whole →
+Upstream reran → allocate a new rNN config/Ticket using this job's worker → `values.yaml` regenerates whole →
 diff against the previous run's copy names every drifted value → each mapped
 Evidence Item is a stale binding EVIDENCE re-lands and OUTLINE absorbs
 (`v<N+1>` if the plan was ✅). The page never goes stale silently, because the
 join from sentence to lane to card to values row to upstream run is walkable
 in both directions.
 
-## 🔄 The four phases, specialized
+## 🔄 The four lifecycle commands, specialized
 
 ```text
 Plan     workflow/plan.yaml: input = the batch's questions + the upstream
@@ -173,25 +176,26 @@ Report   report.yaml mirrors plan · RUN_AUDIT.md Gate 2 · Result receipts
 
 ## 🧩 Reorganize a Discovery Page into one division per Run
 
-A second job this skill owns, and the one exception to "this job never edits
+This separate mode is entered only when the user explicitly asks to reorganize Discovery Pages; ordinary value collection never triggers it.
+Load the current Discovery owner contract before editing, keep the selected Page scope, and use its layout rules.
+This is the one exception to "this job never edits
 the Page": a Discovery Page that files one source per Run (a video knowledge
 page, for example) is moved from the four-division layout into
 `layout: one-division-per-run`, so each Run is one Content division. The
 layout rule itself lives in `haipipe-discovery/ref/page-types.md`, where the
 checker reads it; this section is the job that applies it, one Page at a time.
 
-1. **One subagent per Page folder**: the main session fans out, cheap model.
+1. **One subagent per Page folder**: the main session fans out within the selected Page scope, using the configured model.
 2. **The subagent moves text, never rewrites it**: notes stay word for word.
 3. **One reviewer per Page**: `haipipe-discovery-reviewer-agent`, one fix round.
 4. **Three checks close a Page**: checker clean, nothing lost, reviewer pass.
 
 **Who runs it.** The main session lists the Page folders (every Page whose
 Runs are all one-source Runs), then runs one Workflow `pipeline()` over them:
-a writer agent per Page (`model: 'sonnet'`), then a reviewer agent
-(`agentType: 'haipipe-discovery-reviewer-agent'`, `model: 'sonnet'`), then one
+a writer agent per Page , then a reviewer agent
+(`agentType: 'haipipe-discovery-reviewer-agent'`), then one
 fixer round for a Page the reviewer fails. Each writer edits only its own
-`<task>/<task>.md`, creates no file, and runs no git. The main session commits
-once at the end.
+`<task>/<task>.md`, creates no file, and runs no git. The main session presents the combined changes; commit only when explicitly requested.
 
 **The target layout**, top to bottom:
 
@@ -270,7 +274,7 @@ haipipe-task-for-page/
 └── CHANGELOG.md                 version history
 ```
 
-The base is `haipipe-task` (hierarchy, phases, and Run/Result anatomy). The
+The base is `haipipe-task` (hierarchy, lifecycle commands, and Run/Result anatomy). The
 Page-side contracts it serves but never edits are
 `haipipe-page-outline`, `haipipe-page-evidence`, and
 `haipipe-plugin-outline/ref/item-table.md`.

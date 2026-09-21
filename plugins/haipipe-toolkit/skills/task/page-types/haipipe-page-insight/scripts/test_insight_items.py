@@ -313,6 +313,180 @@ class InsightItemsTest(unittest.TestCase):
         self.assertTrue(any("base_run" in fault and "hash mismatch" in fault
                             for fault in app.inspect(folder)[2]))
 
+    def ready_evidence(self, folder, packet):
+        producer = self.root / "producer"
+        ticket = producer / "runs/r02_compute.sh"
+        ticket.parent.mkdir(parents=True, exist_ok=True)
+        ticket.write_text("#!/bin/sh\n# synthetic producer\nexit 0\n")
+        ident = "study/support#r02_compute@v001"
+        result = producer / "results/r02_compute/v001/result.yaml"
+        receipt = result.with_name("runtime.yaml")
+        write(result, {"execution": ident, "value": 7})
+        write(receipt, {"execution": ident, "status": "complete"})
+        local = folder / "outline/evidence/materials/local-result.yaml"
+        write(local, {"type": "VALUE", "status": "accepted", "value": 7})
+        call = {"recipe_id": "support/compute", "owner": str(producer),
+                "entry": str(ticket), "entry_sha256": app.digest(ticket), "code_version": "synthetic-v1",
+                "parameters": {"input_manifest": "snapshot-01.yaml", "output_root": str(result.parent)},
+                "parameter_contract": "synthetic-v1", "producer_execution": ident,
+                "consumer_insight_execution": packet["execution"],
+                "producer_ticket": str(ticket), "producer_ticket_sha256": app.digest(ticket),
+                "receipt": str(receipt), "receipt_sha256": app.digest(receipt)}
+        return {"supporting_results": [{"run": ident, "path": str(result), "sha256": app.digest(result),
+                                         "ticket": str(ticket), "ticket_sha256": app.digest(ticket),
+                                         "receipt": str(receipt), "receipt_sha256": app.digest(receipt)}],
+                "local_sources": [{"path": str(local), "sha256": app.digest(local)}],
+                "recipe_calls": [call]}
+
+    def test_bind_does_not_freeze_empty_interpretation_input(self):
+        folder, _, packet = ri_fixture(self.root, "late")
+        self.assertIsNone(packet["input"])
+        self.assertFalse(Path(packet["runtime"]).with_name("input.yaml").exists())
+        self.assertEqual({}, app.read_yaml(packet["runtime"])["checkpoints"])
+        self.assertTrue(Path(packet["binding"]).is_file())
+        self.assertEqual([], app.inspect(folder)[2])
+
+    def test_freeze_accepts_later_support_and_preserves_allocation(self):
+        folder, base, packet = ri_fixture(self.root, "later-support")
+        before = Path(packet["binding"]).read_bytes(), base.read_bytes()
+        evidence = self.ready_evidence(folder, packet)
+        output = app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+        frozen = app.read_yaml(output["input"])
+        self.assertEqual(evidence["supporting_results"], frozen["supporting_results"])
+        self.assertEqual(evidence["local_sources"], frozen["local_sources"])
+        self.assertEqual(before, (Path(packet["binding"]).read_bytes(), base.read_bytes()))
+        self.assertEqual([], app.inspect(folder)[2])
+
+    def test_reused_support_needs_no_new_recipe_call_or_producer(self):
+        folder, _, packet = ri_fixture(self.root, "reuse-support")
+        evidence = self.ready_evidence(folder, packet)
+        evidence["recipe_calls"] = []
+        app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+        _, rows, errors = app.inspect(folder)
+        self.assertEqual([], errors)
+        self.assertEqual(1, len(rows))
+        self.assertEqual(packet["insight_run"], rows[0]["item"]["run"])
+
+    def test_new_recipe_packet_cannot_alias_producer_to_consumer(self):
+        folder, _, packet = ri_fixture(self.root, "alias")
+        evidence = self.ready_evidence(folder, packet)
+        evidence["recipe_calls"][0]["producer_execution"] = packet["execution"]
+        before = Path(packet["runtime"]).read_bytes()
+        with self.assertRaisesRegex(ValueError, "identities must be distinct"):
+            app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+        self.assertEqual(before, Path(packet["runtime"]).read_bytes())
+        self.assertFalse(Path(packet["runtime"]).with_name("input.yaml").exists())
+
+    def test_new_recipe_requires_producer_receipt_and_rejects_legacy_packet(self):
+        folder, _, packet = ri_fixture(self.root, "missing-receipt")
+        evidence = self.ready_evidence(folder, packet)
+        call = evidence["recipe_calls"][0]
+        call["execution"] = call.pop("producer_execution")
+        with self.assertRaisesRegex(ValueError, "missing producer_execution"):
+            app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+        call["producer_execution"] = call.pop("execution")
+        Path(call["receipt"]).unlink()
+        with self.assertRaises((ValueError, OSError)):
+            app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+
+    def test_reused_support_requires_its_own_complete_receipt(self):
+        folder, _, packet = ri_fixture(self.root, "incomplete-reuse")
+        evidence = self.ready_evidence(folder, packet)
+        evidence["recipe_calls"] = []
+        source = evidence["supporting_results"][0]
+        receipt_path = Path(source.pop("receipt"))
+        with self.assertRaisesRegex(ValueError, "missing receipt"):
+            app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+        source["receipt"] = str(receipt_path)
+        receipt = app.read_yaml(receipt_path)
+        receipt["status"] = "running"
+        write(receipt_path, receipt)
+        source["receipt_sha256"] = app.digest(receipt_path)
+        with self.assertRaisesRegex(ValueError, "Supporting receipt is not complete"):
+            app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+        self.assertFalse((Path(packet["runtime"]).parent / "input.yaml").exists())
+        receipt["status"] = "complete"
+        write(receipt_path, receipt)
+        source["receipt_sha256"] = app.digest(receipt_path)
+        app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+        self.assertEqual([], app.inspect(folder)[2])
+
+    def test_existing_frozen_packet_keeps_its_recorded_evidence_contract(self):
+        folder, _, packet = ri_fixture(self.root, "earlier-evidence-contract")
+        directory = Path(packet["runtime"]).parent
+        evidence = self.ready_evidence(folder, packet)
+        source = evidence["supporting_results"][0]
+        old = app.read_yaml(packet["binding"])
+        old.update(schema="haipipe.insight-input/v2", version="v001", recipe_calls=[],
+                   supporting_results=[{key: source[key] for key in ("run", "path", "sha256")}])
+        write(directory / "input.yaml", old)
+        runtime = app.read_yaml(packet["runtime"])
+        runtime.update(input_sha256=app.digest(directory / "input.yaml"),
+                       checkpoints={"frozen": {"at": "2026-09-20T00:00:00Z", "receipt": "input.yaml"}})
+        write(directory / "runtime.yaml", runtime)
+        before = {p.name: p.read_bytes() for p in directory.iterdir()}
+        self.assertEqual([], app.inspect(folder)[2])
+        evidence["recipe_calls"] = []
+        new = app.freeze_insight_input(folder, run=packet["insight_run"], version="v002", evidence=evidence)
+        self.assertEqual(app.EVIDENCE_CONTRACT, app.read_yaml(new["input"])["evidence_contract"])
+        self.assertEqual(before, {p.name: p.read_bytes() for p in directory.iterdir()})
+        self.assertEqual([], app.inspect(folder)[2])
+
+    def test_freeze_never_rewrites_an_existing_input(self):
+        folder, _, packet = ri_fixture(self.root, "immutable")
+        evidence = {"local_evidence_reason": "Only inventory observations from the governed manifest"}
+        output = app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+        before = Path(output["input"]).read_bytes(), Path(output["runtime"]).read_bytes()
+        with self.assertRaisesRegex(ValueError, "already frozen"):
+            app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence=evidence)
+        self.assertEqual(before, (Path(output["input"]).read_bytes(), Path(output["runtime"]).read_bytes()))
+        newer = app.freeze_insight_input(folder, run=packet["insight_run"], version="v002", evidence=evidence)
+        self.assertNotEqual(output["execution"], newer["execution"])
+        self.assertEqual(before, (Path(output["input"]).read_bytes(), Path(output["runtime"]).read_bytes()))
+        self.assertEqual([], app.inspect(folder)[2])
+
+    def test_old_empty_frozen_input_migrates_only_by_explicit_new_version(self):
+        folder, _, packet = ri_fixture(self.root, "legacy-empty")
+        directory = Path(packet["runtime"]).parent
+        old = app.read_yaml(packet["binding"])
+        old.update(schema="haipipe.insight-input/v2", version="v001", supporting_results=[], recipe_calls=[])
+        write(directory / "input.yaml", old)
+        runtime = app.read_yaml(packet["runtime"])
+        runtime.pop("binding_sha256")
+        runtime.update(input_sha256=app.digest(directory / "input.yaml"),
+                       checkpoints={"frozen": {"at": "2026-09-20T00:00:00Z", "receipt": "input.yaml"}})
+        write(directory / "runtime.yaml", runtime)
+        Path(packet["binding"]).unlink()
+        before = {p.name: p.read_bytes() for p in directory.iterdir()}
+        app.freeze_insight_input(folder, run=packet["insight_run"], version="v002",
+                                 evidence={"local_evidence_reason": "Inventory only"})
+        self.assertEqual(before, {p.name: p.read_bytes() for p in directory.iterdir()})
+        self.assertEqual([], app.inspect(folder)[2])
+
+    def test_freeze_rejects_changed_allocation_or_unexplained_zero_support(self):
+        folder, _, packet = ri_fixture(self.root, "unexplained")
+        with self.assertRaisesRegex(ValueError, "local_evidence_reason"):
+            app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence={})
+        with self.assertRaisesRegex(ValueError, "binding overrides"):
+            app.freeze_insight_input(folder, run=packet["insight_run"], version="v001", evidence={"target": "data"})
+        binding = app.read_yaml(packet["binding"])
+        binding["question"] = "different goal"
+        write(Path(packet["binding"]), binding)
+        with self.assertRaisesRegex(ValueError, "hash changed"):
+            app.freeze_insight_input(folder, run=packet["insight_run"], version="v001",
+                                     evidence={"local_evidence_reason": "Inventory only"})
+
+    def test_freeze_cli_reports_exact_final_input(self):
+        folder, _, packet = ri_fixture(self.root, "cli")
+        write(folder / "outline/ready-evidence.yaml", {"local_evidence_reason": "Inventory only"})
+        output = io.StringIO()
+        with redirect_stdout(output):
+            status = app.main(["freeze", str(folder), "--item", packet["insight_run"],
+                               "--version", "v001", "--evidence", "outline/ready-evidence.yaml"])
+        self.assertEqual(0, status)
+        self.assertEqual(packet["execution"], json.loads(output.getvalue())["execution"])
+        self.assertEqual([], app.inspect(folder)[2])
+
 
 if __name__ == "__main__":
     unittest.main()

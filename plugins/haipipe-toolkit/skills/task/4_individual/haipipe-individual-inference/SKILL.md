@@ -36,8 +36,8 @@ Pipeline:
        forecast JSON
 ```
 
-The wire payload matches the Endpoint_Set's documented `Input2SrcFn` contract (Format 1 — dataframe_records).
-Same payload Databricks Model Serving and SageMaker would consume; only `endpoint_url` differs.
+The wire payload matches the deployed Endpoint_Set's platform-specific `Input2SrcFn`.
+Select Databricks dataframe_records or SageMaker flat JSON; a local wrapper follows its packaged pair.
 
 ---
 
@@ -47,8 +47,8 @@ Layout
 ```
 src/
   load_patient.py    Subject-XX → patient_ctx dict (parquet → DataFrames)
-  build_payload.py   patient_ctx → dataframe_records JSON (Endpoint_Set contract)
-  client.py          POST dataframe_records → forecast (auth + retry-friendly)
+  build_payload.py   individual path → platform-specific JSON (Endpoint_Set contract)
+  client.py          POST selected JSON → forecast (auth + retry-friendly)
 
 scripts/
   show_ctx_cli.py            inspect an individual's loaded context
@@ -60,26 +60,20 @@ scripts/
 Quickstart
 -----------
 
-Spin up a local endpoint server (skill: `haipipe-end-deploy-local`):
+Use an already deployed endpoint when one is available.
+For a new local server, follow `haipipe-end-deploy-local`: copy its reference
+`serve_local.py` into the canonical serving Task's `scripts/` before launch.
+Choose the platform of the packaged Src2InputFn/Input2SrcFn pair.
 
-```
-ENDPOINT_PATH=_WorkSpace/6-EndpointStore/<endpoint_name> \
-    python Tools/plugins/haipipe-toolkit/skills/task/3_end/haipipe-end-deploy-local/scripts/serve_local.py
-```
-
-In another shell, hit it with an individual:
-
-```
+```sh
 python Tools/plugins/haipipe-toolkit/skills/task/4_individual/haipipe-individual-inference/scripts/test_individual_predict.py \
-    --individual Subject-18
+    --workspace-root /path/to/project \
+    --individual UserGroup-OhioT1DM/Subject-559 \
+    --platform sagemaker \
+    --endpoint-model endpoint_cgm_patchtst_ohio/v0001 \
+    --endpoint-url http://127.0.0.1:8765/invocations
 ```
 
-Override the URL to test against a Databricks endpoint:
-
-```
-CGM_ENDPOINT_URL=https://<workspace>/serving-endpoints/<name>/invocations \
-    python ...test_individual_predict.py --individual Subject-18
-```
 
 ---
 
@@ -141,3 +135,16 @@ Reuses
   `haipipe-end-deploy-{local,databricks,sagemaker}`.
 - Used by agent projects (e.g. `agent-cgm`) as the patient-data loader and
   payload builder for their LangGraph nodes.
+
+## Workspace and platform selection
+
+Pass `workspace_root` (or CLI `--workspace-root`) as the project containing `_WorkSpace`.
+Resolution is explicit argument, then `HAIPIPE_WORKSPACE_ROOT`, then the nearest ancestor
+of cwd containing `_WorkSpace`. Absolute Subject paths resolve directly. Ambiguous
+Subject shorthands raise; no developer machine root is built in.
+`build_payload(..., platform="databricks" | "sagemaker")` selects the wire shape;
+Databricks remains the compatibility default. Local wrappers use the deployed pair's
+platform setting. Direct SageMaker calls require AWS SDK/SigV4 transport; the included
+HTTP client supports ordinary JSON HTTP endpoints and optional bearer authentication.
+
+Use `--endpoint-model` for the deployed model id. In the report CLI, `--model` selects the report-writing LLM and is a different setting.

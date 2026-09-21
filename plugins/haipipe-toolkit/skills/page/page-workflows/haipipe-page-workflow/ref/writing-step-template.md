@@ -27,6 +27,25 @@ coordinator: <stable identity or not supplied>
 - Success: <structure/Bullet closure, completed Section draft/review/diagnose/revise Step, or human agreement on the fixed paragraph text>
 - Review: <the exact fixed scope and its applicable Mermaid Structure descriptions>
 
+For Section/Paragraph prose Runs only, add the shared Writing configuration:
+
+```yaml
+worker: haipipe-writing
+writing:
+  mode: revise                    # draft | revise | evaluate
+  scope: paragraph                # section | paragraph | paragraph-group
+  methods: []                     # explicit selected catalog ids/roles
+  evaluation:
+    rubric: haipipe-writing/base-v1
+    max_revision_passes: 1
+```
+
+Resolve the actual target, baseline, plan/evidence, requirements and original
+feedback using `../../../../writing/haipipe-writing/ref/writing-request.md`.
+Freeze selected method entries/versions/hashes and rubric hash in this Ticket's
+effective input packet; a Step references it and records any host-authorized
+input change. Do not copy prose-worker fields into a pure Structure/Scratch Run.
+
 ## results/<run>/v001.md
 
 One Version has one Markdown journal. Append Steps in order; do not create a
@@ -44,6 +63,13 @@ Prior Version: none, or <closed vNNN.md · SHA-256>
 A Step is a complete scoped cycle, not merely one chat turn. For a
 Section-level Run, record the candidate draft, review/rating, diagnosis,
 revision, and post-revision review/diagnosis before `### Saved result`.
+Use `../../../../writing/haipipe-writing/ref/evaluation.md` for the compact
+`#### Writing evaluation` record: actual candidate/hash, rubric, reviewer mode,
+coverage, methods/status, criterion rows, initial/final findings, revision
+budget and remaining issues. Store it in this Step's review before Saved result;
+do not create per-evaluator files or Runs. If no revision is needed, record one
+reviewed candidate without inventing a second pass. Acceptance/navigation-only
+Steps record their disposition and do not re-review unchanged prose.
 
 ### Human feedback
 

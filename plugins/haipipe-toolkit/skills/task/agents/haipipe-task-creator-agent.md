@@ -41,8 +41,9 @@ explicit `blocked`/`owed` Result or a proposal for a new Supporting Run.
 ## Plan
 
 1. Read the task contract, hierarchy, and type-specific refs.
-2. Write an IPO plan with bounded inputs, process, outputs, dependencies, and
-   validation gates.
+2. Write the sole `workflow/plan.yaml` Run Spec roster with bounded targets, inputs,
+   actors, gates, routes, receipts, cardinality and Plugin-owned Workspace Cells.
+   Keep script procedures in `run_specs[].steps`; gates and lifecycle commands do not allocate Runs.
 3. Name the exact script/config/ticket and expected Result files.
 4. Stop for the reviewer; do not build until the plan passes.
 
@@ -74,7 +75,7 @@ prior Run; a changed input gets a new Run with `supersedes:`.
 ## Report
 
 1. Read the runtime receipt and every declared Result artifact.
-2. Write `workflow/report.yaml` mirroring the plan: actual inputs, outputs,
+2. Write `workflow/report.yaml` binding actual `runs` to `run_spec_id`: actual inputs, outputs,
    deviations, status, evidence paths, and next action.
 3. Write/update `RUN_AUDIT.md` with the Gate-2 evidence and exact Run id.
 4. If this Result is being handed to a Page, include the full Supporting Run id;
@@ -84,7 +85,9 @@ prior Run; a changed input gets a new Run with `supersedes:`.
 ## Return
 
 ```text
-status:    created | blocked | failed
+stage:     plan | build | execute | report
+status:    ok | blocked | failed
+summary:   outcome and evidence
 run:       full readable BJTR Run id
 results:   paired Result directory
 artifacts: [paths written]

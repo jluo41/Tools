@@ -158,11 +158,11 @@ workflow_table:
     id: design-workspaces
     declared_by: haipipe-design
     workspaces:
-      - {id: plan, label: Plan, purpose: commissions and scope}
-      - {id: create, label: Create, purpose: generation action}
-      - {id: review, label: Review, purpose: independent verification}
+      - {id: goal, label: Goal, purpose: brief and objective context}
+      - {id: design, label: Design, purpose: author Commissions; inspect candidates and verification evidence}
+      - {id: insight, label: Insight, purpose: source and present the Insights referenced by a Commission}
       - {id: runtime, label: Run, purpose: read-only runtime presentation}
-      - {id: delivery, label: Delivery, purpose: preview and adoption}
+      - {id: delivery, label: Delivery, purpose: present exact Verify-passed candidate Results}
   entry: [commission]
   terminal: [CLOSE, HOLD]
   run_specs:
@@ -178,13 +178,13 @@ workflow_table:
       exit_gate: {mode: human, assertion: exact Commission is released or held, record: results/<run>/decision.yaml}
       routes: {release: generate, hold: HOLD}
       result: {payload: released Commission fingerprint, receipt: results/<run>/runtime.yaml}
-      cardinality: 1
+      cardinality: C
       cells:
-        - {id: commission@plan, workspace_id: plan, mode: decision, owner_skill: haipipe-design-workflow, worker_skill_chain: [], interaction: release exact Commission, input_view: [], output_view: [decision receipt], authority_change: {kind: release, target: Commission, record: decision receipt}, gate_binding: {role: collect, gate: exit_gate}, source_projection: {kind: source, source_cell: none, object: Commission decision, rule: human authority}}
-        - {id: commission@create, workspace_id: create, mode: empty, owner_skill: none, worker_skill_chain: [], interaction: none, input_view: [], output_view: [], authority_change: {kind: none, target: none, record: none}, gate_binding: {role: none, gate: none}, source_projection: {kind: none, source_cell: none, object: none, rule: none}}
-        - {id: commission@review, workspace_id: review, mode: empty, owner_skill: none, worker_skill_chain: [], interaction: none, input_view: [], output_view: [], authority_change: {kind: none, target: none, record: none}, gate_binding: {role: none, gate: none}, source_projection: {kind: none, source_cell: none, object: none, rule: none}}
-        - {id: commission@runtime, workspace_id: runtime, mode: read-only, owner_skill: haipipe-run, worker_skill_chain: [], interaction: present same decision Run, input_view: [], output_view: [same receipt], authority_change: {kind: none, target: none, record: none}, gate_binding: {role: present, gate: exit_gate}, source_projection: {kind: projection, source_cell: commission@plan, object: same Run, rule: no mint or recount}}
-        - {id: commission@delivery, workspace_id: delivery, mode: read-only, owner_skill: haipipe-design, worker_skill_chain: [], interaction: preview release receipt, input_view: [], output_view: [same receipt], authority_change: {kind: none, target: none, record: none}, gate_binding: {role: present, gate: exit_gate}, source_projection: {kind: projection, source_cell: commission@plan, object: same decision, rule: preview only}}
+        - {id: commission@goal, workspace_id: goal, mode: read-only, owner_skill: haipipe-design-workflow, worker_skill_chain: [], interaction: view the Brief and Insight board, input_view: [Brief, Insight board], output_view: [], authority_change: {kind: none, target: none, record: none}, gate_binding: {role: none, gate: none}, source_projection: {kind: source, source_cell: none, object: Brief and linked Insight board, rule: input context only}}
+        - {id: commission@design, workspace_id: design, mode: decision, owner_skill: haipipe-design-workflow, worker_skill_chain: [], interaction: release or hold the exact Commission, input_view: [Brief, Commission scope, pinned Insight hashes], output_view: [decision receipt], authority_change: {kind: release, target: Commission, record: decision receipt}, gate_binding: {role: collect, gate: exit_gate}, source_projection: {kind: source, source_cell: none, object: Commission decision, rule: human authority}}
+        - {id: commission@insight, workspace_id: insight, mode: read-only, owner_skill: haipipe-insight, worker_skill_chain: [], interaction: present Insights pinned by the Commission hash, input_view: [], output_view: [pinned Insight hashes and references], authority_change: {kind: none, target: none, record: none}, gate_binding: {role: none, gate: none}, source_projection: {kind: projection, source_cell: commission@design, object: same pinned Insights, rule: preserve source identities}}
+        - {id: commission@runtime, workspace_id: runtime, mode: read-only, owner_skill: haipipe-run, worker_skill_chain: [], interaction: present the same decision Run, input_view: [], output_view: [same receipt], authority_change: {kind: none, target: none, record: none}, gate_binding: {role: present, gate: exit_gate}, source_projection: {kind: projection, source_cell: commission@design, object: same Run, rule: no mint or recount}}
+        - {id: commission@delivery, workspace_id: delivery, mode: empty, owner_skill: none, worker_skill_chain: [], interaction: none, input_view: [], output_view: [], authority_change: {kind: none, target: none, record: none}, gate_binding: {role: none, gate: none}, source_projection: {kind: none, source_cell: none, object: none, rule: none}}
 
     - id: generate
       run_type: Design.generate
@@ -195,7 +195,7 @@ workflow_table:
       input: [released Commission]
       depends_on: [commission]
       exit_gate: {mode: automatic, assertion: Result integrity and self-check pass, record: results/<run>/checks.yaml}
-      routes: {pass: verify, fail: HOLD}
+      routes: {pass: verify, fail: generate}
       result: {payload: immutable candidate Result, receipt: results/<run>/runtime.yaml}
       cardinality: N
       cells: <one explicit Cell for each member Workspace>
@@ -209,37 +209,33 @@ workflow_table:
       input: [immutable generation Results]
       depends_on: [generate]
       exit_gate: {mode: agent, assertion: independent coverage settles pass/fail, record: results/<run>/checks.yaml}
-      routes: {pass: adopt, revise: generate, blocked: HOLD}
+      routes: {pass: CLOSE, fail: generate, invalid: verify}
       result: {payload: immutable verification Result, receipt: results/<run>/runtime.yaml}
       cardinality: J
       cells: <one explicit Cell for each member Workspace>
 
-    - id: adopt
-      run_type: Design.adopt
-      purpose: adopt or decline exact verified candidate hashes
-      target: exact verified candidate set
-      actor: {mode: human, owner: design-owner}
-      action: adoption-decision
-      input: [verification Results, preview manifest]
-      depends_on: [verify]
-      exit_gate: {mode: human, assertion: exact candidates are adopted or declined, record: results/<run>/decision.yaml}
-      routes: {adopt: CLOSE, revise: generate, decline: CLOSE, hold: HOLD}
-      result: {payload: adoption decision and hashes, receipt: results/<run>/runtime.yaml}
-      cardinality: 1
-      cells: <one explicit Cell for each member Workspace>
 ```
 
-The abbreviated `cells:` values for Generate, Verify, and Adopt must be fully
+The abbreviated `cells:` values for Generate and Verify must be fully
 materialized in a live declaration. The matrix view is:
 
-| Run Spec | Plan | Create | Review | Run | Delivery |
+| Run Spec | Goal | Design | Insight | Run | Delivery |
 |---|---|---|---|---|---|
-| Commission | decision | empty | empty | read-only | read-only |
-| Generate | read-only | action | empty | read-only | read-only |
-| Verify | read-only | empty | review/action | read-only | read-only |
-| Adopt | read-only | empty | read-only | read-only | decision |
+| Commission | read-only | decision | read-only | read-only | empty |
+| Generate | empty | read-only | empty | read-only | read-only |
+| Verify | empty | read-only | empty | read-only | empty |
 
-Expected actual Design Runs: `1 + N + J + 1`.
+Expected actual Design Runs: `C + N + J`. C counts Commission decisions,
+including holds; at most one may release the Item. Count allocated Runs with
+receipts, including held, failed, blocked, and superseded Runs. The special
+case `1 + N + J` applies when no hold preceded the release.
+
+`pass`, `fail`, and `invalid` name the corresponding verdict/records-check
+outcomes in the Design owner contract. A route back to Generate or Verify
+names the next Spec; the person must queue its new instance. Only Commission
+has a human HOLD decision. Verify pass closes the work and makes the exact
+candidate ready in Delivery. Delivery is a projection, never a Run. The
+Generate delivery Cell is visible only once independent Verify has passed.
 
 ## Runtime projections
 

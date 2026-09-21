@@ -87,7 +87,7 @@ Stage-Independent Steps
     ../../haipipe-data-case/templates/config.yaml
     ../../haipipe-data-aidata/templates/config.yaml
 
-  Or copy an existing config from a sibling pipeline task's configs/ and modify it.
+  Or copy an existing config from a sibling pipeline task's scripts/config/ and modify it.
   See Per-Stage Reference below for required config keys per stage.
 
 **Step 3.5: MANDATORY — Show YAML and Get User Confirmation (ALL Pipeline Commands)**
@@ -477,7 +477,7 @@ _______________________________________________ STAGE 4-aidata _________________
 
 **Output path:**
 
-  _WorkSpace/4-AIDataStore/{aidata_name}/@{aidata_version}/
+  _WorkSpace/4-AIDataStore/{ParentSetName}/@v{N}AIData-{aidata_name}/
 
 **Config template:**
 
@@ -529,7 +529,7 @@ _______________________________________________ STAGE 4-aidata _________________
 
 **Verify:**
 
-  ls _WorkSpace/4-AIDataStore/{aidata_name}/@{aidata_version}/
+  ls _WorkSpace/4-AIDataStore/{ParentSetName}/@v{N}AIData-{aidata_name}/
   # Expected:
   #   train/
   #   validation/
@@ -596,8 +596,10 @@ Before running stage N+1, verify stage N output exists:
   ls _WorkSpace/1-SourceStore/<CohortName>/@<SourceFnName>/manifest.json
   ls _WorkSpace/2-RecStore/<CohortName>_v<N>RecSet/manifest.json
   ls _WorkSpace/3-CaseStore/<RecSetName>/@v<N>CaseSet-<Trigger>/manifest.json
-  ls _WorkSpace/4-AIDataStore/<aidata_name>/@<version>/manifest.json
+  ls _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>/manifest.json
 
 If a manifest.json is missing, the asset was not saved cleanly.
 Re-run the stage that produced it before proceeding.
 
+
+Resolve ParentSetName and the exact AIData version from its manifest/config or store inventory; do not infer a parent from the aidata name alone.

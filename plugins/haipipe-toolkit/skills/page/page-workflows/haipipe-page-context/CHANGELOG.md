@@ -1,3 +1,7 @@
+## 0.2.1 · 2026-09-20
+
+- Keep Context collection outside the Workflow Run list unless separately commissioned.
+
 ## 0.2.0 · 2026-09-15
 
 - Treat CONTEXT as a compatibility dispatch adapter that freezes planning

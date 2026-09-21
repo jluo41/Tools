@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve boards AND accept comment writes — from the machine the files live on.
+"""Serve read-only Pages and explicit Board plugin workspaces.
 
     python3 serve.py [--root DIR] [--port PORT]
 
@@ -11,20 +11,11 @@ authenticated. --no-auth disables HTTP Basic Auth
 for a trusted private network such as a Tailscale tailnet. --no-terminal can
 be combined with --no-auth when only the Page surfaces are needed.
 
-Why this exists (JL, 260723): the first design had the browser write the .md
-itself via the File System Access API. That cannot work here — the browser runs
-on JL's laptop, the board files live on this server (Remote-SSH). The folder
-picker would show the laptop's disk, which has none of this.
+Page prose is read-only. Retired comment, sentence, edit-sentence, card,
+resolve, and discuss endpoints return 405, including requests from older tabs.
+Copy Page context into an agent conversation to request source changes.
+The explicit plugin workspaces keep their own APIs:
 
-So the write moves to the side that actually has the files. This server already
-serves the page; now it also takes two small POSTs and edits the markdown, then
-regenerates board/ so a plain reload shows the rendered comment.
-
-    POST /_board/comment   {path, file, who, sentence, text} -> append directly under sentence
-    POST /_board/edit-sentence {path, file, sentence, replacement, who}
-    POST /_board/card      {path, file, sentence, span, text} -> `> Card <span>: text`
-                                                      -> replace one sentence + append its diff
-    POST /_board/resolve   {path, quote, done}        -> flip - [ ] <-> - [x]
     POST /_board/chat      {path, file, message, model, effort}
                                                       -> one turn with claude_agent_sdk
     POST /_board/stop      {path, file}                -> ask that turn to stop
@@ -438,6 +429,14 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             p = json.loads(self.rfile.read(n) or b"{}")
         except Exception as e:
             return self.reply(400, {"ok": False, "err": f"请求体不是 JSON：{e}"})
+        if self.path.split("?", 1)[0] in {
+            "/_board/comment", "/_board/edit-sentence", "/_board/resolve",
+            "/_board/discuss", "/_board/sentence", "/_board/card",
+        }:
+            return self.reply(405, {
+                "ok": False,
+                "err": "Page is read-only. Copy a prompt to request a change.",
+            })
         if self.path == "/_board/activity":
             try:
                 res, err = self.activity(p)
@@ -717,13 +716,7 @@ class Handler(AuthMixin, BaseMixin, ActivityMixin, HomeMixin, WriteMixin, ChatMi
             if res == "STREAMED":
                 return                      # attach wrote its own NDJSON response
             return self.reply(200, {"ok": not err, "err": err, **(res or {})})
-        ACTS = {"/_board/comment": self.add_comment,
-                "/_board/edit-sentence": self.edit_sentence,
-                "/_board/resolve": self.resolve,
-                "/_board/discuss": self.add_discuss,
-                "/_board/sentence": self.add_sentence,
-                "/_board/card": self.add_card,
-                "/_board/diagram": self.add_diagram,
+        ACTS = {"/_board/diagram": self.add_diagram,
                 "/_board/excalidraw": self.new_excalidraw,
                 "/_board/chat": None}
         if self.path not in ACTS:

@@ -1,16 +1,16 @@
 ---
 name: haipipe-design-workflow
 description: >-
-  Native Design Workflow inside one stable Design Folder. Defines the directed
-  Run Spec graph Design.commission → Design.generate → Design.verify →
-  Delivery, binds it across the Goal/Design/Insight/Run/Delivery Spaces, and
+  Native Design Workflow inside one stable Design Folder: a list of Commission,
+  Generate and Verify Runs, with routes to the next Run or ready Delivery.
+  Binds it across the Goal/Design/Insight/Run/Delivery Spaces, and
   coordinates with but never impersonates the Page workflow.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-09-18"
+  last_updated: "2026-09-20"
 ---
 
-# /haipipe-design-workflow · a directed graph of Design Runs
+# /haipipe-design-workflow · a list of Design Runs
 
 ## Version governance
 
@@ -19,10 +19,15 @@ Only explicit user approval may authorize `1.0.0`.
 This Design skill remains exactly `v0.4.0`. Do not change the version or create
 a `v1.x` release without explicit user permission.
 
-## Run Spec graph
+## Run list and Routes
+
+A Workflow is a list of Runs. Each allocated Run has a stable identity,
+bounded target, actor, gate and Result or receipt. The three current Run Types
+are Commission, Generate and Verify. Routes describe dependencies and the next
+permitted Run; the graph below is a view of those relationships.
 
 ```text
-Design.commission (1 per Design Item)
+Design.commission (C decisions; at most one release per Design Item)
   release ──────────────────────────▶ Design.generate (N)
   hold ─────────────────────────────▶ HOLD (a person may release it later)
 
@@ -33,19 +38,21 @@ Design.generate
 Design.verify
   pass ─────────────────────────────▶ Delivery (ready)
   fail ─────────────────────────────▶ Design.generate (revise)
-  fails the records check ──────────▶ Design.verify (the person queues the review again;
-    (unresolved checks included)       state "verify invalid")
+  unresolved with complete reasons ──▶ Resolve the named evidence/criterion gap
+  malformed records / execution fails ▶ Design.verify only after repair
 
 ```
 
-Expected actual Runs per Design Item: `1 Commission + N Generate + J Verify`.
+Actual current Runs per Design Item: `C Commission + N Generate + J Verify`.
+Count all allocated records, including held, failed, blocked and superseded Runs;
+an attempt inside one Run adds no identity. C=1 when exactly one Commission record exists.
 `rdNN` numbers count across the whole Design Folder.
 
 There is no HOLD route from the agent side. HOLD is a person's decision at
 Commission. A passed independent review is ready for Delivery; the agent-side
 "Queue revise" exists for a failed draft or a failed review.
 
-There is no Design Phase layer. Every row is an independently closable Run
+Every row in Run Specs is an independently closable Run
 Spec. Gate and Route belong to that Run. A Workflow execution materializes
 Run Instances and records the selected routes.
 
@@ -56,7 +63,6 @@ Run Instances and records the selected routes.
 | `commission` | `Design.commission` | named human | one Design Item's exact config version | release/hold decision | decision names exact fingerprint | `decision.yaml` + `runtime.yaml` |
 | `generate` | `Design.generate` | designer agent | the released item | generate/revise | the records check passes (integrity + self-check) | draft Result + checks + runtime |
 | `verify` | `Design.verify` | fresh independent agent | named generation Results | verify | the records check passes (complete independent coverage) | verdict Result + checks + runtime |
-| `delivery` | Delivery projection | none | the exact Verify-passed draft hash | records check + Verify pass | ready candidate and verification pointer | read-only projection |
 
 Commission is the only human decision Run. It has one Ticket, Result, close
 rule, and receipt. Individual comments/clicks are Steps or Gate events inside
@@ -71,7 +77,7 @@ Design (the items), Insight (what supports each item), Run, Delivery. Every
 Run names the Design Item it serves with `item: ITEM<NN>`, and the Spaces
 group by that id:
 
-| Run Spec | Design Space | Insight Space | Run Space | Delivery Space |
+| Run or projection | Design Space | Insight Space | Run Space | Delivery Space |
 |---|---|---|---|---|
 | Commission | the item's goal and acceptance rules it pins; a warning when the register changed after release | the insights the Commission run record pins by hash | release/hold row: person, time, words, route | — |
 | Generate | the latest draft that passed the records check, and its self-check marks | — | row: agent, time, verdict n/m, folded checks and draft text; `Generate · revise of rdNN` with its feedback | listed only after Verify passes |
@@ -91,12 +97,13 @@ expected, falsified, the compiled criteria, the raw rule text, unit, and
 `max_iterations`) and the item's evidence files, each with sha256; it does not
 pin the Brief version or venue packs. The named person records `release` or
 `hold` in the paired decision Result. Only `release` routes to Generate. One
-Commission per item: a second Release is refused, and a held Commission can
-be released later by a new Commission decision.
+release per item: a second Release is refused. A held Commission is complete;
+releasing later creates a new Commission Run and preserves the held decision.
 
 Do not create an unsigned Commission and later back-fill the bet after seeing
-candidate output. Generate and Verify copy the released config and evidence
-list, so an edit to the register after release reaches only a new Commission,
+candidate output. Generate and Verify inherit the released design fields and evidence
+list; only `review_mode` and the permitted operation `mode` are derived as
+specified in the Unit contract. An edit to the register after release reaches only a new Commission,
 which means a new Design Item.
 
 ## Generate Runs
@@ -123,23 +130,29 @@ Allocate `rdNN_verify_<slug>.yaml` over exact generation Result hashes and
 criteria. Use a genuinely fresh reviewer context. A verification Run returns a
 complete pass/fail/unresolved judgment and never edits the candidate. A
 generation self-check is not independent verification. A draft that already
-has a review is not reviewed again.
+has a completed, valid independent review is not reviewed again.
 
 `pass` routes directly to Delivery as a ready candidate. A fail verdict routes
-to a new revise Generate
-Run. A review that fails the records check, including a review with
-unresolved checks, is recorded failed and routes back to Verify; the person
-queues the review again. A reviewer that is not independent writes no Result,
-and the run goes back to the queue.
+to a new revise Generate Run. An unresolved check with its required reason,
+`next_owner`, and `needed` field is a completed judgment routed to
+`resolve-unresolved`; it is never ready for Delivery. The person sends missing
+evidence to its named owner, asks the Commission owner for a clarified
+successor item when a criterion is ambiguous or conflicting, or supplies the
+render/context required by an inspection. Preserve the unresolved Result and
+do not queue the same review against unchanged pins. A malformed record or
+review execution failure is recorded failed/blocked and may be retried only
+after the defect is repaired. A reviewer that is not independent writes no
+Result, and the run goes back to the queue.
 
 ## Delivery projection
 
 Delivery is not a decision Run. When the latest independent Verify is complete
 with verdict `pass`, the exact generation candidate it targeted becomes
 `ready`. The presenter exposes its text, hash, generating Run, and verifying
-Run as a read-only handoff. Optional files under `delivery/render/` may show a
-screen or copied text render, but they never replace the Verify Result or add
-another approval step.
+Run as a read-only handoff. The presenter reads the candidate's Result-local
+`render/manifest.json` and hash-bound picture. Existing `delivery/render/`
+manifests remain legacy display sources. Neither replaces the Verify Result,
+adds an approval step, or authorizes a worker to write outside its Result.
 
 ## Page interlock
 
@@ -162,15 +175,19 @@ Generate Run; an explanatory wording-only change is a Page Writing Step.
 Only Commission → Generate → Verify is routable. The page shows only
 the button an item's state allows and refuses any other action, naming the
 state and who is waited on; the writer refuses a second open run for one item
-and a second review of an already-reviewed draft.
+and a second review of a draft with an already completed, valid independent review.
 Stop Design work once the exact Verify-passed version is ready for Delivery;
 implementation, distribution, and measurement belong to other families.
+The presenter rechecks the Generate and independent Verify Results before
+handoff. A changed artifact or broken pin displays `records invalid`, with
+the repair owner and diagnostic, and is excluded from Delivery and ready totals.
 
 Report each actual Run with type, target, actor, status, Result, Gate outcome,
 Route taken, and receipt. Planned cardinality is not actual inventory.
 
-HOLD is a person's decision at Commission, and a `blocked` receipt
-shows as hold. A caller that cannot run a queued record (missing authority,
+HOLD is a person's decision at Commission and displays as `commission held`.
+A `blocked` receipt displays as `blocked`, names the affected Run and repair
+owner, and offers no Commission release action. A caller that cannot run a queued record (missing authority,
 invalid run record, a pinned file changed since queueing, a reviewer that is
 not independent) leaves it queued or replaces it, and says why; it never
 re-pins in place. Preserve failed and superseded Results.

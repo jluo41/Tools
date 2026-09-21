@@ -17,6 +17,8 @@ from typing import Any, Iterable
 
 import yaml
 
+from selection_contract import SelectionChecks
+
 
 NOVELTY = {"novel", "partial", "preempted", "inconclusive", "unverified"}
 IDENTIFICATION = {"strong", "conditional", "weak", "unknown"}
@@ -48,12 +50,13 @@ class Finding:
     message: str
 
 
-class GateCheck:
+class GateCheck(SelectionChecks):
     def __init__(self, root: Path):
         self.root = root.resolve()
         self.findings: list[Finding] = []
         self.ideas: dict[str, tuple[Path, dict[str, Any]]] = {}
         self.matrix_rows: dict[str, dict[str, Any]] = {}
+        self._generated = False
 
     def fail(self, code: str, path: Path | str, message: str) -> None:
         try:
@@ -188,6 +191,9 @@ class GateCheck:
                         path,
                     )
             if state == "current":
+                page_path = self.resolve_unit_path(page.get("path"))
+                if page_path is None or not page_path.is_file():
+                    self.fail("broken-path", path, "a current projection requires its physical Paper Page")
                 if not valid_revision or surface_revision != revision:
                     self.fail("projection-stale", path, f"paper_page.{name}.current must equal sync_revision")
                 if surface.get("source_hash") != source_hash:
@@ -239,7 +245,7 @@ class GateCheck:
         receipt_path, receipt = linked
         projection = receipt.get("paper_projection")
         if not isinstance(projection, dict):
-            self.fail("missing-projection", receipt_path, "Page phase receipt needs a paper_projection extension")
+            self.fail("missing-projection", receipt_path, "Page dispatch receipt needs a paper_projection extension")
             return
         self.require_keys(
             receipt,
@@ -389,7 +395,10 @@ class GateCheck:
         )
         if row.get("verdict") != claim.get("novelty_check", {}).get("status"):
             self.fail("receipt-drift", path, f"claim {claim.get('id')} verdict does not match Idea Card")
-        if row.get("evidence_depth") not in READING_DEPTH:
+        depth = lambda value: "metadata" if value == "metadata-only" else value
+        if depth(row.get("evidence_depth")) != depth(claim.get("novelty_check", {}).get("evidence_depth")):
+            self.fail("receipt-drift", path, f"claim {claim.get('id')} evidence_depth differs from Idea Card")
+        if depth(row.get("evidence_depth")) not in READING_DEPTH:
             self.fail("invalid-status", path, f"claim {claim.get('id')} evidence_depth is invalid")
         delta = row.get("delta_tuple")
         if isinstance(delta, dict):
@@ -446,10 +455,23 @@ class GateCheck:
         pilot = receipt.get("pilot")
         if not isinstance(pilot, dict) or pilot.get("status") not in PILOT:
             self.fail("invalid-status", path, "pilot.status is invalid")
-        elif pilot.get("status") != idea.get("feasibility", {}).get("pilot"):
-            self.fail("receipt-drift", path, "pilot.status does not match Idea Card feasibility.pilot")
+        else:
+            feasibility = idea.get("feasibility", {})
+            if pilot.get("status") != feasibility.get("pilot"):
+                self.fail("receipt-drift", path, "pilot.status does not match Idea Card feasibility.pilot")
+            if pilot.get("status") in {"positive", "negative"} and not self.same_path(pilot.get("task_result"), feasibility.get("receipt")):
+                self.fail("receipt-drift", path, "pilot.task_result differs from Idea Card Task receipt")
+            if pilot.get("status") == "skipped" and not self.nonempty(pilot.get("reason")):
+                self.fail("reason-missing", path, "skipped pilot requires pilot.reason")
+            if pilot.get("status") in {"pending", "skipped"} and self.nonempty(pilot.get("task_result")):
+                self.fail("pilot-drift", path, "pending/skipped pilot must not claim a Task result")
+            if pilot.get("status") == "waived" and pilot.get("waiver") != feasibility.get("waiver"):
+                self.fail("receipt-drift", path, "pilot.waiver differs from Idea Card")
 
     def check_generate(self) -> None:
+        if self._generated:
+            return
+        self._generated = True
         manifest = self.load("ideation.yaml")
         bundle = self.load("bundle/evidence-bundle.yaml")
         direction = self.load("cards/direction.yaml")
@@ -516,6 +538,10 @@ class GateCheck:
                 self.fail("duplicate-id", path, f"Idea id {idea_id} appears more than once")
                 continue
             self.ideas[idea_id] = (path, value)
+            self.check_card_decision(path, value)
+            venue = value.get("venue_fit")
+            if value.get("state", "open") == "open" and isinstance(venue, dict) and venue.get("human_target", "open") != "open":
+                self.fail("target-projection", path, "an unanswered card cannot have a decided human_target")
             self.require_keys(
                 value,
                 [
@@ -624,8 +650,17 @@ class GateCheck:
                 self.require_keys(item, ["card", "state", "novelty", "identification", "feasibility", "journal_fit", "next_route"], path, "ideas[]")
                 card = item.get("card")
                 if isinstance(card, str):
+                    if card in projected_cards:
+                        self.fail("duplicate-card", path, "sync repeats an Idea Card")
                     projected_cards.add(card)
                     self.require_unit_path(card, path, "projected Idea card")
+                    idea_id = self.card_identity(card, path)
+                    if idea_id is not None:
+                        source_card = self.ideas[idea_id][1]
+                        if item.get("state") != source_card.get("state", "open"):
+                            self.fail("decision-drift", path, f"sync state differs from {idea_id}")
+                        if item.get("state") != "open" and not self.same_path(item.get("decision_ref"), source_card.get("decision_ref")):
+                            self.fail("decision-drift", path, f"sync disposition for {idea_id} lacks its decision_ref")
             actual_cards = {str(card_path.relative_to(self.root)) for card_path, _ in self.ideas.values()}
             if projected_cards != actual_cards:
                 self.fail("portfolio-drift", path, "sync ideas must name every admitted Idea Card exactly once")
@@ -637,7 +672,8 @@ class GateCheck:
         if leaked:
             self.fail("selection-leak", path, f"working sync contains selection fields: {', '.join(leaked)}")
 
-    def check_test(self) -> None:
+    def check_test(self, selected_ids: set[str] | None = None) -> None:
+        """None checks full Test completion; a set scopes completion to selection."""
         self.check_generate()
         matrix = self.load("cards/test-matrix.yaml")
         if matrix is None:
@@ -648,6 +684,7 @@ class GateCheck:
         if not isinstance(rows, list):
             self.fail("invalid-shape", self.root / "cards/test-matrix.yaml", "ideas must be a list")
             return
+        self.matrix_rows.clear()
         for row in rows:
             if not isinstance(row, dict) or not isinstance(row.get("idea_id"), str):
                 self.fail("invalid-row", self.root / "cards/test-matrix.yaml", "every matrix row needs idea_id")
@@ -664,22 +701,34 @@ class GateCheck:
             )
             if row.get("next_route") not in MATRIX_NEXT:
                 self.fail("invalid-route", self.root / "cards/test-matrix.yaml", f"{idea_id} has invalid next_route")
+            if idea_id not in self.ideas:
+                self.fail("unknown-idea", self.root / "cards/test-matrix.yaml", f"unknown matrix Idea {idea_id}")
 
         for idea_id, (path, idea) in self.ideas.items():
             row = self.matrix_rows.get(idea_id)
             if row is None:
                 self.fail("missing-row", self.root / "cards/test-matrix.yaml", f"no test row for {idea_id}")
                 continue
+            require_complete = selected_ids is None or idea_id in selected_ids
+            is_selected = selected_ids is not None and idea_id in selected_ids
             terminal_preemption = row.get("next_route") == "abandon" and row.get("novelty") == "preempted"
             claims = idea.get("core_claims", [])
+            if not isinstance(claims, list) or not claims:
+                self.fail("missing-claims", path, "Core Claims must be a nonempty list")
+                continue
             central_statuses: list[str] = []
             for index, claim in enumerate(claims, 1):
                 novelty = claim.get("novelty_check", {}) if isinstance(claim, dict) else {}
+                if not isinstance(novelty, dict):
+                    self.fail("invalid-shape", path, f"claim {index} novelty_check must be a mapping")
+                    continue
                 status = novelty.get("status")
                 if isinstance(claim, dict) and claim.get("contribution_role", "central") == "central" and isinstance(status, str):
                     central_statuses.append(status)
-                if status in {"unverified", "inconclusive"}:
+                if require_complete and status in {"unverified", "inconclusive"}:
                     self.fail("novelty-open", path, f"claim {index} remains {status}")
+                if is_selected and status not in {"novel", "partial"}:
+                    self.fail("novelty-ineligible", path, f"selected claim {index} must be novel or partial")
                 for field in (
                     "search_question",
                     "closest_work",
@@ -691,8 +740,11 @@ class GateCheck:
                     "limitation",
                     "receipt",
                 ):
-                    if not self.nonempty(novelty.get(field)):
+                    if (require_complete or status in {"novel", "partial", "preempted"}) and not self.nonempty(novelty.get(field)):
                         self.fail("novelty-incomplete", path, f"claim {index} lacks novelty_check.{field}")
+                depth = novelty.get("evidence_depth")
+                if depth is not None and depth not in READING_DEPTH | {"metadata-only"}:
+                    self.fail("invalid-depth", path, f"claim {index} evidence_depth is invalid")
                 if self.nonempty(novelty.get("receipt")):
                     self.check_novelty_receipt(novelty.get("receipt"), idea_id, claim, path)
 
@@ -729,13 +781,47 @@ class GateCheck:
                     try:
                         loaded = yaml.safe_load(fit_path.read_text(encoding="utf-8"))
                         fit_data = loaded if isinstance(loaded, dict) else None
+                        if fit_data is None or not isinstance(fit_data.get("broad_screen"), dict) or fit_data["broad_screen"].get("status") != "complete":
+                            self.fail("broad-screen-drift", fit_path, "Venue Fit Card must confirm its complete broad screen")
                     except (OSError, yaml.YAMLError) as exc:
                         self.fail("invalid-yaml", fit_path, str(exc))
             else:
                 self.fail("missing-path", path, "venue_fit.card is required")
 
-            if terminal_preemption:
+            links = row.get("receipts")
+            if not isinstance(links, dict):
+                self.fail("invalid-shape", path, "matrix receipts must be a mapping")
+            else:
+                novelty_links = [c["novelty_check"].get("receipt") for c in claims if isinstance(c, dict) and isinstance(c.get("novelty_check"), dict) and self.nonempty(c["novelty_check"].get("receipt"))]
+                pressure = idea.get("feasibility", {})
+                expected_links = {
+                    "novelty": novelty_links,
+                    "pressure": [pressure.get("pressure_receipt")] if isinstance(pressure, dict) and self.nonempty(pressure.get("pressure_receipt")) else [],
+                    "venue_fit": [self.fit_path(venue)] if isinstance(venue, dict) and self.nonempty(venue.get("card")) else [],
+                }
+                for field, expected in expected_links.items():
+                    actual = links.get(field)
+                    actual_list = actual if isinstance(actual, list) else [actual]
+                    if expected:
+                        if not all(any(self.same_path(raw, target) for target in expected) for raw in actual_list) or not all(any(self.same_path(raw, target) for raw in actual_list) for target in expected):
+                            self.fail("matrix-receipt-drift", path, f"matrix {field} receipts differ from this card")
+                    elif actual not in (None, "pending", "not-required") and actual != []:
+                        self.fail("matrix-receipt-drift", path, f"matrix {field} must remain pending without a card receipt")
+
+            feasibility = idea.get("feasibility", {})
+            pilot = feasibility.get("pilot") if isinstance(feasibility, dict) else None
+            expected_pilot = "pending" if pilot in {"pending", "skipped"} else pilot
+            if row.get("feasibility") not in {expected_pilot, "hold"}:
+                self.fail("feasibility-projection", path, "matrix feasibility differs from pilot (skipped maps to pending)")
+            identification = idea.get("identification", {})
+            if isinstance(identification, dict) and row.get("identification") != identification.get("credibility"):
+                self.fail("identification-projection", path, "matrix identification differs from card")
+            if not require_complete or (terminal_preemption and not is_selected):
+                if isinstance(feasibility, dict) and self.nonempty(feasibility.get("pressure_receipt")):
+                    self.check_pressure_receipt(feasibility["pressure_receipt"], idea_id, idea, path)
                 continue
+            if is_selected and (row.get("fatal_blockers") or row.get("feasibility") == "hold"):
+                self.fail("selection-blocked", path, "selected card still has a fatal blocker or feasibility HOLD")
             identification = idea.get("identification")
             if not isinstance(identification, dict) or identification.get("credibility") not in IDENTIFICATION - {"unknown"}:
                 self.fail("identification-open", path, "identification.credibility must be resolved")
@@ -759,13 +845,13 @@ class GateCheck:
                 else:
                     self.fail("missing-path", path, "feasibility.pressure_receipt is required")
 
-            if row.get("next_route") == "select" and isinstance(venue, dict):
+            if (is_selected or row.get("next_route") == "select") and isinstance(venue, dict):
                 if venue.get("deep_fit") != "complete":
                     self.fail("deep-fit-open", path, "Select route requires venue_fit.deep_fit complete")
                 candidates = fit_data.get("candidates") if isinstance(fit_data, dict) else None
                 finalists = [
                     item
-                    for item in candidates or []
+                    for item in (candidates if isinstance(candidates, list) else [])
                     if isinstance(item, dict) and item.get("profile") == "deep-fit"
                 ]
                 if not finalists:
@@ -778,129 +864,9 @@ class GateCheck:
                             path,
                             f"deep-fit candidate {finalist.get('id', '<unknown>')} lacks a current Venue contract",
                         )
+                    if isinstance(contract, dict):
+                        self.check_venue_contract(contract.get("path"), finalist.get("target"), finalist.get("category"), path, contract.get("contract_version"))
 
-    def check_select(self) -> None:
-        receipt = self.load("workflow/selection.yaml")
-        if receipt is None:
-            return
-        path = self.root / "workflow/selection.yaml"
-        if receipt.get("kind") != "ideation-selection":
-            self.fail("wrong-kind", path, "kind must be ideation-selection")
-        self.require_keys(receipt, ["decision", "by", "at", "assertions", "reason"], path)
-        decision = receipt.get("decision")
-        if decision not in {"select", "defer", "abandon"}:
-            self.fail("invalid-decision", path, "decision must be select, defer, or abandon")
-            return
-        if decision != "select":
-            self.check_generate()
-            return
-        self.check_test()
-        self.require_keys(receipt, ["selection_posture", "selected_cards", "story_routes", "target_routes"], path)
-        assertions = receipt.get("assertions")
-        expected = {
-            "evidence_complete",
-            "novelty_reviewed",
-            "feasibility_receipt_or_waiver",
-            "venue_fit_reviewed",
-            "target_selected",
-        }
-        if not isinstance(assertions, dict) or any(assertions.get(key) is not True for key in expected):
-            self.fail("assertion-open", path, "all five selection assertions must be true")
-        selected = receipt.get("selected_cards")
-        if isinstance(selected, list):
-            for card in selected:
-                self.require_unit_path(card, path, "selected card")
-        story_routes = receipt.get("story_routes")
-        target_routes = receipt.get("target_routes")
-        if isinstance(selected, list) and (
-            not isinstance(story_routes, list)
-            or not isinstance(target_routes, list)
-            or len(selected) != len(story_routes)
-            or len(selected) != len(target_routes)
-        ):
-            self.fail("route-count", path, "selected cards, Story routes, and target routes must be 1:1")
-        if isinstance(story_routes, list):
-            story_keys: set[tuple[str, str]] = set()
-            for route in story_routes:
-                if not isinstance(route, dict):
-                    self.fail("invalid-route", path, "Story route must be a mapping")
-                    continue
-                self.require_keys(route, ["card", "story_role", "story_path"], path, "story_routes[]")
-                key = (str(route.get("story_role")), str(route.get("story_path")))
-                if key in story_keys:
-                    self.fail("duplicate-route", path, f"duplicate Story route {key}")
-                story_keys.add(key)
-        if isinstance(target_routes, list):
-            for route in target_routes:
-                if not isinstance(route, dict):
-                    self.fail("invalid-route", path, "target route must be a mapping")
-                    continue
-                self.require_keys(route, ["card", "target", "category", "venue_contract"], path, "target_routes[]")
-                if self.nonempty(route.get("venue_contract")):
-                    self.require_unit_path(route.get("venue_contract"), path, "target route Venue contract")
-        if receipt.get("selection_posture") == "proceed-with-caution" and not self.nonempty(receipt.get("accepted_risks")):
-            self.fail("risk-missing", path, "proceed-with-caution requires accepted_risks")
-
-    def check_handoff(self) -> None:
-        self.check_select()
-        selection = self.load("workflow/selection.yaml")
-        if selection is not None and selection.get("decision") != "select":
-            self.fail(
-                "selection-open",
-                self.root / "workflow/selection.yaml",
-                "a ready handoff requires decision: select",
-            )
-        handoff = self.load("handoff/paper-ideation.yaml")
-        if handoff is None:
-            return
-        path = self.root / "handoff/paper-ideation.yaml"
-        if handoff.get("kind") != "paper-ideation-handoff":
-            self.fail("wrong-kind", path, "kind must be paper-ideation-handoff")
-        self.require_keys(handoff, ["source", "selected_ideas", "paper_route", "status", "created_at"], path)
-        if handoff.get("status") != "ready":
-            self.fail("handoff-open", path, "handoff status must be ready")
-        if handoff.get("paper_route") != "haipipe-paper-ideation":
-            self.fail("wrong-route", path, "paper_route must be haipipe-paper-ideation")
-        source = handoff.get("source")
-        if isinstance(source, dict):
-            for field in ("direction_card", "evidence_bundle", "paper_ideation_sync", "selection_receipt"):
-                self.require_unit_path(source.get(field), path, f"source.{field}")
-        else:
-            self.fail("invalid-shape", path, "source must be a mapping")
-        selected = handoff.get("selected_ideas")
-        if not isinstance(selected, list) or not selected:
-            self.fail("missing-selection", path, "selected_ideas must contain at least one item")
-            return
-        routes: set[tuple[str, str]] = set()
-        for item in selected:
-            if not isinstance(item, dict):
-                self.fail("invalid-selection", path, "selected_ideas item must be a mapping")
-                continue
-            self.require_keys(
-                item,
-                [
-                    "card",
-                    "story_role",
-                    "story_path",
-                    "claim_ids",
-                    "evidence_ids",
-                    "feasibility_receipt_or_waiver",
-                    "venue_fit_card",
-                    "intended_target",
-                    "intended_category",
-                    "venue_contract",
-                    "hard_limits",
-                ],
-                path,
-                "selected_ideas[]",
-            )
-            self.require_unit_path(item.get("card"), path, "selected idea card")
-            self.require_unit_path(item.get("venue_fit_card"), path, "selected venue fit card")
-            self.require_unit_path(item.get("venue_contract"), path, "selected Venue contract")
-            key = (str(item.get("story_role")), str(item.get("story_path")))
-            if key in routes:
-                self.fail("duplicate-route", path, f"duplicate selected Story route {key}")
-            routes.add(key)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

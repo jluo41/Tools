@@ -25,7 +25,7 @@ Discovery keeps the same family-level organization used by `haipipe-task`:
 discovery/
 ├── haipipe-discovery/                         public door
 ├── workflow-phases/
-│   └── haipipe-discovery-inquiry/             sole D1 phase
+│   └── haipipe-discovery-inquiry/             D1 Run controller (compatibility path)
 ├── 1_search/                                  acquisition family
 │   ├── haipipe-discovery-search/              family router
 │   └── source FIND/READ workers
@@ -135,8 +135,8 @@ Runs. A Run begins only after one canonical evidence Subject is admitted.
 
 The canonical table, Runs Overview, Human Actions, and Skill Coverage live at
 `workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md`. There is no
-separate Discovery workflow skill; D1 owns the domain workflow and the shared
-Page workflow owns Page artifacts. The D1 root uses the permitted no-Run route;
+separate Discovery workflow skill; the Discovery controller owns domain Run
+routing and the shared Page workflow owns Page artifacts. The D1 root uses the permitted no-Run route;
 consumer Pages own any Page-family Runs they commission.
 
 The pinned upstream source and compatibility decisions for external workers

@@ -1,3 +1,7 @@
+## 1.2.0 · 2026-09-20
+
+- Route Paper/Page requests through the current owner contracts and shared Ideation specialists. Publish the Run Spec inventory, conditional skill map and legacy path compatibility.
+
 ## 1.1.0 · 2026-09-13
 
 - Add the Paper–Page integration boundary for Page 0.89: Paper owns the

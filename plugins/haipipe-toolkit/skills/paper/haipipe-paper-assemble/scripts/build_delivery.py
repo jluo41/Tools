@@ -30,6 +30,59 @@ import hashlib, json, os, re, shutil, subprocess, sys, tomllib
 from datetime import datetime
 from pathlib import Path
 
+def validate_build_config(config, delivery):
+    """Reject unsafe generated paths before any build side effect."""
+    delivery = Path(delivery).resolve()
+    required = {
+        "paper": ("id",), "pages": ("main", "order"),
+        "source": ("room", "master", "sections", "displays", "bibliography"),
+        "outputs": ("main_pdf", "main_docx", "manifest"),
+    }
+    for table, keys in required.items():
+        if not isinstance(config.get(table), dict):
+            raise ValueError(f"paper-build.toml requires [{table}]; see ref/paper-build.toml.example")
+        for key in keys:
+            value = config[table].get(key)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(f"paper-build.toml requires a nonempty [{table}] {key}")
+    if delivery.name != "delivery":
+        raise ValueError("paper-build.toml must live in <paper>/delivery/")
+
+    def child(base, value, label):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{label} must be a nonempty relative path")
+        path = Path(value)
+        if path.is_absolute() or ".." in path.parts:
+            raise ValueError(f"{label} must stay inside {base}; absolute paths and '..' are not allowed")
+        resolved = (base / path).resolve()
+        if resolved == base or not resolved.is_relative_to(base):
+            raise ValueError(f"{label} escapes its generated directory: {value}")
+        return resolved
+
+    if config["source"]["room"] != "latex":
+        raise ValueError('[source] room must be "latex" (generated delivery/latex/); move source groups to [pages]')
+    room = child(delivery, "latex", "[source] room")
+    if (delivery / "latex").is_symlink():
+        raise ValueError("generated delivery/latex must not be a symlink")
+    for key in ("master", "sections", "appendices", "displays", "bibliography"):
+        if key in config["source"]:
+            child(room, config["source"][key], f"[source] {key}")
+
+    inputs = [(delivery / config["pages"][key]).resolve()
+              for key in ("main", "appendix", "order") if config["pages"].get(key)]
+    if config["source"].get("preamble"):
+        inputs.append((delivery / config["source"]["preamble"]).resolve())
+    for source in inputs:
+        if source == delivery or source == room or source.is_relative_to(room) or room.is_relative_to(source):
+            raise ValueError(f"generated room overlaps a source input: {source}")
+    for key, value in config["outputs"].items():
+        target = child(delivery, value, f"[outputs] {key}")
+        if target in {delivery / "paper-build.toml", delivery / "build.py"}:
+            raise ValueError(f"[outputs] {key} would overwrite build configuration/code")
+        if any(target == source or target.is_relative_to(source) or source.is_relative_to(target) for source in inputs):
+            raise ValueError(f"[outputs] {key} overlaps a source input")
+    child(delivery, "display-register.md", "display register")
+
 # ── where am I · which paper ────────────────────────────────────────────────
 # A wrapper execs this file inside its own module and pre-sets __engine_dir__;
 # a direct call resolves everything from this file and the environment.
@@ -50,6 +103,7 @@ if not CONFIG_PATH.exists():
 HERE = CONFIG_PATH.parent                              # <paper>/delivery/
 ROOT = HERE.parent                                     # the paper
 CFG = tomllib.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+validate_build_config(CFG, HERE)
 DEDUPE_EMBEDDED_FLOATS = True   # behavior A · tests flip this to prove the register catches the double print
 
 def rel(p): return (HERE / p).resolve()
@@ -111,10 +165,13 @@ def prescan_embedded(pages):
     for p in pages:
         if p.get("included", p["ready"]) and p["fragment"].exists():
             raw = p["fragment"].read_text(encoding="utf-8", errors="replace")
-            # raw page path  …/outline/evidence/display/<unit>/…  → this page's unit
-            EMBEDDED_UNITS.update(f"{p['id']}/{u}" for u in re.findall(r"(?<!s)display/([^/}]+)/", raw))
-            # final room path displays/<page>/<unit>/…            → already keyed
-            EMBEDDED_UNITS.update(f"{pg}/{u}" for pg, u in re.findall(r"displays/([^/}]+)/([^/}]+)/", raw))
+            refs = re.findall(
+                r"\\(?:input|includegraphics)(?:\[[^\]]*\])?\{([^}]+)\}", raw
+            )
+            for ref in refs:
+                found = page_unit_reference(p, ref)
+                if found:
+                    EMBEDDED_UNITS.add(f"{p['id']}/{found[0].name}")
 
 # ── order ─────────────────────────────────────────────────────────────────────
 ORDER_BLOCK = re.compile(r"<!--\s*haipipe:compile-order:start\s*-->(.*?)<!--\s*haipipe:compile-order:end\s*-->", re.S)
@@ -178,6 +235,119 @@ def read_order():
 def sha(p: Path): return hashlib.sha256(p.read_bytes()).hexdigest()[:16]
 
 
+def _yaml_scalar(value: str) -> str:
+    """Read the simple scalar fields used by Page Result envelopes."""
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        return value[1:-1]
+    return value.split("#", 1)[0].strip()
+
+
+def _result_field(text: str, key: str) -> str:
+    match = re.search(rf"(?m)^{re.escape(key)}:[ \t]*(.*?)\s*$", text)
+    return _yaml_scalar(match.group(1)) if match else ""
+
+
+def _page_result_display_unit(page_dir: Path, manifest: Path, text: str):
+    """Resolve a typed Page DISPLAY Result's payload.unit within results/."""
+    item = _result_field(text, "item")
+    kind = _result_field(text, "type").upper()
+    if kind != "DISPLAY" and not re.search(r"-DISPLAY-", item, re.I):
+        return None
+
+    payload = re.search(
+        r"(?ms)^payload:[ \t]*\n((?:^[ \t]+[^\n]*(?:\n|$))*)", text
+    )
+    if not payload:
+        return None
+    unit_match = re.search(r"(?m)^[ \t]{2}unit:[ \t]*(.*?)\s*$", payload.group(1))
+    if not unit_match:
+        return None
+    raw = _yaml_scalar(unit_match.group(1))
+    if not raw:
+        return None
+
+    result_root = page_dir / "results"
+    raw_path = Path(raw)
+    candidates = []
+    placeholder = "<resolved-result>/"
+    if raw.startswith(placeholder):
+        candidates.append(manifest.parent / raw[len(placeholder):])
+    if raw_path.is_absolute():
+        candidates.append(raw_path)
+    else:
+        candidates.extend((page_dir / raw_path, manifest.parent / raw_path))
+        if raw_path.parts and raw_path.parts[0] not in ("results", "payload"):
+            candidates.append(manifest.parent / "payload" / raw_path)
+
+    try:
+        resolved_root = result_root.resolve()
+    except OSError:
+        return None
+    for candidate in candidates:
+        if candidate.is_symlink():
+            continue
+        try:
+            resolved = candidate.resolve(strict=True)
+            resolved.relative_to(resolved_root)
+        except (OSError, ValueError):
+            continue
+        if resolved.is_dir():
+            return resolved
+    return None
+
+
+def page_display_units(page_dir: Path):
+    """Return current Result units; read the retired Outline lane only during migration."""
+    result_root = page_dir / "results"
+    current = {}
+    saw_display_result = False
+    if result_root.is_dir() and not result_root.is_symlink():
+        for manifest in sorted(result_root.rglob("result.yaml")):
+            if manifest.is_symlink():
+                continue
+            try:
+                manifest.resolve().relative_to(result_root.resolve())
+                text = manifest.read_text(encoding="utf-8", errors="replace")
+            except (OSError, ValueError):
+                continue
+            item = _result_field(text, "item")
+            kind = _result_field(text, "type").upper()
+            if kind != "DISPLAY" and not re.search(r"-DISPLAY-", item, re.I):
+                continue
+            saw_display_result = True
+            # Sorted Result paths mirror the Page Evidence reader: a later
+            # attempt for the same stable Evidence Item replaces the older one.
+            key = item or manifest.parent.name
+            current[key] = (
+                _page_result_display_unit(page_dir, manifest, text),
+                manifest,
+            )
+    if saw_display_result:
+        unresolved = [
+            (item, manifest)
+            for item, (unit, manifest) in current.items()
+            if unit is None
+        ]
+        if unresolved:
+            details = "; ".join(
+                f"{item} ({manifest.relative_to(page_dir)})"
+                for item, manifest in unresolved
+            )
+            raise RuntimeError(
+                "Could not resolve payload.unit for current Page DISPLAY Result(s): "
+                f"{details}. Expected a unit directory contained under results/. "
+                "Refusing to omit these displays from the assembled paper."
+            )
+        return sorted(
+            {unit for unit, _manifest in current.values()},
+            key=lambda p: p.as_posix(),
+        )
+
+    legacy = page_dir / "outline" / "evidence" / "display"
+    return sorted((p for p in legacy.glob("*/") if p.is_dir()), key=lambda p: p.name) if legacy.is_dir() else []
+
+
 def purge_retired_delivery_receipts(value):
     """Remove deprecated delivery-QA keys before carrying a prior manifest forward."""
     retired = {"buildqa", "qareport", "deliveryqa", "deliveryquality",
@@ -198,7 +368,7 @@ def inspect(pid: str, group: Path):
     d = group / pid
     frag = d / "delivery" / "latex" / f"{pid}.tex"
     pdfs = [d / "delivery" / "latex" / f"{pid}-complete.pdf", d / "delivery" / "latex" / f"{pid}.pdf"]
-    units = sorted((d / "outline" / "evidence" / "display").glob("*/")) if (d / "outline" / "evidence" / "display").exists() else []
+    units = page_display_units(d)
     reasons = []
     if not d.exists(): reasons.append("page folder missing")
     plan = latest_outline(group, pid)
@@ -239,6 +409,20 @@ def inspect(pid: str, group: Path):
         else: uncited.append(u.name)
     missing_prev = [u.name for u in cited if not (u / "preview.pdf").exists()]
     if missing_prev: reasons.append(f"display preview.pdf missing for cited unit: {', '.join(missing_prev)}")
+    missing_tex_asset = []
+    for u in cited:
+        ft = u / "float.tex"
+        if not ft.exists():
+            continue
+        raw_float = ft.read_text(encoding="utf-8", errors="replace")
+        if (re.search(r"\\input\{(?:\./)?recipe/", raw_float)
+                and not (u / "assets" / "figure.pdf").exists()):
+            missing_tex_asset.append(u.name)
+    if missing_tex_asset:
+        reasons.append(
+            "standalone TeX display asset missing at assets/figure.pdf for cited unit: "
+            + ", ".join(missing_tex_asset)
+        )
     warnings = []
     if folded: warnings.append(f"display units not gating (folded/retired): {', '.join(folded)}")
     if uncited: warnings.append(f"display units not gating (cited by nothing): {', '.join(uncited)}")
@@ -311,8 +495,28 @@ def label_index(pages):
                 idx.setdefault(lab, (pid, u))
     return idx
 
+
+def page_unit_reference(p, raw_path: str):
+    """Resolve a unit reference embedded by Page LaTeX or a legacy fragment."""
+    parts = [part for part in raw_path.replace("\\", "/").split("/")
+             if part not in ("", ".")]
+    units = {u.name: u for u in p.get("units", [])}
+    for i, part in enumerate(parts):
+        unit_i = None
+        if parts[i:i + 3] == ["outline", "evidence", "display"]:
+            unit_i = i + 3
+        elif part == "results" and i + 3 < len(parts) and parts[i + 2] == "payload":
+            unit_i = i + 3
+        elif part == "display":
+            unit_i = i + 1
+        elif part == "displays":
+            unit_i = i + 2 if i + 1 < len(parts) and parts[i + 1] == p["id"] else i + 1
+        if unit_i is not None and unit_i < len(parts) and parts[unit_i] in units:
+            return units[parts[unit_i]], parts[unit_i + 1:]
+    return None
+
 def unit_page(u: Path) -> str:
-    """the Section Page that owns a unit folder: <page>/outline/evidence/display/<unit>"""
+    """the Section Page owning a Result unit or its retired migration folder."""
     return u.parents[3].name
 
 def unit_key(u: Path) -> str:
@@ -334,6 +538,13 @@ def copy_unit(u: Path) -> str:
     ft = u / "float.tex"
     if ft.exists():
         t = ft.read_text(encoding="utf-8", errors="replace")
+        # The Paper master has no renderer-specific TeX preamble. Project a
+        # TeX-native unit through its standalone PDF asset instead of importing
+        # recipe source that may require undeclared packages or macros.
+        t = re.sub(
+            r"\\input\{(?:\./)?recipe/[^}]+\}",
+            rf"\\includegraphics{{displays/{key}/figure.pdf}}", t
+        )
         t = re.sub(r"(\\includegraphics(?:\[[^\]]*\])?)\{[^}]*\}", rf"\1{{displays/{key}/figure.pdf}}", t)
         t = re.sub(r"\\input\{[^}]*?(table-body[^}/]*)\}", rf"\\input{{displays/{key}/\1}}", t)
         (dst / "float.tex").write_text(t, encoding="utf-8")
@@ -344,21 +555,25 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
     t = p["fragment"].read_text(encoding="utf-8", errors="replace")
     def fix_input(m):
         path = m.group(1)
-        mm = re.search(r"display/([^/]+)/(?:assets/)?([^/}]+?)(?:\.tex)?$", path)   # assets/ or flat; .tex optional
-        if mm:
-            unit, name = mm.groups()
-            src = p["dir"] / "outline/evidence/display" / unit
-            if src.exists(): copy_unit(src)
-            return rf"\input{{displays/{p['id']}/{unit}/{name}}}"
+        found = page_unit_reference(p, path)
+        if found:
+            src, tail = found
+            key = copy_unit(src)
+            tail = list(tail)
+            if tail and tail[0] == "assets":
+                tail = tail[1:]
+            target = "/".join(tail) if tail else "float"
+            if target.endswith(".tex"):
+                target = target[:-4]
+            return rf"\input{{displays/{key}/{target}}}"
         return m.group(0)
     t = re.sub(r"\\input\{([^}]+)\}", fix_input, t)
     def fix_graphic(m):
-        mm = re.search(r"display/([^/]+)/(?:assets/)?([^/}]+)$", m.group(2))
-        if mm:
-            unit, name = mm.groups()
-            src = p["dir"] / "outline/evidence/display" / unit
-            if src.exists(): copy_unit(src)
-            return rf"\includegraphics{m.group(1) or ''}{{displays/{p['id']}/{unit}/figure.pdf}}"
+        found = page_unit_reference(p, m.group(2))
+        if found:
+            src, _tail = found
+            key = copy_unit(src)
+            return rf"\includegraphics{m.group(1) or ''}{{displays/{key}/figure.pdf}}"
         return m.group(0)
     t = re.sub(r"\\includegraphics(\[[^\]]*\])?\{([^}]+)\}", fix_graphic, t)
     # JL 260915: an Abstract page that already opens its own abstract environment is kept as written,
@@ -395,9 +610,17 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
 def merge_bib(pages):
     seen, out, bodies = set(), [], {}
     for p in pages:
-        # Page contract: the canonical evidence lane is the only bibliography source.
-        lane = p["dir"] / "outline/evidence/bibex"
-        for b in sorted(lane.glob("*.bib")) if lane else []:
+        if not p.get("included", p.get("ready", True)):
+            continue  # DRAFT stubs do not print the excluded Page's citations.
+        # Merge the same derived bibliography used by this Page's LaTeX delivery.
+        # Citation authority remains its accepted CITE Results. Never read the
+        # retired Outline/flat bibex lanes or substitute a paper-wide seed Bib.
+        b = p["dir"] / "delivery" / "latex" / f"{p['id']}-complete.bib"
+        if not b.is_file():
+            fragment = p["dir"] / "delivery" / "latex" / f"{p['id']}.tex"
+            if fragment.is_file() and re.search(r"\\cite\w*\*?(?:\[[^\]]*\])*\{", fragment.read_text(encoding="utf-8")):
+                raise RuntimeError(f"{p['id']}: cited Page has no delivery/latex/{p['id']}-complete.bib; regenerate its Page delivery from accepted CITE Results")
+        for b in [b] if b.is_file() else []:
             txt = b.read_text(encoding="utf-8", errors="replace")
             for m in re.finditer(r"@\w+\s*\{\s*([^,\s]+)\s*,", txt):
                 key = m.group(1)
@@ -415,7 +638,7 @@ def merge_bib(pages):
                     # same key, different entry: the first page's version is printed, the
                     # other page's citation data silently disappears unless someone is told
                     BUILD_WARNINGS.append(f"bib key {key} differs between {bodies[key][1]} and {p['id']}; {bodies[key][1]}'s entry kept")
-    BIB.write_text(f"% merged by {ENGINE_TAG} from every page's outline/evidence/bibex/*.bib · do not edit\n\n" + "\n\n".join(out) + "\n", encoding="utf-8")
+    BIB.write_text(f"% merged by {ENGINE_TAG} from each Page's delivery/latex/<page>-complete.bib · do not edit\n\n" + "\n\n".join(out) + "\n", encoding="utf-8")
     return len(out)
 
 # ── master ───────────────────────────────────────────────────────────────────
@@ -551,7 +774,11 @@ LABEL_CMD = re.compile(r"\\label\{([^}]+)\}")
 def declared_number(unit):
     """the paper-level number a unit claims, read from its README ## Placement. `unit` is '<page-id>/<unit>' (0.7.5)."""
     page, _, name = unit.partition("/")
-    hits = list(ROOT.glob(f"B*/{page}/outline/evidence/display/{name}/README.md")) if name else []
+    hits = list(ROOT.glob(f"B*/{page}/results/*/payload/{name}/README.md")) if name else []
+    if not hits and name:
+        # Read the retired Outline lane only for papers that have not migrated
+        # their DISPLAY Results yet.
+        hits = list(ROOT.glob(f"B*/{page}/outline/evidence/display/{name}/README.md"))
     if not hits: return None
     block = re.search(r"^## Placement\s*(.*?)(?=^## |\Z)",
                       hits[0].read_text(encoding="utf-8", errors="replace"), re.S | re.M)
@@ -676,9 +903,9 @@ def venue_findings(pages, page_count=None):
             sents = len([x for x in re.split(r"(?<=[.!?])\s+", body)
                          if len(re.findall(r"[A-Za-z][A-Za-z'-]*", x)) >= 4])
             if hard and words > hard:
-                out.append(f"abstract is {words} words; {pack} says never exceed {hard}")
+                out.append(f"abstract is {words} words; {pack} local writing ceiling is {hard} (pack guidance; verify official rules against the current Venue contract)")
             elif band and not (band[0] <= words <= band[1]):
-                out.append(f"abstract is {words} words; {pack} target is {band[0]}-{band[1]}")
+                out.append(f"abstract is {words} words; {pack} target is {band[0]}-{band[1]} (pack guidance)")
             if sent_band and not (sent_band[0] <= sents <= sent_band[1]):
                 out.append(f"abstract is {sents} sentences; {pack} target is {sent_band[0]}-{sent_band[1]}")
     if pages_band and page_count and not (pages_band[0] <= page_count <= pages_band[1]):
@@ -752,36 +979,17 @@ def display_register(main, appx, extra_findings=()):
         if r["label"] and r["label"] in seen_label:
             findings.append(f"label {r['label']} printed twice: {seen_label[r['label']]} and {r['printed']}")
         seen_label.setdefault(r["label"], r["printed"])
-    # every Section page and every unit ON DISK, not only what this build copied: a collision or a
-    # wrong index on a NOT-READY page is exactly the one that detonates later, when it compiles.
-    # 0.7.5 tooth (JL 260908, third naming pass): the page id carries the section index
-    # (S-<desk>-Main-<N>-<Title>, S-<desk>-Appendix-<L>-<Title>); a unit is Display<n>-<slug>.
+    # Check units on disk, including Pages not yet ready. Page IDs are stable
+    # identities; legacy embedded indices never determine current reading order.
     for page_dir in sorted(q for q in ROOT.glob("B*-*-Main/*/") if q.is_dir() and not q.name.startswith(("_", "."))) + \
                     sorted(q for q in ROOT.glob("B*-*-Appendix/*/") if q.is_dir() and not q.name.startswith(("_", "."))):
         page = page_dir.name
         if not page.startswith("S-"): continue
-        dec, _t = page_heading({"dir": page_dir, "id": page})
-        idx = page_index(page)
-        abstract_page = is_abstract({"dir": page_dir, "id": page})
-        if idx == "0" and abstract_page:
-            # 0.7.10 (JL 260909): the Abstract may carry index 0 so it sorts and reads
-            # like its siblings (S-MISQ-Main-0-Abstract), while the printed document
-            # still gives it no section number, so its H1 carries no §. Legal only for
-            # an abstract: 0 on any other page is a real mismatch.
-            pass
-        elif idx == "0":
-            findings.append(f"{page}: index 0 is reserved for the Abstract")
-        elif idx and dec and idx != dec:
-            findings.append(f"{page}: folder index {idx} but its H1 says {'Appendix ' + dec if dec.isalpha() else '§' + dec}")
-        elif idx and not dec:
-            findings.append(f"{page}: folder index {idx} but its H1 declares no § or Appendix letter")
-        elif dec and not idx and not abstract_page:
-            findings.append(f"{page}: H1 says {'Appendix ' + dec if dec.isalpha() else '§' + dec} but the page id carries no index (want S-<desk>-{'Appendix' if dec.isalpha() else 'Main'}-{dec}-<Title>)")
         disp = page_dir / "outline" / "evidence" / "display"
         for unit_dir in sorted(u for u in disp.glob("*/") if u.is_dir()) if disp.exists() else []:
             unit = unit_dir.name; key = f"{page}/{unit}"
             if not re.fullmatch(r"Display\d+-[A-Za-z0-9][A-Za-z0-9-]*", unit):
-                findings.append(f"legacy unit name {key}: rename to Display<n>-<slug> (the page folder carries the index)")
+                findings.append(f"legacy unit name {key}: rename to Display<n>-<slug> (the Page owns the unit independently of printed order)")
             if not (unit_dir / "README.md").exists():
                 findings.append(f"{key} has no README.md, so it can declare no number")
                 continue
@@ -840,6 +1048,8 @@ def _run(cmd, **kw):
     except FileNotFoundError: return _Missing(cmd[0])
 
 def build():
+    # Recheck immediately before mutation, including symlinks changed since load.
+    validate_build_config(CFG, HERE)
     reset_placement()
     main_ids, appx_ids, order_source = read_order()
     G_MAIN = rel(CFG["pages"]["main"])

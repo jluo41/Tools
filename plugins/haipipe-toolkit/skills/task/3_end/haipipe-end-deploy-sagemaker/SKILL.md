@@ -19,6 +19,18 @@ Consumes an Endpoint_Set built by `haipipe-end-endpointset`, packages it for Sag
 
 ---
 
+Workspace prerequisites
+----------------------
+
+This skill describes the adapter contract. Availability in the current project
+requires `platforms/platform-sagemaker-inference/`, its scoped guide, referenced scripts, compatible
+runtime dependencies, deployment config, and the selected platform's credentials
+and permissions. Inspect those paths before constructing a live command.
+If a prerequisite is absent, return blocked with its exact missing path or setting;
+prior deployment history is not proof that this workspace is deploy-ready.
+Use the Endpoint_Set wire pair matching this platform and the project's actual
+serving host. Do not infer host permissions or installed API behavior from examples.
+
 Commands
 --------
 

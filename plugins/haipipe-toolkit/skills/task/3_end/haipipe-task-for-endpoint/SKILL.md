@@ -233,7 +233,7 @@ Return contract
 status:     ok | blocked | failed
 task_folder: <path to scaffolded task folder>
 run_name:   r01_base
-files:      [t01_<task_name>.md, scripts/<task_name>.py,
+artifacts:      [t01_<task_name>.md, scripts/<task_name>.py,
              scripts/config/r01_base.yaml, runs/r01_base.sh]
 next:       run the task, then /haipipe-end deploy <target>
 ```

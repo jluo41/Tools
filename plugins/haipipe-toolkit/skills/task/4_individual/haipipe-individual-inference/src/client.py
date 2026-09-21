@@ -1,8 +1,9 @@
 """Thin HTTP client for a deployed CGM Endpoint_Set.
 
-Backend-agnostic: same call works against the local FastAPI server
-(today), a Databricks Model Serving endpoint, or a SageMaker invoke
-endpoint — they all consume the same dataframe_records payload.
+The caller supplies the payload shape declared by its deployed Src2Input /
+Input2Src pair. Local wrappers use that same selected contract. This HTTP
+client supports ordinary JSON endpoints; direct SageMaker Runtime invocation
+requires its AWS SDK/SigV4 transport, not a bearer token.
 """
 
 from __future__ import annotations
@@ -23,12 +24,12 @@ def call_predict(
     bearer_token: Optional[str] = None,
     timeout: int = DEFAULT_TIMEOUT,
 ) -> Dict[str, Any]:
-    """POST dataframe_records payload → forecast dict.
+    """POST platform-specific JSON payload → forecast dict.
 
     Args:
         payload: Endpoint_Set dataframe_records payload (see build_payload).
         endpoint_url: override URL (default: $CGM_ENDPOINT_URL).
-        bearer_token: optional auth header (Databricks/SageMaker tokens).
+        bearer_token: optional bearer auth for a compatible HTTP service.
     """
     url = endpoint_url or DEFAULT_URL
     headers = {"Content-Type": "application/json"}
@@ -40,16 +41,11 @@ def call_predict(
 
 
 def slice_last_window(forecast_resp: Dict[str, Any]) -> Dict[str, Any]:
-    """Return a response with only the most recent forecast window kept.
+    """Keep the last returned window according to the Endpoint ordering contract.
 
-    The endpoint's TrigFn (CGM5MinLTS) emits one forecast per valid 288-step
-    contiguous segment in the input — for backtesting use cases this is up
-    to 45 windows. For live "next 2 hours" inference we only care about the
-    last one (anchored at the most recent CGM observation).
-
-    Slicing client-side rather than constraining the endpoint avoids the
-    Record-stage timestamp normalization that drops fragile single-window
-    payloads on real-world (jittery) CGM data.
+    This does not independently establish that its anchor is the latest CGM
+    observation. Consumers must preserve that uncertainty unless the response
+    provides verifiable window timestamps.
     """
     out = dict(forecast_resp)
     models = out.get("models") or []

@@ -40,11 +40,16 @@ from src.common import (DELIVERY_LANES, EVIDENCE_LANES, OUTLINE_LANES,
                         STUDIO_LANES,
                         delivery_lane_dir, evidence_lane_dir,
                         evidence_lane_dirs, outline_lane_dir, studio_lane_dir)
+from src.page_evidence import (current_display_results,
+                               display_result_requires_unit,
+                               cited_display_labels,
+                               _result_document)
+from src.evidence_selection import selected_results, legacy_profile, EvidenceSelectionError
 
 # The writers are shared by the Word and LaTeX Page plugins. They live beside
 # those contracts rather than inside a consumer family such as Paper.
-_SCRIPTS = (Path(__file__).resolve().parents[2]
-            / "page-plugins" / "_shared-export")
+_SCRIPTS = (Path(__file__).resolve().parents[3]
+            / "page" / "page-plugins" / "_shared-export")
 
 _TEXBIN = "/Library/TeX/texbin"
 
@@ -149,18 +154,24 @@ class ExportMixin:
         compatibility fallback, but must not be the only source: otherwise a
         valid v4 Evidence Space display silently disappears from RD output.
         """
+        selected_results(page_src)  # Reject missing/current or ambiguous historical bindings.
         out = []
         stem = page_src.stem
         seen = set()
 
-        def add_float(f):
+        def add_float(f, label_keys=()):
             d = f.parent
-            if d.name in seen:
+            identity = d.resolve()
+            if identity in seen:
                 return
-            seen.add(d.name)
+            seen.add(identity)
             tex = f.read_text(encoding="utf-8", errors="replace")
             lab = re.search(r"\\label\{([^}]+)\}", tex)
-            kind = re.search(r"\\begin\{(table|figure)", tex)
+            if label_keys and not lab:
+                raise EvidenceSelectionError(
+                    f"{d}: the selected DISPLAY Result has Page labels, but float.tex has no manuscript label"
+                )
+            kind = re.search(r"\\begin\{(table|figure|algorithm)", tex)
             cap, i = "", tex.find("\\caption{")
             if i >= 0:
                 k, depth = i + 9, 1
@@ -176,7 +187,7 @@ class ExportMixin:
             # The old first-two-segments rule collapsed every display on such
             # a page to the same short id and made placement impossible.
             prefix = stem + "-Display"
-            aliases = []
+            aliases = [d.name]
             if d.name.startswith(prefix):
                 number = d.name[len(stem) + 1:].split("-", 1)[0]
                 short = stem + "-" + number
@@ -184,60 +195,211 @@ class ExportMixin:
                 # `Display1`, while cross-page material may say
                 # `<stem>-Display1`; both address the same unit and the
                 # exporter must place it once.
-                aliases = [short, number]
+                aliases.extend((short, number))
             else:
                 short = "-".join(d.name.split("-")[:2])
-                aliases = [short]
+                aliases.append(short)
             # A Page may cite the display by its manuscript-facing
             # reference (for example ``\\ref{fig:theory-model}``) rather
             # than by the board short id. Keep that reference as a full
             # alias so the exporter can place the winning asset without
             # rewriting the already-correct Figure reference.
             if lab:
-                aliases.append("\\ref{%s}" % lab.group(1))
+                aliases.extend("\\%s{%s}" % (command, lab.group(1))
+                               for command in ("ref", "autoref", "Cref", "cref"))
+            has_output_asset = (
+                (d / "assets" / "table-body.tex").is_file()
+                if kind and kind.group(1) == "table"
+                else any((d / "assets" / asset).is_file()
+                         for asset in ("figure.pdf", "figure.png", "figure.jpg"))
+            )
+            if not has_output_asset and not legacy_profile(page_src):
+                raise EvidenceSelectionError(f"Selected DISPLAY unit has no output asset: {d}")
+            if has_output_asset:
+                aliases.extend(label_keys)
             out.append((short,
                         {"dir": d, "label": lab.group(1) if lab else None,
-                         "kind": kind.group(1) if kind else "figure",
-                         "caption": cap, "note": note, "aliases": aliases}))
+                         "kind": ("table" if kind and kind.group(1) == "table"
+                                  else "figure"),
+                         "caption": cap, "note": note, "aliases": aliases,
+                         "has_output_asset": has_output_asset}))
 
-        # v4 Result payloads are authoritative. Read only DISPLAY envelopes
-        # whose payload unit resolves inside this Page's results tree.
-        result_root = page_src.parent / "results"
-        if result_root.is_dir():
-            try:
-                import yaml
-            except ImportError:
-                yaml = None
-            if yaml is not None:
-                for manifest in sorted(result_root.rglob("result.yaml")):
+        # Current typed Results are the sole source once a Page has one. A
+        # broken pointer fails closed in both delivery exports instead of
+        # silently falling back to a retired folder that may describe stale
+        # evidence.
+        result_records, has_typed_results = current_display_results(page_src)
+        if has_typed_results:
+            for record in result_records:
+                unit = record["unit"]
+                if unit is None:
+                    if record.get("selection_error"):
+                        raise EvidenceSelectionError(
+                            f"Current DISPLAY Result {record['item']} has an invalid binding: "
+                            f"{record['selection_error']}"
+                        )
+                    status = record["status"].replace("_", " ")
+                    raw_unit = record["unit_ref"]
+                    requires_unit = display_result_requires_unit(status)
+                    if raw_unit or requires_unit:
+                        detail = (f"payload.unit {raw_unit!r} does not resolve inside this Result's payload/"
+                                  if raw_unit else
+                                  f"status is {status!r}, but payload.unit is missing")
+                        manifest_path = record["manifest"].relative_to(page_src.parent)
+                        raise RuntimeError(
+                            f"Current DISPLAY Result {record['item']} "
+                            f"({manifest_path}) "
+                            f"cannot be assembled: {detail}."
+                        )
+                    continue
+                if not legacy_profile(page_src):
                     try:
-                        document = yaml.safe_load(
-                            manifest.read_text(encoding="utf-8"))
-                    except (OSError, yaml.YAMLError):
-                        continue
-                    if not isinstance(document, dict) or \
-                            str(document.get("type", "")).upper() != "DISPLAY":
-                        continue
-                    payload = document.get("payload")
-                    unit_ref = (payload.get("unit")
-                                if isinstance(payload, dict) else None)
-                    if not isinstance(unit_ref, str) or not unit_ref.strip():
-                        continue
-                    unit = (manifest.parent / unit_ref).resolve()
-                    try:
-                        unit.relative_to(result_root.resolve())
-                    except ValueError:
-                        continue
-                    f = unit / "float.tex"
-                    if f.is_file():
-                        add_float(f)
-
-        # Legacy fallback only. New Page writes must never target this lane,
-        # but old units remain readable while a Page is being migrated.
-        for ddir in evidence_lane_dirs(page_src.parent, "display"):
-            for f in sorted(ddir.glob("*/float.tex")):
-                add_float(f)
+                        unit.resolve().relative_to((record["manifest"].parent / "payload").resolve())
+                    except ValueError as exc:
+                        raise EvidenceSelectionError(f"{record['item']}: unit leaves its selected Result payload") from exc
+                f = unit / "float.tex"
+                if not f.is_file():
+                    raise EvidenceSelectionError(f"{record['item']}: selected DISPLAY float.tex is missing")
+                kind = "table" if re.search(r"\\begin\{table\b", f.read_text(
+                    encoding="utf-8", errors="replace")) else "figure"
+                macros = ("table",) if kind == "table" else ("figure", "algorithm")
+                aliases = [rf"\{macro}{{{key}}}"
+                           for key in record["labels"] for macro in macros]
+                add_float(f, aliases)
+        else:
+            # Read-only migration path for Pages without a typed DISPLAY Result.
+            for ddir in evidence_lane_dirs(page_src.parent, "display"):
+                for f in sorted(ddir.glob("*/float.tex")):
+                    add_float(f)
+        if not legacy_profile(page_src):
+            cited = cited_display_labels(
+                page_src.read_text(encoding="utf-8", errors="replace")
+            )
+            bound = set()
+            for _short, record in out:
+                for alias in record["aliases"]:
+                    match = re.fullmatch(
+                        r"\\(?:figure|table|algorithm)\{(D_[A-Za-z][A-Za-z0-9_-]*)\}",
+                        alias,
+                    )
+                    if match:
+                        bound.add(match.group(1))
+            missing = sorted(cited - bound)
+            if missing:
+                raise EvidenceSelectionError(
+                    "Page cites DISPLAY label(s) absent from the selected current Results: "
+                    + ", ".join(missing)
+                )
         return out
+
+    def _selected_bibliography(self, page_src, out_dir):
+        """Freeze a derived Bib from the selected, verified CITE Results only."""
+        if legacy_profile(page_src):
+            own = evidence_lane_dir(page_src.parent, "bibex") / (page_src.stem + ".bib")
+            return own if own.is_file() else None
+        entries = {}
+        for manifest in selected_results(page_src):
+            document = _result_document(manifest)
+            if str(document.get("type", "")).upper() != "CITE":
+                continue
+            payload = document.get("payload") or {}
+            ref = payload.get("bibliography") if isinstance(payload, dict) else None
+            if not isinstance(ref, str) or not ref:
+                raise EvidenceSelectionError(f"{manifest}: CITE payload.bibliography is missing")
+            if ref.startswith("<resolved-result>/"):
+                ref = ref[len("<resolved-result>/"):]
+            bib = (manifest.parent / ref).resolve()
+            try:
+                bib.relative_to((manifest.parent / "payload").resolve())
+                bib.relative_to(manifest.parent.resolve())
+            except ValueError as exc:
+                raise EvidenceSelectionError(f"{manifest}: bibliography leaves its selected Result payload") from exc
+            if not bib.is_file() or bib.suffix != ".bib":
+                raise EvidenceSelectionError(f"{manifest}: selected bibliography is missing")
+            raw = bib.read_text(encoding="utf-8")
+            keys = re.findall(r"@\w+\s*\{\s*([^,\s]+)\s*,", raw)
+            if len(keys) != len(set(keys)):
+                raise EvidenceSelectionError(f"{manifest}: duplicate keys within selected bibliography")
+            source = self._bib_entries(raw)
+            if not source:
+                raise EvidenceSelectionError(f"{manifest}: selected bibliography contains no entries")
+            for key, entry in source.items():
+                if key in entries and entries[key].strip() != entry.strip():
+                    raise EvidenceSelectionError(f"Selected CITE Results conflict on bibliography key {key}")
+                entries[key] = entry
+        if not entries:
+            return None
+        target = out_dir / "selected-bibliography"
+        target.mkdir(exist_ok=True)
+        bib = target / (page_src.stem + ".bib")
+        text = "\n\n".join(entries.values()) + "\n"
+        if not bib.is_file() or bib.read_text(encoding="utf-8") != text:
+            bib.write_text(text, encoding="utf-8")
+        return bib
+
+    def _evidence_receipt(self, page_src, out_dir):
+        """Record selection provenance separately from conversion success."""
+        import hashlib
+        manifests = selected_results(page_src)
+        record = {
+            "schema_version": 1,
+            "profile": "legacy-migration" if legacy_profile(page_src) else "current-ledger",
+            "source": page_src.name,
+            "source_sha256": hashlib.sha256(page_src.read_bytes()).hexdigest(),
+            "results": [{"path": path.relative_to(page_src.parent).as_posix(),
+                         "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                        for path in manifests],
+        }
+        (out_dir / "evidence-selection.json").write_text(
+            json.dumps(record, indent=2) + "\n", encoding="utf-8")
+
+    @staticmethod
+    def _display_ref_map(units):
+        r"""Map ready Page D_ labels to the unit's manuscript ``\label``."""
+        out = {}
+        for _short, unit in units:
+            if not unit.get("label") or not unit.get("has_output_asset"):
+                continue
+            for alias in unit.get("aliases", []):
+                match = re.fullmatch(
+                    r"\\(?:figure|table|algorithm)\{(D_[A-Za-z][A-Za-z0-9_-]*)\}",
+                    alias,
+                )
+                if match:
+                    out.setdefault(match.group(1), unit["label"])
+        return out
+
+    @staticmethod
+    def _replace_display_tokens(lines, label_map):
+        """Replace resolved Page placeholders only in prose, never examples."""
+        if not label_map:
+            return lines, False
+        fence = False
+        changed = False
+        token_re = re.compile(
+            r"\\(?:figure|table|algorithm)\s*\{\s*(D_[A-Za-z][A-Za-z0-9_-]*)\s*\}"
+        )
+        out = []
+        for line in lines:
+            if line.lstrip().startswith("```"):
+                fence = not fence
+                out.append(line)
+                continue
+            if fence or line.lstrip().startswith(">"):
+                out.append(line)
+                continue
+            parts = re.split(r"(`[^`\n]*`)", line)
+            for i in range(0, len(parts), 2):
+                def replace(match):
+                    nonlocal changed
+                    label = label_map.get(match.group(1))
+                    if not label:
+                        return match.group(0)
+                    changed = True
+                    return r"\ref{%s}" % label
+                parts[i] = token_re.sub(replace, parts[i])
+            out.append("".join(parts))
+        return out, changed
 
     def _first_unit_mention(self, body, unit):
         """Return the first reader-facing mention of a Display unit.
@@ -346,13 +508,33 @@ document.getElementById('rebuild').onclick = function () {
         stem = page_src.stem
         title = _tex_text(self._page_title(page_src))
         proot = self._paper_root(page_src)
+        try:
+            units = self._page_units(page_src)
+            selected_bib = self._selected_bibliography(page_src, out_dir)
+            self._evidence_receipt(page_src, out_dir)
+        except (RuntimeError, EvidenceSelectionError, OSError) as exc:
+            return None, str(exc)
+        source_for_tex = page_src
+        temp_source = None
+        label_map = self._display_ref_map(units)
+        if label_map:
+            source_lines = page_src.read_text(encoding="utf-8", errors="replace").splitlines()
+            source_lines, changed = self._replace_display_tokens(source_lines, label_map)
+            if changed:
+                temp_source = tempfile.TemporaryDirectory(prefix="page-display-export-")
+                source_for_tex = Path(temp_source.name) / page_src.name
+                source_for_tex.write_text("\n".join(source_lines) + "\n", encoding="utf-8")
         # --keep-fences: a board division is often figure-only, and the paper
         # default (drop sketches) exported it as an empty section (JL 260815).
-        code, log = self._run(
-            [sys.executable, str(_SCRIPTS / "md2tex.py"), str(page_src),
-             "--paper-root", str(proot or page_src.parent), "-o", str(out_dir),
-             "--keep-fences"],
-            timeout=120)
+        try:
+            code, log = self._run(
+                [sys.executable, str(_SCRIPTS / "md2tex.py"), str(source_for_tex),
+                 "--paper-root", str(proot or page_src.parent), "-o", str(out_dir),
+                 "--keep-fences"],
+                timeout=120)
+        finally:
+            if temp_source is not None:
+                temp_source.cleanup()
         tex = out_dir / (stem + ".tex")
         # A nonzero md2tex exit must FAIL the door (found by the 260820 REVISE
         # pass: two POSTs returned ok:true while re-floating the PREVIOUS
@@ -375,7 +557,6 @@ document.getElementById('rebuild').onclick = function () {
         # citing paragraph — MISQ's first-reference rule, the same one md2tex
         # applies to \ref — re-aimed at the unit's WINNING asset so the
         # wrapper master needs no tikz or renderer package knowledge.
-        units = self._page_units(page_src)
         if units:
             body = tex.read_text(encoding="utf-8")
             # Insert from the last first-reference toward the first. If one
@@ -475,11 +656,11 @@ document.getElementById('rebuild').onclick = function () {
         # citation store, so the PDF cites what the page cites — the paper's
         # 0-*.bib is the fallback for pages that have no store of their own.
         bib = None
-        own = evidence_lane_dir(page_src.parent, "bibex") / (stem + ".bib")
-        if own.is_file() and "@" in own.read_text(encoding="utf-8",
+        own = selected_bib
+        if own and own.is_file() and "@" in own.read_text(encoding="utf-8",
                                                   errors="replace"):
             bib = own
-        elif proot:
+        elif proot and legacy_profile(page_src):
             bibs = sorted(proot.glob("0-*.bib"))
             bib = bibs[0] if bibs else None
         # md2tex leaves a handful of mid-paragraph **bold** runs unconverted
@@ -667,7 +848,9 @@ document.getElementById('rebuild').onclick = function () {
                     "the generated source is below. Log tail:</p><pre>%s</pre>%s"
                     % (_esc(stem), _esc(out[-800:] if out else ""), src_fold))
         view.write_text(_VIEW.format(title=_esc(stem + " · latex"),
-                                     body=body + script),
+                                     body=body + ("<p class='mut'>Evidence: "
+                                          + ("legacy migration profile" if legacy_profile(page_src) else "current ledger selection")
+                                          + " · <a href='evidence-selection.json'>source record</a></p>") + script),
                         encoding="utf-8")
         if stale:
             return ({"url": self._url_of(view), "tex": self._url_of(tex),
@@ -697,9 +880,15 @@ document.getElementById('rebuild').onclick = function () {
         # cache in bibex/ and md2docx is pointed there — in-text labels and
         # the References section then come from the one store the workbench
         # maintains. A page with no store keeps the paper-root fallback.
-        proot = self._paper_root(page_src)
-        own = evidence_lane_dir(page_src.parent, "bibex") / (stem + ".bib")
-        if own.is_file() and "@" in own.read_text(encoding="utf-8",
+        try:
+            all_units = self._page_units(page_src)
+            selected_bib = self._selected_bibliography(page_src, out_dir)
+            self._evidence_receipt(page_src, out_dir)
+        except (RuntimeError, EvidenceSelectionError, OSError) as exc:
+            return None, str(exc)
+        proot = self._paper_root(page_src) if legacy_profile(page_src) else None
+        own = selected_bib
+        if own and own.is_file() and "@" in own.read_text(encoding="utf-8",
                                                   errors="replace"):
             bbl = own.parent / ".board-refs.bbl"
             if not bbl.is_file() or bbl.stat().st_mtime < own.stat().st_mtime:
@@ -716,7 +905,7 @@ document.getElementById('rebuild').onclick = function () {
         # board cites by short id, so the bridge is a TEMP copy of the page
         # with `(\ref{<label>})` appended to each unit's first prose mention.
         # The page source is never edited; the temp is deleted after the run.
-        units = [(s, u) for s, u in self._page_units(page_src) if u["label"]]
+        units = [(s, u) for s, u in all_units if u["label"]]
         # The same conversion the LaTeX door does (JL 260820: "the word plugin
         # don't have the citation and reference"): a backtick key the page's
         # own bibex defines becomes \citep{key}, which md2docx renders from
@@ -724,13 +913,16 @@ document.getElementById('rebuild').onclick = function () {
         # it the key ships as code text and no citation ever fires.
         import re as _re
         bibkeys = []
-        if own.is_file():
+        if own and own.is_file():
             bibkeys = _re.findall(r"@\w+\s*\{\s*([^,\s]+)\s*,",
                                   own.read_text(encoding="utf-8",
                                                 errors="replace"))
         src_for_docx, tmp = page_src, None
         if units or bibkeys:
             lines = page_src.read_text(encoding="utf-8").split("\n")
+            lines, display_replaced = self._replace_display_tokens(
+                lines, self._display_ref_map(units)
+            )
             fence, done = False, set()
             for i, ln in enumerate(lines):
                 if ln.lstrip().startswith("```"):
@@ -777,7 +969,7 @@ document.getElementById('rebuild').onclick = function () {
                             lines[i] = ln = ln.replace(
                                 pat, "\\citep{%s}" % k)
                             key_hits += 1
-            if done or key_hits:
+            if done or key_hits or display_replaced:
                 tmp = out_dir / (stem + ".export.md")
                 tmp.write_text("\n".join(lines), encoding="utf-8")
                 src_for_docx = tmp
@@ -789,23 +981,32 @@ document.getElementById('rebuild').onclick = function () {
                "-o", str(docx), "--join-paragraphs",
                "--keep-fences",
                "--document-title", self._page_title(page_src)]
+        selected_display_dir = None
         if units:
             # the unit index for the page address, and the Display comment
             # bubble beside the Citation ones — the docx's evidence card
             # reads the current v4 Result payload tree; md2docx also retains
             # recursive compatibility for older display roots.
-            display_root = page_src.parent / "results"
-            if not display_root.is_dir():
-                display_root = evidence_lane_dir(page_src.parent, "display")
+            # Stage exactly the selected units: scanning the whole Results tree
+            # lets a historical float with the same label replace the current one.
+            import shutil
+            selected_display_dir = tempfile.TemporaryDirectory(prefix="page-selected-displays-")
+            display_root = Path(selected_display_dir.name)
+            for index, (_, unit) in enumerate(units):
+                shutil.copytree(unit["dir"], display_root / (str(index) + "-" + unit["dir"].name))
             cmd += ["--display-root", str(display_root),
                     "--lanes", "Citation,Display"]
         if proot:
             cmd += ["--paper-root", str(proot)]
-        elif units:
+        elif units or not legacy_profile(page_src):
             # md2docx caches rasterized figures under <root>/3-dist/.media;
             # with no paper root, aim that at the DERIVED plugin folder
             cmd += ["--paper-root", str(out_dir)]
-        code, log = self._run(cmd, timeout=120)
+        try:
+            code, log = self._run(cmd, timeout=120)
+        finally:
+            if selected_display_dir is not None:
+                selected_display_dir.cleanup()
         if tmp is not None:
             try:
                 tmp.unlink()
@@ -834,7 +1035,9 @@ document.getElementById('rebuild').onclick = function () {
                     "<a href='%s' download>⬇ download the .docx</a></p><pre>%s</pre>"
                     % (_esc(stem), durl, _esc(plog[-800:] if plog else "")))
         view.write_text(_VIEW.format(title=_esc(stem + ".docx"),
-                                     body=body + script),
+                                     body=body + ("<p class='mut'>Evidence: "
+                                          + ("legacy migration profile" if legacy_profile(page_src) else "current ledger selection")
+                                          + " · <a href='evidence-selection.json'>source record</a></p>") + script),
                         encoding="utf-8")
         return {"ok": True, "url": self._url_of(view), "docx": durl,
                 "pdf": self._url_of(pdf) if pdf.is_file() else None}, None

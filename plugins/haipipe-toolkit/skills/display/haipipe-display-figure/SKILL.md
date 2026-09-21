@@ -19,12 +19,16 @@ Generate the data plots for a paper based on: **$ARGUMENTS**
 ## Output: write into a display unit
 
 The plot goes directly into the caller-supplied unit directory per the shared
-contract: `../ref/display-unit-output-contract.md`.
-For a Board Page that directory is
-`<page>/outline/evidence/display/<stem>-DisplayN-<slug>/`; a Paper lifecycle
-may instead supply `displays/displayNN-<slug>/`.
+contract: `../ref/display-unit-output-contract.md`. For a Page DISPLAY Result,
+the caller supplies `<page>/results/<re-run>/payload/<unit>/`; a View or other
+caller supplies its own unit path. This renderer never chooses or creates a
+parallel destination.
 THIS renderer's row: asset -> `assets/figure.pdf`; rebuild spec -> `recipe/gen_*.py`
 (+ `recipe/paper_plot_style.py`).
+
+One invocation that produces one bounded display unit may be one Run in the parent Workflow.
+The numbered steps, script calls, compilation, review, and retries are internal Steps; separate
+units with independent receipts are separate Runs.
 
 For a new unit, read `intake/manifest.yaml` before doing anything else.
 The plot script reads only the manifest's approved `intake/inputs/` snapshot.
@@ -38,13 +42,14 @@ Legacy `source/` units remain valid only through the compatibility path in the s
 | **Data-driven plots** | ✅ Yes | Line plots (training curves), bar charts (method comparison), scatter plots, heatmaps, box/violin plots |
 | **Comparison tables** | ➡️ Use `haipipe-display-table` | LaTeX tables (prior bounds, method features, ablation) now live in the dedicated table renderer |
 | **Multi-panel figures** | ✅ Yes | Subfigure grids combining multiple plots (e.g., 3×3 dataset × method) |
-| **Architecture/pipeline diagrams** | ❌ No — manual | Model architecture, data flow diagrams, system overviews. At best can generate a rough TikZ skeleton, but **expect to draw these yourself** using tools like draw.io, Figma, or TikZ |
+| **Architecture/pipeline diagrams** | ➡️ Route to `haipipe-display-diagram` | Model architecture, data flow diagrams, system overviews, and deterministic box-and-arrow schematics |
 | **Generated image grids** | ❌ No — manual | Grids of generated samples (e.g., GAN/diffusion outputs). These come from running your model, not from this skill |
 | **Photographs / screenshots** | ❌ No — manual | Real-world images, UI screenshots, qualitative examples |
 
-**In practice:** For a typical ML paper, this skill handles the data plots (a large share of the figure set).
-Tables go to `haipipe-display-table`; the hero figure / architecture diagram / qualitative results are created via the diagram/illustration skills or manually and placed in `figures/` before running `/haipipe-paper section-edit`.
-The skill will detect manually-made figures as "existing figures" and preserve them.
+**In practice:** For a typical paper, this skill handles data plots. Tables go to
+`haipipe-display-table`; architecture diagrams go to `haipipe-display-diagram`; qualitative concept
+art goes to `haipipe-display-illustration`. Each result stays in the caller-supplied display unit.
+This renderer never writes to a flat `figures/` directory.
 
 ## Constants
 
@@ -56,19 +61,22 @@ The skill will detect manually-made figures as "existing figures" and preserve t
 - **COLOR_PALETTE = `tab10`** — Default matplotlib color cycle.
   Options: `tab10`, `Set2`, `colorblind` (deuteranopia-safe)
 - **FONT_SIZE = 10** — Base font size (matches typical conference body text)
-- **FIG_DIR** — the caller-supplied display unit (plot → `assets/figure.pdf`, scripts → `recipe/`).
-  Flat `figures/` only with no paper.
+- **Output directory** — `assets/` for the active render; `candidates/` when `DISPLAY_CANDIDATE=<id>` is set. Generation scripts live in `recipe/`. The default final asset is `figure.pdf`; when `FORMAT = 'png'`, use `figure.png` and update the wrapper reference.
 - **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for figure quality review.
 
 ## Inputs
 
-1. **Display contract** — the unit's `README.md` and the paper-stage brief.
+1. **Display contract** — the unit's `README.md` and caller brief.
 2. **Display Intake** — `intake/manifest.yaml` and its approved CSV/JSON snapshot.
 3. **Existing candidate** — only when the caller asked to refine that named candidate.
 
 If no display unit or verified Intake exists, stop and ask the caller to create one.
 
-## Workflow
+## Procedure
+
+A caller-directed invocation that produces one bounded display unit is one Run in its parent's
+Workflow. The numbered steps, generation scripts, candidate iterations, compilation, and review stay
+inside that Run.
 
 ### Step 1: Read the Unit Brief and Intake
 
@@ -85,8 +93,20 @@ Create a shared style configuration script:
 
 ```python
 # paper_plot_style.py — shared across all figure scripts
+from pathlib import Path
+import os
+import re
 import matplotlib.pyplot as plt
 import matplotlib
+UNIT = Path(__file__).resolve().parents[1]
+CANDIDATE_ID = os.environ.get('DISPLAY_CANDIDATE', '').strip()
+if CANDIDATE_ID and not re.fullmatch(r'[A-Za-z0-9_-]+', CANDIDATE_ID):
+    raise ValueError('DISPLAY_CANDIDATE must contain only letters, digits, _ or -')
+FIG_DIR = UNIT / ('candidates' if CANDIDATE_ID else 'assets')
+FIG_DIR.mkdir(parents=True, exist_ok=True)
+FONT_SIZE = 10
+DPI = 300
+FORMAT = 'pdf'
 matplotlib.rcParams.update({
     'font.size': FONT_SIZE,
     'font.family': 'serif',
@@ -111,9 +131,11 @@ matplotlib.rcParams.update({
 COLORS = plt.cm.tab10.colors  # or Set2, or colorblind-safe
 
 def save_fig(fig, name, fmt=FORMAT):
-    """Save figure to FIG_DIR with consistent naming."""
-    fig.savefig(f'{FIG_DIR}/{name}.{fmt}')
-    print(f'Saved: {FIG_DIR}/{name}.{fmt}')
+    """Write the active asset or a named candidate without replacing the other."""
+    stem = f'{CANDIDATE_ID}-{name}' if CANDIDATE_ID else name
+    path = FIG_DIR / f'{stem}.{fmt}'
+    fig.savefig(path)
+    print(f'Saved: {path}')
 ```
 
 ### Step 3: Auto-Select Figure Type
@@ -131,9 +153,11 @@ Use this decision tree for data-driven figures (inspired by Imbad0202/academic-r
 | Multi-dataset results | Multi-panel (subfigure) | 0.95\textwidth |
 | Prior work comparison / coefficients | (table) → use `haipipe-display-table` | — |
 
-### Step 4: Generate Each Figure
+### Step 4: Generate the Unit's Figure
 
-For the current display unit, create a standalone Python script in `recipe/`:
+For each display unit, create one active standalone Python generator in `recipe/`. A multi-panel
+figure is assembled by that script into one asset. Separate figures use separate caller-supplied
+units; candidate variations go in `candidates/` instead of overwriting the active asset.
 
 **Line plots** (training curves, scaling):
 ```python
@@ -141,7 +165,7 @@ For the current display unit, create a standalone Python script in `recipe/`:
 from paper_plot_style import *
 import json
 
-with open('intake/inputs/exp_results.json') as f:
+with open(UNIT / 'intake/inputs/exp_results.json') as f:
     data = json.load(f)
 
 fig, ax = plt.subplots(1, 1, figsize=(5, 3.5))
@@ -150,7 +174,7 @@ ax.plot(data['steps'], data['crf_loss'], label='CRF-LR', color=COLORS[1])
 ax.set_xlabel('Training Steps')
 ax.set_ylabel('Cross-Entropy Loss')
 ax.legend(frameon=False)
-save_fig(fig, 'fig2_training_curves')
+save_fig(fig, 'figure')  # -> assets/figure.pdf
 ```
 
 **Bar charts** (comparison, ablation):
@@ -158,7 +182,7 @@ save_fig(fig, 'fig2_training_curves')
 from paper_plot_style import *
 import pandas as pd
 
-data = pd.read_csv('intake/inputs/comparison.csv')
+data = pd.read_csv(UNIT / 'intake/inputs/comparison.csv')
 fig, ax = plt.subplots(1, 1, figsize=(5, 3))
 bars = ax.bar(data['method'], data['value'], color=[COLORS[i] for i in range(len(data))])
 ax.set_ylabel('Accuracy (%)')
@@ -166,54 +190,82 @@ ax.set_ylabel('Accuracy (%)')
 for bar, val in zip(bars, data['value']):
     ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.3,
             f'{val:.1f}', ha='center', va='bottom', fontsize=FONT_SIZE-1)
-save_fig(fig, 'fig3_comparison')
+save_fig(fig, 'figure')  # -> assets/figure.pdf
 ```
 
 **Comparison / coefficient tables** (LaTeX): out of scope — use `haipipe-display-table`, which owns booktabs rules, significance stars, SE rows, panels, and table notes.
 Do not emit `.tex` tables from this skill.
 
 **Architecture/pipeline diagrams** are outside this skill's scope.
-Route them to `haipipe-display-diagram` or `haipipe-display-illustration` through the Display stage.
+Route deterministic diagrams to `haipipe-display-diagram`; route qualitative concept art to
+`haipipe-display-illustration`. Both use the same caller-supplied display unit.
 
-### Step 5: Run All Scripts
+### Step 5: Run the Active Recipe or a Named Candidate Recipe
 
 ```bash
-# Run all figure generation scripts
-for script in gen_fig*.py; do
-    python "$script"
-done
+UNIT_DIR=/path/to/caller-supplied-unit
+# Normal render: run the single active generator.
+python "$UNIT_DIR/recipe/gen_fig2_training_curves.py"
 ```
+
+Keep one active generator per unit. For an explicit comparison, copy it to a candidate-suffixed
+recipe, edit that copy for the proposed variant, and run only that recipe with a candidate id:
+
+```bash
+cp "$UNIT_DIR/recipe/gen_fig2_training_curves.py" "$UNIT_DIR/recipe/gen_fig2_training_curves-A.py"
+DISPLAY_CANDIDATE=A python "$UNIT_DIR/recipe/gen_fig2_training_curves-A.py"
+```
+
+The style helper writes `candidates/A-figure.pdf` (or `.png` when raster output is selected).
+Inspect that candidate file itself; do not use the unit's existing `preview.pdf` for it. After the
+caller selects a candidate, promote it to the matching `assets/figure.pdf` or `assets/figure.png`,
+update the wrapper reference if needed, and rebuild the canonical unit preview.
 
 Verify all output files exist and are non-empty.
 
+Compile and inspect the unit preview from the caller's asset-reference base:
+
+```bash
+WORK_ROOT=/path/to/caller-asset-reference-base
+(cd "$WORK_ROOT" && pdflatex -output-directory "$UNIT_DIR" "$UNIT_DIR/preview.tex")
+```
+
+Open `preview.pdf` and check clipping, legibility, and the caption/asset pairing.
+If compilation fails or the preview has a visible defect, return `HOLD` with the
+error or defect and keep the unit unaccepted.
+
 ### Step 6: Hand Back to the Unit Wrapper
 
-The renderer writes the asset and recipe only. `float.tex` is caller-owned: after the Paper
-adapter supplies an approved caption, label, and placement, a renderer may refresh just its asset
-reference under the shared contract. It never invents or changes those semantic fields.
+For one caller-directed render, the renderer writes the selected asset and recipe into the unit but
+does not mark it accepted. When the caller requests competing candidates, keep alternatives under
+`candidates/` until the caller selects one. `float.tex` is caller-owned: after the caller supplies
+an approved caption, label, and placement, a renderer may refresh just its asset reference under
+the shared contract. It never invents or changes those semantic fields.
 Do not create a parallel `latex_includes.tex` file or write an ad hoc figure block in a section.
 
-The Paper adapter places the accepted unit through its existing `float.tex`.
+The caller or its adapter consumes the selected unit through its existing
+`float.tex`. The renderer never records `accepted:`.
 
 ### Step 7: Figure Quality Review with REVIEWER_MODEL
 
-Send figure descriptions and captions to GPT-5.5 for review:
+Send the compiled preview together with its claim and caption to GPT-5.5 for an
+advisory visual and editorial review. In candidate mode, attach the asset or
+candidate-named preview for that id, not the unit's existing `preview.pdf`. Review the actual
+rendered figure, not a plan alone; the caller remains responsible for semantic
+accuracy and acceptance.
 
 ```
 mcp__codex__codex:
   model: gpt-5.5
   config: {"model_reasoning_effort": "xhigh"}
   prompt: |
-    Review these figure/table plans for a [VENUE] submission.
+    Review this compiled data figure for a [VENUE] submission.
 
-    For each figure:
-    1. Is the caption informative and self-contained?
-    2. Does the figure type match the data being shown?
-    3. Is the comparison fair and clear?
-    4. Any missing baselines or ablations?
-    5. Would a different visualization be more effective?
+    Check the visible labels, scale, legend, comparison, and fit at paper size.
+    Also check whether the claim and caption describe what the rendered data
+    actually show. Flag issues; do not treat a score as acceptance.
 
-    [list all figures with captions and descriptions]
+    [attach the matching active preview or candidate asset/preview and include the approved claim and caption]
 ```
 
 ### Step 8: Quality Checklist
@@ -231,12 +283,12 @@ Before finishing, verify each figure (from pedrohcgs/claude-code-my-workflow):
 - [ ] No matplotlib default title (remove `plt.title` for publications)
 - [ ] Serif font matches paper body text (Times / Computer Modern)
 - [ ] Colorblind-accessible (if using colorblind palette)
+- [ ] Compiled `preview.pdf` opened and inspected; any compile or visual failure is a HOLD
 
 ## Output
 
 The display unit layout (approved values -> `intake/inputs/`, asset -> `assets/figure.pdf`,
-rebuild recipe -> `recipe/gen_figNN_*.py` + `recipe/paper_plot_style.py`) and the no-paper flat
-fallback are the shared contract:
+rebuild recipe -> `recipe/gen_figNN_*.py` + `recipe/paper_plot_style.py`) is the shared contract:
 `../ref/display-unit-output-contract.md`.
 
 ## Figure Type Reference
@@ -249,5 +301,5 @@ fallback are the shared contract:
 | Scatter plot | Correlation analysis | 0.48\textwidth |
 | Heatmap | Attention, confusion matrix | 0.48\textwidth |
 | Box/violin | Distribution comparison | 0.48\textwidth |
-| Architecture | System overview | 0.95\textwidth |
+| Architecture | ➡️ Use `haipipe-display-diagram` | — |
 | Multi-panel | Combined results (subfigures) | 0.95\textwidth |

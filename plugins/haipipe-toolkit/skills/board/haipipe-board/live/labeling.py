@@ -7,8 +7,9 @@ appears only in Labeling → Rounds, and only for items already shown to the
 person; the labels come from the chat.  Every write through
 ``POST /_board/labeling/act`` goes through the
 subjective-label engine (``job.confirm_meaning`` and ``calibration``), which
-re-checks the identified human, HOLD, G0, the event order, and sealed custody
-on each call.  Studio Chat stays a separate tab.
+re-checks the caller-supplied configured authority id, HOLD, G0, the event
+order, and sealed custody on each call. The local Board does not authenticate
+the caller's identity. Studio Chat stays a separate tab.
 """
 from __future__ import annotations
 
@@ -309,9 +310,9 @@ def inspect(page_src: Path) -> dict:
                        "Checkpoint Keeper · preserve: %s · next: start a new "
                        "real-authority Building lineage%s" % (checkpoint_rel, target))
     elif canonical and not canonical.get("meaning_receipt_valid"):
-        next_action = "P0 Contract · the identified human must confirm the current meaning"
+        next_action = "P0 Contract · the configured semantic authority must explicitly attest to the current meaning"
     elif meaning_open:
-        next_action = ("P0 Contract · the identified human must confirm the target, "
+        next_action = ("P0 Contract · the configured semantic authority must explicitly attest to the target, "
                        "class meanings, regions, uncertainty, and unresolved disposition")
     elif open_rounds:
         next_action = "P1 Round · resume " + open_rounds[0] + " at its first missing canonical event"
@@ -675,11 +676,13 @@ def _hold_words(reason) -> str:
 
 
 def _later(phase: str) -> str:
-    """'P3 Test' -> 'step 4 of 6 (Test)': a reader counts steps, not phase codes."""
-    code, _, name = phase.partition(" ")
-    ids = [pid for pid, _ in PHASES]
-    where = f"step {ids.index(code) + 1} of {len(ids)} ({name})" if code in ids else phase
-    return f'<p class=mut>Nothing here yet. This opens at {_esc(where)}.</p>'
+    """Describe capability state without implying a completed lifecycle step."""
+    code = phase.partition(" ")[0]
+    if code == "P0":
+        message = f"{phase} · no sealed-custody record is available"
+    else:
+        message = f"{phase} · not implemented · HOLD"
+    return f'<p class=mut>{_esc(message)}.</p>'
 
 
 def _when(value) -> str:
@@ -820,12 +823,13 @@ def _data_space(vm: dict) -> dict[str, str]:
                      '<p class=mut>No one can confirm a meaning or label on this job.</p>')
     elif canonical and canonical.get("meaning_receipt_valid") and canonical.get("g0_receipt_valid"):
         receipt = authority.get("meaning_receipt") if isinstance(authority.get("meaning_receipt"), dict) else {}
-        gate = _card("Meaning confirmed ✓", f'<p class=ok>By {_esc(receipt.get("human_id"))}, {_esc(_when(receipt.get("confirmed_at")))}.</p>')
+        gate = _card("Meaning confirmed ✓", f'<p class=ok>Caller attested as {_esc(receipt.get("human_id"))}, {_esc(_when(receipt.get("confirmed_at")))}.</p>'
+                     '<p class=mut>The Board records this assertion but does not authenticate the caller\'s identity.</p>')
     elif canonical and canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation":
         region_meanings = regions.get("meanings") if isinstance(regions.get("meanings"), dict) else {}
         gate = _card("Confirm the meaning", (
-            "<p>Only this job's labeler can confirm. Confirming says: these classes, "
-            'boundary regions, and unsure levels are what I mean. After this, round 1 can start.</p>'
+            "<p>Confirming records your attestation that these classes, boundary regions, "
+            'and unsure levels match your intended meaning. The Board does not authenticate identity.</p>'
             '<details><summary>boundary regions</summary>'
             f'{_meaning_list([str(v) for v in regions.get("values") or []], region_meanings)}</details>'
             '<label class=attest><input type=checkbox data-confirm-attest> '
@@ -1696,7 +1700,7 @@ def _discussion_view(vm: dict) -> str:
         for name, desc, state in planned
     )
     guard = ("This imported page can discuss the source, but it cannot create local gold or change the guideline."
-             if hold else "A discussion draft is not a label. Only the identified human can accept a semantic change.")
+             if hold else "A discussion draft is not a label. The configured semantic authority must review and explicitly attest before a semantic change is recorded. This Board does not authenticate the caller.")
     brief = _discussion_prompt(vm)
     return "".join([
         _card("Current discussion", (
@@ -1934,19 +1938,16 @@ def _workflow_map(vm: dict) -> str:
     counts: dict[str, int] = {}
     for r in vm["runs"]:
         counts[str(r["operation"])] = counts.get(str(r["operation"]), 0) + 1
-    canonical_phase = (vm["canonical"] or {}).get("phase")
     names = dict(PHASES)
-    ids = [pid for pid, _ in PHASES]
     labels = ["Run type", "Started by", *spaces, "Writes to", "On this job"]
     body, last = [], None
     for cells in rows:
         cell = lambda name: cells[col[name]] if name in col and col[name] < len(cells) else ""  # noqa: E731
-        phase = cell("phase")
-        if phase != last:
-            step = f"Step {ids.index(phase) + 1} of {len(ids)} · {names.get(phase, phase)}" if phase in ids else phase
-            now = " (now)" if phase == canonical_phase else ""
-            body.append(f'<tr class=phaserow><td colspan={len(labels)}>{_esc(step + now)}</td></tr>')
-            last = phase
+        tag = cell("compatibility tag")
+        if tag != last:
+            group = f"{tag} · {names.get(tag, tag)} · compatibility capability"
+            body.append(f'<tr class=phaserow><td colspan={len(labels)}>{_esc(group)}</td></tr>')
+            last = tag
         op = cell("run type").strip("`")
         started = cell("started by")
         n = counts.get(op, 0)
@@ -2112,14 +2113,17 @@ def _run_space(vm: dict) -> dict[str, str]:
                  f'<th>Result</th></tr></thead><tbody>{rows}</tbody></table></div>')
     else:
         table = "<p class=mut>No Run ticket yet.</p>"
-    canonical_phase = (vm["canonical"] or {}).get("phase")
-    current = next((i for i, (pid, _) in enumerate(PHASES) if pid == canonical_phase), state["phase_i"])
-    steps = " → ".join(
-        (f'<b>{_esc(name)} (now)</b>' if i == current else f'{_esc(name)} ✓' if i < current
-         else f'<span class=mut>{_esc(name)}</span>')
-        for i, (_, name) in enumerate(PHASES)
-    )
-    phases = _card("Phases", f'<p class=stepline>Step {current + 1} of {len(PHASES)}: {steps}</p>'
+    canonical = vm["canonical"] or {}
+    capability_rows = []
+    for pid, name in PHASES:
+        if pid == "P0":
+            status = "contract valid" if canonical.get("p0_contract_integrity_valid") else "HOLD · contract"
+        elif pid == "P1":
+            status = "partial · G0 passed" if canonical.get("g0_passed") else "partial · blocked by G0"
+        else:
+            status = "not implemented · HOLD"
+        capability_rows.append(_row(f"{pid} · {name}", _esc(status)))
+    phases = _card("Compatibility capabilities · not lifecycle progress", "".join(capability_rows)
                    + _row("waiting for", _esc(_blocked_words(state["first_failed"])))
                    + f'<p class=mut>Code: <code>{_esc(state["first_failed"])}</code></p>')
     return {"runs": _card("Runs", table), "phases": phases, "workflow": _sop(vm) + _workflow_map(vm)}
@@ -2713,15 +2717,18 @@ var sessionId;try{sessionId=sessionStorage.getItem('labeling-session')||'';}catc
 if(!sessionId){sessionId='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);try{sessionStorage.setItem('labeling-session',sessionId);}catch(e){}}
 function act(action,body){
  var payload=Object.assign({path:boot.path,file:boot.file,page:boot.page,action:action,
-  human_id:boot.human_id,attest:true,session_id:sessionId},body||{});
+  human_id:boot.human_id,session_id:sessionId},body||{});
+ if(action!=='confirm_meaning')payload.attest=true;
  return fetch('/_board/labeling/act',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
   .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok){throw new Error(j.err||('HTTP '+r.status));}return j;});});
 }
 /* ── G0: confirm meaning ─────────────────────────────────── */
 var attest=$('[data-confirm-attest]'),confirmBtn=$('[data-confirm-meaning]'),confirmMsg=$('[data-confirm-msg]');
 if(attest&&confirmBtn){attest.addEventListener('change',function(){confirmBtn.disabled=!attest.checked;});
- confirmBtn.addEventListener('click',function(){confirmBtn.disabled=true;confirmMsg.textContent='Saving…';confirmMsg.className='msg';
-  act('confirm_meaning',{}).then(function(){confirmMsg.textContent='Confirmed. Opening round 1…';
+ confirmBtn.addEventListener('click',function(){
+  if(!window.confirm('This records your caller attestation as '+boot.human_id+'. The Board does not verify your identity. Continue?'))return;
+  confirmBtn.disabled=true;confirmMsg.textContent='Saving…';confirmMsg.className='msg';
+  act('confirm_meaning',{attest:true}).then(function(){confirmMsg.textContent='Confirmed. Opening round 1…';
    var u=new URL(location.href);u.searchParams.set('space','labeling');u.searchParams.set('view','rounds');location.href=u.toString();})
   .catch(function(e){confirmMsg.textContent=e.message;confirmMsg.className='msg err';confirmBtn.disabled=false;});});}
 /* ── Label: start a round; a round in progress is the server's table, labeled in chat ── */
@@ -2995,13 +3002,15 @@ class LabelingMixin:
     def labeling_act(self, p):
         """The only write door: every action re-checks authority in the engine.
 
-        Returns (status_code, payload).  The browser sends the identified
-        human's id with an explicit attestation; the engine refuses any id
-        that is not the job's one semantic authority, any HOLD job, any state
-        the method forbids, and any sealed or non-batch item.
+        ``human_id`` and ``attest`` are caller assertions, not authenticated
+        identity evidence. The UI requires an explicit confirmation gesture;
+        deployments that need identity assurance must add an authenticated
+        principal provider before treating this receipt as verified.
         """
         origin = self.headers.get("Origin") or ""
         host = self.headers.get("Host") or ""
+        if p.get("action") == "confirm_meaning" and not origin:
+            return 403, {"ok": False, "err": "meaning confirmation requires the Board origin"}
         if origin and urlparse(origin).netloc != host:
             return 403, {"ok": False, "err": "cross-origin labeling write refused"}
         got = self.target(p)
@@ -3014,7 +3023,7 @@ class LabelingMixin:
                                     p.get("page") or "", board_dir):
             return 400, {"ok": False, "err": "missing or mismatched generated Page URL"}
         if p.get("attest") is not True:
-            return 400, {"ok": False, "err": "labeling writes need the human's attestation"}
+            return 400, {"ok": False, "err": "labeling writes need an explicit caller attestation"}
         root, _ = _labeling_lane(page_src)
         if not (root / "gates" / "p0-contract" / "receipt.json").is_file():
             return 409, {"ok": False, "err": "this Page has no canonical labeling job"}
@@ -3031,6 +3040,7 @@ class LabelingMixin:
                 result = jobmod.confirm_meaning(
                     job_root=root, page_file=page_file, human_id=human,
                     confirmed_at=cal.now_iso(), accept_current_schema=True,
+                    attest_as_human=p.get("attest") is True,
                     channel="board labeling screen")
             elif action == "release_round":
                 result = cal.release_round(root, human_id=human, n=int(p.get("n") or 0) or None,

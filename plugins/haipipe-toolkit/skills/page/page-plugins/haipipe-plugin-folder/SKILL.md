@@ -7,8 +7,8 @@ description: >-
   Trigger: folder plugin, folder tab, what does this page hold, stale plugin,
   folder inventory, /haipipe-plugin-folder.
 metadata:
-  version: "0.4.2"
-  last_updated: "2026-09-05"
+  version: "0.4.3"
+  last_updated: "2026-09-20"
 ---
 # /haipipe-plugin-folder · the folder is the truth
 
@@ -24,8 +24,11 @@ A status has no artifact: written to disk it starts aging the moment it lands, a
 ## ⚖️ The one law · staleness is claimed narrowly
 
 Only a DERIVED lane — `delivery/latex` `delivery/word` `outline/evidence/bibex`
-`delivery/slide` `outline/evidence/display` — can be ⚠️ STALE, and it is stale
-exactly when its newest file predates the page's `.md`.
+`delivery/slide` and the legacy `outline/evidence/display` migration folder —
+can be ⚠️ STALE, exactly when its newest file predates the page's `.md`.
+Current Page DISPLAY units live under typed `results/<re-run>/payload/<unit>/`
+and appear in Outline's Evidence Space; their render and human-acceptance gates
+follow the DISPLAY Result contract, not this retired folder row.
 Current source material (`studio/draw` `studio/chat` `outline/skill`) is often
 older than the prose and that is HEALTHY: it gets an age, never a warning. An
 existing Page-local `meeting/` is shown the same way only as legacy input;
@@ -34,7 +37,7 @@ Widening the flag to source folders would train readers to ignore it, which is t
 
 ## 📡 Surface · explicit lanes, live on every open
 
-The 📂 tab follows 🧭 Outline, 🎨 Studio, ⚙️ Runs, and 📤 Delivery. This keeps
+The 📂 tab follows 📤 Delivery in the applicable plugin registry. Run Space is inside Outline. This keeps
 the paper workflow first and the supporting inventory afterward; an explicit
 registry `order` makes the sequence independent of asset filenames. Folder
 still tells a reader "no deck" from "deck built, tab unopened".

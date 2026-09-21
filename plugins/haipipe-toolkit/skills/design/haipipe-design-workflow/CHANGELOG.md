@@ -1,6 +1,17 @@
 # haipipe-design-workflow · version history
 
-0.4.0 current · 260918 (version unchanged at 0.4.0)
+0.4.0 current · 260920 (version unchanged at 0.4.0)
+- Define Workflow first as a list of actual Runs. Commission/Generate/Verify
+  are current Run types; route graphs describe relationships and Delivery is
+  the read-only projection after independent Verify passes.
+- Count C Commission + N Generate + J Verify records. Holds remain immutable
+  when a later Commission releases the Item; at most one release is allowed.
+- Distinguish blocked repairs from human holds, completed valid reviews from
+  invalid review retries, and inherited config fields from mode/review_mode.
+- Read current render evidence from Results, preserve supported historical
+  Adopt ids, and align all venue instructions with the same completion boundary.
+
+0.4.0 · 260918 (version unchanged at 0.4.0)
 - Routing says what the code does: a draft that fails the records check goes
   back to Generate (the person queues a revise); a review that fails it,
   unresolved checks included, goes back to Verify (the person queues the

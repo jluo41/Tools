@@ -88,9 +88,9 @@ The lane and the placeholder are the same fact in two notations: a board lane
 holds what a paper placeholder is waiting for. `cli/holes.py` audits both, and
 `ref/holes.md` carries the discipline.
 
-The humanizer's candidate lane is a second notation for the same computation
-(`~~removed~~` / `**inserted**` inside a `> Note:`), which is why it calls
-`cli/wdiff.py` rather than keeping its own diff.
+Legacy Paper candidates use a second notation for the same computation
+(`~~removed~~` / `**inserted**` inside a `> Note:`). Page interactive candidates
+instead use clean Before/After records and the existing presenter.
 
 `cli/wdiff.py` EMITS both notations, and `--host` selects which:
 
@@ -98,6 +98,14 @@ The humanizer's candidate lane is a second notation for the same computation
 --host board   (default)  > ✎ ~old~ *new* · WHO · YYMMDD HHMM
 --host paper              > Note: ~~old~~ **new** · WHO · WHEN
 ```
+
+`check` validates Board `✎` records only, not Paper `> Note:` candidates.
+It reports record problems, not the number of Paper records checked; zero
+problems cannot certify a Note. A normal typed `> Note:` is not necessarily a
+candidate diff. Preserve the generator for compatibility, pass an actual
+author label/date, and report legacy Paper output as generated but not
+mechanically validated by this checker. Do not use `apply` for an
+original-preserving candidate request.
 
 Until 0.5.0 it emitted the board notation only, and `haipipe-paper-revise`
 instructed its caller to double the tildes by hand. The computation was in one

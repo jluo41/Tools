@@ -16,22 +16,14 @@ import json
 import os
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-
-def _repo_root() -> Path:
-    here = Path(__file__).resolve()
-    for candidate in (Path.cwd(), *here.parents):
-        if (candidate / "pyproject.toml").is_file() and (candidate / "code").is_dir():
-            return candidate.resolve()
-    raise RuntimeError("Could not find the Physician-SPACE repository root")
+UTC = timezone.utc
 
 
-ROOT = _repo_root()
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+ROOT = Path.cwd().resolve()
 
 
 SCHEMA = "haipipe.agent-sdk-shared-receipt/v1"

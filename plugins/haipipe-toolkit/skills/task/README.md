@@ -1,23 +1,14 @@
 # task
 
-`task/` is the HAI-Pipe execution and insight family. A task is a runnable work
-unit; the Task/Insights Board turns its results and Discovery evidence into
-consumer-neutral DIKW Pages that Paper and Application can reuse through
-Supporting and local Runs.
+`task/` owns executable Task Folders and their Plan → Build → Execute → Report lifecycle.
+The hierarchy is `tasks/bNN_<block>/jNN_<job>/tNN_<task>` with native `rNN` Runs.
+A Workflow is a list of Runs: `run_specs` defines them, routes form the execution graph,
+and reports bind actual Run Instances to definitions and durable receipts.
+Internal Steps, review gates, and the four lifecycle commands do not allocate Runs.
 
-## Two surfaces, one family
-
-```text
-EXECUTION                         KNOWLEDGE
-Task Folder                      Task / Insights Board
-Plan → Build → Execute → Report  Data → Information → Knowledge → Wisdom
-folder-kind: task                page-type: insight
-```
-
-Execution answers whether the implementation and run are right. An Insight Page
-answers what the evidence means and how far that meaning can travel. Consumers
-read settled Reusable Findings; they never read `results/` directly. RF is
-consumer-neutral evidence, not a signed Application Design Handoff.
+Insight and Design are independent families under `skills/insight/` and `skills/design/`.
+The Task Insight route is a compatibility handoff to the Insight owner.
+Consumers can bind exact Task Results or settled Insight findings as their contracts allow.
 
 ## Mental Model
 
@@ -35,7 +26,7 @@ Chinese mnemonic:
 
 | Stage | Chinese | Meaning |
 | --- | --- | --- |
-| Plan | 规 / 规划 | Define the objective, IPO contract, dependencies, risks, and validation gates. |
+| Plan | 规 / 规划 | Define bounded Run Specs, dependencies, gates, routes, and Result receipts. |
 | Build | 建 / 构建 | Prepare the runnable object: configs, scripts, refs, runners, and environment. |
 | Execute | 行 / 执行 | Run the task or record the run without changing the task definition. |
 | Report | 报 / 报告 | Make the result inspectable: metrics, artifacts, run status, caveats, and next steps. |
@@ -48,7 +39,7 @@ domain uses the same `规建行报` lifecycle, but owns a different IPO contract
 Chinese mnemonic:
 
 ```text
-数 算 端 体 训 评 图 统 代
+数 算 端 体 训 评 图 统 代 页
 ```
 
 | Folder | Domain | Chinese | Scope |
@@ -59,9 +50,10 @@ Chinese mnemonic:
 | `4_individual` | Individual | 体 / 个体 | Subject-level or patient-level inference, views, and reports. |
 | `5_fit` | Fit | 训 / 训练 | Real model training, sweeps, and checkpoints. |
 | `6_eval` | Eval | 评 / 评估 | Metrics, diagnostics, and statistical analysis. |
-| `7_display` | Display | 图 / 图表 | Publication figures, tables, and source data. |
+| `7_display` | Display | 图 / 图表 | Prepare display source data and provenance; final visual artifacts belong to the Display family. |
 | `8_stata` | Stata | 统 / 统计 | Stata-engine work, including CMS/case/data/reg stages. |
 | `9_agent` | Agent | 代 / 代理 | LLM-agent compute that produces task evidence. |
+| `10_page` | Page service | 页 / 页面 | Produce reusable values and Supporting Run Results for a Page. |
 
 The number is a permanent domain id, not a full pipeline order. New domains are
 appended and existing ids are not renumbered.
@@ -90,13 +82,12 @@ Run Results, Discovery Pages, or prior Insight Pages. It remains
 consumer-neutral. Each item owns a question, local ticket, execution versions,
 and DIKW/RF Result; its workflow and generated item table live with the skill.
 Shared Task recipes accept instance-specific frozen inputs and output scopes.
-Paper and Application may bind exact instance/item/version/RF evidence, but neither downstream
-stake is written into the Insight Page; an Application must turn it into its
-own contextual, signed I5 handoff before Design may use it.
+Downstream consumers bind exact Run/Result evidence and own its contextual use.
+Task does not write consumer stakes or claim that their Page content is accepted.
 
 ## Boundary (self-contained by design)
 
-Tasks execute internal work: a task ends at Report, having produced `results/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer tracks no consumers, names none, and its working docs (SKILL/ref/fn) never route upward.
+Tasks execute internal work: a task ends at Report, having produced `results/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer keeps consumer claims out of execution inputs and delegates interpretation to the owning family.
 
 Self-contained does not mean opaque. Questions resolve through the normal
 Run/Result contract: reuse an existing full Run id when it answers the scope;
@@ -116,7 +107,7 @@ discovery  = inspect outside evidence (literature, prior art)
 📄 the knowledge wall — Task/Insights Board interprets, without consumer stake
 insight    = D → I → K → W → RF, settled once and reused as evidence
 
-📦 the consumers — they bind RF and own every contextual consequence
-paper      = academic expression through Opening → Narrative → Section
-application= I1 registration → signed I5 bridge → Design Commission → Generate → Verify → Adopt
+📦 consumers bind evidence and own contextual decisions
+paper      = academic expression and release
+design     = commissioned design work and verification
 ```

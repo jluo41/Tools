@@ -30,22 +30,32 @@ X carries NO index: letters sort after digits, so `X-cross/` seats itself last i
 1. **Page id = partition letter + rung letter + NN.** `BK01` reads: partition B, Knowledge, first page. The engine's `[A-Z]{1,2}\d` id grammar already parses this; no engine change exists or is needed. Within a group the rung letters D, I, K, W sort in climbing order, so `ls` reads as the ladder. Reserved letters: F names the template and X the cross group; Q, S and M may never name a partition, because they collide with question ids (a partition-Q data page would be `QD01`), the engine's S page class, and the MT head group.
 2. **F is the template.** Every partition group mirrors `1-F-full/` slug for slug: `FD02-funnel-counts` begets `BD02-funnel-counts`. The mirror is checkable by set-diff (`ls */?D01-*` style); a page missing from a partition group must be a registered refusal on the owning MT register, written `🚫` with a reason, never a silent gap.
 3. **X is the only group allowed to compare.** A per-partition page may not carry a cross-partition sentence; the contrast is a new derivation and belongs to an X Information page, the heterogeneity claim to an X Knowledge page. X holds no data of its own and mirrors nothing.
-4. **MT00 is the partition register.** One division lists every partition: letter, name, filter, group folder; the X group is listed beside them with no filter, so the register doubles as the complete group map. One division states the shared-threshold rule: thresholds live in ONE file per task GROUP that the task layer owns (`tasks/<group>/_thresholds.yaml`), every partition config in that group references it, and no page or config may restate a value from it. Until the file exists, every page citing it marks it PENDING. No other page may define a partition or a threshold.
-5. **A partition is a CONFIG, never a code change.** The task layer is untouched: one task folder is one function, one partition is one `configs/<partition>.yaml`, and the board's `store:` routes results exactly as `haipipe-task` already rules. Adding a partition is one group folder inserted before X, one MT00 register row, and one config per task folder consulted. The template partition F needs a config too (`full.yaml`, no filter). When a cut already has a config on disk, ADOPT that name rather than minting a second name for the same cut; and check the adopted yaml's `store:` key, because a manual re-run follows the yaml while a dispatching probe's `RESULT_STORE` overrides it, so a stale key sends a manual run into another board's bank.
-6. **Question ids are partition-free.** A question is written once on its register and asked per partition; the register's Queue carries one COLUMN per partition, plus an X column whenever the register holds an X-routed question, and X is the cross group, not a partition (see `haipipe-insight-question` 0.2.1). `QK1` spans all partitions; there is no `QK1-B`.
+4. **MT00 is the partition register.** List letter, name, filter, group folder, and config; list X with no filter. Shared thresholds belong to the Task Job, for example `tasks/<block>/<job>/src/thresholds.yaml`. Every consulted Task config references that one source; no Page or config restates its values. Until the file exists, dependent work is PENDING.
+5. **A partition is a config over shared code.** Current Tasks live at `tasks/<block>/<job>/<task>/`; partition inputs use `scripts/config/<partition>.yaml`, with native Tickets under `runs/`. F also needs an unfiltered config, commonly `full.yaml`. Adopt an existing name for the same cut. Resolve output through the Task owner's Job `src/config-defaults.yaml` `store:` binding and native runtime's recorded effective output. A Board's `store:` describes its store; it does not override the Task resolver. A stale config-local `store:` or the viewer process's `RESULT_STORE` cannot establish current output identity. Explicit per-invocation overrides remain valid only when recorded in the native Ticket/receipt and indexed by the Insight Runtime. Default results mirror `<store>/<block>/<job>/<task>/results/<run>/runtime.yaml`; preserve any owner's declared version dialect. Discovery prefers exact native Runtime references, then these current config/Job defaults. Historical `tasks/<group>/<task>/configs/` layouts and Probe receipts remain read-only compatibility inputs.
+6. **Question ids are partition-free.** A question is written once on its register and asked per partition; the register's Queue carries one COLUMN per partition, plus an X column whenever the register holds an X-routed question, and X is the cross group, not a partition (see `haipipe-insight-question`). `QK1` spans all partitions; there is no `QK1-B`.
 
 ## The pooling verdict conditions every W page
 
-A partition-major board exists to answer one question: one story or several. That answer is a Knowledge page in X, conventionally `XK02-pooling-verdict`, and every partition W page is CONDITIONED on it:
+A partition-major board asks whether the compared partitions support common counsel or require separate counsel. The answer is a Knowledge page in X, conventionally `XK02-pooling-verdict`; every partition W page is conditioned on its current outcome. The verdict cites the shared threshold source and version fixed before the comparison. A non-significant difference alone does not establish POOL. If the comparison is complete but cannot support either conclusion, use `UNDETERMINED`; missing inputs or unfinished comparisons remain pending and do not create a verdict.
 
 ```text
 XK02 verdict   consequence
 ────────────────────────────────────────────────────────────────────
 POOL           every non-template W page DEFERS, explicitly and by id,
                to the template partition's W page, which carries the board's
-               one counsel and never defers
-SPLIT          the differing partition's W page may counsel its own action,
-               and XK02 becomes the birth certificate a child board must cite
+               one counsel and never defers; no new signature is required
+SPLIT          eligible partition W pages may counsel within their own
+               evidenced boundaries; XK02 is necessary but not sufficient to
+               open a child board, which also needs its own registered consumer
+UNDETERMINED   no non-template W may defer as though POOL were proved or issue
+               partition-specific counsel as though SPLIT were proved; the
+               template W may counsel only for the full-extract scope and must
+               state that subgroup applicability is unresolved. An unanswered
+               partition W may close as `🟡 <page> final` only when it records
+               why the answer cannot close and what evidence or decision could
+               resolve it. That licensed non-answer has no GI5 handoff, no
+               signature, and no Design binding; GI6 records the partial exit.
+               No child board may be opened from this outcome
 ```
 
 Execution order across groups is the Insight workflow's rule
@@ -56,7 +66,7 @@ A child InsightBoard for one partition may be opened ONLY by citing a SPLIT verd
 ## What this layout does NOT change
 
 ```text
-Folder phases   FD01 is I2 Data, XK01 is I4 Knowledge; legacy runtime pages
+Folder kinds   FD01 is Data, XK01 is Knowledge; legacy runtime pages
                 may retain page-type: data/knowledge, but no partition kind exists
 board.md        no new key; store:, spine:, close: as everywhere else
 run / result    the rung's rules apply unchanged inside every partition group

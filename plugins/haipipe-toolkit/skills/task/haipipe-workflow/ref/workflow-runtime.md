@@ -1,10 +1,14 @@
 # Workflow Runtime Contract
 
-This reference applies the root-level
-[`WORKFLOW-DESIGN-PRINCIPLE.md`](../../../../../../../WORKFLOW-DESIGN-PRINCIPLE.md)
+This reference applies the neutral
+[`haipipe-run` contract](../../../run/haipipe-run/SKILL.md)
 to executable HAI workflows.
 
 ## Canonical model
+
+A Workflow is a list of Runs: the definition lists planned Specs, and the
+runtime lists actual native Instances. The dependency/Route graph connects
+those entries; it does not force serial execution or allocate future ids.
 
 ```text
 Workflow Definition
@@ -35,6 +39,13 @@ additional Level-4 Run and must never be counted as one of its child Runs.
 - the Runtime indexes and projects those Run-owned records;
 - a gate evaluation becomes a separate Run only when it has its own bounded
   target, Ticket → Result closure, and reusable receipt.
+
+Resource/controller updates without independent Run contracts may be recorded
+alongside the Run inventory as `resource_controls`, with an owning resource,
+assertion, evidence and control-receipt address. They never receive fabricated
+`run_id` or `run_receipt` values. The Runtime's `control` index continues to
+reference only actual Run-owned gates and routes. A control-only execution
+may contain no allocated Runs and must report that fact explicitly.
 
 ## Runtime envelope
 
@@ -149,6 +160,8 @@ report.yaml     structured projection of the Runtime and child Runs
 runtime.yaml    per-Run receipt; an aggregate Runtime may reference it
 ```
 
-When a low-level adapter still serializes a `phase` field, treat it only as a
-progress/dispatch label. Never allocate a duplicate Run from it. Design's
+When a low-level adapter still serializes a `phase` field, treat it only as an
+adapter dispatch label, never a domain object or resource identity. Current
+Insight status uses Run ids and dependencies. Never allocate a duplicate Run
+from an adapter field. Design's
 clean-break contract rejects previous phase-shaped Design grammar entirely.

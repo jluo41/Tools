@@ -8,8 +8,8 @@ description: >-
   verification; it does not judge identification credibility or journal fit.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.1"
-  last_updated: "2026-09-08"
+  version: "0.1.4"
+  last_updated: "2026-09-20"
   capability_family: "2_test"
 ---
 
@@ -20,6 +20,10 @@ Load `haipipe-ideation` and the target Idea Card. For durable work, load
 must resolve to a completed Discovery Result, its one-entry Bib, and its
 runtime verification receipt. This skill owns the novelty question and
 adversarial comparison. Discovery owns finding and reading sources.
+
+For a durable commission, use the owner-bound Run Specs in
+`../../haipipe-ideation/references/workflow-runs.md`. This capability's checks
+are internal Steps unless separately commissioned under that contract.
 
 ## 1. Extract the claims
 
@@ -101,6 +105,41 @@ reviewed to the available depth, and a final additional query/citation pass
 finds no new candidate that changes the comparison. A user-set resource limit
 may stop earlier, but the status remains `inconclusive` or `unverified`.
 
+### Confidence anchors and abstention
+
+`confidence` is a claim-level judgment about how well the cited, admitted
+literature evidence supports that row's `verdict` within its recorded search
+boundary. Its evidence object is the claim's query/channel coverage, closest
+Discovery Subjects/Results and actual reading depth, plus the four-part delta
+comparison. It does not measure the probability that a claim is novel, the
+quality or credibility of its research design, or its eventual impact. Search
+volume, model certainty, memory, snippets, and citation counts alone do not
+raise confidence. These are qualitative rubric anchors, not probability
+estimates; this revision does not claim empirical calibration against
+independent reviewer labels or later novelty outcomes.
+
+| Label | Evidence anchor and example |
+|---|---|
+| `high` | Required search families/channels and final citation pass are complete; every plausible closest work that could change the reading is understood at full-text depth, or the complete search produced no plausible antecedent; each material delta is resolved without conflict. Example: the closest full-text study shares the topic but establishes a different mechanism and outcome, while the candidate's claim-level delta is explicit. Compared with `medium`, no bounded evidence gap remains that could qualify the reading. |
+| `medium` | Direct, claim-relevant evidence supports the reading and the closest work is understood, with a named bounded limitation that does not leave a material alternative unresolved. Example: a secondary adjacent work is available only as an abstract, but the full-text closest work resolves the central claim. Compared with `high`, a non-decisive coverage/depth limitation remains. |
+| `low` | Some admitted, claim-relevant evidence exists, but incomplete coverage, a plausible unresolved closest work, or a material conflict prevents a stable reading. Example: only abstracts were accessible for a work that may establish the mechanism. Compared with `medium`, the gap could change the claim-level verdict; keep the status `inconclusive` or `unverified` and route the missing evidence. |
+| `none` | Neither claim-relevant admitted sources nor completed search-coverage evidence supports a directional reading. Example: the only leads are model memory, snippets, or unadmitted titles. Compared with `low`, there is no usable direct basis even for a tentative reading; this is abstention, not a low-strength verdict. |
+
+Use `confidence: none` only with `inconclusive` or `unverified`; never attach
+`none` to `novel`, `partial`, or `preempted`. If a missing source, required
+search pass, inaccessible full text, or reviewer conflict could change the
+verdict, abstain: use `inconclusive` when the required search found relevant
+material but access/depth/conflict prevents reconciliation, and `unverified`
+when required search or review remains incomplete. Keep confidence `low` when
+some direct evidence exists, or `none` when it does not. Do not convert lack of
+prior-art findings into high confidence when the search boundary is incomplete.
+Pair `low` only with `inconclusive` or `unverified`; a settled directional
+verdict needs the `medium` or `high` evidence anchor.
+If reviewers remain divided after review, preserve each raw assessment and
+follow the shared resolution protocol; an `undetermined` resolution maps to
+`inconclusive` with `confidence: none`. Never convert novelty confidence to
+identification credibility or another field's label.
+
 ## Output receipt
 
 Update `core_claims[].novelty_check` and write
@@ -110,6 +149,13 @@ Update `core_claims[].novelty_check` and write
 version: 1
 kind: idea-novelty-check
 idea_id: i01
+assessment_binding:
+  mode: owning_run | direct
+  assessment_id: "unique id in the owning Task Result or direct call"
+  owning_run: "bNN.jNN.tNN/rNN | null"
+  evaluator: null  # direct mode: {actor: person/ID or agent/ID, model_or_build: ...}
+  criterion: null  # direct mode: {id: haipipe-novelty-check, version: "0.1.4", owner: haipipe-novelty-check}
+  input: null      # direct mode: {subject_hash: "sha256:...", manifest_sha256: "sha256:..."}
 scope:
   searched_through: "YYYY-MM-DD"
   evidence_boundary: "local-only, full Discovery, or another explicit limit"
@@ -147,25 +193,47 @@ claims:
     verdict: novel | partial | preempted | inconclusive | unverified
     confidence: high | medium | low | none
     limitation: "what coverage/depth prevents a stronger reading"
-limits: ["run-wide limit"]
+limits: ["assessment-wide limit"]
 created_at: "ISO-8601"
 ```
+
+Each evaluator writes a new immutable raw receipt with its own
+`assessment_binding`. For `owning_run`, the evaluator, rubric and input hashes
+are inherited through `owning_run` + `assessment_id` from the Task Result. For
+`direct`, fill the three direct-mode fields from the shared contract in
+`references/receipts.md`. If multiple reviewers assess the same frozen inputs,
+retain every raw file and write a same-shape resolution receipt with
+`review_resolution`, including when they agree; never edit a
+reviewer's original or replace a conflicting claim with a vote. An unresolved
+claim stays `inconclusive`, confidence `none`, and HOLD. The Idea Card's
+`receipt` points to the current resolution receipt when one exists.
 
 Use `planned-not-run` when a query/channel was required and formulated but the
 commission explicitly prohibited execution; use `omitted` only when the
 frozen scope did not require it. `bounded` means some required coverage was not
 executed or not available, while `blocked` means no meaningful comparison
-could be performed. An all-context/no-search run therefore remains
+could be performed. An all-context/no-search assessment therefore remains
 `unverified`; it may still preserve planned queries and adversarial reasoning.
 
 Every claim row projects into the matching Idea Card novelty block, including
-the receipt path. The Idea Card stores the conclusion, not copied paper notes.
+the receipt path and unchanged evidence_depth. New cards use
+none/metadata/abstract/full-text; legacy metadata-only reads as metadata.
+No source read means none. The Idea Card stores the conclusion, not copied paper notes.
 
 Novelty is not identification credibility. Report a scientifically new but
 poorly identified Idea as novel with a separate pressure-test risk; never
 quietly reduce novelty to express design doubt.
 
 ## One-off mode
+
+Follow the umbrella skill's one-off source route: reuse verified inputs,
+otherwise use Discovery one-off search/read within the request; return links,
+access dates and reading depth inline. Keep no-search/read-only restrictions.
+Unavailable evidence means provisional/HOLD. Inline work creates no durable
+portfolio or source bank unless the user asks to retain it.
+Include a complete direct-mode `assessment_binding` in the inline result. If
+more than one reviewer is used, retain each raw judgment inline and return the
+shared `review_resolution` block; unresolved conflict remains HOLD.
 
 Return the same claim table, search coverage, closest-work comparison,
 rejection/defense, verdict, and limitations inline. Cite direct sources. If

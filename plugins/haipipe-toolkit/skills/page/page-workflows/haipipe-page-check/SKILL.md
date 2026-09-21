@@ -9,8 +9,8 @@ description: >-
   Trigger: page check, CHECK phase, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.9.0"
-  last_updated: "2026-09-15"
+  version: "0.10.2"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,7 +25,7 @@ haipipe-page
   → Folder-owning workflow or canonical family skill
   → exact Page Face owner
   → haipipe-sentence, when findings use sentence lanes
-  → family checker, when the Page belongs to paper or application
+  → the current Folder owner checker (Paper, Insight, Design, or another resolved owner)
 ```
 
 What is CHECK's alone: it is the Page Workflow Runtime's independent whole-Page
@@ -33,6 +33,9 @@ completion gate, and the only authority forbidden to change what it judges.
 The `CHECK` label is a compatibility dispatch; its risk is becoming a hidden
 revision, so any fix runs under another Run Spec and returns for a fresh look.
 The Page Face owner supplies the closing rule and whether a person must rule.
+
+At adoption, build, or release, apply `../../haipipe-page/ref/release-decisions.md`
+for profile precedence and reuse of existing human decisions.
 
 ## 🧭 Run Workflow placement
 
@@ -136,33 +139,40 @@ When the deliverable must remain clean, use the Page Face owner's declared ledge
 
 A Page that ships a PDF or a docx is judged on what a person opens. Reading the `.md` and calling it checked is how five declared display units reached LaTeX as two without anyone being told (JL 260816).
 
-`haipipe-board/src/page_evidence.py` computes these deterministically at step ① and `cli/check.py` reports them.
+`haipipe-board/src/page_evidence.py` reads the current typed DISPLAY Result and its `payload.unit`, computes these deterministically at step ①, and `cli/check.py` reports them. It reads the retired folder lane only for Pages with no current DISPLAY Result.
 **Rendered and unrendered are different defects with different fixes**: a unit can print correctly and still trace to nothing, and telling its author to re-run a renderer that already worked is how a checker loses its reader.
 
 
 ```text
 finding                          fires when                              route
 ──────────────────────────────────────────────────────────────────────────────────
-display-declared-no-claim        a unit folder with no `claim:` row in    CONTENT
-                                 its README: litter, not a proposal
-display-declared-not-rendered    a unit folder exists with no winning     CONTENT
+display-result-unit-unresolved   a current DISPLAY Result has an invalid  EVIDENCE
+                                 pointer or is ready without payload.unit
+display-label-unbound            prose uses a D_ label absent from the       EVIDENCE
+                                 selected current DISPLAY Result labels
+display-declared-no-claim        a Result payload unit has no `claim:`    CONTENT
+                                 row in its README: litter, not a proposal
+display-declared-not-rendered    a Result payload unit exists with no     CONTENT
                                  asset and no preview.pdf; the finding
                                  NAMES the first missing step
                                  (① intake · ② recipe · ② asset · ④ preview)
 display-intake-unfrozen          the unit RENDERED but intake/inputs/     EVIDENCE
                                  holds no frozen snapshot, so a printed
                                  number traces back to nothing
-display-cited-not-embedded       the prose cites the unit but latex/      CONTENT
-                                 <stem>.tex never inputs it
-display-rendered-not-cited       the unit rendered and no sentence names   CONTENT
-                                 it, so neither projection places it
+display-cited-not-embedded       the prose cites its bound D_ label or  CONTENT
+                                 manuscript \ref, but Delivery omits it
+display-rendered-not-cited       the unit rendered and no sentence cites  CONTENT
+                                 a Result label or manuscript \ref
 display-accept-stale             intake/ changed after `accepted: ✅`,    EVIDENCE
                                  so the tick binds a render that is gone
-latex-untitled                   latex/<stem>.tex carries no title block  CONTENT
-                                 built from the Page's own H1
-projection-stale                 latex/ or word/ is older than the        CONTENT
-                                 Page source it projects
+latex-untitled                   delivery/latex/<stem>.tex carries no     CONTENT
+                                 title block built from the Page's H1
+projection-stale                 delivery/latex/ or delivery/word/ is     CONTENT
+                                 older than the Page source it projects
 ```
+
+display-label-unbound is a warning while the Page is being drafted. Board
+Delivery requires every cited D_ token to bind to a selected current Result.
 
 **Folder count is never completed work.** The three counts are independent and CHECK reads all three: **declared** means the unit folder exists, **rendered** means a winning asset and `preview.pdf` both exist, **accepted** means a person ticked the README. A version whose declared count exceeds its rendered count does not pass.
 
@@ -200,19 +210,19 @@ It may close an answered decision row according to the base contract, but it may
 The gate exchange is durable input to whichever phase restarts.
 The restarted phase reads each finding together with its reply rather than receiving a summary stripped of the decision context.
 
-## ✋ The gate is ACCEPT-BIASED, and that changes only what is SHOWN
+## ✋ The gate is EVIDENCE-LED, and that changes only what is SHOWN
 
-JL 260818, in his own words: "human should be more likely to accept it." A gate's
-real cost is not the tick, it is the SEARCH a person performs before deciding
-whether to write it. Moving that search onto the machine is the only lever that
-makes yes the likely answer without touching the tick itself.
+The packet gathers the evidence a person needs to decide, including failed
+checks, unresolved disagreements, and limitations. It reduces the search needed
+for review without steering acceptance. Accept, request changes, reject, and
+pause remain valid recorded decisions.
 
 ```text
-✅ WHAT THE BIAS CHANGES · the presentation
+✅ WHAT THE PACKET PROVIDES · the presentation
    present a gate only when `mechanical_errors` for that page is ZERO, so
    nobody is asked to accept a display that never rendered or a PDF with
    no title block
-   the gate is a CONFIRMATION, not an inspection
+   the gate presents evidence for an informed review and decision
 
 ⛔ WHAT IT MAY NEVER CHANGE · the writer
    silence is not consent
@@ -250,10 +260,13 @@ A further human-reserved write is an ORDER rather than a field: the row rank
 in `outline/skill/`, whose law is "the scan seeds, the person ranks" and where
 a refresh never edits, reorders, or removes a row.
 
-They live in three controller dispatches and N files. A read-only collecting surface exists at
-`haipipe-board/live/outline.py`, which shows `approved:`, `verified`, `read` and
-`accepted:` in one card and omits the RULING; it reports no `<n> of <n>` count
-and cannot write. The joined owed ledger is `cli/pagephase.py --owed`.
+Collect required gates across the selected version's plan, Evidence Results,
+Run acceptance, delivery receipts, and owner policy. The response must show
+`settled / required`, the owner, evidence, recorded decision, and next action
+for every required gate, including any owner RULING. `cli/pagephase.py --owed`
+is a collecting input; a partial UI card is not the full acceptance packet.
+Apply `../../haipipe-page/ref/release-decisions.md` to reuse prior applicable
+acceptance. Mechanical checks never supply a person's decision.
 
 ## 🔀 CHECK is not necessarily last
 
@@ -302,22 +315,24 @@ durable passed evidence routes to HOLD.
 ## 📏 The rubric · four axes, four verdicts, one row per unit
 
 Requirements resolve in the order `haipipe-page` §🔍 states (base and
-template → Page Face owner → current Page phase → the page's authored W records in
+template → Page Face owner → current Run Spec owner → the page's authored W records in
 `outline/<stem>-requirement.md` and Stage Contract → the division purpose
 and each paragraph's job line); a conflict between two sources is reported
 and that criterion is not judged. A non-Section compatibility page may still
 carry `## Writing Style` in its source.
 
-```text
-axis          question                                                            judge
-─────────────────────────────────────────────────────────────────────────────────────────────
-Mechanics     is the required structure present, ordered, addressable, consistent?  check.py
-Function      does this section answer the reader question the contract assigns?    semantic reviewer
-Evidence      can every factual compliance claim point to visible text, an Aim's
-              Now:, or a linked artifact?                                            semantic reviewer
-Readability   can a zero-background reader understand the section without
-              supplying a missing premise?                                           fresh-context reviewer
-```
+Use the shared **Mechanics, Function, Evidence, Readability** criteria and four
+verdicts from
+`../../../writing/haipipe-writing/ref/evaluation-rubric.md`.
+That is the base prose rubric used by both Writing self-review and this
+independent CHECK. Its version/hash and the actual checked artifact/version
+belong in the receipt. Add Page-specific mechanics from check.py, required
+source/render consistency, Aims and visible artifact evidence under this
+contract. Judge Readability for the intended reader using a fresh context.
+
+Writing's self-review is input evidence, never this CHECK's verdict. Preserve
+the different-actor and immutable-version requirements above; review all
+required Page units even if a previous Writing Step checked only a local seam.
 
 The review units are every present `##` section, every direct `###` Content
 division, and every `####` paragraph whose job must be tested. Four verdicts
@@ -341,9 +356,14 @@ Decision Now row, or closes a page.
 
 ```text
 page-workflows/haipipe-page-check/
-├── SKILL.md            this phase contract
+├── SKILL.md            this CHECK judgment contract
 └── CHANGELOG.md        version history
 ```
+
+This is the CHECK judgment contract dispatched by `haipipe-page-workflow`; it
+does not define a separate Run or Workflow. The owning Page Workflow's Run
+Specs and Runtime determine whether a CHECK is a step inside an existing Run or
+a standalone Page control receipt.
 
 Owns no scripts.
 The base is `haipipe-page`; a Page Face owner may be a Run Spec owner,
@@ -354,5 +374,5 @@ The Board engine owns execution and audit; this gate owns only its judgment and 
 
 **The Board page that argues this phase** is `QPw6-check` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open, currently whether WARNINGS may block CLOSE.
 
-**This phase in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
+**This CHECK contract in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
 `../haipipe-page-workflow/ref/phase-cards.md` §CHECK. That file states every phase in the SAME fields, so one phase can be read next to another; this contract states the reasoning behind them.

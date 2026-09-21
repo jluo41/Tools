@@ -28,7 +28,7 @@ questions:
 ## The output · values.yaml, regenerated whole per run
 
 ```yaml
-# $OUTPUT_ROOT/results/t01_collect_values/r01_results_batch/values.yaml
+# $OUTPUT_ROOT/t01_collect_values/results/r01_results_batch/values.yaml
 computed: "260831 1710"
 upstream:                     # pin the JOB that reported, not the block; a folder
                               # with no workflow/report.yaml records its dir mtime instead
@@ -55,7 +55,7 @@ values:
 Block: B01_CaseData_TraitOpioid (existing)
 Job: j03_cohort_build (existing)
 Task: t04_sample_flow (new)
-Produces: $OUTPUT_ROOT/results/t04_sample_flow/r02_pooled/sample_flow.csv#final.n_physicians
+Produces: $OUTPUT_ROOT/t04_sample_flow/results/r02_pooled/sample_flow.csv#final.n_physicians
 Needs: the five per-cohort case files j03 already builds
 ```
 

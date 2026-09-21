@@ -4,13 +4,13 @@ description: >-
   Generate, revise, or verify one bounded Design Unit from a frozen caller
   ticket. Returns a Generate Result or a separate Verify Result. Use for one
   message, sequence, candidate set, or UI unit; not for Board management,
-  adoption, shipping, or measurement.
+  Commission decisions, shipping, or measurement.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-09-18"
+  last_updated: "2026-09-20"
 ---
 
-# /haipipe-design-unit · one commission, one inspectable result
+# /haipipe-design-unit · one Ticket, one inspectable Result
 
 ## Version governance
 
@@ -20,9 +20,9 @@ This Design family remains pre-1.0. Only explicit user approval may authorize
 `1.0.0` or any higher major version. Architecture size, clean breaks, and
 field-test repairs do not independently authorize a major-version jump.
 
-This is a worker like a display renderer, not a Folder/phase owner. The caller
+This is a worker like a display renderer, not a Folder owner. The caller
 owns the `rdNN_*` Run identity, input authority, release, scheduling, and
-adoption.
+Run closure and Delivery projection.
 
 Read [unit-contract.md](references/unit-contract.md) on every invocation.
 Read [modes.md](references/modes.md) only for the selected mode. The caller
@@ -41,9 +41,10 @@ a Run by itself: the caller supplies a real Ticket and runtime receipt under
 Resolve checker paths from this skill's directory, not the Design Folder.
 Validate with `python3 scripts/check_unit.py --ticket <ticket>`. Read the
 ticket's exact config and source files. Missing, stale, contradictory, or
-unapproved inputs return a named hold: say what is wrong and write no Result,
+unapproved inputs return a named hold diagnostic: say what is wrong and write no Result,
 so the caller puts the run back in the queue (a stale pin is replaced by the
-person's "Queue again"). Never discover replacement evidence,
+person's "Queue again"). This diagnostic is not a human Commission HOLD decision.
+Never discover replacement evidence,
 execute an upstream producer, or infer approval. A brief-only commission is
 legal when explicitly configured and cannot claim measured effectiveness.
 For every Ticket, read `design_intent` before creating content: it is the
@@ -56,7 +57,11 @@ commissioned bet, not evidence or permission to exceed the source boundary.
    internal drafts, and retries do not create extra Run identities.
 2. Work only in the ticket's paired Result directory. Use the frozen config's
    goal (the item's goal sentence), source roles, output contract, and
-   criteria; never invent a passing rubric after seeing the output. For
+   criteria; never invent a passing rubric after seeing the output. Every
+   semantic/visual criterion must contain the frozen observation method,
+   pass boundary, fail boundary, and not-verifiable boundary. If one is absent,
+   stop before writing the Result and return the missing criterion to the
+   Commission owner. For
    revision, read the exact base and the feedback file
    (`outline/feedback/<run>.md`) but do not edit the base.
 3. Produce the selected mode's content in service of the frozen move. Treat
@@ -65,17 +70,25 @@ commissioned bet, not evidence or permission to exceed the source boundary.
    back-fill `design_intent` after seeing the candidate.
 4. Check the actual artifacts against every criterion. Use deterministic
    checks when possible. For visual criteria inspect the actual render.
-   Semantic judgments name observable evidence; merely compiling a file or
-   writing "pass" is not verification.
+   Semantic judgments quote the observed evidence and apply the frozen
+   boundaries; merely compiling a file or writing "pass" is not verification.
+   If a complete Verify cannot decide, write an `unresolved` check with its
+   reason (`missing_context`, `criterion_ambiguous`, `criterion_conflict`, or
+   `inspection_limit`), `next_owner`, and `needed` input/decision. Never resolve
+   ambiguity by guessing, or by repeating the same review on unchanged inputs.
    A UI unit (a screen) is one self-contained `content/screen.html` with no
    script in it; every displayed patient, product, or price value carries
    `data-bind="{PLACEHOLDER}"` naming its source, and the visible text is
    sample data. Render it before judging any visual criterion:
-   `python3 scripts/render_screen.py --html <result>/content/screen.html
-   --png <folder>/delivery/render/<stem>-<ITEM>-v<N>.png --manifest
-   <folder>/delivery/render/manifest.json --item <ITEM> --candidate <run>
-   --version <N>`. The script reports what a browser sees (height against the
-   viewport, smallest tap target, weakest text contrast, weakest control
+   `python3 scripts/render_screen.py --result-dir <result>
+   --html <result>/content/screen.html --png <result>/render/screen-v<N>.png
+   --manifest <result>/render/manifest.json --item <ITEM> --candidate <run>
+   --version <N>`. Pin that manifest in `result.yaml` as `render_manifest`;
+   it binds the source artifact and picture hashes without adding a content
+   artifact or Run. Rendering requires PyYAML, Playwright's Python package, and
+   local Chrome/Chromium (`CHROME` may name its binary); it uses an explicit
+   viewport with page scripts disabled and no network. The script reports what
+   a browser sees (actual viewport, horizontal and vertical overflow, smallest tap target, weakest text contrast, weakest control
    border, buttons, links and controls) and never judges: quote its numbers,
    and look at the picture, in the check evidence. Anything the patient types
    into or chooses from is a real form control (`input`, `select`,
@@ -101,15 +114,22 @@ the caller and goes back to Generate; the person queues a revise.
 
 Read each target Generate Result's pinned result manifest and its hash-bound
 artifacts. Do not rewrite the targets, their checks, runtime, Page, or
-adoption record. The verification output directory must be disjoint from
-every target.
+decision record. The verification output directory must be disjoint from
+every target. If a fresh render is needed, read the target HTML and use
+`--result-dir <verify-result>` with PNG/manifest paths inside that Verify Result;
+`--candidate` remains the target Generate Run. Pin the local render manifest.
 
 Write a separate check for every target artifact × criterion pair, with
-`pass | fail | unresolved`, observed evidence, and actionable findings.
+`pass | fail | unresolved`, observed evidence, and actionable findings. An
+unresolved outcome is a complete judgment when every row states its reason,
+next owner, and needed input. It is not ready for Delivery. A tool/reviewer
+execution failure with no trustworthy judgment produces no Result and follows
+the Run's failed/blocked retry policy.
 A fully performed review may complete with a fail verdict, which routes to a
 revise Generate. A review with any unresolved check fails the records check:
 the caller records it failed and routes it back to Verify, and the person
-queues the review again. Neither verdict means adopted.
+queues the review again. A completed independent pass makes the exact target
+ready for Delivery; no additional human decision is required.
 
 For `review_mode: independent`, use an actual fresh reviewer context with an
 identity distinct from each producer. A changed actor label alone is not
@@ -118,7 +138,7 @@ independence. The generator's self-check cannot satisfy this request.
 ## Boundaries
 
 - The caller releases work, allocates Tickets, resolves upstream sources,
-  records runtime, manages the Page, and adopts results. This worker does none
+  records runtime, manages the Page, and projects ready Results. This worker does none
   of those invisibly.
 - Page Runs never dispatch this worker and never become its evidence. Candidate
   feedback returns through a new revise Ticket; explanatory Page edits remain

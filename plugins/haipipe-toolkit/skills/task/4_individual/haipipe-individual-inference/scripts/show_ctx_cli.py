@@ -20,9 +20,11 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--individual", required=True)
     ap.add_argument("--cgm-tail", type=int, default=None)
+    ap.add_argument("--workspace-root", help="project containing _WorkSpace")
+    ap.add_argument("--platform", choices=["databricks", "sagemaker"], default="databricks")
     args = ap.parse_args()
 
-    ctx = load_patient_ctx(args.individual, cgm_tail=args.cgm_tail)
+    ctx = load_patient_ctx(args.individual, cgm_tail=args.cgm_tail, workspace_root=args.workspace_root)
     print(json.dumps(summarize_ctx(ctx), indent=2, default=str))
 
 

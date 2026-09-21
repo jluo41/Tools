@@ -89,8 +89,9 @@ inside a Paper Run receipt. They are not Level-4 Runs themselves.
 The complete contract table is owned by
 `../../workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md`. It also
 contains the Runs Overview, Human Actions, exact skill chains, and Skill
-Coverage. The separate `haipipe-discovery-workflow` skill is retired; D1 owns
-the domain table while `haipipe-page-workflow` independently owns Page writes.
+Coverage. The separate `haipipe-discovery-workflow` skill is retired; the
+Discovery controller owns the domain Run table while `haipipe-page-workflow`
+independently owns Page writes.
 
 Expected total native Discovery Level-4 Runs is `R_discovery = N_admitted canonical Subjects`. Search
 queries, candidate rows, redirects, worker/API calls, synthesis passes, typed

@@ -53,6 +53,7 @@ from live.outline_scratch import (read_scratch, save_scratch,
                                   scratch_assets_html, scratch_control_html,
                                   scratch_flag_html, scratch_heading_attr)
 from src.evidence_labels import collect_result_labels, resolve_inline_labels
+from live.outline_prompts import RunPrompts, assets_html as prompt_assets_html
 
 # Aim state emoji (haipipe-page): current set + the older ones still parsed.
 DONE = {"✅"}
@@ -1129,16 +1130,18 @@ def _closed_page_run_paragraphs(page_src):
     return closed
 
 
-def _logic_map(page_src):
+def _logic_map(page_src, root=None):
     """Render only the authored Mermaid map at the top of Draft Space."""
     if page_src is None:
         return ""
+    prompt = RunPrompts(page_src, root).button("structure")
+    toolbar = prompt_assets_html() + '<div class="structure-prompt">' + prompt + '</div>'
     logic = page_src.parent / "outline" / (page_src.stem + "-logic.mmd")
     review_open = _mermaid_structure_review_open(page_src)
     if not logic.is_file():
         if review_open:
             expected = "outline/" + logic.name
-            return (
+            return toolbar + (
                 '<details class="card logic-card" aria-label="Mermaid">'
                 '<summary class="logic-heading"><span>Mermaid</span>'
                 '<code>%s</code></summary>'
@@ -1147,7 +1150,7 @@ def _logic_map(page_src):
                 'current plan before requesting feedback.</div></div></details>'
                 % (_e(expected), _e(expected))
             )
-        return ""
+        return toolbar
     source = logic.read_text(encoding="utf-8", errors="replace")
     # Render the authored Mermaid source first. The PNG beside it is a derived
     # export, not a second reading surface. Keep it only as a narrow fallback
@@ -1177,7 +1180,7 @@ def _logic_map(page_src):
             visual = ('<div class="logic-warning">Mermaid preview unavailable; '
                       'inspect the Markdown source above.</div>')
             warning = ''
-    return (
+    return toolbar + (
         '<details class="card logic-card" aria-label="Mermaid">'
         '<summary class="logic-heading"><span>Mermaid</span><code>%s</code></summary>'
         '<div class="logic-body">%s%s</div></details>'
@@ -2281,6 +2284,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
     outline_url = ("/_board/outline?path=%s&file=%s" % (quote(path_q), quote(file_q))
                    if path_q and file_q else "")
     txt = f.read_text(encoding="utf-8", errors="replace")
+    prompts = RunPrompts(page_src, root)
     # The Page paragraph index is global across Content divisions. The
     # historical Shape kept per-division P numbers, so translate those local
     # addresses only in this live presentation layer: source prose, Evidence
@@ -2402,7 +2406,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         rows.append(
             '<details class="paragraph-group" open data-paragraph="%s">'
             '<summary class="prow"%s><span class=addr>%s</span>'
-            '<span class=mut>%s</span>%s</summary>'
+            '<span class=mut>%s</span>%s%s</summary>'
             '<div class=paragraph-scratch>%s</div>'
             '<div class=paragraph-bullets><div class=preview-columns>'
             '<span>Bullet</span><span>Draft</span></div>%s</div>'
@@ -2413,6 +2417,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
                                     read_only=read_only),
                _e(display_paragraph),
                _e(re.sub(r"\s*·\s*S\d+\s+to\s+S\d+\s*$", "", current_paragraph_title)),
+               prompts.button("paragraph", current_paragraph),
                scratch_flag_html("paragraph", current_paragraph,
                                  scratch_latest.get(("paragraph", current_paragraph)),
                                  read_only=read_only),
@@ -2447,12 +2452,13 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             current_section = "C%d" % cn
             division_title = re.sub(r"^C\d+\s*·\s*", "", line[3:].strip())
             rows.append('<div class="row division-title"%s title="%s">'
-                        '<span class="addr sec">C%d</span><b>%s</b>%s</div>'
+                        '<span class="addr sec">C%d</span><b>%s</b>%s%s</div>'
                         '<div class=section-scratch>%s</div>'
                         % (scratch_heading_attr("section", current_section,
                                                 read_only=read_only),
                            _e(division_title), cn,
                            _e(division_title.split(" · ")[0]),
+                           prompts.button("section", current_section),
                            scratch_flag_html("section", current_section,
                                              scratch_latest.get(("section", current_section)),
                                              read_only=read_only),
@@ -3199,7 +3205,7 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
     plan = (plan_card(page_src, root, path_q, file_q, read_only=read_only,
                       minimal=True)
             if page_src is not None else "")
-    logic = _logic_map(page_src)
+    logic = _logic_map(page_src, root)
     by_div = logic + plan
 
     todo = [a for a in o["aims"] if not a["done"]]

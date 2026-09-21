@@ -10,8 +10,8 @@ description: >-
   export the complete paper, regenerate submission files, or audit whether a
   document is stale.
 metadata:
-  version: "0.7.9"
-  last_updated: "2026-09-08"
+  version: "0.8.0"
+  last_updated: "2026-09-20"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
 ---
 
@@ -34,7 +34,7 @@ The layers have different jobs:
 Paper-<Slug>/                          the board at the paper root
   ├── A1-Story/Story<Letter>-<desk>-<idea-slug>/         boundary, claims, evidence, acceptance
   │       §8 Section Narrative + haipipe:compile-order block = reading order
-  └── Ba-<desk>-Main/S-<desk>-Main-<N>-<Title>/   each Section Page owns its words (id carries §N):
+  └── Ba-<desk>-Main/S-<desk>-Main-<Title>/       stable Section identity; each Page owns its words:
         └── delivery/latex/            <page>.tex (body fragment, what the paper
                                        \inputs) · <page>-complete.tex/.pdf (the
                                        page's own standalone deliverable)
@@ -45,7 +45,7 @@ delivery/latex/                        GENERATED whole from the pages
   ├── master.tex                       one \input per page, Story compile order
   ├── sections/ · appendices/          copies of the pages' <page>.tex fragments
   ├── displays/                        copies of accepted display floats + assets
-  └── reference.bib                    merged from outline/evidence/bibex/<page>.bib
+  └── reference.bib                    merged from delivery/latex/<page>-complete.bib
               ↓
 shared assembly engine + venue profile
               ↓
@@ -69,7 +69,7 @@ the source with prose mined from Word.
 A Section Page enters the build when three things exist on it: an approved
 outline table (`outline/<page>-outline-v*.md` with its tick), a preview PDF for
 every display unit the page CITES and that is LIVE
-(`outline/evidence/display/<unit>/preview.pdf`), and its own compiled page PDF
+(`results/<re-run>/payload/<unit>/preview.pdf`), and its own compiled page PDF
 (`delivery/latex/<page>.pdf` or `<page>-complete.pdf`). A page missing any of
 the three is listed in the build manifest as not ready and the build is
 `DRAFT`; the builder never substitutes an older desk-room copy for it.
@@ -114,7 +114,14 @@ failed build must not be presented as freshly verified results.
 | Lane | Input | Output | Purpose |
 |---|---|---|---|
 | Page-level Delivery `ref/word.md` | one Page's Markdown and Page-local evidence | `<page>/delivery/word/` | coauthor review of one Section/Page |
-| Paper-level `haipipe-paper-assemble` | every Section Page's `delivery/latex/<page>.tex` fragment, accepted display floats, merged `outline/evidence/bibex/` bibliography | `delivery/latex/` then `delivery/word/` | complete manuscript and supplement |
+| Paper-level `haipipe-paper-assemble` | every Section Page's `delivery/latex/<page>.tex` fragment, accepted display floats, merged `delivery/latex/<page>-complete.bib` | `delivery/latex/` then `delivery/word/` | complete manuscript and supplement |
+
+The Page's `delivery/latex/<page>-complete.bib` is the citation projection
+paired with its fragment; the accepted CITE Results remain citation authority.
+Regenerate stale Page delivery before assembly. An included, cited Page missing that Bib
+fails with its exact path; excluded DRAFT stubs keep their not-ready status.
+Retired `outline/evidence/bibex/` and flat `bibex/`
+are never merged or used as fallback. A merged Bib does not prove acceptance.
 
 Page-level Word snapshots are not the assembly input. Paper-level assembly
 does not concatenate those snapshots. Both lanes are projections of their
@@ -218,29 +225,32 @@ never a caption with nothing under it (found by Paper-MISQ-Board, 260908: 3 of 4
 main tables and 7 of 12 appendix tables were lost). `tests/test_latex_room_to_docx.py`
 drives the real engine over a room with those exact column specs.
 
-## 🗂 Section page ids and display unit folders (0.7.5 · JL 260908, third and final naming pass)
+## 🗂 Stable Section identities and display unit folders
 
-The PAGE carries the section index; the UNIT carries none:
+The Page has a stable semantic identity. The selected Story compile-order
+block and LaTeX determine printed order:
 
 ```text
-S-<desk>-Main-<N>-<Title>          S-MISQ-Main-4-Empirical-Strategy · S-MISQ-Main-5-Results     N = the H1's §N
-S-<desk>-Appendix-<L>-<Title>      S-MISQ-Appendix-D-Instrumental-Variables                     L = the H1's Appendix L
-unnumbered page: title only        S-MISQ-Main-Abstract · S-JAMA-IM-Main-Key-Points · -Back-Matter
-<page>/outline/evidence/display/Display<n>-<slug>/        Display1-research-design · Display2-main-regression
-delivery/latex/displays/<page-id>/<unit>/                  displays/S-MISQ-Main-4-Empirical-Strategy/Display1-research-design/
+S-<desk>-Main-<Title>             S-MISQ-Main-Empirical-Strategy · S-MISQ-Main-Results
+S-<desk>-Appendix-<Title>         S-MISQ-Appendix-Instrumental-Variables
+unnumbered Page                  S-MISQ-Main-Abstract · S-JAMA-IM-Main-Key-Points
+<page>/results/<re-run>/payload/Display<n>-<slug>/         Display1-research-design · Display2-main-regression
+delivery/latex/displays/<page-id>/<unit>/                  displays/S-MISQ-Main-Empirical-Strategy/Display1-research-design/
 ```
 
-The H1 keeps its declared value (`# S-MISQ-Main-4-Empirical-Strategy · §4 Empirical
-Strategy and Data`) so the register can compare the folder index with the H1.
-Retired: `S-Display-<code>-<slug>`, `<PageID>-Display<n>-<slug>`,
-`Sec<N>-/App<L>-Display<n>-<slug>`. Because `Display<n>-<slug>` is unique only
-inside its page, every engine key is `<page-id>/<unit>` (register rows,
-findings, `declared_number`, the placed floats). The register lists as a
-finding: a page whose folder index disagrees with its H1, a numbered H1 whose id
-carries no index, a folder index on an unnumbered H1, a unit whose folder still
-carries any prefix, and a unit without `README.md`. Findings never block; they
-name the debt. Known cost, chosen by JL: a moved compile order renames the page
-and its units.
+The Page Result unit is the source. The assembler reads its manifest, float,
+assets, and preview, then projects the needed files into the generated Paper
+delivery path; it never writes back into the Page Result.
+
+Existing index-bearing Page IDs remain readable and retain their identity.
+Inserting or moving a Section never renames its Page, Runs or display units.
+The register compares the H1's declared printed number with actual LaTeX
+numbering, not with a number embedded in the folder name. Legacy unit shapes
+`S-Display-<code>-<slug>`, `<PageID>-Display<n>-<slug>` and
+`Sec<N>-/App<L>-Display<n>-<slug>` remain naming findings. Every engine key is
+`<page-id>/<unit>` because `Display<n>-<slug>` is unique only inside its Page.
+Missing unit metadata remains a finding; it does not authorize an automatic
+rename or modify the Page Result.
 
 **Printed section numbers count what LaTeX numbers (0.7.6).** The register
 counts every unstarred `\section{` in each placed fragment, in `\input` order,
@@ -291,7 +301,7 @@ venue_profile = "misq"
 [pages]
 # where the words come from: the Section Page groups, and the Story page whose
 # `haipipe:compile-order` block fixes the reading order. Each page contributes its body fragment
-# <page>/delivery/latex/<page>.tex, its outline/evidence/bibex/<page>.bib, and the float.tex +
+# <page>/delivery/latex/<page>.tex, its delivery/latex/<page>-complete.bib, and the float.tex +
 # asset of every display unit its fragment \ref's.
 main = "../Ba-MISQ-Main"
 appendix = "../Bb-MISQ-Appendix"
@@ -330,6 +340,19 @@ this contract does not claim that all historical parser paths were removed.
 For the single-target interface, require exactly one complete marker block.
 Reject duplicate or malformed Section entries instead of silently omitting
 them; candidate tellings are narrative plans, not additional active blocks.
+
+The canonical engine validates configuration before any write or cleanup.
+`paper-build.toml` lives in `<paper>/delivery/`; `source.room` is exactly
+`latex`. Generated paths must remain inside their declared output directory,
+with no `..`, absolute path, symlink escape or overlap with authored inputs.
+Missing `[pages]` or required output keys is an error, not a legacy fallback.
+Keep the copyable `ref/paper-build.toml.example` aligned with this contract.
+
+For a commissioned Workflow build, use `compile.<paper>.<build>` from
+`haipipe-paper-workflow/ref/run-workflow.md`: the caller allocates the native
+Ticket/Result and freezes inputs before invoking the mechanical builder.
+Its manifest is the current delivery receipt; a Result may retain an exact
+historical snapshot. A bare build invocation does not invent a Run identity.
 
 Configuration selects and names inputs/outputs. It does not duplicate prose,
 claims, values, citations, captions, or table cells. If a paper needs a
@@ -454,7 +477,7 @@ At minimum, a complete manuscript build records:
   and build status.
 
 The manifest is the sole delivery receipt; Page-level acceptance remains the
-`CHECK` phase. The display register is a derived reader index whose findings
+`CHECK` controller judgment. The display register is a derived reader index whose findings
 are also recorded in the manifest, not an independent acceptance or readiness
 receipt. Do not create a competing delivery-status authority.
 

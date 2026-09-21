@@ -27,7 +27,11 @@ fixture_du = case.result(fixture_ticket)
 review = case.ticket(2, "verify", [case.ref(fixture_du)], {
     "criteria": [{"id": "length", "kind": "max_chars", "value": 12},
                  {"id": "tone", "kind": "semantic",
-                  "description": "Respectful, non-coercive language"}]})
+                  "description": "The recipient can decline without pressure.",
+                  "observation": "Read the complete message as its recipient.",
+                  "pass_when": "A clear refusal path exists without a penalty.",
+                  "fail_when": "Refusal is hidden, threatened, or discouraged.",
+                  "not_verifiable_when": "Consequences of refusal are absent from the supplied context."}]})
 print("owner:", owner)
 print("generation:", generation)
 print("verification:", review)

@@ -8,8 +8,8 @@ description: >-
   belongs; it never predicts acceptance or chooses the target for the user.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-08"
+  version: "0.1.2"
+  last_updated: "2026-09-20"
   capability_family: "2_test"
 ---
 
@@ -20,6 +20,10 @@ Load `haipipe-ideation`, the target Idea Card, and its shared
 that needs deep fit. Discovery owns current official-source retrieval; a
 remembered policy, ranking, skill pack, or search snippet is never a binding
 desk rule.
+
+For a durable commission, use the owner-bound Run Specs in
+`../../haipipe-ideation/references/workflow-runs.md`. This capability's checks
+are internal Steps unless separately commissioned under that contract.
 
 ## Pass 1 · broad screen
 
@@ -80,9 +84,24 @@ When supported, label targets `ambitious`, `realistic`, `fallback`, or
 probabilities. The recommendation names one proposed target/category, its
 conditions, and alternatives, while `human_target.status` remains `open`.
 
-Write or update `cards/venue-fit/<idea>_venue-fit.yaml` using the shared
-schema. Every deep-fit desk fact must resolve through the named Venue contract;
-every local interpretation stays `LOCAL DECISION`.
+Write an immutable assessment snapshot to
+`workflow/venue-fit/<idea>_<timestamp>.yaml` using the shared schema and its
+`assessment_binding`, then project the current assessment to
+`cards/venue-fit/<idea>_venue-fit.yaml`. Every deep-fit desk fact must resolve
+through the named Venue contract; every local interpretation stays
+`LOCAL DECISION`.
+
+Each independent assessor gets a distinct snapshot and binding. For a durable
+Run, inherit evaluator, rubric and frozen-input hashes through the Run's
+`assessment_id`; for direct or one-off work, include the full binding inline
+as described in `../../haipipe-ideation/references/receipts.md`. Preserve every
+snapshot and list its `assessment_id`, receipt path and exact-byte SHA-256 in
+the current Venue Fit Card's `assessment_receipts`. With one judgment, its
+binding may be projected in `assessment_binding`; with multiple judgments,
+leave that singular field null and point `review_resolution` to the resolution
+receipt with its SHA-256. Unresolved dimensions and overall status remain
+`unknown`, with `human_target.status: open` and a HOLD route. Do not average
+fit labels or overwrite a review.
 
 ## Exit gate
 
@@ -93,7 +112,16 @@ unknown has a route. Target selection still belongs to a person in Stage 3.
 
 ## One-off mode
 
+Follow the umbrella skill's one-off source route: reuse verified inputs,
+otherwise use Discovery one-off search/read within the request; return links,
+access dates and reading depth inline. Keep no-search/read-only restrictions.
+Unavailable evidence means provisional/HOLD. Inline work creates no durable
+portfolio or source bank unless the user asks to retain it.
+
 Return the broad screen or comparison inline with official-source links,
 access dates, article categories, desk risks, and uncertainty. If current
 rules were not verified, label the result provisional rather than presenting
 memory as policy.
+Include the complete direct-mode `assessment_binding` inline. If multiple
+reviewers are used, preserve their raw judgments and return the shared
+`review_resolution` block; unresolved conflict remains HOLD.

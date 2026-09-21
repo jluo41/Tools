@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inventory and validate workflow-phase Folder contracts."""
+"""Inventory and validate workflow-owned Folder contracts."""
 from __future__ import annotations
 
 import argparse
@@ -39,17 +39,17 @@ def main() -> int:
     else:
         missing = []
     problems.extend(f"requested workflow not found: {name}" for name in missing)
-    print("phase  workflow                      folder kind          face  ruling       legacy")
-    print("─────  ────────────────────────────  ───────────────────  ────  ───────────  ──────")
-    for item in sorted(contracts, key=lambda x: (x.workflow, x.phase)):
+    print("workflow                      folder kind          face  ruling       legacy")
+    print("────────────────────────────  ───────────────────  ────  ───────────  ──────")
+    for item in sorted(contracts, key=lambda x: (x.workflow, x.folder_kind)):
         print(
-            f"{item.phase:<5}  {item.workflow:<28}  {item.folder_kind:<19}  "
+            f"{item.workflow:<28}  {item.folder_kind:<19}  "
             f"{item.primary_face:<4}  {item.page_ruling:<11}  "
             f"{item.legacy_page_type or '—'}"
         )
     for problem in problems:
         print(f"finding · {problem}")
-    print(f"{len(contracts)} phase contracts · {len(problems)} findings")
+    print(f"{len(contracts)} Folder contracts · {len(problems)} findings")
     return 1 if args.check and problems else 0
 
 

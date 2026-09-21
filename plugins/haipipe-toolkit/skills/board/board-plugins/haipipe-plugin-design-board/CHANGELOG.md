@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.7.1 — 2026-09-20
+
+- Align current guidance with Verify-passed `ready` items and Delivery as a
+  projection; CSV exports only eligible ready drafts. Commission, Generate,
+  and Verify are the workflow's Run types.
+- Revalidate the exact reviewed candidate and its independent Verify before
+  projecting Delivery. Changed artifacts, checks, results, frozen config, or
+  render evidence make the records invalid and remove the item from ready/CSV.
+- Preserve historical `rdNN_adopt_*` IDs in text, links, and tooltips; label
+  their recorded type `Adopt (historical)` and distinguish queue actions.
+- Document `new-folder.row` as the parsed Brief row key (`R3`, for example),
+  separate from the human-readable task title and an integer row position.
+- Fresh-context validation found sparse Boards could omit the promised
+  presentation entry. `new-folder` now creates `## Pages` when missing and
+  preserves existing groups/sections; repeat requests still create no duplicate.
+
+  Ready/Delivery and historical-ID runtime changes were coordinated with
+  the Design family repair; this patch aligns the Board plugin contract.
+
 ## 0.7.0 — 2026-09-18
 
 - A retired record parks under the board's `_archive/` instead of being

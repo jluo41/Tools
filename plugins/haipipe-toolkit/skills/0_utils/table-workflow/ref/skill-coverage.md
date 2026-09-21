@@ -16,7 +16,7 @@ serves. A missing referenced skill also gets one row and blocks the Workflow.
 
 | Skill | Path | Role | Used by Cell(s) | Status | Version | Lines | Quality | Field-test | Gap |
 |---|---|---|---|---|---|---:|---|---|---|
-| `haipipe-run` | `../../../run/haipipe-run/SKILL.md` | contract | `generate@create`, `generate@runtime`, `adopt@runtime` | `?` | `?` | `?` | `?` | `?` | inspect current contract |
+| `haipipe-run` | `../../../run/haipipe-run/SKILL.md` | contract | `commission@runtime`, `generate@runtime`, `verify@runtime` | `?` | `?` | `?` | `?` | `?` | inspect current contract |
 
 Use exact Cell coordinates, not only a Run Spec label or Workspace name.
 

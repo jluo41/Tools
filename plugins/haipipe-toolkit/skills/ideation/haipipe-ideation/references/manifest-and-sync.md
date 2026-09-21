@@ -130,7 +130,8 @@ opportunity_map:
     status: open | narrowed | exhausted | contradicted
 ideas:
   - card: cards/i01_<idea>.yaml
-    state: open | deferred | eliminated
+    state: open | deferred | selected | eliminated
+    decision_ref: null  # immutable I3 receipt required for non-open state
     comparison_order: 1
     novelty: unverified | hold | ready | partial | preempted
     identification: unknown | strong | conditional | weak
@@ -158,7 +159,14 @@ I2, the packet projects the current matrix. `paper_page.state: missing` is a
 request for `haipipe-paper-ideation` to mint or bind the one evergreen P0 Page;
 it is not permission for Ideation to create Paper files itself.
 
-`sync_revision` and `source_hash` identify the semantic source. The three
+`sync_revision` and `source_hash` identify the reviewed semantic source.
+Compute the source fingerprint from the semantic packet, excluding source_hash,
+updated_at, paper_page projection receipts/surfaces, and human-only ideas[].state
+and ideas[].decision_ref projections. Refreshing those human projections does
+not advance the evidence revision. Changes to evidence, claims, tests or machine
+recommendations do advance it. New I3 selection/handoff pins both values; an old
+snapshot remains historical and cannot authorize a new handoff after they change.
+The three
 `paper_page` surfaces are independent attestations, not three names for one
 `current` flag:
 
@@ -170,7 +178,7 @@ it is not permission for Ideation to create Paper files itself.
   is current only when `release` is current and its receipt names the matching
   released source.
 
-Every current surface has a real Page-owned phase receipt whose
+Every current surface has a real Page-owned dispatch receipt (serialized `phase`) whose
 `paper_projection` extension records the consumed `sync_revision`,
 `source_hash`, Page path, surface, output hash, and timestamp. A Page update may bring the working
 Outline/preview/Bullet Workspace to the new revision while leaving adopted
@@ -191,7 +199,7 @@ the current execution lacks write scope, owner permission, or an available
 Paper projection route. Retain the canonical target in `paper_page.path`, keep
 each surface at its last honest revision and receipt, set `sync_status:
 blocked`, and name the reason in `open_gaps`. Do not mint a run-local surrogate
-Page and do not invent a local Ideation Run. The Page-owned phase receipt is
+Page and do not invent a local Ideation Run. The Page-owned dispatch receipt (serialized `phase`) is
 the durable success record; the sync packet is the durable blocked-return
 record.
 
@@ -219,7 +227,10 @@ does not release Content automatically.
 - The Opportunity Map is Ideation's interpretation of how the landscape opens,
   narrows, contradicts, or exhausts candidate space. Each entry names evidence
   and affected Idea ids.
-- Generate or Test may add, revise, merge, reorder, defer, or eliminate Ideas.
+- Generate or Test may add, revise, merge, reorder, or recommend defer/abandon.
+  Only an explicit I3 human receipt changes an admitted Idea to deferred,
+  selected or eliminated; projected dispositions retain decision_ref.
+  Provisional candidates not yet admitted may still be rejected or deduplicated.
   Every material change increments `sync_revision` and routes the changed
   packet to the same Paper P0 working projection rather than minting another
   portfolio; release of adopted Content remains governed by the Page barrier.

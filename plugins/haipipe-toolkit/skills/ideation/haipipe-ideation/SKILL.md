@@ -1,7 +1,7 @@
 ---
 name: haipipe-ideation
 description: >-
-  One door over the three-stage Ideation family: 1 Generate evidence-grounded
+  One door over the Ideation capability groups: 1 Generate evidence-grounded
   candidates, 2 Test novelty, feasibility, journal fit, and Nature-level
   editorial shape, then 3 Select idea-and-target pairs through a human gate
   and hand them to Paper P0. Sync the evolving evidence landscape and
@@ -13,8 +13,8 @@ description: >-
   haipipe-discovery for external source execution.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-13"
+  version: "0.5.2"
+  last_updated: "2026-09-20"
   folder_owner: canonical
   primary_face: direction
   page_ruling: none
@@ -47,12 +47,37 @@ Discovery Results ┘                            │
                                       bounded handoff → Paper P0
 ```
 
-It owns the three-stage state machine, bundle, semantic synthesis, card
+It owns the Generate/Test/Select capability routing, bundle, semantic synthesis, card
 vocabulary, comparative venue-fit reading, Paper sync packet, sole human
 selection record, and final Paper handoff. Its numbered children own the craft
-inside each stage. It does not own external source retrieval, internal
+inside each capability group. It does not own external source retrieval, internal
 computation, a binding venue contract, Paper Page prose, a Story, or citation
 authority.
+
+## Start with the requested outcome
+
+Brainstorm provisional ideas inline, test one Idea on the requested axes, or
+maintain a durable portfolio for Paper. Missing evidence stays provisional or
+HOLD and names the next owner action. Inline work does not create a portfolio
+unless the user asks to keep it. The person decides each Idea and target; the
+machine compares options and prepares the record.
+
+For durable execution, read [references/workflow-runs.md](references/workflow-runs.md):
+the Workflow is a list of owner-native Runs with explicit dependencies.
+Generate/Test/Select are capability groups used as internal Steps, not Run ids.
+A Run has its own commissioned target and closure; a Gate resolves a condition;
+a projection displays another artifact's authority; a receipt preserves what
+happened. A router invocation or a receipt alone is not a Run.
+
+## Paper and Page entrypoints
+
+`haipipe-paper` may route semantic idea work here. `haipipe-paper-ideation`
+loads this owner when a Paper Idea portfolio needs semantic work or sync.
+`haipipe-page` resolves that adapter for an Ideation Page and owns Page writing,
+release and delivery. Load only the requested capability and reuse already
+loaded owners; do not recursively re-enter the routers. An Ideation-only audit
+stays within its declared read-only scope. Sync/release does not create or
+replace the sole I3 human selection receipt.
 
 ## Numbered capability families
 
@@ -79,7 +104,7 @@ Load only the current stage. `haipipe-ideation-test` loads its specialist for
 the requested axis; a generic test loads novelty, pressure, and journal fit,
 while Nature review is loaded only when the user names Nature or a
 Nature-family target remains live. Each specialist is directly invocable for
-a one-off task without forcing the durable three-stage workflow.
+a one-off task without forcing the durable owner-bound Workflow.
 
 ## Boundary and loading order
 
@@ -161,8 +186,9 @@ When a project needs a persistent record, use an explicit BJTR container:
 
 `bNN`, `jNN`, and `tNN` retain their normal meanings and naming grammar. The
 ideation folder is not a fourth execution bank: do not create a local `rNN`
-Run, `runs/`, or `results/` lane for bundling, synthesis, or selection. A
-pressure test that is independently closable is commissioned in its owning
+Run, `runs/`, or `results/` lane for bundling, synthesis, or selection.
+An independently closable portfolio reconciliation or pressure test is
+commissioned in its owning
 Task or Discovery folder, where that owner creates the full BJTR Run and
 same-stem Result. References always use the owner-native full address, never a
 bare local `rNN`.
@@ -176,7 +202,8 @@ owning Task or Discovery folder can commission the corresponding Run.
 Read [references/evidence-bundle.md](references/evidence-bundle.md) for the
 bundle schema and provenance rules, [references/idea-card.md](references/idea-card.md)
 for Direction/Idea Card fields, and [references/workflow-table.md](references/workflow-table.md)
-for the phase table and Run boundary. Read [references/receipts.md](references/receipts.md)
+for the capability table; [references/workflow-runs.md](references/workflow-runs.md)
+defines the Workflow Run Specs and boundaries. Read [references/receipts.md](references/receipts.md)
 when writing search/return, selection, or Paper handoff receipts. Read
 [references/venue-fit.md](references/venue-fit.md) whenever generating,
 reviewing, or selecting journal/venue candidates. Read
@@ -306,7 +333,8 @@ release, and delivery surface states separately, including the consumed
 revision and receipt where present. I3 selection remains the sole human
 authority even when the working projection is current.
 
-Stage 3's `workflow/selection.yaml` is the single human authority for selecting
+I3's versioned selection receipt (current view: `workflow/selection.yaml`)
+is the single human authority for selecting
 an Idea, target/category, accepted risks, and Story route. The Paper P0 Page
 only projects that receipt into verdict, target, and `went to` fields. Page
 approval or CHECK cannot create or override an Ideation selection.
@@ -332,6 +360,20 @@ duplicate Story or treat historical `pagex/` navigation as a selection receipt.
 For an inline brainstorm or evidence map, return Direction/Idea Card-shaped
 content without writing files. If the user asks to keep it, route through a
 durable BJTR unit and the same owner-bound evidence rules.
+In child protocols, durable ids, receipt writes and sync updates apply only
+when saving a unit; one-off requests apply the scientific reasoning inline.
+
+For one-off novelty, Journal fit, or Nature review, reuse supplied verified
+Discovery Results/current Venue contracts first. In build/refresh, missing
+sources route to Discovery's one-off search/read workers; binding desk facts
+still require the Venue owner's verified contract before a durable selection.
+Return direct links, access dates, reading depth and limitations inline.
+Discovery's one-off worker mode needs no folder; do not create a durable
+source bank or Ideation unit solely to answer an inline question. If the user
+asks to retain evidence, follow that owner's durable Result/Bib/runtime rules.
+Respect no-search and read-only audit scope: unavailable or unverified sources
+remain provisional/HOLD, with the missing check named. Memory is never a
+verified novelty finding or current submission rule.
 
 ## Mechanical gate check
 

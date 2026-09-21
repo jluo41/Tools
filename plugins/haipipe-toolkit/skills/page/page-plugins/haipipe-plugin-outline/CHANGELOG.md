@@ -1,3 +1,11 @@
+## 0.84.1 · 2026-09-20
+
+- Clarify that Outline artifacts are consumed by Page Workflow Run Specs and do not define a Run on their own.
+
+## 0.84.0 · 2026-09-20
+
+- Document scoped Draft prompt copying, shared release decisions, current evidence selection, and the two-section reader face.
+
 ## 0.83.0 · 2026-09-15
 
 - Make Scratch notes larger and let the manually triggered `Finish Scratch`

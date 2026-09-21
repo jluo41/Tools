@@ -2,7 +2,17 @@
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 
-- 0.4.0 current, 260918 (version unchanged at 0.4.0, JL's rule): the docs say what the code does.
+- 0.4.0 current, 260920 (version unchanged at 0.4.0): repair the Design contract.
+  - Workflow is a list of Runs; current Run types are Commission, Generate and
+    Verify. Delivery is a projection after independent Verify passes.
+  - Count every Commission decision, including held records before one release;
+    preserve closed Results and distinguish `commission held` from `blocked`.
+  - Workers own optional render evidence inside their current Result; Page and
+    Board read it without allocating Delivery Runs or writing render files.
+  - Align eight venue guides and profiles, Unit paths and scope, review retries,
+    and config inheritance. Historical Adopt reads retain actual Run identities.
+
+- 0.4.0, 260918 (version unchanged at 0.4.0, JL's rule): the docs say what the code does.
   - The register example judges design quality: goal "Send the salience
     wording unchanged, so the reader sees whose office wrote and what to
     review", expected "a first-time reader can say who sent it and what to do

@@ -64,5 +64,6 @@ Recommended actions:
 [ ] 200-800 words (per audience)
 [ ] Sections follow narrative arc
 [ ] Every factual move maps through released Commission inputs
-[ ] Card id, grant, and exact render version resolve in the Design Folder
+[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Any render manifest binds the exact source and picture inside its Result
 ```

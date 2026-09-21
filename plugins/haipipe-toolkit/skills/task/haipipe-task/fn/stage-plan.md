@@ -1,302 +1,40 @@
-fn/stage-plan — audit + fix + generate plans
-=============================================
+# fn/stage-plan — audit, repair, and define Runs
 
-Called by `/haipipe-task plan`.
-Runs the full pre-plan sequence on one canonical `tNN_<task>/` Task Folder,
-which is also its Page Folder: audit it, fix fixable issues, then generate
-plans at two levels, per-script and Task-level.
-Both levels MUST follow the haipipe-workflow IPO schema.
+Use for `/haipipe-task plan <tNN-task-folder>`.
+Read `ref/hierarchy.md`, then `../haipipe-workflow/ref/plan-schema.md` (resolved from the Task skill directory) and `ref/workflow-template.yaml`.
+A Workflow is a list of Runs; `workflow/plan.yaml` is the only authoritative definition roster.
 
-Schema source of truth:
-  skills/task/haipipe-workflow/ref/plan-schema.md
-  skills/task/haipipe-workflow/ref/concepts.md
+## Procedure
 
-Generic template (fill in the blanks):
-  ../ref/workflow-template.yaml
+1. Run the audit in `fn/audit.md`; collect type, Run stems, sibling Tasks, shared configs, and findings.
+2. Preserve existing work and improve an existing plan in place. Resolve native
+   profiles through `../../run/haipipe-run/ref/run-catalog.md` from the Task skill
+   directory; `task.execute` binds this owner's Ticket/Result contract.
+3. Repair missing per-run configs under `scripts/config/`, retaining shared parameters and adding accurate `_meta` purpose, inputs, and outputs.
+4. Create missing Tickets only for explicitly commissioned work on the selected
+   engine/platform; Python uses the shared shell template and Stata uses its
+   PowerShell dialect. Create the paired planned receipt at allocation.
+   Uncommissioned future work stays a Spec without a Run id or Ticket.
+5. Flag notebook naming mismatches without renaming existing notebooks.
+6. Read the full workers and the numbered domain specialist's `ref/workflow-plan-sample*.yaml`.
+7. Define each independently executable config/Ticket variant as a Run Spec with a stable id, catalogue run_type, target, actor, gates, routes, Result receipt, cardinality, and Cells from the owning Plugin's Workspace roster.
+8. Keep data stages, notebook cells, tool calls, and pre/post execution checks as internal `steps` or gates in that Run Spec.
+9. Resolve output paths through `RESULT_STORE`, then Job `src/config-defaults.yaml` store, then the Job root.
+10. Check input/output paths against the actual project, preserve heavy store outputs, and return exact changed paths for independent review.
 
-Type-specific sample (if the specialist has one):
-  ../haipipe-task-for-<type>/ref/workflow-plan-sample.yaml
+A separately commissioned review may be another Run Spec when it has its own owner, close condition, and receipt; the label Gate 1 or Gate 2 alone does not justify a Run.
+If no Workspace surface is declared, omit the Plugin roster and Cells as the
+shared Schema permits. An explicitly declared but unresolved roster or missing
+catalogue profile blocks definition freeze; do not invent either.
 
+## Script detail
 
-Two-layer plan structure
--------------------------
+Use optional `run_specs[].steps` for ordered internal procedures with `label`, `section`, `required`, `prompt`, `files_in`, and `files_out`.
+These annotations do not change cardinality, route, or Run identity.
+If an existing `workflow/plan-script-<worker>.yaml` remains useful, migrate it to a read-only projection containing `plan: workflow/plan.yaml`, `run_spec_ids`, and internal `steps` only.
+It must never contain a second `run_specs` or `phases` roster.
+Prefer keeping details in the authoritative plan when a separate projection adds nothing.
+Config is input, not another plan layer.
 
-```
-┌────────┬──────────────────────────────────┬────────────────────────────────────┐
-│ Layer  │ File                             │ Answers                            │
-├────────┼──────────────────────────────────┼────────────────────────────────────┤
-│ Task   │ workflow/plan.yaml               │ "What does this Task Folder do?"   │
-│        │                                  │ Full IPO: gates + run + report     │
-├────────┼──────────────────────────────────┼────────────────────────────────────┤
-│ Script │ workflow/plan-script-<name>.yaml │ "What does this one script do?"    │
-│        │                                  │ Full IPO: internal phases/steps    │
-└────────┴──────────────────────────────────┴────────────────────────────────────┘
-```
-
-Both layers use the SAME schema shape from plan-schema.md:
-  Header (name, purpose, skill)
-  I: Input (args, files_in)
-  P: Phases → Steps (label, type, required, prompt, files_in, files_out)
-  O: Output (returns, files_out)
-
-
-> JL: one line one sentences.
->> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
-
-The config layer (`scripts/config/<run>.yaml`) is an input file, not a separate plan layer.
-It appears in `input.files_in`.
-
-
-When to call
-------------
-
-```
-/haipipe-task plan <path-to-tNN_<task>>
-```
-
-
-Procedure
----------
-
-### Step 1 — Run audit first
-
-Execute `fn/audit.md` on the Task Folder (the full 6-step procedure).
-Collect: type, run_names, sisters, shared_configs, issues.
-
-Report the audit results to the user (the audit progress block).
-
-### Step 2 — Fix: generate per-run configs
-
-When audit found `shared_configs` (one config serving multiple runs), generate a per-run config for each run that's missing one.
-
-Each per-run config:
-1. Inherits all params from the shared config
-2. Adds `_meta:` block specific to this run (read the script to fill
-   accurate purpose/input/output)
-3. The shared config is kept as reference
-
-Progress:
-```
-🔧 Fix: created N per-run configs from shared <name>.yaml
-```
-
-### Step 3 — Fix: generate missing run script counterparts
-
-If a run has `.sh` but no `.ps1` (or vice versa), generate the missing counterpart.
-
-### Step 4 — Fix: notebook naming
-
-Flag mismatches but do NOT rename existing notebooks.
-
-### Step 5 — Generate per-script plans
-
-For each main `.py` (or `.do`) script in the Task Folder's `scripts/`, generate a `workflow/plan-script-<name>.yaml`.
-
-**How to read a script's internal structure:**
-1. Read the full script file
-2. Identify cells/sections (marked by `# %%` for papermill .py,
-   or section comments for .do)
-3. Group cells into Phases by logical boundary
-4. Within each Phase, each cell becomes a Step
-5. Map _WorkSpace references to files_in/files_out
-
-**The per-script plan MUST follow plan-schema.md.** Every step uses the canonical fields:
-
-  label      "phase:step-name"  (e.g. "train:fit-xgboost")
-  type       agent              (always agent for script-internal steps)
-  required   true | false
-  prompt     what this step computes (one line)
-  files_in   files this step reads ([] if none)
-  files_out  files this step creates ([] if none)
-
-Do NOT use ad-hoc fields like `id`, `name`, `cell`, `reads`, `does`, `outputs`.
-Those are not in the schema.
-
-**Per-script plan format (follows plan-schema.md):**
-
-```yaml
-# ─── Header ──────────────────────────────────────────────────────
-name: <script-name-kebab>
-purpose: "<one-line: what this script does>"
-skill: haipipe-task-for-<type>
-
-# ─── I: Input ────────────────────────────────────────────────────
-input:
-  args:
-    config: scripts/config/<run_name>.yaml
-    run_trigger: runs/<run_name>.sh
-  files_in:
-    - scripts/<script_name>.py
-    - scripts/config/<run_name>.yaml
-    - _WorkSpace/...                     # upstream data dependencies
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: <Phase title>
-    detail: "<one-line what this phase does>"
-    steps:
-      - label: "<phase>:<step-name>"
-        type: agent
-        required: true
-        prompt: "<what this step computes>"
-        files_in:
-          - _WorkSpace/...               # or [] if reads only in-memory
-        files_out: []                    # or [$OUTPUT_ROOT/<task>/results/<run>/<file>]
-
-      - label: "<phase>:<step-name>"
-        type: agent
-        required: true
-        prompt: "<what this step computes>"
-        files_in: []
-        files_out:
-          - $OUTPUT_ROOT/<task>/results/<run>/<file>
-
-  - title: <Next phase>
-    detail: "..."
-    steps:
-      - label: "..."
-        # ...
-
-# ─── O: Output ───────────────────────────────────────────────────
-output:
-  returns:
-    status: ok
-    # task-specific return fields
-  files_out:
-    - $OUTPUT_ROOT/<task>/results/<run>/<file1>
-    - $OUTPUT_ROOT/<task>/results/<run>/<file2>
-```
-
-Write one `workflow/plan-script-<name>.yaml` per script.
-
-Progress:
-```
-📍 Script plan: workflow/plan-script-<name>.yaml
-   phases: N, steps: M, files_in: X, files_out: Y
-```
-
-### Step 6 — Generate task-level plan.yaml
-
-The task plan is ALSO a plan-schema.md-compliant IPO.
-Its phases are the high-level lifecycle steps (Run, Gate1, Gate2), not the script-internal phases (those live in the script plan).
-
-**Task plan format (follows plan-schema.md):**
-
-```yaml
-# ─── Header ──────────────────────────────────────────────────────
-name: <task-name-kebab>
-purpose: "<one line: the research question or deliverable>"
-skill: haipipe-task-for-<type>
-task_folder: <path to tNN_<task> relative to project root>
-
-# ─── I: Input ────────────────────────────────────────────────────
-input:
-  args:
-    config: scripts/config/<run_name>.yaml
-  files_in:
-    - scripts/<script>.py
-    - scripts/config/<run_name>.yaml
-    - _WorkSpace/...                     # union of all script inputs
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: Run
-    detail: "execute scripts/<script>.py via papermill"
-    steps:
-      - label: "run:<script-name>"
-        type: agent
-        required: true
-        prompt: "<what the script does end-to-end>"
-        files_in:
-          - scripts/<script>.py
-          - scripts/config/<run_name>.yaml
-          - _WorkSpace/...
-        files_out:
-          - $OUTPUT_ROOT/<task>/results/<run>/<file1>
-          - $OUTPUT_ROOT/<task>/results/<run>/<file2>
-          - $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
-
-  - title: Gate1
-    detail: "pre-run code quality review"
-    steps:
-      - label: "gate1:code-review"
-        type: agent
-        required: true
-        agentType: haipipe-task-reviewer-agent
-        prompt: "gate 1: review <script>.py for intent-vs-implementation bugs"
-        files_in:
-          - scripts/<script>.py
-          - scripts/config/<run_name>.yaml
-        files_out:
-          - CODE_REVIEW.md
-        schema:
-          name: VERDICT
-          type: object
-          required: [verdict]
-          properties:
-            verdict: { type: string, enum: [pass, warn, fail] }
-            issues: { type: array, items: { type: string } }
-
-  - title: Gate2
-    detail: "post-run result audit"
-    steps:
-      - label: "gate2:result-audit"
-        type: agent
-        required: true
-        agentType: haipipe-task-reviewer-agent
-        prompt: "gate 2: audit results of <run_name>"
-        files_in:
-          - $OUTPUT_ROOT/<task>/results/<run>/*
-          - workflow/plan-script-<name>.yaml
-        files_out:
-          - RUN_AUDIT.md
-        schema:
-          name: VERDICT
-          type: object
-          required: [verdict]
-          properties:
-            verdict: { type: string, enum: [pass, warn, fail] }
-            findings: { type: array, items: { type: string } }
-
-# ─── O: Output ───────────────────────────────────────────────────
-output:
-  returns:
-    status: ok
-    gate1_verdict: <pass | warn | fail>
-    gate2_verdict: <pass | warn | fail>
-    headline: "<one-line result summary>"
-  files_out:
-    - $OUTPUT_ROOT/<task>/results/<run>/<file1>
-    - $OUTPUT_ROOT/<task>/results/<run>/<file2>
-    - $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
-    - CODE_REVIEW.md
-    - RUN_AUDIT.md
-```
-
-### Step 7 — Progress report
-
-```
-📍 Plan: <task-name>
-   task plan: workflow/plan.yaml (N phases, M steps)
-   script plans:
-     workflow/plan-script-<name>.yaml (X phases, Y steps)
-   fixed: Z per-run configs
-```
-
-
-Return contract
----------------
-
-```yaml
-status: ok | blocked
-plan_path: workflow/plan.yaml
-script_plans: [workflow/plan-script-*.yaml]
-type: <detected>
-phases: N
-scripts: M
-configs_generated: [list]
-issues_fixed: [list]
-issues_remaining: [list]
-```
+Return `status`, `summary`, `artifacts`, `next`, `task_folder`, `plan_path`, and `run_specs` (the definition count, never executed count).
+Planning does not execute a Ticket or claim a completed Run.

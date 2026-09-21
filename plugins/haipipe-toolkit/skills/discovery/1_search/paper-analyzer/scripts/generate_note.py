@@ -43,11 +43,20 @@ authors: "{authors}"
 domain: "{domain}"
 tags:
 {tags_yaml}
-quality_score: "[SCORE]/10"
 related_papers: []
 created: "{date}"
 updated: "{date}"
-status: analyzed
+status: draft
+analysis_status: not-assessed
+assessment:
+  evaluator: ""
+  criteria_version: "paper-analyzer@0.2.1"
+  assessed_at: ""
+  input:
+    run_readable: ""
+    run_compact: ""
+    snapshot_uri: ""
+    snapshot_sha256: ""
 ---
 
 # {title}
@@ -63,6 +72,13 @@ status: analyzed
 
 ## 研究问题
 [问题描述中文翻译和解释]
+
+## 来源与阅读范围
+- **规范身份**：[DOI / arXiv ID / 其他稳定标识]
+- **核验方式**：[发布者或索引及核验日期]
+- **阅读深度**：[元数据 / 摘要 / 指定章节 / 全文]
+- **本次评估问题**：[明确的问题；未提供则写“未评估项目相关性”]
+- **覆盖范围**：[实际查看的章节、页码或表图；未查看处不要推断]
 
 ## 方法概述
 
@@ -98,20 +114,23 @@ status: analyzed
 
 ## 深度分析
 
+对下列评估逐项使用 `supported`、`partially-supported`、`not-supported`、
+`not-assessed` 或 `not-applicable`，写明页码、章节或表格位置，并说明缺失
+或相反证据。`not-assessed` 表示未查看所需内容，不代表负面结论；
+`not-applicable` 仅用于研究设计确实不适用的标准，并说明原因。
+
 ### 研究价值
-- **理论贡献**：[理论上的贡献]
-- **实际应用**：[实际应用价值]
-- **领域影响**：[对研究领域的潜在影响]
+- **作者声称的贡献**：[原文主张与页码/章节]
+- **与本次问题的关系**：[direct / adjacent / out-of-scope / unresolved；按上面的范围规则说明]
+- **可迁移范围**：[研究对象、设置或结果在哪些范围内可用；给证据位置]
 
 ### 优势
-- [优势1]
-- [优势2]
-- [优势3]
+- **作者声称**：[主张 + 位置]
+- **读者判断**：[判断 + 所依据的结果/设计位置]
 
 ### 局限性
-- [局限1]
-- [局限2]
-- [局限3]
+- **作者明确承认**：[限制 + 位置；没有则写“未找到”并说明已查看范围]
+- **读者推断**：[限制 + 位置 + 推理所依赖的证据；没有则留空]
 
 ### 适用场景
 - [适用场景1]
@@ -140,34 +159,27 @@ status: analyzed
 2. [作者建议2]
 3. [基于分析的延伸建议]
 
-## 我的综合评价
+## 证据化评估
 
-### 价值评分
-- **总体评分**：[X.X/10]
-- **分项评分**：
-  - 创新性：[X/10]
-  - 技术质量：[X/10]
-  - 实验充分性：[X/10]
-  - 写作质量：[X/10]
-  - 实用性：[X/10]
+判定口径：`supported` 表示已查看内容直接给出该标准所需证据；
+`partially-supported` 表示有部分证据，但缺少明确列出的细节；
+`not-supported` 表示已查看相关内容但没有支持证据，或报告了相反证据；
+`not-assessed` 表示来源/章节不可用或未查看；`not-applicable` 表示该标准
+不适用于论文类型并须说明原因。不可访问或未读内容不能作为“没有证据”的
+依据。方法透明度检查研究设计/理论假设、数据与对象（如适用）及追踪主张
+所需的程序细节；评估覆盖检查主要主张是否有对应分析/证明，并对实证主张
+检查比较对象、结果指标和不确定性；主张可追溯要求每个重要结论连到结果或
+证明的位置。
 
-### 突出亮点
-- [亮点1]
-- [亮点2]
-- [亮点3]
+| Criterion | State | Evidence locator | Finding and missing evidence |
+|---|---|---|---|
+| 与问题/人群匹配 | [direct / adjacent / out-of-scope / unresolved] | [页码/章节] | [对照本次问题与纳入规则] |
+| 方法透明度 | [supported / partially-supported / not-supported / not-assessed / not-applicable] | [页码/章节] | [说明已报告或缺失的设计细节] |
+| 评估覆盖 | [supported / partially-supported / not-supported / not-assessed / not-applicable] | [表格/章节] | [说明研究对象、对照、结果指标及其不确定性] |
+| 主张与结果可追溯 | [supported / partially-supported / not-supported / not-assessed / not-applicable] | [页码/表格] | [将重要主张连到对应的报告结果] |
 
-### 重点关注
-- [需要特别关注的方面]
-
-### 可借鉴点
-- [可以学习借鉴的技术]
-- [可以应用的方法]
-- [有启发性的思路]
-
-### 批判性思考
-- [潜在问题]
-- [可改进之处]
-- [质疑点]
+不要将这些标准合并成总分。区分作者报告的主张与读者解释；若未查看来源或
+相关章节，保留草稿状态并标记未评估。
 
 ## 我的笔记
 

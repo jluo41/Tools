@@ -8,8 +8,8 @@ description: >-
   choose a winner.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-09-13"
+  version: "0.1.4"
+  last_updated: "2026-09-20"
   capability_family: "1_generate"
 ---
 
@@ -21,6 +21,10 @@ work. Preserve the parent unit's BJTR identity. This skill owns
 candidate-generation craft, admission, and the I1 working-state sync packet.
 It does not search external sources, run internal analyses, verify novelty,
 evaluate a journal's current rules, select an Idea, or write the Paper Page.
+
+For a durable commission, use the owner-bound Run Specs in
+`../../haipipe-ideation/references/workflow-runs.md`. This capability's checks
+are internal Steps unless separately commissioned under that contract.
 
 ## Input contract
 
@@ -45,6 +49,9 @@ memory, a title hit, or a user hunch into an observed signal.
 2. **Build the signal map.** Group bundle entries as agreement,
    contradiction, unexplained variation, measurement opening, method opening,
    new setting, negative result, or operational constraint. Retain source IDs.
+   For each cross-source `interpretation`, apply the Direction Card confidence
+   anchors in `references/idea-card.md`; when support is absent, inaccessible,
+   or materially conflicting, omit the synthesis and leave an owner-routed gap.
 3. **Generate across lenses.** Use every applicable lens below before
    repeating one:
 
@@ -108,6 +115,12 @@ An Idea may enter `2_test` only when it has a stable id, falsifiable claim,
 method, hypothesis, minimum experiment, expected outcome, failure
 interpretation, Core Claims, and evidence/inference labels. It need not be
 novel yet. Claiming or scoring novelty at this stage is a gate failure.
+
+## Human state boundary
+
+New admitted cards start open. Generate may reject provisional drafts and merge
+duplicates, but defer/abandon advice about an admitted Idea never changes its
+human state. Project a non-open state only from an explicit I3 per-card receipt.
 
 ## One-off mode
 

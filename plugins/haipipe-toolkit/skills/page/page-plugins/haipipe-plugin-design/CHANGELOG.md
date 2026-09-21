@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.11.1 — 2026-09-20
+
+- Align current docs with Commission → Generate → independent Verify and ready
+  Delivery. Runs are recorded work; Delivery is a projection and internal Steps
+  do not add Run identities. Historical Adopt rows keep their original ids.
+- Distinguish a human `commission held` decision from a `blocked` worker Run;
+  show the blocked Run and repair owner without Commission controls.
+- Read optional hash-bound render evidence from the candidate's own Result.
+  Existing Delivery manifests remain a fallback only when no Result manifest
+  exists; an invalid current manifest never falls back to an older picture.
+- Clarify held/released Commission counts, valid completed-review retry limits,
+  and the allowed operation-specific fields derived from released config.
+- Revalidate the exact Generate and independent Verify Results before Delivery.
+  Changed artifacts, checks, config or render pins display `records invalid`
+  and are excluded from ready totals and CSV exports.
+
 ## 0.11.0 — 2026-09-18
 
 - Delivery handoff now follows a passed independent Verify directly. The live

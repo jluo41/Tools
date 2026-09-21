@@ -23,7 +23,7 @@ For synth data runs on the developer's laptop.
 ```
 Step 1 — Pre-flight
   - Run fn/audit-stata.md (if not already done)
-  - Check: configs/_source_synth.do exists
+  - Check: scripts/config/_source_synth.do exists
   - Check: _WorkSpace/1-CMS-Store/cms_synth/ has year dirs
 
 Step 2 — Execute

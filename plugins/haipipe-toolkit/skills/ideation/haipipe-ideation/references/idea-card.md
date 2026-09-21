@@ -32,6 +32,24 @@ bundle: bundle/evidence-bundle.yaml
 cross-source synthesis, but must name the inputs and confidence. `why_now` is
 not a license for an unsupported novelty claim.
 
+Direction `interpretations[].confidence` is the strength of bundle evidence
+for that specific cross-source synthesis, not confidence in an observed fact,
+novelty, or identification. Use these owner-specific anchors:
+
+| Label | Evidence anchor and example |
+|---|---|
+| `high` | Multiple independent, directly relevant bundle objects converge on the interpretation; source scope and plausible counter-signals have been checked. Example: separate Results report the same mechanism in the declared setting. Compared with `medium`, no material source or scope caveat remains. |
+| `medium` | Direct evidence supports the interpretation, but a named limitation narrows its scope or an alternative explanation remains bounded. Example: one strong Result supports the synthesis while the only second source covers a narrower population. Compared with `high`, a non-decisive limitation remains. |
+| `low` | Some relevant evidence suggests the synthesis, but it is indirect, sparse, or qualified by an unresolved but not contradictory limitation. Example: a single secondary analysis suggests a connection that still needs a direct test. Compared with `medium`, the evidentiary basis is weaker and supports only a tentative reading. |
+
+Do not add a `none` label or map another field's confidence into this scale.
+If the bundle has no relevant support, evidence is inaccessible, or material
+signals conflict so no synthesis is defensible, abstain: omit the interpretation,
+retain the observed signals, and record an `open_gaps` question with its owner
+route. Do not use `low` to encode no evidence or unresolved contradiction.
+These are qualitative anchors, not probabilities or empirically calibrated
+inter-rater/outcome scores.
+
 ## Idea Card
 
 Every candidate gets its own stable `iNN` card. Keep eliminated cards; their
@@ -80,10 +98,10 @@ core_claims:
         mechanism: "theirs versus candidate"
         identification_or_setting: "theirs versus candidate"
         outcome: "theirs versus candidate"
-      evidence_depth: metadata-only | abstract | full-text
+      evidence_depth: none | metadata | abstract | full-text
       limitation: "what the search did not establish"
       status: novel | partial | preempted | inconclusive | unverified
-      receipt: "workflow/novelty/i01_<timestamp>.yaml"
+      receipt: "workflow/novelty/i01_<timestamp>.yaml"  # raw assessment or same-kind resolution receipt; raw reviewer files remain linked there
 identification:
   credibility: strong | conditional | weak | unknown
   fatal_assumptions: []
@@ -92,7 +110,7 @@ feasibility:
   evidence: [int01]
   pilot: positive | negative | skipped | waived | pending
   receipt: "tasks/.../results/.../runtime.yaml"
-  pressure_receipt: "workflow/pressure/i01_<timestamp>.yaml"
+  pressure_receipt: "workflow/pressure/i01_<timestamp>.yaml"  # raw assessment or same-kind resolution receipt
   waiver: ""             # required when pilot: waived
 venue_fit:
   card: venue-fit/i01_venue-fit.yaml
@@ -104,8 +122,9 @@ venue_fit:
   human_target: open | selected | deferred | rejected
 risk: "..."
 reviewer_objection: "strongest counterargument"
-recommendation: proceed | proceed-with-caution | abandon | unresolved
+recommendation: proceed | proceed-with-caution | defer | abandon | unresolved
 state: open | deferred | selected | eliminated
+decision_ref: null  # immutable selection snapshot for a non-open human state
 evidence_bundle: ../bundle/evidence-bundle.yaml
 ```
 
@@ -134,10 +153,17 @@ and evidence detail. A candidate can be semantically strong while still being
   A search result without an admitted Discovery Result remains a lead.
 - Novelty and identification credibility are separate axes. A claim may be
   genuinely new while its design is not yet credible; do not lower one axis to
-  hide a problem on the other.
+  hide a problem on the other. Novelty confidence is recorded claim by claim in
+  the linked novelty receipt and describes support from its stated literature
+  boundary; identification credibility is the pressure-test reading of a
+  specified design/contrast, with its evidence basis in the linked pressure
+  receipt. Apply each owner's anchors in that specialist; neither field maps
+  into the other's labels. `unknown`, `inconclusive`, `unverified`, or an
+  unresolved reviewer disagreement remains an abstention/HOLD with its route,
+  not a low score.
 - Feasibility is a Task-owned receipt. A pilot is not a Discovery citation and
-  does not become a local ideation Run. `feasibility.receipt` is required for
-  positive, negative, or skipped pilots; a Task Run receipt counts only when
+  does not become a local ideation Run. `feasibility.receipt` is required only for
+  positive or negative pilots; a Task Run receipt counts only when
   it explicitly answers the bounded feasibility/pilot question and gives its
   owner locator. `feasibility.waiver` is required only for a waived pilot and
   must state why no pilot is informative or permitted.
@@ -146,11 +172,13 @@ and evidence detail. A candidate can be semantically strong while still being
   exact output and execution provenance, applies an acceptance reading, and
   classifies the result `positive` or `negative`. Folder names, manuscript
   claims, or aggregate outputs by themselves are prior evidence, not a pilot.
-  `skipped` records history and requires a reason receipt, but does not satisfy
+  `skipped` records its reason in pressure_receipt (pilot.reason), requires
+  no Task result, and maps to pending in the Test Matrix. It does not satisfy
   G0; the card still needs a qualifying pilot or an explicit waiver.
-- The card-level novelty reading summarizes the worst
-  `core_claims[].novelty_check.status`. `inconclusive` or `unverified` keeps
-  the card open; it never upgrades to `novel` by intuition. A card with either
+- The selected-card eligibility reading checks every Core Claim separately.
+  The matrix novelty column summarizes central contribution only and can be
+  ready while a supporting claim still blocks selection. `inconclusive` or
+  `unverified` keeps the evidence gate open; it never upgrades to `novel` by intuition. A card with either
   state may be deferred or abandoned, but cannot satisfy the selected Paper
   handoff gate. `partial` is selectable only with the remaining delta and risk
   recorded.
@@ -164,7 +192,14 @@ and evidence detail. A candidate can be semantically strong while still being
   `deep_fit: complete` and `human_target: selected`.
 - Machine-authored `recommendation` is advice. `comparison_order` is likewise
   only a review aid. `state: deferred`, `state: selected`, or
-  `state: eliminated` requires a human decision receipt.
+  `state: eliminated` requires an explicit per-card human decision receipt.
+  Store its immutable path in decision_ref; no answer leaves state open.
+- New depth values are none/metadata/abstract/full-text. Read legacy
+  metadata-only as metadata; none means no source was read and never upgrades
+  to metadata. Copy the matching novelty receipt depth without changing it.
+- Human target/state fields are projections of the versioned I3 receipt, not
+  new write authorities. Follow the exact mapping and history rules in
+  [receipts.md](receipts.md#immutable-history-and-projections).
 
 ## Selection and Paper adapter
 

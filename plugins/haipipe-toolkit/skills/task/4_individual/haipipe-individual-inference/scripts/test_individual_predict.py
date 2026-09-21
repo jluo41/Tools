@@ -19,7 +19,7 @@ from pathlib import Path
 SKILL_SRC = Path(__file__).resolve().parents[1] / "src"
 sys.path.insert(0, str(SKILL_SRC))
 
-from build_payload import build_payload, build_payload_summary  # noqa: E402
+from build_payload import DEFAULT_MODEL, build_payload, build_payload_summary  # noqa: E402
 from client import call_predict, slice_last_window  # noqa: E402
 
 
@@ -29,13 +29,15 @@ def main() -> None:
     ap.add_argument("--endpoint-url", default=None)
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--single-window", action="store_true",
-                    help="Keep only the most recent forecast window in the "
-                         "response (anchored at the last CGM observation).")
+                    help="Keep the last returned forecast window; chronology requires endpoint anchor evidence.")
+    ap.add_argument("--workspace-root", help="project containing _WorkSpace")
+    ap.add_argument("--platform", choices=["databricks", "sagemaker"], default="databricks")
+    ap.add_argument("--endpoint-model", default=DEFAULT_MODEL)
     args = ap.parse_args()
 
-    payload = build_payload(args.individual)
+    payload = build_payload(args.individual, workspace_root=args.workspace_root, platform=args.platform, model=args.endpoint_model)
     summary = build_payload_summary(payload)
-    print(f"📦 payload  : {summary}")
+    print(f"📦 payload  : {summary}", file=sys.stderr if args.json else sys.stdout)
 
     out = call_predict(payload, endpoint_url=args.endpoint_url)
     if args.single_window:

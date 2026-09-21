@@ -74,7 +74,7 @@ Extend `result_gate()` to require `provenance.json` to declare
 `contains_raw_or_phi: false`, and hashes matching `source_data.csv`.
 
 Resolve the planned Result at
-`$OUTPUT_ROOT/results/t01_display_input_summary/<RUNNAME>/`.
+`$OUTPUT_ROOT/t01_display_input_summary/results/<RUNNAME>/`.
 Write the scaffold-time `runtime.yaml` with `status: planned` according to
 `haipipe-task/ref/runtime-yaml-schema.md`.
 Do not create a Task-local `results/` directory.
@@ -86,7 +86,7 @@ Step 5 — Output contract
 The worker writes:
 
 ```text
-$OUTPUT_ROOT/results/t01_display_input_summary/<RUNNAME>/
+$OUTPUT_ROOT/t01_display_input_summary/results/<RUNNAME>/
 ├── source_data.csv
 ├── provenance.json
 ├── runtime.yaml
@@ -129,3 +129,5 @@ MUST NOT
 - Put model training or the final PDF/PNG/TeX asset in this Task.
 - Create a general README.
 - Mark the planned receipt complete or bypass the provenance gate.
+
+For every derived_from entry, carry the same full Run id, exact artifact path, and SHA-256 from source_runs; fail if a declared hash differs.

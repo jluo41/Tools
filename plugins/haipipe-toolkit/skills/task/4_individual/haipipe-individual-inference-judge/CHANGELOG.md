@@ -6,6 +6,11 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.1.2] — 2026-09-20
+
+- Require a complete declared dimension set; reject malformed scores and severities instead of silently downgrading them.
+- Define unavailable dimension scores and one exhaustive mean/verdict policy for all shipped judges.
+
 ## [0.1.1] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.1.0; older entries below keep their original numbers).

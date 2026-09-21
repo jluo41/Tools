@@ -103,7 +103,7 @@ Step 4 — Per-stage notes
 - Merges all CaseSet partitions into one AIDataSet.
 - Auto-discovers partitions via `record_set_name` + `CaseArgs` in config.
 - Streaming HF Dataset conversion (memory-efficient).
-- Output: `_WorkSpace/4-AIDataStore/{name}/@{version}/`
+- Output: `_WorkSpace/4-AIDataStore/{ParentSetName}/@v{N}AIData-{aidata_name}/`
 
 
 Step 5 — Write runtime.yaml

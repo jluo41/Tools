@@ -23,7 +23,7 @@ import yaml
 
 SHIPPED_PERSONAS_DIR = Path(__file__).resolve().parents[1] / "personas"
 
-REQUIRED_YAML_KEYS = {"rubric", "target_audience"}
+REQUIRED_YAML_KEYS = {"rubric", "target_audience", "dimensions"}
 
 
 def resolve_persona_dir(persona: str) -> Path:
@@ -61,6 +61,17 @@ def load_persona(persona: str) -> Dict[str, Any]:
         raise ValueError(
             f"Persona {pdir.name!r} persona.yaml missing required keys: {missing}"
         )
+    dimensions = meta.get("dimensions")
+    if (
+        not isinstance(dimensions, list)
+        or not dimensions
+        or any(not isinstance(name, str) or not name.strip() for name in dimensions)
+        or len(set(name.strip() for name in dimensions)) != len(dimensions)
+    ):
+        raise ValueError(
+            f"Persona {pdir.name!r} must declare a non-empty list of unique dimensions"
+        )
+    meta["dimensions"] = [name.strip() for name in dimensions]
 
     system_md = sys_path.read_text()
     schema_md = schema_path.read_text()

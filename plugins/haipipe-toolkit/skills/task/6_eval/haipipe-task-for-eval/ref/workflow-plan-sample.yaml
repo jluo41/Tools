@@ -1,102 +1,117 @@
-# workflow-plan-sample.yaml — eval task script-level plan
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Plugin-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
 # Schema: task/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
-#
-# Typical eval phases: Load → Score → Compare → Emit
-# All outputs light (results/<run>/), no _WorkSpace writes.
-
-# ─── Header ──────────────────────────────────────────────────────
 name: eval-<MODEL>-<SPLIT>
-purpose: "Score <MODEL> on <SPLIT>; produce metrics + comparison"
-skill: haipipe-task-for-eval
-
-# ─── I: Input ────────────────────────────────────────────────────
+purpose: Score <MODEL> on <SPLIT>; produce metrics + comparison
 input:
   args:
-    config: configs/<RUN>.yaml
+    config: scripts/config/rNN_<run>.yaml
     model_path: <_WorkSpace path to ModelInstance or Endpoint_Set>
     aidata_path: <_WorkSpace path to AIData>
-  files_in:
-    - <NN>_<TASK>.py
-    - configs/<RUN>.yaml
-    - _WorkSpace/4-AIDataStore/<AIDATA>
+  files_in: &id001
+  - scripts/<worker>.py
+  - scripts/config/rNN_<run>.yaml
+  - _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>
+  - _WorkSpace/5-ModelInstanceStore/<MODEL>
+owner: haipipe-task-for-eval
+plugin:
+  id: <owning-plugin>
+  workspace_roster_ref: <plugin-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Score <MODEL> on <SPLIT>; produce metrics + comparison
+  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: haipipe-task-for-eval
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: ok
+      verdict: <confirmed | refuted | inconclusive>
+    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: haipipe-task-for-eval
+    worker_skill_chain:
+    - haipipe-task-for-eval
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Load
+    label: load:aidata
+    required: true
+    prompt: Load AIDataSet, materialize test split
+    files_in:
+    - _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>
+    files_out: []
+  - section: Load
+    label: load:model
+    required: true
+    prompt: Load trained ModelInstance
+    files_in:
     - _WorkSpace/5-ModelInstanceStore/<MODEL>
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: Load
-    detail: "load model + data, prepare test split"
-    steps:
-      - label: "load:aidata"
-        type: agent
-        required: true
-        prompt: "Load AIDataSet, materialize test split"
-        files_in:
-          - _WorkSpace/4-AIDataStore/<AIDATA>
-        files_out: []
-
-      - label: "load:model"
-        type: agent
-        required: true
-        prompt: "Load trained ModelInstance"
-        files_in:
-          - _WorkSpace/5-ModelInstanceStore/<MODEL>
-        files_out: []
-
-  - title: Score
-    detail: "run inference, compute policy scores"
-    steps:
-      - label: "score:infer"
-        type: agent
-        required: true
-        prompt: "Run model.infer() on test split → score matrix"
-        files_in: []
-        files_out: []
-
-      - label: "score:policy"
-        type: agent
-        required: true
-        prompt: "Apply policy routing (e.g. age-routed argmax) → per-row policy assignment"
-        files_in: []
-        files_out: []
-
-  - title: Compare
-    detail: "compute estimator, bootstrap CI, adjudicate"
-    steps:
-      - label: "compare:estimator"
-        type: agent
-        required: true
-        prompt: "Compute DR/IPW/DM estimator for treatment vs baseline"
-        files_in: []
-        files_out: []
-
-      - label: "compare:bootstrap"
-        type: agent
-        required: true
-        prompt: "Bootstrap CI on paired delta → confirmed/refuted/inconclusive"
-        files_in: []
-        files_out: []
-
-  - title: Emit
-    detail: "write metrics.json, runtime.yaml, comparison table"
-    steps:
-      - label: "emit:metrics"
-        type: agent
-        required: true
-        prompt: "Write CI-aware metrics.json per metrics-json-schema.md"
-        files_in: []
-        files_out:
-          - results/<RUN>/metrics.json
-          - results/<RUN>/runtime.yaml
-          - results/<RUN>/policy_comparison.md
-
-# ─── O: Output ───────────────────────────────────────────────────
+    files_out: []
+  - section: Score
+    label: score:infer
+    required: true
+    prompt: Run model.infer() on test split → score matrix
+    files_in: []
+    files_out: []
+  - section: Score
+    label: score:policy
+    required: true
+    prompt: Apply policy routing (e.g. age-routed argmax) → per-row policy assignment
+    files_in: []
+    files_out: []
+  - section: Compare
+    label: compare:estimator
+    required: true
+    prompt: Compute DR/IPW/DM estimator for treatment vs baseline
+    files_in: []
+    files_out: []
+  - section: Compare
+    label: compare:bootstrap
+    required: true
+    prompt: Bootstrap CI on paired delta → confirmed/refuted/inconclusive
+    files_in: []
+    files_out: []
+  - section: Emit
+    label: emit:metrics
+    required: true
+    prompt: Write CI-aware metrics.json per metrics-json-schema.md
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/policy_comparison.md
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
 output:
-  returns:
-    status: ok
-    verdict: <confirmed | refuted | inconclusive>
+  returns: *id002
   files_out:
-    - results/<RUN>/metrics.json
-    - results/<RUN>/runtime.yaml
-    - results/<RUN>/policy_comparison.md
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/policy_comparison.md

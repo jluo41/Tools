@@ -4,6 +4,17 @@ board — Changelog
 Family-level changes. Skill implementation history remains in
 `haipipe-board/CHANGELOG.md`; agent history remains in `agents/CHANGELOG.md`.
 
+## 1.0.3 · 2026-09-20 - Board ownership and release alignment
+
+- Use canonical typed Page Run identities and distinguish owner Run Specs
+  from controller coordinates and Board Workflow Runtime receipts.
+- Route native Board members through their domain owners; document independent
+  Design/Insight families and the actual generic regroup/lanes helper scope.
+- Separate machine artifact checks from workflow release and preserve the
+  person-reserved Page Content gate in both modes.
+- Align DesignBoard with ready/Delivery, original historical Run IDs, and
+  parsed Brief row keys; clarify status row counts and Ticket dialects.
+
 ## 1.0.2 · 2026-09-12 - Restore RP Page Run namespace
 
 - Restore `rp01_mermaid-structure` and `rpNN_pNN[-pNN]` as current Page Run

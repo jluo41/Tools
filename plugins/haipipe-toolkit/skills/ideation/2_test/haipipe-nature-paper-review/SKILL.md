@@ -9,8 +9,8 @@ description: >-
   verified Venue contract.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-09-08"
+  version: "0.1.1"
+  last_updated: "2026-09-20"
   capability_family: "2_test"
 ---
 
@@ -21,6 +21,10 @@ and the candidate Venue Fit Card. This is a specialized editorial overlay,
 not a static database of Nature rules. Load `haipipe-paper-venue` and current
 official-source Discovery Results for binding scope, category, format, data,
 code, ethics, fee, or submission claims.
+
+For a durable commission, use the owner-bound Run Specs in
+`../../haipipe-ideation/references/workflow-runs.md`. This capability's checks
+are internal Steps unless separately commissioned under that contract.
 
 ## First resolve the target
 
@@ -89,6 +93,12 @@ Current official requirements remain `DESK RULE`; measured exemplars are
 supported by one of those sources.
 
 ## One-off mode
+
+Follow the umbrella skill's one-off source route: reuse verified inputs,
+otherwise use Discovery one-off search/read within the request; return links,
+access dates and reading depth inline. Keep no-search/read-only restrictions.
+Unavailable evidence means provisional/HOLD. Inline work creates no durable
+portfolio or source bank unless the user asks to retain it.
 
 Return the lens table, verdict, strongest editorial objection, required
 upgrades, and plausible specialist reroutes. Browse current official pages

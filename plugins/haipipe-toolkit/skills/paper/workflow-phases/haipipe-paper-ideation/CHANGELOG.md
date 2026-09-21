@@ -1,3 +1,7 @@
+## 1.0.3 · 2026-09-20
+
+- Use the canonical Page/Run loading order and Paper Spec adapter. Route semantic ideation to its shared owner; retain separate working/released/delivery surfaces and the sole I3 selection authority.
+
 ## 1.0.2 · 2026-09-13
 
 - Adopted the v2 P0 projection contract with explicit working, release, and

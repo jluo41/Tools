@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -160,12 +161,13 @@ def run_finalize_unit(
     assets.mkdir(parents=True, exist_ok=True)
     recipe.mkdir(parents=True, exist_ok=True)
 
-    # paths relative to the paper root, for LaTeX \includegraphics / \input
+    # paths relative to the caller's asset-reference base for LaTeX
+    # \includegraphics / \input; the unit folder itself remains portable
     try:
         unit_rel = unit.relative_to(workspace).as_posix()
     except ValueError:
         # unit not under workspace: keep a RELATIVE path (with ../) rather than an
-        # absolute one, so float.tex stays portable when compiled from the paper root.
+        # absolute one, so float.tex stays portable when compiled from the caller base.
         unit_rel = Path(os.path.relpath(unit, workspace)).as_posix()
     rel_asset = f"{unit_rel}/assets/figure.png"
     rel_float = f"{unit_rel}/float.tex"
@@ -200,6 +202,7 @@ def run_finalize_unit(
     }
     write_json(review_log, review_payload)
 
+    rel_preview = f"{unit_rel}/preview.tex"
     payload = {
         "ok": True,
         "workspace": str(workspace),
@@ -213,8 +216,9 @@ def run_finalize_unit(
             "reviewLog": str(review_log),
         },
         "previewCompileHint": (
-            f"pdflatex -output-directory {unit_rel} {rel_float.replace('float.tex','preview.tex')} "
-            "(run from the paper root)"
+            f"pdflatex -output-directory {shlex.quote(unit_rel)} "
+            f"{shlex.quote(rel_preview)} "
+            "(run from the caller's asset-reference base)"
         ),
         "score": score,
         "reviewSummary": review_summary,
@@ -362,12 +366,12 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     preflight = subparsers.add_parser("preflight", help="Check that Codex image generation is available")
-    preflight.add_argument("--workspace", help="Paper or project workspace root")
+    preflight.add_argument("--workspace", help="Caller workspace and asset-reference base")
     preflight.add_argument("--json-out", help="Optional path to save the JSON result")
 
     finalize = subparsers.add_parser("finalize", help="Finalize the accepted figure artifacts")
-    finalize.add_argument("--workspace", help="Paper or project workspace root")
-    finalize.add_argument("--best-image", required=True, help="Accepted PNG to promote to figure_final.png")
+    finalize.add_argument("--workspace", help="Caller workspace and asset-reference base")
+    finalize.add_argument("--best-image", required=True, help="Caller-approved PNG candidate to finalize")
     finalize.add_argument(
         "--caption",
         help="Caller-approved caption text. Required with --display-unit; used in latex_include.tex otherwise.",
@@ -384,13 +388,13 @@ def build_parser() -> argparse.ArgumentParser:
     finalize.add_argument("--review-summary", help="Short review summary for review_log.json")
     finalize.add_argument(
         "--display-unit",
-        help="Target displays/<unit>/ dir. New Intake units receive recipe/review_log.json; legacy source/ units stay legacy.",
+        help="Caller-supplied unit directory. New Intake units receive recipe/review_log.json; legacy source/ units stay legacy.",
     )
     finalize.add_argument("--json-out", help="Optional path to save the JSON result")
 
     verify = subparsers.add_parser("verify", help="Verify that final artifacts were emitted correctly")
-    verify.add_argument("--workspace", help="Paper or project workspace root")
-    verify.add_argument("--display-unit", help="Verify a displays/<unit>/ unit instead of flat figures/")
+    verify.add_argument("--workspace", help="Caller workspace and asset-reference base")
+    verify.add_argument("--display-unit", help="Verify a caller-supplied display unit instead of standalone scratch output")
     verify.add_argument("--json-out", help="Optional path to save the JSON result")
 
     return parser

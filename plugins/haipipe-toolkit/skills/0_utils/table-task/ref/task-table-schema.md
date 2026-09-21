@@ -125,8 +125,9 @@ The job has no table of its own; its facts are one line under `### bNNjNN · <jo
 | Result | receipt folder relative to the block |
 | Source | `receipt` or `ticket only` |
 
-Receipts are looked up at `<job>/results/<task>/<run>/runtime.yaml` (the
-nested law) and, flagged `S-results`, at `<task>/results/<run>/runtime.yaml`.
+Current receipts live at `<task>/results/<run>/runtime.yaml`.
+Legacy `<job>/results/<task>/<run>/runtime.yaml` receipts are also read and
+flagged `S-results`; when both exist for one Run, the Task-local receipt wins.
 A results folder without `runtime.yaml` is `R01`.
 
 ## 6. Findings
@@ -137,7 +138,7 @@ A results folder without `runtime.yaml` is `R01`.
 | S5 | task has no `tNN_<task>.md` | haipipe-task |
 | S10 | `config/` or `configs/` at the task root | haipipe-task |
 | S-legacy | code at the task root, not `scripts/` | haipipe-task |
-| S-results | `results/` inside the task | haipipe-task |
+| S-results | legacy Job-level `results/<task>/` placement | haipipe-task |
 | S-store | two `store:` values in one job | haipipe-task |
 | R01 | results folder without a receipt | haipipe-run |
 | R-orphan | receipt with no ticket, or a results folder for a task that does not exist | haipipe-run |

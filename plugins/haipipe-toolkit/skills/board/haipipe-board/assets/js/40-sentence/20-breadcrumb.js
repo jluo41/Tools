@@ -1,15 +1,4 @@
-  /* ── Section and subsection breadcrumbs (QB5d) ────────────────────────────
-     Above Content's fine `C.H.P.S` grammar sits a coarser address every reader
-     can say out loud: `QB4 / State / Decision Now`. Every rendered `##`
-     section and `###` subsection heading gets one, at the END of the heading
-     and invisible until that heading is hovered — the contract the sentence
-     rail and the C/H chips already follow.
-
-     The chip copies the address plus the markdown source path, so Claude Code
-     can open the right file without guessing; `🤖` focuses THIS page's existing
-     chat on that heading. Both are generated per render: nothing is written
-     into the markdown, and a live refresh recomputes them because this runs
-     inside the rewire below. */
+  /* Heading rails copy a source address and its full reading context. */
   function plainLabel(el) {
     // An address is spoken and pasted, so it carries the NAME only: not the
     // heading's emoji, not its `1/7` progress count, not `· 6 sections`.
@@ -22,18 +11,9 @@
       .trim();
   }
   function blockOf(el) {
-    // innerText needs layout, so the clone is measured off-screen and removed.
-    var c = el.cloneNode(true);
-    c.querySelectorAll('.hpath,.schatbar,.sadd,.saddrow,.dadd,button,select,input,textarea')
-      .forEach(function (x) { x.remove(); });
-    if (c.tagName === 'DETAILS') c.open = true;
-    c.querySelectorAll('details').forEach(function (d) { d.open = true; });
-    c.style.cssText = 'position:absolute;left:-99999px;top:0;width:800px';
-    document.body.appendChild(c);
-    var t = c.innerText.replace(/\n{3,}/g, '\n\n').trim();
-    c.remove();
-    return t.length > 1600 ? t.slice(0, 1600) + '\n…' : t;
+    return window.__boardReadableText(el);
   }
+
   function shRun(sh) {
     // A `###` outside Content is a flat `div.sh`; its block is the run of
     // siblings up to the next one.
@@ -46,69 +26,30 @@
     }
     return box;
   }
-  function copyInto(btn, text, label) {
-    function done() {
-      var old = btn.textContent;
-      btn.textContent = label || '✓';
-      setTimeout(function () { btn.textContent = old; }, 700);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done, done);
-      return;
-    }
-    var ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); } catch (e) {}
-    ta.remove(); done();
-  }
-  /* The chip SHOWS the short id and COPIES the full address (JL 260801: "the
-     address here is too long ... maybe just C1 is ok, when I click C1, I can
-     copy the link"). Two different jobs were being served by one string: the
-     reader needs a token they can see at a glance and say out loud, and Claude
-     Code needs `QB4 / Content / 0 · The page protocol · <file>` to open the
-     right place. So the label shrinks and the clipboard payload does not.
-     A Content division already carries `C1` from the sentence grammar, so it
-     reuses that id rather than inventing a second one; everywhere else the
-     page id drops off the front, since the tab and the breadcrumb both
-     already say which page this is. */
-  function headingRail(head, sec, path, short, file, blockEl, withCopy) {
+  function headingRail(head, sec, path, short, blockEl) {
     if (head.querySelector(':scope > .hpath')) return;
     var rail = document.createElement('span');
     rail.className = 'hpath';
-    var chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'hpid';
-    chip.textContent = short || path;
-    chip.title = 'Copy this address' + (file ? '\n' + path + '\n' + file : '');
-    chip.addEventListener('click', function (e) {
-      e.preventDefault(); e.stopPropagation();
-      copyInto(chip, path + (file ? ' · ' + file : ''), '✓ copied');
-    });
-    rail.appendChild(chip);
-    if (withCopy) {                 // `##` headings already carry their own ⧉
-      var cp = document.createElement('button');
-      cp.type = 'button';
-      cp.className = 'hcopy';
-      cp.textContent = '⧉';
-      cp.title = 'Copy this subsection as plain text';
-      cp.addEventListener('click', function (e) {
-        e.preventDefault(); e.stopPropagation();
-        copyInto(cp, blockOf(blockEl()), '✓');
-      });
-      rail.appendChild(cp);
+    // Content/terminal headings already display their generated address.
+    if (!head.querySelector('.caddr,.haddr')) {
+      var chip = document.createElement('span');
+      chip.className = 'hpid';
+      chip.textContent = short || path;
+      chip.title = path;
+      rail.appendChild(chip);
     }
-    var bot = document.createElement('button');
-    bot.type = 'button';
-    bot.className = 'hchat';
-    bot.textContent = '🤖';
-    bot.title = 'Chat about ' + path;
-    bot.addEventListener('click', function (e) {
+    var copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'hcopy';
+    copy.textContent = '⧉';
+    copy.title = 'Copy prompt for ' + path;
+    copy.setAttribute('aria-label', copy.title);
+    copy.addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();
-      if (window.__boardHeadingChat) {
-        window.__boardHeadingChat(sec, path, blockOf(blockEl()), file);
-      }
+      window.__boardCopyPrompt(copy,
+        window.__boardPromptText(sec, path, blockOf(blockEl()), ''));
     });
-    rail.appendChild(bot);
+    rail.appendChild(copy);
     head.appendChild(rail);
   }
   function shortLabel(label) {
@@ -128,16 +69,15 @@
     return host ? host.querySelector(':scope > summary.ch, :scope > .ch') : null;
   }
   function wireHeadingPaths() {
-    document.querySelectorAll('.hpath').forEach(function (x) { x.remove(); });
+    document.querySelectorAll('.hpath,.chcopy').forEach(function (x) { x.remove(); });
     document.querySelectorAll('section.slide.q').forEach(function (sec) {
-      var file = sec.getAttribute('data-file') || '';
       var SECT = 'details.sect, details.outline-section, details.qd';
       sec.querySelectorAll('.ch').forEach(function (ch) {
         var name = plainLabel(ch);
         if (!name) return;
         var box = ch.closest(SECT) || ch.parentElement || ch;
-        headingRail(ch, sec, sec.id + ' / ' + name, shortLabel(name), file,
-                    function () { return box; }, false);
+        headingRail(ch, sec, sec.id + ' / ' + name, shortLabel(name),
+                    function () { return box; });
       });
       function subPath(el) {
         var head = ownHead(el.closest(SECT + ', .folds'));
@@ -146,14 +86,18 @@
       }
       sec.querySelectorAll('.sh').forEach(function (sh) {
         if (!plainLabel(sh)) return;
-        headingRail(sh, sec, subPath(sh), shortLabel(plainLabel(sh)), file,
-                    function () { return shRun(sh); }, true);
+        headingRail(sh, sec, subPath(sh), shortLabel(plainLabel(sh)),
+                    function () { return shRun(sh); });
+      });
+      sec.querySelectorAll('.ph.heading-target').forEach(function (head) {
+        headingRail(head, sec, head.dataset.headingRef, head.dataset.headingId,
+                    function () { return head; });
       });
       sec.querySelectorAll('details.csec > summary').forEach(function (sm) {
         if (!plainLabel(sm)) return;
         // `C1` comes from 10-address.js, which runs first; the visible `.caddr`
         // chip beside it is the same id, so this rail shows no second copy of
-        // it and contributes only the ⧉ and 🤖 buttons.
+        // it and contributes only the ⧉ copy button.
         var cid = (sm.parentElement && sm.parentElement.dataset)
           ? sm.parentElement.dataset.contentId : '';
         // Aims and States groups fold like Content divisions since 260802, so
@@ -162,33 +106,17 @@
         // showing it (JL 260802: "they are nested together"). Their own id is
         // the first token of the heading, `A0` or `P`, so use that.
         if (!cid) cid = shortLabel(plainLabel(sm));
-        headingRail(sm, sec, subPath(sm), cid || plainLabel(sm), file,
-                    function () { return sm.parentElement; }, true);
+        headingRail(sm, sec, subPath(sm), cid || plainLabel(sm),
+                    function () { return sm.parentElement; });
       });
     });
   }
   window.__boardWireSentenceChats = function () {
-    wireSentenceChats();
+    wireSentenceCopies();
     wireHeadingPaths();
   };
-  wireSentenceChats();
+  wireSentenceCopies();
   wireHeadingPaths();
-  document.addEventListener('click', function () {
-    document.querySelectorAll('.schatbar.menu-open').forEach(function (bar) {
-      bar.classList.remove('menu-open');
-      var more = bar.querySelector('.smore');
-      if (more) more.setAttribute('aria-expanded', 'false');
-    });
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape') return;
-    close();
-    document.querySelectorAll('.schatbar.menu-open').forEach(function (bar) {
-      bar.classList.remove('menu-open');
-      var more = bar.querySelector('.smore');
-      if (more) more.setAttribute('aria-expanded', 'false');
-    });
-  });
 })();
 
 /* A chip inside a sentence's <summary> also toggles that sentence's drawer on

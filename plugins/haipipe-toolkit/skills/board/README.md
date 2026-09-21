@@ -16,13 +16,21 @@ sentence work so each rule has one owner.
 | Sentence | `skills/page/haipipe-sentence` | comment, edit, card, sentence-local record |
 | Write routing | `haipipe-board-routing` | propose Board shape or route one anchored Page write |
 
-Domain Page Types live with the workflow that owns them. Task Pages are owned
-by `haipipe-task`; Paper Pages by the Paper family; Application Pages by the
-Application family. This folder does not maintain a duplicate Page Type set.
+Domain Page contracts live with their Folder or family owner. Task Pages are
+owned by `haipipe-task`; Paper Pages by the Paper family. Insight and Design
+are independent families: `haipipe-insight` owns InsightBoards and
+`haipipe-plugin-design-board` presents the Design family at Board grain.
+Application is retired as their parent skill family. This folder does not
+maintain a duplicate Page Type set.
 
 ## Page workflow
 
-| Phase | Skill | Primary work | Primary workspace |
+A Workflow is a list of Runs. Its definition is the Page owner's bounded
+[Run Spec graph](../page/page-workflows/haipipe-page-workflow/ref/workflow-table.md);
+actual instances retain their native identities and receipts. The table below
+maps controller coordinates to workspaces; its rows do not count Runs.
+
+| Controller coordinate | Skill | Primary work | Primary workspace |
 |---:|---|---|---|
 | 00 CONTEXT | `haipipe-page-context` | collect, resolve, freeze allowed context | off-stage Context record |
 | 01 OUTLINE | `haipipe-page-outline` | SHAPE bullets; SURVEY Evidence Items and Runs | Draft + Evidence Spaces |
@@ -38,14 +46,17 @@ than creating a second content surface.
 
 | Name | Identity | Owner |
 |---|---|---|
-| Page Run | `rp00_mermaid-structure`, then `rpNN_pNN[-pNN]` from `rp01` | Page-owned human-feedback Version/Step history |
+| Page Writing Run | `rp-struct-NN`, `rp-scratch-NN_<target>`, `rp-sec-NN`, `rp-para-NN_Pxx[-Pyy]` | Page-owned bounded writing/structure target with feedback Steps and Versions |
 | Task Run | native `rNN` or global run id | output-producing Task/Discovery family |
-| Page workflow pass | phase-controller packet + receipt | `haipipe-page-workflow`; invoked by the `RUN` verb |
+| Page Workflow Runtime execution | `workflow_runtime_id`, controller packet and receipt | `haipipe-page-workflow`; invoked by the `RUN` verb; coordinates actual Runs |
 
-A Page workflow pass is not a Page Run. Board may host and present all three,
-but it never renames their identities or becomes their source authority.
-Historical `prNN_*` Page Runs remain readable migration records; new Page Runs
-use `rpNN` so `PR` remains unambiguous shorthand for Pull Request.
+The Workflow Runtime envelope does not allocate an extra Run. Board hosts
+these projections without renaming identities or becoming their authority.
+The initial Structure Run is `rp-struct-01`; load
+[Page Run families](../page/haipipe-page/ref/page-run-families.md) for RP/RE/RD
+allocation. Historical compact `rp00_*`, `rpNN_pNN` and `prNN_*` records remain
+readable compatibility input. New writers use the canonical typed IDs.
+Serialized `phase`, `cycle` and `next_cycle` fields remain controller labels.
 
 ## Public plugins
 
@@ -102,7 +113,7 @@ python3 haipipe-board/cli/foldercontracts.py --check
 
 The Folder-contract command is a cross-family integration audit and names the
 owning external skill for every finding. Use repeatable `--workflow <name>`
-arguments when validating one owner's phase family in isolation.
+arguments when validating one workflow's Folder owners in isolation.
 
 Use `/workflow-table board` when a cross-skill workflow view is needed. Keep
 test counts in command output and changelogs, not in this README.

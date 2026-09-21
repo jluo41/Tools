@@ -7,8 +7,8 @@ description: >-
   red-team, or compare admitted research ideas before human selection.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-09-13"
+  version: "0.1.3"
+  last_updated: "2026-09-20"
   capability_family: "2_test"
 ---
 
@@ -28,6 +28,10 @@ Load the first three for a complete test. Load the Nature specialist only when
 the user asks for it or a named Nature-family target remains live. A
 single-axis request loads only that specialist and updates the corresponding
 matrix row; it does not imply the other axes passed.
+
+For a durable commission, use the owner-bound Run Specs in
+`../../haipipe-ideation/references/workflow-runs.md`. This capability's checks
+are internal Steps unless separately commissioned under that contract.
 
 ## Per-Idea test matrix
 
@@ -58,6 +62,9 @@ updated_at: "ISO-8601"
 The matrix is a readable index, not a second authority. Every cell links back
 to the Idea Card, owner Result, Venue Fit Card, or specialist receipt that
 supports it.
+Its receipts must match that card's pointers; use pending when a novelty or
+pressure receipt does not yet exist. Multiple novelty receipts use a list.
+Never copy another candidate's receipt paths into an unresolved row.
 
 ## Test protocol
 
@@ -93,7 +100,7 @@ returned paths and statuses.
   an honest judgment.
 - `preempted`, `negative`, `off-fit`, or `not-nature-shaped` are legitimate
   findings, not execution failures.
-- A machine recommendation never changes an Idea to `selected` or
+- A machine recommendation never changes an Idea to `selected`, `deferred` or
   `eliminated`; those states belong to `3_select` and a human receipt.
 
 Project Core Claims into the matrix by contribution role:
@@ -111,6 +118,11 @@ mechanically preempt the Idea. If no role is declared, treat the claim as
 central. Do not use count, majority vote, or an average to override this
 precedence.
 
+Matrix ready is a central-contribution summary, not selection eligibility:
+a supporting unresolved/preempted claim still blocks that card's selection.
+Keep every supporting gap visible. A skipped pilot projects to feasibility:
+pending, with the reason in its pressure receipt; it never becomes a waiver.
+
 ## Exit gate
 
 An Idea is eligible for Select only when all Core Claims have bounded novelty
@@ -120,4 +132,8 @@ named deep-fit finalist has a current Venue contract. Nature review is
 required only when a Nature-family target is under consideration.
 
 Run the shared checker with `--gate test` before presenting a durable test as
-complete. Mechanical success does not replace scientific judgment.
+complete. This is the whole-portfolio completion gate. Select/Handoff instead
+validate the portfolio's structure and truthful states, then apply completion
+requirements only to the actually selected cards. Unselected HOLDs stay visible
+and do not block another ready card. Mechanical success does not replace
+scientific judgment.

@@ -15,7 +15,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir
 sys.path.insert(0, str(HERE))
-from live.paper import collect, render_paper, session_rows, task_home  # noqa: E402
+from live.paper import collect, render_paper, session_rows, task_home, folder_map  # noqa: E402
 
 BOARD = """# Paper-Test · paper board
 spine: one idea, told to a desk
@@ -325,7 +325,7 @@ class PaperPluginTest(unittest.TestCase):
             self.assertEqual(page.count("backend Markdown<span"), 5)         # one footer per Space, naming its files
             self.assertIn("papers/Paper-Test/A1-Story/Story00-ideation/Story00-ideation.md", page)
             self.assertIn("papers/Paper-Test/delivery/build-manifest.json", page)
-            for chip in ("Setup Space", "Ideation Space", "Story Space", "Run Space"):
+            for chip in ("Setup Space", "Ideation Space", "Story Space", "Run Space", "Delivery Space"):
                 self.assertIn(chip, page)
             self.assertIn("/_board/outline?path=%2Fpapers%2FPaper-Test%2Fboard.md&amp;file=A1-Story%2FStory00-ideation%2FStory00-ideation.md&amp;lens=div", page)
             self.assertIn("&amp;lens=run&amp;run=rp-struct-01", page)
@@ -378,7 +378,9 @@ class PaperPluginTest(unittest.TestCase):
             self.assertIn("Task Roadmap", page)
             self.assertIn("Workflow map", page)
             # the map joined to the folder tree: each Run-Type names its folder on THIS board, each slot resolves
-            self.assertIn("Folder tree × Run-Type", page)
+            mapping = folder_map(collect(b, "/papers/Paper-Test/board.md"))
+            self.assertIn("paper.section.route", mapping["by_runtype"])
+            self.assertIn("Ba-DESK-Main/", mapping["by_runtype"]["paper.section.route"])
             self.assertIn("folder on this board", page)
             self.assertIn("A1-Story/StoryA-desk-idea/", page)                 # the story slot resolved
             self.assertIn("Ba-DESK-Main/", page)
@@ -389,7 +391,8 @@ class PaperPluginTest(unittest.TestCase):
             self.assertIn("📁 j01_job/", page)
             self.assertIn("📁 StoryA-desk-idea/", page)
             self.assertIn('<ul class="tree">', page)                           # a real nested tree, not a table
-            self.assertIn('<span class="idtag rt">paper.story.shape</span>', page)
+            self.assertIn("structure.<page>", mapping["by_runtype"])
+            self.assertIn("A1-Story/StoryA-desk-idea/", mapping["by_runtype"]["structure.<page>"])
             self.assertIn('<span class="tn-note">outline/ ', page)             # a page folder's row: its counts, the page named once (by the folder)
             # the tree is complete and bare: every folder opens to its files; no holds text, no explanation table
             self.assertIn("📁 runs/", page)

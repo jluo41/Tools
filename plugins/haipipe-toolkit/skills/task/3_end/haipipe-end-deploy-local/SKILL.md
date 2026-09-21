@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-deploy-local
-description: "Local self-hosted deploy specialist for haipipe-end: wraps an Endpoint_Set into a local HTTP server -- Flask (default), FastAPI, or local Docker container -- for dev, integration testing, demos, and DIY deployments. Reads (never modifies) Endpoint_Sets from haipipe-end-endpointset. Called by /haipipe-end when deploy target is local / flask / fastapi / localhost."
+description: "Local self-hosted deploy specialist for haipipe-end: wraps an Endpoint_Set into a local HTTP server -- FastAPI (default), Flask, or local Docker container -- for dev, integration testing, demos, and DIY deployments. Reads (never modifies) Endpoint_Sets from haipipe-end-endpointset. Called by /haipipe-end when deploy target is local / flask / fastapi / localhost."
 argument-hint: "[verb] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -25,8 +25,8 @@ Wraps an Endpoint_Set into a small HTTP server running on the local machine.
 
   Verb axis:        dashboard | deploy | test | monitor | teardown | review
 
-  Framework flag:   --framework flask  (default)
-                    --framework fastapi
+  Framework flag:   --framework fastapi  (default)
+                    --framework flask  (requires project adapter)
                     --with-docker      (wrap in a local Docker container instead
                                          of running directly with the framework)
 
@@ -38,8 +38,8 @@ Commands
 ```
 /haipipe-end-deploy-local                                  -> dashboard: locally-running servers
 /haipipe-end-deploy-local dashboard                        -> same
-/haipipe-end-deploy-local deploy <endpoint_set>            -> generate app, start Flask on :5000
-/haipipe-end-deploy-local deploy <es> --framework fastapi  -> use FastAPI instead of Flask
+/haipipe-end-deploy-local deploy <endpoint_set>            -> copy the FastAPI wrapper, start on :8765
+/haipipe-end-deploy-local deploy <es> --framework fastapi  -> use the supplied FastAPI template
 /haipipe-end-deploy-local deploy <es> --with-docker        -> run inside a local Docker container
 /haipipe-end-deploy-local deploy <es> --port 8080          -> custom port
 /haipipe-end-deploy-local test <endpoint_id>               -> POST a payload to local server
@@ -63,7 +63,7 @@ deploy      ../haipipe-end/ref/deploy-overview.md
             ../haipipe-end/ref/0-overview.md
               flask:        platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_system.py
               with-docker:  platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_docker.py
-              fastapi:      project-specific (TBD)
+              fastapi:      scripts/serve_local.py (copy to Task scripts/ first)
 test        ../haipipe-end/ref/deploy-overview.md                           POST a JSON payload to localhost:port/invocations
 monitor     ../haipipe-end/ref/deploy-overview.md                           tail logs (`--logs` flag or `docker logs`)
 teardown    ../haipipe-end/ref/deploy-overview.md                           `--stop` flag or `docker stop`
@@ -87,9 +87,10 @@ Required arg per verb:
 Step 2: Choose backing path based on framework + Docker flags.
 For Flask
          without Docker, defer to `run_endpoint_system.py`. For local Docker,
-         defer to `run_endpoint_docker.py`. For FastAPI, project-specific.
+         defer to `run_endpoint_docker.py`. For FastAPI, copy scripts/serve_local.py to the serving Task scripts/.
 
-Step 3: Execute the procedure.
+Step 3: Verify the selected template, workspace imports and dependencies exist, then execute the requested procedure.
+If a Flask/Docker adapter or remote platform repository is missing, return blocked with its exact prerequisite; do not claim deployment is available from this skill alone.
 
 Step 4: Emit the structured tail:
 
@@ -102,10 +103,10 @@ next:      suggested next command
 
 ---
 
-Procedures (placeholder — fill in once local-deploy convention settles)
+Procedures (FastAPI available; Flask/Docker require workspace adapters)
 ------------------------------------------------------------------------
 
-Deploy (Flask, default):
+Deploy (Flask, optional project adapter):
   1. Read Endpoint_Set at `_WorkSpace/6-EndpointStore/<endpoint_set>/`.
   (input contract, all deploy skills: canonical input = the folder; a .tar.gz twin is a wire form only)
   2. Defer to `python platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_system.py
@@ -134,7 +135,7 @@ Deploy (FastAPI):
        POST /invocations  — accepts the Endpoint_Set's documented payload
                             (typically `dataframe_records` per Input2SrcFn)
   3. Invocation (from the job copy):
-       cp <skill>/scripts/serve_local.py tasks/<G>{NN}_<group>/{NN}_<task>/
+       cp <skill>/scripts/serve_local.py tasks/bNN_<block>/jNN_<job>/tNN_<task>/scripts/
        ENDPOINT_PATH=_WorkSpace/6-EndpointStore/<endpoint_set> \
        PORT=8765 \
            python serve_local.py

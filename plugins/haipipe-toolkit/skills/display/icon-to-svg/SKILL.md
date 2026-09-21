@@ -140,6 +140,14 @@ layout — not a pixel-perfect trace. If an element genuinely can't be reduced t
 recommend keeping the raster crop for that one. Honesty about a weak match beats a confident wrong
 one.
 
+## Run and display-unit boundary
+
+One icon-to-SVG conversion is one bounded Run; inspection, scoring, centering,
+and revisions are internal Steps. The default output is a standalone SVG at the
+requested path. If the icon will serve a Page, View, or Paper display, its caller
+places the SVG and rebuild notes in the supplied display unit and owns candidate
+promotion and `accepted:`. A passing score never records acceptance.
+
 ## Example decomposition
 **Input:** a small oval biosensor crop — white puck, navy button left-of-center with a light
 highlight, a short dark dash on the right, subtle 3-D rim.

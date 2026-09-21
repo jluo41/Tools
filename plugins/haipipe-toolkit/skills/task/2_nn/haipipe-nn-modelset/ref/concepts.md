@@ -146,7 +146,7 @@ class ModelInstance_Pipeline:
         self.mode = 'training'
 
     def run(self, aidata_set, mode='fit',
-            modelinstance_name=None, modelinstance_version='v0001'):
+            modelinstance_name=None, modelinstance_version='@v0001'):
         if mode in ['fit', 'train']:
             return self._run_training(aidata_set, modelinstance_name, modelinstance_version)
         elif mode == 'inference':
@@ -350,7 +350,7 @@ Every ModelInstance_Set saves manifest.json with full lineage chain:
 
 ```json
 {
-    "modelinstance_set_name": "MyModel/v0001",
+    "modelinstance_set_name": "MyModel/@v0001",
     "model_type": "TSForecast",
     "aidata_set_manifest": {
         "aidata_set_name": "Demo_AIData",
@@ -415,7 +415,7 @@ pipeline = ModelInstance_Pipeline(
 )
 modelinstance_set = pipeline.run(
     aidata_set, mode='fit',
-    modelinstance_name='MyModel', modelinstance_version='v0001'
+    modelinstance_name='MyModel', modelinstance_version='@v0001'
 )
 modelinstance_set.save_to_disk()  # Explicit save -- pipeline does NOT auto-save
 ```
@@ -563,3 +563,7 @@ Step 7: Package + save/load roundtrip
 # Discover L4 test scripts:
 Glob: code/hainn/tuner/**/test_*_4_modelset.py
 ```
+
+Version examples follow the Instance owner contract: the version includes `@`.
+These are documentation examples; inspect the consuming workspace pipeline before assuming its installed API normalizes a bare `v` or has this default.
+Preserve stored asset identities and explicitly pass the resolved version at call sites.

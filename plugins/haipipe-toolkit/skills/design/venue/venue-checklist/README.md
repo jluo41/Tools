@@ -20,7 +20,6 @@ design_profile:
   narrative: optional
   display: none
   section_edit: none
-  terminal: adopted
 ```
 
 
@@ -40,7 +39,7 @@ template:
 ```
 
 
-## Phase use
+## Run guidance
 
 ### Commission and Generate
 
@@ -52,7 +51,7 @@ If the checklist has a natural progression (prep → action →
 verify → confirm), writing the narrative makes the order explicit.
 Skip if items are independent / unordered.
 
-### Verify and adopt
+### Verify
 Each item: action verb + specific object + measurable completion.
-"Check blood glucose before breakfast" not "Monitor glucose." Render the
-exact ordered list to `delivery/render/`, then adopt or decline.
+"Check blood glucose before breakfast" not "Monitor glucose." If a preview is needed, render the exact ordered list inside the current Result.
+Independent Verify pass makes that exact list ready for Delivery.

@@ -1,108 +1,103 @@
-# workflow-plan-sample-data.yaml -- Stata data stage script-level plan
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Plugin-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
 # Schema: task/haipipe-workflow/ref/plan-schema.md
-# Phases: Setup -> FilterCase -> FilterExternal -> FullVariables -> Describe
-# Heavy outputs land in _WorkSpace/*-Data-Store/.
-
-# --- Preview -----------------------------------------------------------
-# data-pipeline -- cross-year analysis table assembly
-#
-# I: _WorkSpace/2-Case-Store/case_<cohort>_<source>/<asset>/year-*/
-#    _WorkSpace/0-External-Store/<physician_traits>
-#    configs/<Spec>.do
-#
-# +-- 🔧 P1: Setup
-# |   +-- S1: load config, resolve paths
-# |
-# +-- 🧹 P2: FilterCase
-# |   +-- S2: append per-year CASES, apply first-visit + age/year filters
-# |
-# +-- 🧹 P3: FilterExternal
-# |   +-- S3: merge physician traits, apply MD/DO + review-count filters
-# |
-# +-- 🔨 P4: FullVariables
-# |   +-- S4: derive treatment/outcome/control vars -> ANALYSIS-CMS-Filter.dta
-# |
-# +-- 📋 P5: Describe
-# |   +-- S5: N, distinct benes/NPIs, year dist, treatment summary
-#
-# O: _WorkSpace/*-Data-Store/<asset>/ANALYSIS-CMS-Filter.dta
-#    results/run_data_<Spec>/summary.txt + log/
-# -------------------------------------------------------------------
-
 name: data-<SPEC>
-purpose: "Assemble cross-year regression-ready analysis table for <SPEC>"
-skill: haipipe-task-for-stata
-
+purpose: Assemble cross-year regression-ready analysis table for <SPEC>
 input:
   args:
-    config: configs/<SPEC>.do
-  files_in:
-    - data_pipeline.do
-    - configs/<SPEC>.do
+    config: scripts/config/rNN_<run>.do
+  files_in: &id001
+  - scripts/config/rNN_<run>.do
+  - scripts/data_pipeline.do
+  - scripts/config/<SPEC>.do
+  - _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<ASSET>/year-*/
+  - _WorkSpace/0-External-Store/<PHYSICIAN_TRAITS>
+owner: haipipe-task-for-stata
+plugin:
+  id: <owning-plugin>
+  workspace_roster_ref: <plugin-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Assemble cross-year regression-ready analysis table for <SPEC>
+  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: haipipe-task-for-stata
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: ok
+    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: haipipe-task-for-stata
+    worker_skill_chain:
+    - haipipe-task-for-stata
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Setup
+    label: setup:config
+    required: true
+    prompt: Load config, resolve case-store and external-store paths
+    files_in:
+    - scripts/config/<SPEC>.do
+    files_out: []
+  - section: FilterCase
+    label: filter-case:append-filter
+    required: true
+    prompt: Append per-year CASES from Case-Store, apply first-visit rule, age/year window, cancer exclusion
+    files_in:
     - _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<ASSET>/year-*/
+    files_out: []
+  - section: FilterExternal
+    label: filter-external:merge-filter
+    required: true
+    prompt: Merge physician personality traits, apply MD/DO filter, review-count filter
+    files_in:
     - _WorkSpace/0-External-Store/<PHYSICIAN_TRAITS>
-
-phases:
-
-  - title: Setup
-    detail: "load config, resolve _WorkSpace paths"
-    steps:
-      - label: "setup:config"
-        type: agent
-        required: true
-        prompt: "Load config, resolve case-store and external-store paths"
-        files_in:
-          - configs/<SPEC>.do
-        files_out: []
-
-  - title: FilterCase
-    detail: "append per-year CASES, apply first-visit + age/year filters"
-    steps:
-      - label: "filter-case:append-filter"
-        type: agent
-        required: true
-        prompt: "Append per-year CASES from Case-Store, apply first-visit rule, age/year window, cancer exclusion"
-        files_in:
-          - _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<ASSET>/year-*/
-        files_out: []
-
-  - title: FilterExternal
-    detail: "merge physician traits + policy, apply MD/DO + review-count filters"
-    steps:
-      - label: "filter-external:merge-filter"
-        type: agent
-        required: true
-        prompt: "Merge physician personality traits, apply MD/DO filter, review-count filter"
-        files_in:
-          - _WorkSpace/0-External-Store/<PHYSICIAN_TRAITS>
-        files_out: []
-
-  - title: FullVariables
-    detail: "derive treatment/outcome/control variables, write analysis table"
-    steps:
-      - label: "full-variables:derive"
-        type: agent
-        required: true
-        prompt: "Derive treatment/outcome/control variables, write ANALYSIS-CMS-Filter.dta"
-        files_in: []
-        files_out:
-          - _WorkSpace/<N>-Data-Store/<DATA_ASSET>/ANALYSIS-CMS-Filter.dta
-
-  - title: Describe
-    detail: "QC summary of the analysis table"
-    steps:
-      - label: "describe:summary"
-        type: agent
-        required: true
-        prompt: "N rows, distinct benes/NPIs, year dist, treatment summary, outcome means, missingness"
-        files_in: []
-        files_out:
-          - results/run_data_<SPEC>/summary.txt
-
-output:
-  returns:
-    status: ok
-  files_out:
+    files_out: []
+  - section: FullVariables
+    label: full-variables:derive
+    required: true
+    prompt: Derive treatment/outcome/control variables, write ANALYSIS-CMS-Filter.dta
+    files_in: []
+    files_out:
     - _WorkSpace/<N>-Data-Store/<DATA_ASSET>/ANALYSIS-CMS-Filter.dta
-    - results/run_data_<SPEC>/summary.txt
-    - results/run_data_<SPEC>/log/
+  - section: Describe
+    label: describe:summary
+    required: true
+    prompt: N rows, distinct benes/NPIs, year dist, treatment summary, outcome means, missingness
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.txt
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
+output:
+  returns: *id002
+  files_out:
+  - _WorkSpace/<N>-Data-Store/<DATA_ASSET>/ANALYSIS-CMS-Filter.dta
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.txt
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/log/

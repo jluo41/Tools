@@ -57,7 +57,7 @@ exact paths. I never mutate the Task, Run, or Result.
 ## Report gate
 
 ```text
-[ ] workflow/report.yaml mirrors the Plan and describes actual outputs
+[ ] workflow/report.yaml binds actual Runs to Run Specs and describes actual outputs
 [ ] deviations, caveats, blocked items, and next action are explicit
 [ ] RUN_AUDIT.md names the exact Run id and evidence paths
 [ ] Supporting Run handoffs carry the full immutable id
@@ -68,8 +68,11 @@ exact paths. I never mutate the Task, Run, or Result.
 ## Verdict
 
 ```text
-verdict: pass | revise | blocked | fail
+verdict: pass | warn | revise | blocked | fail
 stage:   plan | build | run | report
+issues:  [<path and contract violation>]
+feedback: <specific changes requested>
+sidecar: <CODE_REVIEW.md or RUN_AUDIT.md content, when requested>
 defects:
   - path: <file>
     issue: <contract violation>
@@ -80,3 +83,6 @@ summary: <one line>
 `pass` means the artifact agrees with its declared contract, not merely that a
 command exited zero. A consumer may cite the returned Result directly or place
 its Run id in the Page Evidence Workspace as a Supporting Run.
+
+Return review sidecar content to the orchestrator; the reviewer remains read-only.
+The orchestrator persists it verbatim with reviewed input hashes before execution.

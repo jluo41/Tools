@@ -35,8 +35,8 @@ Three caller rules, each earned on 260815:
   A page outside any paper compiles cite-less, with `\citep` shown literally; inside a paper the master gains natbib, `plainnat`, and a bibtex pass.
 - A code span QUOTES and never EXECUTES: backticked TeX commands are escaped on the way out, so `\citep` prints instead of running.
 - **The Page title prints**: the standalone master opens with the complete canonical H1, TeX-escaped as plain text. The title is document identity, not a Content division, so it is emitted independently of numbered `###` manuscript headings.
-- THE PAGE'S DISPLAY EVIDENCE PRINTS: a unit under `<page>/outline/evidence/display/` cited by Page-local `DisplayN`, fully qualified `<stem>-DisplayN`, or its authored `\ref{label}` is embedded once as a real float after the first citing paragraph, in source order. These are aliases of the same unit; multiple aliases never duplicate the float. Venue-specific placement overrides come from the resolved Page Face owner.
-  The float is built from the unit's WINNING asset plus its own authored caption and label, so the wrapper master needs no tikz or renderer package; a ⬜ unit with no render is skipped, and a mention inside a verbatim fence is an illustration, not a citation.
+- THE PAGE'S DISPLAY EVIDENCE PRINTS: a current typed DISPLAY Result points to a unit under `<page>/results/<re-run>/payload/<unit>/`. Page prose cites it with `\table{D_<slug>}`, `\figure{D_<slug>}`, or `\algorithm{D_<slug>}`; the Result's `labels:` row binds that token to the unit. Delivery resolves ready tokens to the unit's manuscript label in a TEMP copy of the Page, then embeds the float once after its first citing paragraph, in source order. An authored `\ref{label}` remains a supported manuscript reference. Venue-specific placement overrides come from the resolved Page Face owner. The retired Outline display folder is a read-only migration fallback when no typed DISPLAY Result exists.
+  The float is built from the unit's winning asset plus its own authored caption and label, so the wrapper master needs no tikz or renderer package. An unbound token passed directly to the shared writer remains a legible pending marker. Board Delivery requires every cited D_ token to appear in a selected current DISPLAY Result's labels and blocks missing, conflicting, unready, or label-unbound current bindings, as well as ready units without exportable assets. It never falls back to stale evidence. A mention inside a verbatim fence is an illustration, not a citation.
 
 ## 📡 Surface · the segment, and what a failure shows
 
@@ -56,3 +56,13 @@ and must not be shown as the canonical Folder row.
   The writer; Word and LaTeX stay two projections of one reader (`md2docx.parse_page`).
 - `../../../haipipe-plugin/ref/roster.md`
   The `delivery/latex/` lane row this category owns.
+
+## Current Evidence selection
+
+Use the exact current Results bound in `outline/<stem>-evidence-items.md`,
+shared with Evidence Space. DISPLAY uses the selected Result's `payload.unit`;
+every cited D_ token must appear in its `labels:` list. CITE uses its verified
+`payload.bibliography`. Missing, conflicting, unready, or label-unbound current
+bindings block delivery. Do not scan historical units into the document.
+Pages without a ledger use the explicitly recorded legacy migration profile.
+The export's `evidence-selection.json` records that mode and selected hashes.

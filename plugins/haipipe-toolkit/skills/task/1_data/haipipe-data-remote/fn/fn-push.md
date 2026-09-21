@@ -95,7 +95,7 @@ elapsed:   {seconds}s
 next:      "Verify: /haipipe-data-remote diff {store}/{name}"
 ```
 
-If failed with credential error: surface the SSO URL.
+If failed with credential error: surface the backend-specific credential hint: GDrive/rclone token refresh; S3/AWS SSO from workspace configuration; unknown backend: name the missing credential without inventing a login URL.
 
 ---
 

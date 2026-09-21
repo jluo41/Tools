@@ -25,8 +25,8 @@ include_main_displays = true
 # desk's own v0728 submission (Bc-MISQ-Round/RD01/feedback/): Times New Roman,
 # 12 pt, w:line=480 auto (double), pgMar 1440 twips (1 in) on all four sides.
 venue_pack = "playbook-utd-is/MISQ"
-abstract_words = [120, 160]      # target band; never exceed abstract_words_max
-abstract_words_max = 185
+abstract_words = [120, 160]      # pack-observed writing target, not an official cap
+abstract_words_max = 185         # local pack prescription; official contract takes precedence
 abstract_sentences = [4, 7]      # one unstructured prose paragraph, no labeled fields
 main_pages = [40, 50]            # Research Article, double-spaced
 hero_display = "research model / theoretical framework figure"

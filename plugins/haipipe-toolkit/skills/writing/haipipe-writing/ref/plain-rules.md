@@ -18,8 +18,8 @@ whether to read on, so a heading that fails has already cost you the reader.
 
 ## 2 · Words
 
-**A shorter common word always beats a precise rare one.** You lose no precision:
-a plainer word for the same thing is just better writing.
+**Prefer a common word when it preserves the exact meaning.** Keep defined
+technical terms and explain them when needed; precision is not traded for brevity.
 
 ✅ `settles a decision`
 ❌ `argues one choice to a close`
@@ -37,8 +37,10 @@ either one alone still leaves a reader stuck.
 
 ## 3 · Sentences
 
-**One idea per sentence.** Past about 30 words a sentence is usually two, and the
-join is usually a colon or a `because` doing work a full stop should do.
+**One reader move per sentence.** About 30 words is a prompt to inspect reading
+burden, not a ceiling. Keep causal/logical relations and all qualifiers. A
+Section's sentence/Bullet mapping may require an owner-approved plan change
+before splitting; a clear long sentence may stay as written.
 
 **Split at the hinge**, which is where the sentence changes subject:
 

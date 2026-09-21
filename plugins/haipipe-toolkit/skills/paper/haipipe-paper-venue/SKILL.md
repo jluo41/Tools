@@ -7,8 +7,8 @@ description: >-
   the Story's Section Narrative rows, and Section Pages. Use when researching,
   creating, refreshing, or comparing a venue Page.
 metadata:
-  version: "0.8.0"
-  last_updated: "2026-09-07"
+  version: "0.9.0"
+  last_updated: "2026-09-20"
   page_ruling: none
   outline:
     mode: fixed
@@ -18,11 +18,11 @@ metadata:
 
 # /haipipe-paper-venue · make one external desk inspectable
 
-For a concrete Venue Page RUN, load `haipipe-page`,
-`haipipe-page-workflow`, the current Page phase, `haipipe-paper-workflow`, this
-Page Type, and its phase references in canonical order. Name the Page
-`QBv<n>-<slug>.md`; that filename is its sole type key under the current base
-resolver.
+For a concrete Venue Page update, load `haipipe-page`,
+`haipipe-page-workflow`, the current Run Workflow/Spec owner,
+`haipipe-paper-workflow`, this PageType and relevant references in canonical order. Name the Page
+`QBv<n>-<slug>.md` and declare `page-type: venue`. The shared Page resolver
+selects its owner; the filename fallback remains readable for existing Pages.
 
 ## 🏛 Grain and boundary
 
@@ -38,7 +38,7 @@ Section      how one unit satisfies its Story row and desk constraints
 A target may be a journal, funder, conference, regulator, or patent office. Use
 the target's own document units when journal section kinds do not apply.
 
-**The bank is a library, not a phase** (JL 260823). Venue Pages live in the
+**The bank is a shared reference library** (JL 260823). Venue Pages live in the
 shared QBv bank and sit outside the paper journey: nothing about a paper
 advances by writing one. Ideation records a person's intended target/category
 at G0 after deep fit; the Story confirms it as the paper's operational target
@@ -55,16 +55,21 @@ underweight instance of the other:
 ```text
 PACK-BACKED    an exemplar pack sits behind it · budgets are measured ·
                PACK OBSERVATION rows are expected throughout
-               (reference implementation: QBv1-misq)
+               (partial legacy content example: QBv1-misq)
 CfP-ONLY       a call-for-papers or published rule sheet is the ONLY source ·
-               every length is a DESK RULE · the page SAYS, where a pack
+               verified published lengths are DESK RULES; unsourced lengths
+               stay UNKNOWN or labeled OWN ESTIMATE · the page SAYS, where a pack
                observation would normally sit, that none exists
-               (reference implementation: QBv17-wise)
+               (partial legacy content example: QBv17-wise)
 ```
 
 A CfP-only page is legitimately short. What it may never do is fill the gap
-with invented observations; its two honest moves are the DESK RULE and the
-marked OWN ESTIMATE.
+with invented observations. Use sourced DESK RULEs, clearly marked OWN
+ESTIMATEs, or visible UNKNOWNs.
+
+Use `template.md` for current Page structure and
+[ref/profile-examples.md](ref/profile-examples.md) for both contract profiles.
+The legacy bank bodies are source material, not current Page templates.
 
 ## ⚖️ Authority and provenance
 
@@ -75,6 +80,7 @@ DESK RULE          published by the target; binding at a named moment
 PACK OBSERVATION   measured from exemplars; informative, not binding
 PACK PRESCRIPTION  suggested by a playbook without enough observations
 LOCAL DECISION     a paper-specific choice; never attributed to the desk
+OWN ESTIMATE       explicitly local estimate, with basis/uncertainty; not a desk rule
 UNKNOWN            visible gap with an owner or refresh route
 ```
 
@@ -99,15 +105,19 @@ the bounded interface consumers test:
 ```yaml
 versioned_contract:
   schema_version: 1
-  contract_version: "2026-09-07.1"
+  contract_version: "2026-09-20.1"
   target: "Journal or desk"
-  category: "article/application category"
-  profile: pack-backed | cfp-only
-  state: current | partial | stale | superseded
-  verified_at: "2026-09-07"
-  refresh_due: "2027-03-07 or null"
-  official_source_results: ["discoveries/.../results/rNN_...md"]
-  blocking_unknowns: []
+  category: null
+  profile: cfp-only                 # pack-backed | cfp-only
+  state: partial                    # current | partial | stale | superseded
+  verified_at: null
+  refresh_due: null
+  official_source_results: []
+  page_check_receipt: null
+  blocking_unknowns:
+    - Confirm the article or application category.
+    - Record dated official-source Results and a refresh policy.
+    - Obtain Page CHECK for this contract version.
   contract_locator: "QBvN-....md#versioned-contract"
 ```
 
@@ -119,6 +129,26 @@ block may support discovery or a broad screen but cannot close deep fit, G0,
 or a new Story/Section release. A refresh mints a new `contract_version` and
 preserves the prior block in history; it never overwrites what an earlier
 decision consumed.
+
+### Consumer preflight
+
+Before deep fit, G0 or a new Story/Section release, read the exact contract
+block and resolve every path against the owning project's declared root (or
+use an explicit absolute path). Require a concrete target/category/profile,
+`state: current`, a real `verified_at` date, unexpired `refresh_due` when set,
+accepted official-source Results for the volatile rules being used, a
+`page_check_receipt` accepting this same version, and no relevant blocking
+unknowns. A file's existence or a green legacy status does not meet this test.
+On failure report HOLD with the missing source/receipt/refresh owner; broad
+screening can continue with the limitation visible. No second target approval
+is introduced here.
+
+For initial or migrated `partial` records, category/profile/verified_at and
+page_check_receipt may be null when unknown. Put each unresolved field in
+`blocking_unknowns`; it cannot silently acquire current status. Grant/patent
+family summaries need a specific agency/jurisdiction and application category
+before use as a one-target contract. Creating the interface is not an official
+source refresh. Preserve prior versions before replacing a consumed block.
 
 ## 📐 Required Content outline
 
@@ -157,10 +187,13 @@ Venue Pages are evidence-heavy Pages, using the same three Outline-plugin
 workspaces as every current Page:
 
 ```text
-Context Workspace    desk identity, profile, requirements, related links
-Bullet Workspace     venue propositions and typed Evidence Item ids
+Draft Workspace      venue propositions and their typed Evidence Item ids
 Evidence Workspace   Supporting Runs → Local Input → Local Run → typed Result
+Run Workspace        owner-native Run Tickets, Results, and current status
 ```
+
+Desk identity, profile, requirements and related links live in the backstage
+Context record; they are not an additional reader-facing Outline workspace.
 
 Desk sources and exemplars normally arrive through Discovery Supporting Run
 Results. LAND freezes the chosen Results and any governed page-local captures

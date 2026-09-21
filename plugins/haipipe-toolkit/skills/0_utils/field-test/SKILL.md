@@ -1,10 +1,13 @@
 ---
 name: field-test
 description: >-
-  The field-test method for a skill family: run a REAL task through the skills as shipped, against a PRE-REGISTERED expectation of how the run should go, and learn from every place actual and expected diverge. A 🛠 DESIGN desk authors the skills, writes the commission AND an expectation ledger (per step: which law is exercised, what should happen, what should land on disk); a 🏃 FIELD desk — a separate session holding the shipped files and none of the design conversation — executes the real work under the skills' own human gates, keeping a numbered FRICTION LOG; a 📡 monitor watches transcript and disk read-only. Afterward the desks' two halves are joined: each expectation row settles as MATCH, SKILL GAP (reality right, law unclear/wrong/missing), or EXPECTATION GAP (law fine, the designer's model was wrong — also learning). Gaps become law patches and checker teeth (each proven to FAIL first); every run lands a SCORECARD (time from date stamps, tokens from receipts and /cost, format and semantic quality, a tax line naming avoidable spend); loop with a fresh slice of real work until a run returns zero new gaps. Use when a new or reworked skill family needs proof it runs, or when deciding whether a skill set is good enough to trust. Trigger: fieldtest, field test, field run, expectation ledger, friction log, scorecard, token tax, commission packet, expected vs actual, does the run match the skill, two desks, skill conformance, 实测, 试跑, 对表, /field-test.
+  Validate a shipped skill family on a real task from a separate context.
+  Freeze expectations before execution, collect a friction log and receipts,
+  and compare behavior with the skill's own gates. Use for field tests,
+  skill conformance checks, or proof that a revised skill works in a new context.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-08-29"
+  version: "0.4.2"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -76,16 +79,29 @@ step · law exercised · EXPECTED behavior            · EXPECTED artifacts
                       each settle, flip nothing        mirroring F, CHECK-closed
 ```
 
-After the run, each row settles three ways:
+After the run, record two independent judgments for each row: whether the
+observed behavior met the frozen expectation, and what caused any difference.
+The first axis is `met`, `not_met`, or `not_verifiable`; the second is
+`skill_gap`, `executor_nonconformance`, `expectation_error`, `infrastructure`,
+`mixed`, or `unresolved`. Keep the transcript/disk evidence pointer with both.
+Do not infer a skill defect from a failed expectation alone.
+
+Examples of the independent axes:
 
 ```text
-✅ MATCH             actual = expected · the law held and the model was right
-🔧 SKILL GAP         reality was reasonable, the law was unclear, wrong,
-                    contradictory or missing · joins the friction log · patch + tooth
-💭 EXPECTATION GAP   the law is fine, the designer's model was wrong (batching
-                    twelve mints was legal; the designer expected strict one-per-lap)
-                    · corrects the designer, sometimes becomes an example in the law
+met + expectation_error       the law allowed batching; the desk expected one per lap
+not_met + skill_gap           a clear instruction conflicts with the required artifact
+not_met + executor_nonconformance  the shipped instruction was clear but not followed
+not_verifiable + unresolved   available receipts cannot determine what happened
+not_met + mixed               evidence supports more than one contributing cause
 ```
+
+Assign friction severity on its own consequence scale. `blocking` means the
+uncertainty or defect prevents a trustworthy run/decision and must be resolved
+before dependent work; `material` means it could change a result or gate and
+must be resolved by the responsible owner before close; `local` means it affects
+clarity or maintenance without changing the current result. This scale is
+specific to field-test triage and is not comparable to another owner's labels.
 
 ## The scorecard · what every run costs and what it bought
 
@@ -102,7 +118,9 @@ Recorded at settle, one block on the settlement file, all of it read off receipt
 📐 format     mechanical quality: checker findings before → after · independent
               CHECK rounds to CLOSE (1 = first-pass clean) · reworks the
               producer's own misses forced
-🧠 semantic   ledger tally (n MATCH · n SKILL GAP · n EXPECTATION GAP) ·
+🧠 semantic   expectation tally (n met · n not_met · n not_verifiable) plus
+              attribution tally (skill gap · executor nonconformance ·
+              expectation error · infrastructure · mixed · unresolved) ·
               frictions by severity · the independent CHECK's cold-read verdict
               — never the designer's opinion (law 3)
 💸 tax line   every avoidable spend named with its lesson: a judge dispatched
@@ -123,30 +141,43 @@ Calibration from the two 260828 runs, so a new scorecard has something to stand 
 3. **The designer never grades.** Behavioral verdicts come off the transcript and the disk, mechanically; content verdicts belong to the run's own CHECK machinery and the human, not to the desk that wrote the law.
 4. **Friction is four-valued.** Unclear, wrong, self-contradictory, missing — an entry needs a file and the sentence (or absence) that caused it. "It felt awkward" is not an entry; "no skill names the field a signature goes in" is.
 5. **Behavior pass ≠ done.** A run can hold every gate and still expose that a gate is untestable as written. The joined ledger outranks the green run.
-6. **Triage into exactly three bins.** ① infra, fix now; ② false positive, explain and drop (a stale read); ③ law gap, patch the law THEN grow a checker tooth for the mechanical ones — each tooth proven to FAIL on an artifact broken exactly that way before it is trusted.
-7. **Loop until dry, on fresh slices.** Patch, re-commission a DIFFERENT slice of real work, run again. Converged when a run settles every expectation row MATCH and returns zero new frictions; a run that only re-finds known ones means the patches did not land.
+6. **Triage after evidence.** First settle expectation status; then classify
+   attribution. Infrastructure failures may be repaired and rerun. A false
+   positive is closed only with its stale or incorrect evidence identified. A
+   skill gap goes to the skill owner; executor nonconformance goes to the
+   execution path; an expectation error updates the design desk's model; mixed
+   and unresolved cases retain their evidence and named resolver. Add a
+   checker only for a mechanically decidable rule, and prove it rejects an
+   artifact broken in that exact way before relying on it.
+7. **Loop until dry, on fresh slices.** Patch, re-commission a DIFFERENT slice of real work, run again. Converged when a fresh run settles every expectation row `met`, has no unresolved attribution, and returns zero new frictions; a run that only re-finds known ones means the patches did not land.
 8. **The monitor never intervenes.** Drift is reported to the human, who may stop the field desk in its own session. An agent whispering corrections mid-run contaminates the test.
 9. **Metrics are recorded, never recalled.** Time from `date` stamps, tokens from task receipts and a pasted `/cost`, quality from the checker, the ledger and the independent CHECK. A scorecard rebuilt from memory after the fact is the same defect as an expectation written after the run.
 
-## The automated loop · charter in, signatures out
+## The automated loop · bounded authorization
 
-Full automation does not remove the human gates; it BATCHES them to the run's two ends, under the family's auto-charter law (`haipipe-insight` §The auto charter):
+Use the target family's current authorization contract. For Insight, read
+[`../../insight/haipipe-insight-workflow/ref/authorization.md`](../../insight/haipipe-insight-workflow/ref/authorization.md).
+It permits only explicitly granted mechanical register operations. Record an
+existing instruction as its source; do not ask the person to repeat approval
+already given for the same scope.
 
-```text
-before the run   the person signs a CHARTER: which decision classes are
-                 pre-authorized for this run (vocabulary re-marks under a ruled
-                 grammar · 🟡-final flips whose licensing sentence the receipt
-                 QUOTES · header re-derivations citing their Queue) — signatures
-                 and new-computation releases are never charterable
-during the run   the design desk spawns the field desk as a subagent; the
-                 monitor's events become task notifications; charterable
-                 decisions execute against the charter, quoting it in each
-                 receipt; anything outside its classes stops at the gate
-after the run    the person's two remaining acts: the batched signatures the
-                 run queued, and the run-close review of the joined ledger
-```
+Before dispatch, record the exact person, source, board/runtime, targets,
+permitted actions, and expiry. Empty `run_ids` do not authorize Run execution.
+During execution each covered action records the grant and licensing evidence;
+the ordinary owner and gate still apply. A missing, expired, revoked, or
+out-of-scope grant cannot authorize the action. Handoff signatures and release
+of new computation remain person-reserved; automation does not batch them away.
 
-Quality is preserved by the same four guards the manual form uses, none of which the charter touches: the expectation ledger is still written before and joined after; refusal-is-convergence still legalizes 🚫; receipts still land on the pages; and every friction still becomes a law patch and, where mechanical, a checker tooth proven to FAIL first. The charter automates the PERSON'S ATTENTION, never the person's authority.
+The design desk may dispatch a FIELD subagent with the commission and shipped
+skills, but not the expectation ledger or design discussion. The monitor stays
+read-only and does not coach it. After execution, join the ledger with the
+friction log and receipts. Requests outside the existing grant go to the
+normal gate; run-close review does not retroactively authorize them.
+
+For another family, use its own available authorization rules. Do not copy
+Insight's register schema into an unrelated project. Keep the baseline frozen,
+expectations written beforehand, independent judgment, and receipt-backed
+metrics in both manual and automated forms.
 
 ## What this method is not
 

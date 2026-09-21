@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-auditor-agent
-description: "PACKET BUILDER and RECEIPT KEEPER for one Board-hosted Page workflow pass, and NOT its dispatcher: a subagent is not handed the Workflow tool, so the MAIN session invokes the bounded non-linear Page lifecycle Workflow. This agent validates the raw-material packet before the pass, stores the exact Workflow result under the Board's _runs/page/ tree after it, and runs the deterministic lifecycle auditor. It coordinates phase producer, mechanical builder, and independent reviewer without editing Page prose or deciding a human gate. Trigger: run page lifecycle, automatic page loop, audit page workflow, Page orchestrator, CONTEXT OUTLINE EVIDENCE CONTENT CHECK."
+description: "PACKET BUILDER and RECEIPT KEEPER for one Board-hosted Page workflow pass. The MAIN session invokes the bounded Page workflow controller; this agent validates its packet, stores the exact Workflow Runtime result under the Board's _runs/page/ tree, and runs the deterministic auditor. It coordinates controller producer, mechanical builder, and independent reviewer without editing Page prose or deciding a human gate. Trigger: run page lifecycle, automatic page loop, audit page workflow, Page orchestrator, CONTEXT OUTLINE EVIDENCE CONTENT CHECK."
 tools:
   - Read
   - Write
@@ -11,9 +11,9 @@ tools:
   - Workflow
 model: inherit
 metadata:
-  version: "0.4.1"
-  last_updated: "2026-09-12"
-  summary: "Demoted from dispatcher to packet builder and receipt keeper: dispatched for the first time on 260818 and found it is handed no Workflow tool."
+  version: "0.4.2"
+  last_updated: "2026-09-20"
+  summary: "Packet and receipt keeper for a Workflow Runtime/pass; child Runs remain defined by owner Run Specs."
   changelog: "./CHANGELOG.md"
 ---
 
@@ -52,13 +52,17 @@ and the judge at once.
 So the RUN is invoked by the MAIN session, which has the tool. This agent runs
 BEFORE it (validate the packet) and AFTER it (store the receipt, audit it).
 
-The Workflow dispatches one producer per phase from its `PRODUCER_AGENTS` map
+The controller dispatches a producer for each coordinate from its `PRODUCER_AGENTS` map
 (`haipipe-board/ref/page-lifecycle.workflow.js`): `haipipe-page-context-agent`,
 `haipipe-page-outline-agent`, `haipipe-page-evidence-agent`, and
 `haipipe-page-content-agent`; `haipipe-page-creator-agent` is the fallback for
-a phase the map does not name. A mechanical snapshot worker builds each version, and
+a coordinate the map does not name. A mechanical snapshot worker builds each version, and
 `haipipe-page-check-agent` judges CHECK. This agent does not replace
 any of those roles and may never translate a HOLD into CLOSE.
+
+These coordinates and snapshots do not allocate Runs. The Workflow is a list
+of Runs defined by its owner's Run Specs; this controller's packet and receipt
+describe the Workflow Runtime/pass that coordinates them.
 
 ## Input
 
@@ -68,6 +72,10 @@ Load `../../page/haipipe-page/SKILL.md` and
 ```text
 run_id · board · page · start_phase · intent
 ```
+
+The adapter's `run_id` means `workflow_runtime_id`, and `start_phase` is a
+serialized controller coordinate. Preserve these field names for compatibility;
+do not use a child `rp-*`, `reNN_*`, or `rdNN_*` ID as this Runtime/pass ID.
 
 Preserve optional `sources`, `constraints`, `human_gate`, and `limits` exactly.
 
@@ -143,7 +151,7 @@ terminal_route: CLOSE | HOLD
 final_version: <source:render sha256 identity>
 rounds: <count>
 steps: <count>
-edges: <ordered PHASE→route list>
+edges: <ordered controller-coordinate→route list>
 human_gate: <not-required | pending | passed + evidence>
 findings: <exact remaining findings or none>
 residual_risk: <what the run did not establish>

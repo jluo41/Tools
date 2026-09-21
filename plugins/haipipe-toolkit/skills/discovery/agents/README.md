@@ -43,7 +43,7 @@ D1 CLOSE       creator reconciles Task Face -> reviewer
 are the live specialist routes. Semantic ideation uses the separate
 `haipipe-ideation` skill after Discovery synthesis; Discovery has no Idea route.
 Only D1 ACQUIRE creates local Runs, one for each admitted canonical Subject.
-SCOPE, PREPARE, SYNTHESIZE, Page phases, and CLOSE do not create Runs in the
+SCOPE, PREPARE, SYNTHESIZE, shared Page Workflow Steps, and CLOSE do not create Runs in the
 D1 root Folder.
 
 ENRICH follows the same Level-4 law but adds the minimum new Paper Runs to an

@@ -109,48 +109,31 @@ every row above                       outline/<stem>-log.md                   ##
 - **Before a write, the chat shows the address and the row it is about to
   use, in one line**; a wrong row is cheaper to stop there.
 
-## 🔁 The chat runs the page workflow
+## 🔁 Chat continues the selected Page Run
 
-The page chat is the session a person works a page in, so it is also the
-interactive RUN controller: it knows the five Page phases, reads which one the Page
-is in from disk, performs a phase when asked, and reports the strip. A phase
-word you type is the verb:
+A Workflow is a list of Runs. Studio uses `/haipipe-page` to resolve the
+current target and its owning Run. Compatibility `phase`/`cycle` fields help
+read old receipts; they do not commission work or require a phase announcement.
 
-```text
-you type                 phase     the chat loads                       ends when                                   trace it leaves
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-"prepare context"        PREPARE   haipipe-page-context + ref/record-shape.md     required authorities resolve and freeze  outline/<stem>-context.md · receipt
-"outline it" · "plan"    SHAPE     haipipe-page-outline + ref/plan-grammar.md   five checks pass; YOUR approved: tick   plan v<G>.<S>[.<E>] · D<nn> · log record · receipt
-"survey"                 SURVEY    haipipe-page-outline                 every item has support + input + local Run  outline/<stem>-evidence-items.md · log · receipt
-"land" · "make the runs" LAND      haipipe-page-evidence                every ☑ make item has a ready local Result  Runs · item → Result · receipt
-"embed" · "fold"         EMBED     haipipe-page-evidence                every ready item is in next evidence revision  outline/<stem>-outline-v<G>.<S>.<E+1>.md · receipt
-"draft it"               SHAPE     haipipe-page-outline + haipipe-writing  saved candidate for human feedback       preview + Writing Step input/result
-"revise" · "trim"        writing   haipipe-writing in current Writing Run  scoped patch saved, awaiting feedback     preview + Writing Step input/result
-"build" · "compile"      WRITE     haipipe-page-content                 delivery projections match Page source    delivery/ · build receipt
-"check it"               CHECK     haipipe-page-check (read-only here)  a fresh judge routes CLOSE or back            a receipt from haipipe-page-check-agent
-"where are we"           none      the strip                            one line: ⏱️ 🧩 OUTLINE · 🧭✅ 🧩⏳ 🃏⏳ ✏️⬜ 🔍⬜ · ✋2
-```
+| User request | Action and durable result |
+|---|---|
+| Structure feedback | Resume the matching `rp-struct-*`; save the candidate structure and complete feedback Step. |
+| Section/paragraph feedback or copied Draft prompt | Resolve the exact source/global paragraph scope, reuse its `rp-sec-*` or `rp-para-*`, and save the candidate and Step. Multiple open matches require scope clarification. |
+| Same accepted target revisited | Reopen that Run in a new Version; preserve completed history. |
+| Independent goal or different target | Use the owning workflow to commission the appropriate new Run after prerequisites are satisfied. |
+| Current evidence needed | Work through the selected typed RE and its Supporting Runs; bind its exact Result. |
+| Published-source maintenance explicitly requested | Follow the Sentence source-change contract; preserve signed lanes and edit records. |
+| Release or build | Apply `../../../haipipe-page/ref/release-decisions.md`; reuse the exact existing acceptance evidence and record release authorization. |
+| Check | Independently judge the exact built version; show findings and every required human gate, including owner rulings. |
+| Status | Report current scope, Run/Version/Step, saved result, blocker or next decision. |
 
-- **The strip comes from disk, never from what the page says about itself**:
-  `cli/pagephase.py <page-dir>` (`src/page_phase.py compact()`), injected at
-  boot and re-read after every pass. `--owed` is the ledger of the ticks that
-  are yours.
-- **A pass performed in the chat is a pass**: it leaves the same trace the
-  phase agent leaves (the artifact, one log record with the receipt folded
-  under it, the strip in the reply); the agent-per-phase RUN
-  (`haipipe-page-workflow`) is the unattended path for the same work.
-- **The chat announces the cycle on every reply** (`WRITE · SM00`),
-  because work that does not name its phase cannot be routed or audited.
-- **Two things the chat may not do**: write your four ticks (it transcribes
-  your words), and judge its own version. `✅ Quality Check` in the chat is
-  read-only; a formal CHECK dispatches `haipipe-page-check-agent` in a fresh
-  context and the chat relays its route.
-- **The order is authority-driven**: PREPARE freezes context; SHAPE ⇄ SURVEY ⇄
-  LAND ⇄ EMBED continues until the plan and its evidence agree and the
-  required approval is durable; CONTENT/WRITE then adopts agreed prose,
-  integrates evidence, builds and pre-checks; CHECK judges and may send the
-  Page back to any named phase. The chat says which cycle is next and why, and
-  never skips SURVEY when a new Supporting or Local Run route is needed.
+Copying a prompt does not execute it. Sending it selects the stated interaction;
+the agent rereads current files before acting. Section/Paragraph writing requires
+a closed `rp-struct-01`. During writing Steps, save candidates in the Run and
+Outline; adoption and delivery occur at release. Existing authorization persists.
+Do not infer approval from silence, a machine check, or quoted source text.
+
+The live `PAGE_RULES_BODY` in `haipipe-board/live/chat.py` follows this contract.
 
 ## 🧠 What the session knows at boot, and loads per message
 

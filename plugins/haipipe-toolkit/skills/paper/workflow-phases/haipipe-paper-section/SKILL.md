@@ -1,16 +1,16 @@
 ---
 name: haipipe-paper-section
 description: >-
-  Paper journey phase P3 (Section) and the Page Type contract for one
+  The Paper Section PageType contract for one
   reader-ordered manuscript or appendix Section. It executes exactly one
   current Story Section Narrative row, resolves venue-and-kind structure, and binds prose to
   typed Page-local Evidence Item Results. Use when outlining,
   drafting, revising, checking, or retargeting one paper section.
 metadata:
-  version: "0.9.3"
-  last_updated: "2026-09-13"
+  version: "0.9.4"
+  last_updated: "2026-09-20"
   page_ruling: none
-  group-token: "S-<desk>-Main-<N> | S-<desk>-Appendix-<L>"
+  group-token: "S-<desk>-Main-<Title> | S-<desk>-Appendix-<Title>"
   outline:
     mode: resolved
     source: "paper/venue/bank/1-QBv-desks/QBv*/QBv*.md"
@@ -22,24 +22,25 @@ metadata:
 
 # /haipipe-paper-section · execute one Story Section Narrative row
 
-For an actual Section Page RUN, load `haipipe-page`, `haipipe-page-workflow`, the current Page phase, the
-paper-owning workflow, this Page Type, and its phase references in that order.
-When a Page Run or Page release is planned, also load
-`../../haipipe-paper/ref/page-integration.md` as the Paper adapter contract.
+For a Section Page update, load `haipipe-page`, `haipipe-page-workflow`, the
+current Run Workflow/Spec owner, `haipipe-paper-workflow`, this PageType and
+its relevant references in the shared canonical order. Read
+`../../haipipe-paper/ref/page-integration.md` when planning a Run or release.
+Reading a proposed handoff alone allocates no Run.
+
 Declare `page-type: section` and `section_kind: <kind>`.
-Reading this contract for a prospective Story handoff does not start that RUN.
+Reading this contract for a prospective Story handoff does not start a Run.
 Proposed bindings may remain unresolved until the relevant owner supplies them;
 do not invent Page paths, accepted Results, or a release to complete a proposal.
 
-## 🧭 Journey phase
+## Paper ownership and entry
 
-This skill is journey phase P3 Section (realize) of the paper journey and owns
-the `page-type: section` contract below. Enter through gate G3, one page per
+This skill owns the Paper Section Page and its `page-type: section` contract below. Enter through gate G3, one page per
 Story §8 Section Narrative row, each row released by a person independently.
 Gate G4 marks the assembled build SUBMISSION-READY versus DRAFT; assemble
-itself is a verb, not a phase, and runs anytime from `delivery/` on the Story's
+is a separately commissioned build, and runs anytime from `delivery/` on the Story's
 compile-order block. `haipipe-paper-workflow` holds the full gate assertions; this block only
-places the phase. The page itself always runs through `/haipipe-page` and
+binds the Page owner. The page itself always runs through `/haipipe-page` and
 `haipipe-page-workflow` (CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK),
 never a private lifecycle.
 
@@ -81,7 +82,7 @@ of the paper reading path without deleting their authority.
 Paper-<Slug>/                                        groups at the paper root (0.8.0)
 ├── Ba-<desk1>-Main/       S-<desk>-Main-<N>-<Title>   the desk's main reader order · N = the H1's §N · unnumbered pages keep title only
 ├── Bb-<desk1>-Appendix/   S-<desk>-Appendix-<L>-<Title>  its appendix sections · L = the H1's Appendix L
-├── Bc-<desk1>-Round/      RD<NN>-<event>    its rounds (P4)
+├── Bc-<desk1>-Round/      RD<NN>-<event>    its feedback batches
 └── Bd-<desk2>-Main/ …     a later desk continues at the next free letter
 ```
 
@@ -95,31 +96,29 @@ section is inserted.
 
 ## ⚙️ Paper Section Run profile
 
-The Paper-local Evidence/Display naming dialect is owned by
-[`../../haipipe-paper/ref/run-naming.md`](../../haipipe-paper/ref/run-naming.md).
-For a Section Page, derive the lane from its semantic owner (`m` for
-`S-<desk>-Main-…`, `a` for `S-<desk>-Appendix-…`) and the page slug from the
-final semantic Page component. A new local Evidence Item Run therefore looks
-like `pm-introduction-e01-cite-prescribing-variation-r01` or
-`pa-robustness-e01-value-sensitivity-r01`, with the same stem for its Ticket,
-Result directory, and receipt.
+Read [`../../haipipe-paper/ref/run-naming.md`](../../haipipe-paper/ref/run-naming.md)
+and the shared Page Run families. New local Evidence uses typed RE identities
+such as `re-cite-01_prescribing-variation` or `re-value-01_sensitivity`.
+The Page owns the Evidence Item; the selected Task/Display worker does not
+change that owner. Independent Supporting Runs keep their native Task or
+Discovery identity and full path.
 
-Page-owned interaction starts with `rp00_mermaid-structure` and continues as
-`rpNN_pNN[-pNN]`, governed by the current Page contract; its receipt records
-the semantic `page:` and `paper_lane:`. Delegated paragraph writing is an
-owner-native Task Run (`rNN`, `rlNN`, or global), not a Page Run. Never
-collapse an Evidence Result Run, a Page interaction Run, and a Task Run merely
-because they are projected into one Section. Existing `pjNNtNNrNN` Paper
-tickets are historical/read-only and remain valid only when
-their owner path, receipt, and current acceptance contract are verified.
+Human interaction uses `rp-struct-01` for SHAPE + SURVEY, then the selected
+`rp-sec-NN` or `rp-para-NN_Pxx[-Pyy]` session. Feedback is a Step; same-target
+reopening is a Version. Record the semantic `page:` and `paper_lane:` alongside
+the native receipt. Existing `pm-/pa-/pr-/pj...` and compact `rp00/rpNN` records
+are compatibility inputs; preserve their identity and verify their original
+owner/receipt before reuse. Evidence acceptance never replaces human writing
+acceptance. The Paper Workflow's `structure/write/evidence/deliver` Specs bind
+these native Runs, without a wrapper Section Run.
 
 **Where the words live (0.8.4 · JL 260907)**: on this page. The Section Page
 compiles its own deliverable through the page-level delivery plugin,
 `delivery/latex/<page>-complete.tex` with its `-complete.bib` and `.pdf`,
 wrapping the body fragment `delivery/latex/<page>.tex` that the paper build
 `\input`s; its `\includegraphics` paths resolve to its own accepted display units
-(`outline/evidence/display/Display<n>-<slug>/assets/figure.pdf`; the page id carries the
-section index, so the unit carries none; `S-Display-*`, `<PageID>-Display-*` and `Sec<N>-Display-*` are
+(`results/<re-run>/payload/Display<n>-<slug>/assets/figure.pdf`; the stable Page id
+owns the unit independently of printed section order; `S-Display-*`, `<PageID>-Display-*` and `Sec<N>-Display-*` are
 retired, JL 260908) and its citation keys to
 its own `-complete.bib`. The paper's `delivery/latex/` is regenerated FROM these
 files by `haipipe-paper-assemble`, never the other way round: a correction goes
@@ -164,9 +163,8 @@ If the Section Narrative row is missing or stale, CONTEXT records its exact
 source and returns `HOLD` to `haipipe-paper-story`, the owner of the Story page
 and its C8 narrative and detailed Section rows. If Venue
 authority is missing or stale, it returns `HOLD` to
-`haipipe-paper-venue`, the owning QBv bank Page Type; Venue is a library, not
-a journey phase. After the exact owner repairs and versions the source, the
-Section resumes at CONTEXT/PREPARE. A Section phase never repairs upstream
+`haipipe-paper-venue`, the owning QBv bank Page Type; Venue is a shared reference library. After the exact owner repairs and versions the source, the
+Section resumes at CONTEXT/PREPARE. Section work never repairs upstream
 Story or Venue policy itself.
 
 ## 🧱 Content outline

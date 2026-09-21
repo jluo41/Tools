@@ -1,3 +1,7 @@
+## 0.9.0 · 2026-09-20
+
+- Define consumer preflight and honest partial contracts, including matching Page CHECK receipts. Supply current seven-role templates and both profile examples; route legacy bank content as historical reference and use current Page workspaces.
+
 ## 0.8.0 — 2026-09-07
 
 - Added the machine-readable `versioned_contract` block and explicit

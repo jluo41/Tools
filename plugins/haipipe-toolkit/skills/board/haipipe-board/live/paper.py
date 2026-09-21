@@ -217,16 +217,16 @@ def setup_rows(d):
     rows = [{"name": "board.md", "role": "the Board · paper-root", "state": "present"}]
     s00 = d["story00"]["stem"] if d["story00"] else ""
     rows.append({"name": ("A1-Story/%s/" % s00) if s00 else "A1-Story/Story00-<direction>/",
-                 "role": "P0 · the idea pool", "state": "present" if s00 else "missing"})
+                 "role": "the idea pool", "state": "present" if s00 else "missing"})
     if d["stories"]:
         for st in d["stories"]:
-            rows.append({"name": "A1-Story/%s/" % st["stem"], "role": "P1 · one prospective Story per idea", "state": "present"})
+            rows.append({"name": "A1-Story/%s/" % st["stem"], "role": "one prospective Story per idea", "state": "present"})
     else:
         rows.append({"name": "A1-Story/Story<Letter>-%s-<idea-slug>/" % (desk or "<desk>"),
-                     "role": "P1 · one prospective Story per idea", "state": "missing · minted by the I3 handoff"})
-    for letter, kind, role in (("Ba", "Main", "P3 · named Main Section Pages"),
-                               ("Bb", "Appendix", "P3 · named Appendix Section Pages"),
-                               ("Bc", "Round", "P4 · one RD page per feedback batch")):
+                     "role": "one prospective Story per idea", "state": "missing · minted by the I3 handoff"})
+    for letter, kind, role in (("Ba", "Main", "named Main Section Pages"),
+                               ("Bb", "Appendix", "named Appendix Section Pages"),
+                               ("Bc", "Round", "one RD page per feedback batch")):
         hit = next((g for g in d["groups"] if re.match(r"^B[a-z]-.+-%s$" % kind, g["folder"])), None)
         if hit:
             rows.append({"name": hit["folder"] + "/", "role": role + " · %d page(s)" % len(hit["stems"]), "state": "present"})
@@ -358,7 +358,7 @@ def ideation(d):
                                  "went": c[5] if len(c) > 5 else "",
                                  "address": "", "chips": [], "bullets": [],
                                  "fields": fields, "items": []})
-    # ② else the plan's `Idea <n>: <title>` divisions (a P0 page before Content)
+    # ② else the plan's `Idea <n>: <title>` divisions (an Ideation Page before Content)
     plan = latest_outline(folder / "outline", p["stem"]) if folder else None
     if plan is not None:
         ptext = read(plan)
@@ -1484,7 +1484,7 @@ def _sources_html(d, space):
         rows.append(("evidence items", '<code>%s</code> <span class="mut">every page\'s outline/&lt;stem&gt;-evidence-items.md: Local Run · Supporting Runs lines</span>' % esc(_repo_rel(d, b))))
         add("task home", d["blocks"]["dir"], "tickets + runtime.yaml")
         add("discovery home", d["disc"]["dir"], "tickets + runtime.yaml")
-        add("workflow map", _SPACE_MAP, "Workflow map + Folder tree × Run-Type tables")
+        add("workflow map", _SPACE_MAP, "Workflow map + Folder tree × Spec or control tables")
         add("gate G4", "delivery/build-manifest.json", "engine receipt")
     elif space == "delivery":
         add("build config", "delivery/paper-build.toml", "haipipe-paper-assemble")
@@ -1498,7 +1498,7 @@ def _sources_html(d, space):
         return ""
     return ('<div class="card"><h2>backend Markdown<span class="tally">%s Space</span></h2>'
             '<div class="brief">Every word above is read from these files on every open. YAML, JSON and TOML here are receipts a program wrote; '
-            'they are shown, never edited. The Space\'s own labels and hints are the plugin\'s, in live/paper.py.</div>%s</div>'
+            'they are shown, never edited. The Space\'s own labels and hints are the plugin\'s, in live/paper.py and assets/js/10-drawer/09-plugin-paper.js.</div>%s</div>'
             % (esc(space), _kv(rows, "spine-row")))
 
 
@@ -2079,8 +2079,8 @@ def _slot_actual(d, slot):
 
 
 def folder_map(d):
-    """The `Folder tree × Run-Type` table of space-mapping.md, each slot resolved
-    against this board, plus Run-Type → resolved folders for the map's column."""
+    """The `Folder tree × Spec or control` table of space-mapping.md, each slot resolved
+    against this board, plus Spec / control → resolved folders for the map's column."""
     tables = _md_tables(d["workflow_map"])
     key = next((k for k in tables if k.lower().startswith("folder tree")), None)
     rows = []
@@ -2249,7 +2249,7 @@ def _tree_html(d, nodes, by_slot, parent_slot=""):
     """Nested <ul class="tree">: a directory is a <details>, a file a plain row.
     Every row is two columns: the bare tree on the left (marker, icon, name),
     the works on the right (`.tn-works`: the folder's counts on every node; the
-    slot's Run-Type chips once, on the first node of that slot). Nothing else
+    slot's Spec / control chips once, on the first node of that slot). Nothing else
     (JL: less is more). A nested <ul> only pads the left, so the right column
     lines up at every depth."""
     out = []
@@ -2586,11 +2586,11 @@ def render_run(d):
         rt = cells[0].strip("`") if cells else ""
         folders = fm["by_runtype"].get(rt, [])
         mrows.append([esc(c) for c in cells] + [("<br>".join('<span class="idtag">%s</span>' % esc(x) for x in folders)) if folders else '<span class="mut">—</span>'])
-    wmap = ('<div class="card"><h2>Workflow map</h2><div class="brief">Run-Type rows × Space columns, '
-            'projected from haipipe-plugin-paper/ref/space-mapping.md, plus the folder each Run-Type lands in on this board. '
-            'A definition view, not a Run inventory.</div>%s</div>'
+    wmap = ('<div class="card"><h2>Workflow map</h2><div class="brief">Run Spec and control rows × Space columns, '
+            'projected from haipipe-plugin-paper/ref/space-mapping.md, plus the owning folder on this board. '
+            'Definition projection; controls allocate no Runs. Actual execution is recorded by native Tickets and receipts.</div>%s</div>'
             % (_table(headers + ["folder on this board"], mrows) if headers else _empty("space-mapping.md has no table")))
-    # the same map seen from disk: the REAL folder tree, each slot's Run-Types shown once, on its node
+    # the same map seen from disk: the REAL folder tree, each slot's Spec / controls shown once, on its node
     by_slot = {r["slot"]: r for r in fm["rows"]}
     roots, homes = build_tree(d)
     def count(ns):
@@ -2600,18 +2600,18 @@ def render_run(d):
     if missing:
         tail = ('<div class="brief mut" style="margin-top:8px">not on this board yet: %s</div>'
                 % " · ".join('<code>%s</code>' % esc(r["folder"].strip("`")) for r in missing))
-    srcs = ('<div class="brief">backend Markdown: <code>%s</code> (the Workflow map and Folder tree × Run-Type tables) · <code>%s</code> '
+    srcs = ('<div class="brief">backend Markdown: <code>%s</code> (the Workflow map and Folder tree × Spec or control tables) · <code>%s</code> '
             '(the <code>## Pages</code> groups and <code>dialect:</code>) · the folder itself, walked on every open. '
-            'Left: the whole folder tree, click a folder to open it. Right: every folder\'s counts, and the Run-Types '
+            'Left: the whole folder tree, click a folder to open it. Right: every folder\'s counts, and the Spec / controls '
             'acting on the first folder of each slot. '
             'Two boxes: the paper folder, then the project homes the paper claims (Task home · Discovery home).</div>'
             % (esc(_repo_rel(d, _SPACE_MAP)), esc(_repo_rel(d, "board.md"))))
     def box(cap, nodes, empty):
-        head = ('<div class="tree-head"><span>%s</span><span><span class="idtag rt">Run-Type</span> acting here · '
+        head = ('<div class="tree-head"><span>%s</span><span><span class="idtag rt">Spec / control</span> acting here · '
                 '<span class="tn-note">counts</span></span></div>' % cap)
         body = ('<ul class="tree">%s</ul>' % _tree_html(d, nodes, by_slot)) if nodes else '<div class="tn-more">%s</div>' % empty
         return '<div class="treebox">%s%s</div>' % (head, body)
-    tree = ('<div class="card"><h2>Folder tree × Run-Type<span class="tally">%d node(s)</span></h2>%s%s%s%s</div>'
+    tree = ('<div class="card"><h2>Folder tree × Spec or control<span class="tally">%d node(s)</span></h2>%s%s%s%s</div>'
             % (count(roots) + count(homes), srcs,
                box("the paper folder · %s" % esc(d["board"].name), roots, "the paper folder is empty"),
                box("the project homes · Task home · Discovery home", homes,
@@ -2667,7 +2667,7 @@ table.grid tr:last-child td{border-bottom:0}
 .tree-job{font-size:14.5px;margin:12px 0 4px} .tree-task{font-size:14px;margin:8px 0 4px 18px}
 .gates{font-size:14.5px} pre.path{font-size:13px}
 .kv>.item-row>.cc{right:8px;top:8px}
-/* Folder tree × Run-Type: two aligned columns. Left the bare tree, right the works
+/* Folder tree × Spec or control: two aligned columns. Left the bare tree, right the works
    (.tn-works, a fixed --w wide). A nested <ul> pads only the left, so every row's
    right edge is the card's right edge and the works column lines up at any depth. */
 .treebox{--w:clamp(380px,46vw,840px);position:relative;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--card);margin:6px 0 12px}

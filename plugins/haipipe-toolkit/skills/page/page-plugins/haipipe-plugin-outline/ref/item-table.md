@@ -66,6 +66,15 @@ acceptance:
 provenance: {}
 ```
 
+The authored ledger's `Local Run → Result` selects the exact current envelope.
+Evidence Space, inline labels, and delivery exports use that same selection;
+file order, a newer timestamp, or a historical sibling never overrides it.
+Missing or invalid current bindings remain unresolved on reading surfaces and
+block export. Dropped/deferred items do not enter delivery. Without an authored
+ledger, the migration reader can inspect unique historical Results and legacy
+lanes; it rejects ambiguous repeated Item identities and labels that profile
+as legacy in export provenance. Adding a ledger disables this fallback.
+
 The same envelope may carry a root-level `labels:` manifest. It is the stable
 join from authored LaTeX-like placeholders to the Result/Card projection:
 
@@ -341,7 +350,7 @@ used here. For a proposed Page-local `RE`, the contract remains in
 and Local Input defines the future frozen envelope. LAND creates the authored
 Run and generated Result at the addresses selected by the Folder owner's Run
 dialect. For a canonical Task, the Ticket is under the Task's `runs/` and the
-Result is under resolved `$OUTPUT_ROOT/results/<task>/<RUNNAME>/`. Raw paths are
+Result is under resolved `$OUTPUT_ROOT/<task>/results/<RUNNAME>/`. Raw paths are
 selectable text in the Runs-lens card, never download anchors. A Run chip
 opens that exact card via `lens=run&focus=run-<item>&run=<address>`;
 an Evidence chip uses `seg=items` and opens the Evidence Item card instead.

@@ -1,5 +1,11 @@
 # The plan file · one grammar, with Run Spec-owned outline policy
 
+For release, `../../../haipipe-page/ref/release-decisions.md` controls profile
+precedence. The Shape approval rules below apply to the non-interactive/legacy
+profile; interactive Pages reuse acceptance of the exact Structure/Writing
+versions and a recorded release instruction.
+
+
 The plan is `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`: what the page WILL say,
 agreed before it says it. This file is the grammar every plan obeys, and the
 one `checks/outline.py`, `src/plan_shape.py` and the 🧭 tab parse. A Run Spec
@@ -44,6 +50,12 @@ is `C1` with `P1` to `P<n>`.
 if C1 ends at `C1.P3`, the first paragraph in C2 is `C2.P4`. `B` resets inside
 each paragraph. The full Bullet identity is therefore
 `C<n>.P<page-global>.B<paragraph-local>`.
+
+Read-only migration: an older plan may reset `P` within each Section. A copy
+prompt retains that source address and reports the reading-order global identity
+separately. Before editing, reconcile it with the accepted Structure and the
+Run's frozen target. An address disagreement is a blocker; copying never
+renumbers the source or silently retargets an existing Run.
 
 ```text
 ## C<n> · <name>                          ≤ 8 words · ≤ 56 chars · names the subject

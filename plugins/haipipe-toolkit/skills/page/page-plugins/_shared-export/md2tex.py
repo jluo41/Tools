@@ -83,10 +83,13 @@ ESTABLISHES = re.compile(r"^\W*\s*Establishes\b")
 # backticks around the word.
 CODE_SPAN = re.compile(r"`([^`]+)`")
 
-# The working Page keeps unresolved displays in the stable `/table{D_xxx}` /
-# `/figure{D_xxx}` form. That token is useful for binding later, but it is not
-# reader-facing LaTeX, so delivery renders it as a legible pending note.
-DISPLAY_PLACEHOLDER = re.compile(r"/(table|figure)\{([^}]+)\}")
+# The working Page keeps unresolved displays in the stable
+# `\table{D_xxx}` / `\figure{D_xxx}` / `\algorithm{D_xxx}` form. These are
+# Page bindings, not native LaTeX commands; delivery renders an unbound token
+# as a legible pending note. The slash spelling remains a migration alias.
+DISPLAY_PLACEHOLDER = re.compile(
+    r"(?:\\|/)(table|figure|algorithm)\s*\{\s*([^}]+?)\s*\}"
+)
 
 # Task Pages carry a small reader-facing status tail after their manuscript
 # content. It belongs on the Board Page, not in a paper export. Likewise, the
@@ -127,7 +130,7 @@ def escape_prose(s):
 
 def display_placeholder_tex(m):
     noun = m.group(1).capitalize()
-    label = m.group(2).replace("_", r"\_")
+    label = m.group(2).strip().replace("_", r"\_")
     return r"\textit{[%s pending: %s]}" % (noun, label)
 
 

@@ -4,18 +4,28 @@ desk = "<desk><year>"
 source_format = "latex-room"
 venue_profile = "<venue-profile>"
 
+[pages]
+# Authored inputs, outside the generated room. Omit appendix when unused.
+main = "../Ba-<desk>-Main"
+appendix = "../Bb-<desk>-Appendix"
+order = "../A1-Story/StoryA-<desk>-<idea>/StoryA-<desk>-<idea>.md"
+
 [source]
-room = "../1-<desk><year>"
-master = "<master>.tex"
+# Generated output only. The builder rejects other rooms and symlink escapes.
+room = "latex"
+master = "master.tex"
 sections = "sections"
+appendices = "appendices"
 displays = "displays"
 bibliography = "reference.bib"
 
 [outputs]
-main_docx = "<stem>-submission-draft.docx"
-supplement_docx = "<stem>-online-supplement-draft.docx"
-section_snapshots = "draft-sections"
-assets = "submission-assets"
+main_docx = "word/<stem>-submission-draft.docx"
+supplement_docx = "word/<stem>-online-supplement-draft.docx"
+main_pdf = "latex/<stem>-submission-draft.pdf"
+supplement_pdf = "latex/<stem>-online-supplement-draft.pdf"
+section_snapshots = "word/draft-sections"
+assets = "latex/submission-assets"
 manifest = "build-manifest.json"
 
 # Optional profile overrides belong here only when the venue profile declares

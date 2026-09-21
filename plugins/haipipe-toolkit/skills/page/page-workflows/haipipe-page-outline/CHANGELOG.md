@@ -1,3 +1,7 @@
+## 0.46.1 · 2026-09-20
+
+- Qualify legacy Shape approval routes and reuse exact interactive acceptance at release.
+
 ## 0.46.0 · 2026-09-15
 
 - Make SHAPE and SURVEY explicit internal Steps of the shared Structure Run

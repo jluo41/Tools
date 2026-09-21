@@ -28,7 +28,7 @@ Folder tree variants
   Variant 3 — grouped  (blank-line clusters; floating callouts)
   -------------------------------------------------------------
 
-  Tools/plugins/haipipe-toolkit/skills/
+  plugins/haipipe-toolkit/skills/
   └── task/
       ├── haipipe-task/SKILL.md
       │

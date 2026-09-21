@@ -70,7 +70,7 @@ There is no separate question door to load.
 
 ### Full lifecycle
 
-1. Creator drafts `workflow/plan.yaml`; reviewer checks the IPO contract.
+1. Creator drafts `workflow/plan.yaml`; reviewer checks the Run Spec / Run Instance contract.
 2. Creator builds code/config/run ticket; reviewer performs Gate 1.
 3. Execute the ticket; write only the paired Result directory and runtime receipt.
 4. Creator drafts `workflow/report.yaml`; reviewer performs Gate 2.

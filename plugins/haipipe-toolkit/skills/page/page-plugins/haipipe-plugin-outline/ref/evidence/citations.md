@@ -31,6 +31,20 @@ complete supplied entry may land through the person route.
 └── payload/              PRIMARY · the cited source metadata/payload
 ```
 
+The current Result declares the frozen export source explicitly:
+
+```yaml
+payload:
+  bibliography: payload/sources.bib
+```
+
+This path is relative to the selected `result.yaml` and must remain inside its
+own `payload/`. Keep the complete trusted entries unchanged. Word and LaTeX
+assemble their derived bibliography from the ledger-selected, person-verified
+CITE Results. Identical shared entries are deduplicated; conflicting entries
+with the same key block export. An old Page Bib cannot fill a missing current
+binding. The derived export Bib is not a correction or verification target.
+
 Refresh may subset entries from a trusted seed Bib. A person-supplied complete
 entry may land verbatim. The workbench regenerates freely.
 

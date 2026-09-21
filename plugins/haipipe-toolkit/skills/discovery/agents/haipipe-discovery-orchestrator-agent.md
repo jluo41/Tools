@@ -75,7 +75,7 @@ owns relevance, Subject resolution, deduplication, Run allocation, and writes.
 5. Creator executes pending tickets through Search. Reviewer checks every
    complete Result.
 6. Creator runs D1 SYNTHESIZE, which dispatches
-   `haipipe-discovery-synthesize` and the shared Page workflow; Page phases own
+   `haipipe-discovery-synthesize` and the shared Page workflow; Page Workflow Steps own
    root Page writes. If human interaction is selected, the Page workflow owns
    `rp00_mermaid-structure` and selected `rpNN_pNN[-pNN]` Runs; D1 records only
    that CONTENT commissions no Discovery writing Run.

@@ -1,3 +1,15 @@
+## 0.10.2 · 2026-09-20
+
+- Clarify that CHECK is dispatched by the Page Workflow and is not itself a Run.
+
+## 0.10.1 · 2026-09-20
+
+- Use owner-defined closing gates and a complete evidence-led human review packet.
+
+## 0.10.0 · 2026-09-20
+
+- Reference the shared Writing base rubric and retain independent whole-Page mechanics, actor and immutable-version checks.
+
 ## 0.9.0 — 2026-09-15
 
 - Make CHECK the independent whole-Page completion gate of the Workflow

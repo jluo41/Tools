@@ -21,6 +21,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
+import os
+import tempfile
 import datetime as dt
 import shutil
 import sys
@@ -32,7 +36,7 @@ import yaml
 
 WORKSPACE = Path("_WorkSpace")
 USER_STORE = WORKSPACE / "A-User-Store"
-BUILDER_VERSION = "build_sample_individuals.py v0.4"
+BUILDER_VERSION = "build_sample_individuals.py v0.5"
 
 
 def flatten_rel(rel: Path) -> Path:
@@ -229,23 +233,93 @@ def prune_empty_dirs(root: Path) -> int:
     return removed
 
 
-def build_individual(spec: dict) -> dict:
-    """Build one Subject-*/ folder. Returns summary dict."""
+def input_fingerprint(spec: dict) -> str:
+    """Hash config, builder and filesystem inventory (path/size/mtime_ns/ctime_ns).
+
+    Stat fingerprints avoid reading every global parquet on a cache lookup.
+    Use --force when inputs come from a filesystem without reliable timestamps.
+    """
+    roots = [WORKSPACE / "1-SourceStore" / spec["source_set"],
+             WORKSPACE / "2-RecStore" / spec["rec_set"]]
+    if not roots[0].is_dir():
+        raise FileNotFoundError(f"Source set missing: {roots[0]}")
+    paths = []
+    for root in roots + [Path(p) for p in spec.get("raw_paths", [])]:
+        files = sorted(root.rglob("*")) if root.is_dir() else [root]
+        for path in files:
+            if path.is_file():
+                st = path.stat()
+                paths.append((str(path.resolve()), st.st_size, st.st_mtime_ns, st.st_ctime_ns))
+    payload = {"spec": spec, "files": paths,
+               "builder": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def output_inventory(folder: Path) -> dict:
+    return {str(p.relative_to(folder)): [p.stat().st_size, p.stat().st_mtime_ns]
+            for name in ("0-RawDataStore", "1-SourceStore", "2-RecStore")
+            for p in sorted((folder / name).rglob("*")) if p.is_file()}
+
+
+def build_individual(spec: dict, *, force: bool = False) -> dict:
+    """Refresh managed slices in staging; preserve the old cache on failure."""
+    for key in ("dataset_tag", "individual_id"):
+        value = str(spec[key])
+        if not value or value in {".", ".."} or any(c in value for c in ("/", "\\")):
+            raise ValueError(f"Invalid {key}: expected one path component")
     group_dir = USER_STORE / f"UserGroup-{spec['dataset_tag']}"
     folder = group_dir / f"Subject-{spec['individual_id']}"
-    folder.mkdir(parents=True, exist_ok=True)
-
-    manifest_path = folder / "manifest.yaml"
-    if manifest_path.exists():
-        try:
-            with open(manifest_path) as f:
-                existing = yaml.safe_load(f)
-            built_at = dt.datetime.fromisoformat(existing.get("built_at", ""))
-            if (dt.datetime.now() - built_at).total_seconds() < 3600:
+    group_dir.mkdir(parents=True, exist_ok=True)
+    lock = group_dir / f".{folder.name}.build.lock"
+    fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    os.close(fd)
+    staging = None
+    backup = group_dir / f".{folder.name}.previous"
+    try:
+        if backup.exists():
+            raise RuntimeError(f"Unresolved previous build at {backup}; inspect it before retrying")
+        fingerprint = input_fingerprint(spec)
+        manifest_path = folder / "manifest.yaml"
+        if manifest_path.exists() and not force:
+            existing = yaml.safe_load(manifest_path.read_text()) or {}
+            if (existing.get("input_fingerprint") == fingerprint and
+                    existing.get("output_inventory") == output_inventory(folder)):
                 return {"status": "skipped_fresh", "folder": str(folder)}
-        except Exception:
-            pass
+        staging = Path(tempfile.mkdtemp(prefix=f".{folder.name}.build-", dir=group_dir))
+        # Preserve caller-owned files outside the builder's managed projections.
+        if folder.exists():
+            for item in folder.iterdir():
+                if item.name in {"0-RawDataStore", "1-SourceStore", "2-RecStore", "manifest.yaml"}:
+                    continue
+                dest = staging / item.name
+                if item.is_dir():
+                    shutil.copytree(item, dest, symlinks=True)
+                else:
+                    shutil.copy2(item, dest, follow_symlinks=False)
+        result = _build_into(spec, staging, fingerprint)
+        if input_fingerprint(spec) != fingerprint:
+            raise RuntimeError("Inputs changed during build; previous cache retained")
+        if folder.exists():
+            folder.rename(backup)
+        try:
+            staging.rename(folder)
+            staging = None
+        except BaseException:
+            if backup.exists():
+                backup.rename(folder)
+            raise
+        if backup.exists():
+            shutil.rmtree(backup)
+        result["folder"] = str(folder)
+        return result
+    finally:
+        if staging is not None:
+            shutil.rmtree(staging, ignore_errors=True)
+        lock.unlink(missing_ok=True)
 
+
+def _build_into(spec: dict, folder: Path, fingerprint: str) -> dict:
+    manifest_path = folder / "manifest.yaml"
     # 0-RawDataStore: flat — just the raw file names, no cohort/train/test nesting
     raw_out = folder / "0-RawDataStore"
     raw_files_copied = 0
@@ -261,7 +335,7 @@ def build_individual(spec: dict) -> dict:
     source_in = WORKSPACE / "1-SourceStore" / spec["source_set"]
     source_out = folder / "1-SourceStore"
     source_files, source_rows, source_skipped = 0, 0, 0
-    for src in source_in.rglob("*"):
+    for src in sorted(source_in.rglob("*"), key=lambda p: (len(p.parts), str(p))):
         if src.is_file():
             rel = flatten_rel(src.relative_to(source_in))
             dst = source_out / rel
@@ -282,7 +356,7 @@ def build_individual(spec: dict) -> dict:
     rec_files, rec_rows, rec_skipped = 0, 0, 0
     partition_seen = set()
     if rec_in.exists():
-        for src in rec_in.rglob("*"):
+        for src in sorted(rec_in.rglob("*"), key=lambda p: (len(p.parts), str(p))):
             if src.is_file():
                 rel_raw = src.relative_to(rec_in)
                 # Record which partition this file came from (for manifest)
@@ -309,13 +383,18 @@ def build_individual(spec: dict) -> dict:
         "dataset": spec["dataset"],
         "dataset_tag": spec["dataset_tag"],
         "source_raw_paths": [str(p) for p in spec.get("raw_paths", [])],
-        "raw_materialized": bool(spec.get("raw_copy")),
+        "raw_materialized": raw_files_copied > 0,
+        "raw_copy_requested": bool(spec.get("raw_copy")),
+        "raw_files_missing": [str(p) for p in spec.get("raw_paths", []) if not Path(p).exists()],
         "source_set": spec["source_set"],
         "rec_set": spec["rec_set"],
         "pid_column": spec["pid_column"],
         "pid_values": spec["pid_values"],
         "built_at": dt.datetime.now().isoformat(timespec="seconds"),
         "built_by": BUILDER_VERSION,
+        "input_fingerprint": fingerprint,
+        "fingerprint_method": "sha256(config+builder+path/size/mtime_ns/ctime_ns)",
+        "output_inventory": output_inventory(folder),
         "build_args": {
             "raw_files_copied": raw_files_copied,
             "source_files": source_files, "source_rows": source_rows,
@@ -343,7 +422,13 @@ def main():
     ap.add_argument("individual_ids", nargs="*")
     ap.add_argument("--n", type=int, default=5)
     ap.add_argument("--all", action="store_true")
+    ap.add_argument("--force", action="store_true", help="rebuild even when input fingerprints match")
+    ap.add_argument("--workspace", default="_WorkSpace", help="path to the project _WorkSpace directory")
     args = ap.parse_args()
+
+    global WORKSPACE, USER_STORE
+    WORKSPACE = Path(args.workspace).expanduser().resolve()
+    USER_STORE = WORKSPACE / "A-User-Store"
 
     datasets = list(BUILDERS.keys()) if args.all else ([args.dataset] if args.dataset else [])
     if not datasets:
@@ -354,14 +439,16 @@ def main():
     summary = []
     for ds in datasets:
         if ds not in BUILDERS:
-            print(f"SKIP: no builder for {ds}"); continue
+            print(f"ERROR: no builder for {ds}")
+            summary.append({"dataset": ds, "individual_id": "", "status": "error"})
+            continue
         builder = BUILDERS[ds]
         ids = args.individual_ids if (args.individual_ids and not args.all) else list_candidates(ds, args.n)
         print(f"\n=== {ds} — building {len(ids)} individuals: {ids} ===")
         for sid in ids:
             try:
                 spec = builder(sid)
-                result = build_individual(spec)
+                result = build_individual(spec, force=args.force)
                 tag = f"  Subject-{sid}: {result['status']}"
                 if result["status"] == "built":
                     tag += f"  (raw={result['raw_files']}, src_rows={result['source_rows']}, rec_rows={result['rec_rows']})"
@@ -374,7 +461,8 @@ def main():
     print("\n=== Summary ===")
     for s in summary:
         print(f"  {s['dataset']}:{s['individual_id']} → {s['status']}")
+    return 1 if any(s["status"] == "error" for s in summary) else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

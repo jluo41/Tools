@@ -4,8 +4,8 @@ description: Search published venue papers (IEEE, ACM, Springer, etc.) via Seman
 allowed-tools: Bash(*), Read, Write
 metadata:
   argument_hint: "query-or-paper-id"
-  version: "0.1.1"
-  last_updated: "2026-09-04"
+  version: "0.1.2"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -94,12 +94,12 @@ If `semantic_scholar_fetch.py` is not found, fall back to inline Python using `u
 
 | Goal | Flags |
 |------|-------|
-| High-quality journal papers | `--publication-types JournalArticle --min-citations 10` |
-| CS/EE papers, recent | `--fields-of-study "Computer Science,Engineering" --year "2022-"` |
-| Foundational / high-impact | `search-bulk --sort citationCount:desc --fields-of-study "Computer Science"` |
+| Journal articles with at least 10 indexed citations (user-set retrieval filter, not a quality rating) | `--publication-types JournalArticle --min-citations 10` |
+| Computer Science/Engineering papers published from 2022 onward | `--fields-of-study "Computer Science,Engineering" --year "2022-"` |
+| Highest indexed citation counts first (screening order only) | `search-bulk --sort citationCount:desc --fields-of-study "Computer Science"` |
 | Conference papers only | `--publication-types Conference` |
 
-> **Note**: `--venue` requires exact venue names (e.g. "IEEE Transactions on Signal Processing"), not partial matches like "IEEE". Avoid using `--venue` in automated flows — prefer `--publication-types` + `--fields-of-study`.
+> **Note**: `--venue` requires exact venue names (e.g. "IEEE Transactions on Signal Processing"), not partial matches like "IEEE". Avoid using `--venue` in automated flows — prefer `--publication-types` + `--fields-of-study`. Publication type and citation filters affect retrieval only: they do not establish relevance, methodological quality, or evidentiary strength. Citation counts vary by field, paper age, and index coverage; record the query date when they influence selection.
 
 ### Step 3: Fetch Details for a Specific Paper
 
@@ -201,8 +201,8 @@ Suggest follow-up skills:
 ## Key Rules
 
 - **Default to filtered search**: Always apply `--fields-of-study` and `--publication-types` unless user says `- fields: all`. Without filters, S2 returns cross-discipline noise (linguistics, psychology, etc.).
-- **Citation count is gold**: S2's citation data is its main advantage over arXiv. Always show `citationCount` prominently and use it to rank/prioritize results.
-- **Venue metadata matters**: Show `venue` and `publicationVenue.type` (journal vs conference) — this helps users assess paper quality.
+- **Citation count is a retrieval signal**: Show `citationCount` with the query date when available. It may order a candidate list or apply a user-requested filter; never treat count or rank as a paper-quality label or as evidence that a paper supports the question.
+- **Venue metadata is publication context**: Show `venue` and `publicationVenue.type` (journal vs conference) as source metadata. Do not infer methodological quality or relevance from venue alone.
 - **DOI is the canonical ID for published papers**: Always show DOI links for IEEE/ACM/Springer papers.
 - **Rate limiting**: S2 API without key is heavily rate-limited (~1 req/s, strict cooldown). If HTTP 429 occurs, wait and retry. Recommend users set `SEMANTIC_SCHOLAR_API_KEY` env var for higher limits (free at https://www.semanticscholar.org/product/api#api-key-form).
 - **TLDR may be null**: Some publishers (notably IEEE) elide the TLDR field. Fall back to showing the first sentence of the abstract.

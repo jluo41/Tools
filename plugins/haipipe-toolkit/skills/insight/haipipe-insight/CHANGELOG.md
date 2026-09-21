@@ -1,5 +1,24 @@
 # haipipe-insight · version history
 
+## 1.6.2 — 2026-09-20
+
+- Publish the Knowledge strength rubric and the evidence-supported
+  `UNDETERMINED` partition verdict; preserve the signed-handoff boundary for
+  licensed partial-final non-answers.
+- Migration: preserve old verdicts, signatures, and settled cells; route new
+  or reopened work through the owner contracts and Workflow reference.
+
+## 1.6.1 — 2026-09-20
+
+- Clarify Run/Runtime/resource vocabulary; route conditional board and partition rules to references. Define successor question ids and current signed handoff eligibility.
+- Migration: preserve existing records; see the scoped migration reference and current handoff contract.
+
+1.6.0 · 260920
+- Route Application work to bounded native Runs and explicit resource controls.
+- Replace stale procedure/parent-family references with real owners, and define
+  bounded standing authorization with durable source and scope.
+- Migration: `../haipipe-insight-workflow/ref/migration.md`; no live Board rewrite.
+
 1.5.0 · 260916
 - `question|ask` and `verdict` now point at real procedures
   (`haipipe-application/fn/question.md`, `fn/verdict.md`): a person asks in

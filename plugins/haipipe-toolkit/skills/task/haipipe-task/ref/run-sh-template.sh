@@ -112,11 +112,14 @@ RESOLVED_RUN_INPUTS=()
 for input_spec in "${RUN_INPUTS[@]+"${RUN_INPUTS[@]}"}"; do
   input_path="${input_spec%%|*}"
   if [ "$input_path" = "$input_spec" ]; then input_sha=auto; else input_sha="${input_spec#*|}"; fi
-  if [ "$input_sha" = auto ]; then
-    case "$input_path" in /*) input_abs="$input_path" ;; *) input_abs="$JOB_FOLDER/$input_path" ;; esac
-    input_sha="$(shasum -a 256 "$input_abs" 2>/dev/null | awk '{print $1}')"
-    input_sha="${input_sha:-unresolved}"
+  case "$input_path" in /*) input_abs="$input_path" ;; *) input_abs="$JOB_FOLDER/$input_path" ;; esac
+  [ -f "$input_abs" ] && [ -r "$input_abs" ] || fail_shape "declared input is not a readable file: $input_path"
+  observed_sha="$(shasum -a 256 "$input_abs" 2>/dev/null | awk '{print $1}')"
+  [ -n "$observed_sha" ] || fail_shape "cannot fingerprint declared input: $input_path"
+  if [ "$input_sha" != auto ] && [ "$input_sha" != "$observed_sha" ]; then
+    fail_shape "declared input hash changed: $input_path"
   fi
+  input_sha="$observed_sha"
   RESOLVED_RUN_INPUTS+=("${input_path}|${input_sha}")
 done
 
@@ -164,6 +167,8 @@ family:     $RUN_FAMILY
 operation:  $RUN_OPERATION
 target:     $RUN_TARGET
 status:     $receipt_status
+attempt:    $ATTEMPT
+contract_sha256: $CONTRACT_SHA256
 ticket:     $TICKET_REL
 result:     $RESULT_PATH
 inputs:
@@ -197,6 +202,64 @@ EOF
   mv "$RUNTIME_YAML.tmp" "$RUNTIME_YAML"
 }
 
+# One native writer at a time. An abandoned lock requires owner recovery;
+# never remove a lock merely because a second invocation wants to retry.
+RUN_LOCK="$RESULTS_DIR/.run-lock"
+mkdir "$RUN_LOCK" 2>/dev/null || fail_shape "Run is already active or needs abandoned-lock recovery: $RUN_NAME"
+trap 'rmdir "$RUN_LOCK" 2>/dev/null || true' EXIT
+INPUT_SNAPSHOT="$RUN_LOCK/inputs.txt"
+emit_inputs_yaml > "$INPUT_SNAPSHOT"
+# Compare a frozen contract and preserve the prior receipt before launch.
+# No worker is run and no old receipt is changed when these checks fail.
+HISTORY_META="$(python3 - "$RUNTIME_YAML" "$TICKET" "$CONFIG" "$WORKER" \
+  "$INPUT_SNAPSHOT" "$RUN_FAMILY" "$RUN_OPERATION" "$RUN_TARGET" "$TICKET_ARGS_JSON" <<'PY_HISTORY'
+from pathlib import Path
+import hashlib, json, re, shutil, sys
+runtime, ticket, config, worker, inputs = map(Path, sys.argv[1:6])
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+def scalar(text, key):
+    match = re.search(r"^" + re.escape(key) + r":[ \t]*(.*)$", text, re.M)
+    return match.group(1).strip().strip("\"'") if match else ""
+def stop(reason):
+    raise SystemExit("Run history: " + reason)
+contract = dict(ticket=digest(ticket), config=digest(config), worker=digest(worker),
+                inputs=inputs.read_text(), family=sys.argv[6], operation=sys.argv[7],
+                target=sys.argv[8], args=json.loads(sys.argv[9]))
+fingerprint = hashlib.sha256(json.dumps(contract, sort_keys=True).encode()).hexdigest()
+attempt = 1
+if runtime.is_file():
+    previous = runtime.read_text()
+    status = scalar(previous, "status").lower()
+    if status in {"complete", "completed", "done", "superseded"}:
+        stop("closed Result is immutable; reuse it or commission a new Run")
+    started = scalar(previous, "started_at")
+    if status == "planned" and started in {"", "null", "~"}:
+        config_hash = scalar(previous, "config_sha256")
+        if config_hash and config_hash not in {"null", "~"} and config_hash != contract["config"]:
+            stop("planned config changed; resolve the frozen commission before dispatch")
+    else:
+        if status not in {"failed", "blocked", "running"}:
+            stop("unknown prior state; owner recovery is required")
+        if scalar(previous, "contract_sha256") != fingerprint:
+            stop("changed or unproven frozen contract; preserve history and resolve through the owner")
+        old_attempt = scalar(previous, "attempt")
+        if not old_attempt.isdigit() or int(old_attempt) < 1:
+            stop("prior attempt number is missing or invalid")
+        archive = runtime.parent / "attempts" / f"{int(old_attempt):06d}"
+        if archive.exists():
+            stop("attempt archive already exists; reconcile interrupted history before retry")
+        archive.mkdir(parents=True)
+        shutil.copy2(runtime, archive / "runtime.yaml")
+        attempt = int(old_attempt) + 1
+print(fingerprint, attempt)
+PY_HISTORY
+)"
+HISTORY_EXIT=$?
+rm -f "$INPUT_SNAPSHOT"
+[ "$HISTORY_EXIT" -eq 0 ] || fail_shape "retry history or frozen-contract check failed"
+CONTRACT_SHA256="${HISTORY_META%% *}"
+ATTEMPT="${HISTORY_META##* }"
 write_receipt running null null null null null
 
 if [ "$NOTEBOOK_MODE" = off ]; then

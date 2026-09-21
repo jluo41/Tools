@@ -20,7 +20,6 @@ design_profile:
   narrative: none
   display: none
   section_edit: none
-  terminal: adopted
 ```
 
 
@@ -39,14 +38,15 @@ template:
 ```
 
 
-## Phase use
+## Run guidance
 
 ### Commission and Generate
 
-Keep the grant narrow: one source for the hook and one for the action. Author
+Keep the allowed inputs narrow: one source for the hook and one for the action. Author
 one title, one body, and one deep-link target inside the released Commission's rails.
 
-### Verify and adopt
+### Verify
 Title grabs attention. Body gives one reason + one action.
 No opt-out in body (handled by OS notification settings). Render the exact
-notification to `delivery/render/`, then adopt or decline.
+notification inside the current Result if needed for visual checks. Independent
+Verify pass makes it ready for Delivery.

@@ -217,7 +217,8 @@ def collect_result_labels(page_home: Path) -> dict[str, dict[str, str]]:
     if not result_root.is_dir() or result_root.is_symlink():
         return {}
     bindings: dict[str, dict[str, str]] = {}
-    for manifest in sorted(result_root.rglob("result.yaml")):
+    from .evidence_selection import selected_for_home
+    for manifest in selected_for_home(page_home):
         if manifest.is_symlink():
             continue
         try:
@@ -247,9 +248,11 @@ def collect_result_labels(page_home: Path) -> dict[str, dict[str, str]]:
                 "input": top.get("input", ""),
             })
             for alias in label_aliases(label):
-                # A duplicated token is a contract problem; keep the first
-                # sorted authority deterministic rather than changing a draft.
-                bindings.setdefault(alias, label)
+                if alias in bindings and bindings[alias].get("result") != label["result"]:
+                    # Preserve an unresolved conflict instead of silently choosing.
+                    bindings[alias] = {"token": alias, "status": "ambiguous", "display": ""}
+                else:
+                    bindings.setdefault(alias, label)
     return bindings
 
 

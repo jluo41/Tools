@@ -20,10 +20,9 @@ design_profile:
   narrative: required
   display: required
   section_edit: optional
-  terminal: adopted
 ```
 
-## Phase use
+## Run guidance
 
 ### Commission and Generate
 
@@ -46,9 +45,10 @@ minimap concern) — if the unit has sub-widgets, one Job per widget.
 Per-widget review pass on multi-widget cards; simple cards
 (header + body + button) skip.
 
-### Verify and adopt
+### Verify
 UI spec with layout, content, interaction, and data binding,
-owned by the Design Unit. Judge every widget and binding, render to
-`delivery/render/`, then adopt or decline. A drawn screen renders with
-`haipipe-design-unit/scripts/render_screen.py` and is judged on that picture;
-an ASCII wireframe stands in only while no screen is drawn yet.
+owned by the Design Unit. Judge every widget and binding against the actual
+screen rendered with `haipipe-design-unit/scripts/render_screen.py`. Write the
+picture and manifest inside the current Result and pin them before completion.
+An ASCII wireframe can guide internal drafting but cannot satisfy visual checks.
+Independent Verify pass makes the exact screen ready for Delivery.

@@ -8,27 +8,27 @@ Do not add prose outside.
   <rubric_dimensions>
     <dimension>
       <name>clarity</name>
-      <score>1-5</score>
+      <score>1-5 | unavailable</score>
       <reasoning>One short sentence.</reasoning>
     </dimension>
     <dimension>
       <name>actionability</name>
-      <score>1-5</score>
+      <score>1-5 | unavailable</score>
       <reasoning>One short sentence.</reasoning>
     </dimension>
     <dimension>
       <name>tone</name>
-      <score>1-5</score>
+      <score>1-5 | unavailable</score>
       <reasoning>One short sentence.</reasoning>
     </dimension>
     <dimension>
       <name>jargon_avoidance</name>
-      <score>1-5</score>
+      <score>1-5 | unavailable</score>
       <reasoning>One short sentence — name any jargon if found.</reasoning>
     </dimension>
     <dimension>
       <name>length</name>
-      <score>1-5</score>
+      <score>1-5 | unavailable</score>
       <reasoning>One short sentence.</reasoning>
     </dimension>
   </rubric_dimensions>
@@ -44,13 +44,18 @@ Do not add prose outside.
   </issues>
 
   <overall_verdict>pass | warn | fail</overall_verdict>
-  <overall_score>4.2</overall_score>
+  <overall_score>4.2 | unavailable</overall_score>
   <summary>One paragraph synthesizing the scores and any blockers.</summary>
 </judgment>
 ```
 
 CONSTRAINTS:
-- All five dimensions MUST appear (even if score is 5 with empty issue list).
-- `score` integer 1-5; `overall_score` float 0.0-5.0.
+- All five declared dimensions MUST appear exactly once; use `unavailable` and
+  explain the missing evidence when a dimension cannot be assessed.
+- `score` is an integer 1-5 or `unavailable`; `overall_score` is the mean of
+  numeric scores rounded to two decimals, or `unavailable` if none are numeric.
 - `severity` ∈ {info, warning, critical}; `overall_verdict` ∈ {pass, warn, fail}.
+- Overall verdict is `fail` for any score ≤2 or any critical issue; otherwise
+  `warn` for any unavailable dimension or score 3; otherwise `pass`. These
+  cases do not overlap and cover every complete judgment.
 - No XML tags or markdown formatting inside the field text — plain text.

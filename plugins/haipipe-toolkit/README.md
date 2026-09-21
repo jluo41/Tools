@@ -11,7 +11,7 @@ accepted Board Pages ── Evidence Workspace ── Supporting/Local Runs
                                      ▼           ▼
                               typed consumer Pages
                                      │
-                              Paper / Application
+                              Paper / Insight / Design
 ```
 
 If you are here to **build a model** → the engineering substrate (below).
@@ -49,7 +49,11 @@ the Local Run/Result that makes its focal item ready.
 Evidence Workspace binds exact Supporting Run ids and Local Run/Result receipts;
 Task and Discovery never write consumer prose.
 
-The neutral spine is `skills/run/haipipe-run/SKILL.md`; Page evidence wiring is
+The neutral spine is `skills/run/haipipe-run/SKILL.md`; its
+[`Run catalogue`](skills/run/haipipe-run/ref/run-catalog.md) links current domain
+profiles, and its references define identity/history and receipt/inventory
+rules. Workflow agents, domain owners, workers and presenters use these rules.
+Page evidence wiring is
 owned by `skills/page/page-plugins/haipipe-plugin-outline/`.
 
 
@@ -71,7 +75,7 @@ Commands
 /haipipe-ideation     the semantic bridge — evidence bundle | ideas | Paper handoff
 /haipipe-paper        thin academic router over Ideation, Story, Venue,
                       Section, and Round Pages (Roadmap/Narrative retired 260907)
-/haipipe-insight      the evidence side — I0 Meta → I5 Wisdom, signed handoff
+/haipipe-insight      the evidence side — bounded Runs, evidence dependencies, signed handoff
 /haipipe-design       the creative side — Brief → Commission → Generate → Verify
 ```
 
@@ -121,12 +125,12 @@ skills/
 ├── discovery/         🔍 external evidence — Search | Review | Synthesize + Run/Result
 ├── ideation/          💡 semantic research directions over Task + Discovery evidence
 ├── paper/             📄 academic composition over six Page Types
-├── insight/           🔎 evidence-led understanding — I0 Meta → I5 Wisdom
+├── insight/           🔎 evidence-led understanding — native Runs and DIKW resources
 ├── design/            🎨 creative production — Brief → Commission → Verify
-├── board/             🧭 Board + Page Type/Phase contracts + producer/reviewer/orchestrator
+├── board/             🧭 Board + Page and Run contracts + producer/reviewer/orchestrator
 ├── diagrams/          🗺 working design Boards; kept outside delivery skills
 ├── project/           📦 container setup
-├── 0_utils/ 0_connect/   utilities and connectors
+├── 0_utils/           🧰 utilities and connector skills, including whoop-connect
 └── run/               🎟 the neutral Level-4 Run/Result contract
 ```
 

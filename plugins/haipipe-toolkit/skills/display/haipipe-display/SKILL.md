@@ -27,8 +27,13 @@ a figure in the document's TeX   ✒️ tex           haipipe-display-tex
 ```
 
 Data kinds (📊 📈) read ONLY the approved extract in the unit's `intake/`, never the raw data; what a caller owes that folder is `../ref/display-intake-contract.md`.
-Concept kinds (📐 ✒️ 🎨) carry no numbers at all; their input is the spec or prompt they draw.
+Concept kinds (📐 ✒️ 🎨) do not calculate values. They may show a count, percentage, or estimate
+only when the caller declares a verified `role: values` source in `intake/manifest.yaml`.
 Pick ✒️ tex when the figure should share the document's own fonts and math, or when it IS math; pick 📐 diagram when it should stay editable as SVG.
+
+One renderer invocation that produces one bounded unit may be modeled as one Run in a parent
+Workflow. Its numbered instructions, tool calls, compile, review, and retries are Steps inside that
+Run. `origin.run` remains the upstream source-provenance field.
 
 ## 🧭 Concept-first gate for visual displays
 
@@ -55,6 +60,10 @@ inspect current/previous visual
   `concept-reference.md` or the renderer's `prompt.md`) before native
   authoring. Include what must remain, what may be shortened, and what must
   not be introduced.
+- The caller owns the composition ruling. A specific user-directed layout is
+  sufficient; if materially different compositions remain plausible, show the
+  reference or candidates and wait for the caller to choose before rebuilding.
+  Record the selected composition and its invariants in `recipe/`.
 - Rebuild the approved composition as editable native objects or SVG and
   re-typeset every label. A generated bitmap may guide the reconstruction but
   must not replace an editable diagram or PowerPoint source.
@@ -71,13 +80,12 @@ FigureSpec routes.
 
 ## 🚪 Where the unit lands
 
-A PAPER's unit lands at `displays/displayNN-<slug>/` under the paper root.
-A BOARD PAGE's unit lands at
-`<page>/outline/evidence/display/<stem>-DisplayN-<slug>/` (a PAPER Section page names
-the unit `Display<n>-<slug>`, its own id `S-<desk>-Main-<N>-<Title>` carrying the index,
-JL 260908; `S-Display-*` and `Sec<N>-Display<n>-*` are retired), and the page-side rules
-(address, citation chips, the human `accepted:` tick) belong to
-`page/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md`, not to this door.
+The caller supplies the unit directory. For a Page DISPLAY Result, that is
+`<page>/results/<re-run>/payload/<unit>/`; a Paper Section Page uses the same Page-owned Result
+address. A View uses the View-owned path in the shared output contract. A non-Page Paper workflow
+supplies its unit path through its Paper adapter. Renderers never choose a paper root or create a
+second unit copy. Page citations and the human `accepted:` decision belong to
+`page/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md`.
 
 ## 📂 Files
 

@@ -22,9 +22,11 @@ _meta:
 
 display_kind: figure                    # intended consumer: figure | table | diagram | illustration
 
-source_runs:                            # full Run ids + resolved Result paths
+source_runs:                            # full Run ids + exact artifact hashes
   - run: b01j01t01r01
     result: <resolved-upstream-result>
+    artifact: <resolved-upstream-result>/<file>
+    sha256: <sha256-of-that-artifact>
 
 summary_params:                         # this task's responsibility: facts, not visual styling
   columns: [model_size, split, mae, ci95]

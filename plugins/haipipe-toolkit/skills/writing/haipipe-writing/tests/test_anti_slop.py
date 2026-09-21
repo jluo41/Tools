@@ -13,6 +13,18 @@ ROOT = Path(__file__).resolve().parent.parent
 RULES = anti_slop.load_rules()
 
 
+def test_rhythm_percentages_are_observations_without_acceptance_floors():
+    text = "Short sentence. " + " ".join(["word"] * 20) + ". " + " ".join(["word"] * 40) + "."
+    stats = anti_slop.compute_stats(text)
+    assert stats["sentence_count"] == 3
+    assert stats["short_sentence_pct"] == 33.333
+    assert stats["long_sentence_pct"] == 33.333
+    assert anti_slop.audit_text(text, anti_slop.load_rules())["diagnostic_only"] is True
+    empty = anti_slop.compute_stats("")
+    assert empty["short_sentence_pct"] == 0.0
+    assert empty["long_sentence_pct"] == 0.0
+
+
 def test_rule_findings_have_stable_locations():
     text = "This is a pivotal and robust approach.\nIt is not just useful but clear — today.\n"
     result = anti_slop.audit_text(text, RULES)

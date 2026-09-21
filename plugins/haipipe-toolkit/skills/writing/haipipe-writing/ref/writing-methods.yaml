@@ -1,0 +1,49 @@
+# Metadata interpreted by the Writing agent; not an automatic dispatcher.
+schema_version: 1
+default_methods: []
+methods:
+  - id: academic-humanizer
+    roles: [evaluator]
+    scopes: [section, paragraph, paragraph-group, file]
+    provider: installed-skill
+    entry:
+      kind: skill
+      name: academic-humanizer
+      path: null
+    version: null
+    availability: resolve-at-use
+    adapter: methods/academic-humanizer.md
+    inputs: [candidate, baseline, requirements, available-evidence]
+    output: evaluation-findings-v1
+    permitted_actions: [read-inputs, return-findings]
+    provenance: AIScientists-Dev/academic-humanizer (MIT); installation supplied by host
+
+  - id: writing-dna
+    roles: [style]
+    scopes: [section, paragraph, paragraph-group, file]
+    provider: frozen-artifacts
+    entry:
+      kind: packet
+      field: writing_dna
+    version: frozen-profile
+    availability: requires-packet
+    adapter: writing-dna-adapter.md
+    inputs: [writing_dna, requirements, content-map]
+    output: style-choices-and-trace
+    permitted_actions: [read-profile, return-style-choices]
+    provenance: writing-dna-skill; actual profile producer/version recorded by host
+
+  - id: anti-slop
+    roles: [evaluator]
+    scopes: [section, paragraph, paragraph-group, file]
+    provider: adapted-tool
+    entry:
+      kind: python
+      path: ../cli/anti_slop.py
+    version: content-hash
+    availability: bundled
+    adapter: anti-slop-adapter.md
+    inputs: [candidate]
+    output: diagnostic-findings-and-statistics
+    permitted_actions: [read-candidate, write-diagnostic-report]
+    provenance: anti-slop-attribution.md

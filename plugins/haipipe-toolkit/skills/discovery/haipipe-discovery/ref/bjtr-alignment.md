@@ -113,8 +113,8 @@ to rename 1_search, 2_review, or 3_synthesize to Block/Job/Task/Run directories.
    discovery_type.
 2. Every allocated Level-4 Run has a full bNN.jNN.tNN.rNN receipt, one Subject,
    an executable same-stem ticket, and an exact same-stem Result directory.
-3. Only D1 ACQUIRE commissions Discovery Runs. Page phases and D1
-   SYNTHESIZE/CLOSE do not mint umbrella Runs.
+3. Only D1 ACQUIRE commissions Discovery Runs. Shared Page Workflow Steps and
+   Discovery controller Steps do not mint umbrella Runs.
 4. A complete Result owns its Card, facts, runtime receipt, and exactly one
    authoritative Bib entry. The Task aggregate Bib is derived from those
    Results.

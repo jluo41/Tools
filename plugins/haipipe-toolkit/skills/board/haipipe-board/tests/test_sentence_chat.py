@@ -53,7 +53,7 @@ class SentenceChatContractTest(unittest.TestCase):
         self.assertIn("p.classList.contains('pnew')", self.js)
         self.assertIn("var fullId = sec.id + '.' + shortId", self.js)
         self.assertIn("window.__boardWireSentenceChats = function () {", self.js)
-        self.assertIn("    wireSentenceChats();", self.js)
+        self.assertIn("    wireSentenceCopies();", self.js)
         self.assertIn("if (window.__boardWireSentenceChats)", self.js)
 
     def test_heading_is_a_terminal_sibling_not_a_sentence_parent(self):
@@ -66,20 +66,7 @@ class SentenceChatContractTest(unittest.TestCase):
     def test_hover_and_keyboard_entry_are_both_styled(self):
         self.assertIn("p.sentence-target:hover+.schatbar", self.css)
         self.assertIn(".schatbar:focus-within", self.css)
-        self.assertIn(".schat:focus-visible", self.css)
-
-    def test_desktop_rail_has_comment_and_chat_actions(self):
-        self.assertIn("comment.className = 'scomment'", self.js)
-        self.assertIn("openSentenceComment(p, bar)", self.js)
-        self.assertIn("chatButton.className = 'schat'", self.js)
-
-    def test_touch_collapses_actions_into_overflow_menu(self):
-        self.assertIn("more.className = 'smore'", self.js)
-        self.assertIn("menuAction('＋ Comment'", self.js)
-        self.assertIn("menuAction('💬 Chat'", self.js)
-        self.assertIn("menuAction('✎ Edit'", self.js)
-        self.assertIn("@media (hover:none),(pointer:coarse)", self.css)
-        self.assertIn(".schatbar.menu-open>.smenu", self.css)
+        self.assertIn(".scopy:focus-visible", self.css)
 
 
 if __name__ == "__main__":

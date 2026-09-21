@@ -1,75 +1,96 @@
-# workflow-plan-sample.yaml — agent task script-level plan
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Plugin-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
 # Schema: task/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
-#
-# Typical agent phases: Setup → Execute → Parse
-# All outputs light (results/<run>/{transcript.json, summary.md}).
-
-# ─── Header ──────────────────────────────────────────────────────
 name: agent-<TASK_NAME>
-purpose: "Run LLM agent for <PURPOSE>"
-skill: haipipe-task-for-agent
-
-# ─── I: Input ────────────────────────────────────────────────────
+purpose: Run LLM agent for <PURPOSE>
 input:
   args:
-    config: configs/<RUN>.yaml
+    config: scripts/config/rNN_<run>.yaml
     agent_type: <claude | gpt>
     system_prompt: <path or inline>
-  files_in:
-    - <NN>_<TASK>.py
-    - configs/<RUN>.yaml
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: Setup
-    detail: "load context, build prompt, configure tools"
-    steps:
-      - label: "setup:context"
-        type: agent
-        required: true
-        prompt: "Load data context for the agent (documents, metrics, prior results)"
-        files_in:
-          - configs/<RUN>.yaml
-        files_out: []
-
-      - label: "setup:prompt"
-        type: agent
-        required: true
-        prompt: "Build system prompt + user prompt from config"
-        files_in: []
-        files_out: []
-
-  - title: Execute
-    detail: "call the LLM agent"
-    steps:
-      - label: "execute:call"
-        type: agent
-        required: true
-        prompt: "Send prompt to LLM, collect response + tool-use transcript"
-        files_in: []
-        files_out:
-          - results/<RUN>/transcript.json
-
-  - title: Parse
-    detail: "extract structured output from response"
-    steps:
-      - label: "parse:extract"
-        type: agent
-        required: true
-        prompt: "Parse agent response into structured result"
-        files_in:
-          - results/<RUN>/transcript.json
-        files_out:
-          - results/<RUN>/summary.md
-          - results/<RUN>/result.json
-
-# ─── O: Output ───────────────────────────────────────────────────
+  files_in: &id001
+  - scripts/<worker>.py
+  - scripts/config/rNN_<run>.yaml
+owner: haipipe-task-for-agent
+plugin:
+  id: <owning-plugin>
+  workspace_roster_ref: <plugin-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Run LLM agent for <PURPOSE>
+  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: haipipe-task-for-agent
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: ok
+    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: haipipe-task-for-agent
+    worker_skill_chain:
+    - haipipe-task-for-agent
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Setup
+    label: setup:context
+    required: true
+    prompt: Load data context for the agent (documents, metrics, prior results)
+    files_in:
+    - scripts/config/rNN_<run>.yaml
+    files_out: []
+  - section: Setup
+    label: setup:prompt
+    required: true
+    prompt: Build system prompt + user prompt from config
+    files_in: []
+    files_out: []
+  - section: Execute
+    label: execute:call
+    required: true
+    prompt: Send prompt to LLM, collect response + tool-use transcript
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/transcript.json
+  - section: Parse
+    label: parse:extract
+    required: true
+    prompt: Parse agent response into structured result
+    files_in:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/transcript.json
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.md
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/result.json
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
 output:
-  returns:
-    status: ok
+  returns: *id002
   files_out:
-    - results/<RUN>/transcript.json
-    - results/<RUN>/summary.md
-    - results/<RUN>/result.json
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/transcript.json
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/summary.md
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/result.json

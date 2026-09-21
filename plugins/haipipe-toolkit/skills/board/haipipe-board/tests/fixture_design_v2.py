@@ -56,7 +56,7 @@ class ItemSpec:
     expected: str = ""             # typed forecast: what should happen, for whom
     falsified: str = ""            # what observation would refute the bet
     evidence: list[str] = field(default_factory=list)   # "role · relative/path" lines
-    stage: str = "adopted"
+    stage: str = "adopted"         # historical demo default; current cases choose "verified"
     slug: str = ""
     human: str = "JL"
     designer: str = "designer-context-01"
@@ -180,7 +180,7 @@ class FolderBuilder:
     def config(self, spec: ItemSpec, run: str, review_mode: str) -> Path:
         mode = spec.mode or ("challenge" if spec.stance == "challenge" else "compose")
         return self.dump(f"scripts/config/{run}.yaml", {
-            "goal": spec.title, "kind": spec.kind, "mode": mode, "basis": spec.basis, "item": spec.id,
+            "goal": spec.goal, "kind": spec.kind, "mode": mode, "basis": spec.basis, "item": spec.id,
             "design_intent": {"move": spec.goal, "basis": spec.basis, "stance": spec.stance,
                               "expected_effect": spec.expected or None,
                               "failure_condition": spec.falsified or None},
@@ -287,7 +287,8 @@ class FolderBuilder:
             "artifacts": [], "checks": self.ref(check_path, out), "targets": targets,
             "verdict": verdict,
         })
-        self.finish(run, "complete", 6, route="adopt" if verdict == "pass" else "generate")
+        self.finish(run, "complete", 6, route=("delivery" if spec.stage == "verified" else "adopt")
+                    if verdict == "pass" else "generate")
         return run
 
     # -- one item, end to end -------------------------------------------------
@@ -351,13 +352,54 @@ def build_design_folder(folder: Path, stem: str, title: str, opening: str,
     builder.write(f"{stem}.md", (
         f"# {title}\nfolder-kind: design\n\n## Opening\n\n{opening}\n\n"
         "## Outline\n\nDesign Items are registered in `outline/" + stem + "-design-items.md`;\n"
-        "their candidates, verifications, and adoptions are `rdNN_*` Runs.\n\n"
+        "their Commission, Generate and Verify records are `rdNN_*` Runs.\n"
+        "Some fixtures also contain historical Adopt records for reader compatibility.\n\n"
         "## Content\n\nCandidate wording lives in immutable Design Run Results, never here.\n\n"
-        "## Aims\n\n### A1 · Every registered item reaches a truthful terminal decision\n\n"
-        "- ⬜ A1.1 · adopt, decline, or a visible hold for each item.\n"
+        "## Aims\n\n### A1 · Every registered item has a truthful state\n\n"
+        "- ⬜ A1.1 · independently verified and ready, or a named wait/failure.\n"
     ))
     builder.register(title, specs)
     return {spec.id: builder.item(spec) for spec in specs}
+
+
+def bind_insight_handoff(page: Path, signature: str = "JL 260828"):
+    """Synthetic owner receipts for the current exact-hash handoff contract."""
+    folder = page.parent
+    board = folder.parent.parent
+    register = board / "0-MT-meta/MT04-question-wisdom/MT04-question-wisdom.md"
+    register.parent.mkdir(parents=True, exist_ok=True)
+    page_id = page.stem.split("-", 1)[0]
+    register.write_text(
+        "# Synthetic Wisdom register\nfolder-kind: question\nquestion-rung: wisdom\n\n"
+        "```text\nid   question          Gen-1   F·full\n"
+        f"QW1  What counsel?     (none)  ✅ {page_id}\n```\n", encoding="utf-8")
+    workflow = folder / "workflow"
+    workflow.mkdir(exist_ok=True)
+    dependency = workflow / "synthetic-evidence.txt"
+    dependency.write_text("Synthetic accepted evidence for isolated tests only.\n", encoding="utf-8")
+    pin = {"path": page.name, "version": "fixture-v1", "sha256": digest(page)}
+    dependencies = [{"path": "workflow/synthetic-evidence.txt", "sha256": digest(dependency)}]
+    def receipt(path, anchor, payload):
+        import os
+        body = "```yaml\n" + yaml.safe_dump(payload, sort_keys=False) + "```"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"# Synthetic owner log\n\n### {anchor}\n\n{body}\n", encoding="utf-8")
+        return {"path": os.path.relpath(path, folder) + "#" + anchor,
+                "sha256": hashlib.sha256(body.encode()).hexdigest()}
+
+    signed = receipt(folder / "outline" / f"{page.stem}-log.md", "signed-fixture", {
+        "key": "GI5", "status": "passed", "actor": "synthetic-owner",
+        "authority": "haipipe-insight-wisdom", "workflow_runtime_id": "fixture-workflow",
+        "page": pin, "signature": signature, "dependencies": dependencies})
+    settled = receipt(register.parent / "outline" / f"{register.stem}-log.md", "settled-fixture", {
+        "key": "GI6", "status": "passed", "actor": "synthetic-owner",
+        "authority": "haipipe-insight-question", "workflow_runtime_id": "fixture-workflow",
+        "page": pin, "signature_receipt": signed,
+        "target": {"partition": "F", "question": "QW1"}})
+    (workflow / "handoff.yaml").write_text(yaml.safe_dump({
+        "schema": "haipipe.insight-handoff/v1", "page": pin, "dependencies": dependencies,
+        "gi5": signed, "gi6": [settled]}), encoding="utf-8")
+
 
 
 def build_insight_board(board: Path) -> Path:
@@ -396,6 +438,7 @@ def build_insight_board(board: Path) -> Path:
         "OVERREACH     No new message is warranted by this board.\n```\n\n"
         "SERVES        QW1 · BR00-brief A6.1 · Design-01\n\nsigned: ✅ JL 260828\n",
         encoding="utf-8")
+    bind_insight_handoff(page)
     return board
 
 
@@ -412,7 +455,11 @@ def sms_criteria(max_chars: int = 160) -> list[dict]:
         {"id": "optout", "kind": "contains", "value": "Reply STOP to opt-out"},
         {"id": "nolift", "kind": "excludes", "value": "%"},
         {"id": "tone", "kind": "semantic",
-         "description": "plain, non-coercive, prescription-review framing only"},
+         "description": "The recipient can decline the prescription review without pressure.",
+         "observation": "Read the whole SMS as a recipient and inspect its stated STOP path.",
+         "pass_when": "Review request and opt-out are clear; no penalty or false urgency is stated.",
+         "fail_when": "The text hides refusal, threatens a consequence, or falsely claims urgency.",
+         "not_verifiable_when": "The consequences of stopping depend on information absent from the pinned source."},
     ]
 
 
@@ -474,7 +521,11 @@ def demo_specs() -> dict[str, dict]:
                              {"id": "cta", "kind": "contains", "value": "Review options"},
                              {"id": "length", "kind": "max_chars", "value": 200},
                              {"id": "layout", "kind": "visual",
-                              "description": "one heading, one action, one date; fits a 320px card"}],
+                              "description": "one heading, one action, one date; fits a 320px card",
+                              "observation": "Inspect the pinned 320px-wide render at 100% scale.",
+                              "pass_when": "The date, one action, and one heading are visible without horizontal scrolling.",
+                              "fail_when": "Any required element is clipped, hidden, or overlaps another.",
+                              "not_verifiable_when": "The exact render or viewport measurement is missing."}],
                          acceptance=["shows the refill date placeholder {REFILL_DATE}",
                                      "exactly one action: 'Review options'",
                                      "fits a 320px card with one heading"],

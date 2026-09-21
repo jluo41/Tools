@@ -9,8 +9,8 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "0.10.1"
-  last_updated: "2026-09-12"
+  version: "0.10.2"
+  last_updated: "2026-09-20"
   summary: "Checks one immutable Page version and returns the auditable route consumed by the bounded workflow-pass loop."
   changelog: "./CHANGELOG.md"
 ---
@@ -38,8 +38,8 @@ copy is exactly what goes a night out of date while the contract moves:
    base Page plus Outline's `ref/skill-record.md`, not a Page Type). Both are executable,
    so the rule is checked rather than merely written.
 4. `../../page/page-workflows/haipipe-page-check/SKILL.md` for the judgment and
-   routing boundary. If the assignment asks whether another phase was performed
-   correctly, also load that phase's contract from the same folder.
+   routing boundary. If the assignment asks whether another Run or controller
+   dispatch was performed correctly, also load its owner's contract.
 5. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
 6. The target Board's `board.md` for topic, pipeline, groups, links, and page order.
 

@@ -37,7 +37,6 @@ def main():
     parser.add_argument('--paper-id', type=str, required=True, help='论文 arXiv ID')
     parser.add_argument('--title', type=str, required=True, help='论文标题')
     parser.add_argument('--domain', type=str, required=True, help='论文领域')
-    parser.add_argument('--score', type=float, default=0.0, help='质量评分')
     parser.add_argument('--related', type=str, nargs='*', default=[], help='相关论文ID列表')
     parser.add_argument('--vault', type=str, default=None, help='Obsidian vault 路径')
     args = parser.parse_args()
@@ -64,14 +63,24 @@ def main():
         "title": args.title,
         "year": int(date[:4]),
         "domain": args.domain,
-        "quality_score": args.score,
-        "tags": ["论文笔记", args.domain],
-        "analyzed": True
+        "tags": ["论文笔记", args.domain]
     }
 
     existing_nodes = {node["id"]: i for i, node in enumerate(graph["nodes"])}
     if args.paper_id in existing_nodes:
-        graph["nodes"][existing_nodes[args.paper_id]].update(paper_node)
+        node = graph["nodes"][existing_nodes[args.paper_id]]
+        node.update(paper_node)
+        # Preserve old values for users to inspect, but stop exposing the
+        # unsupported score/analyzed flag as current assessment. The graph
+        # helper owns metadata; a human-reviewed status in the note is kept.
+        legacy_assessment = {}
+        for field in ("quality_score", "analyzed"):
+            if field in node:
+                legacy_assessment[field] = node.pop(field)
+        if legacy_assessment:
+            node.setdefault("legacy_unvalidated_assessment", {}).update(
+                legacy_assessment
+            )
     else:
         graph["nodes"].append(paper_node)
 

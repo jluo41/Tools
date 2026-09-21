@@ -11,7 +11,8 @@ I01-<topic-instance>/
 ├── runs/ri01_description.yaml   RI ticket: points to R + freezes new dataset
 └── results/ri01_description/
     ├── v001/
-    │   ├── input.yaml          frozen execution envelope
+    │   ├── binding.yaml        immutable allocation: goal, base R, datasets
+    │   ├── input.yaml          finalized evidence envelope; absent while waiting
     │   ├── runtime.yaml        status, checkpoints, hashes
     │   └── result.yaml         checked DIKW Result and RF records
     └── v002/                   later execution, preserves v001
@@ -89,10 +90,18 @@ several datasets. Shared Task code needs no central patient roster.
 
 ## Frozen execution input
 
-Before interpretation starts write `results/<ri>/<version>/input.yaml`:
+Allocation writes `binding.yaml` with schema `haipipe.insight-binding/v1`,
+`instance`, `run`, `base_run`, `question`, `target`, `expected`, `acceptance`, and
+full dataset bindings. Its hash goes on the planned runtime as `binding_sha256`.
+It has no evidence checkpoint yet. Gather evidence in a separate working packet;
+do not edit the allocation when producer or local Evidence Results arrive.
+
+Before interpretation, use `freeze --item <ri> --version <vNNN> --evidence
+<packet.yaml>` to finalize `results/<ri>/<version>/input.yaml`:
 
 ```yaml
 schema: haipipe.insight-input/v2
+evidence_contract: haipipe.insight-evidence/v1
 instance: sms/patient-a-study
 run: ri01_description
 version: v001
@@ -112,8 +121,27 @@ supporting_results:
   - run: <full-producing-execution-id>
     path: <accepted-result-envelope>
     sha256: <result-sha256>
+    ticket: <exact-producing-Ticket>
+    ticket_sha256: <ticket-sha256>
+    receipt: <exact-complete-producing-receipt>
+    receipt_sha256: <receipt-sha256>
 recipe_calls: []
+local_sources: []
+# With no supporting_results: local_evidence_reason explains the local evidence.
 ```
+
+The `evidence_contract` marker selects the new receipt-bound validation rules.
+`freeze` always emits it; an unknown marker is invalid. Existing frozen packets
+without the marker are read under their earlier evidence dialect, whether or
+not they have allocation binding hashes. Do not add a marker by rewriting old
+bytes; use the next explicit execution version for a revised contract.
+
+Every new Supporting Result binding includes its native Ticket/hash and
+receipt/hash, including reused support with `recipe_calls: []`. The receipt
+must name that same full Run identity and an accepted terminal status. Frozen
+historical packets retain their recorded dialect. `freeze` checks these
+structural bindings and receipt status; the source owner and local Evidence
+owner still judge scientific acceptance and typed verification.
 
 Use `task-calls.md` for populated recipe calls. Upstream calls leave their own
 receipts before their completed Results enter this final frozen interpretation
@@ -132,6 +160,7 @@ execution: sms/patient-a-study#ri01_description@v001
 family: insight
 operation: item
 status: complete
+binding_sha256: <binding-yaml-sha256>
 input_sha256: <input-yaml-sha256>
 result_sha256: <result-yaml-sha256>
 checkpoints:
@@ -241,8 +270,10 @@ service is supplied by this read-only checker; the owner performs that review.
 ## Inspection
 
 `scripts/insight_items.py bind ...` is the deterministic allocation door: it
-chooses the next `riNN`, writes the RI YAML Ticket, freezes `v001/input.yaml`,
-creates a planned runtime receipt, and upgrades the manifest to v2. It never
+chooses the next `riNN`, writes the RI YAML Ticket and `v001/binding.yaml`,
+creates a planned runtime receipt, and upgrades the manifest to v2.
+`freeze` later validates and seals complete evidence into `input.yaml`; it never
+overwrites a frozen input. It never
 executes or edits the base R. `scripts/insight_items.py check <folder>`
 validates the materialized contract.
 `table` projects item, question, target, input versions, current execution,

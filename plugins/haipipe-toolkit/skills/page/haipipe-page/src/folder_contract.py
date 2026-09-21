@@ -1,4 +1,4 @@
-"""Discovery and structural validation for phase-owned Folder contracts.
+"""Discovery and structural validation for Folder owner contracts.
 
 The contract intentionally uses a small frontmatter reader instead of loading
 the skills as YAML documents. Skill descriptions may contain punctuation that
@@ -25,7 +25,6 @@ REQUIRED_SECTIONS = (
 )
 PRIMARY_FACES = {"page", "task"}
 PAGE_RULINGS = {"none", "domain-gate", "local"}
-_PHASE = re.compile(r"^[A-Z][0-9]+$")
 _KIND = re.compile(r"^[a-z][a-z0-9-]*$")
 
 
@@ -52,28 +51,26 @@ def _clean(value: str) -> str:
 
 
 @dataclass(frozen=True)
-class PhaseContract:
+class FolderContract:
     path: Path
     name: str
     workflow: str
-    phase: str
     folder_kind: str
     primary_face: str
     page_ruling: str
     legacy_page_type: str = ""
 
 
-def read_contract(path: Path) -> PhaseContract | None:
+def read_contract(path: Path) -> FolderContract | None:
     text = path.read_text(encoding="utf-8", errors="replace")
     front = _frontmatter(text)
     workflow = _metadata_row(front, "workflow")
     if not workflow:
         return None
-    return PhaseContract(
+    return FolderContract(
         path=path,
         name=_top_row(front, "name"),
         workflow=workflow,
-        phase=_metadata_row(front, "phase"),
         folder_kind=_metadata_row(front, "folder_kind"),
         primary_face=_metadata_row(front, "primary_face"),
         page_ruling=_metadata_row(front, "page_ruling"),
@@ -81,9 +78,13 @@ def read_contract(path: Path) -> PhaseContract | None:
     )
 
 
-def discover(skills_root: Path) -> list[PhaseContract]:
-    contracts: list[PhaseContract] = []
-    for path in sorted(skills_root.glob("*/workflow-phases/*/SKILL.md")):
+def discover(skills_root: Path) -> list[FolderContract]:
+    contracts: list[FolderContract] = []
+    # Unmigrated sibling families keep their paths; only owner metadata
+    # determines resource semantics. A directory name creates no lifecycle.
+    paths = set(skills_root.glob("*/folder-kinds/*/SKILL.md"))
+    paths.update(skills_root.glob("*/workflow-phases/*/SKILL.md"))
+    for path in sorted(paths):
         if any(part.startswith("_") for part in path.relative_to(skills_root).parts):
             continue
         contract = read_contract(path)
@@ -94,8 +95,8 @@ def discover(skills_root: Path) -> list[PhaseContract]:
 
 def resolve(
     skills_root: Path, *, folder_kind: str = "", legacy_page_type: str = ""
-) -> PhaseContract | None:
-    """Resolve one phase contract, raising on an ambiguous declaration."""
+) -> FolderContract | None:
+    """Resolve one Folder owner, raising on an ambiguous declaration."""
     if not folder_kind and not legacy_page_type:
         return None
     matches = [
@@ -113,45 +114,72 @@ def resolve(
     return matches[0] if matches else None
 
 
+def folder_identity_path(folder: Path) -> Path | None:
+    """Select canonical identity, or the read-only legacy import fallback."""
+    for name in ("folder.yaml", "phase.yaml"):
+        candidate = Path(folder) / "workflow" / name
+        if candidate.exists() or candidate.is_symlink():
+            return candidate
+    return None
+
+
 def current_folder_kind(folder: Path) -> str:
-    """Read the authoritative current kind from ``workflow/phase.yaml``.
+    """Read resource identity from ``workflow/folder.yaml``.
 
     An absent file means the Folder has a fixed identity and may use its Page
     frontmatter. A present file is authoritative: malformed current state is a
     routing error, never permission to fall back to a stale Markdown key.
+    Without a canonical file, import only folder-kind from the legacy file;
+    its phase field and transition history have no execution semantics.
     """
-    phase_file = Path(folder) / "workflow" / "phase.yaml"
-    if not phase_file.is_file():
+    identity_file = folder_identity_path(folder)
+    if identity_file is None:
         return ""
-    lines = phase_file.read_text(encoding="utf-8", errors="replace").splitlines()
     try:
-        start = next(
-            index for index, line in enumerate(lines)
-            if re.fullmatch(r"current:\s*(?:#.*)?", line)
-        )
-    except StopIteration as exc:
-        raise ValueError(f"{phase_file}: missing top-level current block") from exc
+        import yaml
+    except ImportError as exc:
+        raise ValueError(f"{identity_file}: PyYAML is required to read Folder identity") from exc
 
-    rows: dict[str, str] = {}
-    for line in lines[start + 1:]:
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-        if not line[:1].isspace():
-            break
-        match = re.match(r"\s+([A-Za-z][A-Za-z0-9-]*):\s*(.*?)\s*$", line)
-        if match:
-            rows[match.group(1)] = _clean(match.group(2))
+    class IdentityLoader(yaml.SafeLoader):
+        pass
 
-    phase = rows.get("phase", "")
-    folder_kind = rows.get("folder-kind", "")
-    if not _PHASE.fullmatch(phase):
-        raise ValueError(f"{phase_file}: current.phase is missing or invalid")
-    if not _KIND.fullmatch(folder_kind):
-        raise ValueError(f"{phase_file}: current.folder-kind is missing or invalid")
+    def unique_mapping(loader, node, deep=False):
+        loader.flatten_mapping(node)
+        mapping = {}
+        for key_node, value_node in node.value:
+            key = loader.construct_object(key_node, deep=deep)
+            if key in mapping:
+                raise ValueError(f"duplicate identity key {key!r}")
+            mapping[key] = loader.construct_object(value_node, deep=deep)
+        return mapping
+
+    IdentityLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, unique_mapping)
+    try:
+        record = yaml.load(identity_file.read_text(encoding="utf-8"), Loader=IdentityLoader)
+    except (OSError, UnicodeError, yaml.YAMLError, ValueError, TypeError) as exc:
+        raise ValueError(f"{identity_file}: invalid Folder identity: {exc}") from exc
+    if not isinstance(record, dict) or not isinstance(record.get("current"), dict):
+        raise ValueError(f"{identity_file}: missing top-level current mapping")
+    folder_kind = record["current"].get("folder-kind")
+    if not isinstance(folder_kind, str) or not _KIND.fullmatch(folder_kind):
+        raise ValueError(f"{identity_file}: current.folder-kind is missing or invalid")
     return folder_kind
 
 
-def validate_contract(contract: PhaseContract) -> list[str]:
+def resolved_folder_kind(folder: Path, *, declared: str = "", legacy: str = "") -> str:
+    """Return resolved kind, '' when absent, or raise a visible routing error."""
+    current = current_folder_kind(folder)
+    if declared and not _KIND.fullmatch(declared):
+        raise ValueError(f"{folder}: invalid Page frontmatter folder-kind {declared!r}")
+    if current and declared and declared != current:
+        raise ValueError(
+            f"{folder_identity_path(folder)} current.folder-kind {current!r} "
+            f"conflicts with Page frontmatter folder-kind {declared!r}"
+        )
+    return current or declared or legacy
+
+
+def validate_contract(contract: FolderContract) -> list[str]:
     problems: list[str] = []
     text = contract.path.read_text(encoding="utf-8", errors="replace")
     rel = contract.path.as_posix()
@@ -163,8 +191,8 @@ def validate_contract(contract: PhaseContract) -> list[str]:
         )
     if not contract.workflow.endswith("-workflow"):
         problems.append(f"{rel}: workflow must name a *-workflow skill")
-    if not _PHASE.fullmatch(contract.phase):
-        problems.append(f"{rel}: phase {contract.phase!r} is not <LETTER><number>")
+    if "folder-kinds" in contract.path.parts and _metadata_row(_frontmatter(text), "phase"):
+        problems.append(f"{rel}: current Folder owners must not declare metadata.phase")
     if not _KIND.fullmatch(contract.folder_kind):
         problems.append(f"{rel}: folder_kind {contract.folder_kind!r} is not kebab-case")
     if contract.primary_face not in PRIMARY_FACES:
@@ -196,14 +224,14 @@ def validate_contract(contract: PhaseContract) -> list[str]:
     return problems
 
 
-def validate_tree(skills_root: Path) -> tuple[list[PhaseContract], list[str]]:
+def validate_tree(skills_root: Path) -> tuple[list[FolderContract], list[str]]:
     contracts = discover(skills_root)
     problems: list[str] = []
     for contract in contracts:
         problems.extend(validate_contract(contract))
 
-    def duplicate(field: str, values: list[tuple[str, PhaseContract]]) -> None:
-        seen: dict[str, PhaseContract] = {}
+    def duplicate(field: str, values: list[tuple[str, FolderContract]]) -> None:
+        seen: dict[str, FolderContract] = {}
         for value, contract in values:
             if not value:
                 continue
@@ -215,10 +243,6 @@ def validate_tree(skills_root: Path) -> tuple[list[PhaseContract], list[str]]:
             else:
                 seen[value] = contract
 
-    duplicate(
-        "workflow phase",
-        [(f"{item.workflow}:{item.phase}", item) for item in contracts],
-    )
     duplicate("folder_kind", [(item.folder_kind, item) for item in contracts])
     duplicate(
         "legacy_page_type", [(item.legacy_page_type, item) for item in contracts]

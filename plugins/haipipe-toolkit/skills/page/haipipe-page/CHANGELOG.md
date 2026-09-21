@@ -1,3 +1,7 @@
+## 0.110.0 · 2026-09-20
+
+- Add read-only Structure, Section, and Paragraph prompt copying in Draft Space; use exact ledger-selected Evidence Results for reading and delivery, and distinguish Ready Runs.
+
 ## 0.109.0 · 2026-09-15
 
 - Include the Board `path` and `file` route fields in Scratch forms so Save

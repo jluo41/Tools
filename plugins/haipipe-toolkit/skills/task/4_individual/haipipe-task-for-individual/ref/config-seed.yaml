@@ -1,5 +1,5 @@
 # =============================================================================
-# Template for configs/<NAME>.yaml — individual-query task
+# Template for scripts/config/<NAME>.yaml — individual-query task
 # =============================================================================
 
 _meta:
@@ -12,7 +12,7 @@ _meta:
   input: |
     <e.g., 2-RecStore CGM5Min + meal-cam-logger annotations; cohort: WellDoc>
   output: |
-    results/<run>/{plot.pdf, table.csv}
+    $OUTPUT_ROOT/<task>/results/rNN_<run>/{plot.pdf, table.csv}
 
 
 # =============================================================================

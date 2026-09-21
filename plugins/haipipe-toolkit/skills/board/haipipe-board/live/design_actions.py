@@ -12,7 +12,6 @@ judges a candidate, or marks a Run complete on the agent's behalf.
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -129,6 +128,10 @@ def add_item(folder: Path, stem: str, fields: dict) -> dict:
                   if line.strip("- ").strip()]
     if not acceptance:
         raise ActionError("a Design Item needs at least one acceptance rule")
+    try:
+        compile_criteria(acceptance)
+    except ValueError as exc:
+        raise ActionError(str(exc)) from exc
     evidence = [line.strip("- ").strip() for line in str(fields.get("evidence") or "").splitlines()
                 if line.strip("- ").strip()]
     if basis == "evidence-informed" and not evidence:
@@ -202,6 +205,38 @@ def compile_criteria(acceptance: list[str]) -> list[dict]:
     criteria = []
     for index, rule in enumerate(acceptance, start=1):
         cid = f"r{index:02d}"
+        rubric_kind = None
+        lowered = rule.casefold()
+        for label in ("semantic", "visual"):
+            if lowered.startswith(label + ":"):
+                rubric_kind = label
+                break
+        if rubric_kind:
+            fields = {}
+            for part in rule.split("|"):
+                key, sep, value = part.partition(":")
+                if not sep or not value.strip():
+                    raise ValueError(
+                        f"{rubric_kind} criterion {cid} needs criterion, observe, pass, fail, "
+                        "and not-verifiable fields separated by |"
+                    )
+                key = key.strip().casefold()
+                if key in fields:
+                    raise ValueError(f"{rubric_kind} criterion {cid} repeats {key}")
+                fields[key] = value.strip()
+            required = {rubric_kind, "observe", "pass", "fail", "not-verifiable"}
+            if set(fields) != required:
+                missing = ", ".join(sorted(required - set(fields))) or ""
+                extra = ", ".join(sorted(set(fields) - required))
+                detail = f"missing {missing}" if missing else f"unknown fields {extra}"
+                raise ValueError(f"{rubric_kind} criterion {cid} has {detail}")
+            criteria.append({
+                "id": cid, "kind": rubric_kind, "description": fields[rubric_kind],
+                "observation": fields["observe"], "pass_when": fields["pass"],
+                "fail_when": fields["fail"],
+                "not_verifiable_when": fields["not-verifiable"],
+            })
+            continue
         hit = _MAX_CHARS.search(rule)
         if hit:
             limit = int(hit.group(2))
@@ -217,10 +252,15 @@ def compile_criteria(acceptance: list[str]) -> list[dict]:
             for n, (kind, phrase) in enumerate(phrases):
                 criteria.append({"id": cid + ("" if n == 0 else chr(ord("a") + n)), "kind": kind, "value": phrase})
         elif _RENDER.search(rule):
-            # A rule judged on the rendered picture (a UI screen) is a visual observation.
-            criteria.append({"id": cid, "kind": "visual", "description": rule})
+            raise ValueError(
+                f"acceptance rule {cid} is visual; use `visual: ... | observe: ... | "
+                "pass: ... | fail: ... | not-verifiable: ...`"
+            )
         else:
-            criteria.append({"id": cid, "kind": "semantic", "description": rule})
+            raise ValueError(
+                f"acceptance rule {cid} is semantic; use `semantic: ... | observe: ... | "
+                "pass: ... | fail: ... | not-verifiable: ...`"
+            )
     return criteria
 
 
@@ -297,7 +337,7 @@ def commission(folder: Path, stem: str, item: dict, actor: str, words: str,
     runs = item.get("runs") or []
     released = _latest(runs, "commission", outcome="release")
     if released is not None:
-        raise ActionError(f"{item['id']} was already released in {released['id']}; one Commission per item")
+        raise ActionError(f"{item['id']} was already released in {released['id']}; at most one released Commission per item")
     number = _next_run(folder)
     slug = _slug(item["id"])
     run = f"rd{number:02d}_commission_{slug}"
@@ -340,10 +380,11 @@ def _frozen(folder: Path, stem: str, item: dict, released: dict, run: str, revie
     frozen = _load(folder / config_ref["path"]) if config_ref else {}
     evidence = [f"{r['role']} · {r['path']}" for r in refs if r.get("role") in ROLES]
     if not frozen:
-        return _config(folder, stem, item, run, review_mode, mode), item.get("evidence") or []
+        legacy_mode = "challenge" if mode and item.get("stance") == "challenge" else mode
+        return _config(folder, stem, item, run, review_mode, legacy_mode), item.get("evidence") or []
     config = dict(frozen, review_mode=review_mode)
     if mode:
-        config["mode"] = mode
+        config["mode"] = "challenge" if frozen.get("design_intent", {}).get("stance") == "challenge" else mode
     return _dump(folder / "scripts" / "config" / f"{run}.yaml", config), evidence
 
 
@@ -388,9 +429,9 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
                         encoding="utf-8")
         extra_inputs = [{"role": "base", "run_id": base["id"], **_ref(folder, base["artifacts"][0]["path"])},
                         {"role": "feedback", **_ref(folder, note)}]
-        # A challenge bet stays in challenge mode (the checker binds stance to
-        # mode); its revision is the same challenge over a frozen base + feedback.
-        mode = "challenge" if (item.get("stance") == "challenge") else "revise"
+        # Derive challenge mode from the released config in _frozen, never from
+        # a register that may have changed since release.
+        mode = "revise"
     config_path, evidence = _frozen(folder, stem, item, released, run, "self", mode)
     inputs, missing = _evidence_inputs(folder, evidence)
     if missing:
@@ -412,7 +453,7 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
         "worker": {"kind": "skill", "name": "haipipe-design-unit", "actor": "designer-context-pending"},
         "queued_at": _now(),
     })
-    return {"run": run, "mode": mode or "compose"}
+    return {"run": run, "mode": _load(config_path)["mode"]}
 
 
 def queue_verify(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
@@ -461,8 +502,9 @@ def complete_run(folder: Path, run: str, started_at: str = "") -> dict:
 
     The worker wrote only ``results/<run>/`` (content, checks, result.yaml).
     This step runs ``check_unit`` on the pair and records the truthful status:
-    ``complete`` with the next route when the gate passes, ``failed`` with the
-    gate's own words when it does not.  It never edits the Result.
+    ``complete`` with the next route when the gate accepts a complete judgment
+    (pass, fail, or unresolved), ``failed`` with the gate's own words when the
+    record is malformed. It never edits the Result.
     """
     import importlib.util
     checker = Path(__file__).resolve().parents[3] / "design" / "haipipe-design-unit" / "scripts" / "check_unit.py"
@@ -491,6 +533,9 @@ def complete_run(folder: Path, run: str, started_at: str = "") -> dict:
                        route="verify" if ticket.get("operation") == "verify" else "generate")
     elif ticket.get("operation") == "verify" and verdict == "fail":
         runtime.update(status="complete", failure=None, route="generate", terminal_outcome="fail")
+    elif ticket.get("operation") == "verify" and verdict == "unresolved":
+        runtime.update(status="complete", failure=None, route="resolve-unresolved",
+                       terminal_outcome="unresolved")
     else:
         runtime.update(status="complete", failure=None,
                        route="verify" if ticket.get("operation") == "generate" else "delivery",
@@ -502,71 +547,8 @@ def complete_run(folder: Path, run: str, started_at: str = "") -> dict:
 
 def adopt(folder: Path, stem: str, item: dict, runs: list[dict], decision: str,
           actor: str, words: str) -> dict:
-    if decision not in ("adopt", "decline", "revise", "hold"):
-        raise ActionError("an Adopt decision is adopt, decline, revise, or hold")
-    actor = actor.strip()
-    if not actor:
-        raise ActionError("the deciding person must be named")
-    verified = _latest(runs, "verify", status="complete")
-    if verified is None:
-        raise ActionError("no complete Verify Result; adoption waits for the independent verifier")
-    target_ref = (verified.get("targets") or [{}])[0]
-    candidate = next((r for r in reversed(runs) if r["kind"] == "generate" and r["artifacts"]
-                      and (not target_ref.get("path") or target_ref["path"].startswith(f"results/{r['id']}/"))), None)
-    if candidate is None:
-        raise ActionError("the verified candidate has no readable artifact")
-    if decision == "adopt" and verified["verdict"] != "pass":
-        raise ActionError(f"verify {verified['id']} did not pass; adopt is refused, revise or decline instead")
-    artifact = candidate["artifacts"][0]["path"]
-    number = _next_run(folder)
-    run = f"rd{number:02d}_adopt_{_slug(item['id'])}"
-    # The preview is the exact draft file, copied once per draft: a second decision on the
-    # same draft reuses it, and a new draft takes the item's next version (audit N9).
-    render_dir = folder / "delivery" / "render"
-    manifest_path = render_dir / "manifest.json"
-    entries = json.loads(manifest_path.read_text()) if manifest_path.is_file() else []
-    mine = [e for e in entries if isinstance(e, dict) and e.get("item") == item["id"]]
-    suffix = Path(artifact).suffix if Path(artifact).suffix in (".txt", ".html", ".md") else ".txt"
-    same = next((e for e in mine if e.get("candidate") == candidate["id"]), None)
-    version = int(same["version"]) if same else 1 + max((int(e.get("version") or 0) for e in mine), default=0)
-    preview = render_dir / f"{stem}-{item['id']}-v{version}{suffix}"
-    if not (preview.is_file() and _digest(preview) == _digest(Path(artifact))):
-        preview.parent.mkdir(parents=True, exist_ok=True)
-        preview.write_bytes(Path(artifact).read_bytes())
-        entries.append({"item": item["id"], "render": preview.name, "candidate": candidate["id"],
-                        "sha256": _digest(preview), "version": version})
-        manifest_path.write_text(json.dumps(entries, indent=2), encoding="utf-8")
-    gen_result = _ref(folder, candidate["result_dir"] / "result.yaml")
-    ver_result = _ref(folder, verified["result_dir"] / "result.yaml")
-    inputs = [gen_result, ver_result, _ref(folder, preview)]
-    ticket_path = _dump(folder / "runs" / f"{run}.yaml", {
-        "schema": TICKET_SCHEMA, "run": run, "run_type": "Design.adopt", "operation": "adopt",
-        "item": item["id"], "target": f"{item.get('title')} · exact verified candidate",
-        "actor": {"mode": "human", "owner": actor},
-        "action": "adopt, decline, revise, or hold the exact candidate", "inputs": inputs,
-        "candidates": [{"run": candidate["id"], **_ref(folder, artifact)}],
-        "verification": [{"run": verified["id"], **ver_result}], "preview": _ref(folder, preview),
-        "entry_gate": "independent verify recorded",
-        "exit_gate": {"mode": "human", "assertion": "decision names candidate hash"},
-        "routes": {"adopt": "CLOSE", "decline": "CLOSE", "revise": "generate", "hold": "HOLD"},
-        "result": f"results/{run}/", "receipt": f"results/{run}/runtime.yaml",
-    })
-    _dump(folder / "results" / run / "decision.yaml", {
-        "run": run, "item": item["id"], "decision": decision, "actor": actor,
-        "words": words.strip() or f"{decision.title()} {item['id']}",
-        "candidate": {"run": candidate["id"], **_ref(folder, artifact)},
-        "verification": {"run": verified["id"], **ver_result},
-        "preview": _ref(folder, preview), "at": _now(),
-    })
-    route = {"adopt": "CLOSE", "decline": "CLOSE", "revise": "generate", "hold": "HOLD"}[decision]
-    _human_runtime(folder, run, "Design.adopt", "adopt", item, f"{item.get('title')} · exact verified candidate",
-                   actor, decision, inputs, route, ticket_path)
-    out = {"run": run, "candidate": candidate["id"], "preview": preview.name}
-    if decision == "revise":
-        runs = runs + [{"id": run, "kind": "adopt", "outcome": "revise", "status": "complete",
-                        "actor": actor, "artifacts": [], "number": number}]
-        out["revise"] = queue_generate(folder, stem, item, runs, feedback=words or "revise", base_run=candidate["id"])
-    return out
+    """Retired write entry; historical records remain readable by the presenter."""
+    raise ActionError("Adopt writes are retired; independent Verify pass is ready for Delivery")
 
 
 # ------------------------------------------------------------ stale queue --

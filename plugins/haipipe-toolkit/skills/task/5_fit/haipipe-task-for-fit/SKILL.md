@@ -4,8 +4,8 @@ description: "model-fitting job specialist: scaffolds {NN}_<name>/ jobs that fit
 argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-04"
+  version: "0.1.3"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,7 +15,7 @@ Skill: haipipe-task-for-fit
 Scaffolds a **model-training job**.
 Full training config, heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, designed for cross-run comparison and paper-grade results.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during the internal Build step of the owning Task authoring Run, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / task_folder / run_name / files).
 
 ## GPU queue handoff
@@ -41,21 +41,24 @@ Short version: algo-dev = smoke test, training = real run.
 What this scaffolds
 -------------------
 
-```
-tasks/A{NN}_<block_name>/                    ← A-series group (model-run)
-└── {NN}_<job_name>/
-    ├── {NN}_<job_name>.py
-    ├── configs/
-    │   └── 5_model_<name>.yaml              seeded from ref/config-seed.yaml
-    ├── runs/
-    │   └── 5_model_<name>_<variant>.sh
-    ├── results/
-    │   └── <run>/                           model_path.txt + metrics.json (light)
-    ├── notebooks/
-    └── sbatch/                              optional, for GPU-partitioned sweep
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared code + config-defaults.yaml
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.py
+        ├── scripts/config/rNN_<run>.yaml
+        └── runs/rNN_<run>.sh
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
-Group letter default: **A** (model-run).
+Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 Heavy outputs land in: `_WorkSpace/5-ModelInstanceStore/`.
 
 
@@ -79,7 +82,7 @@ Summary:
 
   1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
-  3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
+  3. Create the canonical Task Page, workflow/, scripts/config/, worker and matching rNN Ticket; resolve generated output through OUTPUT_ROOT.
   4. Seed config from `ref/config-seed.yaml`.
   5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh`.
   6. Suggest next via cross-skill link.
@@ -115,9 +118,12 @@ Workflow plan
 When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
-ref/workflow-plan-sample.yaml     ← script-level phases for this type
-../../haipipe-task/ref/workflow-template.yaml  ← task-level template (Run/Gate1/Gate2)
+ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain steps
+../../haipipe-task/ref/workflow-template.yaml  ← authoritative Run Spec template with entry/exit gates
 ```
 
 Schema source of truth:
   task/haipipe-workflow/ref/plan-schema.md
+
+Resolve `RESULT_STORE`, then the Job store declaration, then the Job root as OUTPUT_ROOT.
+Use the same output-root contract as `haipipe-task`; no physical output is moved by scaffolding.

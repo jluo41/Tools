@@ -7,6 +7,17 @@ SKILL.md frontmatter `version:`. Newest first.
 This support skill keeps independent semantic versions. A public
 `haipipe-board` major release does not mechanically promote it.
 
+## 0.11.1 - 2026-09-20
+
+- Resolve Board kind and native membership before selecting the Folder/Page
+  owner. Explicit `## Pages` rows control presentation, not all membership.
+- Scope lanes to explicit rows and regroup to matching generic root Pages;
+  describe nested moves, aliases, and reference repair as separate migration work.
+- Reuse an existing concrete structure approval and distinguish source
+  materialization from read-only proposals and reports.
+- Name actual writes or no writes, and the next actor when one is needed;
+  keep historical design discussion in the changelog.
+
 ## 0.11.0 - 2026-09-12
 
 - Route current Page writes to on-stage fields or typed `outline/` records;

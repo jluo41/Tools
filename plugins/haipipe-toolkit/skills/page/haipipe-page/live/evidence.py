@@ -1363,7 +1363,8 @@ def _result_records(page_home: pathlib.Path) -> list[dict[str, object]]:
 
     result_root = page_home / "results"
     if result_root.is_dir() and not result_root.is_symlink():
-        for manifest in sorted(result_root.rglob("result.yaml")):
+        from src.evidence_selection import selected_for_home
+        for manifest in selected_for_home(page_home):
             if manifest.is_symlink():
                 continue
             try:

@@ -3,12 +3,12 @@ name: haipipe-design
 description: >-
   Canonical owner of one stable Design Folder, its Design Item register, and
   the Design Plugin's five Spaces: Goal, Design, Insight, Run, and Delivery. Keeps Page and
-  Design Run graphs distinct. Use for commissioning, generating, independently
+  Design Run lists distinct. Use for commissioning, generating, independently
   verifying and handing off exact Design candidates. Ends when Verify passes,
   never implementation, distribution, experimentation, or measurement.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-09-18"
+  last_updated: "2026-09-20"
   folder_owner: canonical
   folder_kind: design
   primary_face: page
@@ -19,7 +19,7 @@ metadata:
     shape: "commission decision → generation → verification → delivery handoff"
 ---
 
-# /haipipe-design · one Plugin, five Spaces, two Run graphs
+# /haipipe-design · one Plugin, five Spaces, two Run lists
 
 ## Version governance
 
@@ -62,7 +62,7 @@ acceptance:
 revise runs). On screen a `handoff` reads "signed insight".
 
 `expected` and `falsified` judge design quality. They may name what a later
-experiment will check, but the design phase judges design quality only, so
+experiment will check, but Design Runs judge design quality only, so
 they carry no experiment words (arm, allocation, power, winner, field).
 
 `goal`, `stance`, `basis`, `expected`, and `falsified` are the register's
@@ -73,24 +73,28 @@ it; `challenge` or `theory-driven` mode needs both `expected` and
 neither. A Commission pins its config (the goal sentence, stance, basis, mode,
 expected, falsified, the compiled criteria, and the raw rule text) and the
 item's evidence files with sha256; it does not pin the Brief version or venue
-packs. Generate and Verify copy the released config and evidence list, so an
+packs. Generate and Verify inherit the released design fields and evidence list,
+deriving only `review_mode` and the operation's permitted `mode` as specified in
+`haipipe-design-unit/references/unit-contract.md`, so an
 edit to the register after release reaches only a new Commission (and so a
 new item). The register carries no state. Every Design Run record names the
 item it serves (`item: ITEM01`); the item's state is derived by walking those
 Runs in order:
 
 ```text
-not commissioned → commission open → commissioned | hold
+not commissioned → commission open → commissioned | commission held
   → generate queued → generating → generated | generate failed
   → verify queued → verifying → ready | verify failed | verify invalid
 queued run out of date: a queued run whose pinned file changed since it was queued
+blocked: a Run needs the named input/record repair; this is not a Commission hold
+records invalid: a previously ready candidate no longer matches its checked records; inspect before handoff
 ```
 
 The full fold, with who each state waits on, is in
 `haipipe-plugin-design/ref/space-mapping.md`. A Commission releases exactly
 one Design Item (Release all writes one Commission per item); a second
 Release of the same item is refused, and a held Commission can be released
-later. A Generate produces a draft for exactly one item; a passed Verify makes
+later through a new Commission Run, preserving the held decision. A Generate produces a draft for exactly one item; a passed Verify makes
 exactly one item ready. A brief-only item (`basis: brief-only`) is legal and may be
 delivered; it rests on the Brief alone. An item is never a Page division, a
 Run, or a Result: the Page explains it, the Runs produce and judge it, the
@@ -104,7 +108,7 @@ Design Plugin presents the Folder through five Spaces, in time order:
 | Space | Shows |
 |---|---|
 | Goal Space | the ask, from the Brief line that names the folder: venue, who, their job, how many designs (wanted · registered · ready), which Insight board |
-| Design Space | one foldable row per Design Item; opened, the design beside Why this design, From insight to design, The bet, Rules, Steps, and the buttons |
+| Design Space | one foldable row per Design Item; opened, the design beside Why this design, From insight to design, The bet, Rules, Runs, and the buttons |
 | Insight Space | per item, the supporting insights: page, signed by whom, what it says, pinned or not; "needs an insight" when none is named; the board's signed pages no item uses |
 | Run Space | each item's Commission → Generate → Verify timeline: who, when, outcome, next |
 | Delivery Space | a read-only handoff of each item whose Verify passed |
@@ -115,7 +119,8 @@ word (the Brief and its lines, signed insight, draft, run record, records
 check); contract words stay in the files and never appear beside their plain
 word. No roster, handoff, Ticket, candidate, DU, or Brief line id (`R1`)
 reaches the screen, and an insight page shows as its label and title
-(`full-W01 · Send salience`), never its file id `FW01`. Steps are always named by their Run words. A Space is a
+(`full-W01 · Send salience`), never its file id `FW01`. The Runs list uses real Run names;
+Steps are actions inside one Run. A Space is a
 presentation/interaction surface, never another Run or execution owner; the
 presenter is `haipipe-plugin-design`.
 
@@ -143,18 +148,28 @@ ids, Results, gates, counters, or receipts.
 
 ## Design Workflow
 
-The canonical Workflow is a directed Run Spec graph:
+A Workflow is a list of Runs. The Design Workflow contains Commission,
+Generate and Verify Runs, each with its own identity, target, actor, gate and
+Result or receipt. Run Specs describe the allowed types below; Routes describe
+dependencies and which Run may be created next. A route graph is a view of
+those relationships, not another execution unit.
 
 | Run Type | Actor | Target | Action | Exit Gate | Normal Route |
 |---|---|---|---|---|---|
 | `Design.commission` | human | one Design Item's config version | release or hold | exact version decision is durably recorded | `generate`, or `HOLD` (a person may release later) |
 | `Design.generate` | agent | one released item | generate/revise | the records check passes (Result integrity and self-check) | `verify`; a draft that fails the check goes back to `generate` |
 | `Design.verify` | fresh agent | named immutable generation Results | independent verify | complete coverage settles pass/fail | `delivery` (pass), `generate` (fail); a review that fails the check goes back to `verify` |
-| Delivery projection | none | the exact Verify-passed draft hash | read-only handoff | Verify pass + records check | downstream team |
+
+Delivery is a read-only projection of the exact Verify-passed draft and its
+verification pointer, outside the Run list.
 
 ```text
-Expected actual Design Runs per Design Item = 1 Commission + N Generate + J Verify
+Actual current Design Runs per Design Item = C Commission + N Generate + J Verify
 ```
+
+Count allocated records, including held, failed, blocked and superseded Runs;
+attempts inside one Run do not add identities. C=1 on a path with one release
+and no earlier held decisions. Each Item permits at most one release.
 
 The agent side never routes to HOLD: HOLD is a person's decision at
 Commission. A draft that passed its independent review is ready for Delivery;
@@ -170,7 +185,7 @@ inside Commission is a Step/Gate event, not another Run.
 | Concern | Owner |
 |---|---|
 | stable Folder, Design Item register, the list of Spaces, authority boundaries, closure | `haipipe-design` |
-| graph compiled from each Design Run Spec's Routes | `haipipe-design-workflow` |
+| Run list, Run Specs and graph compiled from their Routes | `haipipe-design-workflow` |
 | generic identity, Ticket/Result pairing, receipt invariants | `haipipe-run` |
 | generation/verification unit work | `haipipe-design-unit` |
 | Page RP/evidence/delivery/check graph | `haipipe-page-workflow` |
@@ -207,9 +222,10 @@ Design-<NN>-<audience>-<job>-<venue>/
 │       ├── result.yaml or decision.yaml
 │       ├── checks.yaml                # Generate and Verify
 │       ├── content/                   # Generate: the draft bytes
+│       ├── render/                    # optional Run-local pictures, measurements, manifest.json
 │       └── runtime.yaml
 └── delivery/
-    ├── render/                         # when used: ready-candidate display + manifest.json
+    ├── render/                         # legacy display evidence; new pictures stay in Results
     └── web|latex|word/                 # when used: Page delivery
 ```
 
@@ -217,9 +233,10 @@ Design-<NN>-<audience>-<job>-<venue>/
 when the step that writes it runs. Commission decisions live in
 `results/rdNN_commission_*/decision.yaml`, never under `outline/`. Every
 Design Run keeps the same stem across run record and Result. Completed Results
-and decisions are immutable. `delivery/render/` holds optional ready-candidate
-display material and any rendered picture of a screen listed in `manifest.json`;
-it never becomes a second Result or Run.
+and decisions are immutable. Workers render inside their own Result. The presenter
+reads those pictures without copying or modifying them; Delivery shows only the
+ready candidate. Existing `delivery/render/manifest.json` remains a legacy display
+source for exact candidate versions, never a second Result or Run.
 
 ## Commission = bounded design bet
 
@@ -245,7 +262,7 @@ converge**. A candidate set is not an experiment and has no arm, allocation,
 power, or measured winner. `expected_effect` and `failure_condition` state
 design quality a reader can check now (a first-time reader can say who sent
 it and what to do); they may name what a later experiment will check, but the
-design phase judges design quality only.
+Design Runs judge design quality only.
 
 ## Evidence and Page interlock
 

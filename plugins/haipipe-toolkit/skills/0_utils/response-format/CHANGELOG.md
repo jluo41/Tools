@@ -2,6 +2,19 @@ response-format — Changelog
 ===========================
 
 
+## [0.5.1] - 2026-09-20
+
+- Limit the reply format to chat; artifact headings follow their own template or directory rules.
+- Align the default scan format with numbered scan points and keep explicit response exceptions.
+- Place the final file inventory consistently in the worked reply example.
+
+## [0.5.0] - 2026-09-20
+
+- Clarify that this reference does not self-activate and has no root
+  `CLAUDE.md` pointer in the current checkout.
+- Define the scoped table-only and remote-error response exceptions.
+
+
 ## [0.4.0] - 2026-09-09
 
 SCAN -> EXPLAIN inside each section. JL: "No this is too scatter, what I want is

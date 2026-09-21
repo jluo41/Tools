@@ -74,6 +74,69 @@ def test_engine_knows_its_version_and_paper(paper):
     assert paper.ROOT.name == "Paper-T" and paper.HERE.name == "delivery"
 
 
+@pytest.mark.parametrize("room", ["../1-misq2026", "..", ".", "/", "../delivery/latex"])
+def test_unsafe_room_fails_before_touching_outputs(paper, room):
+    paper.LATEX.mkdir()
+    sentinel = paper.LATEX / "keep.txt"
+    sentinel.write_text("previous readable build")
+    paper.CFG["source"]["room"] = room
+    with pytest.raises(ValueError, match="room"):
+        paper.build()
+    assert sentinel.read_text() == "previous readable build"
+
+
+def test_missing_pages_gives_configuration_error(paper):
+    del paper.CFG["pages"]
+    with pytest.raises(ValueError, match=r"requires \[pages\]"):
+        paper.build()
+    assert not paper.LATEX.exists()
+
+
+@pytest.mark.parametrize("table,key,value", [
+    ("source", "sections", "../authored"),
+    ("source", "master", "/tmp/master.tex"),
+    ("outputs", "main_docx", "../source.docx"),
+    ("outputs", "manifest", "paper-build.toml"),
+    ("outputs", "assets", "."),
+    ("pages", "main", "latex/sections"),
+    ("source", "preamble", "latex/preamble.tex"),
+])
+def test_unsafe_config_paths_fail_without_writes(paper, table, key, value):
+    paper.CFG[table][key] = value
+    with pytest.raises(ValueError):
+        paper.build()
+    assert not paper.LATEX.exists()
+
+
+def test_generated_room_symlink_is_rejected(paper):
+    source = paper.ROOT / "authored"
+    source.mkdir()
+    sentinel = source / "keep.txt"
+    sentinel.write_text("source")
+    paper.LATEX.symlink_to(source, target_is_directory=True)
+    with pytest.raises(ValueError):
+        paper.build()
+    assert sentinel.read_text() == "source"
+
+
+def test_output_symlink_escape_is_rejected(paper):
+    source = paper.ROOT / "authored"
+    source.mkdir()
+    sentinel = source / "T.docx"
+    sentinel.write_text("source")
+    (paper.HERE / "word").symlink_to(source, target_is_directory=True)
+    with pytest.raises(ValueError):
+        paper.build()
+    assert sentinel.read_text() == "source"
+    assert not paper.LATEX.exists()
+
+
+def test_canonical_example_has_all_build_fields(paper):
+    import tomllib
+    config = tomllib.loads((ENGINE.parent.parent / "ref" / "paper-build.toml.example").read_text())
+    paper.validate_build_config(config, paper.HERE)
+
+
 def test_behavior_A_embedded_display_prints_once(paper):
     register, master = _assemble(paper)
     assert register["figures"] == 1
@@ -210,12 +273,10 @@ def test_reader_document_carries_no_reasons_and_no_build_counts(paper):
 def test_bib_key_collision_is_warned(paper):
     m = paper
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
-    (intro / "outline" / "evidence" / "bibex").mkdir(parents=True)
-    (intro / "outline" / "evidence" / "bibex" / "a.bib").write_text("@article{k1, title={One}, year={2020}}\n")
+    (intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib").write_text("@article{k1, title={One}, year={2020}}\n")
     _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{k1}\n")
     methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
-    (methods / "outline" / "evidence" / "bibex").mkdir(parents=True)
-    (methods / "outline" / "evidence" / "bibex" / "b.bib").write_text("@article{k1, title={One, revised}, year={2021}}\n")
+    (methods / "delivery" / "latex" / "S-T-Main-2-Methods-complete.bib").write_text("@article{k1, title={One, revised}, year={2021}}\n")
     _assemble(m)
     assert any("bib key k1 differs" in w for w in m.BUILD_WARNINGS)
     assert m.BIB.read_text().count("@article{k1") == 1
@@ -227,15 +288,13 @@ def test_one_work_under_two_keys_is_a_finding_when_both_are_cited(paper):
     m = paper
     doi = "10.1257/pol.20160094"
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
-    (intro / "outline" / "evidence" / "bibex").mkdir(parents=True)
-    (intro / "outline" / "evidence" / "bibex" / "a.bib").write_text(
+    (intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib").write_text(
         "@article{Author_2018, title={The Effect}, author={Author, A.}, year={2018}, doi={%s}}\n" % doi)
     (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
         "\\section{Introduction}\n\\citep{Author_2018}\n")
     _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{author2018effect}\n")
     methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
-    (methods / "outline" / "evidence" / "bibex").mkdir(parents=True)
-    (methods / "outline" / "evidence" / "bibex" / "b.bib").write_text(
+    (methods / "delivery" / "latex" / "S-T-Main-2-Methods-complete.bib").write_text(
         "@article{author2018effect, title={the effect}, author={Author, A}, year={2018}, doi={%s}}\n" % doi)
     reg, _ = _assemble(m)
     hit = [f for f in reg["findings"] if "prints it twice" in f]
@@ -249,15 +308,13 @@ def test_duplicate_work_is_found_when_only_one_twin_carries_a_doi(paper):
     Titles also differ in case and brace protection ({CDC} vs CDC)."""
     m = paper
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
-    (intro / "outline" / "evidence" / "bibex").mkdir(parents=True)
-    (intro / "outline" / "evidence" / "bibex" / "a.bib").write_text(
+    (intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib").write_text(
         "@article{dowell2016cdc, title={{CDC} guideline for prescribing opioids}, author={Dowell, D}, year={2016}}\n")
     (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
         "\\section{Introduction}\n\\citep{dowell2016cdc}\n")
     _ready_page(m, "S-T-Main-2-Methods", 2, "Methods and Data", "\\section{Methods}\n\\citep{Dowell_2016}\n")
     methods = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-2-Methods"
-    (methods / "outline" / "evidence" / "bibex").mkdir(parents=True)
-    (methods / "outline" / "evidence" / "bibex" / "b.bib").write_text(
+    (methods / "delivery" / "latex" / "S-T-Main-2-Methods-complete.bib").write_text(
         "@article{Dowell_2016, title={CDC Guideline for Prescribing Opioids}, author={Dowell, Deborah}, "
         "year={2016}, DOI={10.1001/jama.2016.1464}}\n")
     reg, _ = _assemble(m)
@@ -272,8 +329,7 @@ def test_one_work_under_two_keys_is_only_a_warning_when_one_is_cited(paper):
     m = paper
     doi = "10.1257/pol.20160094"
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
-    (intro / "outline" / "evidence" / "bibex").mkdir(parents=True)
-    (intro / "outline" / "evidence" / "bibex" / "a.bib").write_text(
+    (intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib").write_text(
         "@article{Author_2018, title={The Effect}, author={Author, A.}, year={2018}, doi={%s}}\n"
         "@article{author2018effect, title={the effect}, author={Author, A}, year={2018}, doi={%s}}\n" % (doi, doi))
     (intro / "delivery" / "latex" / "S-T-Main-1-Intro.tex").write_text(
@@ -295,10 +351,8 @@ def _abstract_page(m, prose, title=None):
     return d
 
 
-def test_abstract_may_carry_index_zero_but_no_other_page_may(paper):
-    """JL 260909 renamed S-MISQ-Main-Abstract to S-MISQ-Main-0-Abstract so it sorts
-    with its siblings. The printed document still gives it no section number, so its
-    H1 has no §; that pairing is legal ONLY for an abstract."""
+def test_legacy_zero_indices_do_not_determine_printed_order(paper):
+    """Legacy numeric IDs remain readable without imposing current order."""
     m = paper
     _ready_page(m, "S-T-Main-2-Methods", 2, "Methods", "\\section{Methods}\nText.\n")
     d = _abstract_page(m, "One two three four five six seven eight nine ten.")
@@ -310,13 +364,11 @@ def test_abstract_may_carry_index_zero_but_no_other_page_may(paper):
     _order(m, ["S-T-Main-0-Abstract", "S-T-Main-1-Intro", "S-T-Main-2-Methods"])
     reg, _ = _assemble(m)
     assert not [f for f in reg["findings"] if "S-T-Main-0-Abstract" in f], reg["findings"]
-    # expect-fail half: index 0 on a page that is NOT an abstract is still a finding.
-    # is_abstract() keys on the id ending in -Abstract, so the probe has to be a page
-    # with a different stem, not the same folder wearing a different H1.
+    # Reordering does not require renaming a legacy numeric Page ID.
     _ready_page(m, "S-T-Main-0-Prelude", 0, "Prelude", "\\section{Prelude}\nText.\n")
     _order(m, ["S-T-Main-0-Abstract", "S-T-Main-0-Prelude", "S-T-Main-1-Intro", "S-T-Main-2-Methods"])
     reg2, _ = _assemble(m)
-    assert any("index 0 is reserved for the Abstract" in f for f in reg2["findings"]), reg2["findings"]
+    assert not any("index 0 is reserved" in f for f in reg2["findings"]), reg2["findings"]
     assert not [f for f in reg2["findings"] if "S-T-Main-0-Abstract" in f], reg2["findings"]
 
 
@@ -407,11 +459,7 @@ def test_round_freeze_copies_all_declared_outputs_and_is_immutable(paper):
 
 
 def test_display_unit_folder_grammar_is_a_register_tooth(paper):
-    """0.7.5 (JL 260908, third pass): page id carries the index (S-T-Main-1-Intro), unit is Display<n>-<slug>.
-
-    Legacy shapes (S-Display-*, Sec1-Display1-*, <PageID>-Display1-*) are findings; a page whose folder
-    index disagrees with its H1, or whose H1 is numbered while the id carries no index, is a finding.
-    """
+    """Units are scoped by stable Page identity, independent of printed order."""
     m = paper
     intro = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-1-Intro"          # H1 says §1, id says 1 → agree
     disp = intro / "outline" / "evidence" / "display"
@@ -420,14 +468,14 @@ def test_display_unit_folder_grammar_is_a_register_tooth(paper):
     wrong = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-9-Wrong"; wrong.mkdir()
     (wrong / "S-T-Main-9-Wrong.md").write_text("# S-T-Main-9-Wrong · §3 Wrong Index\n")
     noidx = m.rel(m.CFG["pages"]["main"]) / "S-T-Main-Unindexed"; noidx.mkdir()
-    (noidx / "S-T-Main-Unindexed.md").write_text("# S-T-Main-Unindexed · §4 Needs An Index\n")
+    (noidx / "S-T-Main-Unindexed.md").write_text("# S-T-Main-Unindexed · §4 Stable Semantic Identity\n")
     register, _ = _assemble(m)
     F = register["findings"]
     assert not any("Display2-good" in f and "legacy" in f for f in F)
     for bad in ("Sec1-Display3-old-second-pass", "S-Display-4-oldest", "S-T-Main-1-Intro-Display5-pageid"):
         assert any(f.startswith("legacy unit name") and bad in f for f in F), bad
-    assert any("S-T-Main-9-Wrong: folder index 9 but its H1 says §3" in f for f in F)
-    assert any("S-T-Main-Unindexed: H1 says §4 but the page id carries no index" in f for f in F)
+    assert not any("folder index" in f for f in F)
+    assert not any("page id carries no index" in f for f in F)
 
 
 def test_conforming_unit_is_not_a_finding_and_unnumbered_pages_are_allowed(paper):
@@ -451,3 +499,29 @@ def test_inner_section_headings_shift_numbers_and_are_a_finding(paper):
     assert secs["S-T-Main-2-Methods"]["printed"] == "§3"                      # shifted by the inner \\section
     assert any("S-T-Main-1-Intro: its fragment prints 2 numbered sections" in f for f in register["findings"])
     assert any("S-T-Main-2-Methods: page H1 says §2, prints §3" in f for f in register["findings"])
+
+
+def test_retired_bib_lane_is_never_merged(paper):
+    intro = paper.rel(paper.CFG["pages"]["main"]) / "S-T-Main-1-Intro"
+    retired = intro / "outline" / "evidence" / "bibex"
+    retired.mkdir(parents=True)
+    (retired / "old.bib").write_text("@article{retired, title={Retired}}")
+    current = intro / "delivery" / "latex" / "S-T-Main-1-Intro-complete.bib"
+    current.write_text("@article{current, title={Current}}")
+    _assemble(paper)
+    assert "@article{current" in paper.BIB.read_text()
+    assert "@article{retired" not in paper.BIB.read_text()
+
+
+def test_cited_page_requires_its_delivery_bib(paper):
+    _ready_page(paper, "S-T-Main-2-Methods", 2, "Methods", r"\section{Methods} \citep{k1}")
+    with pytest.raises(RuntimeError, match="complete.bib; regenerate"):
+        _assemble(paper)
+
+
+def test_excluded_draft_page_does_not_require_a_bibliography(paper):
+    page = _ready_page(paper, "S-T-Main-2-Methods", 2, "Methods", r"\section{Methods} \citep{k1}")
+    (page / "outline" / "S-T-Main-2-Methods-outline-v1.0.md").unlink()
+    _register, master = _assemble(paper)
+    assert "[This section is not yet compiled into this build.]" in master
+    assert "k1" not in paper.BIB.read_text()

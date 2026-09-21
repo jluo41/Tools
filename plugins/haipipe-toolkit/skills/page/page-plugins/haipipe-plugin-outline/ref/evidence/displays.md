@@ -16,10 +16,14 @@ The unit's internal shape is NOT defined here: `skills/display/ref/display-unit-
 <page>/results/<re-run>/
 ├── result.yaml                   typed DISPLAY Result envelope
 └── payload/<unit>/                one renderer payload; no Outline Evidence copy
-    ├── manifest.yaml              frozen input and source hashes
+    ├── intake/
+    │   ├── manifest.yaml          frozen input and source hashes
+    │   └── inputs/                 approved display-safe snapshots
     ├── recipe/                    renderer-owned recipe and receipts
-    ├── preview.tex ▶ preview.pdf  standalone preview
-    ├── assets/                    winning render
+    ├── README.md                  claim, caption, provenance, acceptance status
+    ├── float.tex / preview.tex    caller wrapper and standalone preview source
+    ├── preview.pdf                compiled inspection preview
+    ├── assets/                    selected render; acceptance is a separate gate
     └── candidates/ · versions/    optional renderer history
 ```
 

@@ -4,31 +4,39 @@ description: >-
   Canonical spec for the assistant's chat reply format in this workspace: the
   answer on line 1, then sections whose numbered one-line scan points state the
   takeaways, with plain prose paragraphs underneath carrying the detail. Turns that change
-  files end with a git-derived file-change section, as a flat dash list. The repo
-  CLAUDE.md points here to make it always-on. Trigger: response format, reply
+  files end with a git-derived file-change section, as a flat dash list. This is
+  a reference spec and does not self-activate. Trigger: response format, reply
   format, outline format, bullet points, section headers, emoji headers, 回复格式.
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-09"
+  version: "0.5.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: response-format (0_utils)
 ================================
 
-Canonical format for conversational replies in this workspace. The repo `CLAUDE.md`
-points here; this file is the detailed spec. The CLAUDE.md line is what makes it
-always-on, this skill is the reference it cites.
+Canonical reference for conversational replies in this workspace. Apply it when
+the user invokes this skill or another active instruction loads it. A skill file
+does not make itself always-on, and this checkout has no root `CLAUDE.md` that
+activates it.
+
+When a loaded skill defines a reply shape for a specific request, that scoped
+shape takes precedence for that request. In particular, `/task-table`'s
+table-only response and `/remote-error`'s required report sections are explicit
+exceptions to the general answer-first scan format below. Do not combine both
+shapes in one reply.
 
 Scope
 -----
 
 - Applies to CHAT replies, meaning what the assistant writes back to the user.
-- Does NOT apply to file or document contents. Those keep the repo's own rules
-  (ASCII headers `===` / `---`, no `##`). Never let this format leak into a
-  `.md` or `.tex` file the assistant authors.
+- Does NOT apply to file or document contents. Follow the actual directory
+  guidance and document template, including their heading syntax. This chat
+  skill neither forbids Markdown `##` nor requires ASCII underline headings
+  in authored files.
 
 
 The format
@@ -135,7 +143,7 @@ Sections
 When a code block is still allowed
 ----------------------------------
 
-Flat bullets are the default scan layer and prose paragraphs are the default
+Numbered scan points are the default scan layer and prose paragraphs are the default
 explanation layer. A fenced block earns its place only when the content is
 genuinely two-dimensional or must be shown verbatim:
 
@@ -197,8 +205,9 @@ Yes, and one cheap test settles it.
 1. **Claim holds**: the back-test resolves direction before any build
 2. **The catch**: a skill alone cannot make a behavior always-on
 
-A skill runs only when it is invoked, so an always-on rule has to live in
-`CLAUDE.md` as well. That is a mechanism limit, not a judgement call.
+A skill runs only when it is invoked or explicitly loaded by another active
+instruction. To make this format always-on, an active global instruction must
+load it; this checkout currently has no root `CLAUDE.md` pointer.
 
 ## 🎯 My Recommendation
 1. **Back-test first**: 20 minutes decides the next week
@@ -207,12 +216,12 @@ A skill runs only when it is invoked, so an always-on rule has to live in
 Flat kills the build before anything is spent, and positive hands it a target it
 already chose. Nothing here is exploratory.
 
+## 🙋 What I Need From You
+1. **Pick the model**: Bedrock (BAA-covered), or a local in-VPC model
+
 ## 📁 File Changes
 - **code**: `code-dev/1-PIPELINE/3-Case-WorkSpace/builder_x.py`
 - **derived**: `code/haifn/fn_case/x.py`, rebuilt from the builder, skip
-
-## 🙋 What I Need From You
-1. **Pick the model**: Bedrock (BAA-covered), or a local in-VPC model
 ```
 
 ## 📎 "Show me" means in the reply (JL 260904)

@@ -11,8 +11,8 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.109.0"
-  last_updated: "2026-09-15"
+  version: "0.110.0"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -436,7 +436,7 @@ the Folder kind and its Page Face. A fixed Page Type may own a Page directly. No
 
 Resolve ① to ⑥ in order and stop at the first key that matches. Exactly one
 semantic owner may claim the Page Face. An in-place Folder's
-`workflow/phase.yaml current.folder-kind` is authoritative; fixed-kind Folders
+`workflow/folder.yaml current.folder-kind` is authoritative; fixed-kind Folders
 use Page `folder-kind:`. `page-type:` is the declared Page Type when no current
 Folder kind exists. If current
 state and Markdown disagree, fix the Folder, never the resolver.
@@ -444,7 +444,7 @@ state and Markdown disagree, fix the Folder, never the resolver.
 ```text
 step  machine-readable key                    Page Face owner    contract
 ──────────────────────────────────────────────────────────────────────────
-①     workflow/phase.yaml current kind        Run Workflow       Run Spec owner
+①     workflow/folder.yaml current kind        Run Workflow       Run Spec owner
 ②     frontmatter `folder-kind: <key>`        Run Spec/family     Run Spec/family skill
 ③     frontmatter `page-type: <key>`          Page Type           Page Type owner
 ④     filename QBv<n>-                        venue              for-venue
@@ -466,10 +466,20 @@ There is no central inventory, compatibility layer, alias table, or Page Type
 without an owning contract. A retired key must be migrated or removed from the
 Page; it is not kept alive by a second document.
 
+### Paper Pages
+
+For a Paper Page, follow the [Paper routing contract](../../paper/haipipe-paper/SKILL.md#-routing)
+and load the exact self-owned Ideation, Story, Section, Round or Venue skill.
+For `page-type: ideation`, that is `haipipe-paper-ideation`; it delegates idea
+semantics to `haipipe-ideation` and keeps Page projection/release here. General
+Page work does not load Ideation or every Paper skill. Read the
+[Paper–Page adapter](../../paper/haipipe-paper/ref/page-integration.md) when a
+Paper Run or release is planned. The same owner is loaded only once.
+
 ### A variant extends the base and never redefines it
 
 A Page Face specialization defines Content and fixed extension points without
-reordering the base frame. In a migrated family it lives in the workflow phase
+reordering the base frame. In a migrated family it lives with the Run owner
 or canonical family skill that owns the Folder kind; an unmigrated Page Type
 remains a base variant under `page-types/`. Load the semantic owner before
 writing. After moving a skill, re-run `install.sh --global` so the installed
@@ -579,7 +589,7 @@ a concrete version is judged                   → CHECK
 `page-workflows/haipipe-page-workflow`, whose `ref/page-run-contract.md` holds
 the packet, receipt, version, role-separation and stop rules, and whose
 `ref/phase-cards.md` states every phase in the same six fields. A pass may run
-inside a person's session (the page chat, which knows the phases and reads the
+inside a person's session (the page chat, which resolves Run owners and controller operations and reads the
 strip: `haipipe-plugin-studio/ref/chat.md` §🔁) or as that phase's agent; both leave the same
 trace (the artifact, one log record, the receipt).
 
@@ -686,8 +696,12 @@ its own.
 📄 CREATE     /haipipe-page create a new page on <topic>   [on <board>]
 🔧 WORK ON    /haipipe-page working on <page>              or just the path
 🧑 RUNS       /haipipe-page runs <page> [focus]            propose human interaction
-🔁 RUN        /haipipe-page run <page> [from <phase>]
+🔁 RUN        /haipipe-page run <page> [from <operation>]
 ```
+
+The RUN `from` selector accepts the existing Page controller operation names
+(CONTEXT, OUTLINE, EVIDENCE, CONTENT, CHECK); its parser/API may retain the
+field name `phase`. This help wording does not add a Run-id selector.
 
 **Preview**: `cli/preview.py <page>` prints one screen (title, the Opening's
 visible paragraph, the Aims with their `Now:` lines, the Content divisions,
@@ -878,8 +892,8 @@ language or figure rules to imported HTML/code or its generated wrapper.
 Evaluation asks whether the authored page satisfies its declared
 requirements, never whether the reviewer likes the format, and the
 requirements resolve in this order: this contract and `ref/page-template.md`
-→ the phase-owned Page Face or declared Page Type → the current Page
-Phase contract → the page's own
+→ the Folder-owned Page Face or declared Page Type → the selected Run profile
+and Page controller operation → the page's own
 authored W records in `outline/<stem>-requirement.md` (and `## Stage Contract` on S) → the local division
 purpose and each paragraph's job line. A more specific source refines a
 broader one and never silently contradicts it; a conflict is reported and

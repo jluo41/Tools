@@ -6,6 +6,8 @@
 #   render.sh <html-file> <N>                 # N PNGs, slides 1..N, via #/k
 #   render.sh <html-file> all                 # autodetect .slide count
 #   render.sh <html-file> <N> <out-dir>       # custom output dir
+#   render.sh <html-file> <N> <out-dir> <width> <height>
+#                                                custom capture dimensions
 #
 # Requires: Google Chrome at /Applications/Google Chrome.app (macOS).
 
@@ -19,7 +21,7 @@ fi
 
 FILE="${1:-}"
 if [[ -z "$FILE" ]]; then
-  echo "usage: render.sh <html> [N|all] [out-dir]" >&2
+  echo "usage: render.sh <html> [N|all] [out-dir] [width] [height]" >&2
   exit 1
 fi
 if [[ ! -f "$FILE" ]]; then
@@ -29,6 +31,13 @@ fi
 
 COUNT="${2:-1}"
 OUT="${3:-}"
+WIDTH="${4:-1920}"
+HEIGHT="${5:-1080}"
+
+if [[ ! "$WIDTH" =~ ^[1-9][0-9]*$ || ! "$HEIGHT" =~ ^[1-9][0-9]*$ ]]; then
+  echo "error: width and height must be positive integers" >&2
+  exit 1
+fi
 
 ABS="$(cd "$(dirname "$FILE")" && pwd)/$(basename "$FILE")"
 STEM="$(basename "${FILE%.*}")"
@@ -38,11 +47,11 @@ if [[ "$COUNT" == "all" ]]; then
   [[ -z "$COUNT" || "$COUNT" -lt 1 ]] && COUNT=1
 fi
 
-if [[ -z "$OUT" ]]; then
-  if [[ "$COUNT" -gt 1 ]]; then
+if [[ "$COUNT" != "1" ]]; then
+  if [[ -z "$OUT" ]]; then
     OUT="$(dirname "$FILE")/${STEM}-png"
-    mkdir -p "$OUT"
   fi
+  mkdir -p "$OUT"
 fi
 
 render_one() {
@@ -53,7 +62,7 @@ render_one() {
     --hide-scrollbars \
     --no-sandbox \
     --virtual-time-budget=4000 \
-    --window-size=1920,1080 \
+    --window-size="$WIDTH,$HEIGHT" \
     --screenshot="$target" \
     "$url" >/dev/null 2>&1
   echo "  ✔ $target"

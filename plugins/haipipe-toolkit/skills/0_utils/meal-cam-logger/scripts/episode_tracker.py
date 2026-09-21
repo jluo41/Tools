@@ -1,15 +1,13 @@
 """Episode-level segmentation for meal-cam.
 
-Groups consecutive bite events into "eating episodes" so that one physical
-food item triggers exactly ONE Claude vision call, regardless of how many
-bites the user takes from it.
+Groups consecutive bite events into "eating episodes" by time gap. The
+heuristic does not identify physical food items, so a food switch within an
+episode may not trigger another Claude vision call.
 
 An episode is defined as a sequence of bites where each bite is within
 `max_gap_sec` of the previous one. A longer gap starts a new episode.
 
-v0.3 — simple time-gap heuristic. Future (v0.3.1): also check spatial
-coherence of the hand's "source" position to catch food-switches that
-happen without a long pause.
+v0.3 — simple time-gap heuristic.
 """
 
 from __future__ import annotations
@@ -20,13 +18,18 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Episode:
-    """One contiguous eating episode — a single food item over N bites."""
+    """One time-gap episode of bite detections; it may contain several foods."""
     id: int
     start: dt.datetime
     end: dt.datetime
     bites: int
-    label: str | None          # filled in after the Claude call on the first bite
-    first_frame_b64: str | None = None  # retained in case of re-identification
+    labels: list[str] | None = None
+    label_status: str = "pending"
+    label_error_type: str | None = None
+    label_model: str | None = None
+    label_rubric: str | None = None
+    label_input_sha256: str | None = None
+    label_judged_at: str | None = None
 
 
 @dataclass
@@ -42,14 +45,17 @@ class EpisodeTracker:
         """Call on every bite event from BiteDetector.
 
         Returns (is_new_episode, episode).  If is_new_episode is True, the
-        caller should run the Claude vision call and set episode.label /
-        episode.first_frame_b64.  Otherwise the bite is folded into the
-        current episode and only the counter is updated.
+        caller may classify only the first-bite frame and store the resulting
+        labels plus identification status. A time-gap episode may include
+        more than one food.
+        Otherwise the bite is folded into the current episode and only the
+        counter is updated.
         """
         if (self._current is None
                 or (now - self._current.end).total_seconds() > self.max_gap_sec):
             # New episode
-            ep = Episode(id=self._next_id, start=now, end=now, bites=1, label=None)
+            ep = Episode(id=self._next_id, start=now, end=now, bites=1,
+                         labels=None, label_status="pending")
             self._next_id += 1
             self._current = ep
             self._all.append(ep)
@@ -59,6 +65,20 @@ class EpisodeTracker:
         self._current.end = now
         self._current.bites += 1
         return False, self._current
+
+    def remove_last(self) -> Episode | None:
+        """Remove the most recently logged episode, if one exists.
+
+        This supports an explicit user correction during a session. If the
+        removed episode was current, the next bite starts a fresh episode.
+        Episode IDs remain monotonic for an unambiguous log.
+        """
+        if not self._all:
+            return None
+        removed = self._all.pop()
+        if self._current is removed:
+            self._current = None
+        return removed
 
     @property
     def episodes(self) -> list[Episode]:

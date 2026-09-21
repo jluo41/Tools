@@ -14,6 +14,7 @@ Requires:
 from __future__ import annotations
 
 import base64
+import hashlib
 import sys
 from pathlib import Path
 
@@ -31,12 +32,19 @@ def main() -> int:
         print(f"image not found: {img}", file=sys.stderr)
         return 2
 
-    b64 = base64.standard_b64encode(img.read_bytes()).decode("ascii")
-    label = identify_food(b64, model="claude-sonnet-4-6")
+    image_bytes = img.read_bytes()
+    b64 = base64.standard_b64encode(image_bytes).decode("ascii")
+    identification = identify_food(
+        b64, model="claude-sonnet-4-6",
+        input_sha256=hashlib.sha256(image_bytes).hexdigest(),
+    )
 
     print(f"image:  {img.name}  ({img.stat().st_size // 1024} KB)")
-    print(f"label:  {label!r}")
-    return 0 if label is not None else 1
+    print(f"status: {identification.status}")
+    print(f"visible-food labels (model-inferred): {identification.labels!r}")
+    if identification.error_type:
+        print(f"service error class: {identification.error_type}")
+    return 1 if identification.status == "service_error" else 0
 
 
 if __name__ == "__main__":

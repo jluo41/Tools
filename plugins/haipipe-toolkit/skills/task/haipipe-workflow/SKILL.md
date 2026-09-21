@@ -2,8 +2,8 @@
 name: haipipe-workflow
 description: >-
   IPO workflow designer, builder, executor, and reporter. Defines a Workflow as
-  a directed graph of Run Specs whose execution materializes auditable Run
-  Instances. Use for workflow planning, Run Type/Spec design, gates, routes,
+  a list of Runs: planned Run Specs with dependencies and routes, and actual
+  auditable Run Instances. Use for workflow planning, Run Type/Spec design, gates, routes,
   build scripts, execution, reports, or Workflow × Workspace bindings.
   Trigger: workflow, run graph, run spec, run type, gate, route, IPO, plan
   workflow, build workflow, execute workflow, report, /haipipe-workflow.
@@ -16,7 +16,9 @@ metadata:
 
 # /haipipe-workflow · compose Runs, do not invent Phases
 
-A Workflow is the directed composition of independently closable Runs:
+A Workflow is a list of independently closable Runs. Its definition lists
+Run Specs; its runtime lists allocated Instances. The graph expresses their
+dependencies and routes, including branches and parallel work:
 
 ```text
 Workflow Definition = Run Specs + graph compiled from their Routes
@@ -30,6 +32,8 @@ definition. They are not domain Phases and do not receive runtime authority.
 
 Load `haipipe-run` whenever the Workflow has executable work. Load
 `workflow-table` when the user needs the Run Spec × Workspace projection.
+Resolve type/profile keys through the shared
+[Run catalogue](../../run/haipipe-run/ref/run-catalog.md).
 Load [`ref/workflow-runtime.md`](ref/workflow-runtime.md) when multiple Runs,
 branching, resume, human HOLD, or aggregate audit state justify a Workflow
 Runtime. One straightforward Run may rely on its own receipt.
@@ -90,8 +94,10 @@ cells:
 Required semantic fields are stable Spec and instance identity, Run Type,
 bounded target/goal, actor, action/interaction, lifecycle state, close rule,
 terminal outcome, and durable receipt. Inputs, dependencies, entry gate, and
-Result payload are conditional. Cell bindings are required, with one Cell per
-member Workspace. A terminal Run may omit an explicit route only when `CLOSE`
+Result payload are conditional. When a Plugin Workspace roster is declared,
+Cell bindings are required, with one Cell per member Workspace. A standalone
+Run/Workflow without such surfaces may omit the roster and Cells; never invent
+a Plugin merely to execute one bounded commission. A terminal Run may omit an explicit route only when `CLOSE`
 is its declared default.
 
 ## Human decisions and interactions
@@ -118,16 +124,17 @@ model call when they share one target and close rule.
 `/haipipe-workflow plan` creates or revises `plan.yaml`.
 
 1. Name Workflow purpose, Input, and Output.
-2. Resolve the Plugin-owned Workspace roster.
+2. Resolve the Plugin-owned Workspace roster when the Workflow declares those
+   surfaces; otherwise retain a standalone definition without invented Cells.
 3. List independently closable Run Specs; reject pseudo-Runs that are only
    Steps, files, tools, or projections.
 4. Resolve each Run Type, target, actor, action/interaction, exit gate, routes,
    and cardinality.
-5. Materialize one Cell per Run Spec × member Workspace; bind Skills and
+5. For a declared roster, materialize one Cell per Run Spec × member Workspace; bind Skills and
    interaction/projection behavior in those Cells.
 6. Draw every forward, backward, SELF, HOLD, and terminal route.
 7. State entry Run Specs and Workflow terminal rules.
-8. Freeze only after every destination, close rule, and Cell resolves.
+8. Freeze only after every destination, close rule, and applicable Cell resolves.
 
 Use [`ref/plan-schema.md`](ref/plan-schema.md) for the complete shape.
 
@@ -198,7 +205,7 @@ Before freezing or reporting, require:
 - human decision Runs pass the independent-close test;
 - feedback Steps and Versions are not counted as Runs;
 - planned cardinality is separate from actual allocated instances;
-- every Run Spec has one Cell per Plugin Workspace;
+- with a declared Plugin roster, every Run Spec has one Cell per member Workspace;
 - Cell Skill/interaction/projection bindings do not redefine Run Gate/Route;
 - Workspace bindings are presentation/interaction only;
 - low-level progress groups are not treated as semantic Phases;

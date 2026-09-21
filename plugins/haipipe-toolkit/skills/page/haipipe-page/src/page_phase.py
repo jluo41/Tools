@@ -28,7 +28,8 @@ from src import item_table
 
 from .common import delivery_lane_dirs, evidence_lane_dirs
 from .folder_contract import (
-    current_folder_kind,
+    resolved_folder_kind,
+    folder_identity_path,
     resolve as resolve_folder_contract,
 )
 from .outline_version import latest_outline, version_tag
@@ -239,9 +240,9 @@ def phase_state(page_md, board=None):
     )[1]
     legacy_page_type = (re.search(r"^page-type:\s*([a-z][a-z0-9-]*)\s*$",
                                   page_txt, re.M) or [None, ""])[1]
-    # Existing Pages without a phase-owned Folder identity keep the historical
+    # Existing Pages without a declared Folder identity keep the historical
     # conservative default: they owe a local RULING until CHECK closes. A
-    # phase contract may explicitly remove that debt or bind it to its domain
+    # Folder contract may explicitly remove that debt or bind it to its domain
     # gate. Ambiguity must never silently waive a human-owned decision.
     owner_ruling = "legacy-default"
     owner_ruling_required = True
@@ -249,20 +250,14 @@ def phase_state(page_md, board=None):
     folder_kind = frontmatter_folder_kind
     folder_kind_source = "frontmatter" if folder_kind else ""
     try:
-        phase_folder_kind = current_folder_kind(pd)
-        if phase_folder_kind:
-            page_folder_kind = folder_kind
-            folder_kind = phase_folder_kind
-            folder_kind_source = "workflow/phase.yaml"
-            if page_folder_kind and page_folder_kind != phase_folder_kind:
-                raise ValueError(
-                    "workflow/phase.yaml current.folder-kind "
-                    f"{phase_folder_kind!r} conflicts with Page frontmatter "
-                    f"folder-kind {page_folder_kind!r}"
-                )
+        folder_kind = resolved_folder_kind(pd, declared=frontmatter_folder_kind,
+                                           legacy=legacy_page_type)
+        identity = folder_identity_path(pd)
+        if identity:
+            folder_kind_source = identity.relative_to(pd).as_posix()
         folder_contract = resolve_folder_contract(
             SKILLS_ROOT, folder_kind=folder_kind,
-            legacy_page_type=legacy_page_type,
+            legacy_page_type=folder_kind,
         )
     except ValueError as exc:
         folder_contract = None

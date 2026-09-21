@@ -1,3 +1,17 @@
+## 0.5.2 · 2026-09-20
+
+- Added evidence-bound interpretation-confidence anchors and abstention rules, alongside qualitative novelty-confidence and identification-credibility anchors.
+
+## 0.5.1 · 2026-09-20
+
+- Bound novelty, pressure and Fit receipts to evaluator/rubric/input context, with immutable review resolution and an explicit undetermined route.
+
+## 0.5.0 · 2026-09-20
+
+- Bound durable work to owner-native Workflow Run Specs and kept capability calls distinct from Runs.
+- Aligned human state, projection and specialist fields with version-3 per-card selection/handoff.
+- Added immutable decision snapshots, selected-subset eligibility, exact target/handoff joins and current sync bindings; preserved legacy reads.
+
 ## 0.4.0 · 2026-09-13
 
 - Promoted the Paper P0 sync adapter to schema v2 with independent working,

@@ -1,6 +1,8 @@
-# Ideation workflow table
+# Ideation capability and owner-route table
 
-The numbered directories are capability families, like Discovery's
+The executable Workflow Run Spec list is [workflow-runs.md](workflow-runs.md).
+This table maps capabilities and gates to those Runs; its I labels are not
+Workflow nodes. The numbered directories are capability families, like Discovery's
 `1_search/2_review/3_synthesize`. They do not replace the durable BJTR address
 and never create a local ideation Run.
 
@@ -31,9 +33,10 @@ venue facts          haipipe-journal-fit → haipipe-paper-venue
 ```
 
 Search calls, candidate generation, card edits, test reconciliation, journal
-comparison, and handoff are not Runs. A new bounded source analysis or
-internal computation becomes a Run only in its owning Discovery or Task
-folder.
+comparison, and handoff are internal portfolio Steps or router bookkeeping.
+An independently closable portfolio commission uses the Task-owned portfolio
+Run Spec; new source analyses and pilots use the Discovery/Task Specs.
+A specialist invocation or receipt alone never allocates another Run.
 
 ## Gate assertions
 
@@ -62,8 +65,8 @@ folder.
 
 `I3 → Paper P0` requires:
 
-- a dated human receipt selecting, deferring, or abandoning each reviewed
-  candidate;
+- a dated versioned human receipt with one row per reviewed candidate; only
+  explicit answers select, defer or abandon; unanswered rows remain open;
 - one selected target/category and accepted-risk record per selected card;
 - a distinct Story route for each selected card;
 - direct paths to cards, owner Results, Venue Fit Cards, and Venue contracts;

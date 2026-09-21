@@ -1,7 +1,7 @@
 ---
 name: haipipe-paper-ideation
 description: >-
-  Paper journey phase P0 and the reader-facing Page Type for one research
+  The reader-facing Paper Page Type for one research
   direction's evolving Idea portfolio. It projects haipipe-ideation I1/I2 sync
   packets and the final I3 selection handoff into Direction, Discovery
   Landscape, Opportunity Map, candidate comparisons, evidence gaps, and Story
@@ -9,8 +9,8 @@ description: >-
   create, refresh, read, or check a Paper Ideation Page; route idea generation,
   novelty testing, pressure testing, and selection to haipipe-ideation.
 metadata:
-  version: "1.0.2"
-  last_updated: "2026-09-13"
+  version: "1.0.3"
+  last_updated: "2026-09-20"
   group-token: "Story00"
   outline:
     mode: grammar
@@ -20,15 +20,28 @@ metadata:
 
 # /haipipe-paper-ideation · one evergreen Paper view of an evidence-tested direction
 
-Load `haipipe-page` first and `haipipe-page-workflow` when running the Page.
+For a concrete Page update load `haipipe-page`, `haipipe-page-workflow`, the
+current Run Workflow/Spec owner, `haipipe-paper-workflow`, then this PageType.
+For semantic idea generation/testing/selection, enter `haipipe-ideation`; this
+adapter only loads Page work when its projection or Page content is involved.
 Declare `page-type: ideation`. Load `haipipe-ideation` and its
 `references/manifest-and-sync.md` for an I1/I2 sync; also read
 `references/receipts.md` for a final I3 handoff. The schemas stay with their
 semantic owner and are not copied into this skill.
 
-## 🧭 Journey phase
+For version-3 Ideation decisions, workflow/selection.yaml is the current view
+of the immutable snapshot named by the handoff. Project each candidates[] row:
+only explicit select/defer/abandon answers change a verdict; open stays open.
+Use that row's posture, risks and exact target/category/contract version. The
+top-level decision and route lists are compatibility projections, not a global
+winner or a disposition for every row. Reject mismatched selection/sync
+versions before opening Story routes; preserve prior snapshots and handoffs.
+Follow Ideation's receipts.md mapping; Page creates no second decision.
 
-This skill is journey phase P0 Ideation of the paper journey and owns the
+
+## Paper ownership and entry
+
+This skill owns the Paper Ideation Page and its
 `page-type: ideation` reader contract below. The repo is minted WITH this Page,
 so there is no entry gate and the Page may exist while every candidate is still
 unverified. `haipipe-ideation` is the sole semantic owner of Direction and Idea
@@ -53,7 +66,7 @@ One evergreen `Story00-ideation` Page receives two adapter states owned by
 
 ```text
 I1 GENERATE ─┐
-             ├─ projection/paper-ideation-sync.yaml ─▶ same Paper P0 Page
+             ├─ projection/paper-ideation-sync.yaml ─▶ same Paper Ideation Page
 I2 TEST ─────┘                                  revisions 1, 2, 3, ...
 
 I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
@@ -78,11 +91,11 @@ I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
   when a shape decision is needed. The Page workflow receipt records the
   packet path, consumed revision/hash, projection surface, and output hash; a
   mismatched working revision is stale, not current. The Paper-specific
-  `paper_projection` extension lives inside the normal Page phase receipt. The
+  `paper_projection` extension lives inside the normal Page controller receipt. The
   adapter reads that Page-owned receipt and remains the only writer of the sync
   packet's nested `paper_page` status.
 - When `paper_page.state: missing`, use `/haipipe-page` to mint or bind the one
-  canonical P0 Page and leave all three surfaces `not-requested` until a
+  canonical Ideation Page and leave all three surfaces `not-requested` until a
   projection is actually recorded. When it is `blocked`, preserve the
   canonical path and each last honest surface revision/receipt, report the
   named gap, and do not mint a surrogate Page, a second projection receipt, or
@@ -96,22 +109,22 @@ I3 SELECT ── workflow/selection.yaml ── handoff/paper-ideation.yaml
   remain with their owners. The adapter and Page carry interpretations and
   pointers only.
 
-### 🧱 P0 update surfaces
+### 🧱 Ideation source and Page surfaces
 
-Keep the three states visible whenever the Ideation portfolio changes:
+Keep the semantic source and three Page surfaces visible whenever the Ideation portfolio changes:
 
 ```text
 Ideation source       cards + sync packet                 revision + source hash
-working P0 view       Outline/preview/Bullet Workspace    working receipt
-released P0 view      adopted Content                     release receipt
+working Ideation view       Outline/preview/Bullet Workspace    working receipt
+released Ideation view      adopted Content                     release receipt
 delivery              generated output                    delivery receipt
 ```
 
-The semantic sync is not an interactive Page Run and does not mint `rpNN`.
+The semantic sync is not an interactive Page Run and does not mint a writing Run.
 Only a person's bounded feedback or acceptance request uses the Page Run/Step
-contract. When the P0 working view is current but the released view still
+contract. When the Ideation working view is current but the released view still
 points to the prior revision, report that split explicitly; never label the
-older Markdown or delivery as the latest P0 Page. Portfolio reordering never
+older Markdown or delivery as the latest Ideation Page. Portfolio reordering never
 silently renumbers Page-global paragraph identities; the stable key is
 `idea_id`, not list position.
 

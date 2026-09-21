@@ -1,86 +1,105 @@
-# workflow-plan-sample.yaml — algo-dev task script-level plan
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Plugin-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
 # Schema: task/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
-#
-# Typical algo phases: Setup → SmokeTest → Verify
-# Tiny config, minutes not hours. No heavy outputs. Proves the class works.
-
-# ─── Header ──────────────────────────────────────────────────────
 name: smoke-<ALGO>
-purpose: "Verify <ALGO> class runs end-to-end on tiny config"
-skill: haipipe-task-for-algo
-
-# ─── I: Input ────────────────────────────────────────────────────
+purpose: Verify <ALGO> class runs end-to-end on tiny config
 input:
   args:
-    config: configs/<RUN>.yaml
+    config: scripts/config/rNN_<run>.yaml
     algo: <algorithm class name>
-  files_in:
-    - <NN>_<TASK>.py
-    - configs/<RUN>.yaml
-    - _WorkSpace/4-AIDataStore/<TINY_AIDATA>
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: Setup
-    detail: "load tiny data, instantiate model"
-    steps:
-      - label: "setup:load"
-        type: agent
-        required: true
-        prompt: "Load tiny AIData slice for smoke test"
-        files_in:
-          - _WorkSpace/4-AIDataStore/<TINY_AIDATA>
-        files_out: []
-
-      - label: "setup:instantiate"
-        type: agent
-        required: true
-        prompt: "Instantiate <ALGO> class with minimal config"
-        files_in:
-          - configs/<RUN>.yaml
-        files_out: []
-
-  - title: SmokeTest
-    detail: "run one batch, check loss decreases"
-    steps:
-      - label: "smoke:forward"
-        type: agent
-        required: true
-        prompt: "Run forward pass on one batch — no crash"
-        files_in: []
-        files_out: []
-
-      - label: "smoke:train-step"
-        type: agent
-        required: true
-        prompt: "Run 2-3 training steps, verify loss decreases"
-        files_in: []
-        files_out: []
-
-  - title: Verify
-    detail: "check output shapes and write summary"
-    steps:
-      - label: "verify:shapes"
-        type: agent
-        required: true
-        prompt: "Assert output tensor shapes match spec"
-        files_in: []
-        files_out: []
-
-      - label: "verify:summary"
-        type: agent
-        required: true
-        prompt: "Write smoke test summary (pass/fail, shapes, loss curve)"
-        files_in: []
-        files_out:
-          - results/<RUN>/loss.json
-
-# ─── O: Output ───────────────────────────────────────────────────
+  files_in: &id001
+  - scripts/<worker>.py
+  - scripts/config/rNN_<run>.yaml
+  - _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<tiny_aidata_name>
+owner: haipipe-task-for-algo
+plugin:
+  id: <owning-plugin>
+  workspace_roster_ref: <plugin-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Verify <ALGO> class runs end-to-end on tiny config
+  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: haipipe-task-for-algo
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: ok
+      verdict: <pass | fail>
+    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: haipipe-task-for-algo
+    worker_skill_chain:
+    - haipipe-task-for-algo
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Setup
+    label: setup:load
+    required: true
+    prompt: Load tiny AIData slice for smoke test
+    files_in:
+    - _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<tiny_aidata_name>
+    files_out: []
+  - section: Setup
+    label: setup:instantiate
+    required: true
+    prompt: Instantiate <ALGO> class with minimal config
+    files_in:
+    - scripts/config/rNN_<run>.yaml
+    files_out: []
+  - section: SmokeTest
+    label: smoke:forward
+    required: true
+    prompt: Run forward pass on one batch — no crash
+    files_in: []
+    files_out: []
+  - section: SmokeTest
+    label: smoke:train-step
+    required: true
+    prompt: Run 2-3 training steps, verify loss decreases
+    files_in: []
+    files_out: []
+  - section: Verify
+    label: verify:shapes
+    required: true
+    prompt: Assert output tensor shapes match spec
+    files_in: []
+    files_out: []
+  - section: Verify
+    label: verify:summary
+    required: true
+    prompt: Write smoke test summary (pass/fail, shapes, loss curve)
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/loss.json
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
 output:
-  returns:
-    status: ok
-    verdict: <pass | fail>
+  returns: *id002
   files_out:
-    - results/<RUN>/loss.json
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/loss.json

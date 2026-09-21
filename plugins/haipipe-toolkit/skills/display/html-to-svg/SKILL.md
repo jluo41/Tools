@@ -32,30 +32,43 @@ Palette: ink `#1c1c1c` · sub `#3f3f46` · muted `#8a8a8a` · accent `#1f5aa8`
    `Svg.render(title)`. Number files `NN-slug.svg` in deck order.
 2. **Content**: mirror the source deck slide-for-slide. Prose paragraphs must
    be split into sentences and rendered with `bullets()` — never as wrapped
-   paragraph blocks. Tables render as row/cell `<text>` grids (see the
-   reference implementation's Table 1); charts as `minibar()` rows; flows as
-   boxes + `→` text arrows.
-3. **Verify visually, always**: rasterize a few layout-heavy slides and LOOK
-   at them before declaring done —
+   paragraph blocks. Tables render as row/cell `<text>` grids; charts as
+   `minibar()` rows; flows as boxes + `→` text arrows.
+3. **Review every slide visually.** Build a review PDF from the display SVGs and
+   inspect every page. Also rasterize any slide where crop or overflow is hard
+   to judge in the PDF —
    ```bash
    pip install cairosvg   # once
    python3 -c "import cairosvg; cairosvg.svg2png(url='06-table1.svg', write_to='/tmp/x.png', output_width=1280)"
    ```
    cairosvg has no emoji font — tofu boxes in the preview mean the emoji rule
    was violated. Fix the text, don't ignore the preview.
-4. **PDF review gate — before any .pptx build**: copy `scripts/build_pdf.py`
-   (this skill) next to the SVGs, merge ALL display-variant slides into one
-   vector PDF, and flip through every page:
+4. **Only build formats the user requested.** The review PDF is an internal
+   check by default; deliver it only when the user asks for PDF. If the user
+   requests `.pptx`, copy `scripts/build_pptx.py` next to the SVGs only after
+   the review PDF passes. Never build from `ppt-editable/` for audience review;
+   those SVGs are intentionally overflowed.
+
+   Copy `scripts/build_pdf.py` (this skill) next to the SVGs, merge ALL
+   display-variant slides into one vector PDF, and flip through every page:
    ```bash
    python3 build_pdf.py              # → deck.pdf   (pip install cairosvg pypdf)
    ```
    This is where layout collisions, text overflow, and wording problems get
-   caught — fixing them costs seconds here (edit `generate_svgs.py`, re-run)
-   vs. a rebuilt-and-reimported .pptx later. Only when the PDF looks right,
-   proceed to `build_pptx.py`. Never build the PDF from `ppt-editable/` —
-   those SVGs are intentionally overflowed.
+   caught. Fix them in `generate_svgs.py` and repeat the review before delivery.
 5. **Regenerate** any time numbers change: `python3 generate_svgs.py`.
-   Full loop: `python3 generate_svgs.py && python3 build_pdf.py && python3 build_pptx.py`.
+   Full loop: `python3 generate_svgs.py && python3 build_pdf.py`; append
+   `python3 build_pptx.py` only when `.pptx` is requested.
+
+## Run and display-unit boundary
+
+One deck-to-SVG-set conversion may be one bounded Run. Per-slide files,
+regeneration, visual inspection, and the review PDF are internal Steps; a PPTX
+is produced only when requested. This converter writes standalone files under
+the deck's `svg/` directory and does not create or promote a HAI-Pipe display
+unit. For Page, View, or Paper use, the caller places the approved SVG, recipe,
+and compiled preview into its supplied unit and owns candidate promotion and
+acceptance.
 
 ## Two variants: display vs PPT-editable (figure-to-svg Lesson 16)
 
@@ -113,11 +126,9 @@ Requires `pip install cairosvg pypdf`.
 
 ## Reference implementation
 
-`collaborations/Event-JHU-ADHD-NIH-Team/po-update-deck/svg/generate_svgs.py`
-(REACH-SPACE) — 12 slides covering every pattern: stat cards, funnel with
-leak-outs, timeline lanes, CONSORT flow + stacked bar, event timeline with
-sliding windows, a full Table 1, quadrant cards, bar-panel pairs, pipeline
-flow, card grids, roadmap lanes, two-column references.
+The maintained drawing primitives are in `scripts/svg_deck.py`. This skill
+does not ship a reference deck; use the library and the patterns above as the
+implementation examples.
 
 ## PowerPoint import notes (tell the user)
 

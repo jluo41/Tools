@@ -8,8 +8,10 @@
 | `Design.generate` | `generate` (config mode compose, revise, brainstorm, theory-driven, or challenge) | agent | the released item |
 | `Design.verify` | `verify` | agent | named immutable generation Result(s) |
 
-Expected actual Design Runs per Design Item are `1 Commission + N Generate +
-J Verify`. Count only allocated run records with runtime receipts.
+The Workflow is a list of Runs. Actual current Design Runs per Item are
+`C Commission + N Generate + J Verify`. Count allocated records with receipts,
+including held, failed, blocked and superseded Runs. C=1 only when no hold
+preceded release; an Item permits at most one release.
 Do not count Workflow, Space, Steps, calls, drafts, renders, Results,
 projections, or retry attempts.
 
@@ -92,7 +94,7 @@ The human actor decides `release` or `hold` for one Design Item's exact config
 fingerprint. The Result is `decision.yaml` with run, item, decision, actor,
 exact words, target, input hashes, and timestamp. `release` routes to
 Generate; `hold` routes to HOLD, and the person may release later with a new
-Commission decision. One Commission per item: a second Release is refused.
+Commission Run. Preserve the completed hold decision; a second release is refused.
 The decision itself is independently closable, so this is a Run. Each
 comment/click leading to it is a Step, not another Run.
 
@@ -104,10 +106,12 @@ Modes include `compose`, `brainstorm`, `theory-driven`, `challenge`, and
 mode. The worker is `haipipe-design-unit` through the existing designer
 dispatcher.
 
-The run record pins a copy of the released Commission's config, the
+The run record pins a derived copy of the released Commission's config (only
+`review_mode` and the permitted operation `mode` may differ; see Unit contract), the
 Commission's `decision.yaml` as approval, and the evidence files the
 Commission pinned. The Result folder contains `result.yaml`, `checks.yaml`,
-`content/`, and caller-owned `runtime.yaml`. Completion requires the records
+`content/`, optional `render/` with a hash-bound `render_manifest` reference in
+`result.yaml`, and caller-owned `runtime.yaml`. Completion requires the records
 check to pass; a draft that fails it is recorded `failed` with route
 `generate`, and the person queues a revise with feedback.
 
@@ -116,10 +120,18 @@ check to pass; a draft that fails it is recorded `failed` with route
 The run record pins exact generation Results/hashes, the released config's
 criteria, and an independent reviewer context. The Result contains complete
 coverage and a pass/fail/unresolved verdict. Pass routes to the read-only
-Delivery projection; fail routes to a revise Generate. A review that fails the
-records check, including one with unresolved checks, is recorded `failed` with
-route `verify`, and the person queues the review again. Verification never
-edits the candidate.
+Delivery projection; fail routes to a revise Generate. An unresolved judgment
+with complete per-check reasons is a completed Result, recorded
+`status: complete`, `terminal_outcome: unresolved`, and
+`route: resolve-unresolved`. It is not ready for Delivery, and the same target
+and criteria must not be reviewed again unchanged. The person routes each gap:
+missing evidence to its named evidence owner, unclear or conflicting criteria
+to the Commission owner for a clarified successor item, or inspection limits
+to the owner who can supply the needed render/context. Preserve the unresolved
+Result as history. A malformed/missing judgment or execution failure is not a
+completed unresolved assessment; it is `failed`/`blocked`, and a justified
+retry can use the appropriate recovery route. Verification never edits the
+candidate.
 
 ## Delivery projection
 
@@ -128,6 +140,9 @@ exact Generate Result and Verify receipt whose latest independent verdict is
 `pass`. The projection exposes the design text, source Result, verification
 Run, and hashes so the next team can consume the candidate directly. No
 person-specific status is recorded or displayed.
+
+Pictures are read from the candidate's Result-local render manifest, without
+worker writes to Delivery. Existing Delivery manifests are legacy display input.
 
 ## Runtime receipt
 
@@ -151,16 +166,18 @@ worker: {kind: skill, name: haipipe-design-unit, actor: designer-context-01}
 queued_at: <RFC3339 timestamp>
 started_at: <RFC3339 timestamp>
 finished_at: <RFC3339 timestamp>
-route: verify
-terminal_outcome: pass
+route: verify                        # resolve-unresolved after a complete unresolved Verify
+terminal_outcome: pass               # pass | fail | unresolved
 failure: null                        # failed, blocked, superseded: the reason
 ```
 
 A decision run's receipt carries the same run, family, status, and input
 fields plus `run_type`, `actor: {mode: human, owner}`, `action`,
 `entry_gate`, and `exit_gate`. Actor/context provenance must be honest. The
-worker may write only its paired Result; the caller owns runtime and human
-authority.
+worker may write only its paired Result, excluding runtime; the caller owns
+runtime and human authority. A worker's named hold diagnostic is not a human
+Commission HOLD decision. The presenter distinguishes `commission held` from
+`blocked`, showing the blocked Run, failure and the caller responsible for repair.
 
 ## Reopen and retry
 
@@ -185,6 +202,10 @@ Run resolves to one Workflow Run Spec, legal Gate/Route outcomes, paired v2
 Result, and runtime receipt; Run Space rows must show the same ids.
 
 ## Clean break
+
+Historical `rdNN_adopt_*` decisions remain readable for pairing/audit only,
+under their original ids and marked as legacy. Current writers create only
+Commission, Generate and Verify; no new Adopt or Delivery Run is allocated.
 
 Reject v1 Ticket/Result schemas, `rNN_design_*`, D0-D5/GD0-GD6,
 `design/DU*/`, PageX, and previous phase-shaped Design folders. Stop at the

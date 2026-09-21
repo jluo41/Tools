@@ -1,4 +1,4 @@
 interface:
   display_name: "HAIPipe Run"
   short_description: "Define and audit one addressable Level-4 Run"
-  default_prompt: "Use $haipipe-run to design or audit a Workflow Definition/Execution and its Run Type/Spec/Instance: bounded goal/target, actor, action or interaction, optional inputs/dependencies, internal Steps, Gates/Routes, RP Version semantics, Result, and durable receipt."
+  default_prompt: "Use $haipipe-run to resolve the owner and target, choose reuse, resume, or new work, and apply its Ticket, Result, closure, and inventory rules."

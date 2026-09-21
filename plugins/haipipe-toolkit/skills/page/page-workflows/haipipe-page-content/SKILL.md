@@ -10,8 +10,8 @@ description: >-
   single-paragraph compatibility path. Trigger: page content, adopt agreed text,
   CONTENT phase, WRITE cycle, publish page, build page, /haipipe-page-content.
 metadata:
-  version: "0.16.0"
-  last_updated: "2026-09-15"
+  version: "0.17.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md
 ---
 
@@ -24,12 +24,16 @@ selected integration/delivery workers. Load an owner only once when it fills
 both roles. For `folder-kind: task`, load the reader-facing
 `haipipe-page-task` companion for its display/form contract.
 
+At adoption, build, or release, apply `../../haipipe-page/ref/release-decisions.md`
+for profile precedence and reuse of existing human decisions.
+
 ## 🧭 Run Workflow placement
 
-CONTENT is the Page release/adoption Run Spec owner. It consumes closed
+CONTENT owns the Page release/adoption controller operation. It consumes closed
 writing Results and ready Evidence Results, then materializes the declared RD
-delivery Run Specs. Adoption, build, and pre-check are internal Steps of this
-bounded release work; they do not mint a replacement Run for each paragraph.
+delivery Run Specs. Adoption and pre-check are controller actions; delivery
+builds belong to their commissioned RD Runs. The CONTENT compatibility label
+does not create an additional Run or a Step outside an owning Run.
 The Workflow Runtime and the independent CHECK completion gate decide whether
 the Page release can close.
 

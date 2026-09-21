@@ -21,10 +21,9 @@ design_profile:
   narrative: required
   display: optional
   section_edit: none
-  terminal: adopted
 ```
 
-## Phase use
+## Run guidance
 
 ### Commission and Generate
 
@@ -43,7 +42,8 @@ Letter-style arc:
 If the email includes data (chart, table, KPI), write a display
 map. Otherwise skip — pure-text emails don't need it.
 
-### Verify and adopt
+### Verify
 Subject line + sections following narrative arc.
 Tone per audience profile. Check every factual move against frozen inputs,
-render to `delivery/render/`, then adopt or decline that exact version.
+render inside the current Result when visual checks require it. Independent
+Verify pass makes that exact version ready for Delivery.

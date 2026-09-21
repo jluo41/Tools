@@ -1,18 +1,18 @@
 # Insight item workflow and tables
 
 This task-side item workflow is owned by `haipipe-page-insight`.
-`haipipe-insight-workflow` continues to own the Application I0-I5 ladder.
+`haipipe-insight-workflow` continues to own the InsightBoard Run workflow.
 All steps operate inside one fixed Insight Page Folder. Page authoring uses
 the shared Page workflow; execution uses `haipipe-run`.
 
-## Workflow table
+## Activities and checkpoints
 
 | Step | Unit / question | Reads | Produces | Checkpoint / next |
 |---|---|---|---|---|
 | Scope | Instance: what topic and data context? | Topic, dataset manifests | `workflow/insight.yaml`, Page scope | Scope resolves; plan items |
 | Plan | Item: what independently answerable work? | Instance, prior items/Results | Question, target, expected Result, acceptance, dependencies | Reuse exact Result, resume, or commission a version |
-| Bind | RI: which R and new dataset? | Item, normal R ticket, snapshots, recipe contracts | `riNN` YAML Ticket, frozen v001, planned runtime; explicit upstream calls | Missing R, parameter support, or snapshot: hold this item |
-| Evidence | Execution: are sources ready? | Supporting/local Evidence Runs | Frozen `input.yaml`, named ready Results | `frozen` then `evidence` receipts |
+| Bind | RI: which R and new dataset? | Item, normal R ticket, snapshots, recipe contracts | `riNN` YAML Ticket, immutable `v001/binding.yaml`, planned runtime; explicit upstream calls | Missing R, parameter support, or snapshot: hold this item |
+| Evidence | Execution: are sources ready? | Supporting/local Evidence Runs | `freeze` seals `input.yaml` from ready supporting/local Results | `frozen` then `evidence` receipts |
 | Reason | Item: what does evidence establish? | Frozen input and evidence | D/I/K/W/RF candidate, contradictions, limits | Independent CHECK receipt, `reasoned` |
 | Publish | Item: what may others reuse? | Candidate and CHECK | Immutable Result/hash; accepted or reasoned non-answer | Accepted RF gets `published`; non-answer closes without RF |
 | Synthesize | Page: what do completed items collectively say? | Exact accepted item Results | Current Page synthesis and RF index | Shared Page CHECK; open siblings visible |
@@ -22,9 +22,12 @@ Run, Page, or person-signature gate. Resume from the earliest unsatisfied
 checkpoint after checking frozen inputs. Existing Page/Evidence human
 decisions remain in force and are not replaced by these receipts.
 
-## Phase × Run Map
+## Workflow activities × Run ownership
 
-| Phase | Folder / episode | Purpose | Allowed Run operations | Cardinality | Gate / authority | Close |
+Rows describe operations/checkpoints. Actual workflow nodes are the declared
+owner-native Runs; a row or checkpoint alone never allocates one.
+
+| Activity | Folder / scope | Purpose | Allowed Run operations | Cardinality | Gate / authority | Close |
 |---|---|---|---|---|---|---|
 | Scope / Plan | Insight instance | Declare context and intent | none | 0 | Owner resolves input and question | Planned items only |
 | Bind / Evidence | Item dependencies | Obtain computations and typed evidence | Execution / Discovery / accepted Insight supports; local Page Evidence Item Runs | 0..N supports; one local Run per typed make-item | Producing Task and Page EVIDENCE contracts | Ready evidence |
@@ -38,7 +41,7 @@ add an episode Run whose only Result duplicates its children. A checkpoint,
 LLM call, or rendering pass is not an additional item.
 
 Item CHECK here is independent review of a frozen Result candidate, recorded
-in its typed `review.yaml`. It is not the shared Page CHECK phase, which still
+in its typed `review.yaml`. It is not the shared Page CHECK control, which still
 checks the whole Page. Neither review creates a new Run unless independently
 commissioned under an existing owner contract.
 

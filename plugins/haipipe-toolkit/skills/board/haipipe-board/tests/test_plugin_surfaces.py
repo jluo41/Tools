@@ -280,7 +280,7 @@ class WordTitleTest(unittest.TestCase):
         self.assertEqual(len(units), 1)
         self.assertEqual(units[0][0], "QV2-Display1")
         self.assertEqual(units[0][1]["aliases"],
-                         ["QV2-Display1", "Display1", r"\ref{tab:qv2}"])
+                         ["QV2-Display1-result", "QV2-Display1", "Display1", r"\ref{tab:qv2}"])
         # Manuscript references must locate the same winning unit without
         # requiring a Board-only Display token in reader prose.
         mention = Fake()._first_unit_mention(

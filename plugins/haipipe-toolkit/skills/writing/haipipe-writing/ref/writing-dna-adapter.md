@@ -1,5 +1,15 @@
 # Writing DNA adapter for paragraph realization
 
+Catalog id: writing-dna, role: style. Selection follows
+[method-adapter-contract.md](method-adapter-contract.md). A supplied frozen
+Writing DNA packet selects this adapter; a methods selection references that
+same packet without a second distillation. Resolve its actual profile identity
+and recoverable artifacts. For Section/group work, reuse the packet across the
+commissioned paragraphs without allocating one Run per paragraph. Standalone
+writing uses the same constraints without requiring Page records. This adapter
+consumes style artifacts; it does not launch the distiller or act as an evaluator.
+Shared review uses [evaluation.md](evaluation.md).
+
 This reference defines the seam between the external
 [`writing-dna-skill`](https://github.com/larashero3-dotcom/writing-dna-skill)
 and a HAI Paragraph Writing Run.
@@ -163,7 +173,8 @@ keep the higher-authority form.
 After this render, a Paragraph Run may select the separate HAI anti-slop
 adapter for a read-only surface audit. It is not another DNA layer: it cannot
 change the profile, select a new voice, or write a replacement. Any resulting
-revision remains subordinate to the content map and goes through `wdiff.py`.
+revision remains subordinate to the content map and uses the host's recording
+contract: clean Before/After in Page Steps, or `wdiff.py` for a `✎` host.
 
 ## 4. Priority and conflict handling
 

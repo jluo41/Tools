@@ -14,7 +14,7 @@ Skill: haipipe-task-for-stata (unified Stata engine)
 
 This is the UNIFIED Stata skill -- handles all 4 stages (cms/case/data/reg) internally.
 Called by `/haipipe-task` when engine=Stata.
-Each stage scaffolds a different pipeline phase; all share one engine contract (`ref/stata-dialect.md`).
+Each stage scaffolds a different pipeline stage; all share one engine contract (`ref/stata-dialect.md`).
 
 Two modes: **BUILD** (scaffold job folders) and **SERVER CHECK** (validate before/after CMS server migration).
 
@@ -72,24 +72,25 @@ Stage: cms
 
 **What this scaffolds:**
 
-```
-tasks/{G}{NN}_<group>/
-+-- A{NN}_cms_pipeline/                          <- job letter A = cms stage ({LNN})
-    +-- A{NN}_cms_pipeline.do                    dispatcher: <config> <step> <year> <results_dir> <ws_root>
-    +-- scripts/                                 worker .do per step (b-*-All.do, c-Bene-Year.do, d-Year-Summary.do)
-    +-- configs/
-    |   +-- cms_production.do                    Stata globals (keep-vars, flags; paths from ${ws_root}) -- source of truth
-    |   +-- run_cms_<year>.yaml                  _meta: block + stata_config: pointer
-    +-- run_cms_year.ps1                         orchestrator (<=30 lines)
-    +-- runs/
-    |   +-- run_cms_<year>.ps1                   THIN per-year entry
-    +-- sbatch/
-    |   +-- run_cms_<y0>-<y1>.ps1                multi-year batcher
-    +-- results/
-    +-- diagram/
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared libraries + config-defaults.do
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.do
+        ├── scripts/config/rNN_<run>.do   + optional YAML metadata wrapper
+        └── runs/rNN_<run>.ps1
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           per-step logs under the same Result/log/
+Task scripts/: dispatcher .do + run_cms_year.ps1 + extraction workers.
 ```
 
-- **RUNNAME grammar:** `run_cms_<year>` (one per year, 2015..2020).
+- **RUNNAME grammar:** `rNN_cms_<year>` (one per year, 2015..2020).
 - **Steps:** `pde . carrier_claim . carrier_line . outpatient . bene_year . summary`.
 - **Heavy outputs:** `_WorkSpace/1-CMS-Store/cms_full/<asset>/year-<year>/`.
 - **Headline:** `Bene_Info-<year>` row x col counts.
@@ -100,31 +101,26 @@ Stage: case
 
 **What this scaffolds:**
 
-```
-tasks/{G}{NN}_<group>/
-+-- B{NN}_case_pipeline_<study>/
-    +-- case_pipeline.do                         dispatcher: <config> <step> <year> <results_dir> <ws_root> <source>
-    +-- run_case_year.ps1                        year orchestrator (topic flags, parallel Stata jobs)
-    +-- scripts/
-    |   +-- cases/                               trigger-cases-<script>.do
-    |   +-- feat/                                bene-* / bfaf-* / shared-* workers
-    |   +-- d-Case-Describe.do                   cross-year QC
-    +-- configs/
-    |   +-- <Cohort>.do                          SHARED: ICD codes, topic flags, paths
-    |   +-- _source_synth.do                     source selector: cms_source=synth
-    |   +-- _source_full.do                      source selector: cms_source=full
-    |   +-- <Cohort>_synth_<year>.do             PER-RUN: loads selector + shared config + pins year
-    |   +-- <Cohort>_full_<year>.do              PER-RUN: same for full
-    +-- runs/
-    |   +-- run_case_<Cohort>_synth_<year>.ps1
-    |   +-- run_case_<Cohort>_full_<year>.ps1
-    |   +-- run_describe_<Cohort>.ps1
-    +-- sbatch/
-    +-- results/
-    +-- diagram/
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared libraries + config-defaults.do
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.do
+        ├── scripts/config/rNN_<run>.do   + optional YAML metadata wrapper
+        └── runs/rNN_<run>.ps1
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           per-step logs under the same Result/log/
+Task scripts/: case_pipeline.do, run_case_year.ps1, cases/, feat/, describe worker.
+Config chain: source selector -> shared cohort config -> rNN per-run wrapper.
 ```
 
-- **RUNNAME grammar:** `run_case_<Cohort>_{synth|full}_<year>` (cohort x source x year).
+- **RUNNAME grammar:** `rNN_case_<Cohort>_{synth|full}_<year>` (cohort x source x year).
 - **Source dimension:** synth (laptop-safe) vs full (CMS server only). Each has `_source_{synth|full}.do` selector. Output tagged by `${cms_source}` to avoid collision.
 - **Three-layer config:** (1) source selector, (2) shared cohort .do, (3) thin per-run wrapper.
 - **Steps:** `cases`; `bene_year + enrollment` (parallel); `pde chain`; `claims chain`; `lines chain`; `outpt chain`; `summary`.
@@ -136,33 +132,26 @@ Stage: data
 
 **What this scaffolds:**
 
-```
-tasks/{G}{NN}_<group>/
-+-- C{NN}_data_pipeline_<study>/
-    +-- data_pipeline.do                         dispatcher (NO year argument -- cross-year)
-    +-- run_data_steps.ps1                       shared helper: sequential step runner
-    +-- scripts/
-    |   +-- 1-filter-case/
-    |   +-- 2-filter-external/
-    |   +-- 3-full-variables/
-    |   +-- 4-describe/d-Data-Describe.do
-    |   +-- d-Data-Summary.do
-    +-- configs/
-    |   +-- <Spec>.do                            synth config (laptop-safe)
-    |   +-- <Spec>_real.do                       real config (CMS server); version TODO-tagged
-    +-- runs/
-    |   +-- run_data_<Spec>.ps1                  SELF-ORCHESTRATING (ref/run-data-runner-template.ps1)
-    |   +-- run_data_<Spec>_real.ps1
-    |   +-- run_describe_<Spec>.ps1
-    +-- sbatch/
-    |   +-- run_data_all.ps1                     batcher (-mode synth|real|all)
-    +-- results/
-    |   +-- run_data_<Spec>/
-    |       +-- log/ config_snapshot.do manifest.json summary.txt
-    +-- diagram/
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared libraries + config-defaults.do
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.do
+        ├── scripts/config/rNN_<run>.do   + optional YAML metadata wrapper
+        └── runs/rNN_<run>.ps1
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           per-step logs under the same Result/log/
+Task scripts/: data_pipeline.do, run_data_steps.ps1, numbered filter/derive/describe workers.
+Each synth/real spec has an independent rNN config/Ticket pair; no year axis.
 ```
 
-- **RUNNAME grammar:** `run_data_<Spec>` (cross-year, NO year axis).
+- **RUNNAME grammar:** `rNN_data_<Spec>` (cross-year, NO year axis).
 - **SELF-ORCHESTRATING topology:** NO year orchestrator -- `runs/*.ps1` IS the orchestrator.
 - **Source dimension:** synth vs real via paired configs (`v001_base_synth` / `v001_base_real`).
 - **Steps:** `filter_case -> filter_external -> full_variables -> describe -> summary`.
@@ -176,28 +165,26 @@ Stage: reg
 
 **What this scaffolds:**
 
-```
-tasks/{G}{NN}_<group>/
-+-- D{NN}_reg_<condition>_<pairing>/
-    +-- scripts/
-    |   +-- run-{N}-<Cohort>_<Pairing>_<Trait>-{family}-{spec}.do   numbered workers
-    +-- configs/
-    |   +-- <Cohort>_<Pairing>.do                shared config (data path + version)
-    |   +-- <Cohort>_<Pairing>_synth.do          shared config, synth variant
-    |   +-- run_reg_<RUNNAME>.do                 per-run thin wrapper (pins window + res_dir)
-    +-- runs/
-    |   +-- run_reg_<RUNNAME>.ps1                self-contained (Resolve-StataExe + worker list)
-    +-- sbatch/
-    |   +-- run-<cohort>-<estimator>-all.ps1     per-estimator batcher
-    |   +-- run-<cohort>_synth-all.ps1           synth batcher
-    +-- results/
-    |   +-- run_reg_<RUNNAME>/
-    |       +-- tables/                          .tex + .csv coef tables (main-table script only)
-    |       +-- log/                             Stata .log transcripts
-    +-- diagram/
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared libraries + config-defaults.do
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.do
+        ├── scripts/config/rNN_<run>.do   + optional YAML metadata wrapper
+        └── runs/rNN_<run>.ps1
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           per-step logs under the same Result/log/
+Task scripts/: estimation workers; config chain shared cohort/pairing -> rNN wrapper.
+Each window/family/source variant has an independent rNN Ticket; no dispatcher.
 ```
 
-- **RUNNAME grammar:** `run_reg_<cohort>_<pairing>_{synth_}?<window>_<family>` (cohort x pairing x source x window x estimator-family grid).
+- **RUNNAME grammar:** `rNN_reg_<cohort>_<pairing>_{synth_}?<window>_<family>` (cohort x pairing x source x window x estimator-family grid).
 - **DISPATCHER-LESS:** .ps1 runners call worker .do scripts directly via `& $stata /e do "scripts/$w"`.
 - **Output is LIGHT:** coef tables (.tex/.csv) + logs in results/, NOT _WorkSpace/.
 - **Config dispatch:** `$env:HAIPIPE_RUN_CONFIG` -> per-run .do -> shared .do chain. Env vars: `HAIPIPE_WS_ROOT` + `HAIPIPE_RUN_CONFIG`.
@@ -292,7 +279,7 @@ Step 4: Branch by scope:
     (b) `fn/plan-stata.md` — generate IPO plan.yaml + plan-script-*.yaml using `ref/workflow-plan-sample-<stage>.yaml`
     (c) `fn/build-stata.md` — author .do/.ps1 code (extends scaffold into full authoring)
     (d) `fn/execute-stata.md` — two-mode: local synth or CMS server hand-copy
-    (e) `fn/report-stata.md` — generate report.yaml mirroring plan (reads Stata logs, not runtime.yaml)
+    (e) `fn/report-stata.md` — generate report.yaml mirroring plan (binds runtime.yaml to original Stata logs and Results)
   - SERVER CHECK → read `ref/cms-server-checklist.md`, execute gate checks
 
 
@@ -306,22 +293,23 @@ ref/cms-server-checklist.md     three-gate migration checklist (synth run / pre-
 ref/ndc-drug-features.md        NDC drug-type feature pattern: tier 1 (class flags) vs tier 2 (named drugs) + coverage
 ref/run-ps1-template.ps1        THIN per-run entry for ORCHESTRATED stages (cms/case)
 ref/run-data-runner-template.ps1 SELF-ORCHESTRATING per-run entry for data-stage (preconditions + delegate)
-ref/run-stage-year-template.ps1 intra-run ORCHESTRATOR for ORCHESTRATED stages (<=30 lines; phases)
+ref/run-stage-year-template.ps1 intra-run ORCHESTRATOR for ORCHESTRATED stages (about 30 lines plus required checks; internal step groups)
 ref/dispatcher-do-template.do   DISPATCHER (5-arg: <config> <step> <year> <results_dir> <ws_root>)
 ```
 
 Three portability rules (DO NOT re-derive per task -- the templates already bake them):
   1. Stata exe = ONE resolvable location: hardcoded `$stata` line (cms-stage) OR
      `Resolve-StataExe` function (data/reg/case-stage). See rule A5 in stata-dialect.md.
-  2. Run from the job folder (`$PSScriptRoot`); code paths stay relative; folder name is free.
+  2. Run from the tNN Task folder (resolve from the script location); code paths stay relative; folder name is free.
   3. Anchor the DATA root absolute via `ws_root` (config builds paths from `${ws_root}`, never literal `_WorkSpace`).
 
 All `.ps1`/`.do` follow the **"Script style + server constraints"** contract in `ref/stata-dialect.md` -- CMS server is Windows PowerShell 5.1 only (no `pwsh`), ASCII-only files, 1-2 line headers, no ceremony, thin `runs/` + `sbatch/`.
 `haipipe-task-reviewer-agent` enforces it before any hand-copy to the server (the researcher hand-reads every file).
 
-Every Stata task ALSO ships a read-only **describe / QC run** (`describe` dispatch step -> `scripts/d-<Stage>-Describe.do`, + `runs/run_describe_<...>.ps1`) that writes a human-readable correctness report to `results/`.
+cms/case/data Tasks include a read-only **describe / QC Step** (`describe` dispatch -> `scripts/d-<Stage>-Describe.do`) inside the variant Run.
+Create a separate `runs/rNN_describe_<...>.ps1` only for an independently requested describe-only goal. Reg describe remains optional.
 Built-ins only -- NO SSC (`egen tag` for distinct counts, never `distinct`).
-See the "Describe / QC run" section in `ref/stata-dialect.md`.
+See the "Describe / QC Step" section in `ref/stata-dialect.md`.
 
 
 Per-stage ref files
@@ -335,10 +323,10 @@ ref/config-seed-reg.do                Stata config template for reg stage (share
 ref/config-seed-reg-run.do            thin per-run .do wrapper for reg (pins window + res_dir; DID adds file_policy)
 ref/run-ps1-reg-template.ps1          self-contained reg runner (Resolve-StataExe + HAIPIPE_RUN_CONFIG + worker list)
 ref/config-seed-run.do                thin per-run .do wrapper (case only — loads source + cohort + year)
-ref/workflow-plan-sample-cms.yaml     IPO phases for CMS stage
-ref/workflow-plan-sample-case.yaml    IPO phases for case stage
-ref/workflow-plan-sample-data.yaml    IPO phases for data stage
-ref/workflow-plan-sample-reg.yaml     IPO phases for reg stage
+ref/workflow-plan-sample-cms.yaml     Run Spec with internal steps for CMS stage
+ref/workflow-plan-sample-case.yaml    Run Spec with internal steps for case stage
+ref/workflow-plan-sample-data.yaml    Run Spec with internal steps for data stage
+ref/workflow-plan-sample-reg.yaml     Run Spec with internal steps for reg stage
 ```
 
 
@@ -351,8 +339,8 @@ Each fn/ procedure reads its ref/ inputs:
 ```
 fn/audit-stata.md    reads: (job folder .do/.ps1 files)
 fn/plan-stata.md     reads: ref/workflow-plan-sample-<stage>.yaml
-                            ../../../haipipe-task/ref/workflow-template.yaml
-                            ../../../haipipe-workflow/ref/plan-schema.md
+                            ../../haipipe-task/ref/workflow-template.yaml
+                            ../../haipipe-workflow/ref/plan-schema.md
 fn/build-stata.md    reads: ref/config-seed-<stage>.do (+ ref/config-seed-reg-run.do for reg)
                             ref/dispatcher-do-template.do (cms/case/data)
                             ref/run-ps1-template.ps1 (cms/case) OR ref/run-ps1-reg-template.ps1 (reg)
@@ -371,5 +359,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences -- which stage was chosen + what was scaffolded
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/ workers (incl. a `describe` step + run_describe_*.ps1 QC run); haipipe-task-reviewer-agent before hand-copy; then runs/<run>.ps1 (or sbatch/)
+next:      author dispatcher .do + scripts/ workers (incl. a `describe` step; separate describe Run only when requested); haipipe-task-reviewer-agent before hand-copy; then runs/<run>.ps1 (or sbatch/)
 ```

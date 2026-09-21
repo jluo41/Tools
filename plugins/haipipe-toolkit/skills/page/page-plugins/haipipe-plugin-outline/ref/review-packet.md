@@ -1,5 +1,11 @@
 # Outline human review packet
 
+For release, `../../../haipipe-page/ref/release-decisions.md` controls profile
+precedence. The Shape approval rules below apply to the non-interactive/legacy
+profile; interactive Pages reuse acceptance of the exact Structure/Writing
+versions and a recorded release instruction.
+
+
 Use this packet only when a person asks to **review**, **check**, **read**, or
 **approve** a Page outline.  It turns the existing Outline records into a
 decision-ready conversation; it neither rewrites the plan nor grants a human

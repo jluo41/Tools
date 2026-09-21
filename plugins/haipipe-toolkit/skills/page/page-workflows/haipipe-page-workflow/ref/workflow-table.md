@@ -1,6 +1,7 @@
 # Page Workflow × Space table
 
-This is the canonical Page Run Spec graph projected into Page Spaces. The
+A Workflow is a list of Runs. This table defines their Run Specs and projects
+the dependency/route graph into Page Spaces. The
 serialized controller labels `CONTEXT`, `OUTLINE`, `EVIDENCE`, `CONTENT`, and
 `CHECK` remain routing/progress coordinates only; they are not Phase authority
 or Run identities.
@@ -100,6 +101,32 @@ interaction: review and revise the fixed paragraph target
 gate_binding: {role: collect, gate: exit_gate}
 source_projection: {kind: source, source_cell: none, object: Writing Result}
 ```
+
+The Section cell uses the same worker contract with Section scope:
+
+```yaml
+id: section-writing@draft
+workspace_id: draft
+mode: action
+owner_skill: haipipe-page-workflow
+worker_skill_chain: [haipipe-page-outline, haipipe-writing]
+interaction: draft, evaluate and revise the commissioned Section
+gate_binding: {role: collect, gate: exit_gate}
+source_projection: {kind: source, source_cell: none, object: Writing Result}
+```
+
+For both cells, the owning agent passes the existing Run/Version/Step and
+bounded inputs through
+`../../../../writing/haipipe-writing/ref/writing-request.md`.
+Outline owns plan changes and candidate storage; a wording-only request reads
+the dependent plan slice without rerunning planning. Writing returns candidate,
+changes, rubric review, selected-method trace and unresolved findings. The host
+saves these in the same Step. Calls to writer/evaluator methods are internal
+actions, not new Runs. A YAML binding does not launch a model by itself.
+
+Select external capabilities in the Writing request's methods list using
+`../../../../writing/haipipe-writing/ref/method-adapter-contract.md`.
+No Page row is added merely because another evaluator becomes available.
 
 The Runtime Cell projects the same `rp-*` id and receipt. It never mints,
 renames, copies, or recounts.

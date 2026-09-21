@@ -1,3 +1,7 @@
+## 0.9.4 · 2026-09-20
+
+- Align local typed RE, RP writing and RD delivery with current owners. Preserve stable Section IDs and legacy receipt identities; use the canonical Paper Workflow without a wrapper Section Run.
+
 ## 0.9.3 · 2026-09-13
 
 - Point Page-owned interaction at `rp00_mermaid-structure` and `rpNN_pNN[-pNN]`;

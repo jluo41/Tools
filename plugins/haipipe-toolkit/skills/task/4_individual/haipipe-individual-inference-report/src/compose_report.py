@@ -91,15 +91,10 @@ def _summarize_recent_cgm(ctx: dict, window: int = 288) -> Dict[str, Any]:
 
 
 def _summarize_forecast(forecast_resp: dict) -> Dict[str, Any]:
-    """Endpoint response → forecast summary for the MOST-RECENT window only.
+    """Summarize the last returned window under the Endpoint ordering contract.
 
-    The endpoint returns N forecast windows, one anchored at each LTS
-    segment in history. Only the last window is anchored at "now" (the
-    trigger ObsDT). Earlier windows are historical predictions — useful
-    for backtesting, irrelevant for telling the patient what's coming next.
-
-    n_windows is reported for transparency; pred_min/max/mean describe
-    the patient-facing forecast (last window only).
+    The response need not expose timestamps. This selection alone does not
+    prove the segment ends at the latest observation or represents "now".
     """
     models = forecast_resp.get("models", []) or []
     if not models:
@@ -112,8 +107,15 @@ def _summarize_forecast(forecast_resp: dict) -> Dict[str, Any]:
     if not last:
         raise ValueError("Last forecast window has no y_pred_h24 values")
     last_vals = [float(x) for x in last]
+    trend = _classify_trend(last_vals)
+    low, high = min(last_vals) < 70, max(last_vals) > 300
+    safety_flag = "hypo_and_hyper_risk" if low and high else "hypo_risk" if low else "hyper_risk" if high else "none"
 
     return {
+        "expected_safety_flag": safety_flag,  # computed before display rounding
+        "anchor_verified": False,
+        "selection_rule": "last_returned_window; chronological anchor unavailable",
+        "_trend_evidence": trend,
         "horizon_minutes": len(last_vals) * 5,
         "n_windows": len(fcst),
         "pred_min": round(min(last_vals), 2),
@@ -167,12 +169,48 @@ def _trajectory_sparkline(vals: List[float]) -> str:
     return f"{vals[0]:.0f} {spark} {vals[-1]:.0f}"
 
 
+def _classify_trend(vals: List[float]) -> Dict[str, Any]:
+    """Describe adjacent-step directions without a magnitude cutoff.
+
+    A constant series is stable. A series with increases and no decreases is
+    rising; one with decreases and no increases is falling; a series with
+    both is mixed. Equality and direction are exact comparisons of the
+    supplied numeric values. These labels describe the series only and do
+    not establish clinical significance.
+    """
+    if not vals:
+        raise ValueError("Cannot classify an empty forecast trajectory")
+    values = [float(v) for v in vals]
+    if any(not (-float("inf") < v < float("inf")) for v in values):
+        raise ValueError("Forecast trajectory must contain finite values")
+
+    increases = sum(current > previous for previous, current in zip(values, values[1:]))
+    decreases = sum(current < previous for previous, current in zip(values, values[1:]))
+    unchanged = len(values) - 1 - increases - decreases
+    if increases == 0 and decreases == 0:
+        label = "stable"
+    elif increases > 0 and decreases == 0:
+        label = "rising"
+    elif decreases > 0 and increases == 0:
+        label = "falling"
+    else:
+        label = "mixed"
+    return {
+        "verdict": label,
+        "increasing_steps": increases,
+        "decreasing_steps": decreases,
+        "unchanged_steps": unchanged,
+        "total_steps": len(values) - 1,
+    }
+
+
 def build_user_msg(ctx: dict, forecast_resp: dict) -> str:
     """Single string the LLM sees as the user message."""
     basics = _basics_block(ctx)
     current = _summarize_recent_cgm(ctx)
     fcst = _summarize_forecast(forecast_resp)
     traj = fcst.pop("_trajectory", [])
+    trend = fcst.pop("_trend_evidence")
     spark = _trajectory_sparkline(traj)
 
     def _kv(d):
@@ -181,15 +219,37 @@ def build_user_msg(ctx: dict, forecast_resp: dict) -> str:
     fcst_block = _kv(fcst)
     if spark:
         fcst_block += f"\n  trajectory: {spark}"
+    fcst_block += (
+        "\n  derived_trend_rule: Compare every adjacent pair in the supplied "
+        "series. Constant is stable; increases with no decreases is rising; "
+        "decreases with no increases is falling; both increase and decrease "
+        "steps is mixed. This is descriptive and does not establish clinical significance."
+        f"\n  derived_trend_evidence: verdict={trend['verdict']}; "
+        f"increasing_steps={trend['increasing_steps']}; "
+        f"decreasing_steps={trend['decreasing_steps']}; "
+        f"unchanged_steps={trend['unchanged_steps']}; "
+        f"total_steps={trend['total_steps']}"
+        "\n  confidence_evidence: unavailable; this input contains a point "
+        "trajectory but no forecast calibration or predictive-uncertainty evidence."
+    )
 
     return (
         "PATIENT BASICS\n"
         f"{_kv(basics)}\n\n"
         "CURRENT STATUS\n"
         f"{_kv(current)}\n\n"
-        "MODEL FORECAST (next ~2h, anchored at last_obs_dt)\n"
+        "SELECTED MODEL FORECAST (anchor time not independently verified)\n"
         f"{fcst_block}\n\n"
-        "Compose the <report> per the schema. Output ONLY the <report> block."
+        "Do not claim this forecast starts now or at last_obs_dt without anchor evidence. "
+        "State that timing is unverified and preserve expected_safety_flag, which uses unrounded predictions. "
+        "Use the supplied derived_trend_evidence.verdict exactly as interpretation.verdict; "
+        "the listed adjacent-step rule defines the labels and may not be reinterpreted. "
+        "In interpretation.why, describe only evidence in the supplied data; do not infer a cause from association. "
+        "If no cause is established, say that the cause is unknown. "
+        "Set interpretation.confidence to unavailable: no calibration or predictive-uncertainty "
+        "evidence was supplied. Do not infer confidence from trajectory spread. "
+        "Compose the <report> per the schema. "
+        "Output ONLY the <report> block."
     )
 
 
@@ -258,7 +318,7 @@ def _fnum(elem, tag, cast=float):
         return None
 
 
-def parse_report_xml(xml_str: str) -> Report:
+def parse_report_xml(xml_str: str, *, expected_verdict: Optional[str] = None) -> Report:
     root = ET.fromstring(xml_str)
 
     b = root.find("basics") or ET.Element("basics")
@@ -298,24 +358,47 @@ def parse_report_xml(xml_str: str) -> Report:
             txt = (a.text or "").strip()
             if txt:
                 actions.append(txt)
+    verdict = _ftext(i, "verdict")
+    why = _ftext(i, "why")
+    confidence = _ftext(i, "confidence")
+    safety_flag = _ftext(i, "safety_flag")
+    for field, value in (
+        ("verdict", verdict),
+        ("why", why),
+        ("confidence", confidence),
+        ("safety_flag", safety_flag),
+    ):
+        if not value:
+            raise ValueError(f"Missing required interpretation.{field} label")
     interpretation = {
-        "verdict": _ftext(i, "verdict") or "stable",
-        "why": _ftext(i, "why"),
+        "verdict": verdict,
+        "why": why,
         "actions": actions,
-        "confidence": _ftext(i, "confidence") or "low",
-        "safety_flag": _ftext(i, "safety_flag") or "none",
+        "confidence": confidence,
+        "safety_flag": safety_flag,
     }
 
     nl_node = root.find("nl")
     nl = ((nl_node.text or "") if nl_node is not None else "").strip()
 
-    return Report(
+    report = Report(
         basics=basics,
         current=current,
         forecast_summary=forecast_summary,
         interpretation=interpretation,
         nl=nl,
     )
+    if expected_verdict is not None and report.interpretation.verdict != expected_verdict:
+        raise ValueError(
+            "Model verdict disagrees with deterministic forecast trend rule: "
+            f"expected {expected_verdict!r}, got {report.interpretation.verdict!r}"
+        )
+    if report.interpretation.confidence != "unavailable":
+        raise ValueError(
+            "Confidence must be unavailable unless calibrated uncertainty "
+            "evidence is supplied"
+        )
+    return report
 
 
 # ─── public entry point ──────────────────────────────────────────────
@@ -343,6 +426,7 @@ def compose_report(
     if "ANTHROPIC_AUTH_TOKEN" in os.environ:
         os.environ.pop("ANTHROPIC_AUTH_TOKEN", None)
 
+    trend = _summarize_forecast(forecast_resp)["_trend_evidence"]
     user_msg = build_user_msg(ctx, forecast_resp)
 
     sdk_out = asyncio.run(
@@ -357,7 +441,7 @@ def compose_report(
         raise RuntimeError("Empty response from SDK")
 
     xml_str = extract_report_xml(raw_text)
-    report = parse_report_xml(xml_str)
+    report = parse_report_xml(xml_str, expected_verdict=trend["verdict"])
 
     telemetry = {
         "model": model,

@@ -141,7 +141,7 @@ File: code/haifn/fn_endpoint/fn_input2src/{Input2SrcFnName}.py
   [ ] Function signature is exactly: Input2SrcFn(payload_input_json, SPACE)
   [ ] Returns dict: {ProcName: pd.DataFrame, ...}
   [ ] All keys in return dict are in ProcName_List
-  [ ] Handles BOTH payload formats (dataframe_records and legacy flat)
+  [ ] Accepts the target platform shape and rejects the other shape; selected Src2InputFn round-trips with this Input2SrcFn
   [ ] ProcName_List defined at module level (not inside function)
   [ ] ProcName_to_columns defined at module level (not inside function)
   [ ] SAMPLE_VERSION defined at module level (not inside function)

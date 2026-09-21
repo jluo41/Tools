@@ -30,6 +30,23 @@ class SentenceEditingTest(unittest.TestCase):
     def read(self):
         return self.page.read_text(encoding="utf-8")
 
+    def test_retired_browser_writes_are_rejected_before_target_resolution(self):
+        import io
+        from unittest.mock import Mock
+        self.handler.require_request_auth = lambda: True
+        self.handler.reject_disabled_terminal = lambda: False
+        self.handler.target = Mock(side_effect=AssertionError("Must not resolve a write target"))
+        for action in ("comment", "edit-sentence", "resolve", "discuss", "sentence", "card"):
+            with self.subTest(action=action):
+                self.handler.path = "/_board/" + action
+                self.handler.headers = {"Content-Length": "2"}
+                self.handler.rfile = io.BytesIO(b"{}")
+                self.handler.reply = Mock()
+                self.handler.do_POST()
+                self.assertEqual(self.handler.reply.call_args.args[0], 405)
+                self.assertIn("read-only", self.handler.reply.call_args.args[1]["err"])
+        self.handler.target.assert_not_called()
+
     def test_new_comment_is_directly_under_its_sentence(self):
         self.write("First sentence.\nSecond sentence.\n")
         result, error = self.handler.add_comment(self.page, {

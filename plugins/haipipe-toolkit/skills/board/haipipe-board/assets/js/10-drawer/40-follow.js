@@ -61,19 +61,8 @@
      JL's 260731 report: "换一个 page 之后再打开它，这个 chatbot 还是之前的 page". */
   window.addEventListener('board:updated', follow);
 
-  /* 每张卡片的头部挂一个入口（idempotent —— live refresh 换掉 .wrap 后要重挂） */
+  // Older generated Pages may still contain a chat entry in the header.
   function wireQBtns() {
-    document.querySelectorAll('section.q').forEach(function (sec) {
-      if (sec.querySelector('.chatbtn')) return;
-      var b = document.createElement('button');
-      b.className = 'chatbtn'; b.textContent = '\u{1F916} Chat';
-      b.onclick = function () {
-        // 顺便把 URL 也切到这一题，这样 follow() 和「回目录」都对得上
-        if (location.hash !== '#' + sec.id) location.hash = sec.id;
-        chatOpen(sec);
-      };
-      var qh = sec.querySelector('.qh');
-      if (qh) qh.appendChild(b);
-    });
+    document.querySelectorAll('section.q .chatbtn').forEach(function (button) { button.remove(); });
   }
   wireQBtns();

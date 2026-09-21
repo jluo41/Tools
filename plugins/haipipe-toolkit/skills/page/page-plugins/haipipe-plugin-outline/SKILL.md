@@ -10,8 +10,8 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.83.0"
-  last_updated: "2026-09-15"
+  version: "0.84.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -33,6 +33,9 @@ Evidence Space       Value + Display + Citation sections with collapsed Result c
 Run Space            Page Writing + Page Evidence + Supporting Runs
 ```
 
+At adoption, build, or release, apply `../../haipipe-page/ref/release-decisions.md`
+for profile precedence and reuse of existing human decisions.
+
 ## Default Plugin Link
 
 When returning a link for this Page, return the complete Outline Plugin link by
@@ -41,11 +44,12 @@ both the URL-encoded `path=<page>/board.md` and the URL-encoded `file=<page
 Markdown>` parameters, plus `view=scratch` when a view is needed. The route
 without `file` is not a valid Plugin Link and must not be returned.
 
-Do not return Draft, Evidence, Run, Delivery, Supporting Runs, or other
-subspace links unless the user explicitly asks for that subspace. In the
-normal response, label the link `Outline Plugin` or `Plugin Link`, not the
-name of a subspace. Escape query values correctly and keep the complete URL
-inside one Markdown link target so it opens as one route.
+For ordinary navigation, label the link `Outline Plugin` or `Plugin Link`.
+For a writing Step handoff, follow the shared `user-check-packet.md`: return
+the Draft, Evidence, and exact Current Run links so the candidate and its
+record are reachable. A delivery handoff also includes Delivery Workspace.
+Other subspace links are supplied when requested. Escape query values correctly
+and keep each complete URL inside one Markdown link target.
 
 Run Space also contains a read-only `Workflow map` definition view. It
 projects the canonical Workflow × Space Specification as Run Spec rows ×
@@ -148,14 +152,11 @@ read the retired folder or generated snapshot as a compatibility path.
   while preserving the authored W records verbatim.
 - **No file name contains `outline` except the plan**, because the plan globs
   are `*-outline-*.md`.
-- **The page keeps four on-stage sections**, 🚪 Opening · 🧭 Outline · Content ·
-  Aims, and nothing this folder holds. Opening stays visible and the Page's
-  `🧭 Outline` opens by default and renders the current-plan table. The grid is
-  `Address · Bullet · Feedback · Evidence · Supporting
-  Runs · Local Run`: C/P headers keep the plan's reader order and B rows join
-  routed Feedback, typed Evidence Items, their surveyed Supporting Runs, and
-  local route in separate columns. A Feedback token opens the exact durable
-  record through Folder inspection; it is never inert summary text. A real
+- **The Page keeps two reader sections: Opening and Content.** Outline,
+  Aims, discussions, and process records remain in their plugin workspaces.
+  Draft Space presents Bullet/Draft alignment and read-only evidence routes.
+  Its Structure, Section, and Paragraph headings offer copyable Run prompts.
+  A real
   Run is a short, linked readable address such as
   `b01.j02.t03.r04` plus a compact next-action label (`run`, `rerun`, or
   `reuse`). A never-attempted real Ticket is `registered`; a failed,
@@ -327,6 +328,18 @@ inline note form; `Save` keeps the Run open, and the person manually clicks
 that Scratch Run. Once saved, the raw Scratch is shown by default in Scratch
 Mode even if the underlying body is hidden. There is no old comments
 composer, feedback badge, or tap-to-edit Draft control.
+
+**Copy Run prompts:** the Structure/Mermaid area offers `⧉ Structure prompt`;
+each Section heading offers `⧉ Section prompt`; each paragraph heading offers
+`⧉ Paragraph prompt` in both Table and Reading. Each payload names the Page,
+selected Outline, source address and Page-global paragraph index, matching
+`rp-struct-*`, `rp-sec-*`, or `rp-para-*_Pxx[-Pyy]` Run, current Version/Step,
+and next action. Multiple open matches are reported as ambiguous. Missing
+Runs are labelled unallocated; copying never allocates, writes, or starts work.
+A Section/Paragraph prompt names the Structure blocker when `rp-struct-01`
+is not closed. Paste and send the prompt to select the bounded interaction.
+The agent rereads current records, reuses the matching Run, saves candidate
+Steps, and follows the Page release boundary for adoption/delivery.
 
 The plan and candidate wording remain Markdown authorities under `outline/`:
 the UI keeps the selected Outline filename under a collapsed `Sources`
@@ -663,6 +676,6 @@ Human acceptance of a paragraph does not tick the whole Shape or Page.
 - `../../../board/haipipe-board/checks/outline.py` · the standing check over every board's plans
 - `../../../board/haipipe-board/src/plan_shape.py` · `plan-shape-off-type`, `bullet-missing-note`, the head and Note teeth
 - `../../../board/haipipe-board/cli/requirement.py` · `cli/feedback.py` · `cli/evidence-status.py` · the three generators
-- `../../page-workflows/haipipe-page-outline/SKILL.md` · the phase whose deliverable this folder is
+- `../../page-workflows/haipipe-page-outline/SKILL.md` · the Page Outline capability contract dispatched by the owning Page Workflow; the Outline plugin stores its plan artifacts and does not own a Run by itself
 - `ref/skill-record.md` · the nested ranked store inspected through Folder
 - `../../../diagrams/BoardSkillBoard-260722/4-QPf-page-folder/QPf12-outline/QPf12-outline.md` · the design page and its rulings

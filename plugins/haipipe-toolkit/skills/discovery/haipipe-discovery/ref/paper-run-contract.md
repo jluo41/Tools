@@ -80,8 +80,9 @@ This profile is the executable detail for the `d1.acquire` row in
 ALLOWED    paper-analysis · source-analysis
 TARGET     exactly one resolved canonical Subject
 TICKET     executable runs/<RUNNAME>.sh, authored by the Discovery creator
-INPUTS     Task Page question/type, Trigger provenance, canonical Subject identity,
-           and hashes of any reusable instrument
+INPUTS     Task Page question/type, frozen candidate-rule version/hash, Trigger
+           provenance, canonical Subject identity, and hashes of any reusable
+           instrument
 WORKER     the selected search/read/analyzer skill, CLI, API, or declared agent
 RESULT     Result Card · facts.md · one-entry Bib · runtime.yaml; optional PDF/raw/trigger
 ACCEPT     exact stem pair, executable Ticket, truthful runtime, complete artifacts,
@@ -226,20 +227,59 @@ bib:
   verification:
     status: verified
     by: "person:<identifier>"
+    criteria_version: "discovery-bib-verification/1"
     at: "2026-09-01T12:05:00-04:00"
 executed_at: "2026-09-01T12:00:00-04:00"
 ```
 
 Also record the dispatcher/worker calls and failure reason when applicable.
 Never store credentials or private tokens.
+When `analysis.claim_support` or `analysis.locator_status` is assessed rather
+than left `pending`, the same runtime records the provenance envelope for that
+judgment:
+
+```yaml
+analysis:
+  reading_depth: full-text
+  claim_support: qualified
+  locator_status: partial
+  assessment:
+    by: "agent:<name>/<model>/<session-id>"
+    criteria_version: "paper-source-v2"
+    at: "2026-09-01T12:10:00-04:00"
+    input_snapshot:
+      uri: "https://example.org/article.pdf"
+      sha256: "sha256:<hex-digest>" # only when this source is outside the Run
+```
+
+The enclosing `run`, readable/compact addresses, `subject`, and source-access
+manifest are the owning input record; the judgment does not need to duplicate
+that identity. If the evaluator used material outside this Run's frozen
+Subject and captured artifacts, add its URI and SHA-256 in the assessment
+block. For an appraisal using `paper-analyzer`, set `criteria_version` to the
+exact `paper-analyzer@<version>`; the Run's own identity remains the input
+link. Keep prior assessment receipts when criteria or inputs change; a
+material Discovery re-analysis receives a superseding Run.
+
 `reading_depth` is evidence actually retrieved and inspected by this Run, not
 the best link discovered. `full-text` is legal only when the Run captured or
 read the full article. `claim_support` is `pending | supported | qualified |
-unsupported`; `locator_status` is `pending | partial | complete`. A metadata-
-only or abstract Run may be technically complete but cannot present
+unsupported`; `locator_status` is `pending | partial | complete`. Under
+`paper-source-v2`, `supported` means inspected source content directly answers
+the scoped claim; `qualified` means it bears on the claim but a stated scope,
+reading-depth, or uncertainty limit narrows the answer; `unsupported` means
+inspected content gives no support or reports contrary evidence; `pending`
+means the evaluator has not made that assessment. `locator_status: partial`
+means only some material facts/claims have direct page, section, table, or
+figure locations; `complete` means every material fact/claim in the Result is
+traceable to such a location or explicitly lacks one in the source. A
+metadata-only or abstract Run may be technically complete but cannot present
 full-text-only facts as established.
 `bib.verification.status` is `pending` or `verified`; missing means `pending`.
-Only a person may set `verified`, together with `by` and `at`. A Result may be
+Only a person may set `verified`, together with `by`,
+`criteria_version: discovery-bib-verification/1`, and `at`. That version checks
+the exact title, authors, venue, and locator against the named trusted source.
+A Result may be
 technically `complete` while verification is pending, but the Discovery Task
 cannot close with an epistemic `ok` or `inconclusive` outcome until every
 promoted citation is verified.

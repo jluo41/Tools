@@ -70,5 +70,6 @@ audience=partner     → professional, collaborative tone
 [ ] Length within budget for audience
 [ ] Limitations section present (regulator)
 [ ] Data tables/figures have captions
-[ ] Card id, grant, and exact render version resolve in the Design Folder
+[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Any render manifest binds the exact source and picture inside its Result
 ```

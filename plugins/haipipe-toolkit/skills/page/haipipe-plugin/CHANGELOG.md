@@ -1,3 +1,7 @@
+## 1.10.1 · 2026-09-20
+
+- Align the shared roster with read-only Draft prompt copying, current Result authority, Run ownership, and Design readiness; mark retired lanes and Adopt records as history.
+
 ## 1.10.0 · 2026-09-15
 
 - `ref/roster.md` `results/` row: the Draft Space note composer is named as the

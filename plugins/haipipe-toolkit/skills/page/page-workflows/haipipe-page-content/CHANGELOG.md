@@ -1,3 +1,12 @@
+## 0.17.1 · 2026-09-20
+
+- Treat adoption as a controller action and apply shared profile-specific release decisions.
+
+## 0.17.0 · 2026-09-20
+
+- Use the shared Writing request, method selection and bounded evaluation in the delegated paragraph Ticket.
+- Keep Page adoption and delivery separate from candidate generation and self-review.
+
 ## 0.16.0 · 2026-09-15
 
 - Define CONTENT as the release/adoption Run Spec owner and keep adoption,

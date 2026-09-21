@@ -5,7 +5,8 @@ html-ppt deck. Follow these steps in order.
 
 ## 1. Understand the deck
 
-Before touching files, clarify:
+Use the details the user supplied. Ask only about a missing choice that would materially change
+the deck; otherwise infer a sensible default and continue. Consider:
 
 1. **Audience** — engineers? designers? executives? consumers?
 2. **Length** — 5 min lightning? 20 min share? 45 min talk?
@@ -29,8 +30,9 @@ Use `references/themes.md`. When in doubt:
 - **Pitch / bold** → `neo-brutalism` / `sharp-mono` / `bauhaus`.
 - **Launch / product reveal** → `glassmorphism` / `aurora`.
 
-Wire the theme as `<link id="theme-link" href="../assets/themes/NAME.css">`
-and list 3-5 alternatives in `data-themes` so the user can press T to audition.
+Wire the theme by preserving the asset prefix emitted by the scaffold and
+changing only the filename, for example `.../themes/NAME.css`. List 3-5
+alternatives in `data-themes` so the user can press T to audition.
 
 ## 3. Outline the deck
 
@@ -48,12 +50,17 @@ layout twice in a row.
 ## 4. Scaffold the deck
 
 ```bash
-./scripts/new-deck.sh my-talk
+HTML_PPT=/path/to/html-ppt
+"$HTML_PPT/scripts/new-deck.sh" my-talk
 ```
 
-This copies `templates/deck.html` into `examples/my-talk/index.html` with
-paths rewritten. Add/remove `<section class="slide">` blocks to match your
-outline.
+Run this command from the user's project directory. It copies
+`templates/deck.html` into `my-talk/index.html` and rewrites shared-asset paths
+for that location. Pass a second argument to use another output parent. Pass a
+full-deck template as the third argument, for example
+`"$HTML_PPT/scripts/new-deck.sh" my-talk . presenter-mode-reveal`; its files
+and shared-asset links are copied into the project. Add or remove
+`<section class="slide">` blocks to match the outline.
 
 ## 5. Author each slide
 
@@ -89,32 +96,45 @@ Pick **one** accent animation per slide. Everything else should be calm.
 ## 8. Review in-browser
 
 ```bash
-open examples/my-talk/index.html
+open my-talk/index.html
 ```
 
 Walk through every slide with ← →. Press:
 
 - **O** — overview grid; catch any layout clipping.
-- **T** — cycle themes; make sure nothing looks broken in any theme.
+- **T** — cycle the themes enabled in `data-themes`; check each enabled theme.
 - **S** — open speaker notes; verify every slide has notes.
 
 ## 9. Export to PNG
 
 ```bash
+HTML_PPT=/path/to/html-ppt
 # single slide
-./scripts/render.sh examples/my-talk/index.html
+"$HTML_PPT/scripts/render.sh" my-talk/index.html
 
 # all slides (autodetect count by looking for .slide sections)
-./scripts/render.sh examples/my-talk/index.html all
+"$HTML_PPT/scripts/render.sh" my-talk/index.html all
 
 # explicit slide count + output dir
-./scripts/render.sh examples/my-talk/index.html 12 out/my-talk-png
+"$HTML_PPT/scripts/render.sh" my-talk/index.html 12 out/my-talk-png
+
+# 3:4 XHS template: capture at its 810×1080 canvas
+"$HTML_PPT/scripts/render.sh" my-talk/index.html all out/my-talk-png 810 1080
 ```
 
-Output is 1920×1080 by default. Change in `render.sh` if the user wants 3:4
-for 小红书图文 (1242×1660).
+Output is 1920×1080 by default. Pass width and height after the output
+directory for a custom canvas; the XHS `xhs-post` template uses 810×1080.
 
-## 10. What to NOT do
+## 10. Hand off
+
+Return the editable HTML path in the requested project directory. If PNGs were
+requested, include their output folder and actual capture dimensions. Report
+that every slide was reviewed in the selected theme and, when theme cycling is
+enabled, each theme listed in `data-themes` was checked. Keep the review PDF
+internal unless requested, and remind the user that presenter notes remain in
+the HTML source. Point out any remaining clipping or text that needs a decision.
+
+## 11. What to NOT do
 
 - Don't hand-author from a blank file.
 - Don't use raw hex colors in slide markup. Use tokens.
@@ -127,8 +147,9 @@ for 小红书图文 (1242×1660).
   narration cues, or explanations meant for the speaker (e.g. "这一页的重点是…",
   "Note: mention X here", small grey captions explaining the slide's purpose)
   MUST go inside `<div class="notes">`, not as visible elements. The `.notes`
-  div is hidden (`display:none`) and only shown via the S overlay. Slides
-  should contain ONLY audience-facing content.
+  div is hidden from the audience view and shown in presenter mode. The notes
+  text remains in the shared HTML source, so never put confidential material
+  there. Slides should contain ONLY audience-facing content.
 
 ## Troubleshooting
 

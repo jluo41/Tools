@@ -1,7 +1,7 @@
 # html-ppt — HTML PPT Studio
 
 > A world-class AgentSkill for producing professional HTML presentations in
-> **36 themes**, **15 full-deck templates**, **31 page layouts**,
+> **37 theme styles** (36 in the gallery + the `academic-report` house preset), **15 full-deck templates**, **31 page layouts**,
 > **47 animations** (27 CSS + 20 canvas FX), and a **true presenter mode**
 > with pixel-perfect previews + speaker script + timer — all pure static
 > HTML/CSS/JS, no build step.
@@ -12,7 +12,7 @@
 
 ![html-ppt — cover with live previews](docs/readme/hero.gif)
 
-> One command installs **36 themes × 20 canvas FX × 31 layouts × 15 full decks + presenter mode**. Every preview above is a live iframe of a real template file rendering inside the deck — no screenshots, no mock-ups.
+> One command installs **37 theme styles × 20 canvas FX × 31 layouts × 15 full decks + presenter mode**. The theme gallery shows 36 general themes; `academic-report` is the separate house preset. Every preview above is a live iframe of a real template file rendering inside the deck — no screenshots, no mock-ups.
 
 ## 🎤 Presenter Mode (new!)
 
@@ -20,6 +20,9 @@ Press `S` on any deck to pop open a dedicated presenter window with four
 draggable, resizable **magnetic cards**: current slide, next slide preview,
 speaker script (逐字稿), and timer. Two windows stay in sync via
 `BroadcastChannel`.
+
+Notes are hidden from the audience screen but remain readable in the shared
+HTML file. Do not store confidential information in them.
 
 ![Presenter mode with 4 magnetic cards](docs/readme/presenter-mode.png)
 
@@ -36,13 +39,13 @@ just toggles `.is-active` between slides — **no reload, no flicker**.
 **Speaker script rules (3 golden):**
 1. **Prompt signals, not lines to read** — bold the keywords, separate
    transition sentences into their own paragraphs
-2. **150–300 words per slide** — that's the ~2–3 min/page pace
+2. **Length follows the talk.** For English, 150–300 words is a cue-card range; for Chinese, 150–300 Chinese characters. These are editing targets, not duration guarantees.
 3. **Write it like you speak** — conversational, not written prose
 
 See [`references/presenter-mode.md`](references/presenter-mode.md) for the
-full authoring guide, or copy the ready-made template at
-`templates/full-decks/presenter-mode-reveal/` which ships with full 150-300
-word speaker scripts on every slide.
+full authoring guide, or scaffold the ready-made template at
+`templates/full-decks/presenter-mode-reveal/` which ships with speaker prompts
+on every slide.
 
 ## Install (one command)
 
@@ -62,7 +65,7 @@ that supports AgentSkills can author presentations by asking things like:
 | | Count | Where |
 |---|---|---|
 | 🎤 **Presenter mode** | **NEW** | `S` key / `?preview=N` |
-| 🎨 **Themes** | **36** | `assets/themes/*.css` |
+| 🎨 **Theme styles** | **37** | `assets/themes/*.css` (36 gallery themes + `academic-report`) |
 | 📑 **Full-deck templates** | **15** | `templates/full-decks/<name>/` |
 | 🧩 **Single-page layouts** | **31** | `templates/single-page/*.html` |
 | ✨ **CSS animations** | **27** | `assets/animations/animations.css` |
@@ -70,7 +73,7 @@ that supports AgentSkills can author presentations by asking things like:
 | 🖼️ **Showcase decks** | 4 | `templates/*-showcase.html` |
 | 📸 **Verification screenshots** | 56 | `scripts/verify-output/` |
 
-### 36 Themes
+### 36 Gallery Themes + the `academic-report` House Preset
 
 `minimal-white`, `editorial-serif`, `soft-pastel`, `sharp-mono`, `arctic-cool`,
 `sunset-warm`, `catppuccin-latte`, `catppuccin-mocha`, `dracula`, `tokyo-night`,
@@ -81,13 +84,14 @@ that supports AgentSkills can author presentations by asking things like:
 `corporate-clean`, `academic-paper`, `news-broadcast`, `pitch-deck-vc`,
 `magazine-bold`, `engineering-whiteprint`.
 
-![36 themes · 8 of them](docs/readme/themes.png)
+![36 gallery themes · plus the academic-report house preset](docs/readme/themes.png)
 
-Each is a pure CSS-tokens file — swap one `<link>` to reskin the entire deck.
-Browse them all in `templates/theme-showcase.html` (each slide rendered in an
-isolated iframe so theme ≠ theme is visually guaranteed).
+The 36 gallery themes are pure CSS-token files — swap one `<link>` to reskin
+the entire deck. The separate `academic-report` house preset also uses
+`assets/academic-report-extras.css`. Browse the gallery in
+`templates/theme-showcase.html` (each slide rendered in an isolated iframe).
 
-![14 full-deck templates](docs/readme/templates.png)
+![15 full-deck templates](docs/readme/templates.png)
 
 ### 15 Full-deck templates
 
@@ -106,8 +110,8 @@ Eight extracted from real-world decks, seven generic scenario scaffolds:
 **Scenario decks**
 - `pitch-deck`, `product-launch`, `tech-sharing`, `weekly-report`,
   `xhs-post` (9-slide 3:4), `course-module`,
-  **`presenter-mode-reveal`** 🎤 — complete talk template with full 150-300
-  word speaker scripts on every slide, designed around the `S` key presenter mode
+  **`presenter-mode-reveal`** 🎤 — complete talk template with speaker prompts
+  on every slide, designed around the `S` key presenter mode
 
 Each is a self-contained folder with scoped `.tpl-<name>` CSS so multiple
 decks can be previewed side-by-side without collisions. Browse the full
@@ -151,18 +155,22 @@ module auto-initialised on slide enter via `fx-runtime.js`.
 ## Quick start (manual, after install or git clone)
 
 ```bash
-# Scaffold a new deck from the base template
-./scripts/new-deck.sh my-talk
+# From your project directory, scaffold with the installed skill script.
+cd /path/to/your/project
+HTML_PPT=/path/to/html-ppt
+"$HTML_PPT/scripts/new-deck.sh" my-talk
+# Or scaffold a full-deck template instead:
+# "$HTML_PPT/scripts/new-deck.sh" my-talk . presenter-mode-reveal
 
 # Browse everything
-open templates/theme-showcase.html         # all 36 themes (iframe-isolated)
-open templates/layout-showcase.html        # all 31 layouts
-open templates/animation-showcase.html     # all 47 animations
-open templates/full-decks-index.html       # all 14 full decks
+open "$HTML_PPT/templates/theme-showcase.html"         # 36 gallery themes (iframe-isolated)
+open "$HTML_PPT/templates/layout-showcase.html"        # all 31 layouts
+open "$HTML_PPT/templates/animation-showcase.html"     # all 47 animations
+open "$HTML_PPT/templates/full-decks-index.html"       # all 15 full decks
 
 # Render any template to PNG via headless Chrome
-./scripts/render.sh templates/theme-showcase.html
-./scripts/render.sh examples/my-talk/index.html 12
+"$HTML_PPT/scripts/render.sh" "$HTML_PPT/templates/theme-showcase.html"
+"$HTML_PPT/scripts/render.sh" my-talk/index.html 12
 ```
 
 ## Keyboard cheat sheet
@@ -187,16 +195,16 @@ html-ppt-skill/
 ├── SKILL.md                      agent-facing dispatcher
 ├── README.md                     this file
 ├── references/                   detailed catalogs
-│   ├── themes.md                 36 themes with when-to-use
+│   ├── themes.md                 37 theme styles with when-to-use
 │   ├── layouts.md                31 layout types
 │   ├── animations.md             27 CSS + 20 FX catalog
-│   ├── full-decks.md             14 full-deck templates
+│   ├── full-decks.md             15 full-deck templates
 │   └── authoring-guide.md        full workflow
 ├── assets/
 │   ├── base.css                  shared tokens + primitives
 │   ├── fonts.css                 webfont imports
 │   ├── runtime.js                keyboard + presenter + overview
-│   ├── themes/*.css              36 theme token files
+│   ├── themes/*.css              37 theme style files, including the house preset
 │   └── animations/
 │       ├── animations.css        27 named CSS animations
 │       ├── fx-runtime.js         auto-init [data-fx] on slide enter
@@ -206,8 +214,8 @@ html-ppt-skill/
 │   ├── theme-showcase.html       iframe-isolated theme tour
 │   ├── layout-showcase.html      all 31 layouts
 │   ├── animation-showcase.html   47 animation slides
-│   ├── full-decks-index.html     14-deck gallery
-│   ├── full-decks/<name>/        14 scoped multi-slide decks
+│   ├── full-decks-index.html     15-deck gallery
+│   ├── full-decks/<name>/        15 scoped multi-slide decks
 │   └── single-page/*.html        31 layout files with demo data
 ├── scripts/
 │   ├── new-deck.sh               scaffold

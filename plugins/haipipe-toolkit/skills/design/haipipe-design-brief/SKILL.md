@@ -7,7 +7,7 @@ description: >-
   application brief, folder-kind brief, /haipipe-design-brief.
 metadata:
   version: "0.4.0"
-  last_updated: "2026-09-18"
+  last_updated: "2026-09-20"
   folder_owner: canonical
   folder_kind: brief
   primary_face: page
@@ -76,8 +76,8 @@ may put all three in its header. Columns are matched by header word:
   `<job> <venue> for <who>` (`Prescription review SMS for all patients`).
 - `audience`: who receives it, in plain words (`all patients`, never
   `full SMSR2 population, unconditioned`).
-- `job`: what the recipient is trying to do; `venue`: `sms`, `ui-card`,
-  `email`, `push`.
+- `job`: what the recipient is trying to do; supplied `venue` guides cover
+  `sms`, `ui-card`, `email`, `push`, `reminder`, `checklist`, `report`, and `dashboard`.
 - `designs` (or `wanted`, `how many`): how many designs the line asks for.
 - `insight`: the Insight board the line draws from; empty means the
   DesignBoard's `reads:`.

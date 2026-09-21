@@ -533,7 +533,7 @@ For each PRESENT AIDataSet:
 
 ```bash
 # List splits and vocab files
-ls _WorkSpace/4-AIDataStore/<aidata_name>/@<version>/
+ls _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>/
 
 # Inspect split sizes and vocab
 source .venv/bin/activate && source env.sh
@@ -541,7 +541,7 @@ python -c "
 from haipipe.aidata_base.aidata_set import AIDataSet
 import os, json
 
-base = '_WorkSpace/4-AIDataStore/<aidata_name>/@<version>'
+base = '_WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>'
 aidata_set = AIDataSet.load_from_disk(path=base, SPACE=SPACE)
 
 # Split sizes
@@ -639,3 +639,5 @@ MUST NOT
 4. NEVER skip EMPTY assets in Panel B (they need re-run, different from MISSING)
 5. NEVER look for case_data.parquet -- the file is df_case.parquet
 6. NEVER assume a vocab/ subdirectory in Stage 4 -- files are at ROOT
+
+Resolve ParentSetName and the exact AIData version from its manifest/config or store inventory; do not infer a parent from the aidata name alone.

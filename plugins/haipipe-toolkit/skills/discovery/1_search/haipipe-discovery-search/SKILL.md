@@ -3,8 +3,8 @@ name: haipipe-discovery-search
 description: "Search-route specialist for source-map Discovery Pages: find candidates, resolve canonical papers/sources, and hand admitted Subjects to the D1 Run contract. Trigger: search sources, find papers, add paper run, source map, /haipipe-discovery-search."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-08"
+  version: "0.7.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md
 ---
 
@@ -53,7 +53,15 @@ journal sweep. For a clinical or biomedical scope, include medRxiv alongside
 arXiv when relevant and use PubMed with Crossref as the biomedical/DOI
 fallback; record each channel as searched or not searched. Full novelty work
 adds a field-appropriate top-venue pass; light mode records the omitted pass in
-the Topic coverage declaration.
+the Task Page's `## Source map` coverage declaration (see
+`../../haipipe-discovery/ref/source-format.md`).
+
+Keep this Page-body coverage declaration factual: report channels, queries,
+filters, limits, and stopping rule. Store the frozen candidate policy and
+per-candidate decisions in `discovery.yaml#sources`, consistent with the Page
+declaration. The schema's `confidence: not-applicable` rule for
+`source-map` and the other confidence axes are defined in
+`../../haipipe-discovery/ref/discovery-yaml-schema.md#confidence-and-evidence-axes`.
 
 ## External provider routing
 

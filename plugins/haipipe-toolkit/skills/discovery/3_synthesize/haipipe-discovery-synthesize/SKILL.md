@@ -8,8 +8,8 @@ description: >-
   build a landscape, connect findings, /haipipe-discovery-synthesize.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-13"
+  version: "0.3.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md
 ---
 
@@ -139,6 +139,16 @@ Every factual statement is bounded by the Results' reading depth and locator
 state. A synthesis can be inconclusive without being incomplete; it is
 blocked when required evidence, citation verification, or Page gates remain
 open.
+
+Set `discovery.yaml report.confidence` using the synthesis anchors in
+`../../haipipe-discovery/ref/discovery-yaml-schema.md#confidence-and-evidence-axes`.
+At D1 CLOSE, bind that judgment to its supporting and contrary or qualifying
+Result locators, stated limits, and assessment receipt. If a typed
+`summary.md`, `verdict.md`, or `landscape.md` is emitted, its confidence must
+match the manifest exactly and its `confidence_basis_ref` and `assessment_ref`
+must point to the corresponding report fields. Ordinary bounded scope is not a
+confidence penalty; lower confidence only when the evidence or a material gap
+limits the stated answer.
 
 ## Run and handoff laws
 

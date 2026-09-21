@@ -6,8 +6,8 @@ description: >-
   owner-native Supporting Runs, and defines how Evidence Items, Results,
   Cards, and Labels bind to one another.
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-09-15"
+  version: "0.3.3"
+  last_updated: "2026-09-20"
 ---
 
 # Page Run families · RP, RE, and RD
@@ -215,6 +215,7 @@ Page-special tickets use the Page-readable family identity:
 
 ```text
 runs/rp-struct-NN.md
+runs/rp-scratch-NN_<target>.md
 runs/rp-sec-NN.md
 runs/rp-para-NN_Pxx[-Pyy].md
 runs/re-value-NN_<slug>.md
@@ -233,7 +234,7 @@ storage.
 ## Boundaries
 
 - `RP`, `RE`, and `RD` are Page-local Run families, not workflow phases.
-- RP kind tokens are `struct`, `sec`, and `para`; paragraph identities expose
+- RP kind tokens are `struct`, `scratch`, `sec`, and `para`; paragraph identities expose
   their exact `Pxx` target or contiguous range.
 - RE kind tokens are `value`, `display`, and `cite`; `display_kind` distinguishes
   table, figure, and algorithm. Other renderer mechanisms remain internal and

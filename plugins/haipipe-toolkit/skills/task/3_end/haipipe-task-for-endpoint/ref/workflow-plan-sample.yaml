@@ -1,90 +1,111 @@
-# workflow-plan-sample.yaml — endpoint-packaging task script-level plan
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Plugin-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
 # Schema: task/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
-#
-# Typical endpoint phases: Setup → Package → Verify → Report
-# Heavy output: _WorkSpace/6-EndpointStore/<ENDPOINT>/ ; light: results/<run>/
-
-# ─── Header ──────────────────────────────────────────────────────
 name: package-<ENDPOINT>
-purpose: "Package <MODELINSTANCE> (Stage 5) into deployable Endpoint_Set <ENDPOINT> (Stage 6)"
-skill: haipipe-task-for-endpoint
-
-# ─── I: Input ────────────────────────────────────────────────────
+purpose: Package <MODELINSTANCE> (Stage 5) into deployable Endpoint_Set <ENDPOINT> (Stage 6)
 input:
   args:
-    config: scripts/config/rNN_<RUN>.yaml
+    config: scripts/config/rNN_<run>.yaml
     modelinstance: <_WorkSpace path to ModelInstance_Set (with examples)>
-  files_in:
-    - scripts/<worker>.py
-    - scripts/config/rNN_<RUN>.yaml
+  files_in: &id001
+  - scripts/<worker>.py
+  - scripts/config/rNN_<run>.yaml
+  - _WorkSpace/5-ModelInstanceStore/<MODELINSTANCE>
+owner: haipipe-task-for-endpoint
+plugin:
+  id: <owning-plugin>
+  workspace_roster_ref: <plugin-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Package <MODELINSTANCE> (Stage 5) into deployable Endpoint_Set <ENDPOINT> (Stage 6)
+  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: haipipe-task-for-endpoint
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload:
+      status: complete
+    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: haipipe-task-for-endpoint
+    worker_skill_chain:
+    - haipipe-task-for-endpoint
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Setup
+    label: setup:load-modelinstance
+    required: true
+    prompt: Load ModelInstance_Set (verify examples_data present)
+    files_in:
     - _WorkSpace/5-ModelInstanceStore/<MODELINSTANCE>
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: Setup
-    detail: "load ModelInstance_Set, resolve the 5 Fn names"
-    steps:
-      - label: "setup:load-modelinstance"
-        type: agent
-        required: true
-        prompt: "Load ModelInstance_Set (verify examples_data present)"
-        files_in:
-          - _WorkSpace/5-ModelInstanceStore/<MODELINSTANCE>
-        files_out: []
-      - label: "setup:resolve-fns"
-        type: agent
-        required: true
-        prompt: "Resolve MetaFn/TrigFn/PostFn/Src2InputFn/Input2SrcFn in code/haifn/fn_endpoint/"
-        files_in:
-          - scripts/config/rNN_<RUN>.yaml
-        files_out: []
-
-  - title: Package
-    detail: "Endpoint_Pipeline.run() → 6-EndpointStore"
-    steps:
-      - label: "package:pipeline"
-        type: agent
-        required: true
-        prompt: "Run Endpoint_Pipeline: Src2InputFn per example → payload.json; assemble model/ code/ examples/ meta.json manifest.json"
-        files_in: []
-        files_out:
-          - _WorkSpace/6-EndpointStore/<ENDPOINT>
-
-  - title: Verify
-    detail: "payloads present + inference test on sample payloads"
-    steps:
-      - label: "verify:payloads"
-        type: agent
-        required: true
-        prompt: "Every examples/example_*/ has payload.json"
-        files_in:
-          - _WorkSpace/6-EndpointStore/<ENDPOINT>
-        files_out: []
-      - label: "verify:inference"
-        type: agent
-        required: true
-        prompt: "Run inference(payload) on sample payloads; responses parse"
-        files_in: []
-        files_out:
-          - results/<RUN>/inference_test.json
-
-  - title: Report
-    detail: "package summary + deploy handoff"
-    steps:
-      - label: "report:summary"
-        type: agent
-        required: true
-        prompt: "Write results/<RUN>/metrics.json + runtime.yaml; note the .tar.gz path and next deploy command"
-        files_in: []
-        files_out:
-          - results/<RUN>/metrics.json
-          - results/<RUN>/runtime.yaml
-
-# ─── O: Output ───────────────────────────────────────────────────
+    files_out: []
+  - section: Setup
+    label: setup:resolve-fns
+    required: true
+    prompt: Resolve MetaFn/TrigFn/PostFn/Src2InputFn/Input2SrcFn in code/haifn/fn_endpoint/
+    files_in:
+    - scripts/config/rNN_<run>.yaml
+    files_out: []
+  - section: Package
+    label: package:pipeline
+    required: true
+    prompt: 'Run Endpoint_Pipeline: Src2InputFn per example → payload.json; assemble model/ code/ examples/
+      meta.json manifest.json'
+    files_in: []
+    files_out:
+    - _WorkSpace/6-EndpointStore/<ENDPOINT>
+  - section: Verify
+    label: verify:payloads
+    required: true
+    prompt: Every examples/example_*/ has payload.json
+    files_in:
+    - _WorkSpace/6-EndpointStore/<ENDPOINT>
+    files_out: []
+  - section: Verify
+    label: verify:inference
+    required: true
+    prompt: Run inference(payload) on sample payloads; responses parse
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/inference_test.json
+  - section: Report
+    label: report:summary
+    required: true
+    prompt: Write $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json + runtime.yaml; note the .tar.gz
+      path and next deploy command
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
 output:
   files_out:
-    - _WorkSpace/6-EndpointStore/<ENDPOINT>   # heavy
-    - results/<RUN>/metrics.json              # light
-    - results/<RUN>/runtime.yaml
+  - _WorkSpace/6-EndpointStore/<ENDPOINT>
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/metrics.json
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml

@@ -1,5 +1,5 @@
 # =============================================================================
-# Template for configs/<NAME>.yaml — model-training task
+# Template for scripts/config/<NAME>.yaml — model-training task
 # =============================================================================
 
 _meta:

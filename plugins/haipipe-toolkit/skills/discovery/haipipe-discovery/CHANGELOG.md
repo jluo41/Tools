@@ -8,6 +8,27 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.15.2 · 2026-09-20
+
+- Bind Task and typed-record confidence to type-specific evidence anchors,
+  basis, and the closing assessment receipt; keep source-map coverage factual.
+- Distinguish type-specific `report.outcome` from terminal Task `status`, and
+  name the Page-body location for factual retrieval coverage.
+
+## 0.15.1 · 2026-09-20
+
+- Require broad candidate retrieval to carry a frozen, question-specific
+  admission rule and an explicit coverage boundary. Separate retrieval order
+  and bibliographic metadata from relevance, evidence, and quality judgments.
+- Attach candidate decisions and Task close confidence/outcomes to evaluator,
+  criteria version, timestamp, and frozen input or immutable Run identities.
+
+## 0.15.0 · 2026-09-20
+
+- Require broad candidate retrieval to carry a frozen, question-specific
+  admission rule and an explicit coverage boundary. Separate retrieval order
+  and bibliographic metadata from relevance, evidence, and quality judgments.
+
 ## 0.14.0 · 2026-09-19
 
 - Add the opt-in `layout: one-division-per-run` Page layout for Pages that

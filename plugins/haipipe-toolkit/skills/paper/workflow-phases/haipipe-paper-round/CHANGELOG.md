@@ -1,3 +1,12 @@
+## 0.7.3 · 2026-09-20
+
+- Define Round-local blocking/material/editorial severity anchors and preserve source severity separately.
+- Describe shared Page lifecycle labels as controller Steps, not extra Runs.
+
+## 0.7.2 · 2026-09-20
+
+- Separate RD Round Pages, controller rounds and writing Versions. Define commissioned response Runs, pending answer identity, owner-routed repairs, matching human release approval and final freeze/CHECK ordering; ledger triage creates no evidence Run.
+
 ## 0.7.1 · 2026-09-13
 
 - Clarify that the Round's Outline is a generated Page projection and must not

@@ -1,13 +1,15 @@
 # AI tells: the general catalogue
 
-Migrated 2026-08-01 from `writing/haipipe-paper-revise-humanizer/ref/pattern-catalog.md`
-Layer 1, which was itself vendored from `AIScientists-Dev/academic-humanizer @ 02281d8` (MIT).
+Migrated 2026-08-01 from Layer 1 of the retired HAI humanizer's pattern catalog,
+which was itself vendored from `AIScientists-Dev/academic-humanizer @ 02281d8` (MIT).
+Retained provenance and license: [method-attribution.md](method-attribution.md).
 
 **Why it moved.** That file's Layers 2 to 6 are academic: over-claiming verbs,
 citation dumping, venue voice, funding-proposal register. Layer 1 is not. It
 describes how a machine writes in any register, and it was reachable only by
-loading a paper skill. The humanizer keeps Layers 2 to 6 and cites this file for
-Layer 1, so there is one catalogue and it lives where any prose can reach it.
+loading a paper skill. The standalone HAI humanizer is now retired. Academic
+checks can be selected through the external evaluation adapter; this catalog
+contributes diagnostic findings, never an AI-origin verdict.
 
 ## 1 · The catalogue
 
@@ -24,16 +26,17 @@ Layer 1, so there is one catalogue and it lives where any prose can reach it.
 - **Elegant variation** — cycling synonyms for one referent, so the reader cannot
   tell whether two names are one thing
 - **Filler** — "it is worth noting that", "in order to"
-- **Overlong, clause-stacked sentences** — split them
+- **Overlong, clause-stacked sentences** — inspect reading burden; split only
+  when meaning and the host's sentence/Bullet mapping permit it
 - **Em-dashes** — remove entirely; recast with commas, colons, parentheses, or a
   new sentence (JL 260724, and this repo's own hard rule)
 
-**Before**: *Additionally, an enduring testament to the method's value is its
-ability to delve into intricate dependencies, showcasing a seamless integration
-that underscores its pivotal role.*
+**Before**: *The method has the ability to capture higher-order dependencies.*
 
-**After**: *The method also captures higher-order dependencies, which the
-baselines miss (Table 2).*
+**After**: *The method can capture higher-order dependencies.*
+
+The example changes expression only. No comparator, result, table or citation
+may be added to make a sentence more specific without supplied authority.
 
 ## 2 · The tells this repo produced on its own
 
@@ -52,4 +55,5 @@ Found in this codebase's prose rather than inherited from the catalogue.
 A tell is a tell in context. Neutral and precise IS the human voice in technical
 writing, so do not inject opinion, humour, or first-person personality to prove a
 human wrote it. The academic-specific version of this caution, with its
-claim-evidence discipline, stays in the humanizer's Layer 3.
+claim-evidence discipline, is enforced by the shared Writing request and
+[academic evaluator adapter](methods/academic-humanizer.md).

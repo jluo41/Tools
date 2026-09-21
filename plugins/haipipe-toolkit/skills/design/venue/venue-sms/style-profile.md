@@ -72,22 +72,17 @@ The tone-by-audience rows above are the full tone rules for this venue.
 [ ] Opt-out present
 [ ] No jargon (if patient)
 [ ] Personalization variables are available in the data pipeline
-[ ] Card id, grant, and exact render version resolve in the Design Folder
+[ ] Item id, released Commission, allowed inputs and Result artifact hashes resolve
+[ ] Any render manifest binds the exact source and picture inside its Result
 [ ] Tone matches audience profile
 ```
 
 
-## Unit identity
+## Recorded identity
 
-```yaml
-unit: DU<NN>-<slug>
-kind: sms
-venue: sms
-audience: patient | clinician
-serves: <division-id>
-state: draft | judged
-```
-
-The colocated `card.md` owns stance, grant, expected effect, and release state.
-The division owns `accepted:`. No SMS artifact on a DesignBoard may carry a
-`deployed` terminal; distribution belongs to a downstream Task Folder.
+The register names `ITEM01`; its Generate Ticket names, for example,
+`rd02_generate_item01`. The paired Result lists `content/sms.txt` and its sha256.
+The released Commission config owns stance, design intent and acceptance rules;
+`runtime.yaml` records Run lifecycle, and the Item state is derived from Runs.
+These identifiers belong in records, not recipient copy. Independent Verify pass
+makes the exact message ready for Delivery. Distribution belongs to downstream work.

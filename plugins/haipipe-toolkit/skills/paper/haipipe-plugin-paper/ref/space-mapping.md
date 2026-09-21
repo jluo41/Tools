@@ -1,47 +1,42 @@
-# Paper Plugin · Workflow × Space mapping
+# Paper Plugin · Run Specs and controls × Space
 
-This is the reader-facing mapping for `haipipe-plugin-paper`. Spaces are UI
-projections; the paths below are authority or receipt addresses, not new
-Paper Plugin stores.
+Read `haipipe-paper-workflow/ref/run-workflow.md` for the canonical definition.
+This map is its presentation by Space; each parameterized Spec must be bound
+to a real target before commissioning. Control rows do not count as Runs.
+The map neither allocates a Run nor closes a gate. Setup Apply remains a
+preview until its writer is implemented and an authorized application succeeds.
 
-| Run-Type / record | Setup | Ideation | Story | Run | Delivery |
+| Spec / control | Setup | Ideation | Story | Run | Delivery |
 | --- | --- | --- | --- | --- | --- |
-| `paper.setup` | `action · SetupPlan · board.md + Paper root` | `read · Idea/Story folders` | `read · StoryA folder` | `register · SessionSpec · explicit setup` | `read · delivery config` |
-| `paper.ideation.generate` | `—` | `action · IdeaPool · A1-Story/Story00-ideation/` | `—` | `run · IdeaGeneration · native receipt` | `—` |
-| `paper.ideation.test` | `—` | `review · PressureTest · Story00` | `—` | `run · IdeaPressureTest · native receipt` | `—` |
-| `paper.ideation.select` | `—` | `action · Admission · Story00` | `route · StoryHandoff · StoryA` | `run · IdeaAdmission · native receipt` | `—` |
-| `paper.story.shape` | `—` | `read · admitted Idea` | `action · StorySpine · StoryA C1–C8` | `run · StoryShape · native receipt` | `—` |
-| `paper.story.review` | `—` | `—` | `review · ClaimBoundary · StoryA C5` | `run · StoryReview · native receipt` | `—` |
-| `paper.story.route` | `—` | `—` | `action · StoryRoadmap · StoryA C6–C8` | `route · Section/Task/Discovery · native receipt` | `read · C8 compile order` |
-| `paper.compile` | `read · delivery config` | `—` | `read · C8 compile order` | `run · CompileReceipt · delivery/` | `action · Manuscript · delivery/latex + delivery/word` |
-| `paper.round.respond` | `read · Round folder` | `—` | `route · Story or Section` | `run · RoundReceipt · Bc-<desk>-Round/` | `review · Round · Bc-<desk>-Round/ + delivery/word-feedback/` |
+| `idea.<idea>` | — | candidate discussion | selected handoff pointer | native ridea Ticket/Result | — |
+| `claim.<story>.<claim>` | — | — | C5 support judgment | native rclaim Ticket/Result | — |
+| `obligation.<story>.<row>` | — | — | C7 obligation judgment | native rtask Ticket/Result | — |
+| `narrative.<story>.<section>` | — | — | C8 telling judgment | native rnarra Ticket/Result | — |
+| `support.<target>` | native owner | generation/test dependencies | C6/C7 obligations | Task/Discovery/selected owner receipt | — |
+| `structure.<page>` | Page owner | selected Ideation structure | selected Story/Section structure | native RP | — |
+| `write.<page>.<scope>` | Page owner | selected prose | selected Story/Section prose | native RP | — |
+| `evidence.<page>.<item>` | Page owner | typed bindings | typed bindings | native RE and Supporting Results | — |
+| `deliver.<page>.<format>` | declared target | Page surface receipt | Page surface receipt | native RD | one Page artifact |
+| `compile.<paper>.<build>` | validated config | — | selected C8 order | compile Ticket/Result | current build manifest |
+| `response.<round>` | frozen base build | — | routed repairs | response Ticket/Result | response and frozen answer build |
+| `paper.setup` | control: preview/apply | — | — | no automatic Run | config location |
+| `paper.ideation.select` | — | control: sole human I3 | G0 handoff validation | no selection wrapper Run | — |
+| `paper.story.route` | — | — | control: G1/dependencies/G2 | native Spec references | compile-order pointer |
+| `paper.section.route` | — | — | control: G3 release per C8 row | selected Section Specs | — |
 
-The map does not allocate a Run, close a gate, or replace the authority that
-owns a cell. Empty cells are intentional.
+## Folder tree × Spec or control
 
-## Folder tree × Run-Type
+The renderer matches real folders to these slots. Missing folders are shown
+as missing; the map never creates them. Stored records remain with their owners.
 
-The same map seen from disk: which folder each Run-Type reads, writes, or
-runs in. The Paper Plugin draws the REAL folder tree of the paper as a nested
-explorer in Run Space › Workflow map, matches each real folder to one `slot` here by its shape
-(`board.md` · `A1-Story/Story00…` · `A1-Story/Story<Letter>…` · `Ba/Bb/Bc-…`
-· `delivery/` · the project's task and discovery homes), and shows that
-slot's Run-Types in a right-hand column aligned beside the tree, on the first
-folder of the slot (the `holds` column stays here as the map's own record; the
-tree shows only names, counts and Run-Types); it also adds a `folder on this
-board` column to the map above. The other cells are read as written.
-
-| slot | folder | holds | Run-Types acting here |
+| slot | folder | holds | Specs / controls acting here |
 |---|---|---|---|
-| `board` | `board.md` | Board identity: `dialect: paper`, `paper-root`, the `blocks:` / `discoveries:` claims, Links (venue-page, delivery) | `paper.setup` |
-| `story00` | `A1-Story/Story00-<direction>/` | the idea pool: the Page, `outline/<stem>-outline-vN.md` (Ideas ranked), `outline/<stem>-evidence-items.md`, `workflow/selection.yaml`, `handoff/paper-ideation.yaml`, `runs/ridea-NN_<slug>.md` + `results/` | `paper.ideation.generate` · `paper.ideation.test` · `paper.ideation.select` |
-| `story` | `A1-Story/Story<Letter>-<desk>-<idea-slug>/` | the Story page C1–C8 with its `haipipe:compile-order` block; `runs/rclaim-NN · rtask-NN · rnarra-NN` + `results/` | `paper.ideation.select` · `paper.story.shape` · `paper.story.review` · `paper.story.route` · `paper.round.respond` |
-| `main` | `Ba-<desk>-Main/` | one `S-<desk>-Main-<N>-<Title>/` per Section: the Page, `outline/` (plan, evidence items), `runs/` + `results/` (rp-, re-, rd), `delivery/latex · word · web/` | `paper.story.route` · `paper.compile` · the Page workflow (haipipe-page) |
-| `appendix` | `Bb-<desk>-Appendix/` | one `S-<desk>-Appendix-<L>-<Title>/` per appendix, same shape as Main | `paper.story.route` · `paper.compile` · the Page workflow (haipipe-page) |
-| `round` | `Bc-<desk>-Round/` | one `RD<NN>-<desk>-<slug>/` per feedback batch: `feedback/` · `sent/` · `released/` · `delivery/` | `paper.round.respond` |
-| `delivery` | `delivery/` | `paper-build.toml`, `build.py`, `build-manifest.json`, `display-register.md`, `latex/` (master.tex, sections/, appendices/, displays/, the PDF), `word/`, `word-feedback/` | `paper.setup` · `paper.compile` · `paper.round.respond` |
-| `tasks` | `<project>/tasks/` | the Task home (`task/` on older projects): `bNN_<block>/jNN_<job>/tNN_<task>/` with `runs/` + `results/` + `scripts/`; the Execution Supporting Runs Evidence Items cite | `paper.story.route` · Supporting Runs |
-| `discoveries` | `<project>/discoveries/` | the Discovery home: `bNN_<evidence board>/jNN_<inquiry>/tNN_<task page>/` with `discovery.yaml`, `runs/rNN_*.sh` + `results/`; the Discovery Supporting Runs Evidence Items cite | `paper.story.route` · Supporting Runs |
-
-A folder that is missing on a board is shown as ⬜ with its pattern; the map
-never creates it.
+| `board` | `board.md` | Board identity and paper-root; aggregate Runtime references | `paper.setup` |
+| `story00` | `A1-Story/Story00-<direction>/` | Ideation Page, source projection and sole I3/handoff pointers | `idea.<idea>` · `support.<target>` · `structure.<page>` · `write.<page>.<scope>` · `evidence.<page>.<item>` · `deliver.<page>.<format>` · `paper.ideation.select` |
+| `story` | `A1-Story/Story<Letter>-<desk>-<idea>/` | C1–C8, judgment records and compile-order block | `claim.<story>.<claim>` · `obligation.<story>.<row>` · `narrative.<story>.<section>` · `structure.<page>` · `write.<page>.<scope>` · `evidence.<page>.<item>` · `deliver.<page>.<format>` · `paper.story.route` · `paper.section.route` |
+| `main` | `Ba-<desk>-Main/` | Main Section Pages, RP/RE/RD and accepted bindings | `structure.<page>` · `write.<page>.<scope>` · `evidence.<page>.<item>` · `deliver.<page>.<format>` · `paper.section.route` · `compile.<paper>.<build>` |
+| `appendix` | `Bb-<desk>-Appendix/` | Appendix Section Pages and native work | `structure.<page>` · `write.<page>.<scope>` · `evidence.<page>.<item>` · `deliver.<page>.<format>` · `paper.section.route` · `compile.<paper>.<build>` |
+| `round` | `Bc-<desk>-Round/` | one RD Page per feedback batch, ledger and frozen builds | `response.<round>` · `structure.<page>` · `write.<page>.<scope>` · `deliver.<page>.<format>` |
+| `delivery` | `delivery/` | config, build manifest and generated outputs; commissioned compile records | `paper.setup` · `compile.<paper>.<build>` · `response.<round>` |
+| `tasks` | `<project>/tasks/` | native Task Tickets, Results and receipts | `support.<target>` · `paper.story.route` |
+| `discoveries` | `<project>/discoveries/` | native Discovery Tickets, Results and receipts | `support.<target>` · `paper.story.route` |

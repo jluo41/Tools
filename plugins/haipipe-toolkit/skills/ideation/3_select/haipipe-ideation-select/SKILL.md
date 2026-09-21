@@ -7,8 +7,8 @@ description: >-
   handoff. Use when deciding which research idea and journal target to pursue.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-09-13"
+  version: "0.1.3"
+  last_updated: "2026-09-20"
   capability_family: "3_select"
 ---
 
@@ -20,6 +20,10 @@ candidate Idea Card, the linked Venue Fit Cards, and the latest
 the sole human decision capture, and the final Paper adapter. It does not
 improve weak evidence by scoring it, choose on the user's behalf, or write
 Paper prose.
+
+For a durable commission, use the owner-bound Run Specs in
+`../../haipipe-ideation/references/workflow-runs.md`. This capability's checks
+are internal Steps unless separately commissioned under that contract.
 
 ## Comparison surface
 
@@ -50,7 +54,8 @@ fatal assumption. An optional comparison order is a review aid only.
 4. Ask the person to select none, one, or several Ideas and, for every
    selected Idea, one intended target and article category. Record accepted
    conditions for `PROCEED WITH CAUTION`.
-5. Preserve every nonselected card as deferred or eliminated with its reason;
+5. Record explicit defer/abandon answers with their reasons. Keep unanswered
+   cards open; absence from selected_cards is not a disposition;
    never delete it or reuse its stable id.
 6. Allocate one distinct Story route per selected card and write the
    pointer-only handoff. Multiple selected Ideas do not become alternatives
@@ -66,43 +71,19 @@ allocate an `rpNN` Page Run.
 
 ## Human receipt
 
-The receipt records:
+Use the version-3 schema and history/projection mapping in
+`../../haipipe-ideation/references/receipts.md`. Record reviewed_cards and one
+candidate row per reviewed card. Ask for any missing disposition; unanswered
+cards stay open. Selected rows each own their posture, risks, five assertions,
+exact target/category/contract version, and Story route. Compatibility lists
+are derived from those rows.
 
-```yaml
-version: 2
-kind: ideation-selection
-ideation_task: bNN.jNN.tNN
-direction_card: cards/direction.yaml
-decision: select | defer | abandon
-selection_posture: proceed | proceed-with-caution | not-applicable
-selected_cards: [cards/i01_idea.yaml]
-story_routes:
-  - card: cards/i01_idea.yaml
-    story_role: Story-A
-    story_path: "path or planned path"
-target_routes:
-  - card: cards/i01_idea.yaml
-    target: "journal"
-    category: "article type"
-    venue_contract: "path"
-by: "person:<identifier>"
-at: "ISO-8601"
-accepted_risks: []
-assertions:
-  evidence_complete: true | false
-  novelty_reviewed: true | false
-  feasibility_receipt_or_waiver: true | false
-  venue_fit_reviewed: true | false
-  target_selected: true | false
-reason: "bounded decision rationale"
-```
-
-A missing name/date, unresolved target/category, stale Venue contract, or
-machine-only recommendation keeps the receipt open.
-
-This receipt is the single selection authority. Paper P0 may display its
-verdict, target, and `went to` values, but Page approval or CHECK cannot create
-or replace them.
+Only explicit answers may become human dispositions. Save an immutable
+selection snapshot and an identical current workflow/selection.yaml view,
+then refresh Card/Venue Fit projections from that snapshot. A missing person,
+date, target, stale contract, unaccepted risk or projection mismatch keeps the
+affected decision open. Old decisions remain readable and are never silently
+rewritten.
 
 ## Paper handoff
 
@@ -114,7 +95,8 @@ passes, load `haipipe-paper-ideation` to project the authoritative I3 receipt
 into the existing P0 Page and open distinct Story routes.
 
 Run the shared checker with `--gate select`, then `--gate handoff`. The checker
-can establish that the receipt and paths exist; only the named person can make
+checks per-card eligibility, target contracts, exact selection/handoff joins
+and current sync bindings; only the named person can make
 the decision.
 
 ## One-off mode

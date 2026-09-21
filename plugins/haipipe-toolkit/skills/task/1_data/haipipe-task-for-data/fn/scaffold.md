@@ -75,7 +75,7 @@ Step 5 — Run-script
 --------------------
 
 Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/r01_base.sh`.
-Set `TASK_NAME="tNN_<task>"`.
+Set `TASK_NAME="<worker>"` (the worker filename without .py).
 
 
 Step 6 — Cross-skill link

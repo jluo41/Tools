@@ -1,5 +1,14 @@
 # field-test · version history
 
+0.4.2 · 260920
+- Separate expectation status from attribution, including unresolved and mixed causes.
+- Define local friction-severity anchors and evidence-first routing.
+
+0.4.1 · 260920
+- Align standing authorization with the current Insight authorization contract.
+- Preserve existing grants without repeating approval; keep FIELD isolation and freeze rules.
+- Shorten the discovery description.
+
 0.4.0 · 260829 · JL
 - RENAMED `haipipe-fieldtest` -> `field-test`, two changes in one. The `haipipe-` prefix marks a skill that OPERATES the HAI-Pipe lifecycle and speaks its vocabulary (stage letters, task-folders, Pages, units); this one is a method that takes any skill family, real work and a written expectation, and returns law patches. It joins the unprefixed methods in `0_utils`: `claude-response-format`, `diagram-ascii`, `notebook-cell-python`, and `remote-error` (renamed the same day, same reason). JL: "I want to rename the /haipipe-fieldtest to be /field-test as well."
 - `fieldtest` written as one word became `field-test`, matching the hyphen the description itself has used since 0.1.0 ("The field-test method for a skill family"). The bare word `fieldtest` STAYS in the trigger list as an alias, because that is what a person types.

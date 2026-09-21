@@ -4,7 +4,7 @@
  * which page_board.py marks with `data-board-dialect="paper"` from board.md's
  * `dialect:` line (JL 260916: "like haipipe-plugin-outline, you should have
  * haipipe-plugin-paper"). No Links key, no per-paper file: the route
- * /_board/paper renders the four Spaces from Markdown on every open.
+ * /_board/paper renders the five Spaces from Markdown on every open.
  * `data-board-paper` (the retired console/ Links key) still opts a board in.
  *
  * The tab is read-only. Its rows route back to the owning Story, Section,
@@ -39,7 +39,7 @@
     window.boardPlugins.register({
       id: 'paper',
       label: '📄 Paper',
-      hint: 'Setup, Ideation, Story, and Run spaces',
+      hint: 'Setup, Ideation, Story, Run, and Delivery spaces',
       menu: 'plugin',
       order: 15,
       applies: isBoardIndex,

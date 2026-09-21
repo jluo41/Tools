@@ -35,12 +35,12 @@ Do not add prose outside.
 
   <interpretation>
     <verdict>rising | stable | falling | mixed</verdict>
-    <why>One-sentence cause: meal carbs, fasting trend, recent exercise, etc.</why>
+    <why>One-sentence evidence-based interpretation; if no cause is established, say so.</why>
     <actions>
       <action>concrete action 1</action>
       <action>concrete action 2</action>
     </actions>
-    <confidence>high | medium | low</confidence>
+    <confidence>unavailable</confidence>
     <safety_flag>none | hypo_risk | hyper_risk | hypo_and_hyper_risk</safety_flag>
   </interpretation>
 
@@ -54,6 +54,17 @@ Do not add prose outside.
 
 CONSTRAINTS:
 - `verdict`, `confidence`, `safety_flag` MUST be one of the listed enum values.
+- `verdict` is fixed by comparing every adjacent pair in the supplied
+  trajectory by exact numeric comparison, with no magnitude tolerance: if
+  every value is equal, use `stable`; if there is at least one increase and no
+  decrease, use `rising`; if there is at least one decrease and no increase,
+  use `falling`; if there are both increases and decreases, use `mixed`. Follow
+  the supplied result exactly. This mathematical description does not establish
+  clinical significance.
+- This reporting interface supplies no calibrated prediction-error or
+  predictive-uncertainty evidence, so `confidence` must be `unavailable`.
+  A point trajectory, a narrow range, or a short horizon alone cannot support
+  a high/medium/low confidence label.
 - `actions` may have 0–4 `<action>` children. Empty action list is OK
   ("nothing to do, things look stable").
 - Numeric fields are mg/dL unless noted.

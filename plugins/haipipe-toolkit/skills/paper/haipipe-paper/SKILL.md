@@ -7,8 +7,8 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-09-13"
+  version: "1.2.0"
+  last_updated: "2026-09-20"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -25,16 +25,16 @@ haipipe-paper
   → resolve the concrete Page and its Page Type
 ```
 
-Once one concrete Page RUN begins, use the Page router's canonical order:
+When creating or updating a concrete Page, use the Page router's canonical order:
 
 ```text
 haipipe-page
   → haipipe-page-workflow
-  → current Page phase
+  → current Run Workflow / Run Spec owner
   → haipipe-paper-workflow (Folder-owning workflow)
   → the exact Page Type: haipipe-paper-ideation · haipipe-paper-story ·
     haipipe-paper-section · haipipe-paper-round, or haipipe-paper-venue
-  → phase references / the Story's Section row and style policy
+  → Run Spec references / the Story's Section row and style policy
   → haipipe-run + selected workers, only where Runs exist
   → paper/haipipe-paper/ref/page-integration.md and ref/run-naming.md when a
     Paper-local Run or Page release is planned
@@ -48,42 +48,26 @@ Read [`ref/page-integration.md`](ref/page-integration.md) for the Paper-specific
 consequences of the shared Page contract. This router owns no second Page
 lifecycle, Page Run namespace, Evidence Workspace, or Page release protocol.
 
-`haipipe-paper-assemble` is a separate complete-paper verb after routing; it is
-not inserted into a Page phase.
+`haipipe-paper-assemble` is a separate complete-paper verb after routing; it has its own bounded compile Spec in the Paper Workflow.
 
-## 🧭 The journey (JL 260828 · rebuilt 260907)
+## Paper Workflow and content owners
 
-`haipipe-paper-workflow` owns the gates; this figure is the reading order.
-Every position is named by its authority page (the naming law). The Story is
-the sole paper-level prospective blueprint.
+A Workflow is a list of Runs. Its definition declares bounded Run Specs and
+routes; its Runtime indexes actual native Runs and receipts. Load
+`haipipe-paper-workflow/ref/run-workflow.md` to select the work, dependencies
+and applicable G0–G5 controls. Page containers, status reads, sync and gate
+recording do not allocate Runs. Repeated feedback remains a Step of its Run.
 
-```text
-P0 Ideation (ideate)       💭 Story00-ideation · the repo is minted with this page ·
-│                             ideas cheap and disposable
-│                             gate G0: novelty per claim + pilot + human PROCEED
-P1 Story (plan)            🌱 Story<Letter>-<desk>-<idea-slug> · one paper's prospective blueprint
-│                             Seed C1–C5 · Discovery Roadmap C6 · Task Roadmap C7
-│                             Section Narrative C8 · contract: haipipe-paper-story
-│                             gate G1: a reviewed research plan and explicit
-│                             release for the relevant Discovery/Task work
-P2 Evidence/Execution      🧰 a WORK LANE, not a page · Discovery blocks, Task
-│                             blocks, Runs in examples/<Project>/ · receipts land
-│                             back on the Story
-│  ↺ P1↔P2 = the settle loop  gate G2: each returning block has an owner-native
-│                             receipt · the Story updates RQ/E-row state
-P3 Section (realize)       📄 one page per C8 Section Narrative row · a person
-│                             releases each row independently (gate G3) · sign-off
-│                             = per-unit CHECK ✅
-│  Compile                    assemble — a verb, not a phase · runs anytime from the
-│                             Story's compile-order block · gate G4 marks the build
-│                             SUBMISSION-READY vs DRAFT · the upload is a human act
-P4 Round (respond)         🔁 routes each concern once → Story (C5 support,
-                              C6/C7 research needs, C8 narrative) / Section · gate G5: every concern ledgered and
-                              routed exactly once · a person approves the receipt
+The Story is the prospective blueprint; Sections own manuscript prose;
+Ideation owns its semantic cards through `haipipe-ideation`; Venue is a shared
+reference library; Round holds a feedback batch. These are content owners,
+not numbered workflow units. Research, Section writing and response repairs
+can overlap when their own dependencies and releases permit it.
 
-   📚 venue = library, never a phase: the QBv bank is consulted when a §8 row
-      names its target, and a missing desk gets its bank page minted as a sub-step.
-```
+Read the actual native receipts to answer what is done or pending. Report the
+current target/owner, accepted Result/version, pending dependency/gate, and
+next required human decision. Complete-paper assembly may run early with a
+truthful DRAFT manifest; G4 separately controls submission readiness.
 
 The five Page Types, one line each:
 
@@ -149,13 +133,11 @@ VALUE, CITE, and DISPLAY are Result types inside Evidence Workspace, not
 separate plugins. Exact numbers and citation metadata live in accepted local
 Results; the Page cites their `E<NN>-<TYPE>-<slug>` and full Run/Result ids.
 
-Paper-local Evidence/Display Runs use the semantic lane-aware ids in
-[`ref/run-naming.md`](ref/run-naming.md): `pm-…` for Main, `pa-…` for
-Appendix, and `pr-…` for Round. Human feedback uses the Page-owned
-`rp00_mermaid-structure` and `rpNN_pNN[-pNN]` identities; delegated paragraph
-writing remains an owner-native Task Run. The former `pjNNtNNrNN` and legacy
-interactive `rNN_page-writing...` forms remain read-only history; Paper work
-never silently renames them.
+New Page work uses shared RP/RE/RD identities. Load
+[`ref/run-naming.md`](ref/run-naming.md) for Paper context, judgment targets
+and historical `pm-/pa-/pr-/pj...` compatibility. Native Task/Discovery Runs
+keep their full owner path and identity. Evidence, human writing and external
+Supporting Runs are distinct work; a reused Result is not another execution.
 
 One Page may own many DISPLAY items. One local DISPLAY Result may contain
 several artifacts or panels, but it has one message, one frozen Local Input,
@@ -200,7 +182,8 @@ CHECK         judge the built version; only CHECK may close the Page
 
 Do not hard-code a linear advance here. Load `haipipe-page-workflow`; its
 receipts and authority tests decide whether the Page repeats, branches, holds,
-or returns to an earlier phase.
+or returns to an earlier dependency. These are controller labels; the
+Workflow units remain the declared Runs.
 
 ## 🚪 Routing
 
@@ -208,11 +191,12 @@ Resolve the paper root and target Page before changing anything.
 
 | User intent | Route |
 |---|---|
-| brainstorm, novelty-check, eliminate an idea, or send one to a Story | `haipipe-paper-ideation` |
+| brainstorm, novelty-check, compare or select ideas | `haipipe-ideation` and only its relevant specialist; use `haipipe-paper-ideation` when a Paper Page projection is involved |
+| create, refresh, read or check the Paper Idea portfolio Page | `haipipe-page` + `haipipe-page-workflow` + `haipipe-paper-ideation`; load the semantic owner for sync/handoff |
 | ask where a paper is in the journey, or test a gate | `haipipe-paper-workflow` |
 | draft or review the whole paper, its research roadmaps or section narrative | `haipipe-paper-story` |
 | release work, inspect execution progress, accept a receipt, or release a Section | `haipipe-paper-workflow` plus the exact Discovery/Task/Section owner; use Story for the resulting paper meaning |
-| inspect or record a target venue | `haipipe-paper-venue` (library lane, not a phase) |
+| inspect or record a target venue | `haipipe-paper-venue` (shared reference library) |
 | write or revise one manuscript/appendix unit | `haipipe-paper-section` |
 | triage or answer one feedback/review cycle | `haipipe-paper-round` |
 | check paper or one family's status | `/haipipe-paper status` (command, not a Page Type) |
@@ -224,26 +208,42 @@ Resolve the paper root and target Page before changing anything.
 ### Paper verbs
 
 ```text
-/haipipe-paper ideate <direction|idea-id> [phase]
+/haipipe-paper ideate <direction|idea-id> [controller-label]
 /haipipe-paper enter [paper]
 /haipipe-paper status [paper] [section|evidence|citation|display]
 /haipipe-paper journey [paper]         read the journey position · test the gates ·
                                        never advances anything
-/haipipe-paper story [paper] [phase]
-/haipipe-paper venue <target> [phase]
-/haipipe-paper section <section-id> [phase]
+/haipipe-paper story [paper] [controller-label]
+/haipipe-paper venue <target> [controller-label]
+/haipipe-paper section <section-id> [controller-label]
 /haipipe-paper round <new|id>
 /haipipe-paper assemble [paper]        runs anytime · a build made while gate G4
                                        fails is watermarked DRAFT in its receipt
 ```
 
-Every `[phase]` above is a PAGE phase (CONTEXT…CHECK). The journey's
-positions are never called by that word in a verb; `haipipe-paper-workflow`
-carries the terminology law.
+`[controller-label]` is an optional Page dispatch hint (CONTEXT…CHECK), not a
+Workflow unit. Existing callers using the old positional `[phase]` argument
+remain readable as this hint; the receipt and native owner decide the action.
+When a concrete Page is named, resolve its owner before choosing work. Omit the
+hint to resume from its latest receipt.
 
-When the user names a concrete Page, prefer that Page over inferring a phase
-from a broad verb. When a phase is omitted for an existing Page, inspect its
-latest receipt and use the shared workflow's authority test.
+### Shared skills, loaded when needed
+
+| Need | Owner to load |
+|---|---|
+| idea generation, testing, selection | `haipipe-ideation` → its generate/test/select skill and requested specialist |
+| external sources, review, synthesis | `haipipe-discovery` → selected Discovery capability |
+| computation, experiments, reusable execution | `haipipe-task` → selected Task worker |
+| native Run identities and closure | `haipipe-run`, when commissioning/resuming a Run |
+| a concrete Page | `haipipe-page` + `haipipe-page-workflow` + its exact Paper PageType |
+| Page outline/evidence material | the relevant `haipipe-plugin-outline/ref/...` contract; presenter already installed |
+| one Page export | `haipipe-plugin-delivery` and the selected format reference |
+| a display Evidence Item | `haipipe-display` and the chosen worker, through the Page RE Result contract |
+| Paper board presentation | `haipipe-plugin-paper`; `haipipe-board` owns rendering/checking |
+
+Load only what the request uses. Reuse an already loaded owner; do not recurse
+between the Paper router, Page router and domain adapter. Insight and Design
+remain independent families, referenced through their own Results/contracts.
 
 ## 📐 The Story connects study questions to the manuscript
 
@@ -268,22 +268,22 @@ Page, authorize execution, or imply a v1 approval.
 A new paper repo — created as a git submodule immediately — is one board whose
 page groups sit directly at the paper root, plus one `delivery/` folder that
 is a projection of the finished Section Pages. There is no `0-paperboard/`
-wrapper and no hand-edited desk room. Board groups map onto the journey: P0
-and P1 Story in `A1-Story/`; P3 Section and P4 Round use desk-specific groups:
+wrapper and no hand-edited desk room. Board groups store Ideation and Story in `A1-Story/`; Section and Round use
+desk-specific groups:
 
 ```text
 Paper-<Slug>/
 ├── board.md                    the board · paper-root: .
 ├── board/                      engine-generated HTML (build.py output)
 ├── A1-Story/
-│   ├── Story00-ideation/       P0 · the idea pool · exactly one
-│   └── StoryA-misq-phytrait-discretion/                P1 · one paper's prospective blueprint
+│   ├── Story00-ideation/       the idea pool · exactly one
+│   └── StoryA-misq-phytrait-discretion/                one paper's prospective blueprint
 │       └── StoryA-misq-phytrait-discretion.md          Seed · Discovery Roadmap · Task Roadmap ·
 │                               Section Narrative + selected compile order
 │   (a second surviving idea is Story-B/, same shape; no roadmap/narrative children)
-├── Ba-<desk1>-Main/            P3 · first desk's named Main sections
-├── Bb-<desk1>-Appendix/        P3 · its named Appendix sections
-├── Bc-<desk1>-Round/           P4 · its RD<NN> rounds, one page per batch ·
+├── Ba-<desk1>-Main/            first desk's named Main sections
+├── Bb-<desk1>-Appendix/        its named Appendix sections
+├── Bc-<desk1>-Round/           its RD<NN> rounds, one page per batch ·
 │   └── RD<NN>-<event>-<date>/  each holds sent/ · feedback/ · released/ (the
 │                               frozen PDF+DOCX that drew comments, what came
 │                               back, the PDF+DOCX that answered them)
@@ -459,7 +459,7 @@ decisions; it does not start a Page RUN, release a Section, require rendered
 deliverables, or close G4. The Page, evidence and assembly checks below apply
 when those artifacts are actually authored, executed or built.
 
-- The active Page Type and Page phase are explicit.
+- The active Page owner, Run Spec and any controller dispatch label are explicit.
 - The Story passes its eight-division read-through test and preserves the
   user's version/approval boundary.
 - The selected C8 Section Narrative states the venue telling and every
@@ -490,15 +490,13 @@ when those artifacts are actually authored, executed or built.
 ```text
 paper/
 ├── haipipe-paper/          public door; one routing contract
-├── haipipe-paper-workflow/ the journey gate machine (Ideation → Story →
-│                           Evidence/Execution → Section → Compile → Round);
-│                           owns transitions only
+├── haipipe-paper-workflow/ Run Spec list, native Runtime index and G0–G5 controls
 ├── haipipe-paper-assemble/  complete-paper DOCX/PDF/supplement build contract
-├── workflow-phases/        Paper journey contracts with a Page carrier:
+├── workflow-phases/        retained source path for four self-owned PageTypes:
 │                           haipipe-paper-ideation · haipipe-paper-story ·
 │                           haipipe-paper-section ·
 │                           haipipe-paper-round
-├── haipipe-paper-venue/ the one non-phase Page Type: a QBv bank record
+├── haipipe-paper-venue/ shared Venue PageType: a QBv bank record
 ├── venue/                  the shared QBv desk bank (bank/), prose playbooks,
 │                           and the literature bank
 └── README.md               architecture and maintenance boundary

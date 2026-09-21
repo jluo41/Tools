@@ -1,3 +1,10 @@
+## 0.6.0 · 2026-09-20
+
+- Make the Board-hosted Page a reading surface with one Copy prompt action for
+  sentences, headings, and text selections.
+- Retire inline editing and browser comment/Card creation; request source
+  changes through an agent conversation while preserving attached records.
+
 ## 0.5.1 · 2026-09-13
 
 - Retire the Outline candidate Comments composer in favor of active Page Run

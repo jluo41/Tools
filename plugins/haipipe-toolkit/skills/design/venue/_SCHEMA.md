@@ -4,7 +4,7 @@ Every venue profile is a uniform Design reference pack:
 
 ```text
 venue-<name>/
-├── README.md           constraints · Design profile · output grammar · phase use
+├── README.md           constraints · Design profile · output grammar · Run guidance
 ├── style-profile.md    voice/format examples and self-review rails
 └── exemplars/          optional real artifacts to pattern-match
 ```
@@ -12,6 +12,12 @@ venue-<name>/
 Venue profiles are **knowledge, not skills and not workflows**. The released
 Brief roster pins one primary venue; each Commission compiles the selected
 pack into frozen criteria. No venue creates its own lifecycle.
+
+The caller resolves venue defaults against the requested audience and scope
+before release, including one explicit word budget and `unit.shape/count`.
+The worker follows that frozen contract. A brief-only mockup or specification
+labels sample values and missing sources; it cannot claim accepted findings,
+live refresh, or production readiness from a venue example.
 
 
 Design profile block (required in every README)
@@ -23,43 +29,43 @@ design_profile:
   narrative: required | optional | none
   display: required | optional | none
   section_edit: required | optional | none
-  terminal: adopted
 ```
 
 The three composition fields describe what the generated Unit must contain;
-they are not phases. `evidence_bar` narrows the Commission's allowed inputs and
+they describe content, not execution units. `evidence_bar` narrows the Commission's allowed inputs and
 criteria:
 
 - **light** — every load-bearing move resolves through Commission inputs; a
   non-load-bearing convention may be labeled as a venue convention.
-- **medium** — every primary section/item/move maps to the grant; every open
+- **medium** — every primary section/item/move maps to the released inputs; every open
   load-bearing gap emits a BR00 need and Insight register question.
 - **full** — every displayed fact, metric, recommendation, and decision unit
-  maps to an accepted source in the grant; no load-bearing gap remains hidden.
+  maps to an accepted source in the released inputs; no load-bearing gap remains hidden.
 
-The grant stays inside board `reads:`. Design freezes signed Wisdom handoffs and
+The allowed input scope stays inside board `reads:`. Design freezes signed Wisdom handoffs and
 other explicitly allowed sources by exact path/version/hash; it never opens
 D/I/K pages or raw Task results to manufacture support and never creates a new
 PageX lane. If the bar cannot be met, the Run returns a named gap or hold; it
 does not substitute “common knowledge” or open a private ask session.
 
 
-Phase use (required in every README)
+Run guidance (required in every README)
 ====================================
 
 Each pack states only its delta inside the shared workflow:
 
 ```text
-Commission  pin audience × job × venue and compile rails before release
+Commission  freeze the item config and allowed sources before release
 Generate    author the exact content/spec/layout the profile requires
 Verify      independently test every candidate against rails and evidence bar
-Preview     write delivery/render/ from exact immutable Result members
-Adopt       a person selects or declines exact verified preview versions
 ```
 
-Adoption names the exact file under `delivery/render/`. `adopted` is the
-Application terminal. Build, deploy, distribute, allocate, and measure are
-downstream Task-Face work in another Folder.
+A Workflow is a list of Runs. A pack supplies guidance for these three Run
+Types; it does not add lifecycle states. Independent Verify pass makes the exact
+candidate ready for Delivery. Render/preview is an internal Step: write pictures
+and measurements in the current Result and pin its render manifest. The presenter
+reads them without worker writes to Delivery. Build, deploy, distribute, allocate
+and measure belong to downstream work in another Folder.
 
 
 Venue template (when useful)

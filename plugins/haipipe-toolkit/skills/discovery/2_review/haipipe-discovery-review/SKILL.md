@@ -3,8 +3,8 @@ name: haipipe-discovery-review
 description: "Review-route specialist for source-reading Discovery Pages: inspect one admitted Paper/Source Result at a time, extract reliable claims and limitations, and return a verified review packet. Trigger: read this paper, review this source, inspect a Result, source reading, /haipipe-discovery-review."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.7.0"
-  last_updated: "2026-09-08"
+  version: "0.7.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md
 ---
 
@@ -50,6 +50,13 @@ folder, or aggregate bibliography.
 5. Hand accepted packets to `haipipe-discovery-synthesize` when the Page
    promise requires combining multiple Results. The synthesis family owns
    topic-level organization and Page CONTENT.
+
+For the source-level `confidence` field, assess only whether this packet
+faithfully represents the inspected source. Follow the source-extraction
+anchors in `../../haipipe-discovery/ref/discovery-yaml-schema.md#confidence-and-evidence-axes`.
+Do not use confidence as a study-quality grade or as the Task's synthesis
+confidence. Study appraisal stays criterion-level with evidence states and
+locators; retrieval coverage stays in the frozen source-map declaration.
 
 ## Review Output Contract
 

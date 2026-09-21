@@ -1,6 +1,12 @@
 # haipipe-design-brief · version history
 
-## 0.4.0 current · 2026-09-18 (version unchanged at 0.4.0)
+## 0.4.0 current · 2026-09-20 (version unchanged at 0.4.0)
+
+- List all eight supplied venue guides so the four earlier examples cannot be
+  mistaken for a restricted venue enum. Fresh-context portfolio validation
+  confirmed all eight parse into distinct Brief tasks without allocating Runs.
+
+## 0.4.0 · 2026-09-18 (version unchanged at 0.4.0)
 
 - The design-task table grammar now lives here: the list sits under the
   `What to design` heading and is the only Brief table whose header holds

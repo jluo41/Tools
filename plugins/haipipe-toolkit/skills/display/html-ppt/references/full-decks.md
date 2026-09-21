@@ -1,12 +1,12 @@
 # Full-Deck Templates
 
-Self-contained multi-slide HTML decks under `templates/full-decks/<name>/`. Each folder contains:
+Multi-slide HTML decks under `templates/full-decks/<name>/`. Each folder contains:
 
 - `index.html` — complete multi-slide deck (cover / section / content / code / chart or diagram / CTA / thanks, 7+ slides)
 - `style.css` — scoped with `.tpl-<name>` class prefix so multiple templates can coexist
 - `README.md` — short rationale, inspiration, and use guidance
 
-All templates pull the shared `assets/fonts.css`, `assets/base.css`, and `assets/runtime.js` from the skill root. Navigate with `← →` / `space`, use `F` for fullscreen, `O` for overview.
+All templates pull the shared `assets/fonts.css`, `assets/base.css`, and `assets/runtime.js` from the skill root. Their CSS is scoped, but the runtime assets are shared. To use one in a project, scaffold it with `"$HTML_PPT/scripts/new-deck.sh" <deck-name> . <template-name>`; the script copies the template and rewrites shared-asset links for the new location. A direct copy needs the asset links updated manually. Navigate with `← →` / `space`, use `F` for fullscreen, `O` for overview.
 
 Use these when you want a coherent, opinionated look for an entire deck — not a mix-and-match of layouts. Each template is visually distinctive enough to be identified at a glance.
 
@@ -82,7 +82,7 @@ These are not extracted from a single source — they are generic scaffolds for 
 | 12 | `weekly-report`    | 7  | Corporate clarity, 8-cell KPI grid, shipped list, 8-week bar chart, next-week table | 周报, team status update, business review |
 | 13 | `xhs-post`         | 9  | **3:4 @ 810×1080**, warm pastel, dashed sticker cards, page dots | 小红书 图文 post, Instagram carousel |
 | 14 | `course-module`    | 7  | Warm paper + Playfair serif, persistent left sidebar of learning objectives, MCQ self-check | 教学模块, online course, workshop module |
-| 15 | `presenter-mode-reveal` 🎤 | 6  | **演讲者模式专用** · tokyo-night 默认 · 5 主题 T 键切换 · 每页带 150–300 字逐字稿示例 | **技术分享/演讲/课程**—需要按 S 键看逐字稿的场景 ✨ |
+| 15 | `presenter-mode-reveal` 🎤 | 6  | **演讲者模式专用** · tokyo-night 默认 · 5 主题 T 键切换 · 示例提示按语言与目标时长编写 | **技术分享/演讲/课程**—需要按 S 键看逐字稿的场景 ✨ |
 
 Each folder: `index.html`, scoped `style.css` (prefixed `.tpl-<name>`), `README.md`. The `xhs-post` template overrides the default `.slide` box to fixed `810×1080` for 3:4 portrait.
 

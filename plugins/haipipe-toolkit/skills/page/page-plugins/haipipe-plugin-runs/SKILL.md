@@ -106,9 +106,12 @@ DELEGATED PARAGRAPH WRITING TASK · same Folder, Markdown commission
 
 JOB-BACKED TASK · canonical haipipe Task Page
   <job>/<task>/runs/<run>.sh
-  <job>/results/<task>/<run>/
+  $OUTPUT_ROOT/<task>/results/<run>/
   optional input:  <job>/<task>/scripts/config/<run>.*
-  optional record: <job>/notebooks/<task>/<run>.ipynb
+  optional record: $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
+
+HISTORICAL TASK STORE · read through its recorded resolver
+  <job-or-output-root>/results/<task>/<run>/
 
 LABELING JOB · subjective-label
   runs/<RUNNAME>.yaml
@@ -355,6 +358,18 @@ SURFACE   Outline → Run Space: Page Writing · Page Evidence · Supporting Run
 WRITER    person/chat authors tickets; the ticket writes its paired Result
   BOUNDARY  read-only presenter; no Run Workflow, lifecycle, evidence, or closure authority
 ```
+
+## Native inventory integrity
+
+Follow `haipipe-run/ref/receipts-and-inventory.md` for the counting grain.
+A Ticket without a receipt is Held with a missing-receipt finding, not Ready.
+Ready requires an allocated planned receipt. Inspect the union of native
+Tickets and Result/receipt stores; keep orphan and conflicting records visible.
+Pair current Task output through its declared store and `<task>/results/<run>`
+resolver, retaining the historical `results/<task>/<run>` fallback.
+Paper judgment uses its native Ticket and human-closure journal; Design
+Commission is a valid current Run alongside Generate and Verify. Retired
+Adopt records remain historical evidence. None of these views allocates work.
 
 ## 🔒 Boundaries
 

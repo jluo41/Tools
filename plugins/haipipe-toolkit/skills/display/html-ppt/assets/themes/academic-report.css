@@ -1,7 +1,6 @@
 /* theme: academic-report — HOUSE DEFAULT (JL, settled 2026-07-21)
-   Pure-white formal report deck in Times New Roman. Distilled from the
-   REACH-ADHD NIH program-officer briefing (the reference deck for this style:
-   REACH-SPACE/collaborations/Event-JHU-ADHD-NIH-Team/po-update-deck/).
+   Pure-white formal report deck in Times New Roman, refined during a historical
+   NIH program-officer briefing. The preset has no external project dependency.
    Pair with ../academic-report-extras.css for the component conventions
    (sentence-per-line bullets, todo pills, no-kicker, page-fill). */
 :root{

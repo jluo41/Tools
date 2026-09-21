@@ -1,3 +1,17 @@
+## 0.4.6 · 2026-09-20
+
+- Remove retired Design Adopt declarations and coverage; retain Commission, Generate, and Verify.
+- Align failure routes and Verify closure with the Design owner; Delivery projects the passed candidate.
+- Count C Commission decisions, N Generate Runs, and J Verify Runs, including held decisions.
+
+## 0.4.5 · 2026-09-20
+
+- State directly that a Workflow is a list of Run Specs and Routes connect
+  the listed Specs.
+- Synchronize the Design schema, matrix, and example Cells with the live
+  Goal/Design/Insight/Run/Delivery Workspace roster.
+- Correct stale Workspace coordinates in the skill coverage and Run catalog.
+
 ## 0.4.4 · 2026-09-15
 
 - Make Workflow Definition the directed graph of Run Specs and spec-owned

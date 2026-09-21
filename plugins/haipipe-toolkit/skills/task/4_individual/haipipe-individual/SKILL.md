@@ -35,8 +35,8 @@ Why stages 0-2 only
   5-ModelInstance trained weights                   NO   — training artifact
   6-Endpoint      deployable                        NO   — shared by all individuals
 
-A deployed endpoint reads the individual's 2-RecStore, runs inference, and returns a prediction.
-It does NOT need 3-6.
+The shipped inference client reads the individual's 1-SourceStore and builds an Endpoint payload.
+The shared Endpoint owns preprocessing and model assets; per-individual 2-RecStore remains useful for retrieval/evaluation.
 
 
 Folder Layout (FLAT — no dataset-name or partition wrappers nested inside)
@@ -128,36 +128,26 @@ Progression: build (this skill) → inference → report → judge.
 Build Logic (what `build` does)
 --------------------------------
 
-Given `{dataset, individual_id}` the build proceeds in 5 steps:
+Given `{dataset, individual_id}`, `fn/build_sample_individuals.py`:
 
-  Step 1  — mkdir
-    Create Subject-{id}/ under _WorkSpace/A-User-Store/UserGroup-{DatasetTag}/.
-    If folder exists and manifest is fresh → skip (idempotent).
+1. Resolves the configured global SourceSet and RecSet and fingerprints the spec,
+   builder, and input inventory (absolute path, size, mtime_ns, ctime_ns).
+2. Reuses a cache only when that fingerprint and its recorded output inventory match.
+   `--force` rebuilds when timestamps are unreliable or an explicit refresh is wanted.
+3. Builds in a staging directory beside Subject-<id>. Ohio raw files are copied;
+   MIMIC raw data stays pointer-only, and unavailable proprietary raw data is not invented.
+4. Filters existing global 1-SourceStore and 2-RecStore parquet files by the
+   configured PatientID values. It does not rerun SourceFn or RecordFn pipelines.
+   Tables without PatientID and empty slices are omitted. Wrapper/partition flattening
+   follows the rules above; duplicate paths within the same build use deterministic
+   top-level-first ordering.
+5. Writes provenance and output inventory, checks that inputs did not change,
+   then replaces managed cache projections. A failed build preserves the previous cache;
+   unrelated files outside the managed Store directories are preserved.
 
-  Step 2  — slice raw
-    Copy or filter raw files from _WorkSpace/0-RawDataStore/{dataset}/
-    scoped to individual_id. Format-specific:
-      OhioT1DM     → copy {id}-ws-training.xml + {id}-ws-testing.xml
-      MIMIC-IV     → filter each CSV on individual_id column, write slice
-      WellDoc      → filter study CSV rows on individual_id
-    Write into Subject-*/0-RawDataStore/.
-
-  Step 3  — filtered source
-    Run the existing fn_source.run() pipeline with an individual filter
-    (Partition_Args['individual_id_filter'] = [individual_id]).
-    Reads: Subject-*/0-RawDataStore/ (or global 0-RawDataStore/ + filter).
-    Writes: Subject-*/1-SourceStore/ (FLAT — dataset/source-set wrappers stripped per the flattening rules; names preserved in manifest.yaml).
-
-  Step 4  — filtered record
-    Run fn_record.run() against the filtered source from Step 3.
-    Reads: Subject-*/1-SourceStore/.
-    Writes: Subject-*/2-RecStore/ (FLAT Record-* dirs — rec-set wrapper stripped, name preserved in manifest.yaml).
-
-  Step 5  — manifest
-    Write Subject-*/manifest.yaml with provenance:
-      individual_id, dataset, source_raw_paths, source_set, rec_set,
-      built_at, built_by (script version), build_args (filter config).
-
+Use `--workspace <path-to-_WorkSpace>` to select the builder's Store root.
+Input fingerprints use filesystem metadata to avoid rereading entire global datasets;
+these are cache invalidation signatures, not cryptographic content attestations.
 
 manifest.yaml schema
 --------------------
@@ -172,7 +162,10 @@ source_raw_paths:
 source_set: "OhioT1DM_v0"
 rec_set: "OhioT1DM_v0RecSet"
 built_at: "2026-04-20T14:30:00"
-built_by: "build_sample_individuals.py v0.1"
+built_by: "build_sample_individuals.py v0.5"
+input_fingerprint: "<sha256-of-spec-builder-and-stat-inventory>"
+fingerprint_method: "sha256(config+builder+path/size/mtime_ns/ctime_ns)"
+output_inventory: {}  # populated with generated relative paths, sizes and mtimes
 build_args:
   individual_id_filter: ["559"]
 ```
@@ -187,12 +180,12 @@ A single script (`fn/build_sample_individuals.py`) owns this:
   1. Read sample config (which datasets, which individual IDs, N per dataset).
   2. For each (dataset, individual_id):
      a. Steps 1-5 from Build Logic.
-     b. Idempotent: skip if manifest.built_at is fresh.
+     b. Reuse only if input fingerprint and output inventory match.
   3. Emit a build report (what was built, what was skipped, any errors).
 
 Do NOT hand-edit per-individual folders.
 They are derived, not source of truth.
-Source of truth = global _WorkSpace/0-RawDataStore/ + the build script.
+Source of truth = configured global SourceSet + RecSet, optional raw paths, build spec, and builder.
 
 
 Consumers
@@ -200,7 +193,8 @@ Consumers
 
   Deployed endpoints (stage 6) read:
     manifest.yaml       → dataset + rec_set identification
-    2-RecStore/         → the record for inference
+    1-SourceStore/      → payload context for the shipped inference client
+    2-RecStore/         → optional retrieval/evaluation context
     (NEVER read 3-6 — those don't exist per-individual anyway.)
 
   Tutorials and demos read:
@@ -226,7 +220,7 @@ Relationship to Project-Wide Stores
     2-RecStore/                 ← one individual's record
 
   A per-individual folder is a VIEW of the global store, scoped to one ID,
-  built by running the SAME pipeline with an individual filter.
+  built by filtering the existing global Source/Record outputs.
 
 
 Rules
@@ -236,7 +230,7 @@ Rules
   - NEVER dataset-qualify the child folder name: it is Subject-{id}; the dataset tag lives on the parent UserGroup-{DatasetTag}/ (see Naming Convention).
   - ALWAYS write manifest.yaml — it's the provenance record.
   - If a dataset's raw format can't be cleanly sliced (e.g. proprietary binary),
-    store a pointer manifest in 0-RawDataStore/ instead of copying.
+    record source_raw_paths and raw_materialized in the Subject manifest instead of copying.
   - The build script is the source of truth for how each dataset is sliced.
     Hand-curated individual folders drift and break — do not do it.
   - Individual folders are reproducible: `rm -rf` and re-run `build` must produce

@@ -1,29 +1,14 @@
-"""Is the page's EVIDENCE actually on disk, and did the projections take it?
+"""Check the Page's selected DISPLAY Results and their Delivery projections.
 
-WHY THIS EXISTS. Until 260816 the board checked the Markdown and nothing else,
-so a page could pass every check while the thing a person opens was missing half
-its content. QV2-lbp-regression-results is the case that named the gap: the
-display tab counted five unit FOLDERS, three of them held nothing but a README
-and an empty ``recipe/``, and the LaTeX export correctly embedded the two that
-had rendered. Every layer behaved as specified and the reader still got a report
-with three tables missing (JL 260816: "You have five displays in the display
-plugins, but only two in the latex, why? Is it the workflow issue?").
-
-It was. Nothing owned the step between "the answer came back" and "the float
-exists", so nothing reported that it had not been taken. These checks report it.
-
-WHAT IT DOES NOT DO. It never renders, never edits a unit, and never ticks
-``accepted:``. Step ⑤ of the display walk is a person's and stays a person's
-(`page-plugins/haipipe-plugin-outline/ref/evidence/displays.md`). This module only says which step a unit
-is stuck on, in the same vocabulary the 🖼 tab uses, so the tab and the checker
-cannot disagree about what "rendered" means.
-
-THREE COUNTS, NEVER ONE. `declared` is a unit folder, `rendered` is a winning
-asset plus a preview, `accepted` is a human tick. Folder count is not completed
-work, and the whole failure above is what collapsing them looks like.
+The Evidence Item ledger points at each current typed Result. This module
+resolves a DISPLAY Result's payload.unit, checks the unit's intake/render/
+acceptance state, and compares cited labels with generated LaTeX. The retired
+display folder is read only for Pages using the no-ledger migration profile.
+It never renders, edits a unit, or records a human acceptance decision.
 """
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -33,21 +18,15 @@ from pathlib import Path
 # alone is what a half-run renderer leaves behind.
 WINNING_ASSETS = ("table-body.tex", "figure.pdf", "figure.png", "figure.svg")
 
-# `<stem>-Display<N>-<slug>` — the page-side unit address. The board's own
-# citation index keys on the same shape (`src/dialect_paper.py`).
+# Legacy `<stem>-Display<N>-<slug>` unit folders are read only during migration.
 UNIT_DIR_RE = re.compile(r"^(?P<stem>.+)-Display(?P<n>\d+)-(?P<slug>.+)$")
-
-# BOTH citation forms resolve to the same unit and both exporters place it once
-# (`haipipe-plugin-outline/ref/evidence/displays.md`, "Citation"): the bare Page-local id inside its own
-# page, and the fully qualified `<stem>-DisplayN` in cross-page prose. Matching
-# only the bare form called seven correctly-cited units uncited on
-# CMSStoreBoard, because `QC2-cancer-Display3` is preceded by a hyphen.
-#
-# The trailing `(?![\w-])` keeps a FOLDER name out: `Display3-method-workflow`
-# inside a path is filing, not a sentence citing evidence. Code spans and fences
-# are stripped before matching, because a backticked id QUOTES instead of
-# chipping and a page documenting the citation move must not report itself.
+# Bare Display<N> tokens are accepted only by the no-ledger migration checker.
 CITE_RE = re.compile(r"(?<!\w)Display(\d+)(?![\w-])")
+DISPLAY_TOKEN_RE = re.compile(
+    r"\\(?:figure|table|algorithm)\s*\{\s*(D_[A-Za-z][A-Za-z0-9_-]*)\s*\}"
+)
+DISPLAY_KEY_RE = re.compile(r"^D_[A-Za-z][A-Za-z0-9_-]*$")
+LATEX_REF_RE = re.compile(r"\\(?:auto|C|c)?ref\{([^}]+)\}")
 CODE_SPAN_RE = re.compile(r"`[^`\n]*`")
 
 # BOTH row forms are in the wild and both are the unit contract's rows: QV2's
@@ -57,11 +36,6 @@ CODE_SPAN_RE = re.compile(r"`[^`\n]*`")
 # The leading `-` is optional for that reason, and the key is length-capped so a
 # prose sentence containing a colon cannot pose as a row.
 #
-# ⚠️ `live/plugview.py:122 _readme_rows` has the same bullet-only rule and the
-# same blind spot, so the 🖼 tab currently shows those 25 units with no claim,
-# kind, or acceptance state. Not fixed here: that file is another session's open
-# work, and the tab and this checker must not be allowed to disagree about what
-# a row IS — they should share one parser once it lands.
 # Four dialects on disk, and the bold marker lands on either side of the colon:
 #   `- claim: x`  ·  `claim: x`  ·  `**Claim**: x`  ·  `- **Kind:** x`
 README_ROW_RE = re.compile(
@@ -100,6 +74,232 @@ def _newest(root: Path) -> float:
     """The newest mtime under a folder, 0.0 when it holds no file."""
     times = [p.stat().st_mtime for p in root.rglob("*") if p.is_file()]
     return max(times) if times else 0.0
+
+
+def _page_home(page_source: Path) -> Path:
+    """Current Page output home: the directory that contains its source."""
+    return page_source.parent
+
+
+def _legacy_display_root(page_source: Path) -> Path:
+    """Read the old sibling folder only while a Page migrates to Results."""
+    candidate = page_source.parent / page_source.stem
+    return candidate / "display" if candidate.is_dir() else page_source.parent / "display"
+
+
+def _yaml_scalar(value: str) -> str:
+    """Decode the scalar fields needed from a Result envelope."""
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] == '"':
+        try:
+            decoded = json.loads(value)
+            return decoded if isinstance(decoded, str) else str(decoded)
+        except (TypeError, ValueError):
+            return value[1:-1].replace("\\\\", "\\").replace('\\"', '"')
+    if len(value) >= 2 and value[0] == value[-1] == "'":
+        return value[1:-1].replace("''", "'")
+    return value.split("#", 1)[0].strip()
+
+
+def _minimal_result_document(text: str) -> dict:
+    """Read the small, stable Result subset if PyYAML is unavailable."""
+    result = {}
+    for key in ("item", "type", "status", "display_kind"):
+        match = re.search(rf"(?m)^{re.escape(key)}:[ \t]*(.*?)\s*$", text)
+        if match:
+            result[key] = _yaml_scalar(match.group(1))
+
+    payload_match = re.search(
+        r"(?ms)^payload:[ \t]*\n((?:^[ \t]+[^\n]*(?:\n|$))*)", text
+    )
+    payload = {}
+    if payload_match:
+        match = re.search(r"(?m)^[ \t]+unit:[ \t]*(.*?)\s*$", payload_match.group(1))
+        if match:
+            payload["unit"] = _yaml_scalar(match.group(1))
+    result["payload"] = payload
+
+    labels = []
+    inline_labels = re.search(r"(?m)^labels:[ \t]*(\[.*\])[ \t]*$", text)
+    if inline_labels:
+        raw = inline_labels.group(1)
+        try:
+            value = json.loads(raw)
+        except (TypeError, ValueError):
+            try:
+                import ast
+                value = ast.literal_eval(raw)
+            except (SyntaxError, ValueError):
+                value = []
+        if isinstance(value, list):
+            labels.extend(str(item) for item in value)
+    else:
+        labels_match = re.search(
+            r"(?ms)^labels:[ \t]*\n((?:^[ \t]+[^\n]*(?:\n|$))*)", text
+        )
+        if labels_match:
+            entries = re.split(r"(?m)^[ \t]*-[ \t]+", labels_match.group(1))
+            for entry in entries:
+                fields = {}
+                for line in entry.splitlines():
+                    match = re.match(
+                        r"^[ \t]*([A-Za-z_][A-Za-z0-9_-]*):[ \t]*(.*?)\s*$", line
+                    )
+                    if match:
+                        fields[match.group(1)] = _yaml_scalar(match.group(2))
+                if fields:
+                    labels.append(fields)
+                else:
+                    token = _yaml_scalar(entry)
+                    if token:
+                        labels.append(token)
+    result["labels"] = labels
+    return result
+
+
+def _result_document(manifest: Path) -> dict:
+    try:
+        text = manifest.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return {}
+    try:
+        value = json.loads(text)
+    except (TypeError, ValueError):
+        try:
+            import yaml
+        except ImportError:
+            return _minimal_result_document(text)
+        try:
+            value = yaml.safe_load(text)
+        except yaml.YAMLError:
+            return _minimal_result_document(text)
+    return value if isinstance(value, dict) else _minimal_result_document(text)
+
+
+def _resolve_payload_unit(page_home: Path, manifest: Path, raw: object) -> Path | None:
+    """Resolve payload.unit only inside the selected Result's payload tree."""
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    value = raw.strip()
+    root = manifest.parent / "payload"
+    candidates = []
+    placeholder = "<resolved-result>/"
+    if value.startswith(placeholder):
+        candidates.append(manifest.parent / value[len(placeholder):])
+    path = Path(value)
+    if path.is_absolute():
+        candidates.append(path)
+    else:
+        candidates.extend((page_home / path, manifest.parent / path))
+        if path.parts and path.parts[0] not in {"results", "payload"}:
+            candidates.append(manifest.parent / "payload" / path)
+    try:
+        resolved_root = root.resolve()
+    except OSError:
+        return None
+    for candidate in candidates:
+        if candidate.is_symlink():
+            continue
+        try:
+            resolved = candidate.resolve(strict=True)
+            resolved.relative_to(resolved_root)
+        except (OSError, ValueError):
+            continue
+        if resolved.is_dir():
+            return resolved
+    return None
+
+
+def _display_label_key(label: object) -> str:
+    if isinstance(label, str):
+        token, kind = label.strip(), ""
+        status = ""
+    elif isinstance(label, dict):
+        token = str(label.get("token") or label.get("label") or
+                    label.get("placeholder") or label.get("key") or
+                    label.get("reference") or "").strip()
+        kind = str(label.get("kind") or "").strip().upper()
+        status = str(label.get("status") or "").strip().lower()
+    else:
+        return ""
+    if status in {"unresolved", "pending", "missing"}:
+        return ""
+    match = DISPLAY_TOKEN_RE.fullmatch(token)
+    key = match.group(1) if match else token
+    kind = kind or ("DISPLAY" if DISPLAY_KEY_RE.fullmatch(key) else "")
+    return key if kind in {"DISPLAY", "TABLE"} and DISPLAY_KEY_RE.fullmatch(key) else ""
+
+
+def _result_display_labels(document: dict) -> set[str]:
+    labels = document.get("labels")
+    if not isinstance(labels, list):
+        return set()
+    return {key for key in (_display_label_key(label) for label in labels) if key}
+
+
+def current_display_results(page_source: Path) -> tuple[list[dict], bool]:
+    """Ledger-selected DISPLAY envelopes, with confined payload paths.
+
+    The boolean says a current typed DISPLAY Result exists even when its payload
+    has not been produced yet. That prevents legacy folders from taking over a
+    Page that has moved to Results.
+    """
+    page_home = _page_home(page_source)
+    result_root = page_home / "results"
+    records = {}
+    from .evidence_selection import legacy_profile, selected_results
+    saw_display = not legacy_profile(page_source)
+    try:
+        selection_errors = []
+        manifests = selected_results(page_source, strict=False, errors=selection_errors)
+    except OSError:
+        return [], False
+    for issue in selection_errors:
+        if str(issue.get("type", "")).upper() not in {"DISPLAY", "TABLE"}:
+            continue
+        item = str(issue.get("item") or issue.get("reference") or "unresolved DISPLAY Result")
+        records[item] = {
+            "item": item,
+            "manifest": None,
+            "unit": None,
+            "unit_ref": issue.get("reference"),
+            "labels": set(),
+            "status": "unresolved",
+            "selection_error": issue.get("error", "invalid selected Result"),
+        }
+        saw_display = True
+    for manifest in manifests:
+        if manifest.is_symlink():
+            continue
+        try:
+            manifest.resolve().relative_to(result_root.resolve())
+        except (OSError, ValueError):
+            continue
+        document = _result_document(manifest)
+        item = str(document.get("item", "")).strip()
+        kind = str(document.get("type", "")).strip().upper()
+        if kind not in {"DISPLAY", "TABLE"} and not re.search(r"-(?:DISPLAY|TABLE)-", item, re.I):
+            continue
+        saw_display = True
+        payload = document.get("payload")
+        raw_unit = payload.get("unit") if isinstance(payload, dict) else None
+        unit = _resolve_payload_unit(page_home, manifest, raw_unit)
+        key = item or manifest.relative_to(page_home).as_posix()
+        records[key] = {
+            "item": item or key,
+            "manifest": manifest,
+            "unit": unit,
+            "unit_ref": raw_unit,
+            "labels": _result_display_labels(document),
+            "status": str(document.get("status", "")).strip().lower(),
+        }
+    return list(records.values()), saw_display
+
+
+def display_result_requires_unit(status: str) -> bool:
+    """Ready/complete Result states must point to a concrete payload unit."""
+    token = re.sub(r"^[^a-z]+", "", str(status).replace("_", " ").lower())
+    return token.startswith(("complete", "ready", "rendered", "accepted", "resolved"))
 
 
 def unit_state(unit: Path) -> dict:
@@ -173,14 +373,17 @@ def unit_state(unit: Path) -> dict:
 
 
 def display_units(page_source: Path) -> list[Path]:
-    """Every declared unit folder beside one Page source, in id order.
+    """Every current Result unit, falling back to the retired folder lane.
 
-    A unit is DECLARED by its folder, not by holding a float.tex: the empty
-    shells are exactly what must be reported, so the selector cannot be the
-    thing they are missing.
+    Typed Results own current units. Legacy folder discovery remains readable
+    only for Pages that have not yet written a typed DISPLAY Result.
     """
-    folder = page_source.parent / page_source.stem
-    root = folder / "display" if folder.is_dir() else page_source.parent / "display"
+    results, saw_display = current_display_results(page_source)
+    if saw_display:
+        return sorted({record["unit"] for record in results if record["unit"]},
+                      key=lambda path: path.as_posix())
+
+    root = _legacy_display_root(page_source)
     if not root.is_dir():
         return []
 
@@ -200,19 +403,67 @@ def cited_ids(text: str) -> set[str]:
         if line.lstrip().startswith("```"):
             fence = not fence
             continue
-        if not fence:
+        if not fence and not line.lstrip().startswith(">"):
             prose.append(CODE_SPAN_RE.sub(" ", line))
     return {n.lstrip("0") or "0" for n in CITE_RE.findall("\n".join(prose))}
 
 
+def cited_display_labels(text: str) -> set[str]:
+    """Page-facing D_ labels cited in prose, excluding quoted examples."""
+    prose, fence = [], False
+    for line in text.split("\n"):
+        if line.lstrip().startswith("```"):
+            fence = not fence
+            continue
+        if not fence and not line.lstrip().startswith(">"):
+            prose.append(CODE_SPAN_RE.sub(" ", line))
+    return set(DISPLAY_TOKEN_RE.findall("\n".join(prose)))
+
+
+def cited_latex_refs(text: str) -> set[str]:
+    """Manuscript labels cited directly with ref/autoref, excluding examples."""
+    prose, fence = [], False
+    for line in text.split("\n"):
+        if line.lstrip().startswith(chr(96) * 3):
+            fence = not fence
+            continue
+        if not fence and not line.lstrip().startswith(">"):
+            prose.append(CODE_SPAN_RE.sub(" ", line))
+    return set(LATEX_REF_RE.findall("\n".join(prose)))
+
+
 def _projection(page_source: Path, kind: str) -> Path | None:
-    folder = page_source.parent / page_source.stem
-    root = folder / kind if folder.is_dir() else page_source.parent / kind
-    if not root.is_dir():
-        return None
+    folder = _page_home(page_source)
     suffix = ".tex" if kind == "latex" else ".docx"
-    hit = root / f"{page_source.stem}{suffix}"
-    return hit if hit.is_file() else None
+    current = folder / "delivery" / kind / f"{page_source.stem}{suffix}"
+    if current.is_file():
+        return current
+    candidate = page_source.parent / page_source.stem
+    legacy_home = candidate if candidate.is_dir() else folder
+    legacy = legacy_home / kind / f"{page_source.stem}{suffix}"
+    return legacy if legacy.is_file() else None
+
+
+def _projection_embeds_unit(tex_text: str, tex_path: Path, unit: Path) -> bool:
+    """Return whether generated TeX references a real asset inside this unit."""
+    asset_root = (unit / "assets").resolve()
+    refs = re.findall(
+        r"\\(?:input|includegraphics)\s*(?:\[[^\]]*\])?\s*\{([^}]+)\}",
+        tex_text,
+    )
+    for raw in refs:
+        ref = Path(raw.strip())
+        candidate = ref if ref.is_absolute() else tex_path.parent / ref
+        try:
+            resolved = candidate.resolve()
+            resolved.relative_to(asset_root)
+        except (OSError, ValueError):
+            continue
+        if resolved.is_file() or any(
+                resolved.with_suffix(suffix).is_file()
+                for suffix in (".tex", ".pdf", ".png", ".jpg", ".jpeg", ".svg")):
+            return True
+    return False
 
 
 def check_page_evidence(page_source: Path, text: str, name: str, rep,
@@ -222,8 +473,35 @@ def check_page_evidence(page_source: Path, text: str, name: str, rep,
     ``rep`` is `cli/check.py`'s report object; ``error``/``warn`` are its level
     constants, passed in so this module stays importable without the CLI.
     """
-    units = display_units(page_source)
-    if not units:
+    result_records, has_typed_results = current_display_results(page_source)
+    unresolved = []
+    if has_typed_results:
+        unit_records = [record for record in result_records if record["unit"]]
+        for record in result_records:
+            if record["unit"]:
+                continue
+            status = record["status"].replace("_", " ")
+            raw_unit = record["unit_ref"]
+            requires_unit = display_result_requires_unit(status)
+            if record.get("selection_error") or raw_unit or requires_unit:
+                unresolved.append(record)
+                if record.get("selection_error"):
+                    detail = (f"selected Result {raw_unit!r} is invalid: "
+                              f"{record['selection_error']}" if raw_unit else
+                              f"no selected Result is bound: {record['selection_error']}")
+                else:
+                    detail = (f"payload.unit {raw_unit!r} does not resolve inside this Result's payload/"
+                              if raw_unit else
+                              f"status is {status!r}, but payload.unit is missing")
+                rep.add(error, "display-result-unit-unresolved",
+                        f"{name} -> {record['item']}",
+                        f"the current DISPLAY Result cannot supply its Page unit: {detail}.")
+        units = [record["unit"] for record in unit_records]
+    else:
+        units = display_units(page_source)
+        unit_records = [{"unit": unit, "item": unit.name, "labels": set()}
+                        for unit in units]
+    if not units and not unresolved:
         return
 
     states = [unit_state(u) for u in units]
@@ -258,42 +536,89 @@ def check_page_evidence(page_source: Path, text: str, name: str, rep,
                     "then have a person accept it again.")
 
     # The QV2 defect itself: the prose names a unit and the PDF never carries it.
+    if has_typed_results:
+        declared_labels = {
+            label for record in result_records for label in record["labels"]
+        }
+        for token in sorted(cited_display_labels(text) - declared_labels):
+            rep.add(warn, "display-label-unbound",
+                    f"{name} -> {token}",
+                    "no selected current DISPLAY Result declares this Page label; "
+                    "Delivery leaves it visibly pending until the token is bound.")
+
     tex = _projection(page_source, "latex")
     if tex is not None:
         tex_text = tex.read_text(encoding="utf-8", errors="replace")
-        by_n = {}
-        for unit, state in zip(units, states):
-            m = UNIT_DIR_RE.match(unit.name)
-            if m:
-                by_n[m.group("n").lstrip("0") or "0"] = (unit, state)
-        for n in sorted(cited_ids(text), key=lambda v: int(v)):
-            pair = by_n.get(n.lstrip("0") or "0")
-            if pair is None:
-                rep.add(warn, "display-cited-unit-missing", f"{name} -> Display{n}",
-                        "the prose cites this unit and no such folder exists "
-                        "under display/")
-                continue
-            unit, state = pair
-            if unit.name not in tex_text:
-                detail = ("it never rendered, so the exporter skipped it"
-                          if not state["rendered"]
-                          else "it IS rendered, so this is an export fault")
-                rep.add(error, "display-cited-not-embedded",
-                        f"{name} -> Display{n}",
-                        f"cited in the prose but absent from "
-                        f"{tex.parent.name}/{tex.name}; {detail}.")
+        if has_typed_results:
+            cited = cited_display_labels(text)
+            cited_refs = cited_latex_refs(text)
+            by_label = {}
+            by_ref = {}
+            for record in unit_records:
+                for label in record["labels"]:
+                    by_label.setdefault(label, record)
+                float_tex = record["unit"] / "float.tex"
+                if float_tex.is_file():
+                    body = float_tex.read_text(encoding="utf-8", errors="replace")
+                    match = re.search(r"\\label\{([^}]+)\}", body)
+                    if match:
+                        by_ref.setdefault(match.group(1), record)
+            cited_records = set()
+            mentions = ([(label, by_label.get(label)) for label in cited]
+                        + [(label, by_ref.get(label)) for label in cited_refs])
+            for token, record in mentions:
+                if record is None:
+                    # Unbound Page tokens remain visible in draft mode.
+                    continue
+                cited_records.add(record["item"])
+                unit = record["unit"]
+                if not _projection_embeds_unit(tex_text, tex, unit):
+                    state = unit_state(unit)
+                    detail = ("it has no winning render, so the exporter skipped it"
+                              if not state["rendered"]
+                              else "it IS rendered, so this is an export fault")
+                    rep.add(error, "display-cited-not-embedded",
+                            f"{name} -> {token}",
+                            f"cited in the prose but absent from "
+                            f"{tex.parent.name}/{tex.name}; {detail}.")
+            for record, state in zip(unit_records, states):
+                if (state["rendered"] and record["labels"]
+                        and record["item"] not in cited_records):
+                    rep.add(warn, "display-rendered-not-cited",
+                            f"{name} -> {record['item']}",
+                            "rendered, but no sentence cites one of this Result's "
+                            "D_ labels, so the projection has no placement point.")
+        else:
+            by_n = {}
+            for unit, state in zip(units, states):
+                m = UNIT_DIR_RE.match(unit.name)
+                if m:
+                    by_n[m.group("n").lstrip("0") or "0"] = (unit, state)
+            for n in sorted(cited_ids(text), key=lambda v: int(v)):
+                pair = by_n.get(n.lstrip("0") or "0")
+                if pair is None:
+                    rep.add(warn, "display-cited-unit-missing", f"{name} -> Display{n}",
+                            "the prose cites this unit and no such folder exists "
+                            "under the retired display/ lane")
+                    continue
+                unit, state = pair
+                if not _projection_embeds_unit(tex_text, tex, unit):
+                    detail = ("it has no winning render, so the exporter skipped it"
+                              if not state["rendered"]
+                              else "it IS rendered, so this is an export fault")
+                    rep.add(error, "display-cited-not-embedded",
+                            f"{name} -> Display{n}",
+                            f"cited in the prose but absent from "
+                            f"{tex.parent.name}/{tex.name}; {detail}.")
 
-        # The mirror defect: a unit that rendered and that no sentence names.
-        # The projections inherit the CITATION, so an uncited unit prints
-        # nowhere however finished it is.
-        cited = {n.lstrip("0") or "0" for n in cited_ids(text)}
-        for n, (unit, state) in sorted(by_n.items(), key=lambda kv: int(kv[0])):
-            if n not in cited and state["rendered"]:
-                rep.add(warn, "display-rendered-not-cited",
-                        f"{name} -> {unit.name}",
-                        "rendered but no sentence cites `Display" + n + "`, and "
-                        "the projections embed only cited units, so this render "
-                        "reaches no reader.")
+            cited = {n.lstrip("0") or "0" for n in cited_ids(text)}
+            for n, (unit, state) in sorted(by_n.items(), key=lambda kv: int(kv[0])):
+                if n not in cited and state["rendered"]:
+                    rep.add(warn, "display-rendered-not-cited",
+                            f"{name} -> {unit.name}",
+                            "rendered but no sentence cites `Display" + n + "`, and "
+                            "the projections embed only cited units, so this render "
+                            "reaches no reader.")
 
         # The Page's own H1 must reach the document as a title block.
         if not re.search(r"\\(title|section\*?)\{", tex_text):
@@ -312,7 +637,7 @@ def check_page_evidence(page_source: Path, text: str, name: str, rep,
                 "the .docx is older than the Page source it projects; REVISE "
                 "changed the page and did not rebuild.")
 
-    if rendered < len(units):
+    if units and rendered < len(units):
         rep.add(warn, "display-counts-split", name,
                 f"{len(units)} declared · {rendered} rendered · "
                 f"{sum(1 for s in states if s['accepted'])} accepted. The three "

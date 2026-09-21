@@ -16,9 +16,11 @@ Usage:
 """
 
 import argparse
+import hashlib
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
 
@@ -104,7 +106,7 @@ def create_notebook(cells):
     """Create Jupyter notebook structure from cells."""
     nb_cells = []
 
-    for cell in cells:
+    for index, cell in enumerate(cells):
         if cell["cell_type"] == "markdown":
             nb_cell = {
                 "cell_type": "markdown",
@@ -127,6 +129,9 @@ def create_notebook(cells):
                 "outputs": [],
                 "source": '\n'.join(cell["source"])
             }
+        # nbformat 4.5 requires stable, unique IDs for each cell.
+        identity = str(index) + "\n" + nb_cell["source"]
+        nb_cell["id"] = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:16]
         nb_cells.append(nb_cell)
 
     notebook = {
@@ -146,8 +151,7 @@ def create_notebook(cells):
                 "mimetype": "text/x-python",
                 "name": "python",
                 "nbconvert_exporter": "python",
-                "pygments_lexer": "ipython3",
-                "version": "3.10.0"
+                "pygments_lexer": "ipython3"
             }
         },
         "nbformat": 4,
@@ -214,9 +218,8 @@ Examples:
             return 1
 
         # Replace 'script' with 'notebook' in path
-        script_dir_str = str(script_dir)
-        if '/script' in script_dir_str:
-            out_dir = Path(script_dir_str.replace('/script', '/notebook'))
+        if script_dir.name == 'script':
+            out_dir = script_dir.with_name('notebook')
         else:
             out_dir = script_dir.parent / 'notebook'
 
@@ -231,16 +234,20 @@ Examples:
         print(f"  {script_dir} → {out_dir}")
         print("-" * 60)
 
+        failures = []
         for py_file in py_files:
             ipynb_path = out_dir / (py_file.stem + '.ipynb')
             try:
                 convert_py_to_ipynb(py_file, ipynb_path)
             except Exception as e:
+                failures.append(py_file.name)
                 print(f"✗ Error: {py_file.name}: {e}")
 
         print("-" * 60)
-        print(f"✓ Done!")
-        return 0
+        print(f"Converted {len(py_files) - len(failures)}/{len(py_files)} files.")
+        if failures:
+            print("Failed: " + ", ".join(failures), file=sys.stderr)
+        return 1 if failures else 0
 
     # Single file mode
     py_path = input_path
@@ -267,4 +274,4 @@ Examples:
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

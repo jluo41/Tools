@@ -49,7 +49,8 @@ Then:
 
 1. choose the owning unit and Board location;
 2. write `board.md` using `board-form.md`;
-3. create Q/S Pages from `page-template.md`, or use the owning generator for a
+3. create generic Q/S Pages from the canonical
+   [Page template](../../../page/haipipe-page/ref/page-template.md), or use the owning generator for a
    generated Page kind;
 4. register presentation order in `## Pages`;
 5. build, check, and inspect the rendered Board.
@@ -60,12 +61,21 @@ membership.
 
 ## Add or archive structure
 
+Resolve Board kind and existing members before adding structure. Membership
+comes from the declared source tree; `## Pages` controls grouping and order.
 The live structure route and direct source edits must produce the same grammar.
+The following Q/S operations apply to a generic Board:
 
 - Add a Group by appending one `### Q<id> · <title>` block to `## Pages`.
 - Add a Q Page inside its Group folder and list its filename under that Group.
 - Archive a Page by moving it under `_archive/` and removing its Pages row.
 - Archive a Group only after it contains no active Page rows.
+
+For Task and Discovery Blocks, use the native Job/Task owner to create or
+change members, then update Board presentation order if needed. A Board with
+only Job headings may already contain Tasks. For Design and Insight Boards,
+use their family owner and Board-level actions. Do not create a Q Page to
+replace an existing native object or reshape its tree with generic tools.
 
 Archive history is written to the Page's
 `outline/<stem>-log.md`, never to a Page-level `## Log`.
@@ -102,9 +112,13 @@ used. Build and check use system Python. A non-loopback listener requires
 authentication unless the user explicitly chooses a trusted private-network
 exception. The terminal endpoint is a real shell; never expose it casually.
 
-The live layer may write comments, edits, structure, Chat sessions, drawings,
-and supported plugin records back to source. A write is complete only after
-the Markdown lands and the Board rebuilds.
+The Page reading surface is read-only. Its retired comment, sentence-edit,
+Card, discussion, and resolve POST routes return 405, including stale browser
+requests. Copy a passage prompt into an agent conversation to request source
+changes. Explicit plugin workspaces still manage their own records, Chat
+sessions, drawings, and Board structure. Source updates are complete after
+the Markdown lands and the Board rebuilds. Rebuild generated Board assets and
+restart `serve.py` when upgrading to this reading-only interface.
 
 ## Move Group and Page folders
 

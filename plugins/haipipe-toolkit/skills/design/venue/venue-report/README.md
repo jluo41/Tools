@@ -6,7 +6,9 @@ tables/figures. The most paper-like venue in this reference family.
 
 ## Constraints
 
-- **Length:** 600-2000 words (audience-dependent)
+- **Length:** a full report typically uses 600-2000 words; audience-specific
+  briefs may be shorter (see the style profile). Freeze one explicit budget
+  at Commission rather than combining a default range with an audience cap.
 - **Structure:** formal sections (exec summary, methodology,
   findings, recommendations, appendix)
 - **Citations:** required (format per audience profile)
@@ -21,10 +23,9 @@ design_profile:
   narrative: required
   display: required
   section_edit: required
-  terminal: adopted
 ```
 
-## Phase use
+## Run guidance
 
 ### Commission and Generate
 
@@ -57,6 +58,7 @@ sections:
   - 06-gate-check          # settlement + caveats before shipping
 ```
 
-### Verify and adopt
+### Verify
 Judge the formal report against the evidence bar and venue rails, render its
-exact version under `delivery/render/`, then adopt or decline.
+exact version inside the current Result. Independent Verify pass makes it ready
+for Delivery.

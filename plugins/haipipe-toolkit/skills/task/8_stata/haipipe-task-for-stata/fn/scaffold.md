@@ -4,7 +4,7 @@ fn-scaffold: Scaffold a Stata job
 Unified scaffold for all 4 Stata stages.
 Read `ref/stata-dialect.md` first for the engine contract.
 
-Output: `tasks/{G}{NN}_<group>/{LNN}_{task_name}/` where {L} = stage letter (A=cms, B=case, C=data, D=reg).
+Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`; stage belongs in the suffix.
 
 
 Step 1 -- Identify project + block
@@ -24,7 +24,7 @@ Step 2 -- Resolve stage
 Step 3 -- Collect metadata
 ---------------------------
 
-- 2-digit NN: next free in this group.
+- Allocate unused bNN/jNN/tNN/rNN indices at their own levels; preserve existing identities.
 - snake_case task_name.
 - Stage-specific axis:
     cms:  year axis (2015..2020) -> one run per year
@@ -40,12 +40,18 @@ Step 4 -- Create skeleton
 Stage-specific tree (see SKILL.md for the full tree per stage).
 Common elements:
 
-    {LNN}_{task_name}/
-    |- configs/              Stata .do configs (source of truth) + YAML _meta wrappers
-    |- runs/                 THIN .ps1 entries (from ref/run-ps1-template.ps1)
-    |- sbatch/               multi-run batchers (optional)
-    |- results/              log/ + summary.txt + config_snapshot.do (+ manifest.json for self-orchestrating stages per dialect B3)
-    +- diagram/              doc surface (never README.md)
+    tasks/bNN_<block>/board.md
+    tasks/bNN_<block>/jNN_<job>/src/                 shared libraries/defaults
+    tasks/bNN_<block>/jNN_<job>/tNN_<task>/
+      tNN_<task>.md + outline/ + workflow/
+      scripts/                                    dispatcher, orchestrator, workers
+      scripts/config/rNN_<run>.do                  per-run globals
+      scripts/config/rNN_<run>.yaml                optional metadata wrapper
+      runs/rNN_<run>.ps1                           matching Ticket
+      sbatch/                                     optional, Task-local only
+
+    Results: $OUTPUT_ROOT/<task>/results/rNN_<run>/ (logs, summary, snapshots)
+    Resolve RESULT_STORE, then Job store declaration, then Job root before launch.
 
 Stage differences:
 - cms/case: dispatcher .do (from ref/dispatcher-do-template.do) + orchestrator .ps1 (from ref/run-stage-year-template.ps1) + scripts/ subdirs
@@ -56,23 +62,24 @@ Stage differences:
 Step 5 -- Seed configs
 -----------------------
 
-Copy `ref/config-seed-<stage>.do` to `configs/<cfg>.do`.
+Copy the shared seed to `scripts/config/<cfg>.do` and create a per-run `scripts/config/rNN_<run>.do` wrapper for each Ticket.
+The wrapper selects shared globals and pins the variant; shared configs never substitute for a Run identity.
 Fill in Stata globals (keep-vars, paths, flags).
 The `.do` is the source of truth; a companion `.yaml` carries only the `_meta:` discipline block.
 
 Stage-specific seeding:
-- cms: one config per year. `stata_config:` points to shared `cms_production.do`.
-- case: three layers -- (1) `_source_{synth|full}.do` source selectors, (2) `<Cohort>.do` shared cohort config, (3) thin per-run `<Cohort>_<source>_<year>.do` from `ref/config-seed-run.do`. One YAML + one .do per (cohort x source x year).
+- cms: one `scripts/config/rNN_<run>.do` per year, loading shared `cms_production.do` and pinning `global data_year <year>`. The optional YAML `stata_config:` points to that per-run wrapper.
+- case: three layers -- (1) `_source_{synth|full}.do` source selectors, (2) `<Cohort>.do` shared cohort config, (3) thin per-run `rNN_<run>.do` from `ref/config-seed-run.do`. One YAML + one .do per (cohort x source x year).
 - data: paired configs per spec (synth + real variants). No year axis.
     (1) `<Spec>.do` -- synth config (laptop-safe). `data_asset_version "v001_base_synth"`.
     (2) `<Spec>_real.do` -- real config (CMS server). `data_asset_version "v001_base_real"`.
         `case_asset_version` is TODO-tagged until real case-pipeline runs complete.
     Identical except: case_asset_version, data_asset_version, file_physician path.
-    Each gets its own runner + results dir. sbatch accepts `-mode synth|real|all`.
+    Each spec variant is instantiated as its own `scripts/config/rNN_<run>.do` with matching Ticket + Result directory. sbatch accepts `-mode synth|real|all`.
 - reg: two-layer chain from `ref/config-seed-reg.do` + `ref/config-seed-reg-run.do`:
     (1) `<Cohort>_<Pairing>.do` -- shared: data path + version + res_root.
     (2) `<Cohort>_<Pairing>_synth.do` -- shared synth variant (different data_version).
-    (3) `run_reg_<RUNNAME>.do` -- per-run: loads shared + pins outcome_bfaf_window + res_dir.
+    (3) `rNN_<run>.do` -- per-run: loads shared + pins outcome_bfaf_window + res_dir.
         DID per-run configs add: `global file_policy "${ws_root}/0-External-Store/Policy/..."`.
     YAML _meta companions are OPTIONAL for reg (simple 5-7 line .do configs are self-describing).
     Controls/outcomes/instruments live in worker .do scripts, NOT in configs.
@@ -81,16 +88,16 @@ Stage-specific seeding:
 Step 6 -- Run-scripts
 ----------------------
 
-**cms/case:** Copy `ref/run-ps1-template.ps1` to `runs/<run>.ps1` for each RUNNAME.
+**cms/case:** Copy `ref/run-ps1-template.ps1` to `runs/rNN_<run>.ps1` for each RUNNAME.
 Thin entries that delegate to the orchestrator .ps1.
 
-**data:** Copy `ref/run-data-runner-template.ps1` to `runs/<run>.ps1`.
+**data:** Copy `ref/run-data-runner-template.ps1` to `runs/rNN_<run>.ps1`.
 Self-orchestrating entries.
 
-**reg:** Copy `ref/run-ps1-reg-template.ps1` to `runs/<run>.ps1`.
+**reg:** Copy `ref/run-ps1-reg-template.ps1` to `runs/rNN_<run>.ps1`.
 Self-contained runners with Resolve-StataExe + HAIPIPE_RUN_CONFIG + worker list.
 
-For cms/case: also copy `ref/run-stage-year-template.ps1` as the orchestrator .ps1.
+For cms/case: also copy `ref/run-stage-year-template.ps1` to scripts/ as the orchestrator .ps1.
 For data/reg: no separate orchestrator -- the runner IS the orchestrator.
 
 Optional: create sbatch/*.ps1 multi-run batchers.
@@ -100,7 +107,7 @@ Step 7 -- Report
 -----------------
 
     status:    ok
-    summary:   Scaffolded <stage> task <NN>_<name> under {G}{NN}_<group>.
+    summary:   Scaffolded <stage> task <NN>_<name> under the selected bNN Block / jNN Job.
     artifacts: [paths created]
     next:      author dispatcher .do + scripts/ workers (incl. describe step); run haipipe-task-reviewer-agent before hand-copy
 

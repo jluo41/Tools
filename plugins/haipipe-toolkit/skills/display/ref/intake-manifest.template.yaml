@@ -4,8 +4,8 @@ schema: haipipe-display-intake/v1
 
 display:
   id: displayNN-slug
-  kind: figure # figure | table | diagram | illustration
-  requested_by: 0-lifecycle/3-display/S-Display-N-slug.md
+  kind: figure # figure | table | diagram | illustration | tex
+  requested_by: <Page Evidence Item or caller brief path>
 
 sources:
   - id: values-main
@@ -25,7 +25,8 @@ sources:
       materialized_at: "YYYY-MM-DDTHH:MM:SSZ"
       materialized_by: "GPT-5.6 Terra"
 
-  # Concept displays omit values-main. They still declare what the renderer may use.
+  # Concept displays omit values-main unless an approved visual includes verified numbers.
+  # In that case, add a separate role: values source; the renderer never calculates those values.
   # - id: narrative-context
   #   role: narrative-context
   #   purpose: "Explains the reader takeaway without supplying numeric facts."

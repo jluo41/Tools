@@ -44,14 +44,21 @@ Runs                   allocated Run / RI instances, triggers, actors, inputs,
                        statuses, Results, and receipts
 ```
 
-The Flow Table rows are the six Insight RunTypes:
+The Workflow map lists parameterized Run Spec templates: Supporting work,
+local Evidence, selected Structure/Writing, and Delivery. Each concrete Spec
+binds one bounded target and its native owner. The accompanying Folder resource
+table maps Meta, Question and DIKW resources to their Spaces; its rows do not
+count as Runs. Folder trees show Folder kinds.
 
-```text
-I0 Meta → I1 Question → I2 Data → I3 Information → I4 Knowledge → I5 Wisdom
-```
+The Runs view reads aggregate records from
+`_runs/insight/<workflow_runtime_id>/runtime.yaml`, with actual native Run ids,
+owners, targets, dependencies, Results and receipt pointers. Empty inventories
+stay empty; malformed or duplicate identities produce a visible reading error.
+Historical Page-referenced Supporting receipts remain a separate provenance
+view. The aggregate projects native records and does not establish their gates.
 
-The columns are the four Spaces. A cell reports the action, state, and
-artifact for that Run Spec in that Space. `workflow_runtime_id` is the runtime
+Space columns show the relevant resource actions and artifacts; a template
+or resource row is never presented as an allocated Run. `workflow_runtime_id` is the runtime
 envelope behind Run Space; it is not a Space label and is not itself a Run.
 
 ## Topic and question evolution

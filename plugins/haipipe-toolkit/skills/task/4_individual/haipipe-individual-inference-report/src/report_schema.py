@@ -11,10 +11,10 @@ Both come from the same LLM call. The XML response shape is:
       <current>...</current>
       <forecast_summary>...</forecast_summary>
       <interpretation>
-        <verdict>rising | stable | falling</verdict>
+        <verdict>rising | stable | falling | mixed</verdict>
         <why>...</why>
         <actions>...</actions>
-        <confidence>high | medium | low</confidence>
+        <confidence>unavailable</confidence>
         <safety_flag>none | hypo_risk | hyper_risk</safety_flag>
       </interpretation>
       <nl>... free text patient/clinician message ...</nl>
@@ -28,7 +28,7 @@ from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 
 VERDICT_VALUES = {"rising", "stable", "falling", "mixed"}
-CONFIDENCE_VALUES = {"high", "medium", "low"}
+CONFIDENCE_VALUES = {"unavailable"}
 SAFETY_VALUES = {"none", "hypo_risk", "hyper_risk", "hypo_and_hyper_risk"}
 
 
@@ -56,7 +56,7 @@ class CurrentStatus(BaseModel):
 
 
 class ForecastSummary(BaseModel):
-    """Compact summary of the model's forecast (raw forecast lives in meta)."""
+    """Compact summary of the model's forecast (raw forecast lives in forecast.json, bound by hashes in meta.json)."""
     horizon_minutes: int            # e.g. 120
     n_windows: int                  # e.g. 45
     pred_min: float
@@ -65,10 +65,11 @@ class ForecastSummary(BaseModel):
 
 
 class Interpretation(BaseModel):
+    """Forecast labels with a reproducible trend and confidence contract."""
     verdict: Literal["rising", "stable", "falling", "mixed"]
-    why: str
+    why: str = Field(min_length=1)
     actions: List[str] = Field(default_factory=list, max_length=4)
-    confidence: Literal["high", "medium", "low"]
+    confidence: Literal["unavailable"]
     safety_flag: Literal["none", "hypo_risk", "hyper_risk", "hypo_and_hyper_risk"]
 
 

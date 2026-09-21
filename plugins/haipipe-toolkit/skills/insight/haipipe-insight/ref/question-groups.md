@@ -2,7 +2,7 @@
 
 A Question Group is the scheduling and status intersection of one Insight
 partition scope and one requested DIKW target. It is derived from MT00 and the
-four I1 registers; it is never another Folder, queue, or authority ledger.
+four Question registers; it is never another Folder, queue, or authority ledger.
 
 ```text
 Question Group = partition scope × target Insight Level
@@ -32,7 +32,11 @@ W  Wisdom        counsel / hand off
 ```
 
 The canonical handle is `QG-<partition>-<level>`. It is computed, not stored.
-Changing a question's target moves its membership; changing MT00 partitions
+A question's rung is fixed by its id prefix. A target change creates a new
+question id in the destination register with reciprocal `supersedes` /
+`superseded-by` links. Historical rows and settlements stay at their original
+addresses; open old cells retire with an explicit refusal reason. Only the
+successor's own cells join the new rung's groups. Changing MT00 partitions
 recomputes the affected groups and reopens X where required.
 
 ## Membership
@@ -64,7 +68,9 @@ SETTLED    every eligible cell is ✅, 🚫 <reason>, or 🟡 <page> final
 ```
 
 The group is a batch view, not the atomic transition. Dispatch still selects
-one cell and one Page at a time. Status sorts groups by MT00 partition order,
+one ready owner-native Run at a time, with its target Page and cell(s), or an
+explicit control-only action when no Run is needed. One computation may serve
+several cells; record its identity once. Status sorts groups by MT00 partition order,
 then `D → I → K → W`; questions within a group stay in stable id order.
 
 The same projection works in both layouts:

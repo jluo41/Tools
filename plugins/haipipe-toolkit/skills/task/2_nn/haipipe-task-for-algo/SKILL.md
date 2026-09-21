@@ -27,7 +27,7 @@ task-algo vs task-training (don't confuse them)
 ```
                     task-algo (this)        task-training
 Purpose             smoke-test algorithm    train + sweep a model
-Group letter        X (paired demo)         A (model-run)
+Hierarchy           bNN/jNN/tNN/rNN       bNN/jNN/tNN/rNN
 Config              minimal / 1-batch       full hyperparam grid
 Runtime             minutes                 hours-to-days
 Outputs             "didn't crash" + loss   checkpoint → _WorkSpace/5
@@ -39,19 +39,24 @@ Pipeline skill      /haipipe-nn-algo        /haipipe-nn-tuner+instance
 What this scaffolds
 -------------------
 
-```
-tasks/X_algo/                                ← X-series group (paired Track A)
-└── {NN}_test_<algo_name>/
-    ├── {NN}_test_<algo_name>.py
-    ├── configs/
-    │   └── algo_<name>_tiny.yaml            seeded from ref/config-seed.yaml
-    ├── runs/
-    │   └── algo_<name>_tiny.sh
-    ├── results/                             loss.json, "ran" marker
-    └── notebooks/
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared code + config-defaults.yaml
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.py
+        ├── scripts/config/rNN_<run>.yaml
+        └── runs/rNN_<run>.sh
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
-Group letter default: **X** (algo-dev demo).
+Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 Heavy outputs: none (tiny / disposable).
 
 
@@ -76,7 +81,7 @@ Summary:
 
   1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
-  3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
+  3. Create the canonical Task Page, workflow/, scripts/config/, worker and matching rNN Ticket; resolve generated output through OUTPUT_ROOT.
   4. Seed config from `ref/config-seed.yaml`.
   5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh`.
   6. Suggest next via cross-skill link.
@@ -101,9 +106,12 @@ Workflow plan
 When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
-ref/workflow-plan-sample.yaml     ← script-level phases for this type
-../../haipipe-task/ref/workflow-template.yaml  ← task-level template (Run/Gate1/Gate2)
+ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain steps
+../../haipipe-task/ref/workflow-template.yaml  ← authoritative Run Spec template with entry/exit gates
 ```
 
 Schema source of truth:
   task/haipipe-workflow/ref/plan-schema.md
+
+Resolve `RESULT_STORE`, then the Job store declaration, then the Job root as OUTPUT_ROOT.
+Use the same output-root contract as `haipipe-task`; no physical output is moved by scaffolding.

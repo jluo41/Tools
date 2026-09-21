@@ -2,10 +2,10 @@ board: Agent Roster
 ====================
 
 The Board family owns a producer base, an approver, a reviewer, an auditor,
-and (under `../../page/page-workflows/agents/`) one agent per current lifecycle phase:
+and (under `../../page/page-workflows/agents/`) agents for the current controller dispatches:
 
 ```text
-haipipe-page-creator-agent      producer BASE + the two non-phase verbs
+haipipe-page-creator-agent      producer BASE + two standalone verbs
                                 (create-page, revise-opening); dispatch fallback
 haipipe-page-approver-agent     rule-bound machine ticks against approve-rules/
 haipipe-board-reviewer-agent    fresh read-only board review; base of the judge
@@ -29,7 +29,7 @@ current session / haipipe-board      MAIN session invokes the Workflow;
         │                            auditor-agent validates the packet before,
         │ writes known change        stores + audits the receipt after
         ▼                                      │
-reviewer-agent: board review                   ├── producer: one current phase
+reviewer-agent: board review                   ├── producer: one dispatch
         │                                      │   agent (PRODUCER_AGENTS map;
         └── original writer fixes              │   creator-agent = fallback)
                                                ├── builder: snapshot version
@@ -42,6 +42,13 @@ The workflow-pass lane is narrower than the Board door. The `RUN` verb drives on
 identified persistent Page and never proposes Board structure, registers a
 Page, synchronizes a transcript, or edits `board.md`. Those actions still need
 the current conversation's context and remain with `haipipe-board`.
+
+The Workflow is a list of Runs, defined by its owner's Run Specs. Controller
+coordinates (CONTEXT, OUTLINE, EVIDENCE, CONTENT, CHECK), snapshots, and dispatch
+receipts do not independently add Runs. The Board's `_runs/page/` receipts
+record a Workflow Runtime/pass; Page-owned `rp-struct-*`, `rp-sec-*`, `rp-para-*`,
+and `rp-scratch-*` identities follow the canonical
+[Page Run families](../../page/haipipe-page/ref/page-run-families.md).
 
 Knowledge home
 --------------

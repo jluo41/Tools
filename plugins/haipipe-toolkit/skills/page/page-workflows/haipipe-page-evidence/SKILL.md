@@ -276,7 +276,7 @@ directories. The Evidence Item contract is declared by the Outline plan and
 its Result manifest; its Page-owned execution lineage is the `RE` ticket under
 `runs/`. The authoritative payload from a real local Run lives at the Result
 address resolved by its Folder dialect (`results/<RUNNAME>/` for Folder-local,
-or `$OUTPUT_ROOT/results/<task>/<RUNNAME>/` for a Task), while an external
+or `$OUTPUT_ROOT/<task>/results/<RUNNAME>/` for a Task), while an external
 payload stays at its Supporting Run's own Result path. Never introduce
 `outline/evidence/value/` as a second copy of a VALUE Result.
 
@@ -292,7 +292,7 @@ it is not a LAND or EMBED prerequisite.
 For a consumer-serving canonical Task, that PHI-safe admitted unit is the one
 narrow Page-authority exception to the rule that generated output stays under
 `$OUTPUT_ROOT`. The paired `result.yaml` and `runtime.yaml` remain in
-`$OUTPUT_ROOT/results/<task>/<RUNNAME>/`; the unit does not become a second
+`$OUTPUT_ROOT/<task>/results/<RUNNAME>/`; the unit does not become a second
 Result store.
 
 | Type | Local Result must make ready |
@@ -373,7 +373,7 @@ not a partially supported Page.
 Resolve execution artifacts through the Folder owner's Run dialect: a
 Folder-local owner uses sibling `runs/` and `results/`; a canonical Task keeps
 its Ticket under the Task's `runs/` and its generated Result under the resolved
-`$OUTPUT_ROOT/results/<task>/<RUNNAME>/`. No LAND step may copy a Result merely to make it
+`$OUTPUT_ROOT/<task>/results/<RUNNAME>/`. No LAND step may copy a Result merely to make it
 look local, create a new `outline/evidence/` lane, recreate a root
 `<page>/evidence/` category, or create a standalone Evidence tab.
 

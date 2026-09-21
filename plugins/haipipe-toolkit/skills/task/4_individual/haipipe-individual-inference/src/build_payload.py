@@ -65,9 +65,14 @@ def build_payload(
     *,
     history_len: int = DEFAULT_HISTORY_LEN,
     model: str = DEFAULT_MODEL,
+    platform: str = "databricks",
+    workspace_root: Optional[str] = None,
+    patient_ctx: Optional[dict] = None,
 ) -> dict:
     """Individual path/id → Endpoint_Set dataframe_records payload."""
-    ctx = load_patient_ctx(individual, cgm_tail=history_len)
+    if platform not in {"databricks", "sagemaker"}:
+        raise ValueError("platform must name the deployed wire contract: databricks or sagemaker")
+    ctx = patient_ctx if patient_ctx is not None else load_patient_ctx(individual, cgm_tail=history_len, workspace_root=workspace_root)
     cgm = ctx["tables"].get("CGM")
     if cgm is None or len(cgm) == 0:
         raise ValueError(f"No CGM data for individual {individual!r}")
@@ -87,20 +92,18 @@ def build_payload(
     if len(ptt):
         inference_form["Patient"] = _df_to_columnar(ptt)
 
-    return {
-        "models": [model],
-        "dataframe_records": [
-            {
-                "TriggerName_to_CaseTriggerList": {"CGM5MinEntry": [trigger]},
-                "inference_form": inference_form,
-            }
-        ],
+    record = {
+        "TriggerName_to_CaseTriggerList": {"CGM5MinEntry": [trigger]},
+        "inference_form": inference_form,
     }
+    if platform == "sagemaker":
+        return {"models": [model], **record}
+    return {"models": [model], "dataframe_records": [record]}
 
 
 def build_payload_summary(payload: dict) -> dict:
     """Compact view of a payload for logging."""
-    rec = payload["dataframe_records"][0]
+    rec = payload["dataframe_records"][0] if "dataframe_records" in payload else payload
     trig = rec["TriggerName_to_CaseTriggerList"]["CGM5MinEntry"][0]
     elog = rec["inference_form"]["ElogBGEntry"]
     return {

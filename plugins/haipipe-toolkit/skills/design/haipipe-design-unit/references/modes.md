@@ -32,7 +32,8 @@ Any rationale, ideation summary, member provenance, mechanism note, uncertainty,
 or forecast file is conditional output only when commissioned with explicit
 criteria. Record observable design choices, not private chain-of-thought.
 
-Venue rules remain in `application/venue/venue-<kind>/`. The caller compiles
+Venue rules are in `../../venue/venue-<kind>/`, relative to this reference
+file (`design/venue/` in the skills tree). The caller compiles
 the item's acceptance rules into checks; venue packs are not pinned by the
 Commission. A visual/UI unit may invoke its renderer internally; separately
 reusable display work keeps its own native Run.

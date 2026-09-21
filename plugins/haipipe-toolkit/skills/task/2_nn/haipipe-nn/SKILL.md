@@ -70,7 +70,7 @@ Function Verb Map
 status, dashboard, what's there       -> dashboard
 review, audit, check, validate        -> review
 generate, build, create, scaffold     -> generate
-test, smoke, run                      -> test
+test, smoke, explicit `run` alias      -> test
 ```
 
 ---
@@ -166,3 +166,7 @@ fn/fn-test.md            test procedure (used by every specialist)
 
 These fn docs are SHARED across specialists.
 Each specialist reads its own `ref/concepts.md` plus the relevant umbrella fn doc.
+
+Natural-language requests to train, tune, or produce a real checkpoint route to `haipipe-task-for-fit`.
+The explicit `/haipipe-nn run` alias retains smoke-test compatibility.
+For ambiguous “run the model”, resolve whether the requested product is a smoke check, inference, or a trained checkpoint before selecting the operation.

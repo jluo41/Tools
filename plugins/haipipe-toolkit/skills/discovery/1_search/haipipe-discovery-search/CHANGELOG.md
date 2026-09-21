@@ -3,6 +3,12 @@ haipipe-discovery-search — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.7.1 · 2026-09-20
+
+- Link factual source-map coverage reporting to the Discovery confidence axes;
+  coverage has no confidence rating. Name the Page-body coverage declaration
+  separately from the `discovery.yaml#sources` candidate receipts.
+
 ## 0.7.0 · 2026-09-08
 
 - Add external provider routing for academic-paper-search, ARIS research-lit,

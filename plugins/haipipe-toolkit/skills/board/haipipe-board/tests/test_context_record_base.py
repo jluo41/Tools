@@ -108,6 +108,21 @@ class BasePageContextTest(unittest.TestCase):
         self.assertNotIn("approved: ✅", result)
         self.assertNotIn("accepted: ✅", result)
 
+    def test_canonical_identity_resolves_owner_and_exposes_conflicting_page_kind(self):
+        workflow = self.folder / "workflow"
+        workflow.mkdir()
+        (workflow / "folder.yaml").write_text(
+            "current:\n  folder-kind: wisdom\n", encoding="utf-8"
+        )
+        identity = self.record(self.build(), 1)
+        self.assertIn("**Status**: resolved", identity)
+        self.assertIn("haipipe-insight-wisdom", identity)
+        self.assertIn("workflow/folder.yaml", identity)
+        self.write_page("folder-kind: data\n")
+        identity = self.record(self.build(), 1)
+        self.assertIn("**Status**: missing", identity)
+        self.assertIn("conflicts", identity)
+
     def test_retired_design_phase_identity_does_not_resolve(self):
         workflow = self.folder / "workflow"
         workflow.mkdir()

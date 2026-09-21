@@ -15,8 +15,10 @@ Block (bNN) -> Job (jNN) -> Task Page (tNN) -> Run (rNN)
                                            └── Result(s)
 ```
 
-`haipipe-run` is the one Level-4 contract. A Run records one bounded attempt;
-its immutable Result records what that attempt produced. A Task or Discovery
+`haipipe-run` is the shared Level-4 contract. A Run records one bounded
+commission with preserved Steps/attempts; its Result records the outcome.
+A Workflow lists planned Run Specs and actual Instances, connected by
+dependencies and routes. A Task or Discovery
 folder owns its own `runs/` and `results/` (plus scripts and workflow metadata).
 Scripts are engines for Runs, not a second evidence system.
 
@@ -46,7 +48,7 @@ instance Page Folder. Its items are runnable questions, not extra Pages.
 | Shared analysis | haipipe-task | Reusable recipe; isolated instance inputs and outputs |
 | Insight work | haipipe-page-insight + haipipe-run | Item ticket and versioned DIKW/RF Results |
 | Item table / Runs view | haipipe-board | Read projections of intent and receipts |
-| Consumer-specific Design authority | haipipe-insight-workflow | Exact item/RF evidence contextualized in signed I5 Wisdom |
+| Consumer-specific Design authority | haipipe-insight-workflow | Exact item/RF evidence contextualized in person-signed Wisdom |
 
 The detailed contracts are the Insight skill's `ref/instance-items.md`,
 `ref/workflow-table.md`, and `ref/task-calls.md`. The same recipe can serve A/B/C
@@ -90,7 +92,10 @@ Runs/
 ├── Execution    code, data, models, calculations
 ├── Discovery    search, source review, external evidence
 ├── Insight      instance-local item interpretation and reusable findings
-└── Page         page-local division writing and display work
+├── Page         RP writing, RE evidence, RD delivery, delegated writing/display
+├── Design       Commission, Generate, Verify
+├── Paper        bounded judgments, compile and response work
+└── Labeling     the domain's 25 independently closable operation kinds
 
 Scripts/         the files that execute a Run (one path per script/engine)
 ```
@@ -143,9 +148,8 @@ discovery             Search, Review, and Synthesize external evidence
 run                   neutral Level-4 Run/Result contract
 ideation              evidence bundles and research directions
 paper                 academic composition and Page Types
-insight               evidence-led understanding: I0 Meta -> I5 Wisdom
-design                creative production: Brief -> Commission -> Verify
-application           the Insight/Design join and its delivery channels
+insight               evidence-led understanding: native Runs, dependencies, DIKW resources
+design                creative production: Brief -> Commission -> Generate -> Verify
 display / writing     rendering and prose engines
 ```
 

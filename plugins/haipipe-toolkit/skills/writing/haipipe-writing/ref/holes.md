@@ -49,8 +49,8 @@ Two passes editing the same prose is a write race. When several checkers sweep
 one document they are READ-ONLY: they report where each hole is, what kind it is,
 and who owes it. One writer takes all the reports and does the insertions.
 
-This is not a performance rule. It is why the paper phase's three lanes can run
-in a single batch at all.
+The host designates one writer even when several read-only checks contribute
+findings to the same Run.
 
 ## 4 · Dialects
 
@@ -87,4 +87,5 @@ all three.
 Everything that knows what a manuscript is: grepping the `.bib` before writing a
 key, the `\citep{}` vs `\cite{TOADD}` decision, DR rows and display inboxes, the
 `outline/evidence/` boundary, the stage contracts, and the rule that real evidence lands
-only through the EVIDENCE phase. None of that generalizes, and none of it moved.
+only through the owning Evidence Run and its binding contract. Those
+manuscript-specific decisions remain with the Paper/Page owner.

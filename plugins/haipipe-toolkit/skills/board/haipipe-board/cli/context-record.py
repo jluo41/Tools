@@ -38,7 +38,8 @@ SKILLS = HERE.parent.parent                             # skills/
 sys.path.insert(0, str(HERE))
 
 from src import item_table                              # noqa: E402
-from src.folder_contract import (current_folder_kind,
+from src.folder_contract import (resolved_folder_kind,
+                                 folder_identity_path,
                                  resolve as resolve_folder_contract)  # noqa: E402
 from src.outline_version import latest_outline, version_tag  # noqa: E402
 
@@ -139,19 +140,19 @@ def build(page_md: Path, board: Path) -> str:
     missing = []
 
     # ── CTX1 identity ────────────────────────────────────────────────────
-    phase_yaml = page_md.parent / "workflow" / "phase.yaml"
-    if phase_yaml.is_file():
-        kind_src = src(root, phase_yaml)
-        try:
-            kind = current_folder_kind(page_md.parent)
-        except ValueError as error:
-            kind = ""
-            kind_src += f" · invalid current identity: {error}"
-    else:
-        kind = fm(text, "folder-kind") or fm(text, "page-type")
-        kind_src = f"`{page_md.name}` frontmatter `page-type:`"
+    identity_file = folder_identity_path(page_md.parent)
+    key = "folder-kind" if fm(text, "folder-kind") else "page-type"
+    kind_src = src(root, identity_file) if identity_file is not None else f"`{page_md.name}` frontmatter `{key}:`"
+    identity_error = ""
+    try:
+        kind = resolved_folder_kind(page_md.parent, declared=fm(text, "folder-kind"),
+                                    legacy=fm(text, "page-type"))
+    except ValueError as error:
+        kind = ""
+        identity_error = str(error)
+        kind_src += f" · invalid current identity: {error}"
     folder_owner, face_owner = owners(kind)
-    base_page = not kind and not phase_yaml.is_file()
+    base_page = not kind and identity_file is None and not identity_error
     if base_page:
         # The base Page contract deliberately permits no specialized kind.
         # Do not invent a Page Type to get a standalone Page into PREPARE.

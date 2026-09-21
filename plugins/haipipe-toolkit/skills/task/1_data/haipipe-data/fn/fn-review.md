@@ -83,7 +83,7 @@ Present this message:
   Builder scripts (project fn_develop task folders; legacy: code-dev/1-PIPELINE/)
     Any builder:   examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<task>/scripts/<builder>.py
 
-  Pipeline configs (job configs/)
+  Pipeline configs (Task scripts/config/)
     Any config:    <task>/scripts/config/<name>.yaml
   ---------------------------------------------------------------
 
@@ -407,11 +407,11 @@ Quick Reference: Checklist by Type
 
   File type          Checklist IDs to apply
   -----------------  ----------------------------------------
-  SourceFn           SF-1 through SF-10 (SF-8/9/10 = CGM only)
+  SourceFn           SF-1 through SF-15 (SF-8/9/10 = CGM only)
   HumanFn            HF-1 through HF-6
-  RecordFn           RF-1 through RF-14
+  RecordFn           RF-1 through RF-17
   TriggerFn          TF-1 through TF-6
-  CaseFn             CF-1 through CF-11
+  CaseFn             CF-1 through CF-13
   InputTfmFn         IT-1 through IT-5
   OutputTfmFn        OT-1 through OT-3
   SplitFn            SP-1 through SP-5

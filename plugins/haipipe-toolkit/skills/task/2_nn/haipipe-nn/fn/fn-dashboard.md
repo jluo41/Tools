@@ -217,6 +217,6 @@ INSTANCE_FILE      = "code/hainn/instance/<family>/instance_<name>.py"
 CONFIG_FILE        = "code/hainn/instance/<family>/configuration_<name>.py"
 TUNER_FILE         = "code/hainn/tuner/<family>/tuner_<name>.py"
 ALGORITHM_FILE     = "code/hainn/algo/<family>/algorithm_<name>.py"  # or N/A
-YAML_FILE          = "config/.../my_model.yaml"
+YAML_FILE          = "<task>/scripts/config/rNN_<run>.yaml"  # or resolved developer harness config
 TEST_DIR           = "code/hainn/tuner/<family>/test-modeling-<name>/"
 ```

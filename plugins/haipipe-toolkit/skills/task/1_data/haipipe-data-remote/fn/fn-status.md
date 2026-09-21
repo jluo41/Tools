@@ -101,7 +101,7 @@ Hints (no automatic action):
   - Newer ExternalStore release on remote: review with /haipipe-data-external
 ```
 
-If a store probe fails with an auth error, mark that row as `auth?` and append the SSO URL hint at the bottom.
+If a store probe fails with an auth error, mark that row as `auth?` and append the backend-specific credential hint from ref/concepts.md.
 
 ---
 

@@ -294,10 +294,11 @@ ProcName_to_columns = {
 SAMPLE_VERSION = 'v260101'
 
 def Input2SrcFn(payload_input_json, SPACE):
-    if 'dataframe_records' in payload_input_json:
-        record = payload_input_json['dataframe_records'][0]
-    else:
-        record = payload_input_json
+    # Example for --platform databricks. Generate a separate flat decoder for SageMaker.
+    records = payload_input_json.get('dataframe_records')
+    if not isinstance(records, list) or len(records) != 1 or not isinstance(records[0], dict):
+        raise ValueError('Expected one Databricks dataframe_records record')
+    record = records[0]
 
     patient_id = str(record.get('patient_id', ''))
     timestamp  = pd.to_datetime(record.get('timestamp'))

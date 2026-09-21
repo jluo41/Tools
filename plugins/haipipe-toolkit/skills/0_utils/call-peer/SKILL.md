@@ -6,7 +6,7 @@ description: >-
   resume, and message the other provider.
 metadata:
   version: "1.6.0"
-  last_updated: "2026-09-10"
+  last_updated: "2026-09-20"
 ---
 
 # Call Peer
@@ -45,7 +45,7 @@ Use the user's action verb, not merely the presence of the word "peer".
 |---|---|---|
 | read, inspect, review, look at, see what it did, current progress, latest status | READ_EXISTING_PEER | Read the persisted partner transcript directly; do not invoke a provider. |
 | start, call, wake, ask, send, delegate, continue, have the peer do something | START_OR_RESUME_PEER | Verify the pair and explicitly call the native provider. |
-| first read it, then ask it to do something | READ_EXISTING_PEER, then START_OR_RESUME_PEER | Complete the read-only phase first; only then perform the explicitly requested call. |
+| first read it, then ask it to do something | READ_EXISTING_PEER, then START_OR_RESUME_PEER | Complete the read-only operation first; only then perform the explicitly requested call. |
 | ask Claude to read the Codex session, or ask Codex to read the Claude session | START_OR_RESUME_PEER | The target provider must be called to perform that read; this is different from the current agent reading the transcript itself. |
 | create a new peer only so it can supply historical progress from a missing peer | READ_EXISTING_PEER | A new session has no old transcript. Return PAIR_NOT_REGISTERED; do not create a substitute. |
 | ambiguous wording | READ_EXISTING_PEER | Choose the safe read-only interpretation and report what was found. Never start a provider merely to clarify. |
@@ -75,7 +75,7 @@ Examples:
 
 ## Pair identity and naming
 
-Use one human-readable name for both sides. Never use a generic name such as
+Use one shared pair name and distinct native session display names. Never use a generic pair name such as
 Call-Peer. Prefer the user's exact task or session name; otherwise derive a
 recognizable name from the current task and workspace. For example:
 
@@ -83,9 +83,12 @@ recognizable name from the current task and workspace. For example:
 T01 C-data VisitLBP_1stPair
 ~~~
 
-The wrapper forwards this exact name to Claude's native --name option.
-Codex has no corresponding native name flag, so the manifest and session ID
-are authoritative for Codex.
+The pair name stays in the registry. The default callee display name appends
+the provider, for example `T01 C-data VisitLBP_1stPair-Claude`. Use
+`--callee-session-name` for a different display name; it must differ from the
+pair/caller name. The wrapper passes the callee name to Claude's `--name`.
+For Codex the manifest records the name. Provider, native session ID, and cwd
+remain authoritative; a display-name difference never requires a new pair.
 
 The pair registry is normally under:
 
@@ -103,8 +106,15 @@ This is the default for progress questions. It must not start a native
 provider.
 
 1. Resolve the existing manifest using the pair name and the exact resolved
-   working directory. The read-only pair_sync.resolve_pair_session resolver
-   may be used. Verify that the manifest's pair_name and cwd match.
+   working directory. Use the read-only status command below or `pair_sync.resolve_pair_session`.
+   Verify that the manifest's pair_name and cwd match. An absent registration
+   returns a nonzero exit; report it as `PAIR_NOT_REGISTERED`.
+
+   ```bash
+   : "${CALL_PEER_SKILL_DIR:?Set the directory containing this loaded SKILL.md}"
+   "${CALL_PEER_PYTHON:-python3}" "$CALL_PEER_SKILL_DIR/scripts/pair_sync.py" \
+     status --pair-name "<exact pair name>" --cwd "<confirmed target directory>"
+   ```
 2. Identify the partner provider and its registered session_id. Record the
    manifest path, provider, session ID, and snapshot time.
 3. Locate the provider's persisted native transcript by exact provider and
@@ -192,15 +202,28 @@ send, or delegate to the other peer.
 
 ### Normal paired command
 
-Use the paired wrapper for ordinary cross-provider work:
+Use the paired wrapper for ordinary cross-provider work. Resolve
+`CALL_PEER_SKILL_DIR` to the directory containing this loaded SKILL.md (follow
+installation symlinks); it is independent of the target project. Set that
+absolute path in the command environment. Use a verified Python 3.9+
+interpreter, optionally configured as `CALL_PEER_PYTHON`. The ordinary CLI and
+read-only registry need only the standard library on macOS/Linux.
+
+The legacy SDK helper is optional: `run_native_agent.py` requires an installed
+`haiutils.agent_sdk`, or `HAIPIPE_SDK_ROOT` naming its import directory. Its
+dependencies are checked only when SDK mode is explicitly used. Help and
+ordinary CLI/registry operations do not load it.
 
 ~~~bash
-.venv/bin/python Tools/plugins/haipipe-toolkit/skills/0_utils/scripts/run_paired_cli.py \
+: "${CALL_PEER_SKILL_DIR:?Set the absolute directory of the loaded call-peer skill}"
+PAIR_CWD="$(pwd -P)"
+"${CALL_PEER_PYTHON:-python3}" \
+  "$CALL_PEER_SKILL_DIR/scripts/run_paired_cli.py" \
   --pair-name "<pair_name>" \
   --caller-provider <claude|codex> \
   --caller-session-id <current_caller_session_id> \
   --callee-provider <codex|claude> \
-  --cwd /Users/jluo41/Desktop/Physician-SPACE \
+  --cwd "$PAIR_CWD" \
   --prompt "<explicit task>"
 ~~~
 

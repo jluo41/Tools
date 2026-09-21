@@ -1,21 +1,21 @@
 ---
 name: diagram-ascii
 description: >-
-  Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and
+  Fast ASCII diagrams with optional emoji for brainstorming, folder/code overviews, and
   progress tracking. Use to sketch an idea, map a codebase, visualize a flow
   inline, or make a complex relationship easier to scan. Ordinary replies stay
   natural and concise; reply blocks are optional, never the default.
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-07"
+  version: "0.5.0"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /diagram-ascii — Brainstorm & Progress Diagrams
 
-**Purpose**: quickly sketch ideas and track progress as emoji-rich ASCII. Optimized for speed, readability, and scannability — not mechanical precision. For complex diagrams with many crossing arrows, suggest Mermaid instead.
+**Purpose**: quickly sketch ideas and track progress with readable ASCII diagrams. Emoji are optional markers when they add clear meaning. Optimize for speed, readability, and scannability — not mechanical precision. For complex diagrams with many crossing arrows, suggest Mermaid instead.
 
-**🎨 Emoji-first — use as many as possible.** Emoji are the **primary visual scaffolding** of every diagram in this skill, not decoration. Use them densely: 📦 every box, 🏷️ every header cell, 📋 every row label, 🟢 every status indicator. More is better than fewer. Mix categories freely — a diagram packed with 6+ emoji types is the goal, not a problem. If you can put an emoji somewhere, do.
+**Emoji are optional.** Use a small, consistent set only when it improves scanability or conveys status clearly. Plain-text labels are fully acceptable and preferred when emoji could hurt alignment, readability, accessibility, or rendering in a user's environment.
 
 **Gallery (`ref/`)** — full worked examples. Read the relevant file when an inline template isn't enough:
 
@@ -118,9 +118,9 @@ my-module/
 
 When you're producing a new diagram for a module that doesn't yet have a `diagram/` folder, create it. Don't add to `docs/`.
 
-## Style — Emoji-Rich
+## Style — Optional Emoji
 
-**Use as many emoji as possible.** Pull from multiple categories in the same diagram — combining People + Services + Data + Status in one sketch is *encouraged*, not "spam." The palette below is a menu, not a quota.
+Use emoji only when they add clear meaning. Keep any chosen set small and consistent; the palette below is a menu, not a quota.
 
 | Category | Examples |
 |---|---|
@@ -252,7 +252,7 @@ code/
 
 **Folder tree — grouped** (blank lines between logical clusters; floating callout on its own line)
 ```
-Tools/plugins/haipipe-toolkit/skills/
+plugins/haipipe-toolkit/skills/
 └── task/
     ├── haipipe-task/SKILL.md
     │
@@ -441,7 +441,7 @@ For a worked-through method section using all of the above, see `ref/08-paper-se
 
 - Mixing ASCII `+--+` with Unicode `╔══╗` in one diagram
 - Tabs instead of spaces
-- **Plain-text labels with no emoji** — looks dead; defeats the purpose of this skill. If a box, header, row, or status has no emoji, you've under-decorated it.
+- Emoji used as decoration where they add no meaning, especially when they make alignment, readability, or screen-reader output worse
 - 15+ nodes with crossings — use Mermaid instead
 
 ## See Also

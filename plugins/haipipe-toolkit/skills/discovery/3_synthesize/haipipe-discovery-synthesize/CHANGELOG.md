@@ -4,6 +4,11 @@ haipipe-discovery-synthesize — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions
 match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.3.1 · 2026-09-20
+
+- Bind Task and typed-record confidence to the Discovery evidence anchors,
+  exact Results/locators, limits, and shared assessment receipt.
+
 ## 0.3.0 · 2026-09-13
 
 - Align synthesis with the Page-owned interaction lane and release barrier.

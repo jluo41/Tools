@@ -41,6 +41,7 @@ _TICKET_NAME = re.compile(
     r"(?:^rp-(?:struct|sec|para)-\d{2}(?:_P\d{2}(?:-P\d{2})?)?"
     r"|^rp-scratch-\d{2}_[A-Za-z0-9._-]+"
     r"|^re-(?:value|display|cite)-\d{2}(?:_[a-z0-9][a-z0-9_-]*)?"
+    r"|^r(?:idea|claim|task|narra|response)-\d+"
     r"|^rp\d+|^rl\d+|^ri\d+|^rd\d+|^r\d+|^run[-_]"
     r"|^b\d+[._]j\d+[._]t\d+[._]r\d+|^p[._]?j\d+[._]?t\d+[._]?r\d+)",
     re.I,
@@ -163,7 +164,7 @@ def _fields(runtime: Path | None) -> dict[str, str]:
     return {name: field(name) for name in
             ("run", "global_id", "status", "target", "result", "ticket", "family",
              "operation", "interaction", "mode", "version", "step", "outcome", "summary",
-             "target_scope", "participants", "coordinator", "contributors")}
+             "target_scope", "participants", "coordinator", "contributors", "store")}
 
 
 def _writing_operation(fields: dict[str, str]) -> bool:
@@ -1174,9 +1175,9 @@ def _version_closed(runtime: Path, version: str) -> bool:
 
 def _status(runtime: Path | None, fields: dict[str, str]) -> str:
     if runtime is None:
-        return "Held" if _writing_operation(fields) else "Ready"
+        return "Held"
     status = fields.get("status", "").lower()
-    if status in {"planned", "ticket", "queued"}:
+    if status in {"ready", "planned", "ticket", "queued"}:
         return "Ready"
     if status in {"running", "started"}:
         return "Running"
@@ -1190,6 +1191,8 @@ def _status(runtime: Path | None, fields: dict[str, str]) -> str:
     if status in {"blocked", "held", "rerun", "incomplete"}:
         return "Held"
     if status in {"complete", "completed", "done"}:
+        if fields.get("family", "").lower() == "paper" and fields.get("operation") == "judgment":
+            return "Done" if _version_closed(runtime, fields.get("version", "")) else "Held"
         if fields.get("operation") == "paragraph-writing":
             # Structural availability only; the writer owns semantic acceptance.
             return "Done" if all(_preview_text(runtime.parent / name, runtime.parent).strip()
@@ -1230,7 +1233,8 @@ def _runtime_for(ticket: Path, runs_dir: Path, results_dir: Path) -> Path | None
             return candidate
     rel_text = str(ticket.relative_to(runs_dir))
     for candidate in sorted(results_dir.rglob("runtime.yaml")) if results_dir.is_dir() else []:
-        if not _confined_file(candidate, results_dir):
+        if ("attempts" in candidate.relative_to(results_dir).parts
+                or not _confined_file(candidate, results_dir)):
             continue
         fields = _fields(candidate)
         if fields.get("ticket") in {rel_text, ticket.name, str(ticket)}:
@@ -1281,6 +1285,33 @@ def _sort_key(row: dict) -> tuple:
     return _STATE_ORDER.get(row["status"], 9), newest, row["run_id"]
 
 
+def _task_result_locations(page_dir: Path, job_dir: Path,
+                           findings: list[str] | None = None) -> list[tuple[Path, Path]]:
+    """Declared Task store first, then current local and historical storage."""
+    locations = []
+    store = _fields(job_dir / "src" / "config-defaults.yaml").get("store", "")
+    if store and store not in {"null", "~"}:
+        store_path = Path(store).expanduser()
+        if not store_path.is_absolute():
+            ancestors = [job_dir, *job_dir.parents]
+            checkout = next((a for a in ancestors if (a / "pyproject.toml").is_file()
+                             and (a / "code").is_dir()), None)
+            checkout = checkout or next((a for a in ancestors if (a / ".git").exists()), None)
+            if checkout is None:
+                if findings is not None:
+                    findings.append("relative declared Task store has no resolvable checkout root")
+                store_path = None
+            else:
+                store_path = checkout / store_path
+        if store_path is not None:
+            output_root = store_path / job_dir.parent.name / job_dir.name
+            locations.extend(((output_root / page_dir.name / "results", output_root),
+                              (output_root / "results" / page_dir.name, output_root)))
+    locations.extend(((page_dir / "results", job_dir),
+                      (job_dir / "results" / page_dir.name, job_dir)))
+    return list(dict.fromkeys(locations))
+
+
 def local_runs(page_src: Path) -> list[dict]:
     """Read allocated Folder-local or Job-backed Task Run pairs."""
     page_dir = page_src.parent
@@ -1288,20 +1319,19 @@ def local_runs(page_src: Path) -> list[dict]:
     item_tickets = {row["ticket"] for row in instance_rows}
     task_info, job_dir = _task_context(page_src)
     runs_dir = page_dir / "runs"
-    if task_info:
-        results_dir = job_dir / "results" / page_dir.name
-        result_base = job_dir
-    else:
-        results_dir = page_dir / "results"
-        result_base = page_dir
+    location_findings = []
+    locations = (_task_result_locations(page_dir, job_dir, location_findings) if task_info else
+                 [(page_dir / "results", page_dir)])
+    results_dir, result_base = locations[0]
     rows = list(instance_rows)
     paired_runtimes = {row["runtime"] for row in rows if row.get("runtime")}
     for ticket in _ticket_files(runs_dir):
         if ticket in item_tickets:
             continue
-        runtime = _runtime_for(ticket, runs_dir, results_dir)
-        if runtime:
-            paired_runtimes.add(runtime)
+        matches = [(path, base_path) for result_root, base_path in locations
+                   if (path := _runtime_for(ticket, runs_dir, result_root)) is not None]
+        runtime, result_base = matches[0] if matches else (None, locations[0][1])
+        paired_runtimes.update(path for path, _ in matches)
         fields = _fields(runtime)
         ticket_fields = _fields(ticket) if ticket.suffix.lower() in {".md", ".yaml", ".yml"} else {}
         for key in ("target", "family", "operation", "interaction", "mode", "version", "step",
@@ -1314,9 +1344,13 @@ def local_runs(page_src: Path) -> list[dict]:
                            "operation": "interactive-writing",
                            "interaction": fields.get("interaction") or "human-feedback"})
         is_page_run = _is_page_run(fields)
-        audit = []
+        audit = list(location_findings)
+        if runtime is None:
+            audit.append("authored Run record has no runtime receipt")
+        if len(matches) > 1:
+            audit.append("multiple Result receipts resolve to the same Run; owner reconciliation required")
         retired_design = bool(re.fullmatch(
-            r"r[0-9]{2,}_design_(?:generate|verify)_[a-z0-9][a-z0-9_-]*",
+            r"r[0-9]{2,}_design_(?:commission|generate|verify|adopt)_[a-z0-9][a-z0-9_-]*",
             ticket.stem,
         ))
         if retired_design:
@@ -1335,7 +1369,7 @@ def local_runs(page_src: Path) -> list[dict]:
             global_id = readable_global_run(compact) if compact else ticket.stem
             run_id = global_id
         elif (fields.get("family") == "design" or
-              re.fullmatch(r"rd[0-9]{2,}_(?:generate|verify)_[a-z0-9][a-z0-9_-]*",
+              re.fullmatch(r"rd[0-9]{2,}_(?:commission|generate|verify|adopt)_[a-z0-9][a-z0-9_-]*",
                            ticket.stem)):
             # Design uses its stable Folder address, never a fabricated Paper
             # or b/j/t identity. Its YAML Ticket is already a supported suffix.
@@ -1343,7 +1377,7 @@ def local_runs(page_src: Path) -> list[dict]:
             global_id = fields.get("global_id") or f"{page_dir.as_posix()}#{ticket.stem}"
             run_id = ticket.stem
             if fields.get("family") == "design" and not re.fullmatch(
-                    r"rd[0-9]{2,}_(?:generate|verify)_[a-z0-9][a-z0-9_-]*",
+                    r"rd[0-9]{2,}_(?:commission|generate|verify|adopt)_[a-z0-9][a-z0-9_-]*",
                     ticket.stem):
                 audit.append("invalid current Design Run identity")
         elif retired_design:
@@ -1397,21 +1431,44 @@ def local_runs(page_src: Path) -> list[dict]:
                 ticket=ticket,
             ),
         })
-    for runtime in (sorted(results_dir.rglob("runtime.yaml"))
-                    if results_dir.is_dir() else []):
-        if runtime in paired_runtimes or not _confined_file(runtime, results_dir):
+    orphan_candidates = {}
+    ticket_stems = {p.stem for p in _ticket_files(runs_dir)}
+    for result_root, base_path in locations:
+        if not result_root.is_dir():
             continue
+        for receipt in sorted(result_root.rglob("runtime.yaml")):
+            if ("attempts" not in receipt.relative_to(result_root).parts
+                    and receipt not in paired_runtimes and _confined_file(receipt, result_root)):
+                orphan_candidates[receipt.parent] = (receipt, base_path)
+        for directory in sorted(result_root.iterdir()):
+            if (directory.is_dir() and not directory.is_symlink()
+                    and _TICKET_NAME.match(directory.name)
+                    and directory.name not in ticket_stems
+                    and not (directory / "runtime.yaml").exists()
+                    and not any(directory.rglob("runtime.yaml"))):
+                orphan_candidates[directory] = (None, base_path)
+    orphan_groups = {}
+    for result_path, (runtime, result_base) in orphan_candidates.items():
+        identity = result_path.name if task_info else result_path
+        orphan_groups.setdefault(identity, []).append((result_path, runtime, result_base))
+    for candidates in orphan_groups.values():
+        result_path, runtime, result_base = candidates[0]
+        orphan_audit = ["Result exists without its authored Run record" if runtime else
+                        "Result directory has neither an authored Run record nor a runtime receipt"]
+        if len(candidates) > 1:
+            orphan_audit.append("multiple Result locations resolve to the same Run: " +
+                                ", ".join(str(path) for path, _, _ in candidates))
         fields = _fields(runtime)
         is_page_run = _is_page_run(fields)
-        stem = runtime.parent.name
+        stem = result_path.name
         rows.append({
             "run_id": stem if is_page_run else f"P {stem}",
             "global_id": fields.get("global_id") or stem,
             "compact_id": compact_global_run(fields.get("global_id", "")),
             "ticket": None,
             "runtime": runtime,
-            "result_path": runtime.parent,
-            "result": fields.get("result", "") or _fallback_result(runtime, result_base),
+            "result_path": result_path,
+            "result": fields.get("result", "") or str(result_path),
             "target": fields.get("target", "") or "orphan Result",
             "outcome": _result_outcome(runtime, fields),
             "kind": ("Interactive writing" if fields.get("operation") == "interactive-writing"
@@ -1431,7 +1488,7 @@ def local_runs(page_src: Path) -> list[dict]:
             "status": "Held",
             "refs": [],
             "orphan": True,
-            "audit": ["Result exists without its authored Run record"],
+            "audit": orphan_audit,
         })
     base_children = {}
     for relation in instance_rows:
@@ -1472,6 +1529,8 @@ def _labeling_runs(page_src: Path) -> list[dict]:
                     "outcome", "summary"):
             fields[key] = fields.get(key) or ticket_fields.get(key, "")
         audit = []
+        if runtime is None:
+            audit.append("authored Run record has no runtime receipt")
         declared = fields.get("run")
         if declared and declared != ticket.stem:
             audit.append("runtime Run identity does not match the authored Run record")
@@ -1945,21 +2004,10 @@ def _workflow_map_rows(page_src: Path) -> list[tuple[str, str, list[tuple[str, s
     """
     stem = page_src.stem
     outline = f"outline/{stem}-outline-v*.md"
-    context = f"outline/{stem}-context.md"
     logic = f"outline/{stem}-logic.mmd"
     evidence_items = f"outline/{stem}-evidence-items.md"
     product = f"{stem}.md"
     return [
-        (
-            "context",
-            "Page.context",
-            [
-                ("read", "PageContext", context),
-                ("—", "—", "—"),
-                ("read-only", "ContextReceipt", "workflow/receipts/context-*.yaml"),
-                ("—", "—", "—"),
-            ],
-        ),
         (
             "structure",
             "Page.interactive-writing.structure",
@@ -2020,16 +2068,6 @@ def _workflow_map_rows(page_src: Path) -> list[tuple[str, str, list[tuple[str, s
                 ("write", "DeliveryArtifact", "delivery/{web,latex,word,render}/"),
             ],
         ),
-        (
-            "check",
-            "Page.check",
-            [
-                ("review", "OutlineCheck", f"{outline} + {product}"),
-                ("review", "EvidenceCheck", "results/re-*/result.yaml"),
-                ("read-only", "CheckReceipt", "workflow/receipts/"),
-                ("review", "DeliveryCheck", "delivery/**/build-manifest.json"),
-            ],
-        ),
     ]
 
 
@@ -2074,7 +2112,9 @@ def _workflow_map_html(page_src: Path) -> str:
     return (
         '<p class=workflow-map-note>Rows are planned Run Specs; columns are Spaces. '
         'Each cell shows <code>mode · schema · path</code>. This map is read-only; '
-        'the concrete Runs remain in the other Run Space tabs.</p>'
+        'the concrete Runs remain in the other Run Space tabs. Context collection, '
+        'Content adoption, and whole-Page Check are controller operations. '
+        'Check reviews Draft, Evidence, Run records, and Delivery together.</p>'
         '<div class=workflow-map-viewport><div class=workflow-map-grid role=table '
         'aria-label="Workflow by Space specification">%s%s</div></div>' %
         ("".join(header_html), "".join(rows_html))

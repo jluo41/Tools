@@ -212,7 +212,7 @@ order and its locators actually support the current claim; a title/DOI match,
 an abstract link, or a larger citation count is not deeper evidence.
 
 When internal feasibility is missing, reuse an existing Task Run/Result or open
-a new Task Run when the work passes the four `haipipe-run` tests. The bundle
+a new Task Run when the work passes the six `haipipe-run` qualification tests. The bundle
 records the returned owner path either way.
 
 When venue evidence is missing, use a two-pass route:

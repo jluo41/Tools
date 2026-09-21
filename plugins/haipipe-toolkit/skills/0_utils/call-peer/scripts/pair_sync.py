@@ -27,9 +27,11 @@ import re
 import subprocess
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
+
+UTC = timezone.utc
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
@@ -177,7 +179,7 @@ def _atomic_write_json(path: Path, value: Any, *, private: bool = False) -> None
 
 def _default_skills() -> list[str]:
     return [
-        str(ROOT / "Tools/plugins/haipipe-toolkit/skills/0_utils/call-peer/SKILL.md"),
+        str(Path(__file__).resolve().parents[1] / "SKILL.md"),
     ]
 
 

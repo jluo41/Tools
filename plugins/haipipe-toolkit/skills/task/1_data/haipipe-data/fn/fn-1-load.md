@@ -261,7 +261,7 @@ _______________________________________________ STAGE 3-case ___________________
 _______________________________________________ STAGE 4-aidata _______________________________________________
 
 **Store path:**
-  _WorkSpace/4-AIDataStore/{aidata_name}/@{aidata_version}/
+  _WorkSpace/4-AIDataStore/{ParentSetName}/@v{N}AIData-{aidata_name}/
 
   CRITICAL layout:
     train/                  <- HuggingFace Dataset split
@@ -278,13 +278,13 @@ _______________________________________________ STAGE 4-aidata _________________
 
   # Option A
   aidata_set = AIDataSet.load_from_disk(
-      path='_WorkSpace/4-AIDataStore/<aidata_name>/@<version>',
+      path='_WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>',
       SPACE=SPACE
   )
 
   # Option B
   aidata_set = AIDataSet.load_asset(
-      path='_WorkSpace/4-AIDataStore/<aidata_name>/@<version>',
+      path='_WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>',
       SPACE=SPACE
   )
 
@@ -341,3 +341,5 @@ MUST NOT (All Stages)
 3. NEVER expect a vocab/ subdirectory in Stage 4 -- vocab files are at ROOT
 4. NEVER assume assets exist -- always run ls first to discover
 5. NEVER skip checking row counts -- zero rows means a bug in the upstream stage
+
+Resolve ParentSetName and the exact AIData version from its manifest/config or store inventory; do not infer a parent from the aidata name alone.

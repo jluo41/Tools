@@ -1,36 +1,13 @@
 (function () {
-  var KEY = 'board-comments:' + location.pathname;
-  var UK = 'board-users', WK = 'board-user-last';
-  var db = [], users = [];
-  try { db = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { db = []; }
-  try { users = JSON.parse(localStorage.getItem(UK) || 'null') || ['JL','CC']; }
-  catch (e) { users = ['JL','CC']; }
-  users = users.filter(function (u) { return u !== 'RA'; });
-  if (!users.length) users = ['JL','CC'];
-  localStorage.setItem(UK, JSON.stringify(users));
-  if (localStorage.getItem(WK) === 'RA') localStorage.removeItem(WK);
-  var pend = null;
-
+  // The Page has no comment composer. Shared helpers also serve explicit plugin workspaces.
   function mk(tag, id, html) {
     var e = document.createElement(tag); e.id = id; e.innerHTML = html || ''; return e;
   }
-  var btn = mk('button', 'cbtn', '\u{1F4AC} Comment');
-  // 🪪 the SECOND thing a selection can become (JL 260802, QB5 option D):
-  // a comment goes UNDER the line, a card goes ON these exact words. Two
-  // buttons rather than one with a mode, because the reader has already made
-  // the choice by the time they let go of the mouse.
-  var cbtn = mk('button', 'ccard', '\u{1FAAA} Card');
-  var box = mk('div', 'cbox',
-    '<div class="qq"></div><textarea placeholder="Write a comment…"></textarea>' +
-    '<div class="row"><select></select><span style="flex:1"></span>' +
-    '<button class="cx">Cancel</button><button class="ok cs">Save</button></div>' +
-    '<input class="nu" placeholder="New initials, e.g. ZW — press Enter">');
-  var dock = mk('button', 'cdock', '');
-  var panel = mk('div', 'cpanel', '');
+  var btn = mk('button', 'cbtn', '⧉ Copy prompt');
+  btn.type = 'button';
+  btn.setAttribute('aria-label', 'Copy prompt for selected passage');
   var toast = mk('div', 'ctoast', '');
-  [btn, cbtn, box, dock, panel, toast].forEach(function (e) { document.body.appendChild(e); });
-
-  function save() { localStorage.setItem(KEY, JSON.stringify(db)); marks(); paint(); }
+  [btn, toast].forEach(function (e) { document.body.appendChild(e); });
   function say(m) {
     toast.textContent = m; toast.style.display = 'block';
     clearTimeout(toast._t);

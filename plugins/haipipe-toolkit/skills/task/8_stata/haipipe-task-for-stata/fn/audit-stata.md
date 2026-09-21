@@ -28,11 +28,11 @@ Must know stage before checking stage-specific patterns.
 
 If stage=case, verify the three-layer config pattern:
 
-1. **Source selectors exist:** `configs/_source_synth.do` and `configs/_source_full.do`
-2. **Shared cohort config exists:** `configs/<Cohort>.do` (the one WITHOUT source/year suffix)
-3. **Per-run configs exist:** `configs/<Cohort>_{synth|full}_{year}.do` for each runner
+1. **Source selectors exist:** `scripts/config/_source_synth.do` and `scripts/config/_source_full.do`
+2. **Shared cohort config exists:** `scripts/config/<Cohort>.do` (the one WITHOUT source/year suffix)
+3. **Per-run configs exist:** `scripts/config/rNN_<run>.do` for each runner
 4. **Loading order:** Each per-run config loads source selector THEN shared config
-   (grep for `do configs/_source_` appearing BEFORE `do configs/<Cohort>.do`)
+   (grep for `do scripts/config/_source_` appearing BEFORE `do scripts/config/<Cohort>.do`)
 5. **Source tag in output:** `case_asset_name` does NOT contain `${cms_source}`
    (source goes in VERSION not NAME per current convention)
 
@@ -79,7 +79,7 @@ Issue types:
 
 If stage=case, verify topic flags:
 
-1. Read `configs/<Cohort>.do` for `global run_topic_*` definitions
+1. Read `scripts/config/<Cohort>.do` for `global run_topic_*` definitions
 2. Read `case_pipeline.do` for dispatcher branches that check those flags
 3. Read `run_case_year.ps1` for `Get-TopicFlag` calls
 4. Verify: every topic flag defined in config has a matching dispatcher branch

@@ -1,6 +1,6 @@
 ---
 name: haipipe-display-unit-agent
-description: "Write-scoped PRODUCER for exactly ONE display unit, dispatched one per 🖼 bullet in an approved outline. In a fresh context it resolves that bullet's intake (a probe card's proof/ for a data kind, a frozen listing for a concept kind), routes the kind through haipipe-display to one of the five renderers, writes recipe/ and assets/, compiles preview.pdf, writes README.md with its claim and its serves: backlink, and names the bullet's mark. It never ticks accepted:, never judges its own claim, never invents a value, and refuses a bullet whose intake does not exist yet. Trigger: build a display unit, render one 🖼 bullet, display producer, fan out displays, one unit per bullet, make the figures for this page."
+description: "Write-scoped PRODUCER for exactly ONE display unit, dispatched one per 🖼 bullet in an approved outline. It uses the caller-supplied unit path and the Evidence Item's frozen Local Input, routes the kind through haipipe-display to one of the five renderers, writes recipe/ and assets/, compiles preview.pdf, and writes README.md with its claim and serves: backlink. It never ticks accepted:, treats a quality score as acceptance, judges its own claim, or invents a value. In a parent Workflow, this bounded unit may be one Run; tool calls and review turns remain internal Steps. Trigger: build a display unit, render one 🖼 bullet, display producer, fan out displays, one unit per bullet, make the figures for this page."
 tools:
   - Read
   - Write
@@ -20,7 +20,9 @@ metadata:
 # Display Unit Producer
 
 Build ONE display unit in a fresh context, from one 🖼 bullet of one approved
-outline. Return a receipt. Never tick `accepted:`, and never judge your own
+outline. This bounded target may be one Run in a parent Workflow; renderer
+instructions, tool calls, compiles, review turns, and retries are internal
+Steps. Return a receipt. Never tick `accepted:`, and never judge your own
 claim: a separate reviewer does that, for the reason in §🚨 below.
 
 ## 📥 What you are given
@@ -29,6 +31,7 @@ claim: a separate reviewer does that, for the reason in §🚨 below.
 page       <board>/<group>/<page>/<page>.md
 bullet     C<n>.P<n>.B<n>            the address, and it is FROZEN
 mark       🖼 owed · <kind>          table | figure | diagram | tex | illustration
+unit       <caller-supplied unit directory>
 ```
 
 The bullet's own sentence IS the design brief. Read it as written; it says what
@@ -42,21 +45,20 @@ Resolve the intake BEFORE drawing anything.
 ```text
 kind          intake comes from                        refuse when
 ──────────────────────────────────────────────────────────────────────────────
-📊 table      a probe card's proof/ whose state is     no card serves this
-📈 figure     answered · answered-local · read         bullet, or every card
-              → copy verbatim into intake/inputs/       serving it is planned
-              → record the CARD's own sha256            or commissioned
-📐 diagram    the LISTING or spec it asserts, frozen   you cannot produce the
-✒️ tex        into intake/inputs/ with the command      listing yourself
-🎨 illustr.   and the date that produced it
+📊 table      the Evidence Item's admitted Local Input  required Results or the
+📈 figure     → freeze the approved summary into        Local Input are absent,
+              intake/inputs/ and record its hash        ambiguous, or stale
+📐 diagram    the approved spec or narrative context,   approved composition
+✒️ tex        frozen in intake/inputs/ with provenance  or declared input is absent
+🎨 illustr.   and permitted-use notes
 ```
 
 **Refusing is a correct outcome, not a failure.** A unit whose intake does not
 exist yet must not be created: an empty folder is litter, and a folder that
-exists reads as declared work. Return `HOLD` naming the card you are waiting on.
+exists reads as declared work. Return `HOLD` naming the missing admitted input or Result.
 
-🚫 **Never reach into the workspace for a number.** The card already crossed the
-wall and recorded source, run and sha256; a second unwitnessed pull can silently
+🚫 **Never reach into the workspace for a number.** The caller already admitted
+the Evidence Item's Local Input and recorded source, Run, and hashes; a second
 disagree with it (`page/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md` §❄️).
 
 🚫 **Never type a value into a recipe.** The recipe READS the frozen intake at
@@ -76,7 +78,8 @@ Load `haipipe-display`, the one door, and let the `kind` route it:
 ```
 
 Then `float.tex` (caption and label, caller-owned), `preview.tex`, and compile
-`preview.pdf`. **LOOK at the compiled PDF before writing the README.** Render
+`preview.pdf` from the caller's asset-reference base, placing the PDF in the unit.
+**LOOK at the compiled PDF before writing the README.** Render
 it to an image and read it; a clipped label, an overlapping edge or a wrapped
 cell is invisible in the source and obvious in the picture.
 
@@ -121,13 +124,16 @@ figure right" says yes to both. So: write the receipt, hand off, and let
 ## 🧾 Receipt
 
 ```text
-unit: <page>/display/<stem>-Display<N>-<slug>/
+unit: <caller-supplied unit directory>
+page_result: <page>/results/<re-run>/result.yaml  # Page units only
 serves: C<n>.P<n>.B<n>
 kind: <kind> · renderer: <skill>
-intake: <source> · sha256 <hash> · from card <PP<NN>> | listing frozen <date>
+intake: <source> · sha256 <hash> · from declared Local Input or approved brief
 claim: <one sentence>
-rendered: assets/<file> · preview.pdf   | HOLD: waiting on <card>, state <state>
+rendered: assets/<file> · preview.pdf | candidate:<id> · candidates/<file> · inspected preview | HOLD: <missing input/path; state>
 looked_at: yes|no          🚫 `no` is a HOLD, not a pass
+candidate: none | pending:<id> | caller-selected:<id>
+asset_location: assets/<file> | candidates/<id>-<file>
 mark_updated: 🖼 Display<N> · <kind>
 accepted: ⬜
 ```

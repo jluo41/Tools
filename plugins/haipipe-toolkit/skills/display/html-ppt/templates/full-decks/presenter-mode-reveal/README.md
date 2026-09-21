@@ -12,9 +12,15 @@
 ## 快速开始
 
 ```bash
-cp -r templates/full-decks/presenter-mode-reveal examples/my-talk
-open examples/my-talk/index.html
+HTML_PPT=/path/to/html-ppt
+cd /path/to/your/project
+"$HTML_PPT/scripts/new-deck.sh" my-talk . presenter-mode-reveal
+open my-talk/index.html
 ```
+
+The scaffold copies this template into the project and rewrites its shared-asset
+links for that location. Other template choices are listed in the installed
+skill's `references/full-decks.md`.
 
 ## 键盘操作
 
@@ -41,10 +47,10 @@ open examples/my-talk/index.html
 
 ## 写逐字稿的规范
 
-**每一页的 `<aside class="notes">` 里写 150–300 字**。三条铁律：
+**每一页的 `<aside class="notes">` 里放可快速扫读的提示**。三条规则：
 
 1. **不是讲稿，是提示信号** — 核心点加粗、过渡句成段、数据列清楚
-2. **150–300 字/页** — 按 2–3 分钟/页的节奏
+2. **按语言和演讲时长调整篇幅。** 中文可先按每页 150–300 个汉字，英文可先按 150–300 个单词；这不是固定时长换算。
 3. **用口语写** — "因此" → "所以"；"该方案" → "这个方案"；读一遍不拗口才对
 
 示例：
@@ -97,6 +103,6 @@ presenter-mode-reveal/
 
 ## 注意事项
 
-- **观众永远看不到 `.notes` 内容** — CSS 默认 `display:none`，只在演讲者视图里可见
+- **`.notes` 只在观众画面隐藏** — Notes 仍在共享 HTML 源码中，不能放机密信息
 - **别把只给自己看的话写在 slide 本体上** — 所有提词必须在 `<aside class="notes">` 里
 - **双屏演讲**：打开 `index.html` 按 S 弹出演讲者窗口，把观众窗口拖到投影/外接屏 F 全屏，演讲者窗口留在自己屏幕

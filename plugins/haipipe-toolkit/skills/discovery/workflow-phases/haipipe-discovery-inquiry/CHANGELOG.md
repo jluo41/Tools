@@ -1,3 +1,18 @@
+## 0.6.3 · 2026-09-20
+
+- Clarify that shared Page Workflow Steps are controller coordination and do
+  not create Discovery Runs or grant an independent D1 phase authority.
+
+## 0.6.2 · 2026-09-20
+
+- Define a Discovery Workflow as selected owner-native Run Specs/Instances; keep SCOPE/PREPARE/ACQUIRE/SYNTHESIZE/CLOSE as internal controller Steps and the physical folder as a compatibility path.
+- Clarify Page Runs remain Page-owned and sit outside the Discovery source Run count.
+
+## 0.6.1 · 2026-09-20
+
+- Require a question-specific candidate admission rule and named search
+  boundary before broad retrieval opens Runs; return vague rules to SCOPE.
+
 ## 0.6.0 · 2026-09-13
 
 - Align the Discovery Page Face with the current Page frame: generated Outline

@@ -1,5 +1,6 @@
 """Behavioral gates over real synthetic artifacts, not prose/heading matches."""
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -172,13 +173,17 @@ class DesignUnitGateTest(unittest.TestCase):
 
     def test_unresolved_semantic_check_is_incomplete(self):
         ticket = self.ticket(updates={"criteria": [
-            {"id": "tone", "kind": "semantic", "description": "Respectful"}]})
+            {"id": "tone", "kind": "semantic", "description": "Respectful",
+             "observation": "Read as the intended recipient.",
+             "pass_when": "The refusal route is clear.",
+             "fail_when": "The message pressures the reader.",
+             "not_verifiable_when": "The recipient/context is not supplied."}]})
         result = self.result(ticket)
         self.edit_checks(result, lambda rows: rows[0].update(status="unresolved"))
         manifest = gate.document(result)
         manifest["verdict"] = "unresolved"
         self.dump(result, manifest)
-        self.assert_bad(ticket, result, "unresolved")
+        self.assert_bad(ticket, result, "unresolved check needs a valid unresolved_reason")
 
     def test_verify_can_complete_with_rejecting_verdict(self):
         generation = self.ticket()
@@ -355,7 +360,7 @@ class DesignUnitGateTest(unittest.TestCase):
         self.assertIn("input manifest", " ".join(gate.audit_folder(self.owner)))
 
     def test_decision_runs_are_paired_not_rejected(self):
-        # Commission/Adopt are caller-owned human decision Runs (run-profile):
+        # Commission is current; Adopt is historical reader compatibility:
         # the folder audit checks their pairing, never worker semantics.
         run = "rd05_commission_sms"
         self.dump(self.owner / "runs" / f"{run}.yaml", {
@@ -371,6 +376,87 @@ class DesignUnitGateTest(unittest.TestCase):
         self.dump(bad, {"schema": gate.TICKET_SCHEMA, "run": "rd06_adopt_other",
                         "operation": "adopt"})
         self.assertIn("identity mismatch", " ".join(gate.audit_folder(self.owner)))
+
+    def add_render(self, result, source, candidate, **changes):
+        import os
+        picture = self.write(result.parent / "render" / "screen.png", "synthetic picture bytes")
+        path = result.parent / "render" / "manifest.json"
+        row = {"item": "ITEM01", "candidate": candidate, "version": 1,
+               "source": os.path.relpath(source, path.parent), "sha256": gate.digest(source),
+               "render": picture.name, "render_sha256": gate.digest(picture)}
+        row.update(changes)
+        self.write(path, json.dumps([row]))
+        manifest = gate.document(result)
+        manifest["render_manifest"] = self.ref(path, result.parent)
+        self.dump(result, manifest)
+        return path, picture
+
+    def test_render_evidence_does_not_change_content_count(self):
+        ticket = self.ticket()
+        result = self.result(ticket)
+        self.add_render(result, result.parent / "content/sms.txt", ticket.stem)
+        self.assertEqual(gate.validate(ticket, result), [])
+        self.assertEqual(len(gate.document(result)["artifacts"]), 1)
+        self.assertEqual(gate.audit_folder(self.owner), [])
+
+    def test_render_picture_and_manifest_are_both_hash_bound(self):
+        for changed in ("picture", "manifest"):
+            with self.subTest(changed=changed):
+                ticket = self.ticket()
+                result = self.result(ticket)
+                manifest, picture = self.add_render(result, result.parent / "content/sms.txt", ticket.stem)
+                target = picture if changed == "picture" else manifest
+                self.write(target, target.read_text() + " ")
+                self.assert_bad(ticket, result, "hash mismatch")
+
+    def test_render_rejects_wrong_source_candidate_and_version(self):
+        ticket = self.ticket()
+        result = self.result(ticket)
+        outside = self.write(self.owner / "uncommissioned.html", "not a commissioned artifact")
+        for source, candidate, changes, diagnostic in (
+                (outside, ticket.stem, {}, "not a pinned content artifact"),
+                (result.parent / "content/sms.txt", "rd99_generate_other", {}, "not a pinned content artifact"),
+                (result.parent / "content/sms.txt", ticket.stem, {"version": 0}, "positive integer")):
+            with self.subTest(diagnostic=diagnostic, candidate=candidate):
+                self.add_render(result, source, candidate, **changes)
+                self.assert_bad(ticket, result, diagnostic)
+
+    def test_render_picture_cannot_escape_its_result(self):
+        ticket = self.ticket()
+        result = self.result(ticket)
+        outside = self.write(self.owner / "outside.png", "outside picture")
+        self.add_render(result, result.parent / "content/sms.txt", ticket.stem,
+                        render="../../../outside.png", render_sha256=gate.digest(outside))
+        self.assert_bad(ticket, result, "escapes Result")
+
+    def test_render_requires_matching_item_when_ticket_names_one(self):
+        ticket = self.ticket()
+        data = gate.document(ticket)
+        data["item"] = "ITEM02"
+        self.dump(ticket, data)
+        result = self.result(ticket)
+        self.add_render(result, result.parent / "content/sms.txt", ticket.stem)
+        self.assert_bad(ticket, result, "render item mismatch")
+
+    def test_verify_render_is_local_and_reads_only_pinned_source(self):
+        generate = self.ticket()
+        generated = self.result(generate)
+        self.add_render(generated, generated.parent / "content/sms.txt", generate.stem)
+        before = {str(p): p.read_bytes() for p in generated.parent.rglob("*") if p.is_file()}
+        verify = self.ticket(2, "verify", [self.ref(generated, self.owner)])
+        verified = self.result(verify)
+        self.add_render(verified, generated.parent / "content/sms.txt", generate.stem)
+        self.assertEqual(gate.validate(verify, verified), [])
+        self.assertEqual(gate.document(verified)["artifacts"], [])
+        self.assertEqual(before, {str(p): p.read_bytes() for p in generated.parent.rglob("*") if p.is_file()})
+
+    def test_verify_checks_target_render_integrity(self):
+        generate = self.ticket()
+        generated = self.result(generate)
+        _, picture = self.add_render(generated, generated.parent / "content/sms.txt", generate.stem)
+        verify = self.ticket(2, "verify", [self.ref(generated, self.owner)])
+        self.write(picture, "changed after the target Result was pinned")
+        self.assert_bad(verify, message="hash mismatch")
 
 
 if __name__ == "__main__":

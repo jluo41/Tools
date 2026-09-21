@@ -1,5 +1,22 @@
 # haipipe-run · CHANGELOG
 
+## 0.27.0 · 2026-09-20
+
+Define a Run as a bounded commission with preserved attempts; explain Workflow
+Spec and instance lists with dependency/Route graphs. Split the entrypoint into
+shared rules plus catalogue, identity/history, and receipt/inventory references.
+Index current Task, Discovery, RP/RE/RD, delegated writing, independent display,
+Insight, Design, Paper judgment/compile/response, and Labeling profiles. Preserve
+native schemas and historical identities; retire active Design Adopt examples.
+Clarify waiting/null timestamps, incomplete allocations, owner-qualified counts,
+RI binding versus execution-version counts, and closure versus promotion.
+Align direct catalogue, Workflow, Task, Page/Paper, and presenter consumers.
+New shell Tickets verify declared input bytes, fingerprint the commissioned
+contract, archive prior attempt receipts, exclude simultaneous writers and
+refuse to overwrite closed Results. Run readers diagnose missing/duplicate
+records, resolve declared Task stores and keep recovery rows visible. Existing
+copied Tickets and published Results are not migrated by this source update.
+
 ## 0.26.1 · 2026-09-15
 
 Replace Phase-owned Run profiles with Workflow Run Spec graphs. Gate and Route

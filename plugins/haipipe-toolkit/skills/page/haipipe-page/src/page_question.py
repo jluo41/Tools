@@ -1368,22 +1368,10 @@ def _render_question(q, prv, nxt):
                              leading=display_preview)
 
     ndisc = len(re.findall(r"^>+\s*[A-Z]{1,4}\d{0,4}\s*[「\"：:]", disc, re.M))
-    # 讨论里加个「整段写想法」的框（要 serve.py 跑着）：写完 → 追加进 ## Discussion。
-    # 不钉在某句话上，就是自由讨论；serve.py 没跑时按钮会提示改走手写（JL 260723）。
-    dadd = (f'<div class="dadd" data-file="{esc(q.get("file",""))}">'
-            f'<textarea placeholder="Write a thought into the discussion…"></textarea>'
-            f'<div class="row"><select></select>'
-            f'<button class="dsave" type="button">➕ Add to discussion</button></div></div>')
-    # The form comes FIRST, above the thread (JL 260802): it is the one thing
-    # in this fold a reader can act on, and the newest exchange is right under
-    # it, so writing a reply never means scrolling past the whole history.
+    # Historical discussion remains readable; the Page has no writing form.
     folds = "" if has_outline_folder else det(
         f"💬 Discussion ({ndisc})",
-        dadd +
-        (render_thread(disc) if disc else
-         f'<p class="mut">No discussion yet — add a line under '
-         f'<code>## Discussion</code> in {q["file"]}: '
-         f'<code>&gt; Comment JL …</code></p>'))
+        render_thread(disc) if disc else '<p class="mut">No discussion yet.</p>')
     # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
     folds += det("💡 Why here", body(why, apparatus=False))
     # Every fold says how much is inside, the way Discussion and Log already

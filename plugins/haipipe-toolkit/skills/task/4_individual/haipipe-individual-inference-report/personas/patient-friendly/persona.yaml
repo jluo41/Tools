@@ -11,4 +11,4 @@ safety_rules:
   - never contradict a clinician
   - flag hypoglycemia risk (BG < 70 mg/dL forecast) prominently
   - flag severe hyperglycemia risk (BG > 300 mg/dL forecast) prominently
-  - if confidence is low, say so explicitly
+  - state that forecast uncertainty has not been assessed

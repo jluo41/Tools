@@ -18,7 +18,7 @@ import xml.etree.ElementTree as ET
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Sequence, Tuple
 
 from claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient
 from claude_agent_sdk.types import AssistantMessage, ResultMessage, TextBlock
@@ -107,65 +107,130 @@ def _ftext(elem, tag, default=""):
     return v.strip() if v else default
 
 
-def _fnum(elem, tag, cast=float):
-    v = elem.findtext(tag)
-    if v is None or not v.strip():
-        return None
-    try:
-        return cast(v.strip())
-    except (ValueError, TypeError):
-        return None
+def _expected_verdict(scores: Dict[str, Optional[int]], issues: list[dict]) -> str:
+    """Apply the shared, exhaustive verdict policy used by judge personas."""
+    available = [score for score in scores.values() if score is not None]
+    if any(score <= 2 for score in available) or any(
+        issue["severity"] == "critical" for issue in issues
+    ):
+        return "fail"
+    if len(available) != len(scores) or any(score == 3 for score in available):
+        return "warn"
+    return "pass"
 
 
-def parse_judgment_xml(xml_str: str, judge_persona_name: str) -> Judgment:
+def parse_judgment_xml(
+    xml_str: str,
+    judge_persona_name: str,
+    expected_dimensions: Sequence[str],
+) -> Judgment:
     root = ET.fromstring(xml_str)
+    if root.tag != "judgment":
+        raise ValueError(f"Expected <judgment> root, got <{root.tag}>")
+
+    expected = list(expected_dimensions)
+    if not expected or any(not name for name in expected) or len(set(expected)) != len(expected):
+        raise ValueError("Judge persona must declare unique, non-empty dimensions")
 
     rubric_dimensions: Dict[str, Dict[str, Any]] = {}
+    scores: Dict[str, Optional[int]] = {}
     rd_root = root.find("rubric_dimensions")
-    if rd_root is not None:
-        for d in rd_root.findall("dimension"):
-            name = (d.findtext("name") or "").strip()
-            if not name:
-                continue
-            score = _fnum(d, "score", int)
-            reasoning = _ftext(d, "reasoning")
-            if score is None:
-                # missing score → skip silently rather than fail; surfaced in summary
-                continue
-            rubric_dimensions[name] = {"score": score, "reasoning": reasoning}
+    if rd_root is None:
+        raise ValueError("Missing required <rubric_dimensions>")
+    for d in rd_root.findall("dimension"):
+        name = _ftext(d, "name")
+        if not name:
+            raise ValueError("Every <dimension> must have a non-empty <name>")
+        if name in rubric_dimensions:
+            raise ValueError(f"Duplicate rubric dimension {name!r}")
+        raw_score = _ftext(d, "score")
+        if not raw_score:
+            raise ValueError(f"Dimension {name!r} is missing <score>")
+        if raw_score == "unavailable":
+            score = None
+        elif raw_score in {"1", "2", "3", "4", "5"}:
+            score = int(raw_score)
+        else:
+            raise ValueError(
+                f"Dimension {name!r} score must be an integer 1-5 or 'unavailable'; "
+                f"got {raw_score!r}"
+            )
+        reasoning = _ftext(d, "reasoning")
+        if not reasoning:
+            raise ValueError(f"Dimension {name!r} is missing <reasoning>")
+        rubric_dimensions[name] = {"score": score, "reasoning": reasoning}
+        scores[name] = score
+
+    actual_names = set(rubric_dimensions)
+    expected_names = set(expected)
+    missing = [name for name in expected if name not in actual_names]
+    extra = sorted(actual_names - expected_names)
+    if missing or extra:
+        raise ValueError(f"Rubric dimension mismatch; missing={missing}, unexpected={extra}")
 
     issues = []
     iss_root = root.find("issues")
-    if iss_root is not None:
-        for i in iss_root.findall("issue"):
-            sev = _ftext(i, "severity") or "info"
-            issues.append(
-                {
-                    "severity": sev if sev in {"info", "warning", "critical"} else "info",
-                    "location": _ftext(i, "location"),
-                    "issue": _ftext(i, "issue"),
-                    "suggestion": _ftext(i, "suggestion") or None,
-                }
-            )
+    if iss_root is None:
+        raise ValueError("Missing required <issues> (use an empty element for no issues)")
+    for i in iss_root.findall("issue"):
+        severity = _ftext(i, "severity")
+        if severity not in {"info", "warning", "critical"}:
+            raise ValueError(f"Issue severity must be info, warning, or critical; got {severity!r}")
+        location = _ftext(i, "location")
+        issue_text = _ftext(i, "issue")
+        if not location or not issue_text:
+            raise ValueError("Every issue must have non-empty <location> and <issue>")
+        issues.append({
+            "severity": severity,
+            "location": location,
+            "issue": issue_text,
+            "suggestion": _ftext(i, "suggestion") or None,
+        })
 
-    overall_verdict = (_ftext(root, "overall_verdict") or "warn").lower()
+    overall_verdict = _ftext(root, "overall_verdict")
     if overall_verdict not in {"pass", "warn", "fail"}:
-        overall_verdict = "warn"
+        raise ValueError(f"Invalid or missing overall verdict: {overall_verdict!r}")
+    expected_verdict = _expected_verdict(scores, issues)
+    if overall_verdict != expected_verdict:
+        raise ValueError(
+            f"Overall verdict {overall_verdict!r} contradicts the rubric policy; "
+            f"expected {expected_verdict!r} from scores and critical issues"
+        )
 
-    overall_score = _fnum(root, "overall_score") or (
-        statistics.mean([d["score"] for d in rubric_dimensions.values()])
-        if rubric_dimensions
-        else 0.0
-    )
+    raw_overall_score = _ftext(root, "overall_score")
+    if not raw_overall_score:
+        raise ValueError("Missing required <overall_score>")
+    available_scores = [score for score in scores.values() if score is not None]
+    expected_score = round(statistics.mean(available_scores), 2) if available_scores else None
+    if raw_overall_score == "unavailable":
+        overall_score = None
+    else:
+        try:
+            overall_score = float(raw_overall_score)
+        except ValueError as exc:
+            raise ValueError(f"Invalid overall score {raw_overall_score!r}") from exc
+        if not (0.0 <= overall_score <= 5.0):
+            raise ValueError("Overall score must be between 0 and 5")
+        if expected_score is None or abs(overall_score - expected_score) > 0.01:
+            raise ValueError(
+                f"Overall score must be the mean of available rubric scores; "
+                f"expected {expected_score if expected_score is not None else 'unavailable'}"
+            )
+    if expected_score is None and overall_score is not None:
+        raise ValueError("Overall score must be unavailable when no dimension is assessed")
+    if expected_score is not None and overall_score is None:
+        raise ValueError(f"Overall score is required; expected {expected_score}")
 
     summary = _ftext(root, "summary")
+    if not summary:
+        raise ValueError("Missing required <summary>")
 
     return Judgment(
         judge_persona=judge_persona_name,
         rubric_dimensions=rubric_dimensions,
         issues=issues,
         overall_verdict=overall_verdict,
-        overall_score=round(float(overall_score), 2),
+        overall_score=round(overall_score, 2) if overall_score is not None else None,
         summary=summary,
     )
 
@@ -178,6 +243,7 @@ def judge_report(
     *,
     system_prompt: str,
     judge_persona_name: str,
+    expected_dimensions: Sequence[str],
     extra_context: Optional[Dict[str, Any]] = None,
     model: str = DEFAULT_MODEL,
     timeout_s: int = DEFAULT_TIMEOUT_S,
@@ -202,7 +268,7 @@ def judge_report(
         raise RuntimeError("Empty response from SDK")
 
     xml_str = extract_judgment_xml(raw_text)
-    judgment = parse_judgment_xml(xml_str, judge_persona_name)
+    judgment = parse_judgment_xml(xml_str, judge_persona_name, expected_dimensions)
 
     telemetry = {
         "model": model,

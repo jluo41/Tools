@@ -1,3 +1,17 @@
+## Board Run and gate alignment · 2026-09-20
+
+- Approver 0.3.1 records the rule result without granting workflow release.
+  A checked v0 Outline may permit evidence work; the owner still requires
+  human approval before Content in copilot or auto. Missing owner context
+  produces a check verdict with release/gates not evaluated.
+- Creator 0.12.2 links the canonical Page template and separates producer
+  dispatch receipts from owner-defined Runs.
+- Auditor 0.4.2 identifies the adapter `run_id` as a Workflow Runtime/pass ID,
+  while reviewer 0.10.2 and the roster load the actual owner contracts.
+- Current Page Runs use typed `rp-struct-*`, `rp-sec-*`, `rp-para-*`, and
+  `rp-scratch-*`; earlier compact-namespace and optional-approval entries
+  below are historical, not current dispatch or release instructions.
+
 ## Page Run namespace correction · 2026-09-12
 
 - Treat Page-owned `rpNN` as the current Page Run namespace and `prNN_*` as

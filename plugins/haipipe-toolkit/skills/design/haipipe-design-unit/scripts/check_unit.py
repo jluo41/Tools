@@ -3,19 +3,23 @@
 from __future__ import annotations
 import argparse
 import hashlib
+import json
 from pathlib import Path
 import re
 import sys
 import yaml
 
 RUN = re.compile(r"rd[0-9]{2,}_(generate|verify)_[a-z0-9][a-z0-9_-]*")
-# Commission and Adopt are caller-owned human decision Runs (run-profile.md).
+# Commission is the current human decision Run; Adopt is legacy audit only.
 # The worker never produces them, so the folder audit checks only their
 # Ticket/Result pairing and a recorded decision, never worker semantics.
 DECISION_RUN = re.compile(r"rd[0-9]{2,}_(commission|adopt)_[a-z0-9][a-z0-9_-]*")
 HASH = re.compile(r"[0-9a-f]{64}")
 ROLES = {"evidence", "inspiration", "reference", "avoid", "base", "feedback", "handoff"}
 KINDS = {"max_chars", "contains", "excludes", "starts_with", "ends_with", "semantic", "visual"}
+UNRESOLVED_REASONS = {
+    "missing_context", "criterion_ambiguous", "criterion_conflict", "inspection_limit"
+}
 TEXT_KINDS = {"contains", "excludes", "starts_with", "ends_with"}
 TICKET_SCHEMA = "haipipe.design-ticket/v2"
 RESULT_SCHEMA = "haipipe.design-result/v2"
@@ -148,6 +152,39 @@ def artifact_records(folder, records):
     return out
 
 
+def render_records(output, manifest, subjects, item=None):
+    """Validate optional render evidence without counting pictures as content.
+
+    subjects maps resolved source artifact paths to their Generate Run ids.
+    Returned picture paths are bounded by this Result's render directory.
+    """
+    if "render_manifest" not in manifest:
+        return []
+    root = output.resolve() / "render"
+    path = reference(output, manifest["render_manifest"], bounded=True)
+    need(inside(path, root), "render manifest must live in Result render/")
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    need(isinstance(rows, list) and rows, "render manifest requires a nonempty list")
+    seen = set()
+    checked = []
+    for row in rows:
+        need(isinstance(row, dict), "render entry must be a mapping")
+        string(row.get("item"), "render.item")
+        need(not item or row["item"] == item, "render item mismatch")
+        need(type(row.get("version")) is int and row["version"] > 0,
+             "render version must be a positive integer")
+        source = reference(path.parent, {"path": row.get("source"), "sha256": row.get("sha256")})
+        need(source in subjects and subjects[source] == row.get("candidate"),
+             "render source/candidate is not a pinned content artifact")
+        picture = reference(path.parent, {"path": row.get("render"), "sha256": row.get("render_sha256")}, bounded=True)
+        need(inside(picture, root), "picture must live in Result render/")
+        key = (row["candidate"], source, row["version"])
+        need(key not in seen, "duplicate render version for source")
+        seen.add(key)
+        checked.append({**row, "path": picture})
+    return checked
+
+
 def context(ticket, historical=False):
     """Read and check one Ticket.  ``historical`` reads a closed run: an input that
     lives outside the Design Folder (an Insight page, still being edited) is
@@ -204,8 +241,10 @@ def context(ticket, historical=False):
                  "max_chars requires a nonnegative integer")
         elif kind in TEXT_KINDS:
             string(criterion.get("value"), "criterion.value")
-        else:
+        elif kind in {"semantic", "visual"}:
             string(criterion.get("description"), "criterion.description")
+            for key in ("observation", "pass_when", "fail_when", "not_verifiable_when"):
+                string(criterion.get(key), f"criterion.{key}")
     approval = data.get("approval", {})
     need(isinstance(approval, dict), "approval must be a mapping")
     string(approval.get("actor"), "approval.actor")
@@ -254,7 +293,10 @@ def context(ticket, historical=False):
         runtime = document(path.parent / "runtime.yaml")
         need(runtime.get("status") == "complete" and runtime.get("run") == manifest.get("run"),
              "target generation is not complete")
-        for rel, artifact in artifact_records(path.parent, manifest.get("artifacts")):
+        target_artifacts = artifact_records(path.parent, manifest.get("artifacts"))
+        render_records(path.parent, manifest,
+                       {artifact: target_run for _, artifact in target_artifacts}, data.get("item"))
+        for rel, artifact in target_artifacts:
             subjects.append((target["path"] + "::" + rel, artifact))
     if config["review_mode"] == "independent":
         need(data["actor"] not in producers, "independent reviewer equals producer")
@@ -284,6 +326,11 @@ def validate(ticket, result=None, historical=False):
             need(len(subjects) == config["unit"]["count"], "Generate artifact count mismatch")
         else:
             need(manifest.get("artifacts") == [], "verify must not produce replacement artifacts")
+        render_records(output, manifest, {
+            path: (data["run"] if data["operation"] == "generate"
+                   else Path(target.split("::", 1)[0]).parent.name)
+            for target, path in subjects
+        }, data.get("item"))
         checks_path = reference(output, manifest.get("checks"), bounded=True)
         checks = document(checks_path).get("checks")
         need(isinstance(checks, list), "checks must be a list")
@@ -295,6 +342,11 @@ def validate(ticket, result=None, historical=False):
             need(pair in expected and pair not in indexed, "extra or duplicate check pair")
             need(check.get("status") in {"pass", "fail", "unresolved"}, "invalid check status")
             string(check.get("evidence"), "check.evidence")
+            if check.get("status") == "unresolved":
+                need(check.get("unresolved_reason") in UNRESOLVED_REASONS,
+                     "unresolved check needs a valid unresolved_reason")
+                string(check.get("next_owner"), "unresolved check.next_owner")
+                string(check.get("needed"), "unresolved check.needed")
             indexed[pair] = check
         need(set(indexed) == expected, "missing required check pairs")
         for target, path in subjects:
@@ -315,16 +367,15 @@ def validate(ticket, result=None, historical=False):
         verdict = ("unresolved" if "unresolved" in statuses else
                    "fail" if "fail" in statuses else "pass")
         need(manifest.get("verdict") == verdict, "verdict disagrees with checks")
-        need(verdict != "unresolved", "required checks remain unresolved")
         if data["operation"] == "generate":
-            need(verdict == "pass", "the generated draft has failing criteria")
+            need(verdict == "pass", "Generate requires every criterion to pass; resolve an unknown criterion before commissioning")
         return []
     except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError) as exc:
         return [str(exc)]
 
 
 def decision_run(folder, ticket):
-    """Pairing gate for a Commission or Adopt Ticket: identity, receipt, decision."""
+    """Pair current Commission or historical Adopt records without authorizing writes."""
     try:
         data = document(ticket)
         need(data.get("schema") == TICKET_SCHEMA, "unsupported Ticket schema")

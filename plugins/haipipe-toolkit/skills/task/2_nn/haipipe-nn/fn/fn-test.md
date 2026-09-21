@@ -215,7 +215,7 @@ SPACE = os.environ.get('SPACE', '.')
 
 # CORRECT -- use path= and SPACE=
 aidata = AIDataSet.load_from_disk(
-    path='_WorkSpace/4-AIDataStore/Demo_Small_AIData/@v0001',
+    path='_WorkSpace/4-AIDataStore/<resolved-ParentSetName>/@v<N>AIData-<aidata_name>',
     SPACE=SPACE
 )
 print(aidata)                           # shows splits + schema
@@ -225,12 +225,11 @@ print(aidata.dataset_dict['train'][0])  # shows one row
 # AIDataSet.load_from_disk(set_name='...', store_key='...')
 ```
 
-The AIData name and version come from the test config YAML:
-  aidata_name: "Demo_Small_AIData"
-  aidata_version: "@v0001"
-
-Build the path from config:
-  path = f"_WorkSpace/4-AIDataStore/{config.aidata_name}/{config.aidata_version}"
+Resolve the AIData name, version, and ParentSetName from the selected manifest
+or actual Store inventory. Pass that exact discovered path to load_from_disk.
+The current layout is `_WorkSpace/4-AIDataStore/{ParentSetName}/@v{N}AIData-{aidata_name}/`.
+Do not synthesize a path from `aidata_name/aidata_version` or assume a new
+config API field exists; inspect the consuming workspace resolver first.
 
 ---
 

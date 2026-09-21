@@ -2,22 +2,22 @@ fn-scaffold: Scaffold an individual-query job
 ======================================================
 
 Query / visualize ONE individual's data (CGM trace, meal timeline, treatment events).
-Group letter default: **E** (individual).
+Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
 
-Output: `tasks/E{NN}_<group>/{NN}_<job_name>/`.
+Output: `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
 
 
 Step 1 — Identify project + block
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK block. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **E**; scaffold a new `E{NN}_<block_name>/` if needed.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: resolve the Block and Job; create missing canonical containers through the shared Task owner.
 
 
 Step 2 — Collect metadata
 --------------------------
 
-- 2-digit NN: next free in this group.
+- Allocate the next unused Task index inside the selected Job and Run index inside that Task; preserve existing indices.
 - snake_case task_name: descriptive
   (e.g., `view_cgm_timeline`, `view_meal_glucose_overlay`).
 - `subject_id`: REQUIRED — the patient to query.
@@ -30,24 +30,28 @@ Step 2 — Collect metadata
 Step 3 — Create skeleton
 -------------------------
 
-```
-E{NN}_<group>/
-└── {NN}_<job_name>/
-    ├── {NN}_<job_name>.py
-    ├── configs/
-    │   └── individual_<view>.yaml             from ref/config-seed.yaml
-    ├── runs/
-    │   └── individual_<view>.sh
-    ├── results/
-    │   └── <run>/                           plot.pdf, table.csv
-    └── notebooks/
+```text
+tasks/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared code + config-defaults.yaml
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── outline/
+        ├── workflow/                plan.yaml + report.yaml
+        ├── scripts/<worker>.py
+        ├── scripts/config/rNN_<run>.yaml
+        └── runs/rNN_<run>.sh
+
+Generated: $OUTPUT_ROOT/tNN_<task>/results/rNN_<run>/
+           $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
 ```
 
 
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/individual_<view>.yaml`.
+Copy `ref/config-seed.yaml` to `scripts/config/rNN_<run>.yaml`.
 Fill in:
 - `_meta:` block.
 - `subject_id:`, `subject_group:`.
@@ -59,8 +63,8 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/individual_<view>.sh`.
-Set `TASK_NAME="{NN}_{job_name}"`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/rNN_<run>.sh`.
+Set `TASK_NAME="<worker>"` (the worker filename without .py); config and Ticket share the exact `rNN_<run>` stem.
 
 
 Step 6 — Cross-skill link
@@ -77,7 +81,7 @@ Step 7 — Report
 
 ```
 status:    ok
-summary:   Scaffolded individual-query task <NN>_<name> (view=<view>) under E{NN}_<group>.
+summary:   Scaffolded individual-query task <NN>_<name> (view=<view>) under the selected bNN Block / jNN Job.
 artifacts: [paths created]
 next:      verify subject_id exists, then run.sh
 ```
@@ -86,7 +90,7 @@ next:      verify subject_id exists, then run.sh
 MUST NOT
 ---------
 
-- Hardcode `subject_id` in the `.py` — it lives in `configs/individual_<view>.yaml`
+- Hardcode `subject_id` in the `.py` — it lives in `scripts/config/rNN_<run>.yaml`
   so different subjects can be queried by config change alone.
 - Include PHI / PII beyond the project's data policy.
 - Place full data dumps in `results/` — only summary plots + tables.
@@ -107,7 +111,7 @@ For the first run after this scaffold, do ONE of:
      `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`
      (skips the gate for one run; logs a warning to stderr.)
 
-  3. **Permanent skip for this config** — add to `configs/<RUN>.yaml`:
+  3. **Permanent skip for this config** — add to `scripts/config/<RUN>.yaml`:
      ```yaml
      _meta:
        skip_review: true

@@ -10,8 +10,8 @@ description: >-
   Context record, outline context, collect page requirements,
   /haipipe-page-context.
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-15"
+  version: "0.2.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md
 ---
 
@@ -36,7 +36,7 @@ source records           remain authoritative and physically separate
 
 ## 🧭 Run Workflow placement
 
-This skill supplies the context-resolution Run Spec/dispatch adapter. It
+This skill supplies a context-resolution controller adapter, outside the Run list. It
 freezes inputs for the Page Run Workflow, but does not mint a Level-4 Run;
 `outline/<stem>-context.md` and its compatibility receipt are planning inputs
 for later Run Specs.
@@ -44,9 +44,9 @@ for later Run Specs.
 ## ⚡ Brief
 
 ```text
-PHASE    00 CONTEXT
-CYCLE    PREPARE · Collect → Resolve → Freeze
-ASKS     what exact context may the next Page phase rely on?
+ADAPTER  CONTEXT (legacy dispatch 00)
+ACTION   PREPARE · Collect → Resolve → Freeze
+ASKS     what exact context may the selected Page Run rely on?
 READS    Page + Folder identity · Folder owner · Page Face owner · policy ·
          requirement · feedback · discussion · files · log · ranked skills ·
          related Page fragments · current plan/evidence/run state
@@ -70,7 +70,7 @@ resolved for this Page version.
 
 Collect only sources that can change what the Page should become:
 
-1. Resolve Folder identity from `workflow/phase.yaml`, then `folder-kind:`,
+1. Resolve Folder identity from `workflow/folder.yaml`, then `folder-kind:`,
    then the compatibility `page-type:` route.
 2. Read the Folder owner and Page Face owner contracts, if applicable. The
    Page Face owner is the exact workflow-phase, canonical family, or legacy

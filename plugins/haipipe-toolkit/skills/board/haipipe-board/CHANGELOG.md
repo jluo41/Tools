@@ -1,3 +1,21 @@
+## 1.0.12 · 2026-09-20
+
+- Make the Page reader copy-only; reject retired prose-edit endpoints, update Studio dispatch, and export the ledger-selected evidence.
+- Show labeling capabilities without fake step counts, mark unimplemented P2-P5 surfaces as HOLD, and describe local semantic confirmations as unauthenticated caller attestations.
+
+## 1.0.11 · 2026-09-20
+
+- Teach the current `rp-struct-*`, `rp-sec-*`, `rp-para-*`, and `rp-scratch-*`
+  Page Run families; keep compact IDs as historical input.
+- Distinguish Workflow Runtime receipts in `_runs/page/` from Page-local
+  configuration, owner Runs, controller coordinates, and readiness rows.
+- Add Design/Insight Board kinds and their independent owner routes, and
+  scope generic Q creation and archival to the generic Board dialect.
+- Point creation instructions at the canonical Page template. Correct the
+  status example and CLI help: three rows for Board/Group, four for Page.
+- Design presenters retain recorded historical Run IDs and label the Run
+  type separately from queue actions (coordinated with the Design family).
+
 ## 1.0.10 · 2026-09-18
 
 - `live/paper.py`: reading polish after a twenty-view Chrome audit of the Paper

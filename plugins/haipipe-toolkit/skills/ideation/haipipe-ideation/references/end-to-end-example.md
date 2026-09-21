@@ -140,7 +140,7 @@ ideas:
 
 Test writes Paper sync revision 2 with this matrix and the machine-only
 portfolio recommendation. The same P0 Page now shows why `i02` is headed
-toward abandonment and why `i03` remains deferred; it creates neither a second
+toward abandonment and why the machine recommends deferring `i03`; it creates neither a second
 portfolio nor an independent human verdict.
 
 ## 3 Select
@@ -148,40 +148,86 @@ portfolio nor an independent human verdict.
 The machine recommends `i01` with caution, abandoning `i02`, and deferring
 `i03`. A person then chooses the realistic specialist target for `i01`, names
 the article category, accepts the associational-claim boundary, and records
-the date and identity.
+the date and identity. The person also explicitly abandons i02 and defers i03;
+these dispositions are not inferred from their absence from selected_cards.
 
 ```yaml
-version: 2
+version: 3
 kind: ideation-selection
 ideation_task: b01.j01.t01
 direction_card: cards/direction.yaml
 decision: select
-selection_posture: proceed-with-caution
-selected_cards: [cards/i01_moderation.yaml]
+selected_cards:
+- cards/i01_moderation.yaml
 story_routes:
-  - card: cards/i01_moderation.yaml
-    story_role: Story-A
-    story_path: Paper-Example/A1-Story/StoryA-specialist-moderation/StoryA-specialist-moderation.md
+- card: cards/i01_moderation.yaml
+  story_role: Story-A
+  story_path: Paper-Example/A1-Story/StoryA-specialist-moderation/StoryA-specialist-moderation.md
 target_routes:
-  - card: cards/i01_moderation.yaml
+- card: cards/i01_moderation.yaml
+  venue_fit_card: cards/venue-fit/i01_venue-fit.yaml
+  target: Specialist journal
+  category: Original research
+  venue_contract: shared-venue-bank/QBvN-specialist.md#versioned-contract
+  contract_version: 2026-09-08.1
+by: person:example
+at: 2026-09-08 12:00:00-04:00
+reason: Best balance of material delta, executable pilot, and current desk fit.
+id: s01
+snapshot: workflow/selections/s01.yaml
+source:
+  sync_revision: 2
+  source_hash: sha256:<reviewed semantic source>
+reviewed_cards:
+- cards/i01_moderation.yaml
+- cards/i02_prediction.yaml
+- cards/i03_linkage.yaml
+candidates:
+- card: cards/i01_moderation.yaml
+  disposition: select
+  reason: Best balance of material delta, executable pilot, and current desk fit.
+  posture: proceed-with-caution
+  accepted_risks:
+  - Do not make a causal claim without a new design
+  assertions:
+    evidence_complete: true
+    novelty_reviewed: true
+    feasibility_receipt_or_waiver: true
+    venue_fit_reviewed: true
+    target_selected: true
+  target_route:
     venue_fit_card: cards/venue-fit/i01_venue-fit.yaml
     target: Specialist journal
     category: Original research
     venue_contract: shared-venue-bank/QBvN-specialist.md#versioned-contract
-by: person:example
-at: 2026-09-08T12:00:00-04:00
-accepted_risks: [Do not make a causal claim without a new design]
-assertions:
-  evidence_complete: true
-  novelty_reviewed: true
-  feasibility_receipt_or_waiver: true
-  venue_fit_reviewed: true
-  target_selected: true
-reason: Best balance of material delta, executable pilot, and current desk fit.
+    contract_version: 2026-09-08.1
+  story_route:
+    story_role: Story-A
+    story_path: Paper-Example/A1-Story/StoryA-specialist-moderation/StoryA-specialist-moderation.md
+- card: cards/i02_prediction.yaml
+  disposition: abandon
+  reason: The person accepts the preemption evidence
+- card: cards/i03_linkage.yaml
+  disposition: defer
+  reason: The person waits for full-text and linkage work
 ```
 
-The handoff points to Paper sync revision 2, this sole human receipt, the Idea
+Save identical copies at workflow/selection.yaml and workflow/selections/s01.yaml.
+Project each answered card and Venue Fit human_target using receipts.md; keep
+machine recommendations separate. The handoff uses version 3, id s01 and
+snapshot handoff/history/s01.yaml. It points to Paper sync revision 2 and its
+source hash, this immutable human receipt, the Idea
 Card, claim ids, owner Results, pilot receipt, Venue Fit Card, current Venue
 contract, hard claim limits, and the planned Story route. Paper P0 projects
 the receipt's verdict, target, and `went to` fields; it does not decide again.
 The handoff copies none of those source artifacts.
+
+## Run ownership for this example
+
+The durable commission uses the portfolio Run Spec in workflow-runs.md, with
+a Task-owned Execution Ticket/Result/runtime for this direction and snapshot.
+The I1/I2/I3 sections above are its internal Steps. Existing source and pilot
+Results are dependencies; only missing independently closable source/pilot
+questions allocate their owner-native Runs. P0 projection and each specialist
+lens do not create extra Runs. If i03 remains HOLD, the whole Test gate is not
+complete, but selected-subset gates may still authorize i01.

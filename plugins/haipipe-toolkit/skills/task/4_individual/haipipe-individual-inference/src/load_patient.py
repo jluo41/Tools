@@ -1,7 +1,7 @@
 """Load a single individual's context from _WorkSpace/A-User-Store.
 
 Individual layout (haipipe-individual contract):
-  UserGroup-<dataset>/Individual-<id>/
+  UserGroup-<dataset>/Subject-<id>/
     manifest.yaml
     1-SourceStore/{CGM,Diet,Exercise,Medication,Ptt,...}.parquet
     2-RecStore/...
@@ -12,35 +12,53 @@ record-level binning useful for retrieval/eval, ignored here.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Optional
 
 import pandas as pd
 import yaml
 
-WORKSPACE_ROOT = Path("/home/jluo41/WellDoc-SPACE")
-USER_STORE = WORKSPACE_ROOT / "_WorkSpace" / "A-User-Store"
-
 SOURCE_TABLES = ["CGM", "Diet", "Exercise", "Medication", "Ptt"]
 
 
-def resolve_individual_path(individual: str) -> Path:
-    """Accept either a full path or 'UserGroup-X/Subject-Y' shorthand."""
-    p = Path(individual)
-    if p.is_absolute() and p.exists():
-        return p
-    candidate = USER_STORE / individual
-    if candidate.exists():
-        return candidate
-    matches = list(USER_STORE.glob(f"UserGroup-*/{individual}"))
+def resolve_workspace_root(workspace_root: str | Path | None = None) -> Path:
+    """Project root: explicit arg, HAIPIPE_WORKSPACE_ROOT, then nearest cwd marker."""
+    configured = workspace_root or os.environ.get("HAIPIPE_WORKSPACE_ROOT")
+    if configured:
+        root = Path(configured).expanduser().resolve()
+        if not (root / "_WorkSpace").is_dir():
+            raise FileNotFoundError(f"No _WorkSpace under configured project root {root}")
+        return root
+    cwd = Path.cwd().resolve()
+    for root in [cwd, *cwd.parents]:
+        if (root / "_WorkSpace").is_dir():
+            return root
+    raise FileNotFoundError("Set --workspace-root or HAIPIPE_WORKSPACE_ROOT to the project containing _WorkSpace")
+
+
+def resolve_individual_path(individual: str, workspace_root: str | Path | None = None) -> Path:
+    """Resolve an absolute Subject path or shorthand within exactly one project."""
+    p = Path(individual).expanduser()
+    if p.is_absolute():
+        if not p.is_dir():
+            raise FileNotFoundError(f"Individual directory missing: {p}")
+        return p.resolve()
+    if ".." in p.parts:
+        raise ValueError("Individual shorthand cannot escape the user store")
+    store = resolve_workspace_root(workspace_root) / "_WorkSpace" / "A-User-Store"
+    candidate = store / p
+    if candidate.is_dir():
+        return candidate.resolve()
+    matches = [g / p for g in store.iterdir() if g.name.startswith("UserGroup-") and (g / p).is_dir()] if store.is_dir() else []
     if len(matches) == 1:
-        return matches[0]
+        return matches[0].resolve()
     if len(matches) > 1:
         raise ValueError(f"Individual id {individual!r} is ambiguous: {matches}")
-    raise FileNotFoundError(f"Cannot resolve individual {individual!r} under {USER_STORE}")
+    raise FileNotFoundError(f"Cannot resolve individual {individual!r} under {store}")
 
 
-def load_patient_ctx(individual: str, cgm_tail: Optional[int] = None) -> dict:
+def load_patient_ctx(individual: str, cgm_tail: Optional[int] = None, *, workspace_root: str | Path | None = None) -> dict:
     """Load a patient's context dict.
 
     Args:
@@ -51,7 +69,7 @@ def load_patient_ctx(individual: str, cgm_tail: Optional[int] = None) -> dict:
     Returns:
         dict with keys: individual_path, manifest, tables (DataFrame per table).
     """
-    individual_dir = resolve_individual_path(individual)
+    individual_dir = resolve_individual_path(individual, workspace_root)
     src = individual_dir / "1-SourceStore"
     if not src.exists():
         raise FileNotFoundError(f"No 1-SourceStore at {individual_dir}")

@@ -1,73 +1,94 @@
-# workflow-plan-sample.yaml — individual-query task script-level plan
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Plugin-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
 # Schema: task/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
-#
-# Typical individual phases: Load → Query → Visualize
-# All outputs light (results/<run>/{plot.pdf, table.csv}).
-
-# ─── Header ──────────────────────────────────────────────────────
 name: view-<SUBJECT>-<VIEW_TYPE>
-purpose: "Query and visualize one individual's <VIEW_TYPE>"
-skill: haipipe-task-for-individual
-
-# ─── I: Input ────────────────────────────────────────────────────
+purpose: Query and visualize one individual's <VIEW_TYPE>
 input:
   args:
-    config: configs/<RUN>.yaml
+    config: scripts/config/rNN_<run>.yaml
     subject_id: <SUBJECT_ID>
     view_type: <timeline | treatment_events | meal_glucose>
-  files_in:
-    - <NN>_<TASK>.py
-    - configs/<RUN>.yaml
+  files_in: &id001
+  - scripts/<worker>.py
+  - scripts/config/rNN_<run>.yaml
+  - _WorkSpace/A-User-Store/UserGroup-<DATASET>/Subject-<ID>
+owner: haipipe-task-for-individual
+plugin:
+  id: <owning-plugin>
+  workspace_roster_ref: <plugin-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Query and visualize one individual's <VIEW_TYPE>
+  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: haipipe-task-for-individual
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: ok
+    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: haipipe-task-for-individual
+    worker_skill_chain:
+    - haipipe-task-for-individual
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Load
+    label: load:subject
+    required: true
+    prompt: Load Subject-<ID> from _WorkSpace/A-User-Store/
+    files_in:
     - _WorkSpace/A-User-Store/UserGroup-<DATASET>/Subject-<ID>
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: Load
-    detail: "load individual's data from A-User-Store"
-    steps:
-      - label: "load:subject"
-        type: agent
-        required: true
-        prompt: "Load Subject-<ID> from _WorkSpace/A-User-Store/"
-        files_in:
-          - _WorkSpace/A-User-Store/UserGroup-<DATASET>/Subject-<ID>
-        files_out: []
-
-  - title: Query
-    detail: "filter and prepare the view-specific slice"
-    steps:
-      - label: "query:filter"
-        type: agent
-        required: true
-        prompt: "Filter to view window, join Source+Record layers"
-        files_in: []
-        files_out: []
-
-  - title: Visualize
-    detail: "render plot and export"
-    steps:
-      - label: "visualize:plot"
-        type: agent
-        required: true
-        prompt: "Render <VIEW_TYPE> plot for Subject-<ID>"
-        files_in: []
-        files_out:
-          - results/<RUN>/plot.pdf
-
-      - label: "visualize:table"
-        type: agent
-        required: false
-        prompt: "Export supporting data as CSV"
-        files_in: []
-        files_out:
-          - results/<RUN>/table.csv
-
-# ─── O: Output ───────────────────────────────────────────────────
+    files_out: []
+  - section: Query
+    label: query:filter
+    required: true
+    prompt: Filter to view window, join Source+Record layers
+    files_in: []
+    files_out: []
+  - section: Visualize
+    label: visualize:plot
+    required: true
+    prompt: Render <VIEW_TYPE> plot for Subject-<ID>
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/plot.pdf
+  - section: Visualize
+    label: visualize:table
+    required: false
+    prompt: Export supporting data as CSV
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/results/rNN_<run>/table.csv
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
 output:
-  returns:
-    status: ok
+  returns: *id002
   files_out:
-    - results/<RUN>/plot.pdf
-    - results/<RUN>/table.csv
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/plot.pdf
+  - $OUTPUT_ROOT/<task>/results/rNN_<run>/table.csv

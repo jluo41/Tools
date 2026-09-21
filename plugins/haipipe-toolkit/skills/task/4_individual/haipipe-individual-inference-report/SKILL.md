@@ -9,8 +9,8 @@ description: >-
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-05-31"
+  version: "0.1.1"
+  last_updated: "2026-09-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -59,7 +59,7 @@ scripts/
   make_report_cli.py    end-to-end CLI: individual + persona → report
 
 tests/
-  (smoke against Subject-18, when written)
+  test_label_contract.py  offline trend and report-label parsing checks
 ```
 
 ---
@@ -67,28 +67,27 @@ tests/
 Quickstart
 -----------
 
-1. Start the local prediction endpoint (sibling skill):
+Use an already deployed endpoint when one is available.
+For a new local server, follow `haipipe-end-deploy-local`: copy its reference
+`serve_local.py` into the canonical serving Task's `scripts/` before launch.
+Choose the platform of the packaged Src2InputFn/Input2SrcFn pair.
 
-```
-ENDPOINT_PATH=_WorkSpace/6-EndpointStore/endpoint_cgm_patchtst_ohio_v0001 \
-PORT=8765 \
-    python Tools/plugins/haipipe-toolkit/skills/task/3_end/haipipe-end-deploy-local/scripts/serve_local.py
-```
-
-2. Generate a report:
-
-```
+```sh
 python Tools/plugins/haipipe-toolkit/skills/task/4_individual/haipipe-individual-inference-report/scripts/make_report_cli.py \
-    --individual Subject-18 \
-    --persona patient-friendly
+    --workspace-root /path/to/project \
+    --individual UserGroup-OhioT1DM/Subject-559 \
+    --platform sagemaker \
+    --endpoint-model endpoint_cgm_patchtst_ohio/v0001 \
+    --endpoint-url http://127.0.0.1:8765/invocations --persona patient-friendly
 ```
 
 Output: `_WorkSpace/7-AgentWorkspace/reports/<individual_id>/<persona>/<ts>/`
-```
-report.json     structured payload (matches Report pydantic)
-report.txt      patient-facing NL (3-6 sentences)
-response.xml    raw <report> block from the LLM
-meta.json       telemetry: model, cost, duration, session_id, ...
+```text
+forecast.json   selected endpoint response
+report.json     structured Report payload
+report.txt      reader text
+response.xml    raw LLM report response
+meta.json       telemetry and forecast/report hash binding
 ```
 
 ---
@@ -142,14 +141,22 @@ Output schema (XML the model emits)
   <forecast_summary>{horizon_minutes, n_windows, pred_min/max/mean}</forecast_summary>
   <interpretation>
     <verdict>rising|stable|falling|mixed</verdict>
-    <why>...</why>
+    <why>Evidence-based interpretation; state when a cause is unknown</why>
     <actions><action>...</action></actions>
-    <confidence>high|medium|low</confidence>
+    <confidence>unavailable</confidence>
     <safety_flag>none|hypo_risk|hyper_risk|hypo_and_hyper_risk</safety_flag>
   </interpretation>
   <nl>... patient-facing prose ...</nl>
 </report>
 ```
+
+Trend is a fixed mathematical description of the supplied series: a constant
+series is `stable`; increases with no decreases are `rising`; decreases with
+no increases are `falling`; and a series with both directions is `mixed`. It
+does not establish clinical significance. The report interface has no forecast
+calibration input, so `confidence` is `unavailable`; it must not infer
+confidence from trajectory range or smoothness. Neither label establishes a
+cause.
 
 ---
 
@@ -161,6 +168,7 @@ Failure modes
 | `no <report>...</report> block in SDK output` | Model wrote prose around the XML | Tighten persona system prompt; check `response.xml` |
 | `requests.exceptions.ConnectionError ... 8765` | Endpoint server not running | Start `serve_local.py` (see step 1) |
 | `pydantic.ValidationError` on Report | Model violated enum (verdict/confidence/safety_flag) | Inspect `response.xml`; persona should constrain enum strictly |
+| report rejected for trend/confidence | Model did not use the supplied fixed trend label or claimed confidence without calibration evidence | Inspect `response.xml` and the forecast evidence; do not override the trend rule |
 | SDK reports `is_error` | Auth or model id wrong | Confirm `~/.claude` logged in; `claude --version`; check `model` in persona.yaml |
 
 ---
@@ -172,3 +180,13 @@ Reuses
 - `haipipe-end-deploy-local` for the prediction endpoint
 - `claude_agent_sdk` for the LLM call (subprocess of `claude` CLI)
 - Pattern reference: `Physician-SPACE/.../tasks/A3_cross_family_judge/run_sdk_judge.py`
+
+`make_report_cli.py` accepts `--workspace-root` and `--platform`; select the deployed
+wire pair even for a local wrapper. `meta.json` binds forecast.json and report.json
+hashes and selected model/window indices. `forecast.json` is required for independent
+forecast fact-checking; it follows the same project data policy as the report.
+Patient actions are limited to explanation, care-team contact and a supplied existing
+clinician plan. Do not derive new treatment, exercise, food or hydration instructions
+from the forecast. The report and safety-review persona apply the same boundary.
+
+Use `--endpoint-model` for the deployed model id. In the report CLI, `--model` selects the report-writing LLM and is a different setting.

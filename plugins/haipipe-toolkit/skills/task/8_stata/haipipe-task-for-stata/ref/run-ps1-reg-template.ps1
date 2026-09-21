@@ -19,13 +19,18 @@ function Resolve-StataExe {
 $stata = Resolve-StataExe
 if (-not $stata) { Write-Error "No Stata found under 'C:\Program Files\Stata*\' (or set `$env:HAIPIPE_STATA)."; exit 1 }
 $env:HAIPIPE_WS_ROOT   = Join-Path $WS_ROOT "_WorkSpace"
-$env:HAIPIPE_RUN_CONFIG = "<RUNNAME>"
+$env:HAIPIPE_RUN_CONFIG = [IO.Path]::GetFileNameWithoutExtension($PSCommandPath)
+$env:HAIPIPE_RESULT_DIR = "<resolved-OUTPUT_ROOT>\<task>\results\$env:HAIPIPE_RUN_CONFIG"
 $workers = @(
     "<worker-1>.do",
     "<worker-2>.do"
 )
 Push-Location $TASK_DIR
 try {
-    foreach ($w in $workers) { Write-Host "  -> $w"; & $stata /e do "scripts/$w" }
+    foreach ($w in $workers) {
+        Write-Host "  -> $w"
+        & $stata /e do "scripts/$w"
+        if ($LASTEXITCODE -ne 0) { throw "Stata worker failed: $w ($LASTEXITCODE)" }
+    }
 } finally { Pop-Location }
 Write-Host "done: <RUNNAME>"

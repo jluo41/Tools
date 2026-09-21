@@ -1,3 +1,12 @@
+## 0.62.1 · 2026-09-20
+
+- Separate Run Specs from controller operations and link the shared release-decision authority.
+
+## 0.62.0 · 2026-09-20
+
+- Bind Section and Paragraph Writing Runs to one scoped request, selected-method and evaluation contract.
+- Store located rubric findings in the existing Step; preserve Run identity and the agent-driven execution boundary.
+
 ## 0.61.0 · 2026-09-15
 
 - Define `Finish Scratch` as the manual trigger for an AI-generated closing

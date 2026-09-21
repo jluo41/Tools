@@ -60,7 +60,7 @@ from src.page_evidence import check_page_evidence  # noqa: E402
 from src.feedback import SEMANTIC_SECTION_ID  # noqa: E402  · the one section-id grammar
 from src.feedback import (rounds as _rounds, parse_round, register_path,  # noqa: E402
                           register_ids, routed_rows)
-from src.folder_contract import current_folder_kind  # noqa: E402
+from src.folder_contract import resolved_folder_kind  # noqa: E402
 
 ERROR, WARN, GAP = "ERROR", "WARN", "GAP"
 MAX_PAGE_TITLE_WORDS = 6
@@ -1973,22 +1973,16 @@ INSIGHT_QUESTION_PREFIX = {
 def _insight_folder_kind(md, text):
     """Resolve Page-v2 Folder kind before the legacy Page Type.
 
-    ``workflow/phase.yaml`` is authoritative when present. The general Folder
-    contract checker reports malformed phase state; this family check then
-    stays silent rather than guessing from stale Markdown.
+    ``workflow/folder.yaml`` is authoritative when present; the shared reader
+    imports a legacy identity only when it is absent. Malformed identity or
+    conflicting Markdown raises a routing error before any kind-specific check.
     """
-    try:
-        current = current_folder_kind(md.parent)
-    except ValueError:
-        return ""
-    if current:
-        return current
     head = text.split("\n## ", 1)[0]
     declared = re.search(r"(?m)^folder-kind:\s*([a-z][a-z0-9-]*)\s*$", head)
-    if declared:
-        return declared.group(1)
     legacy = re.search(r"(?m)^page-type:\s*([a-z][a-z0-9-]*)\s*$", head)
-    return legacy.group(1) if legacy else ""
+    return resolved_folder_kind(md.parent,
+                                declared=declared.group(1) if declared else "",
+                                legacy=legacy.group(1) if legacy else "")
 
 
 def check_insight_family(d, rep):
@@ -2010,7 +2004,11 @@ def check_insight_family(d, rep):
             text = md.read_text(encoding="utf-8")
         except OSError:
             continue
-        ptype = _insight_folder_kind(md, text)
+        try:
+            ptype = _insight_folder_kind(md, text)
+        except ValueError as exc:
+            rep.add(ERROR, "folder-identity-invalid", md.name, str(exc))
+            continue
         name = md.name
 
         if ptype == "wisdom":

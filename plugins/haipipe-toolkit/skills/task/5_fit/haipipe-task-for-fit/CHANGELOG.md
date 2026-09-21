@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.1.3] — 2026-09-20
+
+- Clarify that Build is an internal step of the owning Task authoring Run.
+
 
 ## [0.1.2] — 2026-07-24
 
@@ -22,4 +26,3 @@ Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until J
 ## [1.0.0] — 2026-05-31
 
 - baseline metadata added.
-

@@ -1,11 +1,17 @@
 # Display-Unit Output Contract
 
-Owner: the `display/` family. Every renderer (`-display-table`, `-display-figure`,
-`-display-diagram`, `-display-illustration`) writes into a **unit directory** the caller supplies,
+Owner: the `display/` family. All five renderer skills (`haipipe-display-table`,
+`haipipe-display-figure`, `haipipe-display-diagram`, `haipipe-display-illustration`,
+and `haipipe-display-tex`) write into a **unit directory** the caller supplies,
 not into a flat `figures/` directory. The caller supplies a verified `intake/` and, when a
 wrapper is wanted, the approved caption/label/placement fields. The renderer fills `recipe/` and
 `assets/`; it may serialize `float.tex` only from those explicit caller-owned fields, compiles
 `preview.pdf`, and updates `README.md`.
+
+For a Page DISPLAY Result, the caller-supplied unit is
+`<page>/results/<re-run>/payload/<unit>/`. The Result envelope owns this address; a renderer never
+creates a parallel `outline/evidence/display/` or flat `display/` copy. Paper adapters consume the
+Page Result unit and may project files into generated delivery output.
 
 This is what makes a rendered asset a first-class, reusable, inspectable display instead of a
 loose file.
@@ -16,13 +22,14 @@ page the unit is instead `Display<n>-<slug>`, because the page id already carrie
 the section index, `S-<desk>-Main-<N>-<Title>`; JL 260908). It may add
 `output.md` as the View-owned semantic brief. This is still the one generic
 unit directory: do not mirror it into a second renderer adapter folder. The
-View builder may project only `manifest.json`, `float.tex`, winning `assets/`,
-and inspection previews into a source-free consumer fixture.
+View builder may project only a derived `manifest.json`, `float.tex`, winning `assets/`,
+and inspection previews into a source-free consumer fixture. `intake/manifest.yaml` remains the
+authoritative intake record; the JSON file is a consumer projection, never a second source of truth.
 
-**This file is source-agnostic.** It says nothing about papers. A caller that has a paper maps
-this bundle into its own layout through its own adapter; the paper's is
-`paper/1-lifecycle/4-display/ref/paper-adapter.md`. A renderer never opens a paper, never
-resolves a paper root, and never creates a lifecycle page.
+**This is the shared, source-agnostic renderer contract.** It defines the portable unit, not a
+caller's delivery layout. A caller that has a paper maps this bundle into its own layout through
+the [Paper assembler](../../paper/haipipe-paper-assemble/SKILL.md). A renderer never opens a
+paper, resolves a paper root, or creates a lifecycle page.
 
 ## Unit layout for new units
 
@@ -34,17 +41,16 @@ resolves a paper root, and never creates a lifecycle page.
 │   └── inputs/    small approved summary CSV/JSON extracts only
 ├── recipe/        renderer-owned script / FigureSpec / prompt / receipts;
 │                  optional editable `<slug>.pptx` + `export.md`
-├── float.tex      caller-owned caption + \label + renderer-maintained asset reference
+├── float.tex      caller-owned caption + \label + renderer-owned content reference
 ├── preview.tex    standalone wrapper that \inputs float.tex
 ├── preview.pdf    compiled preview
-├── assets/        the WINNING rendered asset
+├── assets/        the selected rendered asset; its presence is not acceptance
 ├── candidates/    candidate-mode renders, pre-decision
 └── versions/      superseded variants and demoted candidates, kept for history
 ```
 
-The caller owns where `<unit-dir>` sits, the wrapper's semantic fields (caption, label, and
-placement), and what the asset reference inside `float.tex` must be relative to. The renderer is
-told those fields; it does not derive, invent, or revise them.
+The caller owns where `<unit-dir>` sits and the wrapper's semantic fields (caption, label, and
+placement). The renderer is told those fields; it does not derive, invent, or revise them.
 
 The intake schema and materialization rules live in `display-intake-contract.md`.
 
@@ -61,13 +67,32 @@ New units use the layout above.
 | Renderer | `assets/` | `recipe/` |
 |---|---|---|
 | `-display-table` | `table-body.tex` | `gen_*.py`, reading `intake/inputs/source_data.csv` |
-| `-display-figure` | `figure.pdf` | `gen_*.py` (+ `paper_plot_style.py`) |
+| `-display-figure` | `figure.pdf` (or `figure.png` when raster output is explicitly selected) | `gen_*.py` (+ `paper_plot_style.py`) |
 | `-display-diagram` | `figure.svg` (+ `figure.pdf`) | the FigureSpec `*.json` |
 | `-display-illustration` | `figure.png` | `prompt.md` (final prompt + bridge job + score) + `review_log.json` |
+| `haipipe-display-tex` | `figure.pdf` (standalone preview/fallback) | hand-authored `<slug>.tex` + `asset.tex` |
 | PowerPoint-native manual figure | `figure.pdf` (or `figure.svg`) | editable `<slug>.pptx` + `export.md` (source → exported asset) |
 
-`float.tex` references the asset only. Numbers typed directly into `float.tex` are a defect: data
-lives in `assets/`.
+For table, plot, diagram, and illustration units, `float.tex` references the approved asset.
+For TeX-native units, `float.tex` may `\input` the hand-authored source in `recipe/` so a consumer
+with the declared preamble can use the document's native fonts and macros. `assets/figure.pdf` is
+the standalone fallback for consumers that cannot use that preamble. Both paths keep caption,
+label, and placement caller-owned. Numbers typed directly into `float.tex` are a defect; values
+come from the admitted intake.
+
+## Execution and review boundaries
+
+A parent Workflow is a list of Runs. One invocation that produces one bounded display unit may be
+one Run. The renderer's numbered Steps, script or tool calls, compile, review, and retry loop stay
+inside that Run. Give separate Runs only to independently closable unit targets with their own
+receipts. `origin.run` records upstream provenance and is not renamed to the display Run.
+
+Renderer scores and self-checks are advisory. A single caller-directed render may be written to
+`assets/` while its `accepted:` status remains pending. When alternatives are being compared, keep
+unselected work in `candidates/`, show the candidate and review notes to the caller, and wait for
+the caller's selection before promoting a winner into `assets/`. Only the authorized human owner
+records `accepted:` after the selected asset has a compiled and inspected preview. A score
+threshold never selects or accepts an asset.
 
 ## Editable PowerPoint sources
 
@@ -88,28 +113,48 @@ Legacy PPTX files under `versions/` remain linkable as historical editable sourc
 
 ## Candidate mode
 
-When the caller says candidate mode, or passes `--candidate <letter>`, the renderer:
+When alternatives are being compared, or the caller asks for candidate mode, use a candidate id
+according to that renderer's instructions; there is no shared command-line flag. The renderer:
 
 - writes its render to `candidates/<letter>-<form>.<ext>` instead of `assets/`;
 - writes its rebuild recipe into `recipe/`, suffixed with the candidate letter so recipes do
   not collide;
 - does NOT touch `intake/`, `assets/`, `float.tex`, or `README.md` status.
 
-Promotion of a winner into `assets/`, and demotion of losers into `versions/`, is the CALLER's
-decision, never the renderer's. This is what guarantees that commissioning a render can never
-silently replace what a document currently shows.
+The illustration renderer is a bridge-managed exception: unselected images remain in its declared
+scratch workspace at `<work-root>/figures/ai_generated/`; it may write preflight and candidate
+receipts in `recipe/` while comparing. It does not write the active asset or wrapper until the
+caller selects a candidate, then records the final prompt and review receipt in `recipe/`.
+
+The candidate asset is shown directly for selection; candidate mode leaves the unit's active
+`assets/`, `float.tex`, and `preview.pdf` unchanged. The caller selects a winner and promotes it
+into `assets/`; losing variants may move to `versions/`. After promotion, rebuild and inspect the
+unit's `preview.pdf`. Promotion is the caller's decision, and `accepted:` is a separate human
+decision recorded only after that preview is inspected.
+
+Show the actual candidate file and identify it by candidate id; never present the unit's existing
+`preview.pdf` as if it contained that candidate. If the caption or float context affects the
+choice, create a candidate-named preview under `candidates/` using the candidate asset and the
+unchanged caller-owned caption, label, and placement. Do not overwrite `float.tex` or the canonical
+`preview.pdf` to make that preview.
 
 ## Renderer procedure
 
 1. Receive the unit directory, asset-reference base, and prepared `intake/` from the caller.
 2. Validate `intake/manifest.yaml`; a numeric render requires a verified values snapshot.
-3. Render the asset into `<unit-dir>/assets/` (or `candidates/` in candidate mode).
+3. Render a single caller-directed result into `<unit-dir>/assets/`; in candidate mode, render it
+   into `<unit-dir>/candidates/` and leave the active asset untouched.
 4. Write the rebuild recipe into `<unit-dir>/recipe/`. For a PowerPoint-native figure, retain the
    editable `.pptx` there and write `export.md`; the exported PDF/SVG still goes in `assets/`.
-5. If the caller supplied a wrapper specification, create or refresh `float.tex` without changing
-   its caption, `\label`, or placement; update only the asset reference as needed. If no such
-   specification exists, leave `float.tex` pending rather than inventing one.
-6. Write `preview.tex` if missing; compile `preview.pdf`.
+5. For a selected asset, if the caller supplied a wrapper specification, create or refresh
+   `float.tex` without changing its caption, `\label`, or placement. Use the renderer-specific
+   content reference above. If no wrapper specification exists, leave `float.tex` pending rather
+   than inventing one. Candidate mode does not edit the active wrapper.
+6. Write `preview.tex` if missing. For table, figure, diagram, and illustration units, compile
+   `preview.pdf` for the selected asset from the supplied asset-reference base. For a TeX-native
+   unit, follow the TeX renderer's two wrapper compiles from their own directories so relative
+   `\\input` paths resolve, and write the standalone fallback to `assets/figure.pdf`. Candidate
+   mode leaves the active preview unchanged until promotion.
 7. Update `README.md`: status, evidence source.
 8. Return the unit path and the result bundle. Never leave assets in a flat directory.
 
@@ -121,8 +166,8 @@ silently replace what a document currently shows.
   admitted as the Evidence Item's Local Input; the upstream Task and Run remain in that provenance chain.
   Its recipe reads the frozen `intake/inputs/` extract. A hand-typed
   coefficient, or a number typed into `float.tex`, is a placeholder and not a display. Concept
-  figures carry no data and skip this, but a schematic is still annotated with REAL counts supplied
-  by the caller, never invented ones.
+  renderers do not calculate values. They may show a real count, percentage, or estimate only when
+  the caller declares a verified `role: values` intake source; they never invent one.
 - **Publication display hygiene.** Every rendered display must read in grayscale and be
   colorblind-safe: encode the key contrast with position, shape, or weight, never with hue alone.
   No title baked inside the image; the title lives only in the caller-owned `\caption{}` in
@@ -144,8 +189,8 @@ silently replace what a document currently shows.
 `haipipe-display` is the DOOR over this table: a caller who knows the kind may call a renderer
 directly, and a caller who does not says what they want to the door.
 
-The two data renderers read a caller's aggregated intake only; the two concept renderers take no
-values input, though a schematic still carries real counts.
+The two data renderers require an aggregated values intake. Concept renderers have no default values
+input; a concept unit that displays verified figures declares a separate `role: values` source.
 
 ## Notes
 

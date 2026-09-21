@@ -1,5 +1,9 @@
 # CHANGELOG · haipipe-plugin-paper
 
+## 0.3.0 · 2026-09-20
+
+- Align the Space/folder map with the canonical Run Specs and explicit controls. Present all five Spaces and owner-native receipts without allocating wrapper Runs.
+
 ## 0.2.2 · 2026-09-18
 
 - Reading polish from a full audit (all twenty Space views of both papers,

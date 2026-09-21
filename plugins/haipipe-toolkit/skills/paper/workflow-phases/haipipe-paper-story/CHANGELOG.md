@@ -1,3 +1,7 @@
+## 0.9.3 · 2026-09-20
+
+- Bind prospective C1–C8 Story work to the canonical Page/Run contracts and Paper Specs. CHECK remains a controller judgment and does not establish planned findings or authorize execution. No Page outline or human approval is promoted.
+
 ## 0.9.2 · 260908
 - Story id grammar is `Story<Letter>-<desk>-<idea-slug>` (JL 260908: "letter should be good", after "why this is just A? really silly"): the letter orders, the desk names the telling, the slug names the idea; `Story-A` is out, `Story01-…` stays rejected. New "🔤 The Story id" block; group-token updated; first instance `StoryA-misq-phytrait-discretion`.
 

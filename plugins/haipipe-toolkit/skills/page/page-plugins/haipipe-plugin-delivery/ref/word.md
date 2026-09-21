@@ -33,8 +33,8 @@ With no page store, a paper's `0-*.bib` found upward rides along; outside any pa
 
 **Evidence rides as comments**: `--lanes` defaults to Citation alone (the paper family's ruling); whether a BOARD page's export wants lanes at all is QPf7's open A2.1, answered by a real coauthor's markup.
 
-**The page's display evidence embeds (JL 260816)**: when `<page>/outline/evidence/display/` holds units, the board's caller bridges the grammar gap; md2docx keys floats on `\ref` and a board page cites by Page-local `DisplayN` or fully qualified `<stem>-DisplayN`, so `export.py` hands the writer a TEMP copy with `(\ref{<label>})` appended to each unit's first prose mention, plus `--display-root <page>/outline/evidence/display` and `--lanes Citation,Display`. Aliases identify one unit and therefore embed it only once.
-The docx then carries the figure (rasterized from the unit's winning `figure.pdf`) with the unit's own caption, the inline `(Figure n)`, and a 🖼 Display comment on the citing sentence; the page source is never edited and the temp is deleted after the run.
+**The page's display evidence embeds (typed DISPLAY Result payloads)**: the Board selects each current envelope from `outline/<stem>-evidence-items.md`, resolves its `payload.unit` under `<page>/results/<re-run>/payload/<unit>/`, and stages only those selected units in a short-lived directory for `md2docx`. Page prose cites the Result with `\table{D_<slug>}`, `\figure{D_<slug>}`, or `\algorithm{D_<slug>}`; the Result's `labels:` row binds that token to the unit's manuscript `\label`. `export.py` resolves ready tokens to `\ref{<label>}` in a TEMP copy of the Page, then passes the staged root as `--display-root` with `--lanes Citation,Display`; `md2docx` scans that selected set, so historical same-label units cannot override it. An authored `\ref{label}` remains a supported manuscript reference. The retired Outline display folder is a read-only migration fallback when no typed DISPLAY Result exists.
+The docx carries the figure (rasterized from the selected unit's winning `figure.pdf`) or native table body with the unit's own caption, the inline figure/table reference, and a 🖼 Display comment on the citing sentence. The Page source is never edited and the temporary source and selected-unit staging directory are removed after the run. An unbound token passed directly to the shared writer stays readable as pending text. Board Delivery requires every cited D_ token to appear in a selected current DISPLAY Result's labels and blocks missing, conflicting, unready, or label-unbound current bindings, as well as ready units without exportable assets; it never falls back to stale evidence.
 
 **Tables remain native and editable**: booktabs `tabular` and `tabularx` assets, including balanced column specifications such as `@{}X r@{}` and `\multicolumn`, are parsed into Word table rows. TeX wrappers and note minipages do not leak into cell text.
 
@@ -59,3 +59,13 @@ The twin needs Chrome on the machine; without it the view keeps the ⬇ download
 The writer always lands new artifacts in `delivery/word/`. A pre-migration
 flat `word/` may be read during a sweep, but it is not a current destination
 and must not be shown as the canonical Folder row.
+
+## Current Evidence selection
+
+Use the exact current Results bound in `outline/<stem>-evidence-items.md`,
+shared with Evidence Space. DISPLAY uses the selected Result's `payload.unit`;
+every cited D_ token must appear in its `labels:` list. CITE uses its verified
+`payload.bibliography`. Missing, conflicting, unready, or label-unbound current
+bindings block delivery. Do not scan historical units into the document.
+Pages without a ledger use the explicitly recorded legacy migration profile.
+The export's `evidence-selection.json` records that mode and selected hashes.

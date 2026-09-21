@@ -23,7 +23,7 @@ what a Task Page must show so a reader can inspect the evidence without
 reconstructing the scripts.
 
 Load this skill together with haipipe-page, haipipe-task,
-haipipe-task/ref/task-page.md, the current Page workflow phase, and the
+haipipe-task/ref/task-page.md, the current Page workflow route/action, and the
 display contracts. It does not replace any of those authorities and it never
 executes a producing Task merely to make a Page look complete.
 

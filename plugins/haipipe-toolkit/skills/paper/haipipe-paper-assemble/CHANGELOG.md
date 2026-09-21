@@ -1,3 +1,7 @@
+## 0.8.0 · 2026-09-20
+
+- Validate required config and generated paths before mutation; correct the canonical config example. Bind commissioned builds to the compile Spec. Merge Page delivery bibliographies, preserve stable Section identities and label MISQ thresholds as local guidance. Add path/bibliography regression coverage.
+
 ## 0.7.9 · 260908
 - **The WORD lane followed the venue for the first time.** The LaTeX lane has always taken `bibstyle` from the profile, while `latex_room_to_docx.py` emitted numbered Vancouver citations (`[1,2]` and a numbered reference list) for EVERY profile, so a MISQ submission was going out with medical-journal citations. Caught by diffing the generated .docx against the co-author's `MISQ-Official-Format.docx`, which is APA author-date throughout (JL 260908: "is the word fit the misq template as well?").
 - New `citation_style = "author-date"`: in-text `(Barnett et al., 2017; Hoppe et al., 2017)`, one/two/three-plus author forms, and an alphabetical unnumbered reference list in APA (`Barnett, M. L., Olenski, A. R., & Jena, A. B. (2017). Title. Journal, 376, 663-673. https://doi.org/...`). Default stays `numeric`, so JAMA and the medical profiles are untouched. Our first two entries now match the official file character for character.

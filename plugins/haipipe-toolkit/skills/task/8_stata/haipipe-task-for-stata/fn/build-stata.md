@@ -2,13 +2,13 @@ fn/build-stata — Author Stata pipeline code
 =============================================
 
 Extends `fn/scaffold.md` (which creates the skeleton) into full authoring: write dispatcher branches, worker scripts, configs, and orchestrator logic.
-This is what the creator agent does during Phase 2 (Build).
+This is what the creator agent does during Build command.
 
 
 When to call
 ------------
 
-As Phase 2: Build of the `/haipipe-task` lifecycle on a Stata job folder.
+As Build command of the `/haipipe-task` lifecycle on a Stata job folder.
 Also callable standalone: `/haipipe-task-for-stata build <job-path>`
 
 Prerequisite: `fn/plan-stata.md` has been run (plan.yaml exists).
@@ -28,9 +28,7 @@ When building into a job folder that already has authored code (e.g., adding a n
    - STATATMP setup (if yes, replicate in new orchestrators)
 
 2. **Match, do not override.** New files MUST follow the conventions
-   already established in the job folder, even if those conventions
-   differ from the default templates. Consistency within a job folder
-   beats template compliance.
+   already established in the job folder, while preserving the canonical hierarchy and receipt contract. Existing legacy trees are read-compatible; do not create new legacy paths.
 
 3. **When to deviate.** Only deviate from existing patterns when:
    - The existing pattern has a known bug (document in the file header)
@@ -45,7 +43,7 @@ Procedure
 
 Read `workflow/plan.yaml` and all `workflow/plan-script-*.yaml`.
 These define WHAT to build.
-The plan's phases and steps map to:
+The plan's Run Specs and internal steps map to:
 - Dispatcher `.do` branches (one `else if` per step)
 - Worker `.do` scripts (one file per step in `scripts/`)
 - Orchestrator `.ps1` blocks (topic grouping + parallelism)
@@ -94,16 +92,16 @@ cms workers: extract + clean one CMS file type per year case workers: merge case
 Read `ref/run-stage-year-template.ps1` as the starting template.
 
 Build the orchestrator (`run_<stage>_year.ps1`, <=30 lines) with:
-1. Param block: `$cfg`, `$year`, `$source` (case only)
+1. Param block: `$cfg`, optional `$year` consistency assertion, resolved `$resultsDir`; derive year/source from the per-run config
 2. `$ErrorActionPreference = "Stop"`
 3. `$stata` per dialect A5: hardcoded line or Resolve-StataExe, either accepted for any stage
-4. `$dir = $PSScriptRoot` + repo root walk-up for `$ws`
-5. Config validation (`if -not Test-Path configs/$cfg.do`)
+4. `$dir = Split-Path -Parent $PSScriptRoot` (orchestrator is under Task scripts/) + repo root walk-up for `$ws`
+5. Config validation (`if -not Test-Path scripts/config/$cfg.do`)
 6. `$wsRoot` + `$resultsDir` as named variables
 7. `New-Item` for results dir + log/ subdirectory
 8. `$base` + `$tail` for Stata dispatcher args
-9. Phase blocks: `Start-Process ... -PassThru` for parallel, `-PassThru -Wait` for sequential
-10. Final `Write-Host` done message
+9. Step groups: `Start-Process ... -PassThru` for parallel, `-PassThru -Wait` for sequential
+10. Check every child ExitCode before dependent work and print done only after all workers succeed
 
 **CMS server rules (baked in):**
 - NO `Start-Job` (constrained language mode)
@@ -116,7 +114,7 @@ Build the orchestrator (`run_<stage>_year.ps1`, <=30 lines) with:
 Reg is DISPATCHER-LESS — each `.ps1` runner is self-contained.
 Read `ref/run-ps1-reg-template.ps1` as the starting template.
 
-Build each runner (`runs/run_reg_<RUNNAME>.ps1`) with:
+Build each runner (`runs/rNN_<run>.ps1`) with:
 1. `$ErrorActionPreference = "Stop"`
 2. `$TASK_DIR = Split-Path -Parent $PSScriptRoot`
 3. Repo root walk-up via `pyproject.toml`
@@ -134,33 +132,33 @@ Build each runner (`runs/run_reg_<RUNNAME>.ps1`) with:
 
 ### Step 4 — Author configs
 
-**Shared config** (`configs/<Cohort>.do`):
+**Shared config** (`scripts/config/<Cohort>.do`):
 - All globals that don't change per run
 - ICD codes, BFAF windows, topic flags, output paths
 - Uses `${ws_root}` and `${cms_source}` (set by source selector / dispatcher)
 
 **Source selectors** (case stage only):
-- `configs/_source_synth.do`: sets `cms_source`, `cms_asset_name`, `cms_asset_version` for synth
-- `configs/_source_full.do`: same for full/real
+- `scripts/config/_source_synth.do`: sets `cms_source`, `cms_asset_name`, `cms_asset_version` for synth
+- `scripts/config/_source_full.do`: same for full/real
 
 **Per-run configs** (thin wrappers):
-- `configs/<Cohort>_{synth|full}_{year}.do`: loads source selector + shared config + pins year
+- `scripts/config/rNN_<run>.do`: loads source selector + shared config + pins year
 - Generated from `ref/config-seed-run.do`
 
 **Reg configs** (two-layer chain, from `ref/config-seed-reg.do` + `ref/config-seed-reg-run.do`):
-- Shared: `configs/<Cohort>_<Pairing>.do` — data path + version + res_root
-- Shared synth: `configs/<Cohort>_<Pairing>_synth.do` — same but synth data version
-- Per-run: `configs/run_reg_<RUNNAME>.do` — loads shared config + pins `outcome_bfaf_window` + `res_dir`
+- Shared: `scripts/config/<Cohort>_<Pairing>.do` — data path + version + res_root
+- Shared synth: `scripts/config/<Cohort>_<Pairing>_synth.do` — same but synth data version
+- Per-run: `scripts/config/rNN_<run>.do` — loads shared config + pins `outcome_bfaf_window` + `res_dir`
 - DID per-run: same + adds `global file_policy "${ws_root}/0-External-Store/Policy/Policy-State-Year.dta"`
 - Controls, outcomes, treatment, instruments live in worker .do scripts (NOT config) because different workers within the same run have different RHS.
 
 ### Step 5 — Author thin runners + sbatch
 
-**cms/case thin runners** (`runs/run_<stage>_<RUNNAME>.ps1`) — data has no thin runner (self-orchestrating):
+**cms/case thin runners** (`runs/rNN_<run>.ps1`) — data has no thin runner (self-orchestrating):
 - 2 lines: comment + call to orchestrator with args
 - From `ref/run-ps1-template.ps1`
 
-**Reg runners** (`runs/run_reg_<RUNNAME>.ps1`):
+**Reg runners** (`runs/rNN_<run>.ps1`):
 - Self-contained (~30-38 lines): from `ref/run-ps1-reg-template.ps1`
 - NOT thin delegates — each runner IS its own orchestrator
 
@@ -168,7 +166,7 @@ Build each runner (`runs/run_reg_<RUNNAME>.ps1`) with:
 - Reg: per-estimator and per-source batchers using `& powershell -File`
 - cms/case/data: multi-year batchers
 
-**Describe runner** (`runs/run_describe_<Cohort>.ps1`):
+**Optional independently requested describe Run** (`runs/rNN_describe_<cohort>.ps1`):
 - Standalone (doesn't go through orchestrator)
 - Has its own Stata exe resolution + STATATMP
 - Calls dispatcher with `describe` step

@@ -141,7 +141,7 @@ readability and de-template checks                DIAGNOSTIC
 
 An explicit request that changes the topic, promise, claim order, or evidence
 boundary is a content request, not a style override; route it back to the
-owning phase. If DNA conflicts with a higher-authority rule, keep the higher
+owning authority. If DNA conflicts with a higher-authority rule, keep the higher
 authority and record the decision in the Run trace.
 
 For paper or technical prose, use the structure-before-surface idea only as a
@@ -154,8 +154,10 @@ For a first draft, complete the evidence-bound content pass before the DNA
 surface pass, then check the rendered unit against the packet. Keep the
 plan/evidence addresses, any Narrative Decision, and the Writing DNA identity,
 artifacts, exemplars, and conflicts in the host writing receipt or `trace.md`
-so the realization remains reviewable. For a revision, pass the old and new prose to
-`cli/wdiff.py`; the model does not hand-author the word-level record.
+so the realization remains reviewable. For a revision, return clean Before/After
+to a Page Step, or pass old/new prose to `cli/wdiff.py` for a `✎` host. The model
+does not hand-author visual diff marks. Use [evaluation.md](evaluation.md) for
+the shared rubric, revision budget and candidate-specific review trace.
 
 ## 4. Final audit
 

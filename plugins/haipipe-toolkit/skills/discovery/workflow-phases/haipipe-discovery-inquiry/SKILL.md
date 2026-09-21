@@ -1,16 +1,16 @@
 ---
 name: haipipe-discovery-inquiry
 description: >-
-  D1 Folder contract for one Discovery inquiry. It owns folder-kind discovery,
+  Discovery Folder contract for one inquiry. It owns folder-kind discovery,
   the four-role article Page Face, the Paper/Source Run Task Face, selected
-  plugins, D1 Task workflow, shared Page-workflow handoff, cross-face closure,
+  plugins, Discovery controller routing, shared Page-workflow handoff, cross-face closure,
   and evidence handoff. Use when resolving,
   scaffolding, checking, or closing one BJTR Discovery Task Page Folder.
 metadata:
-  version: "0.6.0"
-  last_updated: "2026-09-13"
+  version: "0.6.3"
+  last_updated: "2026-09-20"
   workflow: haipipe-discovery-inquiry
-  phase: D1
+  phase: D1 # compatibility selector for the Discovery controller contract; not a Run identity
   folder_kind: discovery
   primary_face: page
   page_ruling: none
@@ -20,18 +20,25 @@ metadata:
     shape: "four ordered role headings: Question and boundary, Type payload, Evidence map, Limits and next move; each adds a subject-specific title and owns the same-name Aim group"
 ---
 
-# /haipipe-discovery-inquiry · D1 owns one evidence question
+# /haipipe-discovery-inquiry · Discovery owner contract and Run Workflow
 
 ## Position
 
-D1 is the sole Discovery Folder phase and owns the domain/Task workflow:
+D1 is the retained Discovery controller label. Its lifecycle vocabulary names
+internal routing Steps, not Workflow units:
 
 ```text
 SCOPE -> PREPARE? -> ACQUIRE <-> SYNTHESIZE -> CLOSE
 ```
 
-This skill is the Discovery D1 registry identity; there is no second workflow
-skill to load. The Page Face independently advances through
+This skill is the Discovery Folder owner and Run Workflow definition; there is
+no second Discovery workflow skill to load. A live Workflow is a list of
+selected owner-native Run Instances and their dependency/route graph. This
+contract defines the available Run Specs; its Runtime lists the selected
+Discovery source Runs and, when commissioned, the separately owned Page Runs.
+SCOPE, PREPARE, ACQUIRE, SYNTHESIZE, and CLOSE are controller Steps that route
+between those Runs and their gates; they are not Run identities or additional
+workflow units. The Page Face independently advances through
 `haipipe-page-workflow` 00–04. D1 SYNTHESIZE hands Results to that workflow;
 it does not write Page artifacts through a private lifecycle. Each admitted
 canonical paper or source is one Discovery Level-4 Run. The D1 root uses the
@@ -44,14 +51,15 @@ At the skill-bank level, `1_search`, `2_review`, and `3_synthesize` are the
 live numbered capability families analogous to the numbered groups under
 `haipipe-task`. Search resolves candidates, Review inspects one source/Result,
 and Synthesize combines accepted Results into the Page. These groups do not
-add D1/D2/D3 phases. Only this skill under `workflow-phases/` owns the
-Discovery phase contract.
+add D1/D2/D3 phases or Runs. This skill retains its `workflow-phases/`
+compatibility path and owns the Discovery Run Specs and controller routing
+policy.
 
-The canonical Phase × Run declaration, Runs Overview, Human Actions, and Skill
-Coverage live in `ref/workflow-table.md`.
+The canonical Run Specs, controller-Step routing, Runs Overview, Human Actions,
+and Skill Coverage live in `ref/workflow-table.md`.
 
 The retrofit of earlier 0/1/2/3 or 1/2/3/4 descriptions is authoritative in
-`../../haipipe-discovery/ref/bjtr-alignment.md`: D1 owns the domain cycles,
+`../../haipipe-discovery/ref/bjtr-alignment.md`: D1 names controller Steps,
 while the project address remains Block -> Job -> Task Page -> Run.
 
 ## Folder Kind
@@ -64,7 +72,11 @@ select the empirical `page-type: task` compatibility grammar.
 ## Input
 
 - One bounded external-world question.
-- A canonical `discovery_type` and source/admission boundary.
+- A canonical `discovery_type` and source/admission boundary. Before broad
+  retrieval, freeze a question-specific candidate rule at SCOPE, including the
+  topical inclusion/exclusion test and coverage/stopping boundary. If that
+  rule is missing or too vague to apply, return to SCOPE or hold for resolution
+  before opening Runs; retrieval ranks and citation counts are not substitutes.
 - Zero or more preserved records or candidate sources.
 - For each D1 `ACQUIRE` Run, one resolved canonical Subject and its
   Trigger.
@@ -186,7 +198,7 @@ limits. A consumer never treats a legacy source index as a Result receipt.
 ## Files
 
 - `ref/workflow-table.md` — canonical Discovery specialization of the shared
-  Page phases, Runs Overview, Human Actions, and Skill Coverage.
+  Page Workflow Steps, Runs Overview, Human Actions, and Skill Coverage.
 - `../../haipipe-discovery/ref/bjtr-alignment.md` — numbered-family retrofit and
   BJTR crosswalk.
 - `../../haipipe-discovery/SKILL.md` — user door, executor, and compatibility

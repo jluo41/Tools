@@ -1,76 +1,96 @@
-# workflow-plan-sample.yaml — display task script-level plan
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Plugin-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
 # Schema: task/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
-#
-# Typical display-input phases: Load → Summarize → Validate → Export
-# All outputs are small, display-safe inputs under
-# $OUTPUT_ROOT/<task>/results/<run>/{source_data.csv, provenance.json}.
-
-# ─── Header ──────────────────────────────────────────────────────
 name: display-input-<NAME>
-purpose: "Produce a verified display-ready summary for <NAME> from upstream results"
-skill: haipipe-task-for-display
-
-# ─── I: Input ────────────────────────────────────────────────────
+purpose: Produce a verified display-ready summary for <NAME> from upstream results
 input:
   args:
-    config: t01_display_input_summary/scripts/config/<RUN>.yaml
+    config: scripts/config/rNN_<run>.yaml
     display_kind: <figure | table | diagram | illustration>
-  files_in:
-    - t01_display_input_summary/scripts/prepare_display_input.py
-    - t01_display_input_summary/scripts/config/<RUN>.yaml
+  files_in: &id001
+  - scripts/config/rNN_<run>.yaml
+  - t01_display_input_summary/scripts/prepare_display_input.py
+  - t01_display_input_summary/scripts/config/rNN_<run>.yaml
+  - <resolved-upstream-result>/metrics.json
+owner: haipipe-task-for-display
+plugin:
+  id: <owning-plugin>
+  workspace_roster_ref: <plugin-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Produce a verified display-ready summary for <NAME> from upstream results
+  target: tasks/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: haipipe-task-for-display
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: complete
+    receipt: $OUTPUT_ROOT/<task>/results/rNN_<run>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: haipipe-task-for-display
+    worker_skill_chain:
+    - haipipe-task-for-display
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Load
+    label: load:data
+    required: true
+    prompt: Load upstream results (metrics.json, source_data.csv)
+    files_in:
     - <resolved-upstream-result>/metrics.json
-
-# ─── P: Phases ───────────────────────────────────────────────────
-phases:
-
-  - title: Load
-    detail: "load upstream metrics or data"
-    steps:
-      - label: "load:data"
-        type: agent
-        required: true
-        prompt: "Load upstream results (metrics.json, source_data.csv)"
-        files_in:
-          - <resolved-upstream-result>/metrics.json
-        files_out: []
-
-  - title: Summarize
-    detail: "select and aggregate the exact values the display may use"
-    steps:
-      - label: "summary:aggregate"
-        type: agent
-        required: true
-        prompt: "Produce the small display-ready aggregate; do not choose visual styling or emit a paper asset."
-        files_in: []
-        files_out: []
-
-  - title: Validate
-    detail: "verify the aggregate and record its provenance"
-    steps:
-      - label: "validate:provenance"
-        type: agent
-        required: true
-        prompt: "Record task holder, run, upstream artifacts, selected columns, filters, checksums, and the display-safety assertion in provenance.json."
-        files_in: []
-        files_out: []
-
-  - title: Export
-    detail: "save the portable input package for a Display Intake"
-    steps:
-      - label: "export:display-input"
-        type: agent
-        required: true
-        prompt: "Save source_data.csv + provenance.json to $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/; optional diagnostics stay in diagnostics/."
-        files_in: []
-        files_out:
-          - $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/source_data.csv
-          - $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/provenance.json
-
-# ─── O: Output ───────────────────────────────────────────────────
+    files_out: []
+  - section: Summarize
+    label: summary:aggregate
+    required: true
+    prompt: Produce the small display-ready aggregate; do not choose visual styling or emit a paper asset.
+    files_in: []
+    files_out: []
+  - section: Validate
+    label: validate:provenance
+    required: true
+    prompt: Record task holder, run, upstream artifacts, selected columns, filters, checksums, and the
+      display-safety assertion in provenance.json.
+    files_in: []
+    files_out: []
+  - section: Export
+    label: export:display-input
+    required: true
+    prompt: Save source_data.csv + provenance.json to $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/;
+      optional diagnostics stay in diagnostics/.
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/source_data.csv
+    - $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/provenance.json
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
 output:
-  returns:
-    status: complete
+  returns: *id002
   files_out:
-    - $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/source_data.csv
-    - $OUTPUT_ROOT/results/t01_display_input_summary/<RUN>/provenance.json
+  - $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/source_data.csv
+  - $OUTPUT_ROOT/t01_display_input_summary/results/<RUN>/provenance.json

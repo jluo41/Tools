@@ -22,7 +22,7 @@ case_set_name: "<RecordSetName>/@v<N>CaseSet-<TriggerFolder>"
 
 # -------------------------------------------------------------------
 # AIData naming
-#   Output path: _WorkSpace/4-AIDataStore/<aidata_name>/@<aidata_version>/
+#   Output path: _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>/
 #
 #   To find existing CaseSets:
 #     ls _WorkSpace/3-CaseStore/

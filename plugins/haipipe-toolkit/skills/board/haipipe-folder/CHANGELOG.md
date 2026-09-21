@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1 · 2026-09-20
+
+- Scope shell Ticket/Result examples to their dialect and link the canonical
+  Markdown Page and YAML Design Run Profiles.
+- Use domain Page ownership wording after the independent Insight/Design
+  family split; retain the current Workflow Run Spec and identity contract.
+
 ## 0.6.1 · 2026-09-12
 
 - Point Page and plugin ownership links at their canonical `skills/page/`

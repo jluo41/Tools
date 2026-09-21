@@ -143,7 +143,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
                           "no folder yet", "New Design Folder", "New design tasks", "(board default)",
                           # the href is HTML-escaped, so & is &amp; in the page
                           "/_board/design?path=%2FDesignPlugin-Demo-260916-DesignBoard%2Fboard.md&amp;file=2-Design%2FDesign-01-all-patients-prescription-review-sms%2FDesign-01-all-patients-prescription-review-sms.md&amp;space=design&amp;item=ITEM02",
-                          "1 of 1 insights signed", "records check: PASS in every folder",
+                          "1 of 1 insights currently eligible", "records check: PASS in every folder",
                           "<th>used by</th>", ">Design-01</a> <span class=mut>2 items</span>"):
                 self.assertIn(label, rendered)
             for jargon in ("roster", "Roster", "handoffs signed", "check_unit", "candidate", "DS01",
@@ -174,6 +174,9 @@ class DesignBoardWritesTest(unittest.TestCase):
             self.assertRegex(text, r"(?m)^state: 🔴 OPEN · ")
             self.assertRegex(text, r"(?m)^owner: \S")
             self.assertTrue((page.parent / "outline" / f'{out["folder"]}-design-items.md').is_file())
+            # Sparse native Boards still gain the promised presentation entry.
+            board_text = (board / "board.md").read_text(encoding="utf-8")
+            self.assertIn("## Pages\n" + page.relative_to(board).as_posix(), board_text)
             snap = design_board_snapshot(board, Path(td))
             r3 = next(r for r in snap["brief_rows"] if r["id"] == "R3")
             self.assertEqual(r3["folder"], out["folder"])
@@ -182,6 +185,21 @@ class DesignBoardWritesTest(unittest.TestCase):
                 new_folder(board, "R3")          # already has a folder
             with self.assertRaises(ValueError):
                 new_folder(board, "R9")          # not in the Brief
+
+    def test_new_folder_registers_under_design_group_and_preserves_other_sections(self):
+        with TemporaryDirectory() as td:
+            board = board_fixture(Path(td))
+            board_md = board / "board.md"
+            suffix = "\n## Pages\n### Brief\nExisting brief\n### Design\nExisting design\n\n## Links\nKeep these links.\n"
+            board_md.write_text(board_md.read_text(encoding="utf-8") + suffix, encoding="utf-8")
+            before = board_md.read_text(encoding="utf-8")
+            out = new_folder(board, "R3")
+            rel = f'2-Design/{out["folder"]}/{out["folder"]}.md'
+            after = board_md.read_text(encoding="utf-8")
+            self.assertEqual(after, before.replace("Existing design\n", f"Existing design\n{rel}\n"))
+            with self.assertRaises(ValueError):
+                new_folder(board, "R3")
+            self.assertEqual(board_md.read_text(encoding="utf-8"), after)
 
     def test_new_folder_without_a_line_column_is_opened_once(self):
         with TemporaryDirectory() as td:

@@ -185,6 +185,12 @@ def compute_stats(text: str) -> dict[str, Any]:
         "sentence_count": len(sentences),
         "mean_sentence_length": round(mean_length, 3),
         "sentence_length_stdev": round(stdev, 3),
+        # Retain useful rhythm observations from the retired slop.py without
+        # importing its corpus-specific acceptance floors.
+        "short_sentence_pct": round(100 * sum(n <= 12 for n in sentence_lengths)
+                                    / len(sentence_lengths), 3) if sentence_lengths else 0.0,
+        "long_sentence_pct": round(100 * sum(n >= 40 for n in sentence_lengths)
+                                   / len(sentence_lengths), 3) if sentence_lengths else 0.0,
         "sentence_length_cov": round(cov, 3),
         "burstiness": round(cov, 3),
         "mattr": round(_mattr(tokens), 3),

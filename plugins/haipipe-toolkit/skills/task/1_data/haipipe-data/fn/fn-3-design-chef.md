@@ -159,7 +159,7 @@ python -m scripts.haistepcli.case   --config <task>/scripts/config/<run>.yaml
 python -m scripts.haistepcli.aidata --config <task>/scripts/config/<run>.yaml
 ```
 
-Use the matching scripts.haistepcli.<stage> module for your stage; configs live in the pipeline task's configs/ folder.
+Use the matching scripts.haistepcli.<stage> module for your stage; configs live in the pipeline task's scripts/config/ folder.
 
 ---
 

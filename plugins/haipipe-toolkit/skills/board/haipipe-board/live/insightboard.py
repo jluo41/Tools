@@ -14,10 +14,15 @@ D page names in the store.
 from __future__ import annotations
 
 import html
+import hashlib
 import re
+import uuid
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
+
+from src.folder_contract import resolved_folder_kind
+from .insight_handoff import eligibility as handoff_eligibility, watch_paths as handoff_watch_paths
 
 
 _TITLE = re.compile(r"(?m)^#\s+(.+?)\s*$")
@@ -32,7 +37,7 @@ _MARK = re.compile(r"(✅|🟡|🚫|⬜|🧊)")
 _LOG_LINE = re.compile(r"(?m)^(\d{6}) · (.+?)\s*$")
 _SERVES = re.compile(r"(?im)^\s*SERVES\b")
 _SIGNED = re.compile(r"(?im)^\s*signed:\s*✅\s*(.+?)\s*$")
-_CACHE: dict[str, tuple[float, dict]] = {}
+_CACHE: dict[str, tuple[tuple, dict]] = {}
 
 
 # ─── small readers ──────────────────────────────────────────────────────────
@@ -134,6 +139,12 @@ def _pages(board_root: Path) -> list[dict]:
             continue
         text = _read(path)
         head = _header(text)
+        identity_error = ""
+        try:
+            kind = resolved_folder_kind(path.parent, declared=head.get("folder-kind", ""),
+                                        legacy=head.get("page-type", ""))
+        except ValueError as exc:
+            kind, identity_error = "", str(exc)
         stem = path.stem.split("-", 1)[0].upper()
         m = re.match(r"^([A-Z]?)([DIKW])\d{2}$", stem)
         part = next((re.match(r"^\d+-([A-Z])-", p).group(1) for p in rel.parts
@@ -141,7 +152,8 @@ def _pages(board_root: Path) -> list[dict]:
         pages.append({
             "path": path, "rel": rel.as_posix(), "id": stem, "text": text,
             "title": (_TITLE.search(text).group(1).strip() if _TITLE.search(text) else path.stem),
-            "state": head.get("state", "OPEN"), "page_type": head.get("page-type", ""),
+            "state": head.get("state", "OPEN"),
+            "page_type": kind, "identity_error": identity_error,
             "rung": head.get("question-rung", "").lower(),
             "level": _LEVEL_OF.get(m.group(2)) if m else "", "partition": part,
             "receipt_field": head.get("receipt", ""),
@@ -416,7 +428,31 @@ def board_snapshot(board_root: Path, server_root: Path | None = None,
     board_root = Path(board_root)
     server_root = Path(server_root or board_root)
     key = str(board_root.resolve())
-    stamp = _mtime_max(board_root)
+    runtime_stamp = []
+    for path in sorted((board_root / "_runs" / "insight").glob("*/runtime.yaml")):
+        try:
+            stat = path.stat()
+            runtime_stamp.append((path.as_posix(), stat.st_mtime_ns, stat.st_size))
+        except OSError:
+            continue
+    identity_stamp = []
+    for path in sorted(board_root.rglob("workflow/*.yaml")):
+        if path.name not in {"folder.yaml", "phase.yaml", "handoff.yaml"}:
+            continue
+        try:
+            stat = path.stat()
+            identity_stamp.append((path.as_posix(), stat.st_mtime_ns, stat.st_size))
+        except OSError:
+            continue
+    source_stamp = []
+    source_paths = set(board_root.rglob("*.md")) | set(handoff_watch_paths(board_root))
+    for path in sorted(source_paths):
+        try:
+            stat = path.stat()
+            source_stamp.append((path.as_posix(), stat.st_mtime_ns, stat.st_size))
+        except OSError:
+            source_stamp.append((path.as_posix(), None, None))
+    stamp = (tuple(source_stamp), tuple(runtime_stamp), tuple(identity_stamp))
     cached = _CACHE.get(key)
     if cached and cached[0] == stamp and cached[1]["static"] == static \
             and cached[1]["root"] == server_root:
@@ -426,19 +462,11 @@ def board_snapshot(board_root: Path, server_root: Path | None = None,
     by_id = {p["id"]: p for p in pages}
     partitions = _partitions(board_root, pages)
     partition_ids = [row["id"] for row in partitions]
-    registers = [p for p in pages if p["page_type"] == "question" or p["rung"]]
+    registers = [p for p in pages if not p["identity_error"] and
+                 (p["page_type"] == "question" or (not p["page_type"] and p["rung"]))]
     questions = []
     for reg in sorted(registers, key=lambda p: p["id"]):
         questions.extend(_parse_register(reg, partition_ids))
-    # cells a register grid does not carry are still real when a page answers them
-    for page in pages:
-        for qid in _QID.findall(page["state"]) if "answers" in page["state"] else []:
-            row = next((q for q in questions if q["id"] == qid), None)
-            if row and page["partition"] and not row["cells"].get(page["partition"], {}).get("page"):
-                mark = _MARK.match(page["state"].strip())
-                mark = mark.group(1) if mark else "⬜"
-                row["cells"][page["partition"]] = {"mark": mark, "page": page["id"],
-                                                    "note": "page", "raw": f"{mark} {page['id']}"}
     store_field = _field(text, "store")
     store = (server_root / store_field) if store_field else None
     rel = board_root.resolve().relative_to(server_root.resolve()).as_posix()
@@ -453,6 +481,7 @@ def board_snapshot(board_root: Path, server_root: Path | None = None,
         "question_ids": [q["id"] for q in questions],
         "registers": {lvl: [p["path"] for p in registers if p["rung"] == lvl] for lvl in _LEVELS},
         "runs": _receipts(pages, store), "events": _log_events(pages),
+        "workflow_runtimes": _workflow_runtimes(board_root),
         "handoffs": handoff_records(board_root, pages),
         "settled": sum(p["state"].startswith("✅") for p in pages),
     }
@@ -470,7 +499,14 @@ def _first_para(body: str) -> str:
 
 def handoff_records(board_root: Path, pages: list[dict] | None = None) -> list[dict]:
     rows = []
-    for page in pages if pages is not None else _pages(Path(board_root)):
+    pages = pages if pages is not None else _pages(Path(board_root))
+    partitions = [row["id"] for row in _partitions(Path(board_root), pages)]
+    questions = [row for register in pages
+                 if register["page_type"] == "question" and not register["identity_error"]
+                 for row in _parse_register(register, partitions)]
+    for page in pages:
+        if page["page_type"] and page["page_type"] != "wisdom":
+            continue
         if page["level"] != "wisdom" and page["page_type"] != "wisdom":
             continue
         text = page["text"]
@@ -478,10 +514,22 @@ def handoff_records(board_root: Path, pages: list[dict] | None = None) -> list[d
             continue
         sig = _SIGNED.search(text)
         serves = re.search(r"(?m)^\s*SERVES\s+(.+?)\s*$", text)
+        signature = sig.group(1).strip() if sig else ""
+        served = serves.group(1) if serves else ""
+        eligibility = handoff_eligibility(page, signature, served)
+        if eligibility["bindable"]:
+            for qid in set(_QID.findall(served)):
+                matches = [q for q in questions if q["id"] == qid]
+                cell = matches[0]["cells"].get(page["partition"] or "F", {}) if len(matches) == 1 else {}
+                terminal = cell.get("mark") == "✅" or (cell.get("mark") == "🟡" and "final" in cell.get("note", ""))
+                if not terminal or cell.get("page") != page["id"]:
+                    eligibility.update(bindable=False, eligibility="unverified",
+                                       eligibility_reason=f"current register cell {qid} is not settled to this Page")
+                    break
         rows.append({"page": page["path"], "record": page, "title": page["title"],
                      "state": page["state"], "signed": bool(sig),
-                     "signature": sig.group(1).strip() if sig else "",
-                     "serves": serves.group(1) if serves else "", "bindable": bool(sig)})
+                     "signature": signature, "serves": served,
+                     **eligibility})
     return rows
 
 
@@ -525,7 +573,8 @@ def _gates(snap, row, pid, cell, page, primary, receipt) -> list[dict]:
     def st(p): return "passed" if p and p["state"].startswith("✅") else ("held" if p else "pending")
     target = (row or {}).get("id", "Q?")[1]
     needed = {"D": 2, "I": 3, "K": 4, "W": 5}.get(target, 5)
-    signed = bool(page and _SIGNED.search(page["text"]))
+    handoff = next((h for h in snap["handoffs"] if page and h["page"] == page["path"]), {})
+    signed = bool(handoff.get("signature_current"))
     gates = [
         ("GI0", "Meta ready", st(meta), "automatic", meta["state"] if meta else "no MT00"),
         ("GI1", "Question registered", "passed" if row else "pending", "person",
@@ -535,7 +584,7 @@ def _gates(snap, row, pid, cell, page, primary, receipt) -> list[dict]:
         ("GI3", "Information derived", st(lv.get("information")), "agent", (lv.get("information") or {}).get("id", "")),
         ("GI4", "Knowledge claimed", st(lv.get("knowledge")), "agent", (lv.get("knowledge") or {}).get("id", "")),
         ("GI5", "Wisdom signed", "passed" if signed else ("held" if lv.get("wisdom") else "pending"),
-         "person", _SIGNED.search(page["text"]).group(1) if signed else ""),
+         "person", handoff.get("signature", "") if signed else handoff.get("eligibility_reason", "")),
         ("GI6", "Cell settled", "passed" if cell["mark"] == "✅" else ("held" if cell["mark"] == "🟡" else
                                                                    "refused" if cell["mark"] == "🚫" else "pending"),
          "automatic", cell["raw"]),
@@ -891,6 +940,100 @@ def _render_scope(snap: dict, qid: str, pid: str) -> str:
             + _view("pages", _render_pages(snap)))
 
 
+def _workflow_runtimes(board: Path) -> list[dict]:
+    """Read aggregate projections without writing or inventing native Runs."""
+    records = []
+    for path in sorted((board / "_runs" / "insight").glob("*/runtime.yaml")):
+        record = {"path": path.relative_to(board).as_posix(),
+                  "id": path.parent.name, "runs": [], "frontier": [],
+                  "resource_controls": [], "error": ""}
+        try:
+            import yaml
+        except ImportError:
+            record["error"] = "PyYAML is required to read the workflow record"
+            records.append(record)
+            continue
+        try:
+            data = yaml.safe_load(path.read_text(encoding="utf-8"))
+            if not isinstance(data, dict) or data.get("schema") != "haipipe.workflow-runtime/v1":
+                raise ValueError("unsupported workflow record schema")
+            if data.get("workflow_id") != "haipipe-insight-workflow":
+                raise ValueError("workflow owner is not haipipe-insight-workflow")
+            if data.get("workflow_runtime_id") != path.parent.name:
+                raise ValueError("workflow runtime id does not match its record directory")
+            runs, frontier = data.get("runs"), data.get("frontier", [])
+            resource_controls = data.get("resource_controls", [])
+            if not isinstance(runs, list) or not isinstance(frontier, list):
+                raise ValueError("runs and frontier must be lists")
+            seen = set()
+            for run in runs:
+                required = ("run_id", "run_spec_id", "owner", "status", "ticket", "result", "receipt")
+                if not isinstance(run, dict) or any(
+                    not isinstance(run.get(key), str) or not run[key].strip() for key in required
+                ):
+                    raise ValueError("Run row lacks native identity, owner, state or record paths")
+                if run["run_id"] in seen:
+                    raise ValueError(f"duplicate native Run id: {run['run_id']}")
+                seen.add(run["run_id"])
+            if any(not isinstance(item, dict) for item in frontier):
+                raise ValueError("frontier entries must be target records")
+            if not isinstance(resource_controls, list) or any(
+                not isinstance(item, dict) for item in resource_controls
+            ):
+                raise ValueError("resource_controls must be control records")
+            record.update({"status": data.get("status", "not recorded"),
+                           "definition": data.get("definition_ref", "not recorded"),
+                           "runs": runs, "frontier": frontier,
+                           "resource_controls": resource_controls})
+        except (OSError, UnicodeError, ValueError, yaml.YAMLError) as exc:
+            record["error"] = str(exc)
+        records.append(record)
+    return records
+
+
+def _render_runtime_inventory(snap: dict) -> str:
+    records = snap.get("workflow_runtimes", [])
+    if not records:
+        return ('<h2>Workflow Runs</h2><p class=note>No aggregate workflow record yet. '
+                'Resource kinds and Question Groups do not establish Run allocations.</p>')
+    parts = ['<h2>Workflow Runs</h2><p>Recorded native identities and dependencies for each execution. '
+             'Native Results and receipts own their outcomes.</p>']
+    for record in records:
+        parts.append(f'<h3>{_e(record["id"])}</h3><p class=mono>{_e(record["path"])}</p>')
+        if record["error"]:
+            parts.append(f'<p class=note>Cannot read workflow inventory: {_e(record["error"])}</p>')
+            continue
+        parts.append(f'<p>Status: {_e(record["status"])} · Definition: {_e(record["definition"])} '
+                     f'· {len(record["runs"])} recorded Runs</p>')
+        if record["runs"]:
+            rows = []
+            for run in record["runs"]:
+                values = [run["run_id"], run["run_spec_id"], run["owner"], run.get("target", ""),
+                          run.get("participation", "not recorded"), run["status"],
+                          run.get("depends_on", []), run["result"], run["receipt"]]
+                rows.append('<tr>' + ''.join(f'<td>{_e(value)}</td>' for value in values) + '</tr>')
+            headings = ("Run", "Spec", "Owner", "Target", "Participation", "Status", "Dependencies", "Result", "Receipt")
+            parts.append('<div class=scroll><table><tr>' + ''.join(f'<th>{h}</th>' for h in headings)
+                         + '</tr>' + ''.join(rows) + '</table></div>')
+        else:
+            parts.append('<p>No allocated Runs in this execution; control-only work is recorded separately.</p>')
+        if record["resource_controls"]:
+            parts.append('<h4>Resource controls</h4><ul>')
+            for item in record["resource_controls"]:
+                parts.append(f'<li>{_e(item.get("key", "control action"))} · '
+                             f'{_e(item.get("target", ""))} · {_e(item.get("status", "not recorded"))} · '
+                             f'{_e(item.get("receipt", "receipt not recorded"))}</li>')
+            parts.append('</ul>')
+        if record["frontier"]:
+            parts.append('<h4>Ready and waiting work</h4><ul>')
+            for item in record["frontier"]:
+                parts.append(f'<li>{_e(item.get("run_spec_id", "control action"))} · '
+                             f'{_e(item.get("target", ""))} · {_e(item.get("state", "not recorded"))} · '
+                             f'{_e(item.get("waiting_on", []))}</li>')
+            parts.append('</ul>')
+    return ''.join(parts)
+
+
 def _render_run(snap: dict) -> str:
     runs = snap["runs"]
     if runs:
@@ -903,7 +1046,8 @@ def _render_run(snap: dict) -> str:
         ledger = f'<div class=scroll><table><tr><th>Run</th><th>Named by</th><th>Status</th><th>Started</th><th>Took</th><th>Git</th><th>Receipt</th></tr>{body}</table></div>'
     else:
         ledger = '<p class=note>No page on this board names a run receipt yet. A D page names one with a <code>run receipt</code> line or a <code>receipt:</code> header.</p>'
-    ledger = '<h2>Runs</h2><p class=lead>Every run a page names, read from its <code>runtime.yaml</code> in the store.</p>' + ledger
+    ledger = (_render_runtime_inventory(snap) + '<h2>Page-referenced Supporting receipts</h2>'
+              '<p class=lead>Historical source receipts named by Pages, read from the store.</p>' + ledger)
     # The Folders table became the Workflow map's folder tree (the paper board's
     # shape); an old `view=folders` link opens the map.
     return (_tabs([("ledger", "Runs"), ("timeline", "Timeline"), ("wmap", "Workflow map")])
@@ -992,15 +1136,54 @@ def _render_timeline(snap: dict) -> str:
             f'<div class=taxis>{"".join(axis)}</div>{ticks}{"".join(sections)}')
 
 
+def _tasks_root(snap: dict) -> Path:
+    return next((parent / "tasks" for parent in snap["board"].parents
+                 if (parent / "tasks").is_dir()), snap["board"].parent.parent / "tasks")
+
+
 def _task_calls(snap: dict) -> list[dict]:
-    """Every task config whose `store:` is this board's store: the calls this
-    board runs.  The task code sits in the project's `tasks/`, shared by every
-    board; only the config's `store:` ties a call to one board."""
-    tasks_root = snap["board"].parent.parent / "tasks"
-    store = (snap["store"] or "").rstrip("/")
-    if not store or not tasks_root.is_dir():
-        return []
-    calls = []
+    """Project actual native addresses first, then declared Job store routes.
+
+    A consumer override is known only from its recorded Ticket/Result/receipt;
+    never infer it from this process's environment or a stale Task config.
+    """
+    tasks_root = _tasks_root(snap).resolve()
+    calls, seen = [], set()
+
+    def absolute(value):
+        path = Path(value)
+        return path if path.is_absolute() else snap["root"] / path
+
+    def add(task, name, ticket, receipt, source):
+        if str(ticket.resolve()) in seen:
+            return
+        seen.add(str(ticket.resolve()))
+        rel = task.relative_to(tasks_root)
+        calls.append({"family": rel.parts[0], "job": task.parent.name if len(rel.parts) > 2 else "",
+                      "task": task.name, "call": name, "task_path": task, "source": source,
+                      "ticket": ticket, "receipt": receipt, "script": ticket.is_file(),
+                      "ran": receipt.is_file()})
+
+    for runtime in snap.get("workflow_runtimes", []):
+        for run in runtime.get("runs", []):
+            ticket, receipt = absolute(run["ticket"]), absolute(run["receipt"])
+            task = ticket.parent.parent
+            if ticket.parent.name == "runs" and task.resolve().is_relative_to(tasks_root):
+                add(task.resolve(), ticket.stem, ticket, receipt, "native-receipt")
+    if not tasks_root.is_dir():
+        return calls
+    board_store = snap.get("store_path")
+    for cfg in sorted(tasks_root.glob("*/*/*/scripts/config/*.yaml")):
+        task = cfg.parents[2]
+        job = task.parent
+        store = _field(_read(job / "src/config-defaults.yaml"), "store")
+        if not store or board_store is None or absolute(store).resolve() != board_store.resolve():
+            continue
+        output_root = absolute(store) / job.relative_to(tasks_root)
+        add(task, cfg.stem, task / "runs" / f"{cfg.stem}.sh",
+            output_root / task.name / "results" / cfg.stem / "runtime.yaml", "job-default")
+    # Old two-level config banks remain readable as a labelled import only.
+    store = (snap.get("store") or "").rstrip("/")
     for cfg in sorted(tasks_root.glob("*/*/configs/*.yaml")):
         hit = re.search(r"(?m)^store:\s*(\S+)", _read(cfg))
         if not hit or hit.group(1).rstrip("/") != store:
@@ -1008,40 +1191,34 @@ def _task_calls(snap: dict) -> list[dict]:
         task_dir = cfg.parent.parent
         result = (snap["store_path"] / task_dir.parent.name / task_dir.name / "results" / cfg.stem / "runtime.yaml"
                   if snap["store_path"] else None)
-        calls.append({"family": task_dir.parent.name, "task": task_dir.name, "call": cfg.stem,
-                      "script": (task_dir / "runs" / f"{cfg.stem}.sh").exists(),
-                      "ran": bool(result and result.is_file())})
+        if result:
+            add(task_dir, cfg.stem, task_dir / "runs" / f"{cfg.stem}.sh", result, "legacy-config")
     return calls
 
 
-# Run-type rows × Space columns: a definition view, not a Run inventory.
-# From haipipe-insight-workflow §"The six Insight RunTypes" and §"Runtime
-# control keys"; the task run is the Supporting Run a D page binds to.  The
-# third field is the folder slot the row lands in, resolved on the served
-# board for the `Folder on this board` column (the paper board's shape,
-# haipipe-plugin-paper 0.2.1).
+# Resource ownership × Space columns. These rows do not allocate or count Runs.
 _WORKFLOW_MAP = (
-    ("I0 Meta", "MT00", "meta", ("set · data cuts, extract, thresholds · Data tab", "—",
+    ("Meta", "MT00", "meta", ("set · data cuts, extract, thresholds · Data tab", "—",
                                  "read · the extract, last line of the trace", "gate GI0 · meta ready",
                                  "log · MT00's dated lines", "—")),
-    ("I1 Question", "MT01 – MT04", "question", ("ask · one row per question, one cell per data cut · Register, Ask",
+    ("Question", "MT01 – MT04", "question", ("ask · one row per question, one cell per data cut · Register, Ask",
                                                "read · the chosen question on the top strip", "—",
                                                "gate GI1 · question registered · GI6 · cell settled",
                                                "log · the registers' dated lines", "—")),
-    ("Task run", "tasks/…/runs/<call>.sh", "task", ("—", "—", "read · the run line: status, git, seconds",
-                                                    "part of GI2 · the data page names a run that finished ok",
+    ("Supporting Task", "tasks/…/runs/<call>.sh", "task", ("—", "—", "read · the run line: status, git, seconds",
+                                                    "GI2 for produced sources · exact accepted native Result/receipt",
                                                     "run · writes results/<call>/runtime.yaml · Runs tab", "—")),
-    ("I2 Data", "D pages", "data", ("cell · ✅ full-D02", "answer · the counts, D rows", "hop · data line, bound to its run",
+    ("Data", "D pages", "data", ("cell · ✅ full-D02", "answer · the counts, D rows", "hop · data line, bound to exact source evidence",
                                     "gate GI2 · data observed", "named by · Runs table", "—")),
-    ("I3 Information", "I pages", "information", ("cell · ✅ full-I05", "answer · the results, I rows", "hop · information lines",
+    ("Information", "I pages", "information", ("cell · ✅ full-I05", "answer · the results, I rows", "hop · information lines",
                                                   "gate GI3 · information derived", "log · Timeline", "—")),
-    ("I4 Knowledge", "K pages · X verdict", "knowledge", ("cell · ✅ full-K02", "answer · claims with their strength, K rows",
+    ("Knowledge", "K pages · X verdict", "knowledge", ("cell · ✅ full-K02", "answer · claims with their strength, K rows",
                                                           "hop · knowledge line", "gate GI4 · knowledge claimed", "log · Timeline", "—")),
-    ("I5 Wisdom", "W pages", "wisdom", ("cell · ✅ full-W01", "answer · DO and DO NOT rules · Limits tab",
+    ("Wisdom", "W pages", "wisdom", ("cell · ✅ full-W01", "answer · DO and DO NOT rules · Limits tab",
                                         "hop · first line of the trace", "gate GI5 · signed by a person", "log · Timeline",
-                                        "out · signed pages ready for design")),
+                                        "out · current signed payload + GI6 settlement")),
 )
-_RUN_TYPE = {slot: name for name, _, slot, _ in _WORKFLOW_MAP}
+_FOLDER_KIND = {slot: name for name, _, slot, _ in _WORKFLOW_MAP}
 
 
 def _page_slot(page: dict) -> str:
@@ -1054,7 +1231,7 @@ def _page_slot(page: dict) -> str:
 
 def _slot_folders(snap: dict) -> dict[str, list[tuple[str, str]]]:
     """Each map slot → the real folders it lands in on this board, with a count."""
-    out: dict[str, list[tuple[str, str]]] = {slot: [] for slot in _RUN_TYPE}
+    out: dict[str, list[tuple[str, str]]] = {slot: [] for slot in _FOLDER_KIND}
     for page in snap["pages"]:
         if page["id"].startswith("MT"):
             out[_page_slot(page)].append((page["rel"].rsplit("/", 1)[0] + "/", ""))
@@ -1124,8 +1301,8 @@ def _walk(path: Path, depth: int) -> tuple[list[dict], int]:
 
 
 def _board_tree(snap: dict) -> list[dict]:
-    """The board folder as it is on disk: every page folder carries the run
-    type that writes it; a data-cut folder carries the run types inside it."""
+    """The board folder as it is on disk: every page folder carries its resource
+    kind; a data-cut folder carries the resource kinds inside it."""
     board = snap["board"]
     by_dir = {p["path"].parent: p for p in snap["pages"]}
     cuts = {row["folder"] for row in snap["partitions"]}
@@ -1148,12 +1325,12 @@ def _board_tree(snap: dict) -> list[dict]:
                 state = page["state"].split(" · ", 1)[0]
                 extra = len(sub) + more - 1
                 note = state + (f' · {_plural(extra, "more item")}' if extra > 0 else "")
-                kids.append(_tnode(y.name + "/", y, True, [_RUN_TYPE[_page_slot(page)]] if _page_slot(page) else [],
+                kids.append(_tnode(y.name + "/", y, True, [_FOLDER_KIND[_page_slot(page)]] if _page_slot(page) else [],
                                    note, sub, False, more))
             else:
                 kids.append(_tnode(y.name + "/", y, True, note=_plural(len(sub) + more, "item"), kids=sub, more=more))
         mine = [p for p in snap["pages"] if p["rel"].split("/", 1)[0] == x.name]
-        slots = [slot for slot in _RUN_TYPE if any(_page_slot(p) == slot for p in mine)]
+        slots = [slot for slot in _FOLDER_KIND if any(_page_slot(p) == slot for p in mine)]
         if x.name in cuts:
             note = _plural(len(mine), "page") + "".join(
                 f' · {sum(p["level"] == lv for p in mine)} {lv[0].upper()}' for lv in _LEVELS if any(p["level"] == lv for p in mine))
@@ -1162,7 +1339,7 @@ def _board_tree(snap: dict) -> list[dict]:
                                                  if "question" in slots else "")
         else:
             note = _plural(len(kids), "item")
-        roots.append(_tnode(x.name + "/", x, True, [_RUN_TYPE[s] for s in slots], note, kids, x.name not in cuts))
+        roots.append(_tnode(x.name + "/", x, True, [_FOLDER_KIND[s] for s in slots], note, kids, x.name not in cuts))
     return roots
 
 
@@ -1171,8 +1348,8 @@ def _homes_tree(snap: dict) -> list[dict]:
     (shared by every board of the project) and this board's Results store."""
     homes = []
     calls = _task_calls(snap)
-    project = snap["board"].parent.parent
-    tasks_root = project / "tasks"
+    tasks_root = _tasks_root(snap)
+    project = tasks_root.parent
     if tasks_root.is_dir():
         families = []
         for fam in _entries(tasks_root):
@@ -1185,14 +1362,13 @@ def _homes_tree(snap: dict) -> list[dict]:
                 if not task.is_dir():
                     kids.append(_tnode(task.name, task, False, note=_size(task)))
                     continue
-                here = [c for c in mine if c["task"] == task.name]
-                sub, more = _walk(task, 2)
+                here = [c for c in mine if c.get("task_path", task) == task
+                        or c.get("task_path", task).parent == task]
+                sub, more = _walk(task, 3)
                 note = (f'{_plural(len(here), "call")} for this board · {sum(c["ran"] for c in here)} ran'
                         if here else "no call for this board")
                 kids.append(_tnode(task.name + "/", task, True, note=note, kids=sub, more=more))
-            tasks = sum(1 for k in kids if k["dir"])
-            note = (f'{_plural(tasks, "task")} · {_plural(len(mine), "call")} for this board' if mine
-                    else f'{_plural(tasks, "task")} · not used by this board')
+            note = (f'{_plural(len(mine), "call")} for this board' if mine else 'not used by this board')
             families.append(_tnode(fam.name + "/", fam, True, note=note, kids=kids, opened=bool(mine)))
         homes.append(_tnode(f"{project.name}/tasks/", tasks_root, True, ["Task run"],
                             "the Task home · the code, one config per call · shared by every board", families, True))
@@ -1246,7 +1422,7 @@ def _wbr(text: str) -> str:
 
 def _render_workflow_map(snap: dict) -> str:
     where = _slot_folders(snap)
-    head = "".join(f"<th>{s}</th>" for s in ("Run type", "Scope", "Insight", "Evidence", "Check", "Run", "Delivery",
+    head = "".join(f"<th>{s}</th>" for s in ("Folder resource", "Scope", "Insight", "Evidence", "Check", "Run", "Delivery",
                                                "Folder on this board"))
     body = "".join(
         f'<tr><td><b>{_e(name)}</b><div class="mut mono">{_wbr(hint)}</div></td>'
@@ -1261,22 +1437,32 @@ def _render_workflow_map(snap: dict) -> str:
 
     def box(caption, nodes, empty):
         tree = f'<ul class=tree>{_tree_html(snap, nodes)}</ul>' if nodes else f'<div class=tn-more>{empty}</div>'
-        return (f'<div class=treebox><div class=tree-head><span>{caption}</span><span><span class="idtag rt">Run type</span>'
-                f' acting here · <span class=tn-note>counts</span></span></div>{tree}</div>')
+        return (f'<div class=treebox><div class=tree-head><span>{caption}</span><span><span class="idtag rt">Folder kind</span>'
+                f' · <span class=tn-note>counts</span></span></div>{tree}</div>')
 
     roots, homes = _board_tree(snap), _homes_tree(snap)
-    return ('<h2>Workflow map</h2><p class=lead>Run-type rows × Space columns: what each step of the Insight workflow '
-            'shows or does in each Space, and the folder it lands in on this board. A definition view, not a list of runs.</p>'
+    specs = (
+        ("support.<target>", "Task / Discovery", "one missing computation or source Result", "native producer id"),
+        ("evidence.<page>.<item>", "Page Evidence", "one decided VALUE / CITE / DISPLAY item", "RE lineage + native Ticket"),
+        ("structure.<page>", "Page Writing", "one selected whole-Page map", "rp-struct-NN"),
+        ("write.<page>.<scope>", "Page Writing", "one selected section or paragraph goal", "rp-sec-NN / rp-para-NN"),
+        ("deliver.<page>.<target>", "Page Delivery", "one declared delivery target", "RD lineage + native Ticket"),
+    )
+    spec_rows = "".join("<tr>" + "".join(f"<td>{_e(v)}</td>" for v in row) + "</tr>" for row in specs)
+    return ('<h2>Workflow map</h2><p class=lead>Each selected Run Spec has a bounded target and dependencies. '
+            'The runtime records actual native Runs, their Results, receipts, and ready or waiting work.</p>'
+            '<h3>Run Spec templates</h3><p>Templates describe available work. A Ticket and receipt establish an allocated Run. '
+            'Registration, Page checks, signatures and settlement are control actions.</p>'
+            '<div class=scroll><table><tr><th>Spec</th><th>Owner</th><th>Target</th><th>Native identity</th></tr>'
+            f'{spec_rows}</table></div>'
+            '<h3>Folder resources × Spaces</h3><p>The resources below hold questions and answers; their kinds do not count as Runs.</p>'
             f'<div class=scroll><table class=wmap><tr>{head}</tr>{body}</table></div>'
-            f'<h2 class=tree-title>Folder tree × Run type <span class=mut>· {count(roots) + count(homes)} folders and files</span></h2>'
-            '<p class=lead>The same map seen from disk, walked on every open. Left: the real folder tree; click a folder '
-            'to open it. Right: the run type that writes each folder, and its counts. Two boxes: the board folder, then the '
-            'project homes it uses. The map\'s words live in <code>live/insightboard.py</code> (<code>_WORKFLOW_MAP</code>, '
-            'from haipipe-insight-workflow\'s six run types and gate keys); the store comes from <code>store:</code> in '
-            f'<code>{_wbr(snap["relative"] + "/board.md")}</code>.</p>'
+            f'<h2 class=tree-title>Folder tree × Folder kind <span class=mut>· {count(roots) + count(homes)} folders and files</span></h2>'
+            '<p class=lead>Folders and their resource kinds, read from this board and the project stores it uses.</p>'
             + box(f'the board folder · {_e(snap["board"].name)}', roots, "the board folder is empty")
             + box("the project homes · Task home · Results store", homes,
-                  "no Task home or Results store: add tasks/ to the project, or a store: line to board.md"))
+                  "no Task home or Results store recorded"))
+
 
 
 def _rows_table(rows: list[tuple[str, str, str]]) -> str:
@@ -1355,14 +1541,14 @@ def _render_delivery(snap: dict) -> str:
     """What leaves this board: person-signed Wisdom pages a DesignBoard may use."""
     hrows = "".join(
         f'<tr><td>{_link(snap, h["record"])} · {_e(h["title"])}</td><td class=mono>{_e(h["serves"])}</td>'
-        f'<td>{_pill("✅", "✅ " + h["signature"]) if h["signed"] else _pill("⬜", "unsigned · waits for a person")}</td></tr>'
+        f'<td>{_pill("✅" if h["bindable"] else "🟡", h["eligibility"])} · {_e(h["eligibility_reason"])}</td></tr>'
         for h in snap["handoffs"]) or '<tr><td colspan=3 class=mut>No Wisdom page is ready to leave this board yet.</td></tr>'
-    signed = sum(h["signed"] for h in snap["handoffs"])
-    waiting = len(snap["handoffs"]) - signed
-    return (f'<h2>Delivery</h2><p class=lead>{signed} signed Wisdom page{"" if signed == 1 else "s"} ready for design'
-            f'{f"; {waiting} wait for a signature" if waiting else ""}. '
+    ready = sum(h["bindable"] for h in snap["handoffs"])
+    waiting = len(snap["handoffs"]) - ready
+    return (f'<h2>Delivery</h2><p class=lead>{ready} Wisdom page{"" if ready == 1 else "s"} ready for design'
+            f'{f"; {waiting} need current signature/settlement evidence" if waiting else ""}. '
             f'Data, Information and Knowledge pages never leave the board directly.</p>'
-            f'<table><tr><th>Wisdom page</th><th>Serves</th><th>Signed</th></tr>{hrows}</table>')
+            f'<table><tr><th>Wisdom page</th><th>Serves</th><th>Current eligibility</th></tr>{hrows}</table>')
 
 
 def _render_check(snap: dict, view: dict | None, qid: str, pid: str) -> str:
@@ -1374,7 +1560,7 @@ def _render_check(snap: dict, view: dict | None, qid: str, pid: str) -> str:
             f'<span class=who><span class="pill {"human" if g["who"] == "person" else "acc" if g["who"] == "agent" else ""}">{_e(g["who"])}</span> {_e(g["state"])}</span>'
             f'{("<span class=n title=" + chr(34) + _e(g["note"]) + chr(34) + ">" + _e(_clip(g["note"], 90)) + "</span>") if g["note"] else ""}</div>'
             for g in view["gates"]) + '</div>'
-    gates = f'<h2>Gates for {_e(qid)} × {_e(pid)}</h2><p class=lead>Seven gates per cell. Purple gates need a person; GI5 always does.</p>' + gates
+    gates = f'<h2>Gates for {_e(qid)} × {_e(pid)}</h2><p class=lead>Applicable GI controls for this cell. Handoff signing needs a person; a permitted POOL deferral exports no handoff.</p>' + gates
     groom = groom_snapshot(snap["board"], snap)
     crow = "".join(
         f'<tr><td>{_pill("🚫" if c["level"] == "FAIL" else "🟡" if c["level"] == "WARN" else "✅", c["level"])}</td>'
@@ -1406,8 +1592,8 @@ def groom_snapshot(board_root: Path, snapshot: dict | None = None) -> dict:
              if not (_field(_read(path), "state") or "").startswith("✅")]
     bindable = [h for h in snapshot["handoffs"] if h["bindable"]]
     if not bindable:
-        checks.append({"level": "WARN", "code": "no-signed-design-handoff", "where": board_root.name,
-                       "message": "no signed Wisdom Design Handoff is available to Design"})
+        checks.append({"level": "WARN", "code": "no-current-design-handoff", "where": board_root.name,
+                       "message": "no current signed payload with verified dependency pins and GI6 receipt is available to Design"})
     return {"checks": checks, "queue": queue, "handoffs": snapshot["handoffs"], "bindable_handoffs": bindable}
 
 
@@ -1558,7 +1744,9 @@ class InsightBoardMixin:
                 qid, pids = register_question(
                     board, payload.get("level", ""), payload.get("question", ""),
                     payload.get("partition") or payload.get("partitions") or "",
-                    payload.get("origin", ""), payload.get("parent", ""))
+                    payload.get("origin", ""), payload.get("parent", ""),
+                    workflow_runtime_id=payload.get("workflow_runtime_id", ""),
+                    actor=payload.get("actor") or "board-ask")
             except ValueError as exc:
                 return None, str(exc)
             return {"url": f"/_board/insight-board?board={quote(board.name)}&space=insight&q={qid}&p={pids[0]}",
@@ -1582,6 +1770,8 @@ def _main(argv: list[str]) -> int:
     ask.add_argument("question")
     ask.add_argument("--origin", default="", help="curiosity-driven or need-driven")
     ask.add_argument("--parent", default="", help="what it grew out of, e.g. 'FI08 · I3' or 'QI9'")
+    ask.add_argument("--workflow-runtime-id", default="", help="existing Runtime declaring this exact registration")
+    ask.add_argument("--actor", default="board-ask", help="registration actor recorded in the control receipt")
     args = ap.parse_args(argv)
     board = Path(args.board).resolve()
     if not (board / "board.md").is_file():
@@ -1589,7 +1779,8 @@ def _main(argv: list[str]) -> int:
         return 2
     try:
         qid, pids = register_question(board, args.level, args.question, args.partitions,
-                                      args.origin, args.parent)
+                                      args.origin, args.parent,
+                                      workflow_runtime_id=args.workflow_runtime_id, actor=args.actor)
     except ValueError as exc:
         print(f"refused: {exc}")
         return 1
@@ -1601,45 +1792,137 @@ def _main(argv: list[str]) -> int:
 # ─── the one write: register a question ─────────────────────────────────────
 
 def register_question(board_root: Path, level: str, question: str, partitions,
-                      origin: str = "", parent: str = "") -> tuple[str, list[str]]:
-    """Append one row to the register facing `level` and one `## Log` line.
+                      origin: str = "", parent: str = "", *,
+                      workflow_runtime_id: str = "", actor: str = "board-ask") -> tuple[str, list[str]]:
+    """Serialize shared register writes; a concurrent or interrupted writer holds."""
+    lock = Path(board_root) / ".insight-registration.lock"
+    try:
+        lock.mkdir()
+    except FileExistsError as exc:
+        raise ValueError("registration is locked; finish or recover the existing writer first") from exc
+    try:
+        return _register_question(board_root, level, question, partitions, origin, parent,
+                                  workflow_runtime_id=workflow_runtime_id, actor=actor)
+    finally:
+        lock.rmdir()
+
+
+def _register_question(board_root: Path, level: str, question: str, partitions,
+                       origin: str = "", parent: str = "", *,
+                       workflow_runtime_id: str = "", actor: str = "board-ask") -> tuple[str, list[str]]:
+    """Register a question and index its canonical control receipt; no Run.
 
     Called by the skill (`python3 -m live.insightboard ask ...`) after Claude
     Code has decided the level, the partitions and the lineage.  The register
-    grid is the source of truth for questions, so this is the only file the
-    board plugin ever writes.  Wisdom (MT04) keeps a transposed grid and is
-    left to a person.
+    grid remains the question authority. Its Outline log owns the receipt;
+    the aggregate Runtime indexes that control. Transposed grids need an
+    explicit owner edit.
     """
-    level = (level or "").strip().upper()[:1]
+    level = (level or "").strip().upper()
     question = " ".join((question or "").split())
     if isinstance(partitions, str):
         partitions = re.split(r"[,\s]+", partitions)
-    partitions = [p.strip().upper()[:1] for p in partitions if p and p.strip()]
+    partitions = list(dict.fromkeys(p.strip().upper() for p in partitions if p and p.strip()))
     if level not in _LEVEL_OF:
         raise ValueError("kind of answer must be D, I, K or W")
     if not question:
         raise ValueError("the question is empty")
     if not partitions:
         raise ValueError("choose at least one partition")
+    if any(not re.fullmatch(r"[A-Z]", p) for p in partitions):
+        raise ValueError("partition ids must be single letters")
     pages = _pages(Path(board_root))
-    register = next((p for p in pages if p["rung"] == _LEVEL_OF[level]
-                     or (p["page_type"] == "question" and p["id"] == f"MT0{'DIKW'.index(level) + 1}")), None)
+    candidates = [p for p in pages if p["rung"] == _LEVEL_OF[level]
+                  or p["id"] == f"MT0{'DIKW'.index(level) + 1}"]
+    for page in candidates:
+        if page["identity_error"]:
+            raise ValueError(page["identity_error"])
+        if page["page_type"] != "question":
+            raise ValueError(f"{page['path']}: selected register is not a Question Folder")
+    if len(candidates) > 1:
+        raise ValueError("multiple Question registers face the requested rung")
+    register = candidates[0] if candidates else None
     if register is None:
         raise ValueError(f"no register page faces the {_LEVEL_LABEL[level]} level")
-    qid = _append_question_row(register["path"], level, question, partitions, origin, parent)
+    qid, updated = _prepare_question_row(register["path"], level, question, partitions)
+    import yaml
+    board_root = Path(board_root).resolve()
+    path = register["path"].resolve()
+    runtime_id = workflow_runtime_id or f"registration-{uuid.uuid4().hex}"
+    if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]*", runtime_id):
+        raise ValueError("invalid workflow_runtime_id")
+    runtime_dir = board_root / "_runs/insight" / runtime_id
+    runtime_path = runtime_dir / "runtime.yaml"
+    request = {"action": "register-question", "level": level,
+               "question": question, "partitions": partitions}
+    if workflow_runtime_id:
+        try:
+            runtime = yaml.safe_load(runtime_path.read_text(encoding="utf-8"))
+        except (OSError, yaml.YAMLError) as exc:
+            raise ValueError(f"registration Runtime cannot be read: {exc}") from exc
+        if not isinstance(runtime, dict) or runtime.get("workflow_id") != "haipipe-insight-workflow" \
+                or runtime.get("workflow_runtime_id") != runtime_id \
+                or runtime.get("status") not in {"planned", "running", "held"} \
+                or request not in runtime.get("requested_controls", []):
+            raise ValueError("Runtime must declare this exact registration control and remain open")
+        if not isinstance(runtime.get("resource_controls", []), list):
+            raise ValueError("Runtime resource_controls must be a list")
+    else:
+        definition = {"schema": "haipipe.insight-definition/v1", "workflow_id": "haipipe-insight-workflow",
+                      "revision": "v001", "run_specs": [], "requested_answer_targets": [],
+                      "requested_controls": [request],
+                      "completion": {"required_controls": "neutral-row-open-cells-and-registration-receipt",
+                                     "required_runs": "none", "frontier": "empty"}}
+        definition_text = yaml.safe_dump(definition, sort_keys=False, allow_unicode=True)
+        runtime = {"schema": "haipipe.workflow-runtime/v1", "workflow_id": "haipipe-insight-workflow",
+                   "workflow_version": "1.3.1", "workflow_runtime_id": runtime_id,
+                   "definition_ref": "definition-v001.yaml",
+                   "definition_hash": hashlib.sha256(definition_text.encode()).hexdigest(),
+                   "status": "planned", "requested_answer_targets": [], "requested_controls": [request],
+                   "runs": [], "control": {"gates": [], "routes": []},
+                   "resource_controls": [], "frontier": [], "output": {"acceptance": "pending"}}
+    record_id = f"registration-{qid.lower()}-{uuid.uuid4().hex[:12]}"
+    log = path.parent / "outline" / f"{path.stem}-log.md"
+    receipt = f"{log.relative_to(board_root).as_posix()}#{record_id}"
+    control = {"key": "registration", "target": {"question": qid, "partitions": partitions},
+               "status": "passed", "authority": "haipipe-insight-question", "actor": actor,
+               "evidence": [{"path": path.relative_to(board_root).as_posix(),
+                             "sha256": hashlib.sha256(updated.encode()).hexdigest()}], "receipt": receipt}
+    stamp = datetime.now().astimezone().isoformat(timespec="seconds")
+    record = {"workflow_runtime_id": runtime_id, "at": stamp, **control,
+              "assertion": "neutral question row and requested open cells registered",
+              "outcome": "registered", "origin": origin or "not stated", "parent": parent or "none",
+              "next_action": "define any missing answerability facts before GI1; answering remains separate"}
+    entry = (f"### {record_id}\n\n{date.today():%y%m%d} · Registered `{qid}` on {', '.join(partitions)} "
+             f"from the Insight Board · origin: {origin or 'not stated'} · born from: {parent or 'new'}\n\n"
+             f"```yaml\n{yaml.safe_dump(record, sort_keys=False, allow_unicode=True)}```\n")
+    # Prepare and validate every input before the first write. A newly-created
+    # planned Runtime makes an interrupted registration visible for recovery.
+    if not workflow_runtime_id:
+        runtime_dir.mkdir(parents=True, exist_ok=False)
+        (runtime_dir / "definition-v001.yaml").write_text(definition_text, encoding="utf-8")
+        runtime_path.write_text(yaml.safe_dump(runtime, sort_keys=False), encoding="utf-8")
+    path.write_text(updated, encoding="utf-8")
+    log.parent.mkdir(parents=True, exist_ok=True)
+    log.write_text(_read(log).rstrip("\n") + "\n\n" + entry, encoding="utf-8")
+    runtime.setdefault("resource_controls", []).append(control)
+    if not workflow_runtime_id:
+        runtime.update(status="complete", output={"path": path.relative_to(board_root).as_posix(),
+                                                  "acceptance": "passed", "receipt": receipt})
+    runtime_path.write_text(yaml.safe_dump(runtime, sort_keys=False, allow_unicode=True), encoding="utf-8")
+    _CACHE.pop(str(board_root), None)
     return qid, partitions
 
 
-def _append_question_row(path: Path, level: str, question: str, partitions,
-                         origin: str = "", parent: str = "") -> str:
+def _prepare_question_row(path: Path, level: str, question: str, partitions) -> tuple[str, str]:
     if isinstance(partitions, str):
         partitions = [partitions]
-    import datetime
     import textwrap
 
     text = _read(path)
     fence = re.compile(r"(?ms)^```\w*\n(.*?)^```")
-    block = next((m for m in fence.finditer(text) if re.search(r"(?m)^Q[DIKW]\d+\s", m.group(1))), None)
+    block = next((m for m in fence.finditer(text)
+                  if re.search(r"(?m)^id\s+.*\bquestion\b", m.group(1))), None)
     if block is None:
         raise ValueError(f"{path.name} has no question grid")
     lines = block.group(1).splitlines()
@@ -1665,27 +1948,14 @@ def _append_question_row(path: Path, level: str, question: str, partitions,
     for i, (pid, start) in enumerate(cols):
         first = first.ljust(start) + ("⬜ open" if pid in partitions else "·")
     new_lines = [first] + [" " * q_off + c for c in chunks[1:]]
-    last = max((i for i, l in enumerate(lines) if re.match(r"^Q[DIKW]\d+\s", l)), default=-1)
+    last = max((i for i, l in enumerate(lines) if re.match(r"^Q[DIKW]\d+\s", l)),
+               default=lines.index(header))
     while last + 1 < len(lines) and re.match(r"^\s{4,}\S", lines[last + 1]) and not _MARK.search(lines[last + 1]):
         last += 1  # keep a wrapped question with its row
     lines[last + 1:last + 1] = new_lines
     body = "\n".join(lines) + "\n"
     text = text[:block.start(1)] + body + text[block.end(1):]
-    stamp = datetime.date.today().strftime("%y%m%d")
-    entry = (f"{stamp} · Registered `{qid}` on {', '.join(partitions)} from the Insight Board"
-             f" · origin: {origin or 'not stated'} · born from: {parent or 'new'} · \"{question}\"")
-    # The receipt goes where this board already keeps the register's log:
-    # the canonical outline/<stem>-log.md when it exists, else the page's
-    # own Log division (what A00 does).
-    side_log = path.parent / "outline" / f"{path.stem}-log.md"
-    if side_log.is_file():
-        side_log.write_text(_read(side_log).rstrip("\n") + "\n\n" + entry + "\n", encoding="utf-8")
-    elif re.search(r"(?m)^## Log\s*$", text):
-        text = text.rstrip("\n") + "\n\n" + entry + "\n"
-    else:
-        text = text.rstrip("\n") + "\n\n## Log\n\n" + entry + "\n"
-    path.write_text(text, encoding="utf-8")
-    return qid
+    return qid, text
 if __name__ == "__main__":
     import sys
     raise SystemExit(_main(sys.argv[1:]))

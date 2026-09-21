@@ -389,16 +389,16 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
         f'<td><a href="{_e(_page_url(snapshot, i["rel"], "design", i["id"]))}"><code>{_e(i["folder"])}</code> · <b>{_e(i["id"])}</b></a></td>'
         f'<td>{_e(i["title"])}</td><td>{_e(i["glyph"])} {_e(i["state"])}</td></tr>'
         for i in snapshot["waiting"])
-    queue_html = ('<h2>Waiting on</h2><table><tr><th>who · step</th><th>folder · item</th><th>design</th><th>state</th></tr>'
+    queue_html = ('<h2>Waiting on</h2><table><tr><th>who · next action</th><th>folder · item</th><th>design</th><th>state</th></tr>'
                   f'{queue_rows}</table>' if queue_rows else '<h2>Waiting on</h2><div class=empty>Nothing is waiting; every item is ready for Delivery or still in progress.</div>')
     run_rows = "".join(
         f'<tr><td class=mut>{_e(r["finished"] or r["started"] or "—")}</td>'
         f'<td><a href="{_e(_page_url(snapshot, next(f["rel"] for f in snapshot["folders"] if f["name"] == r["folder"]), "run", r["item"]))}"><code>{_e(r["folder"])}</code></a></td>'
-        f'<td><code>{_e(r["id"].replace("_adopt_", "_delivery_"))}</code></td><td>{_e(r["step"])}</td>'
+        f'<td><code>{_e(r["id"])}</code></td><td>{_e(r["step"])}</td>'
         f'<td>{_e(r["actor"])} <span class=mut>{_e(r["mode"])}</span></td>'
         f'<td class="{"bad" if r["status"] in ("failed", "blocked") else "ok" if r["status"] == "complete" else ""}">{_e(r["status"])}</td>'
         f'<td>{_e({"adopt": "ready", "decline": "not delivered"}.get(r["outcome"], r["outcome"]))}</td></tr>' for r in snapshot["runs"])
-    runs_html = ('<h2>Every Run · newest first</h2><table><tr><th>when</th><th>folder</th><th>run</th><th>step</th>'
+    runs_html = ('<h2>Every Run · newest first</h2><table><tr><th>when</th><th>folder</th><th>run</th><th>Run type</th>'
                  f'<th>who</th><th>status</th><th>outcome</th></tr>{run_rows}</table>' if run_rows
                  else '<h2>Every Run</h2><div class=empty>No Design Run in any folder yet.</div>')
     audit_html = ""
@@ -709,7 +709,8 @@ def _list_page(board_root: Path, rel: str) -> None:
     lines = text.splitlines()
     pages = next((i for i, l in enumerate(lines) if re.match(r"^##\s+Pages\b", l)), None)
     if pages is None:
-        return
+        lines.extend(["", "## Pages"])
+        pages = len(lines) - 1
     stop = next((i for i in range(pages + 1, len(lines)) if re.match(r"^##\s", lines[i])), len(lines))
     heading = next((i for i in range(pages + 1, stop) if re.match(r"^###\s+.*Design", lines[i])), None)
     at = stop

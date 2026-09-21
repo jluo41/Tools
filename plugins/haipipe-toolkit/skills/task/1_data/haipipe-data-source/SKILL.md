@@ -28,7 +28,7 @@ Commands
 /haipipe-data-source dashboard rawdata      -> 0-RawDataStore inventory (no manifest check)
 /haipipe-data-source load                   -> load and inspect existing Source_Set
 /haipipe-data-source cook                   -> run Source_Pipeline with config
-/haipipe-data-source design-chef            -> create new SourceFn / HumanFn via builder
+/haipipe-data-source design-chef            -> create new SourceFn via builder (HumanFn routes to haipipe-data-record)
 /haipipe-data-source design-kitchen         -> modify Source_Pipeline infrastructure
 /haipipe-data-source review [file_path]     -> structural review of a Source-layer file
 ```

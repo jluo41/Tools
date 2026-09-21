@@ -319,7 +319,7 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
     # know which phase of the page I am in?"). Read from disk by
     # src/page_phase.py, the same module `cli/pagephase.py` prints in full, so
     # the two can never drift. Board- and group-level strips stay three rows:
-    # a phase belongs to one page and averaging it over a group means nothing.
+    # Readiness belongs to one Page; it is not an active Run identity or count.
     rows = [where + "  ", f"{marker} {status} · {mode}  "]
     if target["kind"] == "page" and not problem:
         st = phase_state(board / target["file"], board)
@@ -331,7 +331,7 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="render one three-line Board closing block; never writes files"
+        description="render a three-line Board/Group closing block, or four lines for Page readiness; never writes files"
     )
     parser.add_argument("board", help="Board folder containing board.md")
     parser.add_argument(

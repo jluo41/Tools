@@ -74,12 +74,13 @@ For a numeric display, every `role: values` source MUST contain all of
 `snapshot.sha256`.
 The snapshot must be an aggregate that is safe to keep in the paper folder.
 
-For a concept display, omit `role: values` entirely.
+For a concept display with no verified numeric labels, omit `role: values`.
 Record the paper-context input instead, for example the narrative beat, claim,
 or human-approved table description.
 A concept figure may not invent numeric facts.
-If it shows real counts, percentages, or estimates, add a separate
-`role: values` source for those facts.
+If the approved concept shows a real count, percentage, or estimate, declare a
+separate verified `role: values` source for those facts. The renderer may copy
+those values into the visual but must not calculate or infer them.
 
 ## Materializing a task result
 
@@ -90,12 +91,14 @@ tasks/<holder>/results/<run>/source_data.csv
         │
         ├── task keeps the canonical aggregate and provenance.json
         ▼
-displays/displayNN-<slug>/intake/
+<caller-supplied-unit>/intake/
         ├── manifest.yaml records holder, run, artifact, hashes, and purpose
         └── inputs/source_data.csv is the frozen render input
 ```
 
-The display stage or its adapter materializes the snapshot.
+For a non-Page holder, the display stage or its adapter materializes the
+snapshot inside the caller-supplied unit. Page callers use the Page Result path
+below; renderers never choose a parallel folder.
 It must copy only the display-ready summary CSV, never raw data or a broad
 intermediate file.
 The renderer reads `intake/inputs/`; it does not search task folders, inspect
@@ -114,9 +117,11 @@ unit's Intake:
 display-input Task Result
         -> page-service Result values.yaml
         -> Evidence Item Local Input
-        -> outline/evidence/display/<unit>/intake/
+        -> <page>/results/<re-run>/payload/<unit>/intake/
 ```
 
+The typed DISPLAY Result owns this Page path. A renderer writes only inside the
+unit directory passed by the caller; it never creates an Outline Evidence copy.
 This is the Page family's one numeric door.
 Non-Page holders may continue to materialize a verified display-input Task
 Result directly into their display Intake.
@@ -166,4 +171,4 @@ Candidate rendering must not mutate `intake/`.
 - Every numeric visual element traces to a `role: values` source.
 - Every values source points to a task holder, run when applicable, and canonical artifact.
 - `recipe/` reads only declared intake inputs for values.
-- The owning View Display row or the Paper Section page's `Display<n>-<slug>` unit (legacy names `S-Display-N`, `<PageID>-Display<n>`, `Sec<N>-Display<n>`) points to the manifest as its provenance binding.
+- The owning View Display row or the Page Result envelope points to the unit's manifest as its provenance binding. Legacy paper folder names remain read-only migration input.

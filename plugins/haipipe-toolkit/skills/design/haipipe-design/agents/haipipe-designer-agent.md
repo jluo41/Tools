@@ -22,7 +22,8 @@ Independent verify requires an actual fresh reviewer context distinct from
 the producer. If this dispatch inherited generation discussion, return a hold
 rather than relabeling yourself independent.
 
-Write only the paired Result directory. Return paths, checks, verdict and gaps.
+Write only the paired Result directory, including any local `render/` evidence.
+Pin its manifest in the Result before completion. Return paths, checks, verdict and gaps.
 Do not edit a card, the register, a sibling Result, the Page, a Delivery
 projection, or runtime.yaml.
 Do not run Commission decision Runs, allocate, ship, or execute upstream work.

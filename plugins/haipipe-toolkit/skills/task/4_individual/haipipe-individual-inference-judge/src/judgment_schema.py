@@ -18,8 +18,8 @@ VERDICT_VALUES = {"pass", "warn", "fail"}
 
 
 class DimensionScore(BaseModel):
-    """One rubric dimension. score is 1-5; reasoning is free-form."""
-    score: int = Field(ge=1, le=5)
+    """One rubric dimension; `None` means evidence was unavailable."""
+    score: Optional[int] = Field(default=None, ge=1, le=5)
     reasoning: str
 
 
@@ -37,5 +37,5 @@ class Judgment(BaseModel):
     rubric_dimensions: Dict[str, DimensionScore]
     issues: List[IssueFlag] = Field(default_factory=list)
     overall_verdict: Literal["pass", "warn", "fail"]
-    overall_score: float = Field(ge=0.0, le=5.0)
+    overall_score: Optional[float] = Field(default=None, ge=0.0, le=5.0)
     summary: str                     # one-paragraph synthesis

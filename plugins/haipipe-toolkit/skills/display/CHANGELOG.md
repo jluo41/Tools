@@ -3,6 +3,13 @@ display — Changelog
 
 Family-level changes. Skill implementation history stays in each skill's own CHANGELOG.
 
+## 2026-09-20 · Figure review evidence and tolerances
+
+`figure-to-svg` now requires matched source/replica render context, dimensions,
+intended display size, and visible evidence for each issue. Its local severity
+anchors distinguish meaning changes, material readability loss, and local
+differences; missing context returns `not-verifiable`.
+
 ## 2026-08-16 · The ✒️ tex kind gets its skill
 
 JL: "should we have a new skill for the tikz? or make -diagram include tikz?"
