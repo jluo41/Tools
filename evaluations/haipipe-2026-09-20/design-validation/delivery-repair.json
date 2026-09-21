@@ -1,0 +1,24 @@
+{
+  "tampered": {
+    "state": "records invalid",
+    "ready": null,
+    "waiting": "SYNTHETIC-ACTOR-NOT-A-HUMAN-RELEASE \u00b7 inspect recorded candidate and review: rd02_generate_item01: hash mismatch: content/sms.txt changed after it was pinned",
+    "exported_rows": [],
+    "actual_artifact_sha256": "2e953567e6e2f14292c7c68137c95e72fba9280225cb4f62df1aa3a9b3ab4e30",
+    "audit": [
+      "runs/rd02_generate_item01.yaml: hash mismatch: content/sms.txt changed after it was pinned",
+      "runs/rd03_verify_item01.yaml: hash mismatch: content/sms.txt changed after it was pinned",
+      "runs/rd03_verify_item01.yaml: hash mismatch: content/sms.txt changed after it was pinned"
+    ]
+  },
+  "unchanged_valid_portfolio": {
+    "totals": {
+      "lines": 8,
+      "wanted": 8,
+      "registered": 8,
+      "ready": 8
+    },
+    "exported_rows": 8,
+    "audit": []
+  }
+}

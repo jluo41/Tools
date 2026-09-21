@@ -1,0 +1,95 @@
+[
+  {
+    "argv": [
+      "python3",
+      "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py",
+      "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks",
+      "--out",
+      "auto"
+    ],
+    "exit_code": 0,
+    "output": "/tmp/validate-workflow-260920-3cbuakfo/task-render.log"
+  },
+  {
+    "argv": [
+      "python3",
+      "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py",
+      "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks",
+      "--surface",
+      "tree",
+      "--depth",
+      "run"
+    ],
+    "exit_code": 0,
+    "output": "/tmp/validate-workflow-260920-3cbuakfo/task-status-tree.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py",
+      "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks",
+      "--surface",
+      "tree",
+      "--depth",
+      "task"
+    ],
+    "exit_code": 0,
+    "output": "/tmp/validate-workflow-260920-3cbuakfo/task-status-summary.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py",
+      "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks",
+      "--surface",
+      "run"
+    ],
+    "exit_code": 0,
+    "output": "/tmp/validate-workflow-260920-3cbuakfo/task-runs.md"
+  },
+  {
+    "argv": [
+      "python3",
+      "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py",
+      "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks",
+      "--format",
+      "tsv"
+    ],
+    "exit_code": 0,
+    "output": "/tmp/validate-workflow-260920-3cbuakfo/task-table.tsv"
+  },
+  {
+    "argv": [
+      "python3",
+      "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py",
+      "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks",
+      "--check",
+      "/tmp/validate-workflow-260920-3cbuakfo/MUTATED-TASK-TABLE.md"
+    ],
+    "exit_code": 1,
+    "output": "/tmp/validate-workflow-260920-3cbuakfo/drift-negative.log"
+  },
+  {
+    "argv": [
+      "python3",
+      "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py",
+      "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks",
+      "--check",
+      "/tmp/validate-workflow-260920-3cbuakfo/MUTATED-TASK-TABLE.md",
+      "--expect-fail"
+    ],
+    "exit_code": 0,
+    "output": "/tmp/validate-workflow-260920-3cbuakfo/drift-proof.log"
+  },
+  {
+    "argv": [
+      "python3",
+      "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py",
+      "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks",
+      "--check",
+      "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks/TASK-TABLE.md"
+    ],
+    "exit_code": 0,
+    "output": "/tmp/validate-workflow-260920-3cbuakfo/drift-clean.log"
+  }
+]

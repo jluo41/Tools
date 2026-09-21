@@ -1,0 +1,166 @@
+{
+  "scope": "synthetic fixtures only; all records were manufactured for validation",
+  "checks": [
+    {
+      "name": "proposal: counts and clean contracts",
+      "pass": true,
+      "details": {
+        "totals": {
+          "lines": 8,
+          "wanted": 8,
+          "registered": 8,
+          "ready": 0
+        },
+        "audit": [],
+        "runs": 0
+      }
+    },
+    {
+      "name": "proposal: presenter reads do not mutate source",
+      "pass": true,
+      "details": {
+        "file_count": 19
+      }
+    },
+    {
+      "name": "proposal: no InsightBoard required",
+      "pass": true,
+      "details": "not-declared"
+    },
+    {
+      "name": "portfolio: counts and clean contracts",
+      "pass": true,
+      "details": {
+        "totals": {
+          "lines": 8,
+          "wanted": 8,
+          "registered": 8,
+          "ready": 8
+        },
+        "audit": [],
+        "runs": 24
+      }
+    },
+    {
+      "name": "portfolio: presenter reads do not mutate source",
+      "pass": true,
+      "details": {
+        "file_count": 138
+      }
+    },
+    {
+      "name": "portfolio: no InsightBoard required",
+      "pass": true,
+      "details": "not-declared"
+    },
+    {
+      "name": "all eight venues in ready fixture export",
+      "pass": true,
+      "details": 8
+    },
+    {
+      "name": "static twin has no download link",
+      "pass": true,
+      "details": ""
+    },
+    {
+      "name": "held then released preserves hold and adds Commission identity",
+      "pass": true,
+      "details": {
+        "runs": [
+          "rd01_commission_item01",
+          "rd02_commission_item01"
+        ],
+        "audit": []
+      }
+    },
+    {
+      "name": "blocked is not Commission held and offers no release",
+      "pass": true,
+      "details": {
+        "waiting": "SYNTHETIC-ACTOR-NOT-A-HUMAN-RELEASE \u00b7 resolve rd02_generate_item01: Missing branch pickup-hours source; caller must resolve operational source QD1.",
+        "audit": []
+      }
+    },
+    {
+      "name": "valid rejected review routes to revision without delivery",
+      "pass": true,
+      "details": {
+        "state": "verify failed",
+        "audit": []
+      }
+    },
+    {
+      "name": "historical-adopt: retained original historical id",
+      "pass": true,
+      "details": {
+        "state": "ready",
+        "run": "rd04_adopt_item01",
+        "audit": []
+      }
+    },
+    {
+      "name": "historical-decline: retained original historical id",
+      "pass": true,
+      "details": {
+        "state": "declined",
+        "run": "rd04_adopt_item01",
+        "audit": []
+      }
+    },
+    {
+      "name": "legacy v1 folder refused",
+      "pass": true,
+      "details": "legacy v1 Page/Ticket/Result storage is not supported"
+    },
+    {
+      "name": "tampered verified bytes excluded from ready projection",
+      "pass": true,
+      "details": {
+        "state": "records invalid",
+        "ready": null,
+        "audit": [
+          "runs/rd02_generate_item01.yaml: hash mismatch: content/sms.txt changed after it was pinned",
+          "runs/rd03_verify_item01.yaml: hash mismatch: content/sms.txt changed after it was pinned",
+          "runs/rd03_verify_item01.yaml: hash mismatch: content/sms.txt changed after it was pinned"
+        ]
+      }
+    },
+    {
+      "name": "SMS fixture <= 160 code points",
+      "pass": true,
+      "details": 95
+    },
+    {
+      "name": "email subject <= 60 code points",
+      "pass": true,
+      "details": 19
+    },
+    {
+      "name": "push title and body bounds",
+      "pass": true,
+      "details": {
+        "title": 18,
+        "body": 20
+      }
+    },
+    {
+      "name": "reminder fixture <= 200 code points",
+      "pass": true,
+      "details": 84
+    },
+    {
+      "name": "checklist fixture has five action rows",
+      "pass": true,
+      "details": [
+        "[ ] Open the hold record",
+        "[ ] Find the held item",
+        "[ ] Match the item to the hold record",
+        "[ ] Complete the library checkout step",
+        "[ ] Confirm the handoff is complete"
+      ]
+    }
+  ],
+  "passed": 20,
+  "failed": 0
+}

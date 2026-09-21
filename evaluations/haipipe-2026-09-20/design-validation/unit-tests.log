@@ -1,0 +1,55 @@
+test_actual_viewport_and_png_are_consistent (test_render_screen.RealViewportTest) ... ok
+test_horizontal_overflow_cannot_pass_one_screen (test_render_screen.RealViewportTest) ... ok
+test_left_and_vertical_clipping_cannot_pass_one_screen (test_render_screen.RealViewportTest) ... ok
+test_page_scripts_are_disabled_and_controls_are_measured (test_render_screen.RealViewportTest) ... ok
+test_closed_results_cannot_be_rendered (test_render_screen.RenderBoundaryTest) ... ok
+test_dimensions_and_manifest_shape_are_checked_before_browser (test_render_screen.RenderBoundaryTest) ... ok
+test_every_output_stays_in_current_result (test_render_screen.RenderBoundaryTest) ... ok
+test_existing_source_version_is_preserved (test_render_screen.RenderBoundaryTest) ... ok
+test_manifest_binds_source_and_picture_without_editing_runtime (test_render_screen.RenderBoundaryTest) ... ok
+test_overwrites_and_colliding_paths_are_rejected (test_render_screen.RenderBoundaryTest) ... ok
+test_symlink_escape_is_rejected_before_write (test_render_screen.RenderBoundaryTest) ... ok
+test_artifact_escape_is_rejected (test_unit.DesignUnitGateTest) ... ok
+test_brainstorm_cannot_smuggle_in_forecast (test_unit.DesignUnitGateTest) ... ok
+test_challenge_requires_challenge_stance (test_unit.DesignUnitGateTest) ... ok
+test_decision_runs_are_paired_not_rejected (test_unit.DesignUnitGateTest) ... ok
+test_dishonest_pass_does_not_override_actual_bytes (test_unit.DesignUnitGateTest) ... ok
+test_duplicate_check_coverage (test_unit.DesignUnitGateTest) ... ok
+test_duplicate_yaml_fields_rejected (test_unit.DesignUnitGateTest) ... ok
+test_evidence_informed_cannot_silently_be_brief_only (test_unit.DesignUnitGateTest) ... ok
+test_false_complete_receipt_requires_real_result (test_unit.DesignUnitGateTest) ... ok
+test_growing_log_does_not_stale_individual_release (test_unit.DesignUnitGateTest) ... ok
+test_independent_reviewer_cannot_be_producer (test_unit.DesignUnitGateTest) ... ok
+test_known_broken_actual_content_is_rejected (test_unit.DesignUnitGateTest) ... ok
+test_missing_check_coverage (test_unit.DesignUnitGateTest) ... ok
+test_missing_human_record_does_not_pass (test_unit.DesignUnitGateTest) ... ok
+test_mutated_content_rejected_even_when_manifest_unchanged (test_unit.DesignUnitGateTest) ... ok
+test_orphan_result_is_visible (test_unit.DesignUnitGateTest) ... ok
+test_page_run_cannot_become_design_evidence (test_unit.DesignUnitGateTest) ... ok
+test_page_run_feedback_routes_through_a_revision (test_unit.DesignUnitGateTest) ... ok
+test_planned_runtime_is_not_required_to_have_completed_result (test_unit.DesignUnitGateTest) ... ok
+test_render_evidence_does_not_change_content_count (test_unit.DesignUnitGateTest) ... ok
+test_render_picture_and_manifest_are_both_hash_bound (test_unit.DesignUnitGateTest) ... ok
+test_render_picture_cannot_escape_its_result (test_unit.DesignUnitGateTest) ... ok
+test_render_rejects_wrong_source_candidate_and_version (test_unit.DesignUnitGateTest) ... ok
+test_render_requires_matching_item_when_ticket_names_one (test_unit.DesignUnitGateTest) ... ok
+test_retired_run_identity_is_rejected (test_unit.DesignUnitGateTest) ... ok
+test_revision_requires_actual_base_and_feedback (test_unit.DesignUnitGateTest) ... ok
+test_runtime_cannot_omit_source_or_worker_provenance (test_unit.DesignUnitGateTest) ... ok
+test_stale_config_rejected (test_unit.DesignUnitGateTest) ... ok
+test_theory_driven_requires_falsifiable_intent (test_unit.DesignUnitGateTest) ... ok
+test_unresolved_semantic_check_is_incomplete (test_unit.DesignUnitGateTest) ... ok
+test_v1_is_rejected_even_when_other_fields_are_valid (test_unit.DesignUnitGateTest) ... ok
+test_v2_requires_explicit_design_intent (test_unit.DesignUnitGateTest) ... ok
+test_valid_generation_and_inventory (test_unit.DesignUnitGateTest) ... ok
+test_verify_can_complete_with_rejecting_verdict (test_unit.DesignUnitGateTest) ... ok
+test_verify_cannot_replace_content (test_unit.DesignUnitGateTest) ... ok
+test_verify_checks_target_render_integrity (test_unit.DesignUnitGateTest) ... ok
+test_verify_detects_mutated_target_payload (test_unit.DesignUnitGateTest) ... ok
+test_verify_rejects_target_with_forged_run_pairing (test_unit.DesignUnitGateTest) ... ok
+test_verify_render_is_local_and_reads_only_pinned_source (test_unit.DesignUnitGateTest) ... ok
+
+----------------------------------------------------------------------
+Ran 50 tests in 5.185s
+
+OK

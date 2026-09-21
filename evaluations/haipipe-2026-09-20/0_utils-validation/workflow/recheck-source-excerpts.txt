@@ -1,0 +1,94 @@
+/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-workflow/SKILL.md
+148: Design.commission ──release──▶ N × Design.generate          (C decisions; at most one release per Item)
+149: Design.generate ──passes the records check──▶ J × Design.verify
+150: Design.generate ──fails the records check──▶ Design.generate (a person queues a revise)
+151: Design.verify ──pass──▶ CLOSE (Delivery becomes ready)
+152: Design.verify ──fail──▶ Design.generate (revise)
+153: Design.verify ──fails the records check──▶ Design.verify (a person queues the review again)
+154: Design.commission ──hold──▶ HOLD (a person's decision only)
+155: 
+156: Expected actual Runs per Design Item = C + N + J
+157: ```
+158: 
+159: Count allocated Runs with receipts, including held, failed, blocked, and
+160: superseded Runs. A later release after a hold creates a new Commission Run;
+161: preserve the held decision. C=1 only when no hold preceded the release.
+162: 
+163: Commission is the only human decision Run in the current Design workflow.
+164: It has a bounded question, explicit commission, human actor, durable decision
+165: receipt, and its own close rule. A click/comment remains a Step or Gate.
+166: Delivery is a read-only projection of the Verify-passed candidate, not a Run
+167: or another approval. A route back to Generate or Verify requires the person
+168: to queue the revise/review under the Design owner's rules; it is not permission
+169: for an automatic retry. Agent failures do not create a human HOLD decision.
+
+/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-workflow/ref/workflow-table-schema.md
+178:       exit_gate: {mode: human, assertion: exact Commission is released or held, record: results/<run>/decision.yaml}
+179:       routes: {release: generate, hold: HOLD}
+180:       result: {payload: released Commission fingerprint, receipt: results/<run>/runtime.yaml}
+181:       cardinality: C
+228: Expected actual Design Runs: `C + N + J`. C counts Commission decisions,
+229: including holds; at most one may release the Item. Count allocated Runs with
+230: receipts, including held, failed, blocked, and superseded Runs. The special
+231: case `1 + N + J` applies when no hold preceded the release.
+232: 
+233: `pass`, `fail`, and `invalid` name the corresponding verdict/records-check
+234: outcomes in the Design owner contract. A route back to Generate or Verify
+235: names the next Spec; the person must queue its new instance. Only Commission
+236: has a human HOLD decision. Verify pass closes the work and makes the exact
+237: candidate ready in Delivery. Delivery is a projection, never a Run. The
+
+/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md
+46: Actual current Runs per Design Item: `C Commission + N Generate + J Verify`.
+47: Count all allocated records, including held, failed, blocked and superseded Runs;
+48: an attempt inside one Run adds no identity. C=1 only when no hold preceded release.
+49: `rdNN` numbers count across the whole Design Folder.
+
+/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/references/run-profile.md
+11: The Workflow is a list of Runs. Actual current Design Runs per Item are
+12: `C Commission + N Generate + J Verify`. Count allocated records with receipts,
+13: including held, failed, blocked and superseded Runs. C=1 only when no hold
+14: preceded release; an Item permits at most one release.
+15: Do not count Workflow, Space, Steps, calls, drafts, renders, Results,
+16: projections, or retry attempts.
+93: The human actor decides `release` or `hold` for one Design Item's exact config
+94: fingerprint. The Result is `decision.yaml` with run, item, decision, actor,
+95: exact words, target, input hashes, and timestamp. `release` routes to
+96: Generate; `hold` routes to HOLD, and the person may release later with a new
+97: Commission Run. Preserve the completed hold decision; a second release is refused.
+98: The decision itself is independently closable, so this is a Run. Each
+99: comment/click leading to it is a Step, not another Run.
+
+/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/SKILL.md
+99: - **A ticket is a planned Run; a receipt is an actual one.** `runs/<stem>.sh`
+100:   pairs with `<task>/results/<stem>/runtime.yaml` by stem. Ticket
+101:   without receipt = `Ready`. Receipt without ticket = orphan finding. The
+102:   receipt's `status` is normalised the way `haipipe-run` does
+103:   (`ok`/`complete` → Done, `running` → Running, `failed` → Failed,
+104:   `expected_missing`/`external_required` → No data, absent → `? (no status)`);
+105:   a process exit code alone is never promoted to Done. A Run named in a newer
+106:   receipt's `supersedes:` renders `Superseded` and stops counting.
+107: - **A task's status is rolled up from its Runs, never typed.** First match
+108:   wins over the Runs that still count: no ticket and no receipt → `⚪ No runs`;
+109:   any Running → `🏃 Running`; any Failed → `❌ Failed`; any unknown receipt
+110:   status → `❓ Unknown`; any Held → `⏸️ Held`; any No data → `📭 No data`
+111:   (the input is not on this machine); some Done and some Ready → `🟡 Partial`;
+112:   every Run Ready → `⬜ Not run`; every Run Done → `✅ Done`. `N/M` after the
+230: | `<task>/results/<run>/runtime.yaml` | receipts: status, started, ended, exit_code |
+267: 1. **Render** `--out auto` once the tree exists. The first honest table of a
+268:    tree with only unexecuted tickets says `Not run` on each Task row and
+269:    `Ready` on its Run rows. It shows
+270:    `? (not declared)` for configs without a purpose: that is missing plan
+271:    content, shown as such.
+
+/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/task-table-schema.md
+60: | some Done, some Ready | Partial | 🟡 |
+61: | every one Ready | Not run | ⬜ |
+128: Current receipts live at `<task>/results/<run>/runtime.yaml`.
+129: Legacy `<job>/results/<task>/<run>/runtime.yaml` receipts are also read and
+130: flagged `S-results`; when both exist for one Run, the Task-local receipt wins.
+141: | S-results | legacy Job-level `results/<task>/` placement | haipipe-task |
+
+/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/task/haipipe-task/ref/hierarchy.md
+187: - Light Result artifacts live below `<task>/results/<run>/`, beside the Task's `runs/` and `scripts/` (JL ruling 260909; before it they sat at the Job level under `<task>/results/<run>/`).
+236: - Generated Results live in the Task Folder's `results/`, never at the Job level and never under `scripts/`.

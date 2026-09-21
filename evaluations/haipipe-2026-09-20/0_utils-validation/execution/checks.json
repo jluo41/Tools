@@ -1,0 +1,191 @@
+{
+  "checked_at": "2026-09-20T21:36:03.860019+00:00",
+  "source_unchanged": true,
+  "source_sha256": "44d97b04eaf00b33415c390a9f24055779623de2fc16a184c35e6d947ad0ffdd",
+  "pair_state_files": [],
+  "successful_attempts": [
+    {
+      "receipt": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-669d5370a9c2404a94d2aec2db4fd5d0/execution.json",
+      "record": {
+        "schema": "haipipe.notebook-execution/v1",
+        "execution_id": "20260920T213603-669d5370a9c2404a94d2aec2db4fd5d0",
+        "run_id": null,
+        "target": "/private/tmp/skill validation execution 9867hqbf/sample project/data summary.py",
+        "action": "execute-and-convert",
+        "project_dir": "/private/tmp/skill validation execution 9867hqbf/sample project",
+        "python": "/opt/homebrew/opt/python@3.11/bin/python3.11",
+        "started": "2026-09-20T21:36:03.442166+00:00",
+        "ended": "2026-09-20T21:36:03.513221+00:00",
+        "status": "complete",
+        "exit_code": 0,
+        "artifacts": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-669d5370a9c2404a94d2aec2db4fd5d0/artifacts",
+        "notebook": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-669d5370a9c2404a94d2aec2db4fd5d0/data summary.ipynb",
+        "steps": [
+          {
+            "name": "execute",
+            "status": "complete",
+            "exit_code": 0,
+            "log": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-669d5370a9c2404a94d2aec2db4fd5d0/execute.log"
+          },
+          {
+            "name": "convert",
+            "status": "complete",
+            "exit_code": 0,
+            "log": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-669d5370a9c2404a94d2aec2db4fd5d0/convert.log"
+          }
+        ]
+      },
+      "logs": {
+        "execute": "================================================================================\n\u2713 Setup complete\n================================================================================\n\u2713 Input loaded\n================================================================================\nrows=3\nsum=60\nmean=20.00\n\u2713 Summary saved\n",
+        "convert": "\u2713 data summary.py \u2192 data summary.ipynb\n"
+      },
+      "artifacts": {
+        "summary.csv": "rows,sum,mean\n3,60,20.00\n",
+        "summary.txt": "rows=3\nsum=60\nmean=20.00\n"
+      },
+      "notebook_inspection": {
+        "nbformat": 4,
+        "nbformat_minor": 5,
+        "cell_types": [
+          "code",
+          "markdown",
+          "code",
+          "code",
+          "code"
+        ],
+        "code_cells_have_outputs": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "execution_counts": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "combined_code_compiles": true,
+        "cell_ids_present": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "language_version_metadata": "3.10.0"
+      }
+    },
+    {
+      "receipt": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-6d7c4f9685f4440cbb0eab991c1a975e/execution.json",
+      "record": {
+        "schema": "haipipe.notebook-execution/v1",
+        "execution_id": "20260920T213603-6d7c4f9685f4440cbb0eab991c1a975e",
+        "run_id": null,
+        "target": "/private/tmp/skill validation execution 9867hqbf/sample project/data summary.py",
+        "action": "execute-and-convert",
+        "project_dir": "/private/tmp/skill validation execution 9867hqbf/sample project",
+        "python": "/opt/homebrew/opt/python@3.11/bin/python3.11",
+        "started": "2026-09-20T21:36:03.559533+00:00",
+        "ended": "2026-09-20T21:36:03.675495+00:00",
+        "status": "complete",
+        "exit_code": 0,
+        "artifacts": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-6d7c4f9685f4440cbb0eab991c1a975e/artifacts",
+        "notebook": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-6d7c4f9685f4440cbb0eab991c1a975e/data summary.ipynb",
+        "steps": [
+          {
+            "name": "execute",
+            "status": "complete",
+            "exit_code": 0,
+            "log": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-6d7c4f9685f4440cbb0eab991c1a975e/execute.log"
+          },
+          {
+            "name": "convert",
+            "status": "complete",
+            "exit_code": 0,
+            "log": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/executions/20260920T213603-6d7c4f9685f4440cbb0eab991c1a975e/convert.log"
+          }
+        ]
+      },
+      "logs": {
+        "execute": "================================================================================\n\u2713 Setup complete\n================================================================================\n\u2713 Input loaded\n================================================================================\nrows=3\nsum=60\nmean=20.00\n\u2713 Summary saved\n",
+        "convert": "\u2713 data summary.py \u2192 data summary.ipynb\n"
+      },
+      "artifacts": {
+        "summary.csv": "rows,sum,mean\n3,60,20.00\n",
+        "summary.txt": "rows=3\nsum=60\nmean=20.00\n"
+      },
+      "notebook_inspection": {
+        "nbformat": 4,
+        "nbformat_minor": 5,
+        "cell_types": [
+          "code",
+          "markdown",
+          "code",
+          "code",
+          "code"
+        ],
+        "code_cells_have_outputs": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "execution_counts": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "combined_code_compiles": true,
+        "cell_ids_present": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "language_version_metadata": "3.10.0"
+      }
+    }
+  ],
+  "failed_attempts": [
+    {
+      "receipt": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/failed executions/20260920T213603-f4fe0789ad684fdbaa819f302c878eab/execution.json",
+      "record": {
+        "schema": "haipipe.notebook-execution/v1",
+        "execution_id": "20260920T213603-f4fe0789ad684fdbaa819f302c878eab",
+        "run_id": null,
+        "target": "/private/tmp/skill validation execution 9867hqbf/sample project/missing data.py",
+        "action": "execute-and-convert",
+        "project_dir": "/private/tmp/skill validation execution 9867hqbf/sample project",
+        "python": "/opt/homebrew/opt/python@3.11/bin/python3.11",
+        "started": "2026-09-20T21:36:03.791551+00:00",
+        "ended": "2026-09-20T21:36:03.819710+00:00",
+        "status": "failed",
+        "exit_code": 1,
+        "artifacts": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/failed executions/20260920T213603-f4fe0789ad684fdbaa819f302c878eab/artifacts",
+        "notebook": null,
+        "steps": [
+          {
+            "name": "execute",
+            "status": "failed",
+            "exit_code": 1,
+            "log": "/private/tmp/skill validation execution 9867hqbf/sample project/runs/failed executions/20260920T213603-f4fe0789ad684fdbaa819f302c878eab/execute.log"
+          }
+        ]
+      },
+      "logs": {
+        "execute": "Traceback (most recent call last):\n  File \"/private/tmp/skill validation execution 9867hqbf/sample project/missing data.py\", line 3, in <module>\n    print(Path(\"not present.csv\").read_text())\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'not present.csv'\n"
+      },
+      "artifacts": {}
+    }
+  ],
+  "batch_notebooks": [
+    "/private/tmp/skill validation execution 9867hqbf/batch input/notebook/good.ipynb",
+    "/private/tmp/skill validation execution 9867hqbf/batch input/notebook/invalid_syntax.ipynb"
+  ],
+  "missing_source_created_attempts": false,
+  "nbformat_available": false,
+  "nbconvert_available": false
+}

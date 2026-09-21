@@ -1,0 +1,34 @@
+{
+  "checks": [
+    {
+      "name": "interrupted attempt preserves final receipt",
+      "passed": true,
+      "exit": 143,
+      "receipt": {
+        "schema": "haipipe.notebook-execution/v1",
+        "execution_id": "20260920T214752-3914b58066e14328ba836f583f6aa781",
+        "run_id": null,
+        "target": "/private/var/folders/xz/ry4gps2919x6blrm19d_x_840000gn/T/utility-final-check-snkl5gqv/wait.py",
+        "action": "execute-and-convert",
+        "project_dir": "/private/var/folders/xz/ry4gps2919x6blrm19d_x_840000gn/T/utility-final-check-snkl5gqv",
+        "python": "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9",
+        "started": "2026-09-20T21:47:52.811521+00:00",
+        "ended": "2026-09-20T21:47:53.146234+00:00",
+        "status": "interrupted",
+        "exit_code": 143,
+        "artifacts": "/private/var/folders/xz/ry4gps2919x6blrm19d_x_840000gn/T/utility-final-check-snkl5gqv/attempts/20260920T214752-3914b58066e14328ba836f583f6aa781/artifacts",
+        "notebook": null,
+        "steps": [
+          {
+            "name": "execute",
+            "status": "interrupted",
+            "exit_code": 143,
+            "log": "/private/var/folders/xz/ry4gps2919x6blrm19d_x_840000gn/T/utility-final-check-snkl5gqv/attempts/20260920T214752-3914b58066e14328ba836f583f6aa781/execute.log"
+          }
+        ]
+      },
+      "stdout": "{\"status\": \"interrupted\", \"receipt\": \"/private/var/folders/xz/ry4gps2919x6blrm19d_x_840000gn/T/utility-final-check-snkl5gqv/attempts/20260920T214752-3914b58066e14328ba836f583f6aa781/execution.json\", \"notebook\": null}\n",
+      "stderr": ""
+    }
+  ]
+}

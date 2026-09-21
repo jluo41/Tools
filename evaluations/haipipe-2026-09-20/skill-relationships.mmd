@@ -1,0 +1,53 @@
+flowchart LR
+    Project["Project<br/>scope and workspace"]
+    Board["Board<br/>navigation, routing, status views"]
+    Utils["0_utils<br/>shared helper skills"]
+
+    subgraph Owners["Domain workflow owners"]
+        direction TB
+        Task["Task<br/>internal execution"]
+        Discovery["Discovery<br/>external evidence"]
+        Page["Page<br/>human-facing work and evidence"]
+        Paper["Paper<br/>manuscript composition"]
+        subgraph Peers["Independent first-class peer families"]
+            direction LR
+            Insight["Insight<br/>evidence-led analysis"]
+            Design["Design<br/>creative production"]
+        end
+    end
+
+    subgraph RunModel["Shared execution model"]
+        direction LR
+        Workflow["Workflow<br/>list of Runs"]
+        Run["Run<br/>bounded, owner-native execution"]
+        Result["Result / receipt<br/>traceable output"]
+        Workflow --> Run --> Result
+    end
+
+    subgraph Capabilities["Capability skills used within workflows"]
+        direction TB
+        Writing["Writing<br/>prose"]
+        Display["Display<br/>visuals"]
+    end
+
+    Task -. defines and owns its Runs .-> Workflow
+    Discovery -. defines and owns its Runs .-> Workflow
+    Page -. defines local Runs .-> Workflow
+    Paper -. defines its Runs .-> Workflow
+    Insight -. defines and owns its Runs .-> Workflow
+    Design -. defines and owns its Runs .-> Workflow
+
+    Task -->|Supporting Run Results| Page
+    Discovery -->|Supporting Run Results| Page
+    Result -->|Supporting / Local evidence| Page
+    Page -->|page outputs| Paper
+    Insight -->|person-signed handoff| Design
+
+    Board -. routes and displays .-> Owners
+    Board -. projects owner status .-> Result
+    Project -. scopes .-> Owners
+    Utils -. supports where used .-> Owners
+    Writing -. prose capability .-> Page
+    Writing -. prose capability .-> Paper
+    Display -. visual capability .-> Page
+    Display -. visual capability .-> Paper

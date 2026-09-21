@@ -1,0 +1,102 @@
+[
+  {
+    "source": "/private/tmp/skill validation execution 9867hqbf/validation-receipt.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/execution/validation-receipt.md"
+  },
+  {
+    "source": "/private/tmp/skill validation execution 9867hqbf/checks.json",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/execution/checks.json"
+  },
+  {
+    "source": "/tmp/mealcam-fresh-20260920/validation-receipt.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/meal/validation-receipt.md"
+  },
+  {
+    "source": "/tmp/mealcam-fresh-20260920/validation.json",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/meal/validation.json"
+  },
+  {
+    "source": "/tmp/mealcam-fresh-20260920/validate.py",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/meal/validate.py"
+  },
+  {
+    "source": "/tmp/validate-workflow-260920-3cbuakfo/VALIDATION-RECEIPT.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/workflow/VALIDATION-RECEIPT.md"
+  },
+  {
+    "source": "/tmp/validate-workflow-260920-3cbuakfo/commands.json",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/workflow/commands.json"
+  },
+  {
+    "source": "/tmp/validate-workflow-260920-3cbuakfo/design-workflow.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/workflow/design-workflow.md"
+  },
+  {
+    "source": "/tmp/validate-workflow-260920-3cbuakfo/design-workflow.json",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/workflow/design-workflow.json"
+  },
+  {
+    "source": "/tmp/validate-workflow-260920-3cbuakfo/design-process.txt",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/workflow/design-process.txt"
+  },
+  {
+    "source": "/tmp/validate-workflow-260920-3cbuakfo/recheck-source-excerpts.txt",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/workflow/recheck-source-excerpts.txt"
+  },
+  {
+    "source": "/tmp/validate-workflow-260920-3cbuakfo/Project with spaces/tasks/TASK-TABLE.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/workflow/Project with spaces/tasks/TASK-TABLE.md"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/validation-receipt.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/validation-receipt.md"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/validation-receipt.json",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/validation-receipt.json"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/friction-log.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/friction-log.md"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/authorization-evidence.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/authorization-evidence.md"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/field-commission.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/field-commission.md"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/expectation-ledger.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/expectation-ledger.md"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/response-format-reply.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/response-format-reply.md"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/remote-error-reply.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/remote-error-reply.md"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/report.py",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/report.py"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/register/empty-input-report.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/register/empty-input-report.md"
+  },
+  {
+    "source": "/tmp/interaction-validation-lb40b3lu/whoop-preflight.md",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interaction/whoop-preflight.md"
+  },
+  {
+    "source": "/tmp/utility local validation 47z3tj_r/checks.json",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/local/checks.json"
+  },
+  {
+    "source": "/var/folders/xz/ry4gps2919x6blrm19d_x_840000gn/T/utility-final-check-snkl5gqv/checks.json",
+    "snapshot": "evaluations/haipipe-2026-09-20/0_utils-validation/interruption/checks.json"
+  }
+]

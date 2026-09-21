@@ -1,0 +1,107 @@
+{
+  "workspace": "/Users/jluo41/Desktop/Tools-SPACE",
+  "environment": "local",
+  "worktrees": false,
+  "coordinatorThreadId": "01a0bf79-1927-7ad2-9301-04f92c552eb2",
+  "criterion": "A Workflow is a list of Runs. Use Run, not Phase, for workflow units.",
+  "sessions": [
+    {
+      "key": "insight",
+      "title": "Eval-HAIPipe-Insight",
+      "threadId": "01a0c010-8db4-7f23-b729-1f9371c026a9",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/insight.md"
+    },
+    {
+      "key": "design",
+      "title": "Eval-HAIPipe-Design",
+      "threadId": "01a0c011-14d7-7a31-bcac-e10176428f62",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/design.md"
+    },
+    {
+      "key": "page",
+      "title": "Eval-HAIPipe-Page",
+      "threadId": "01a0c011-2562-77a1-babb-c90490cfe1c7",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/page.md"
+    },
+    {
+      "key": "writing",
+      "title": "Eval-HAIPipe-Writing",
+      "threadId": "01a0c011-35df-7d02-898e-231fdc748b84",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/writing.md"
+    },
+    {
+      "key": "paper",
+      "title": "Eval-HAIPipe-Paper",
+      "threadId": "01a0c011-46a2-7ac2-b1d0-e68f32e67c57",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/paper.md"
+    },
+    {
+      "key": "board",
+      "title": "Eval-HAIPipe-Board",
+      "threadId": "01a0c011-6e66-7583-bfbc-e6acd2dc81d6",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/board.md"
+    },
+    {
+      "key": "run",
+      "title": "Eval-HAIPipe-Run",
+      "threadId": "01a0c011-84c2-7221-978c-623f577fc761",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/run.md"
+    },
+    {
+      "key": "task",
+      "title": "Eval-HAIPipe-Task",
+      "threadId": "01a0c011-9e34-70f0-8e0c-e7d7231a6a23",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/task.md"
+    },
+    {
+      "key": "discovery",
+      "title": "Eval-HAIPipe-Discovery",
+      "threadId": "01a0c011-b22a-7fe3-b686-492c1e261c56",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/discovery.md"
+    },
+    {
+      "key": "ideation",
+      "title": "Eval-HAIPipe-Ideation",
+      "threadId": "01a0c011-f700-7692-93a7-6192784d3f7b",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/ideation.md"
+    },
+    {
+      "key": "display",
+      "title": "Eval-HAIPipe-Display",
+      "threadId": "01a0c012-1405-7963-b609-406e5ce81b9c",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/display.md"
+    },
+    {
+      "key": "project",
+      "title": "Eval-HAIPipe-Project",
+      "threadId": "01a0c012-2872-7520-b6e1-18e218183562",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/project.md"
+    },
+    {
+      "key": "0_utils",
+      "title": "Eval-HAIPipe-Utils",
+      "threadId": "01a0c012-5462-70f1-87d5-0323688e915a",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/0_utils.md"
+    },
+    {
+      "key": "subjective_labeling",
+      "title": "Eval-Tool-SPACE — Subjective Labeling",
+      "threadId": "01a0c0c2-f905-79e3-b982-1310335cf792",
+      "hostId": "local",
+      "report": "/Users/jluo41/Desktop/Tools-SPACE/evaluations/haipipe-2026-09-20/subjective-labeling-findings-and-fix-plan.md"
+    }
+  ]
+}

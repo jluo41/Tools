@@ -1,0 +1,86 @@
+{
+  "skills_checked": 32,
+  "passed": 16,
+  "issues": [
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/1_data/haipipe-data-remote",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/2_nn/haipipe-nn",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/2_nn/haipipe-nn-modelset",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/2_nn/haipipe-task-for-algo",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/3_end/haipipe-end-deploy-databricks",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/3_end/haipipe-end-deploy-local",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/3_end/haipipe-end-deploy-sagemaker",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/4_individual/haipipe-individual",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/4_individual/haipipe-individual-inference",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/4_individual/haipipe-individual-inference-judge",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/4_individual/haipipe-individual-inference-report",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/4_individual/haipipe-task-for-individual",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/5_fit/haipipe-task-for-fit",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/6_eval/haipipe-task-for-eval",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/8_stata/haipipe-task-for-stata",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/task/9_agent/haipipe-task-for-agent",
+      "issue": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "baseline_same": true
+    }
+  ]
+}

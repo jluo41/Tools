@@ -1,0 +1,30 @@
+[
+  {
+    "case": "sms",
+    "runs": [
+      "rd01_commission_item01",
+      "rd02_generate_item01",
+      "rd03_verify_item01"
+    ],
+    "state": "ready",
+    "ready_run": "rd02_generate_item01",
+    "csv_rows": 1,
+    "audit": [],
+    "preview": null,
+    "reader_changed_files": 0
+  },
+  {
+    "case": "screen",
+    "runs": [
+      "rd01_commission_item01",
+      "rd02_generate_item01",
+      "rd03_verify_item01"
+    ],
+    "state": "ready",
+    "ready_run": "rd02_generate_item01",
+    "csv_rows": 1,
+    "audit": [],
+    "preview": "/private/tmp/design-skill-validation-20260920/board-projections/screen-DesignBoard/2-Design/Design-01-library-pickup-ui-card/results/rd02_generate_item01/render/screen-v2.png",
+    "reader_changed_files": 0
+  }
+]

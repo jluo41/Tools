@@ -1,0 +1,213 @@
+{
+  "python": "3.9.6 (default, May 22 2026, 11:13:45) \n[Clang 21.0.0 (clang-2100.1.1.101)]",
+  "checks": [
+    {
+      "name": "help run_cli_agent.py",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_cli_agent.py",
+        "--help"
+      ],
+      "expected_exit": 0,
+      "exit": 0,
+      "passed": true,
+      "stdout": "usage: run_cli_agent.py [-h] --provider {claude,codex}\n                        [--prompt PROMPT | --prompt-file PROMPT_FILE]\n                        [--session-id SESSION_ID | --pair-name PAIR_NAME]\n                        [--session-name SESSION_NAME] [--sync-pair]\n                        [--model MODEL] [--cli-arg CLI_ARG]\n                        [--config-dir CONFIG_DIR] [--cwd CWD] --out-dir\n                        OUT_DIR [--dry-run]\n\nCall the native Claude or Codex CLI with a persistent receipt.\n\noptional arguments:\n  -h, --help            show this help message and exit\n  --provider {claude,codex}\n  --prompt PROMPT\n  --prompt-file PROMPT_FILE\n  --session-id SESSION_ID, --resume-session SESSION_ID\n  --pair-name PAIR_NAME\n                        Resume the provider session registered under this pair\n                        name in the current workspace\n  --session-name SESSION_NAME\n                        Native session name; registered pair metadata is used\n                        when omitted\n  --sync-pair           Legacy opt-in: append this turn to the pair mailbox\n                        after success\n  --model MODEL         Optional explicit native CLI model override\n  --cli-arg CLI_ARG     One extra argument passed to the native CLI; repeat as\n                        needed\n  --config-dir CONFIG_DIR\n                        Optional shared native home\n  --cwd CWD             Native CLI working directory\n  --out-dir OUT_DIR\n  --dry-run             Resolve the command without calling a provider\n",
+      "stderr": ""
+    },
+    {
+      "name": "help pair_sync.py",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/pair_sync.py",
+        "--help"
+      ],
+      "expected_exit": 0,
+      "exit": 0,
+      "passed": true,
+      "stdout": "usage: pair_sync.py [-h]\n                    {register,deliver,hook,install-hooks,status,set-enabled}\n                    ...\n\nMaintain and synchronize native Claude/Codex pairs\n\npositional arguments:\n  {register,deliver,hook,install-hooks,status,set-enabled}\n    status              Show pair identity, sync state, and pending digests\n    set-enabled         Pause or resume automatic pair synchronization\n\noptional arguments:\n  -h, --help            show this help message and exit\n",
+      "stderr": ""
+    },
+    {
+      "name": "help run_paired_cli.py",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_paired_cli.py",
+        "--help"
+      ],
+      "expected_exit": 0,
+      "exit": 0,
+      "passed": true,
+      "stdout": "usage: run_paired_cli.py [-h] --pair-name PAIR_NAME --caller-provider\n                         {claude,codex}\n                         [--caller-session-id CALLER_SESSION_ID]\n                         --callee-provider {claude,codex}\n                         [--callee-session-id CALLEE_SESSION_ID]\n                         [--new-session]\n                         [--callee-session-name CALLEE_SESSION_NAME]\n                         [--prompt PROMPT | --prompt-file PROMPT_FILE]\n                         [--model MODEL] [--cli-arg CLI_ARG] [--cwd CWD]\n                         [--timeout TIMEOUT] [--dry-run]\n\nCreate or resume the other provider's native CLI session as a named pair.\n\noptional arguments:\n  -h, --help            show this help message and exit\n  --pair-name PAIR_NAME\n                        Shared name; use the verified current caller session\n                        name\n  --caller-provider {claude,codex}\n  --caller-session-id CALLER_SESSION_ID\n                        Current caller session id, when available\n  --callee-provider {claude,codex}\n  --callee-session-id CALLEE_SESSION_ID, --session-id CALLEE_SESSION_ID\n                        Existing partner session id; pair name lookup is used\n                        when omitted\n  --new-session         Force a new partner session even when this pair name\n                        already has one\n  --callee-session-name CALLEE_SESSION_NAME\n                        Partner's native session name; defaults to '<pair-\n                        name>-<callee-provider>'\n  --prompt PROMPT\n  --prompt-file PROMPT_FILE\n  --model MODEL         Optional native CLI model override\n  --cli-arg CLI_ARG     One extra argument passed to the callee CLI; repeat as\n                        needed\n  --cwd CWD\n  --timeout TIMEOUT     Maximum seconds to wait for the native callee CLI\n                        (default: 300)\n  --dry-run             Show the native command without calling a provider\n",
+      "stderr": ""
+    },
+    {
+      "name": "help run_native_agent.py",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_native_agent.py",
+        "--help"
+      ],
+      "expected_exit": 0,
+      "exit": 0,
+      "passed": true,
+      "stdout": "usage: run_native_agent.py [-h] --provider {claude,codex} [--model MODEL]\n                           --campaign-id CAMPAIGN_ID --query-id QUERY_ID\n                           [--prompt PROMPT | --prompt-file PROMPT_FILE]\n                           [--system-prompt SYSTEM_PROMPT]\n                           [--system-prompt-file SYSTEM_PROMPT_FILE]\n                           [--skill-path SKILL_PATH] --call-store CALL_STORE\n                           --out-dir OUT_DIR [--resume-session RESUME_SESSION]\n                           [--web {disabled,live}] [--max-turns MAX_TURNS]\n                           [--max-attempts MAX_ATTEMPTS]\n\nRun one Claude Agent SDK or Codex Agent SDK turn and write a receipt.\n\noptional arguments:\n  -h, --help            show this help message and exit\n  --provider {claude,codex}\n  --model MODEL         Exact provider model id; defaults to the low-cost\n                        validated arm\n  --campaign-id CAMPAIGN_ID\n  --query-id QUERY_ID\n  --prompt PROMPT\n  --prompt-file PROMPT_FILE\n  --system-prompt SYSTEM_PROMPT\n  --system-prompt-file SYSTEM_PROMPT_FILE\n  --skill-path SKILL_PATH\n                        Explicitly append a local SKILL.md as delegated\n                        context; repeatable.\n  --call-store CALL_STORE\n                        Persistent session/rollout store. Reuse this path when\n                        resuming.\n  --out-dir OUT_DIR     Fresh directory for this turn's prompt, response, raw\n                        events, and receipt.\n  --resume-session RESUME_SESSION\n                        Resume this exact provider session/thread id\n  --web {disabled,live}\n  --max-turns MAX_TURNS\n  --max-attempts MAX_ATTEMPTS\n                        Transient retry attempts. Keep at 1 when avoiding\n                        duplicate billable calls.\n",
+      "stderr": ""
+    },
+    {
+      "name": "help run_shared_agent.py",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_shared_agent.py",
+        "--help"
+      ],
+      "expected_exit": 0,
+      "exit": 0,
+      "passed": true,
+      "stdout": "usage: run_shared_agent.py [-h] --provider {claude,codex} [--model MODEL]\n                           [--prompt PROMPT | --prompt-file PROMPT_FILE]\n                           [--system-prompt SYSTEM_PROMPT]\n                           [--system-prompt-file SYSTEM_PROMPT_FILE]\n                           [--skill-path SKILL_PATH] [--session-id SESSION_ID]\n                           [--config-dir CONFIG_DIR] [--cwd CWD] --out-dir\n                           OUT_DIR [--web {disabled,live}]\n                           [--max-turns MAX_TURNS] [--dry-run]\n\nRun one shared-home Claude Agent SDK or Codex SDK turn.\n\noptional arguments:\n  -h, --help            show this help message and exit\n  --provider {claude,codex}\n  --model MODEL\n  --prompt PROMPT\n  --prompt-file PROMPT_FILE\n  --system-prompt SYSTEM_PROMPT\n  --system-prompt-file SYSTEM_PROMPT_FILE\n  --skill-path SKILL_PATH\n  --session-id SESSION_ID\n                        Resume this provider-native session/thread\n  --config-dir CONFIG_DIR\n                        Defaults to ~/.claude or ~/.codex\n  --cwd CWD             Shared project working directory\n  --out-dir OUT_DIR\n  --web {disabled,live}\n  --max-turns MAX_TURNS\n  --dry-run             Resolve paths without calling a provider\n",
+      "stderr": ""
+    },
+    {
+      "name": "unregistered pair",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/pair_sync.py",
+        "status",
+        "--pair-name",
+        "validation",
+        "--cwd",
+        "/tmp/utility local validation 47z3tj_r"
+      ],
+      "expected_exit": 2,
+      "exit": 2,
+      "passed": true,
+      "stdout": "",
+      "stderr": "FileNotFoundError: Pair manifest is missing or invalid: /private/tmp/utility local validation 47z3tj_r/empty pairs/validation--09be43b1f18d.json\n"
+    },
+    {
+      "name": "SDK dependency preflight",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_native_agent.py",
+        "--provider",
+        "claude",
+        "--campaign-id",
+        "validation",
+        "--query-id",
+        "one",
+        "--prompt",
+        "unused",
+        "--call-store",
+        "/tmp/utility local validation 47z3tj_r/sdk-store",
+        "--out-dir",
+        "/tmp/utility local validation 47z3tj_r/sdk-receipt"
+      ],
+      "expected_exit": 2,
+      "exit": 2,
+      "passed": true,
+      "stdout": "",
+      "stderr": "ValueError: HAIPIPE_SDK_ROOT must name an existing SDK import directory\n"
+    },
+    {
+      "name": "notebook attempt 0",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/run_notebook.py",
+        "/tmp/utility local validation 47z3tj_r/summary.py",
+        "--project-dir",
+        "/tmp/utility local validation 47z3tj_r",
+        "--output-root",
+        "/tmp/utility local validation 47z3tj_r/attempts",
+        "--run-id",
+        "caller-run-42"
+      ],
+      "expected_exit": 0,
+      "exit": 0,
+      "passed": true,
+      "stdout": "{\"status\": \"complete\", \"receipt\": \"/private/tmp/utility local validation 47z3tj_r/attempts/20260920T214032-7e468c77b12e4abfa96d2c03013cd75b/execution.json\", \"notebook\": \"/private/tmp/utility local validation 47z3tj_r/attempts/20260920T214032-7e468c77b12e4abfa96d2c03013cd75b/summary.ipynb\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "notebook cell IDs 0",
+      "passed": true
+    },
+    {
+      "name": "notebook attempt 1",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/run_notebook.py",
+        "/tmp/utility local validation 47z3tj_r/summary.py",
+        "--project-dir",
+        "/tmp/utility local validation 47z3tj_r",
+        "--output-root",
+        "/tmp/utility local validation 47z3tj_r/attempts",
+        "--run-id",
+        "caller-run-42"
+      ],
+      "expected_exit": 0,
+      "exit": 0,
+      "passed": true,
+      "stdout": "{\"status\": \"complete\", \"receipt\": \"/private/tmp/utility local validation 47z3tj_r/attempts/20260920T214032-1a63c9d8ef8445c2a659c89db6e6302b/execution.json\", \"notebook\": \"/private/tmp/utility local validation 47z3tj_r/attempts/20260920T214032-1a63c9d8ef8445c2a659c89db6e6302b/summary.ipynb\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "notebook cell IDs 1",
+      "passed": true
+    },
+    {
+      "name": "preserved attempts",
+      "passed": true
+    },
+    {
+      "name": "failed source",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/run_notebook.py",
+        "/tmp/utility local validation 47z3tj_r/summary.py",
+        "--project-dir",
+        "/tmp/utility local validation 47z3tj_r",
+        "--output-root",
+        "/tmp/utility local validation 47z3tj_r/attempts"
+      ],
+      "expected_exit": 7,
+      "exit": 7,
+      "passed": true,
+      "stdout": "{\"status\": \"failed\", \"receipt\": \"/private/tmp/utility local validation 47z3tj_r/attempts/20260920T214032-5446779c56c44067b3a2612826c8471b/execution.json\", \"notebook\": null}\n",
+      "stderr": ""
+    },
+    {
+      "name": "failed receipt",
+      "passed": true
+    },
+    {
+      "name": "missing converter input",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/convert_to_notebooks.py",
+        "/tmp/utility local validation 47z3tj_r/missing.py"
+      ],
+      "expected_exit": 1,
+      "exit": 1,
+      "passed": true,
+      "stdout": "Error: File not found: /tmp/utility local validation 47z3tj_r/missing.py\n",
+      "stderr": ""
+    },
+    {
+      "name": "partial batch",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/convert_to_notebooks.py",
+        "--dir",
+        "/tmp/utility local validation 47z3tj_r/script"
+      ],
+      "expected_exit": 1,
+      "exit": 1,
+      "passed": true,
+      "stdout": "Converting 2 files:\n  /tmp/utility local validation 47z3tj_r/script \u2192 /tmp/utility local validation 47z3tj_r/notebook\n------------------------------------------------------------\n\u2717 Error: bad.py: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte\n\u2713 good.py \u2192 good.ipynb\n------------------------------------------------------------\nConverted 1/2 files.\n",
+      "stderr": "Failed: bad.py\n"
+    },
+    {
+      "name": "no SDK writes",
+      "passed": true
+    }
+  ]
+}

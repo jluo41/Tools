@@ -1,0 +1,62 @@
+[
+  {
+    "view": "validated-design",
+    "width": 1440,
+    "images": [
+      {
+        "complete": true,
+        "width": 780
+      },
+      {
+        "complete": true,
+        "width": 780
+      }
+    ],
+    "page_width": 1440,
+    "body_text_contains_ready": true
+  },
+  {
+    "view": "validated-run",
+    "width": 1440,
+    "images": [
+      {
+        "complete": true,
+        "width": 780
+      },
+      {
+        "complete": true,
+        "width": 780
+      }
+    ],
+    "page_width": 1440,
+    "body_text_contains_ready": true
+  },
+  {
+    "view": "board-delivery",
+    "width": 1440,
+    "images": [
+      {
+        "complete": true,
+        "width": 780
+      }
+    ],
+    "page_width": 1440,
+    "body_text_contains_ready": true
+  },
+  {
+    "view": "validated-design",
+    "width": 430,
+    "images": [
+      {
+        "complete": true,
+        "width": 780
+      },
+      {
+        "complete": true,
+        "width": 780
+      }
+    ],
+    "page_width": 430,
+    "body_text_contains_ready": true
+  }
+]

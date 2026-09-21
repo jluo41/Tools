@@ -1,0 +1,323 @@
+{
+  "checks": [
+    {
+      "check": "meal started",
+      "passed": true,
+      "detail": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173745-606276.md"
+    },
+    {
+      "check": "meal progress",
+      "passed": true,
+      "detail": "# 2026-09-20\n\n- **Run ID:** meal-2026-09-20-173745-606276\n- **Start:**    17:37:45\n- **End:**      In progress\n- **Duration:** In progress\n- **Status:**   running\n\n## Episodes\n\n- 17:37:45\u201317:37:48  (2 bites)  test salad\n"
+    },
+    {
+      "check": "one identification for repeated bites",
+      "passed": true,
+      "detail": "2 injected bites grouped in one actual EpisodeTracker episode"
+    },
+    {
+      "check": "pause suspends capture and receipt",
+      "passed": true,
+      "detail": "process stat=T; unchanged for 1.4 sec"
+    },
+    {
+      "check": "meal final receipt",
+      "passed": true,
+      "detail": "# 2026-09-20\n\n- **Run ID:** meal-2026-09-20-173745-606276\n- **Start:**    17:37:45\n- **End:**      17:37:50\n- **Duration:** 0 min 4 sec\n- **Status:**   stopped\n\n## Episodes\n\n- 17:37:45\u201317:37:48  (2 bites)  test salad\n"
+    },
+    {
+      "check": "meal resources closed",
+      "passed": true,
+      "detail": "one capture release and one detector close"
+    },
+    {
+      "check": "meal stale PID rejected",
+      "passed": true,
+      "detail": "No matching live meal-cam process; do not send a signal."
+    },
+    {
+      "check": "duration includes pause",
+      "passed": true,
+      "detail": "Duration:** 0 min 4 sec"
+    },
+    {
+      "check": "empty started",
+      "passed": true,
+      "detail": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173750-725825.md"
+    },
+    {
+      "check": "empty startup receipt",
+      "passed": true,
+      "detail": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173750-725825.md"
+    },
+    {
+      "check": "empty final receipt",
+      "passed": true,
+      "detail": "# 2026-09-20\n\n- **Run ID:** meal-2026-09-20-173750-725825\n- **Start:**    17:37:50\n- **End:**      17:37:52\n- **Duration:** 0 min 2 sec\n- **Status:**   stopped\n\n## Episodes\n\n- No bite episodes detected.\n"
+    },
+    {
+      "check": "empty resources closed",
+      "passed": true,
+      "detail": "one capture release and one detector close"
+    },
+    {
+      "check": "empty stale PID rejected",
+      "passed": true,
+      "detail": "No matching live meal-cam process; do not send a signal."
+    },
+    {
+      "check": "empty finalized without identification",
+      "passed": true,
+      "detail": "# 2026-09-20\n\n- **Run ID:** meal-2026-09-20-173750-725825\n- **Start:**    17:37:50\n- **End:**      17:37:52\n- **Duration:** 0 min 2 sec\n- **Status:**   stopped\n\n## Episodes\n\n- No bite episodes detected.\n"
+    },
+    {
+      "check": "independent-a started",
+      "passed": true,
+      "detail": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173753-974683.md"
+    },
+    {
+      "check": "independent-b started",
+      "passed": true,
+      "detail": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173756-048094.md"
+    },
+    {
+      "check": "independent controls and receipts",
+      "passed": true,
+      "detail": {
+        "a": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173753-974683.md",
+        "b": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173756-048094.md"
+      }
+    },
+    {
+      "check": "skip affects only selected session",
+      "passed": true,
+      "detail": "A whole episode removed; B still has 2 bites of test soup"
+    },
+    {
+      "check": "independent-a final receipt",
+      "passed": true,
+      "detail": "# 2026-09-20\n\n- **Run ID:** meal-2026-09-20-173753-974683\n- **Start:**    17:37:53\n- **End:**      17:37:59\n- **Duration:** 0 min 5 sec\n- **Status:**   stopped\n\n## Episodes\n\n- No bite episodes detected.\n"
+    },
+    {
+      "check": "independent-a resources closed",
+      "passed": true,
+      "detail": "one capture release and one detector close"
+    },
+    {
+      "check": "independent-a stale PID rejected",
+      "passed": true,
+      "detail": "No matching live meal-cam process; do not send a signal."
+    },
+    {
+      "check": "other session remains running",
+      "passed": true,
+      "detail": "Verified meal-cam PID 89012; log: /tmp/meal-cam.tE6Azx/run.log"
+    },
+    {
+      "check": "independent-b final receipt",
+      "passed": true,
+      "detail": "# 2026-09-20\n\n- **Run ID:** meal-2026-09-20-173756-048094\n- **Start:**    17:37:56\n- **End:**      17:38:00\n- **Duration:** 0 min 4 sec\n- **Status:**   stopped\n\n## Episodes\n\n- 17:37:56\u201317:37:59  (2 bites)  test soup\n"
+    },
+    {
+      "check": "independent-b resources closed",
+      "passed": true,
+      "detail": "one capture release and one detector close"
+    },
+    {
+      "check": "independent-b stale PID rejected",
+      "passed": true,
+      "detail": "No matching live meal-cam process; do not send a signal."
+    },
+    {
+      "check": "final outputs remain independent",
+      "passed": true,
+      "detail": "read each exact startup session_file; all four files exist"
+    },
+    {
+      "check": "sources unchanged",
+      "passed": true,
+      "detail": "SKILL.md, meal_cam_loop.py, episode_tracker.py"
+    }
+  ],
+  "commands": [
+    {
+      "title": "meal-start",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-01-meal-start.sh",
+      "exit_code": 0,
+      "stdout": "PID_FILE=/tmp/meal-cam.JQYvEi/run.pid\nLOG_FILE=/tmp/meal-cam.JQYvEi/run.log\nPID=87441\n[meal-cam] receipt created. session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173745-606276.md\n[meal-cam] started. source_type=webcam fps=10.0 cooldown=3.0s max_gap=45.0s session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173745-606276.md\n[meal-cam] episode #1 START  label='test salad'  file=meal-2026-09-20-173745-606276.md\n",
+      "stderr": ""
+    },
+    {
+      "title": "meal-verify-start",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-02-meal-verify-start.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 87441; log: /tmp/meal-cam.JQYvEi/run.log\n",
+      "stderr": ""
+    },
+    {
+      "title": "meal-pause",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-03-meal-pause.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 87441; log: /tmp/meal-cam.JQYvEi/run.log\nT   \n",
+      "stderr": ""
+    },
+    {
+      "title": "meal-stop",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-04-meal-stop.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 87441; log: /tmp/meal-cam.JQYvEi/run.log\n[meal-cam] receipt created. session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173745-606276.md\n[meal-cam] started. source_type=webcam fps=10.0 cooldown=3.0s max_gap=45.0s session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173745-606276.md\n[meal-cam] episode #1 START  label='test salad'  file=meal-2026-09-20-173745-606276.md\n[meal-cam] episode #1 bite #2  (test salad)\n[meal-cam] stopped. episodes=1 bites=2  file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173745-606276.md\n",
+      "stderr": ""
+    },
+    {
+      "title": "meal-reject-stopped-pid",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-05-meal-reject-stopped-pid.sh",
+      "exit_code": 0,
+      "stdout": "No matching live meal-cam process; do not send a signal.\n",
+      "stderr": ""
+    },
+    {
+      "title": "empty-start",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-06-empty-start.sh",
+      "exit_code": 0,
+      "stdout": "PID_FILE=/tmp/meal-cam.P7fmLz/run.pid\nLOG_FILE=/tmp/meal-cam.P7fmLz/run.log\nPID=88329\n[meal-cam] receipt created. session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173750-725825.md\n[meal-cam] started. source_type=webcam fps=10.0 cooldown=3.0s max_gap=45.0s session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173750-725825.md\n",
+      "stderr": ""
+    },
+    {
+      "title": "empty-verify-start",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-07-empty-verify-start.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 88329; log: /tmp/meal-cam.P7fmLz/run.log\n",
+      "stderr": ""
+    },
+    {
+      "title": "empty-skip-empty",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-08-empty-skip-empty.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 88329; log: /tmp/meal-cam.P7fmLz/run.log\n",
+      "stderr": ""
+    },
+    {
+      "title": "empty-stop",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-09-empty-stop.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 88329; log: /tmp/meal-cam.P7fmLz/run.log\n[meal-cam] receipt created. session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173750-725825.md\n[meal-cam] started. source_type=webcam fps=10.0 cooldown=3.0s max_gap=45.0s session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173750-725825.md\n[meal-cam] skip requested; no episode to remove\n[meal-cam] stopped. episodes=0 bites=0  file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173750-725825.md\n",
+      "stderr": ""
+    },
+    {
+      "title": "empty-reject-stopped-pid",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-10-empty-reject-stopped-pid.sh",
+      "exit_code": 0,
+      "stdout": "No matching live meal-cam process; do not send a signal.\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-a-start",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-11-independent-a-start.sh",
+      "exit_code": 0,
+      "stdout": "PID_FILE=/tmp/meal-cam.GbBZyo/run.pid\nLOG_FILE=/tmp/meal-cam.GbBZyo/run.log\nPID=88940\n[meal-cam] receipt created. session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173753-974683.md\n[meal-cam] started. source_type=webcam fps=10.0 cooldown=3.0s max_gap=45.0s session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173753-974683.md\n[meal-cam] episode #1 START  label='test apple'  file=meal-2026-09-20-173753-974683.md\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-a-verify-start",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-12-independent-a-verify-start.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 88940; log: /tmp/meal-cam.GbBZyo/run.log\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-b-start",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-13-independent-b-start.sh",
+      "exit_code": 0,
+      "stdout": "PID_FILE=/tmp/meal-cam.tE6Azx/run.pid\nLOG_FILE=/tmp/meal-cam.tE6Azx/run.log\nPID=89012\n[meal-cam] receipt created. session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173756-048094.md\n[meal-cam] started. source_type=webcam fps=10.0 cooldown=3.0s max_gap=45.0s session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173756-048094.md\n[meal-cam] episode #1 START  label='test soup'  file=meal-2026-09-20-173756-048094.md\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-b-verify-start",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-14-independent-b-verify-start.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 89012; log: /tmp/meal-cam.tE6Azx/run.log\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-a-skip-last",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-15-independent-a-skip-last.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 88940; log: /tmp/meal-cam.GbBZyo/run.log\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-a-stop",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-16-independent-a-stop.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 88940; log: /tmp/meal-cam.GbBZyo/run.log\n[meal-cam] receipt created. session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173753-974683.md\n[meal-cam] started. source_type=webcam fps=10.0 cooldown=3.0s max_gap=45.0s session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173753-974683.md\n[meal-cam] episode #1 START  label='test apple'  file=meal-2026-09-20-173753-974683.md\n[meal-cam] episode #1 bite #2  (test apple)\n[meal-cam] removed episode #1\n[meal-cam] stopped. episodes=0 bites=0  file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173753-974683.md\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-a-reject-stopped-pid",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-17-independent-a-reject-stopped-pid.sh",
+      "exit_code": 0,
+      "stdout": "No matching live meal-cam process; do not send a signal.\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-b-verify-after-other-stop",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-18-independent-b-verify-after-other-stop.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 89012; log: /tmp/meal-cam.tE6Azx/run.log\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-b-stop",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-19-independent-b-stop.sh",
+      "exit_code": 0,
+      "stdout": "Verified meal-cam PID 89012; log: /tmp/meal-cam.tE6Azx/run.log\n[meal-cam] receipt created. session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173756-048094.md\n[meal-cam] started. source_type=webcam fps=10.0 cooldown=3.0s max_gap=45.0s session_file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173756-048094.md\n[meal-cam] episode #1 START  label='test soup'  file=meal-2026-09-20-173756-048094.md\n[meal-cam] episode #1 bite #2  (test soup)\n[meal-cam] stopped. episodes=1 bites=2  file=/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173756-048094.md\n",
+      "stderr": ""
+    },
+    {
+      "title": "independent-b-reject-stopped-pid",
+      "command": "/bin/bash /tmp/mealcam-fresh-20260920/command-20-independent-b-reject-stopped-pid.sh",
+      "exit_code": 0,
+      "stdout": "No matching live meal-cam process; do not send a signal.\n",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/SKILL.md": "ebd31cb1a4a764bf16f5adb1eb82c5b77ebbfedcb8b596623587b0f2fa8a23ec",
+    "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/scripts/meal_cam_loop.py": "cc2174aa309bbf950cb34a7ded0f917790459916d4db223bada1396e25358104",
+    "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/scripts/episode_tracker.py": "4eb8b13f6de5a38323b17f62113d4ac861680417d14d6ea81297567ce4c9416b"
+  },
+  "sessions": [
+    {
+      "name": "meal",
+      "pid": "87441",
+      "control": "/tmp/meal-cam.JQYvEi",
+      "log": "/tmp/meal-cam.JQYvEi/run.log",
+      "receipt": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173745-606276.md",
+      "audit": "/tmp/mealcam-fresh-20260920/meal.audit.jsonl"
+    },
+    {
+      "name": "empty",
+      "pid": "88329",
+      "control": "/tmp/meal-cam.P7fmLz",
+      "log": "/tmp/meal-cam.P7fmLz/run.log",
+      "receipt": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173750-725825.md",
+      "audit": "/tmp/mealcam-fresh-20260920/empty.audit.jsonl"
+    },
+    {
+      "name": "independent-a",
+      "pid": "88940",
+      "control": "/tmp/meal-cam.GbBZyo",
+      "log": "/tmp/meal-cam.GbBZyo/run.log",
+      "receipt": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173753-974683.md",
+      "audit": "/tmp/mealcam-fresh-20260920/independent-a.audit.jsonl"
+    },
+    {
+      "name": "independent-b",
+      "pid": "89012",
+      "control": "/tmp/meal-cam.tE6Azx",
+      "log": "/tmp/meal-cam.tE6Azx/run.log",
+      "receipt": "/private/tmp/mealcam-fresh-20260920/receipts/meal-2026-09-20-173756-048094.md",
+      "audit": "/tmp/mealcam-fresh-20260920/independent-b.audit.jsonl"
+    }
+  ]
+}

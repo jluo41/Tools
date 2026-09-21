@@ -1,0 +1,48 @@
+DESIGN PROCESS - INSTANCE BOUNDARIES AND INTERNAL STEPS
+
+This diagram shows permitted actual Run instances, not an observed inventory.
+Each RUN box gets one rdNN identity only when allocated. Example ids below
+show the first release/generate/verify path for ITEM01.
+
++--------------------------------------------------------------+
+| RUN rd01_commission_item01 : Design.commission                 |
+| actor: named person; target: exact item/config                 |
+| internal steps: inspect pins -> comment -> Release or Hold     |
+| close: decision.yaml + runtime.yaml                           |
++--------------------------------------------------------------+
+       | release                           | hold
+       v                                   v
+ Person queues Generate                 HOLD decision is complete
+       |                                Later release = NEW Commission RUN
+       v
++--------------------------------------------------------------+
+| RUN rd02_generate_item01 : Design.generate                    |
+| actor: designer; target: released item                        |
+| internal steps: inspect inputs -> draft -> self-check          |
+| bounded internal revisions/calls stay INSIDE this RUN         |
+| close: immutable draft Result + checks + runtime              |
++--------------------------------------------------------------+
+       | clean records check               | failed records check
+       v                                   v
+ Person queues Verify                   Person queues revise
+       |                                -> NEW Generate RUN
+       v                                   (frozen base + feedback)
++--------------------------------------------------------------+
+| RUN rd03_verify_item01 : Design.verify                        |
+| actor: fresh independent reviewer; target: exact draft hashes |
+| internal steps: inspect every artifact x criterion -> judge   |
+| close: independent verdict Result + checks + runtime          |
++--------------------------------------------------------------+
+       |                         |                          |
+       | valid pass              | valid fail               | records invalid
+       v                         v                          v
+ DELIVERY ready               Person queues revise      Person queues review
+ Same exact draft             -> NEW Generate RUN        -> NEW Verify RUN
+ Read-only projection         Review status: complete    Review status: failed
+ No extra RUN or approval     route: generate            route: verify
+ Stop Design                                             state: verify invalid
+
+Count allocated records: C Commission + N Generate + J Verify.
+No earlier hold -> C=1. A hold followed by release -> C=2.
+An unchanged retry after worker death can stay the same Run; internal steps
+never create new Run ids. Page-writing Runs have their own identities.

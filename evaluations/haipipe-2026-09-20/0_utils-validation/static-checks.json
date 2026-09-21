@@ -1,0 +1,118 @@
+{
+  "python_files": [
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/pair_sync.py",
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_cli_agent.py",
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_native_agent.py",
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_paired_cli.py",
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_shared_agent.py",
+    "plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/scripts/bite_detector.py",
+    "plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/scripts/episode_tracker.py",
+    "plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/scripts/meal_cam_loop.py",
+    "plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/scripts/test_bite_detector.py",
+    "plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/scripts/test_identify_food.py",
+    "plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/convert_to_notebooks.py",
+    "plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/run_notebook.py",
+    "plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py"
+  ],
+  "skills": [
+    {
+      "skill": "call-peer",
+      "valid": true,
+      "message": "Skill is valid!",
+      "sha256": "16ed0c435d1c303c8568d3568cf2276a8c0d0328b2629bbdcd2c1c491cf0b0bd"
+    },
+    {
+      "skill": "diagram-ascii",
+      "valid": true,
+      "message": "Skill is valid!",
+      "sha256": "fcf63714d0fb2317ae45e3639eed5c7e1ac390964371b4d63c921e78fa4180fc"
+    },
+    {
+      "skill": "field-test",
+      "valid": true,
+      "message": "Skill is valid!",
+      "sha256": "56f3ea78991a668a7db4f0aacc52a28b663cc89a1ae1651dbd9c5532381ff9d5"
+    },
+    {
+      "skill": "meal-cam-logger",
+      "valid": true,
+      "message": "Skill is valid!",
+      "sha256": "ebbbe7c6b1a89fe93738cc00867eda48efbf6c4d485b31b0dc82fd78933de880"
+    },
+    {
+      "skill": "notebook-cell-python",
+      "valid": true,
+      "message": "Skill is valid!",
+      "sha256": "38bbf2b4354da7cf93ea36a289e46942eb2e8cef5f903e51fb12689d1e1886da"
+    },
+    {
+      "skill": "remote-error",
+      "valid": false,
+      "message": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "sha256": "c448562d6a46eeb65e75f9a9b357234e4e3857df2654b854a512d4fb3572c297",
+      "with_known_claude_extension_omitted": true,
+      "normalized_message": "Skill is valid!"
+    },
+    {
+      "skill": "response-format",
+      "valid": false,
+      "message": "Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are: allowed-tools, description, license, metadata, name",
+      "sha256": "bb44365abada36470d88a0025e5e0bfae6a6242b3c83b84c8881d7e781f2361e",
+      "with_known_claude_extension_omitted": true,
+      "normalized_message": "Skill is valid!"
+    },
+    {
+      "skill": "table-task",
+      "valid": true,
+      "message": "Skill is valid!",
+      "sha256": "d49b0f50ee9af1fed73acaf8b9990a9318ebb6d7b2ef31c51923265353a0689b"
+    },
+    {
+      "skill": "table-workflow",
+      "valid": true,
+      "message": "Skill is valid!",
+      "sha256": "8c9b5d05afcf27d1ddecb2da7f69e374e6c03f602ac6543a08c55028e8952f70"
+    },
+    {
+      "skill": "whoop-connect",
+      "valid": true,
+      "message": "Skill is valid!",
+      "sha256": "b2414f42be44e51e72a1b46cbc739d4bf0ad9e90d318eccab655ec4d9d690f1a"
+    }
+  ],
+  "diff_check": {
+    "exit": 0,
+    "output": ""
+  },
+  "changed_since_turn_start": [
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/SKILL.md",
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/pair_sync.py",
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_cli_agent.py",
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_native_agent.py",
+    "plugins/haipipe-toolkit/skills/0_utils/call-peer/scripts/run_shared_agent.py",
+    "plugins/haipipe-toolkit/skills/0_utils/field-test/CHANGELOG.md",
+    "plugins/haipipe-toolkit/skills/0_utils/field-test/SKILL.md",
+    "plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/CHANGELOG.md",
+    "plugins/haipipe-toolkit/skills/0_utils/meal-cam-logger/SKILL.md",
+    "plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/CHANGELOG.md",
+    "plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/SKILL.md",
+    "plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/convert_to_notebooks.py",
+    "plugins/haipipe-toolkit/skills/0_utils/notebook-cell-python/run_notebook.py",
+    "plugins/haipipe-toolkit/skills/0_utils/remote-error/CHANGELOG.md",
+    "plugins/haipipe-toolkit/skills/0_utils/remote-error/SKILL.md",
+    "plugins/haipipe-toolkit/skills/0_utils/remote-error/ref/profile-cms-stata.md",
+    "plugins/haipipe-toolkit/skills/0_utils/response-format/CHANGELOG.md",
+    "plugins/haipipe-toolkit/skills/0_utils/response-format/SKILL.md",
+    "plugins/haipipe-toolkit/skills/0_utils/table-task/CHANGELOG.md",
+    "plugins/haipipe-toolkit/skills/0_utils/table-task/SKILL.md",
+    "plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py",
+    "plugins/haipipe-toolkit/skills/0_utils/table-task/ref/task-table-schema.md",
+    "plugins/haipipe-toolkit/skills/0_utils/table-workflow/CHANGELOG.md",
+    "plugins/haipipe-toolkit/skills/0_utils/table-workflow/SKILL.md",
+    "plugins/haipipe-toolkit/skills/0_utils/table-workflow/ref/run-catalog.md",
+    "plugins/haipipe-toolkit/skills/0_utils/table-workflow/ref/skill-coverage.md",
+    "plugins/haipipe-toolkit/skills/0_utils/table-workflow/ref/workflow-table-schema.md",
+    "plugins/haipipe-toolkit/skills/0_utils/whoop-connect/CHANGELOG.md",
+    "plugins/haipipe-toolkit/skills/0_utils/whoop-connect/SKILL.md"
+  ]
+}

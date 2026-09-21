@@ -1,0 +1,96 @@
+{
+  "date_checked": "2026-09-20T17:44:59-0400",
+  "workspace_generated": "/tmp/interaction-validation-lb40b3lu",
+  "repository_sources_written": false,
+  "skills_invoked": [
+    "remote-error 0.10.0",
+    "response-format 0.5.0",
+    "field-test 0.4.0",
+    "whoop-connect 0.2.0"
+  ],
+  "scenario_results": {
+    "remote_error": "Canonical fixture edited at report.py:6; generic report preserved; no profile gate or remote rerun.",
+    "response_format": "Representative numbered chat reply and separately templated Markdown report written. Scoped remote-error reply also written.",
+    "field_test": "Commission and expectation ledger prepared; no FIELD dispatch. Actual Insight authority owners read. No concrete standing grant supplied, so application of a real grant is untested.",
+    "whoop": "Configured checkout absent; preflight stopped before app/OAuth/credentials; connection unverified."
+  },
+  "checks_passed": [
+    "Python AST parse, without executing fixture",
+    "Exact guarded source line inspected",
+    "Template headings present",
+    "Supplied trace preserved verbatim",
+    "Remote Run ID N/A",
+    "Only issue report created inside supplied register",
+    "Whoop checkout absent",
+    "Referenced skill SHA-256 values unchanged since recorded baseline"
+  ],
+  "untested": [
+    "Remote execution and deployment",
+    "Fixture runtime behavior",
+    "Real local project checker",
+    "Insight live grant application and revocation/expiry behavior",
+    "FIELD execution and independent CHECK",
+    "Whoop valid-checkout path, credentials, callback, token freshness, refresh, sync and scheduler"
+  ],
+  "external_services_used": false,
+  "browser_oauth_used": false,
+  "real_user_data_used": false,
+  "token_usage": "unavailable; no usage receipt",
+  "skill_manifest": [
+    {
+      "path": "plugins/haipipe-toolkit/skills/0_utils/remote-error/SKILL.md",
+      "sha256": "ed5647a5f387adc5fca03434e5701b8e1fd682018973a084184829e0603a023c"
+    },
+    {
+      "path": "plugins/haipipe-toolkit/skills/0_utils/remote-error/ref/issue-file-template.md",
+      "sha256": "89fb64ae4828e21025611e1957eba21d391cecbc47c8c2601ae632b9b80487c6"
+    },
+    {
+      "path": "plugins/haipipe-toolkit/skills/0_utils/response-format/SKILL.md",
+      "sha256": "d5c68fe5bb34a8007c1b3fa94bc629471516cd074c33781e1edfb1c5e743cda5"
+    },
+    {
+      "path": "plugins/haipipe-toolkit/skills/0_utils/field-test/SKILL.md",
+      "sha256": "30aacdae7ba960d8e8ff4e5a17e480aef7816405644daf2154bda30d9ca7723c"
+    },
+    {
+      "path": "plugins/haipipe-toolkit/skills/0_utils/whoop-connect/SKILL.md",
+      "sha256": "7e231552e955d264b5a4aa2f5127dd15200096ff8239581f30b8f32f4b3919e4"
+    },
+    {
+      "path": "plugins/haipipe-toolkit/skills/insight/haipipe-insight-workflow/ref/authorization.md",
+      "sha256": "293f5d8e34eefa77f5bc3f05b47f4d2e0a7efbd68ce58054e67c59c66bd1557e"
+    }
+  ],
+  "source_friction_recheck": {
+    "checked_at": "2026-09-20T17:48:21-0400",
+    "scope": "Read-only recheck of the two previously reported source frictions; only temporary receipts updated.",
+    "results": [
+      {
+        "finding": 1,
+        "status": "resolved",
+        "source": "plugins/haipipe-toolkit/skills/0_utils/remote-error/SKILL.md",
+        "line": 296,
+        "evidence": "WHAT now specifies valid # markers for Python/shell, // only where supported, and a diff fence when comments are unavailable. Existing Python representative matches this rule.",
+        "sha256": "c448562d6a46eeb65e75f9a9b357234e4e3857df2654b854a512d4fb3572c297"
+      },
+      {
+        "finding": 2,
+        "status": "resolved",
+        "source": "plugins/haipipe-toolkit/skills/0_utils/response-format/SKILL.md",
+        "line": 198,
+        "evidence": "The example now places its question before File Changes, which is its final section.",
+        "sha256": "bb44365abada36470d88a0025e5e0bfae6a6242b3c83b84c8881d7e781f2361e"
+      }
+    ],
+    "unchanged_limits": [
+      "Synthetic target is not a full live-artifact field test",
+      "No concrete standing authorization was supplied or exercised",
+      "No FIELD dispatch or independent CHECK",
+      "Whoop success path, credentials, OAuth, token freshness, refresh, sync and scheduler remain untested",
+      "No fixture runtime execution or remote rerun"
+    ],
+    "repository_sources_written": false,
+    "new_live_actions": false
+  }
+}

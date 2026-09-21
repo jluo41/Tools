@@ -1,0 +1,239 @@
+{
+  "installer-discovery": {
+    "bash_actual_discovery": [
+      "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/writing/haipipe-writing\thaipipe-toolkit\twriting/haipipe-writing"
+    ],
+    "powershell_available": null,
+    "powershell_static_writing_candidates": [
+      "plugins/haipipe-toolkit/skills/writing/haipipe-writing/SKILL.md"
+    ]
+  },
+  "metadata-checks": [
+    {
+      "skill": "plugins/haipipe-toolkit/skills/writing/haipipe-writing",
+      "exit": 0,
+      "output": "Skill is valid!\n"
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow",
+      "exit": 0,
+      "output": "Skill is valid!\n"
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-content",
+      "exit": 0,
+      "output": "Skill is valid!\n"
+    },
+    {
+      "skill": "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-check",
+      "exit": 0,
+      "output": "Skill is valid!\n"
+    },
+    {
+      "check": "agreement",
+      "exit": 0,
+      "output": "\u2705 haipipe-writing\n\u2705 haipipe-page-workflow\n\u2705 haipipe-page-content\n\u2705 haipipe-page-check\n\n4 skill folder(s) \u00b7 0 version disagreement(s) \u00b7 0 path finding(s)\n"
+    }
+  ],
+  "page-guard-comparison": {
+    "current": {
+      "run": 19,
+      "failures": [
+        "test_entry_points_route_to_one_interactive_contract (writing_page_guards.InteractiveSkillContractTest) (skill='run/haipipe-run/SKILL.md')",
+        "test_handoff_and_runtime_boundary_are_explicit (writing_page_guards.InteractiveSkillContractTest)",
+        "test_page_has_explicit_structure_section_and_paragraph_run_ids (writing_page_guards.InteractiveSkillContractTest) (source='---\\nname: haipipe-run\\ndescription: >-\\n  ')",
+        "test_page_run_identity_is_separate_from_task_run_identity (writing_page_guards.InteractiveSkillContractTest) (source='---\\nname: haipipe-run\\ndescription: >-\\n  ')",
+        "test_runs_function_proposes_only_human_interaction (writing_page_guards.InteractiveSkillContractTest)"
+      ],
+      "errors": []
+    },
+    "before-writing-changes": {
+      "run": 19,
+      "failures": [
+        "test_entry_points_route_to_one_interactive_contract (writing_page_guards.InteractiveSkillContractTest) (skill='run/haipipe-run/SKILL.md')",
+        "test_handoff_and_runtime_boundary_are_explicit (writing_page_guards.InteractiveSkillContractTest)",
+        "test_page_has_explicit_structure_section_and_paragraph_run_ids (writing_page_guards.InteractiveSkillContractTest) (source='---\\nname: haipipe-run\\ndescription: >-\\n  ')",
+        "test_page_run_identity_is_separate_from_task_run_identity (writing_page_guards.InteractiveSkillContractTest) (source='---\\nname: haipipe-run\\ndescription: >-\\n  ')",
+        "test_runs_function_proposes_only_human_interaction (writing_page_guards.InteractiveSkillContractTest)"
+      ],
+      "errors": []
+    }
+  },
+  "static-checks": {
+    "markdown_files": 28,
+    "findings": [],
+    "catalog_ids": [
+      "academic-humanizer",
+      "writing-dna",
+      "anti-slop"
+    ]
+  },
+  "behavior-checks": {
+    "original_inputs_unchanged": 28,
+    "section_exact_patch": true,
+    "paragraph_exact_patch": true,
+    "followup_same_candidate": true,
+    "external_candidate_unchanged": true,
+    "standalone_native_exact_patch": true,
+    "missing_required_blocked": true,
+    "unsupported_suggestion_rejected": true,
+    "unsupported_number_not_verifiable": true,
+    "missing_paragraph_job_located": true,
+    "zero_revision_budget_preserved": true
+  },
+  "final-checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "plugins/haipipe-toolkit/skills/writing/haipipe-writing/tests/test_anti_slop.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "output": "........                                                                 [100%]\n8 passed in 0.05s\n"
+    },
+    {
+      "command": [
+        "python3",
+        "plugins/haipipe-toolkit/skills/writing/haipipe-writing/tests/test_roundtrip.py"
+      ],
+      "exit_code": 0,
+      "output": "\u2500\u2500 what apply writes, check accepts \u2500\u2500\n\u2705 bare sentence, board host                      0 problem(s), expected 0\n\u2705 sentence already carrying one lane             0 problem(s), expected 0\n\u2705 sentence carrying three lanes and a comment    0 problem(s), expected 0\n\u2705 sentence already carrying a signed record      0 problem(s), expected 0\n\u2705 the pre-existing signed \u270e record survived\n\u2705 paper host beside an existing board record     0 problem(s), expected 0\n\u2705 paper host emits ~~old~~ **new** and destroys no \u270e record\n\u2705 a split anchors on its FIRST line              record under line 1, tail below\n\n\u2500\u2500 what check must still reject \u2500\u2500\n\u2705 record under no prose at all                   a record hanging off a heading is anchored to nothing\n\u2705 record marking no change                       a record with no ~old~ or *new* says nothing\n\u2705 malformed record                               needs `> \u270e <diff> \u00b7 WHO \u00b7 YYMMDD HHMM`\n\n\u2705 all round trips hold\n"
+    },
+    {
+      "command": [
+        "python3",
+        "plugins/haipipe-toolkit/skills/writing/haipipe-writing/cli/agree.py",
+        "plugins/haipipe-toolkit/skills/writing/haipipe-writing",
+        "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow",
+        "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-content",
+        "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-check"
+      ],
+      "exit_code": 0,
+      "output": "\u2705 haipipe-writing\n\u2705 haipipe-page-workflow\n\u2705 haipipe-page-content\n\u2705 haipipe-page-check\n\n4 skill folder(s) \u00b7 0 version disagreement(s) \u00b7 0 path finding(s)\n"
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/jluo41/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        "plugins/haipipe-toolkit/skills/writing/haipipe-writing"
+      ],
+      "exit_code": 0,
+      "output": "Skill is valid!\n"
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/jluo41/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow"
+      ],
+      "exit_code": 0,
+      "output": "Skill is valid!\n"
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/jluo41/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-content"
+      ],
+      "exit_code": 0,
+      "output": "Skill is valid!\n"
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/jluo41/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-check"
+      ],
+      "exit_code": 0,
+      "output": "Skill is valid!\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "plugins/haipipe-toolkit/skills/writing/haipipe-writing"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-content"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-check"
+      ],
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "fixture_input_sha256": {
+    "section/request.yaml": "83d0ab496e975c0ebbcd1eed217b77e26cf8a17b0b8fa7676431cfacfa4d544b",
+    "section/draft.md": "965b5f514741d5756de5d5f1c01094c0a2d4b40c854100df6bd159c2d2e02af4",
+    "section/evidence.md": "759aa357a5cb209c46397674dceafa58934fcbb9e9db2216beb8bad17f0377f6",
+    "section/plan.md": "79c8a848a5b6fcb245e3a2413cf1b484d04f93a42a8837ae1cdb88c0773d26cb",
+    "paragraph/context.md": "bbd8db99c6c480e273adacc95c7916a9b2affec23c6f097861cd958344e103d2",
+    "paragraph/draft.md": "c7cc9e437306309a401962a7ac11bc2feb8a0dc352fde516545faf44b5b3eee3",
+    "paragraph/requests.md": "54b9d9c812989b8e20d06e0820b25a59fe9f8820932652d9800a80444bc2f4b0",
+    "external-review/request.yaml": "c47117f9bf562b4372c55121bff58c5933c3c86d53b849674eeff9bf456cf15d",
+    "external-review/evidence.md": "d42829c9cc2d609f0a83b95eb7201d3830106acc386f7f45fb9360a1f1734f57",
+    "external-review/candidate.md": "0bc1a87eeffe95aa5933400447416ee9243971212e864920d3da2794f41bfd35",
+    "external-review/baseline.md": "66eb34ffa94f25ce393ef4fb09452b87a8637b9ee4739a62faf2357b774f7af2",
+    "external-review/methods.yaml": "a44ee93b676fea289fbb4c4886d9cfda927eebbda2bca903b3c7616bfede2457",
+    "external-review/methods/evidence-review/SKILL.md": "5f2e293c8077a61063deb932dc419b5b450808998efb0ab12fdb88037b0f17ad",
+    "external-review/methods/evidence-review/adapter.md": "f5a227f2254122051a85e27f0f0354836411399383db1b1af218b828697b994f",
+    "external-review/methods/reader-review/SKILL.md": "e65086a5291bea0be9fd2b77852f661703e940d3c17f8a126fa619675714bbad",
+    "external-review/methods/reader-review/adapter.md": "f5a227f2254122051a85e27f0f0354836411399383db1b1af218b828697b994f",
+    "standalone-boundaries/draft.md": "9f16dc69714adfa5abe7025c4e7d54c1962f1a44880943d04c45e9eb76839961",
+    "standalone-boundaries/evidence.md": "47e8fdc89f90b1ae1297bfe289bfc2d0b2528f4d795fce89bc4aad1a29176db1",
+    "standalone-boundaries/required-missing-request.yaml": "bc2206e0ee7dbf993bab7b34d3357d4d448c9fdb38dfb3b2896086b5c0451973",
+    "standalone-boundaries/native-request.yaml": "290645fe951d9e2f97d6147846a2244797f70dce70548b23229d1fb0a7670e07",
+    "standalone-boundaries/methods.yaml": "71ce991cfc8ad6dff850b107c4260198a8cce939370d20b4a23ffabb77bae122",
+    "standalone-boundaries/suggestion-request.yaml": "1ee7494e759b7e0a9d62127c3b70bf6220f2cd4d3d954ae5e1a6470381e90329",
+    "standalone-boundaries/method/SKILL.md": "b669ef3e18e26a10ef08609b42f5bc4d293b7f35e464c382bfc73af96dfa80c1",
+    "standalone-boundaries/method/adapter.md": "ac1d220614beaa8aa2a22f7cb90efca57be19dfd45cd6537dfc30072fb10a7f3",
+    "unverifiable-section/request.yaml": "0aa0ee6ae0c4160f069928bc590732185a0712a01a997581011d40fca34be453",
+    "unverifiable-section/draft.md": "6b512570cc1d10ed94158ab790076296647bff8c34dac6a5f9bfcc171682a058",
+    "unverifiable-section/evidence.md": "2965e4bff4c967c090f37f7a84d2cf3cbdc37ad69cd8a4b9d38ac7f63778d169",
+    "unverifiable-section/plan.md": "b2a3457bcb9b3de18c563b9191c4ce49a4cc1f395b51c00e82194c2be11aff79"
+  },
+  "worker_return_sha256": {
+    "section/return.md": "314c8d528170df92609a3b7be52195d967cfeffeddef4603137c7156b9296d12",
+    "paragraph/followup-return.md": "46deda4bcb3bdc7280fe40bc2ce6385070043621ad359f429e466df00fd2fca1",
+    "paragraph/first-return.md": "bfd92d9fa4bf884132d7fdb03d81c42a6a38aef445d6509fe33af301e0b6ee90",
+    "standalone-boundaries/required-missing-return.md": "ef6db22dc4da081536cce1048c611fd88a721e28171d12cf4706f239f73150aa",
+    "standalone-boundaries/native-return.md": "f17bfe754d974fbfebae4e5dc1ab46fe2d0084b1c187871bbfa1bdeab2b1802e",
+    "standalone-boundaries/suggestion-return.md": "954e4a20338754ac9dd860f2ab46bc872615449d773766aaf0c6b3491395d13a",
+    "external-review/return.md": "2517b482796023373ab13652d09ae918787fd143d7523ad9095fff487c6ccab8",
+    "unverifiable-section/return.md": "b3e98c508ea1aa6bccd01c376442b200fc11d3be7612ededfe6b5f82b812c7ce"
+  },
+  "validation_context": "Five fresh-context sessions, eight request/feedback cases; synthetic sources and project-provided skills; same-agent method-assisted self-review.",
+  "final_writing_skill_sha256": "5c9badb8065307902c59705ad2101b3307abdb79a156ba785a217c0ed1079f31"
+}

@@ -1,0 +1,84 @@
+{
+  "status": "passed",
+  "checks": [
+    "retry preserves prior receipt",
+    "attempt counter",
+    "complete immutable",
+    "changed contract blocked",
+    "attempts excluded from inventory",
+    "Paper judgment closure",
+    "Design Commission",
+    "missing receipt and orphan visibility",
+    "mirrored Task store in both readers",
+    "waiting state",
+    "duplicate receipts stay one Held row in both readers",
+    "duplicate orphan Results stay one recovery row",
+    "relative store marker, git fallback and unresolved diagnosis",
+    "changed auto-hashed input blocks retry",
+    "explicit input hash verified against current bytes",
+    "missing declared input blocks launch",
+    "default Task report keeps recovery rows visible"
+  ],
+  "log": [
+    {
+      "ticket": "r01_execution_fit.sh",
+      "exit": 1,
+      "stdout": "==> Runtime written to /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model/results/r01_execution_fit/runtime.yaml\n==> Next: /haipipe-task report /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model\n",
+      "stderr": "==> [pre-flight] code review skipped by explicit flag\n"
+    },
+    {
+      "ticket": "r01_execution_fit.sh",
+      "exit": 0,
+      "stdout": "==> Runtime written to /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model/results/r01_execution_fit/runtime.yaml\n==> Next: /haipipe-task report /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model\n",
+      "stderr": "==> [pre-flight] code review skipped by explicit flag\n"
+    },
+    {
+      "ticket": "r01_execution_fit.sh",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "==> [pre-flight] code review skipped by explicit flag\nRun history: closed Result is immutable; reuse it or commission a new Run\n==> BLOCKED: retry history or frozen-contract check failed\n"
+    },
+    {
+      "ticket": "r02_execution_fit.sh",
+      "exit": 1,
+      "stdout": "==> Runtime written to /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model/results/r02_execution_fit/runtime.yaml\n==> Next: /haipipe-task report /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model\n",
+      "stderr": "==> [pre-flight] code review skipped by explicit flag\n"
+    },
+    {
+      "ticket": "r02_execution_fit.sh",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "==> [pre-flight] code review skipped by explicit flag\nRun history: changed or unproven frozen contract; preserve history and resolve through the owner\n==> BLOCKED: retry history or frozen-contract check failed\n"
+    },
+    {
+      "ticket": "r07_execution_input.sh",
+      "exit": 1,
+      "stdout": "==> Runtime written to /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model/results/r07_execution_input/runtime.yaml\n==> Next: /haipipe-task report /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model\n",
+      "stderr": "==> [pre-flight] code review skipped by explicit flag\n"
+    },
+    {
+      "ticket": "r07_execution_input.sh",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "==> [pre-flight] code review skipped by explicit flag\nRun history: changed or unproven frozen contract; preserve history and resolve through the owner\n==> BLOCKED: retry history or frozen-contract check failed\n"
+    },
+    {
+      "ticket": "r08_execution_pinned.sh",
+      "exit": 1,
+      "stdout": "==> Runtime written to /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model/results/r08_execution_pinned/runtime.yaml\n==> Next: /haipipe-task report /private/tmp/haipipe-run-runtime-c0vbo_jq/workspace/Proj/tasks/b01_test/j01_demo/t01_model\n",
+      "stderr": "==> [pre-flight] code review skipped by explicit flag\n"
+    },
+    {
+      "ticket": "r08_execution_pinned.sh",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "==> BLOCKED: declared input hash changed: input.txt\n"
+    },
+    {
+      "ticket": "r07_execution_input.sh",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "==> BLOCKED: declared input is not a readable file: input.txt\n"
+    }
+  ]
+}

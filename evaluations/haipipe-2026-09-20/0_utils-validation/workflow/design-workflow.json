@@ -1,0 +1,692 @@
+{
+  "workflow_table": {
+    "id": "design-workflow",
+    "title": "Current Design family workflow definition",
+    "owner": "haipipe-design-workflow",
+    "workspace_roster": {
+      "id": "design-workspaces",
+      "declared_by": "haipipe-design",
+      "workspaces": [
+        {
+          "id": "goal",
+          "label": "Goal Space",
+          "purpose": "Goal presentation"
+        },
+        {
+          "id": "design",
+          "label": "Design Space",
+          "purpose": "Design presentation"
+        },
+        {
+          "id": "insight",
+          "label": "Insight Space",
+          "purpose": "Insight presentation"
+        },
+        {
+          "id": "runtime",
+          "label": "Run Space",
+          "purpose": "Run presentation"
+        },
+        {
+          "id": "delivery",
+          "label": "Delivery Space",
+          "purpose": "Delivery presentation"
+        }
+      ]
+    },
+    "run_specs": [
+      {
+        "id": "commission",
+        "run_type": "Design.commission",
+        "purpose": "Close one exact release or hold decision",
+        "target": "one Design Item exact config version",
+        "actor": {
+          "mode": "human",
+          "owner": "named person on the Commission record"
+        },
+        "action": "release or hold",
+        "input": [],
+        "depends_on": [],
+        "entry_gate": {
+          "mode": "automatic",
+          "assertion": "exact item config and evidence pinned; item has no release",
+          "record": "runs/<run>.yaml"
+        },
+        "exit_gate": {
+          "mode": "human",
+          "assertion": "durable decision names exact fingerprint",
+          "record": "results/<run>/decision.yaml"
+        },
+        "routes": {
+          "release": "generate",
+          "hold": "HOLD"
+        },
+        "result": {
+          "payload": "decision.yaml",
+          "receipt": "results/<run>/runtime.yaml"
+        },
+        "cardinality": "C: all allocated Commission decisions; at most one release per item",
+        "cells": [
+          {
+            "id": "commission@goal",
+            "workspace_id": "goal",
+            "mode": "read-only",
+            "owner_skill": "haipipe-design-workflow",
+            "worker_skill_chain": [],
+            "interaction": "view Brief line and Insight board",
+            "input_view": [
+              "Brief line",
+              "Insight board"
+            ],
+            "output_view": [],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "none",
+              "gate": "none"
+            },
+            "source_projection": {
+              "kind": "source",
+              "source_cell": "none",
+              "object": "Brief and linked Insight board",
+              "rule": "preserve native Run/Result identity; never mint, copy or recount"
+            }
+          },
+          {
+            "id": "commission@design",
+            "workspace_id": "design",
+            "mode": "decision",
+            "owner_skill": "haipipe-design-workflow",
+            "worker_skill_chain": [],
+            "interaction": "Release or Hold exact item config",
+            "input_view": [
+              "goal",
+              "rules",
+              "pinned config/evidence"
+            ],
+            "output_view": [
+              "decision.yaml"
+            ],
+            "authority_change": {
+              "kind": "release",
+              "target": "exact Design Item Commission",
+              "record": "results/<run>/decision.yaml (release or hold)"
+            },
+            "gate_binding": {
+              "role": "collect",
+              "gate": "exit_gate"
+            },
+            "source_projection": {
+              "kind": "source",
+              "source_cell": "none",
+              "object": "Commission decision",
+              "rule": "preserve native Run/Result identity; never mint, copy or recount"
+            }
+          },
+          {
+            "id": "commission@insight",
+            "workspace_id": "insight",
+            "mode": "read-only",
+            "owner_skill": "haipipe-insight",
+            "worker_skill_chain": [],
+            "interaction": "view insights pinned by this Commission",
+            "input_view": [],
+            "output_view": [
+              "source paths and hashes"
+            ],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "none",
+              "gate": "none"
+            },
+            "source_projection": {
+              "kind": "projection",
+              "source_cell": "commission@design",
+              "object": "pinned source insights",
+              "rule": "preserve native Run/Result identity; never mint, copy or recount"
+            }
+          },
+          {
+            "id": "commission@runtime",
+            "workspace_id": "runtime",
+            "mode": "read-only",
+            "owner_skill": "haipipe-run",
+            "worker_skill_chain": [],
+            "interaction": "view same release/hold Run",
+            "input_view": [],
+            "output_view": [
+              "person",
+              "time",
+              "words",
+              "route",
+              "receipt"
+            ],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "present",
+              "gate": "exit_gate"
+            },
+            "source_projection": {
+              "kind": "projection",
+              "source_cell": "commission@design",
+              "object": "same Commission Run",
+              "rule": "preserve native Run/Result identity; never mint, copy or recount"
+            }
+          },
+          {
+            "id": "commission@delivery",
+            "workspace_id": "delivery",
+            "mode": "empty",
+            "owner_skill": "none",
+            "worker_skill_chain": [],
+            "interaction": "none",
+            "input_view": [],
+            "output_view": [],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "none",
+              "gate": "none"
+            },
+            "source_projection": {
+              "kind": "none",
+              "source_cell": "none",
+              "object": "none",
+              "rule": "none"
+            }
+          }
+        ]
+      },
+      {
+        "id": "generate",
+        "run_type": "Design.generate",
+        "purpose": "Close one bounded draft generation or revision",
+        "target": "one released Design Item",
+        "actor": {
+          "mode": "agent",
+          "owner": "haipipe-design-unit"
+        },
+        "action": "generate or revise",
+        "input": [
+          "released config and evidence; revise adds frozen base and feedback"
+        ],
+        "depends_on": [
+          "commission"
+        ],
+        "entry_gate": {
+          "mode": "automatic",
+          "assertion": "Commission released; person queued the Run",
+          "record": "runs/<run>.yaml"
+        },
+        "exit_gate": {
+          "mode": "hybrid",
+          "assertion": "records check validates Result integrity and self-check, or truthful terminal failure recorded",
+          "record": "results/<run>/checks.yaml"
+        },
+        "routes": {
+          "pass": "verify",
+          "fail": "generate"
+        },
+        "result": {
+          "payload": "result.yaml + checks.yaml + content/",
+          "receipt": "results/<run>/runtime.yaml"
+        },
+        "cardinality": "N",
+        "cells": [
+          {
+            "id": "generate@goal",
+            "workspace_id": "goal",
+            "mode": "empty",
+            "owner_skill": "none",
+            "worker_skill_chain": [],
+            "interaction": "none",
+            "input_view": [],
+            "output_view": [],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "none",
+              "gate": "none"
+            },
+            "source_projection": {
+              "kind": "none",
+              "source_cell": "none",
+              "object": "none",
+              "rule": "none"
+            }
+          },
+          {
+            "id": "generate@design",
+            "workspace_id": "design",
+            "mode": "read-only",
+            "owner_skill": "haipipe-design-workflow",
+            "worker_skill_chain": [
+              "haipipe-design-unit"
+            ],
+            "interaction": "view latest draft whose records check passed",
+            "input_view": [],
+            "output_view": [
+              "draft",
+              "self-check marks"
+            ],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "present",
+              "gate": "exit_gate"
+            },
+            "source_projection": {
+              "kind": "source",
+              "source_cell": "none",
+              "object": "same Generate Result",
+              "rule": "preserve native Run/Result identity; never mint, copy or recount"
+            }
+          },
+          {
+            "id": "generate@insight",
+            "workspace_id": "insight",
+            "mode": "empty",
+            "owner_skill": "none",
+            "worker_skill_chain": [],
+            "interaction": "none",
+            "input_view": [],
+            "output_view": [],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "none",
+              "gate": "none"
+            },
+            "source_projection": {
+              "kind": "none",
+              "source_cell": "none",
+              "object": "none",
+              "rule": "none"
+            }
+          },
+          {
+            "id": "generate@runtime",
+            "workspace_id": "runtime",
+            "mode": "read-only",
+            "owner_skill": "haipipe-run",
+            "worker_skill_chain": [],
+            "interaction": "view same Generate Run",
+            "input_view": [],
+            "output_view": [
+              "agent",
+              "time",
+              "verdict n/m",
+              "folded checks",
+              "draft text",
+              "feedback"
+            ],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "present",
+              "gate": "exit_gate"
+            },
+            "source_projection": {
+              "kind": "projection",
+              "source_cell": "generate@design",
+              "object": "same Generate Run",
+              "rule": "preserve native Run/Result identity; never mint, copy or recount"
+            }
+          },
+          {
+            "id": "generate@delivery",
+            "workspace_id": "delivery",
+            "mode": "read-only",
+            "owner_skill": "haipipe-design-workflow",
+            "worker_skill_chain": [],
+            "interaction": "view exact draft only after independent Verify passes",
+            "input_view": [],
+            "output_view": [
+              "ready draft text"
+            ],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "none",
+              "gate": "none"
+            },
+            "source_projection": {
+              "kind": "projection",
+              "source_cell": "generate@design",
+              "object": "same Verify-passed Generate Result",
+              "rule": "preserve native Run/Result identity; never mint, copy or recount"
+            }
+          }
+        ]
+      },
+      {
+        "id": "verify",
+        "run_type": "Design.verify",
+        "purpose": "Close independent review of exact generation Results",
+        "target": "named immutable generation Result hashes",
+        "actor": {
+          "mode": "agent",
+          "owner": "fresh haipipe-design-unit reviewer context"
+        },
+        "action": "independent verify",
+        "input": [
+          "exact generation Results/hashes; released criteria"
+        ],
+        "depends_on": [
+          "generate"
+        ],
+        "entry_gate": {
+          "mode": "automatic",
+          "assertion": "person queued review; reviewer independent; draft has no valid completed independent review",
+          "record": "runs/<run>.yaml"
+        },
+        "exit_gate": {
+          "mode": "hybrid",
+          "assertion": "complete independent artifact-by-criterion coverage settles pass/fail; invalid or unresolved review is failed",
+          "record": "results/<run>/checks.yaml"
+        },
+        "routes": {
+          "pass": "CLOSE",
+          "fail": "generate",
+          "invalid": "verify"
+        },
+        "result": {
+          "payload": "result.yaml + checks.yaml",
+          "receipt": "results/<run>/runtime.yaml"
+        },
+        "cardinality": "J",
+        "cells": [
+          {
+            "id": "verify@goal",
+            "workspace_id": "goal",
+            "mode": "empty",
+            "owner_skill": "none",
+            "worker_skill_chain": [],
+            "interaction": "none",
+            "input_view": [],
+            "output_view": [],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "none",
+              "gate": "none"
+            },
+            "source_projection": {
+              "kind": "none",
+              "source_cell": "none",
+              "object": "none",
+              "rule": "none"
+            }
+          },
+          {
+            "id": "verify@design",
+            "workspace_id": "design",
+            "mode": "read-only",
+            "owner_skill": "haipipe-design-workflow",
+            "worker_skill_chain": [
+              "haipipe-design-unit"
+            ],
+            "interaction": "view independent rule marks of exact reviewed draft",
+            "input_view": [],
+            "output_view": [
+              "rule marks",
+              "verdict"
+            ],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "present",
+              "gate": "exit_gate"
+            },
+            "source_projection": {
+              "kind": "source",
+              "source_cell": "none",
+              "object": "same Verify Result",
+              "rule": "preserve native Run/Result identity; never mint, copy or recount"
+            }
+          },
+          {
+            "id": "verify@insight",
+            "workspace_id": "insight",
+            "mode": "empty",
+            "owner_skill": "none",
+            "worker_skill_chain": [],
+            "interaction": "none",
+            "input_view": [],
+            "output_view": [],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "none",
+              "gate": "none"
+            },
+            "source_projection": {
+              "kind": "none",
+              "source_cell": "none",
+              "object": "none",
+              "rule": "none"
+            }
+          },
+          {
+            "id": "verify@runtime",
+            "workspace_id": "runtime",
+            "mode": "read-only",
+            "owner_skill": "haipipe-run",
+            "worker_skill_chain": [],
+            "interaction": "view same independent Verify Run",
+            "input_view": [],
+            "output_view": [
+              "reviewer",
+              "time",
+              "verdict n/m",
+              "folded checks"
+            ],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "present",
+              "gate": "exit_gate"
+            },
+            "source_projection": {
+              "kind": "projection",
+              "source_cell": "verify@design",
+              "object": "same Verify Run",
+              "rule": "preserve native Run/Result identity; never mint, copy or recount"
+            }
+          },
+          {
+            "id": "verify@delivery",
+            "workspace_id": "delivery",
+            "mode": "empty",
+            "owner_skill": "none",
+            "worker_skill_chain": [],
+            "interaction": "none",
+            "input_view": [],
+            "output_view": [],
+            "authority_change": {
+              "kind": "none",
+              "target": "none",
+              "record": "none"
+            },
+            "gate_binding": {
+              "role": "none",
+              "gate": "none"
+            },
+            "source_projection": {
+              "kind": "none",
+              "source_cell": "none",
+              "object": "none",
+              "rule": "none"
+            }
+          }
+        ]
+      }
+    ],
+    "entry": [
+      "commission"
+    ],
+    "terminal": [
+      "CLOSE",
+      "HOLD"
+    ],
+    "run_catalog": {
+      "mode": "declared",
+      "ref": "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-workflow/ref/run-catalog.md",
+      "keys": [
+        "Design.commission",
+        "Design.generate",
+        "Design.verify"
+      ]
+    },
+    "skill_coverage": [
+      {
+        "skill": "haipipe-design-workflow",
+        "path": "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md",
+        "role": "machine",
+        "used_by_cells": [
+          "commission@goal",
+          "commission@design",
+          "generate@design",
+          "generate@delivery",
+          "verify@design"
+        ],
+        "provenance": {
+          "kind": "derived",
+          "source": "owner Space bindings plus workflow-table worked declaration; generated Cell declaration"
+        },
+        "status": "? unknown",
+        "version": "0.4.0",
+        "skill_md_lines": 198,
+        "quality": {
+          "class": "?",
+          "score_or_finding": "?",
+          "source": "no source quality review requested"
+        },
+        "field_test": {
+          "status": "?",
+          "source": "no field-test evidence read"
+        },
+        "gap": "no runtime worker invocation or quality assessment requested; source identity/version resolved"
+      },
+      {
+        "skill": "haipipe-design-unit",
+        "path": "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-unit/SKILL.md",
+        "role": "craft",
+        "used_by_cells": [
+          "generate@design",
+          "verify@design"
+        ],
+        "provenance": {
+          "kind": "derived",
+          "source": "owner Space bindings plus workflow-table worked declaration; generated Cell declaration"
+        },
+        "status": "? unknown",
+        "version": "0.4.0",
+        "skill_md_lines": 146,
+        "quality": {
+          "class": "?",
+          "score_or_finding": "?",
+          "source": "no source quality review requested"
+        },
+        "field_test": {
+          "status": "?",
+          "source": "no field-test evidence read"
+        },
+        "gap": "no runtime worker invocation or quality assessment requested; source identity/version resolved"
+      },
+      {
+        "skill": "haipipe-insight",
+        "path": "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/haipipe-insight/SKILL.md",
+        "role": "door",
+        "used_by_cells": [
+          "commission@insight"
+        ],
+        "provenance": {
+          "kind": "derived",
+          "source": "owner Space bindings plus workflow-table worked declaration; generated Cell declaration"
+        },
+        "status": "? unknown",
+        "version": "1.6.0",
+        "skill_md_lines": 359,
+        "quality": {
+          "class": "?",
+          "score_or_finding": "?",
+          "source": "no source quality review requested"
+        },
+        "field_test": {
+          "status": "?",
+          "source": "no field-test evidence read"
+        },
+        "gap": "no runtime worker invocation or quality assessment requested; source identity/version resolved"
+      },
+      {
+        "skill": "haipipe-run",
+        "path": "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/run/haipipe-run/SKILL.md",
+        "role": "contract",
+        "used_by_cells": [
+          "commission@runtime",
+          "generate@runtime",
+          "verify@runtime"
+        ],
+        "provenance": {
+          "kind": "derived",
+          "source": "owner Space bindings plus workflow-table worked declaration; generated Cell declaration"
+        },
+        "status": "? unknown",
+        "version": "0.26.1",
+        "skill_md_lines": 693,
+        "quality": {
+          "class": "?",
+          "score_or_finding": "?",
+          "source": "no source quality review requested"
+        },
+        "field_test": {
+          "status": "?",
+          "source": "no field-test evidence read"
+        },
+        "gap": "no runtime worker invocation or quality assessment requested; source identity/version resolved"
+      }
+    ]
+  }
+}
