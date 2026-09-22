@@ -42,7 +42,7 @@ explicit `blocked`/`owed` Result or a proposal for a new Supporting Run.
 
 1. Read the task contract, hierarchy, and type-specific refs.
 2. Write the sole `workflow/plan.yaml` Run Spec roster with bounded targets, inputs,
-   actors, gates, routes, receipts, cardinality and Plugin-owned Workspace Cells.
+   actors, gates, routes, receipts, cardinality and Workbench-owned Workspace Cells.
    Keep script procedures in `run_specs[].steps`; gates and lifecycle commands do not allocate Runs.
 3. Name the exact script/config/ticket and expected Result files.
 4. Stop for the reviewer; do not build until the plan passes.

@@ -42,12 +42,22 @@ import os
 #   3. the marker walk       a bare import with no env.sh
 def _external_store():
     declared = os.environ.get("LOCAL_EXTERNAL_STORE")
-    root = next(a for a in pathlib.Path(__file__).resolve().parents
-                if (a / "pyproject.toml").exists() and (a / "code").is_dir())
+    if declared and pathlib.Path(declared).is_absolute():
+        return pathlib.Path(declared)
+    parents = pathlib.Path(__file__).resolve().parents
+    root = next((a for a in parents
+                 if (a / "pyproject.toml").exists() and (a / "code").is_dir()), None)
     if declared:
-        d = pathlib.Path(declared)
-        return d if d.is_absolute() else root / d
-    return root / "_WorkSpace" / "ExternalStore"
+        return (root or pathlib.Path.cwd()) / declared
+    if root is not None:
+        return root / "_WorkSpace" / "ExternalStore"
+    # No SPACE above this file (a bare Tools checkout, or Tools reached through a
+    # symlink that resolve() unwound) and nothing declared. Return a path that
+    # exists() answers False for, so /healthz reports "degraded" and the service
+    # still starts, instead of the import dying in next() before FOODNORM_DB is read.
+    return next((a / "_WorkSpace" / "ExternalStore" for a in parents
+                 if (a / "_WorkSpace" / "ExternalStore").is_dir()),
+                pathlib.Path.cwd() / "_WorkSpace" / "ExternalStore")
 
 
 _STORE = _external_store()

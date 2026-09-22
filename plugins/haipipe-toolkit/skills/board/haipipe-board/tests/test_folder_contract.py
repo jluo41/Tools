@@ -21,7 +21,7 @@ class TestFolderContract(unittest.TestCase):
     def skills(self):
         return ENGINE.parent.parent
 
-    def test_insight_folder_owners_resolve_without_phase_metadata(self):
+    def test_insight_folder_owners_resolve_without_legacy_lifecycle_metadata(self):
         contracts, integration_problems = validate_tree(self.skills)
         application_workflows = {
             "haipipe-insight-workflow",
@@ -111,7 +111,7 @@ class TestFolderContract(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         current_folder_kind(folder)
 
-    def test_present_phase_file_cannot_fall_back_when_current_is_malformed(self):
+    def test_present_legacy_lifecycle_file_cannot_fall_back_when_current_is_malformed(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp)
             (folder / "workflow").mkdir()

@@ -42,7 +42,7 @@ def main():
     profiles = load_profiles(args.only)
     runs = []
     for p in profiles:
-        fixtures = discover(p.examples, p.port, p.url_env)
+        fixtures = discover(p.examples, p.port, p.url_env, p.prefix)
         skipped = []
         if p.skip:
             keep = []

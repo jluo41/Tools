@@ -86,7 +86,7 @@ Routine resource updates and GI evaluations remain control records. An accepted
 Run Result satisfies only its declared target; Page CHECK/CLOSE and the
 Folder's GI conditions still govern citation and register settlement.
 
-## Plugins
+## Workbenches
 
 - full Supporting Run id and accepted Result required for cross-Folder evidence;
 - one frozen Local Input and one consumer-owned local Evidence Run/Result are

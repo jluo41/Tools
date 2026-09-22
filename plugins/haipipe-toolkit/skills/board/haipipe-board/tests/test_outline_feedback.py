@@ -66,7 +66,7 @@ class DraftSpaceFeedbackTest(unittest.TestCase):
         handler = OutlineMixin()
         handler.target = lambda p: ('S-test/S-test.md', self.board)
         result, error = handler.plug_outline({
-            'action': 'scratch', 'phase': 'save',
+            'action': 'scratch', 'step': 'save',
             'path': '/board.md', 'file': 'S-test/S-test.md',
             'scope': 'paragraph', 'target': 'C1.P1',
             'notes': 'Keep the opening focused.',

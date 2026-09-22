@@ -53,7 +53,7 @@ def main(argv=None):
             sub.add_argument("--port", type=int, default=8765)
             sub.add_argument("--token", help="Prefer PAGE_SERVER_TOKEN environment variable")
             sub.add_argument("--read-only", action="store_true",
-                             help="Disable Page plugin writes too (the Page itself is always reader-only)")
+                             help="Disable Page workbench writes too (the Page itself is always reader-only)")
             sub.add_argument("--public-url", help="Configured reader-facing origin")
     args = parser.parse_args(argv)
     try:
@@ -125,7 +125,9 @@ def main(argv=None):
             print(build_page(context, args.output))
         else:
             import os
-            from src.standalone_server import serve
+            servers = Path(__file__).resolve().parents[4] / "servers"
+            sys.path.insert(0, str(servers / "haipipe-page"))
+            from standalone_server import serve
             serve(context, host=args.host, port=args.port,
                   token=args.token or os.environ.get("PAGE_SERVER_TOKEN"),
                   read_only=args.read_only, public_url=args.public_url)

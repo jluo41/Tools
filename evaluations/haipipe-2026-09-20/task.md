@@ -10,11 +10,25 @@
 
 当前 Run 判定为：**2 PASS、10 PARTIAL、8 FAIL、29 N/A**。PASS 是 `haipipe-workflow` 与 `haipipe-task-gpu`。FAIL 集中在 Workflow 计划结构及 Task 生命周期模板；N/A 表示技能本身不定义 Task Workflow roster，不代表其内容整体无问题。
 
+**后续归属更新（2026-09-21）：** `haipipe-task-gpu` 与
+`haipipe-task-gpu-training` 已移入
+`task/5_fit/haipipe-task-for-fit/`，公开 Skill 名称保持不变。GPU 现在是
+Fit Task 的执行修饰；独立 `gpu` Task type 路由已收回，评估、serving 和
+engine 的 GPU 工作继续由各自 owner 负责。原始评分数字保留为评估快照，
+当前路径和归属以本更新为准。
+
+**后续归属更新（2026-09-21，Insight Page）：** `haipipe-page-insight` 原先
+误放在 Task 的 `page-types/` 下，现已移到
+`skills/insight/haipipe-page-insight/`。它仍是 Task 路由使用的
+consumer-neutral topic/data Page 合同，公开 Skill 名称和调用方式不变；当前
+清单按 Insight 归类为 9 个、Task 归类为 48 个。原先的 49 个 Task 统计保留
+为本评估快照。
+
 评估遵守“Workflow 是 Runs 的列表”这一边界：有独立输入、关闭条件和 Result/receipt 的工作可成为 Run；脚本内操作、检查、工具调用、Gate、数据拆分、Page controller pass 不会自动成为 Run。兼容用的低层 `phase`/`stages` 字段与当前语义冲突的指令分开处理，没有建议盲目全局替换。
 
 ## 快照、方法与限制
 
-- 基线与当前 HEAD 均为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`。任务目录之外有 8 个子模块引用修改：`references/{cite-guard,grant-writer-skills,paper-rag-skill,paperspine,reprorun,research-agent-skills,research-co-pilot,scipilot-figure-skill}`；`evaluations/` 原先未跟踪且含本次既有 brief/inventory/session 文件。本报告是本次授权的唯一写入。Task 技能目录没有本次修改。
+- 基线与当前 HEAD 均为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`。任务目录之外有 8 个子模块引用修改：`references/{cite-guard,grant-writer-skills,paper-rag-skill,paperspine,reprorun,research-agent-skills,research-co-pilot,scipilot-figure-skill}`；`evaluations/` 原先未跟踪且含本次既有 brief/inventory/session 文件。本报告原始评估阶段没有修改 Task 技能目录；后续归属调整见上方更新。
 - 逐篇阅读 49 个当前 `SKILL.md`；并阅读各组所链接的当前 README、references、procedures/functions、模板、例子、agents 和可见交互文案。覆盖明细见下文。
 - 只在核实文档描述含义时读少量源码或脚本，如 Individual payload / builder、Task raw 的 Databricks shell 模板。没有运行技能、服务、代码、checker 或测试；以下 walkthrough 均为桌面推演，不是运行时观察。
 - 历史 `CHANGELOG.md` 与历史审查文件不作为当前行为的证明。相关历史材料仅用于确认某条修复记录或说明其过期；第三方 skill 实现、未分配家族、Task checker/tests、未检出的 `platforms/` 资料和大部分可执行资产没有全面审阅。逐组未读内容与代码审阅限制列在覆盖说明中。
@@ -178,8 +192,8 @@
 ## 值得保留的做法
 
 - `haipipe-workflow/SKILL.md` 与 `ref/plan-schema.md` 把 Run Spec、Run Instance、Step 区分清楚；schema 将 `run_specs` 设为唯一 roster。低层 `phase`/`stages` API 作为 progress/compatibility metadata 的边界也写得清楚，可保留字段但不应继续教作者将它们当 domain Workflow rows。
-- `haipipe-task-gpu/SKILL.md` 用 Ticket、Run、配置、Result/receipt 配对表达队列，明确 supervisor 不会隐式创建 Run。
-- `haipipe-task-gpu-training/SKILL.md` 对实际训练 Run 的责任表达清楚；`train/validation/test phases` 是数据拆分语义，应改名 splits/sets，不应升级成 Workflow Runs。
+- `5_fit/haipipe-task-for-fit/haipipe-task-gpu/SKILL.md` 用 Ticket、Run、配置、Result/receipt 配对表达 Fit 队列，明确 supervisor 不会隐式创建 Run。
+- `5_fit/haipipe-task-for-fit/haipipe-task-gpu-training/SKILL.md` 对实际训练 Run 的责任表达清楚；数据 splits 不是 Workflow Runs。
 - `haipipe-task/fn/run.md` 的输入/输出约束、精确路径和 Run receipt 检查有助于 agent 收尾；Task 的 fail/block 处理在 `fn/block.md` 里也能让人知道待解决事项。
 - `haipipe-data-remote/SKILL.md:21-27,93-100` 先 dry-run、向人展示计划再确认，对远程复制有清楚的人类控制点；不可删除/镜像的边界易懂。凭据错误按 backend 提示的原则正确，但 concepts 文档另有通用 SSO 说法，见 P2。
 - Data umbrella 的用户确认点只在多项匹配时出现；Endpoint 显式选择目标平台、ModelInstance 和 payload；GPU queue 保留可审计 Ticket/Result。应继续保留这些明确可见的输入与下一步。
@@ -193,8 +207,8 @@ PASS = 当前表达与 Run roster 契约一致；PARTIAL = 核心边界大体对
 |---|---|---|
 | `haipipe-task` | FAIL | 四个 phases 和 `phases:` 模板冲突于 `run_specs` schema（P1）。 |
 | `haipipe-workflow` | PASS | `run_specs` 唯一 roster；Run Instance / Step / progress metadata 边界清楚。 |
-| `haipipe-task-gpu` | PASS | 每个 queue item 是可配对 Ticket、Run、Result 和 receipt；无隐藏 Run。 |
-| `haipipe-task-gpu-training` | PARTIAL | Run 所属清楚；“train/validation/test phases”应称 splits/sets。 |
+| `5_fit/haipipe-task-for-fit/haipipe-task-gpu` | PASS | Fit queue item 是可配对 Ticket、Run、Result 和 receipt；无隐藏 Run。 |
+| `5_fit/haipipe-task-for-fit/haipipe-task-gpu-training` | PASS | Fit training Run 所属清楚；data splits 不会被升级为额外 Run。 |
 | `haipipe-page-task` | PARTIAL | Page evidence 有 Run 边界；“current Page workflow phase”应为 controller label/route。 |
 | `10_page/haipipe-task-for-page` | FAIL | 四阶段/旧计划结构；Page Result specimen 路径偏离 canonical Run 路径。 |
 | `page-types/haipipe-page-insight` | PARTIAL | 正确区分 Run 与 checkpoint，但仍有 “Phase × Run Map”。 |
@@ -247,10 +261,10 @@ PASS = 当前表达与 Run roster 契约一致；PARTIAL = 核心边界大体对
 
 | 子组与完整技能清单（路径相对 `plugins/haipipe-toolkit/skills/task/`） | 已查的当前支持材料 | 排除 / 缺口 |
 |---|---|---|
-| **Core / Page / Insight：7** — `haipipe-task`、`haipipe-workflow`、`haipipe-page-task`、`haipipe-task-gpu`、`haipipe-task-gpu-training`、`10_page/haipipe-task-for-page`、`page-types/haipipe-page-insight` | Task README、Task agents README 与 agent instructions、`haipipe-task/fn/` 全部程序文档及引用的 hierarchy/task structure/authoring convention/workflow/page/schema 文档、workflow template、Task lifecycle workflow JS、Workflow concepts/plan-schema/template/API/runtime references、Page task 模板与 specimen、Insight 的 instance-items/workflow-table/task-calls/migration、Insight agent manifest、Page owner 的路由/Workflow 兼容语义。 | 未逐行读 `config-meta-template.yaml`、`databricks-execution.md`、`intent-docstring-template.py`、`metrics-json-schema.md`、`run-sh-template.sh`、`runtime-yaml-schema.md`、`running-process.txt`；未读 Task checker 实现/tests、Insight scripts/tests。未运行 skill、checker 或 tests。 |
+| **Core / Page / Insight：5** — `haipipe-task`、`haipipe-workflow`、`haipipe-page-task`、`10_page/haipipe-task-for-page`、`page-types/haipipe-page-insight` | Task README、Task agents README 与 agent instructions、`haipipe-task/fn/` 全部程序文档及引用的 hierarchy/task structure/authoring convention/workflow/page/schema 文档、workflow template、Task lifecycle workflow JS、Workflow concepts/plan-schema/template/API/runtime references、Page task 模板与 specimen、Insight 的 instance-items/workflow-table/task-calls/migration、Insight agent manifest、Page owner 的路由/Workflow 兼容语义。 | 未逐行读 `config-meta-template.yaml`、`databricks-execution.md`、`intent-docstring-template.py`、`metrics-json-schema.md`、`run-sh-template.sh`、`runtime-yaml-schema.md`、`running-process.txt`；未读 Task checker 实现/tests、Insight scripts/tests。未运行 skill、checker 或 tests。 |
 | **Data / NN：16** — `1_data/haipipe-data`、`haipipe-data-aidata`、`haipipe-data-case`、`haipipe-data-external`、`haipipe-data-raw`、`haipipe-data-record`、`haipipe-data-remote`、`haipipe-data-source`、`haipipe-task-for-data`、`haipipe-task-for-raw`；`2_nn/haipipe-nn`、`haipipe-nn-algo`、`haipipe-nn-instance`、`haipipe-nn-modelset`、`haipipe-nn-tuner`、`haipipe-task-for-algo` | Data umbrella README/overview/7 个共享 fn 文档；Data specialist 的链接 refs、templates、examples；External/Remote references 与 live fn 文档；两个 Task 的 scaffold/config/workflow 样例。NN README、overview、4 个 layer concepts、4 个共享 fn 文档。历史 subgroup review 仅用来核对先前修复陈述。 | 没有读 Data/NN 可执行源码与资产；CHANGELOG 排除。未发现 NN subgroup review。历史 review 不是当前行为证明。 |
 | **Endpoint / Individual：20** — `3_end/haipipe-end`、`haipipe-end-deploy-databricks`、`haipipe-end-deploy-local`、`haipipe-end-deploy-mlflow`、`haipipe-end-deploy-sagemaker`、`haipipe-end-develop-databricks`、`haipipe-end-develop-local`、`haipipe-end-develop-sagemaker`、`haipipe-end-endpointset`、`haipipe-end-input2src`、`haipipe-end-meta`、`haipipe-end-post`、`haipipe-end-src2input`、`haipipe-end-trig`、`haipipe-task-for-endpoint`；`4_individual/haipipe-individual`、`haipipe-individual-inference`、`haipipe-individual-inference-report`、`haipipe-individual-inference-judge`、`haipipe-task-for-individual` | Endpoint README/overview/deploy overview/fn design、各 Fn concepts、EndpointSet 五份 fn、各 target develop concepts、Task scaffold/config/workflow/performance notes、相关 builder 与 Local serving 脚本。Individual Task scaffold/config/workflow sample、individual builder、inference source/CLI、report/judge scripts/schemas/personas；共享 Workflow schema/template/creator/reviewer agents。 | CHANGELOG 排除；LESSON 只读当前矛盾相关段落；历史 SKILLSET_REVIEW 作为历史材料。当前 checkout 没有 `platforms/`，故未核对平台仓库 CLAUDE/docs。未运行代码/服务/skills/tests。 |
-| **Fit / Eval / Display / Stata / Agent：6** — `5_fit/haipipe-task-for-fit`、`6_eval/haipipe-task-for-eval`、`7_display/haipipe-task-for-display`、`8_stata/haipipe-task-for-stata`、`9_agent/haipipe-task-for-agent`、`9_agent/haipipe-task-llm-engine` | 逐个当前 SKILL、相关 refs/templates/changelogs、全部 26 份 Stata 文件中的相关 planner/report/dialect 资料；Fit/GPU/GPU-training 交叉材料；LLM engine 文档；Task schema 与 run contract。 | LLM engine Python 仅做关键词层面检查，未完整审代码；未运行 skill/tests。历史 changelog 仅用于语境，不作为当前语义依据。 |
+| **Fit / Eval / Display / Stata / Agent：8** — `5_fit/haipipe-task-for-fit`、`5_fit/haipipe-task-for-fit/haipipe-task-gpu`、`5_fit/haipipe-task-for-fit/haipipe-task-gpu-training`、`6_eval/haipipe-task-for-eval`、`7_display/haipipe-task-for-display`、`8_stata/haipipe-task-for-stata`、`9_agent/haipipe-task-for-agent`、`9_agent/haipipe-task-llm-engine` | 逐个当前 SKILL、相关 refs/templates/changelogs、全部 26 份 Stata 文件中的相关 planner/report/dialect 资料；Fit-owned GPU companions 的交叉材料；LLM engine 文档；Task schema 与 run contract。 | LLM engine Python 仅做关键词层面检查，未完整审代码；未运行 skill/tests。历史 changelog 仅用于语境，不作为当前语义依据。 |
 
 总计：**49/49 个当前 Task SKILL.md 已完整阅读**，覆盖分组与 `inventory.json` 相符。未审第三方工具行为、Task runtime 实际执行、平台外部仓库或未分配的其他 skill family；这不是那些内容正确与否的判断。
 

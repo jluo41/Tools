@@ -28,7 +28,7 @@
 - Keep one stable question row and CELL-level authority; no group Folder,
   duplicated question, or independently written group state is introduced.
 - Align register closure with Page CHECK/CLOSE plus the matching GI receipt and
-  retire active PageX/Probe plugin selection.
+  retire active PageX/Probe workbench selection.
 
 ## 1.1.0 — 2026-09-08
 

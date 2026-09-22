@@ -9,9 +9,13 @@ description: >-
   first, then IEEE Xplore, ScienceDirect, ACM DL, and the web.
 allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp__zotero__*, mcp__obsidian-vault__*
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-07-14"
+  version: "0.1.1"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  haipipe:
+    vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
+    vendored_on: "2026-09-22"
+    local_changes: adapted SKILL.md (HAI Pipe adapter) and added CHANGELOG; synchronized against this ARIS tip on 2026-09-08
 ---
 
 # Comm Lit Review

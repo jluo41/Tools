@@ -8,17 +8,21 @@ description: >-
 allowed-tools: Bash(*), Read, Grep, Glob, Skill
 metadata:
   argument_hint: "[search-query]"
-  version: "0.1.0"
-  last_updated: "2026-09-07"
+  version: "0.1.1"
+  last_updated: "2026-09-22"
   source: "ARIS skills/openalex @ 0472e53"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  haipipe:
+    vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
+    vendored_on: "2026-09-22"
+    local_changes: adapted SKILL.md (HAI Pipe adapter) and added CHANGELOG; synchronized against this ARIS tip on 2026-09-08
 ---
 
 # OpenAlex · Discovery source adapter
 
 This adapter brings the latest ARIS OpenAlex worker into HAI Pipe without
 importing its standalone output conventions. Load
-`../haipipe-discovery-search/SKILL.md` for the durable Search route and
+`../../haipipe-discovery-search/SKILL.md` for the durable Search route and
 `../../haipipe-discovery/ref/paper-run-contract.md` for Result/Bib law.
 
 ## Role

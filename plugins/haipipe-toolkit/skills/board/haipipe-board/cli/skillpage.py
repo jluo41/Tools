@@ -724,14 +724,14 @@ def _contract_file(rel):
 
 
 def snapshot(src, dst):
-    """Copy one unit's contract surface into a page's plugin, defused.
+    """Copy one unit's contract surface into a page's workbench, defused.
 
     Every `SKILL.md` at any depth is renamed `SKILL.snapshot.md`, because two
     walls both key on that exact name: the installer's `*/skills/*/SKILL.md`
     glob would install the copy as a second skill under the unit's own
     globally unique name, and `PAGENAME.match("SKILL.md")` is true so page
     discovery would surface it as a ghost page. Discovery is also fenced by
-    the plugin boundary in `src/common.py`; the rename is the second lock.
+    the workbench boundary in `src/common.py`; the rename is the second lock.
 
     An AGENT unit is one .md file whose changelog belongs to its folder
     (JL 260727), so a file src snapshots as that file plus the shared
@@ -763,7 +763,7 @@ def snapshot(src, dst):
 def cmd_plug(a):
     """Write the unit's material into the Page's `outline/skill/` lane.
 
-    The design-page shape: the page argues and settles, the plugin holds the
+    The design-page shape: the page argues and settles, the workbench holds the
     unit's bytes, and nothing derived is spliced into the .md any more. The
     live unit keeps shipping from its own folder; the snapshot records what
     this page's judgments were about (snapshot, never residence)."""
@@ -779,7 +779,7 @@ def cmd_plug(a):
     if page is None:
         return f"no page with id {a.page!r} on {board.name}"
     if page.parent.name != page.stem:
-        return (f"{page.name} is not a folded page; a plugin needs the page "
+        return (f"{page.name} is not a folded page; a workbench needs the page "
                 f"to own its folder first (QB3)")
     unit_name = src.stem if src.is_file() else src.name
     dst = page.parent / "outline" / "skill" / unit_name

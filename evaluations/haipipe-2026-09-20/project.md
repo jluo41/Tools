@@ -36,7 +36,7 @@ Meeting 的核心分界同样清楚：会议是 Page 之上的共享源记录；
 
 会议技能规定单项目会议写到 `<project>/meetings/<YYMMDD-HHMM>/`，SPACE 级会议写到 `<SPACE>/meetings/...`（`haipipe-project-meeting/SKILL.md:24-31,35-43`）。项目结构参考则把 `meetings/` 明确画在 `diagram/meetings/`（`haipipe-project/ref/project-structure.md:134-146`），项目入口也把会议放在 `diagram/` 描述里（`haipipe-project/SKILL.md:29-34`）。两者都在当前材料里，没有说明哪个只是旧布局。
 
-这不只是文档画法不同。审计脚本的根目录 allowlist 只有 `tasks`、`discoveries`、`diagram`、`papers`、`applications`、`external`（`haipipe-project/scripts/audit_projects.py:16-24`）；根目录中不在 allowlist 且未声明为迁移债务的目录会成为错误（同文件 `:150-160`）。因此，照会议技能创建 `<project>/meetings/` 后，现有 `audit` 静态逻辑会把它报告为 `undeclared noncanonical root`。脚本没有在本评估中运行；这是根据代码分支的静态判断。Board 服务的退役提示也指向 project/SPACE 级会议（`skills/board/haipipe-board/cli/serve.py:600-608`），支持会议 owner 在 Project/SPACE 层，但不能解决它究竟在 Project 根还是 `diagram/` 下。
+这不只是文档画法不同。审计脚本的根目录 allowlist 只有 `tasks`、`discoveries`、`diagram`、`papers`、`applications`、`external`（`haipipe-project/scripts/audit_projects.py:16-24`）；根目录中不在 allowlist 且未声明为迁移债务的目录会成为错误（同文件 `:150-160`）。因此，照会议技能创建 `<project>/meetings/` 后，现有 `audit` 静态逻辑会把它报告为 `undeclared noncanonical root`。脚本没有在本评估中运行；这是根据代码分支的静态判断。Board 服务的退役提示也指向 project/SPACE 级会议（`servers/_host/serve.py:600-608`），支持会议 owner 在 Project/SPACE 层，但不能解决它究竟在 Project 根还是 `diagram/` 下。
 
 **建议：**选定唯一规范路径后，同步 Project 树图、项目入口、meeting skill 输出字段和审计 allowlist。现有 Project/SPACE 路由材料多数写的是 owner 根下 `meetings/`，因此较一致的选择是承认 `meetings/` 为可选根级目录；若决定留在 `diagram/meetings/`，则应改 meeting skill 的路径和返回值，不能保留两套写法。
 

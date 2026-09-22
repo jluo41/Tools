@@ -9,7 +9,7 @@ Evidence Workspace, and Page release.
 
 ```text
 haipipe-page
-  Page Folder · Page Face · Page controller labels · Page Runs · Evidence Workspace
+  Page Folder · Page Face · Page Run names · Page Runs · Evidence Workspace
   Page release · Page delivery · Page CHECK
 
 haipipe-paper
@@ -43,10 +43,11 @@ owns the Paper presentation. Direct Ideation-only audits need not run Page.
 Story, Section, Round and Venue likewise load their exact self-owned contract.
 See `haipipe-paper-workflow/ref/run-workflow.md` for the Run Spec list.
 
-Page controller `phase/cycle/next_cycle` fields and the legacy
-`workflow-phases/` source directory are compatibility labels, not Workflow
-units, Run Specs or Steps. One Page pass is a Workflow Runtime/control record;
-only independently commissioned work gets a native Run identity.
+Page controller `Run/cycle/next_cycle` fields are compatibility labels, not
+Workflow units, Run Specs or Steps. Paper PageTypes are direct
+`paper/haipipe-paper-*` entrypoints. One Page pass is a Workflow
+Runtime/control record; only independently commissioned work gets a native Run
+identity.
 
 ## 3. Run boundary
 

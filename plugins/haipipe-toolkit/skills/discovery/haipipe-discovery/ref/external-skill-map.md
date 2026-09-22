@@ -11,18 +11,34 @@ The normalized capability inputs and packet shapes live in
 `external-capability-registry.md`. This map records provenance and adoption;
 the registry records how a worker may be used without crossing HAI authority.
 
-## Promoted into the active Discovery family
+## Vendored originals · what we call
 
-| External capability | HAI location | Use in Discovery | Adaptation |
-|---|---|---|---|
-| gemini-search | discovery/1_search/gemini-search | Optional broad candidate scout | Read-only harvest; dispatcher verifies identity and allocates Runs. |
-| openalex | discovery/1_search/openalex | Optional structured journal/index and citation-graph source | Pinned helper; metadata never becomes Bib authority by itself. |
-| research-lit | discovery/2_review/research-lit | Supporting review and synthesis craft worker | Source options now include Gemini/OpenAlex; `3_synthesize` and the Page route own durable writes. |
-| haipipe-discovery-synthesize | discovery/3_synthesize/haipipe-discovery-synthesize | Cross-Result article synthesis | HAI router; combines accepted Result/Card/Bib pointers and never creates a local Run. |
+Two treatments, the same rule as `writing/` and `ideation/`. An original we
+**call** is vendored: an adapted copy in a numbered stage folder with its LICENSE,
+a CHANGELOG stamping the upstream commit, and `metadata.haipipe.vendored_from` in
+its frontmatter. A source we only **read** stays in `references/` and is digested
+in the tables below. The skills we wrote (`haipipe-discovery-search`,
+`haipipe-discovery-review`, `haipipe-discovery-synthesize`, `haipipe-discovery-inquiry`)
+sit flat at the family root and are the only callers.
 
-The existing HAI adapters for arxiv, semantic-scholar, deepxiv, exa-search,
-alphaxiv, and paper-analyzer remain the active workers; they were compared
-against the ARIS catalog but did not need a duplicate copy in this update.
+| Stage folder | Original | Upstream | Commit | Licence | Local version |
+|---|---|---|---|---|---|
+| `../../1_search/arxiv/` | arxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
+| `../../1_search/semantic-scholar/` | semantic-scholar | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.3` |
+| `../../1_search/exa-search/` | exa-search | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
+| `../../1_search/openalex/` | openalex | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
+| `../../1_search/gemini-search/` | gemini-search | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
+| `../../1_search/alphaxiv/` | alphaxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
+| `../../1_search/deepxiv/` | deepxiv | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.2` |
+| `../../1_search/paper-analyzer/` | paper-analyzer | nature-paper-skills | `44cff42` | MIT | `0.2.2` |
+| `../../2_review/research-lit/` | research-lit | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.2.3` |
+| `../../2_review/comm-lit-review/` | comm-lit-review | ARIS (wanshuiyin/Auto-claude-code-research-in-sleep) | `0472e53` | MIT | `0.1.1` |
+| `../../2_review/academic-researcher/` | academic-researcher | nature-paper-skills | `44cff42` | MIT | `0.1.1` |
+
+The ARIS copies were adapted earlier and synchronized against the pinned tip
+`0472e53` (2026-09-07/08); the submodule checkout itself sits at an older commit,
+so the pin, not the checkout, is the provenance. Each copy differs from upstream
+by its adapted SKILL.md and an added CHANGELOG; nothing else was taken.
 
 The Science Superpowers prior-work lens is incorporated into
 `discovery/2_review/research-lit` as an optional evidence-backed grounding
@@ -40,9 +56,9 @@ three live capability families may invoke and normalize into HAI packets:
 | literature-review extraction/appraisal | `2_review` | Method, limitation, reproducibility, confidence, and disagreement fields | `haipipe-discovery-review` writes the existing Result contract |
 | literature-source-tracing | `2_review` | Primary-text locator for a cited statement | Result `facts.md` and `runtime.yaml`; never DOCX output |
 | citation-fidelity / reference-verify | `2_review` / CHECK | Page-level citation verification and pending state | Result verification plus Outline citation authority |
-| research-genealogy | `3_synthesize` | Citation lineage for `landscape-review` | Page CONTENT phase, backed by admitted Results |
-| result-to-claim | `3_synthesize` | Supported / partial / unsupported claim gate | Synthesis map and Page CHECK |
-| citation-audit | `3_synthesize` / CHECK | Post-synthesis bibliography and context audit | Outline/CHECK; never a second Bib |
+| research-genealogy | `haipipe-discovery-synthesize` | Citation lineage for `landscape-review` | Page CONTENT phase, backed by admitted Results |
+| result-to-claim | `haipipe-discovery-synthesize` | Supported / partial / unsupported claim gate | Synthesis map and Page CHECK |
+| citation-audit | `haipipe-discovery-synthesize` / CHECK | Post-synthesis bibliography and context audit | Outline/CHECK; never a second Bib |
 
 The adapters are intentionally not copied wholesale into the family folders.
 When one is called, its output is a draft packet; the local specialist
@@ -66,7 +82,7 @@ overwriting the provenance.
 | research-agent-skills | 4af0f96 | replication-archive and agent utilities | Reference-only: replication/build work belongs to Task or Paper, not source acquisition. |
 | research-co-pilot | f824e6c | literature-review, research-brainstorm, peer-review | Reference-only: standalone research/<project> memory and phase network conflict with D1 authority. |
 | paper-rag-skill | b1097d3 | paperrag | Optional infrastructure reference: a PDF vector index may feed local context, but it never creates a Discovery Run/Result/Bib. |
-| research-genealogy | e075888 | research-genealogy | Reference-only source; accepted as a `3_synthesize` lineage worker, while HAI Results and Page CONTENT remain authoritative. |
+| research-genealogy | e075888 | research-genealogy | Reference-only source; accepted as a `haipipe-discovery-synthesize` lineage worker, while HAI Results and Page CONTENT remain authoritative. |
 | science-superpowers | 9e348a4 | surveying-prior-work, framing-research-questions, feasibility, verification | Prior-work lens adapted into research-lit; the remaining human-gated analysis workflow stays outside D1. |
 | superpower-socialscience-skills | 4c8ec80 | domain analysis experts, internet/bibliometric analysis | Reference-only craft workers; invoke after evidence admission when a domain method is explicitly requested. |
 | paperjury | 53c75e8 | paper review/edit/auto hardening | Reference-only: manuscript review/editing is Paper work, not Discovery evidence acquisition. |

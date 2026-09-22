@@ -70,7 +70,7 @@ def main():
     shutil.copytree(frozen, work / "b" / "BoardSkillBoard-260722")
     s = socket.socket(); s.bind(("127.0.0.1", 0)); port = s.getsockname()[1]; s.close()
     proc = subprocess.Popen(
-        [PY_EXE, str(HERE / "cli" / "serve.py"), "--root", str(work / "b"),
+        [PY_EXE, str(HERE.parents[2] / "servers" / "_host" / "serve.py"), "--root", str(work / "b"),
          "--port", str(port), "--host", "127.0.0.1"],
         stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     base, board_url = f"http://127.0.0.1:{port}", "/BoardSkillBoard-260722/board.html"

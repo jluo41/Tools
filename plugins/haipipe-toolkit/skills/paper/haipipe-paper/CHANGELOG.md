@@ -59,8 +59,8 @@
 ## 0.7.0 · 260904
 
 - Separate family-entry routing from the canonical concrete Page RUN order.
-- Replace the active Probe/PageX/plugin-lane model with one shared Outline
-  plugin and typed VALUE/CITE/DISPLAY local Results over Supporting/local Runs.
+- Replace the active Probe/PageX/workbench-lane model with one shared Outline
+  workbench and typed VALUE/CITE/DISPLAY local Results over Supporting/local Runs.
 - Add CONTEXT to the Paper Page loop and update status/folder/desk-room
   language to current evidence identities.
 

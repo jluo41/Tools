@@ -1,6 +1,8 @@
-# Paper Run Specs, routing, and Runtime
+# Paper Runs: Specs, routing, and Runtime
 
-Read this when planning, commissioning, resuming, or reporting Paper work.
+Read this when planning, commissioning, resuming, or reporting Paper Runs.
+Paper Runs are the Paper-scoped execution layer; they are not PageTypes or
+Page controller steps.
 The shared authorities are `haipipe-run`, `haipipe-page-workflow`, and
 `haipipe-page/ref/page-run-families.md`. Paper specializes their targets and
 dependencies; it does not introduce another lifecycle.
@@ -28,7 +30,7 @@ dispatch. Cardinality is 0..N selected targets, not one Run per Page or click.
 | `structure.<page>` | Page Structure RP / shared Page workflow + exact PageType | commissioned whole-Page structure, direction and evidence decisions | hybrid / SHAPE + SURVEY | Page owner resolved + applicable G3 → native structure acceptance | evidence/write as selected; feedback internal; changed goal → NEW_RUN |
 | `write.<page>.<scope>` | Page Writing RP / shared Page workflow + exact PageType | one Section/paragraph goal; accepted structure and required evidence | hybrid / draft, review, diagnose, revise | native writing entry + applicable G3 → native writing acceptance | SELF, NEW_VERSION, CLOSE, NEW_RUN under Page owner |
 | `evidence.<page>.<item>` | Page Evidence RE / Page evidence owner + selected worker | one VALUE/CITE/DISPLAY item; frozen Local Input and 0..N Supporting Results | agent or hybrid / make and verify typed Result | decided item + required inputs → accepted typed Result | EMBED control → dependent write/deliver; failure → repair or HOLD |
-| `deliver.<page>.<format>` | Page Delivery RD / `haipipe-plugin-delivery` | one released Page version and delivery target | agent / render one target | native release barrier → artifact/hash/build receipt | Page CHECK control → compile dependency; failure → repair/HOLD |
+| `deliver.<page>.<format>` | Page Delivery RD / `haipipe-workbench-page` | one released Page version and delivery target | agent / render one target | native release barrier → artifact/hash/build receipt | Page CHECK control → compile dependency; failure → repair/HOLD |
 | `compile.<paper>.<build>` | `paper.compile` / `haipipe-paper-assemble` | exact compile-order, Section fragments/bindings, config/profile | agent / assemble one manuscript build | valid safe config + explicit build request → truthful manifest and declared outputs or failure | G4 evaluates readiness; feedback → response; build outcome → CLOSE |
 | `response.<round>` | `paper.response` / `haipipe-paper-round` | one frozen feedback batch/base build, ledger, checked returned versions | hybrid / compose one response package | named batch → covered concerns, frozen answer build and human response/close receipt | required repairs → affected owner Specs; incomplete → HOLD; G5 → CLOSE |
 
@@ -52,7 +54,7 @@ closable work. They do not automatically allocate Runs. Idea generation and
 testing load `haipipe-ideation` and its requested specialist; index only the
 native Runs those owners actually allocate, not one Run per I1/I2/I3 label.
 
-The old plugin vocabulary maps as follows:
+The old workbench vocabulary maps as follows:
 
 | Existing label | Current meaning |
 |---|---|
@@ -65,11 +67,11 @@ The old plugin vocabulary maps as follows:
 | `paper.compile` | `compile.<paper>.<build>` |
 | `paper.round.respond` | `response.<round>`; ledger triage alone is a control action |
 
-P0–P4 and the physical `paper/workflow-phases/` directory are legacy location
-labels. The directory is retained so existing links/installations resolve;
-its four skills own PageTypes. It does not define a Phase hierarchy. Shared
-serialized `phase/cycle/next_cycle` fields remain controller labels, neither
-Run Specs nor Steps. Do not bulk-rename historical receipts or frozen builds.
+P0–P4 are legacy Run names. The four Paper PageType skills are direct
+`paper/haipipe-paper-*` entrypoints; they do not define the `paper-runs` layer.
+Shared serialized `Run/cycle/next_cycle` fields remain Run names,
+neither Run Specs nor Steps. Do not bulk-rename historical receipts or frozen
+builds.
 
 ## Native identities and Result storage
 

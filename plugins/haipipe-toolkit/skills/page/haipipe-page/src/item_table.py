@@ -5,7 +5,7 @@ each ``E<NN>-<TYPE>-<slug>``; SURVEY plans zero-to-many Supporting Runs, one
 Local Input, and exactly one local Page Evidence Item Run; LAND validates and
 freezes those inputs before binding the local
 Result. This module is the single parser used by the generated evidence view
-and phase strip, so the UI cannot invent a second status contract.
+and progress strip, so the UI cannot invent a second status contract.
 """
 from __future__ import annotations
 
@@ -732,7 +732,7 @@ def cycle_now(approved: bool, rows: dict, statuses, n_items: int) -> str:
 
 
 def summarize(page_md: Path, plan: Path, lane=None) -> dict:
-    """Return compact item counts for the Page phase strip."""
+    """Return compact item counts for the Page progress strip."""
     del lane  # typed items land only through their local Result binding
     plan_txt = plan.read_text(encoding="utf-8", errors="replace")
     page_txt = page_md.read_text(encoding="utf-8", errors="replace")

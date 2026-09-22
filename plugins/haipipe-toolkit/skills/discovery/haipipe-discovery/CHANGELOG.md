@@ -8,6 +8,19 @@ since this orchestrator owns the layer contract. Newest first. Rollup lives in
 the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
+## 0.17.0 · 2026-09-22
+
+- Family layout: every skill we wrote (door, inquiry controller, search, review, synthesize) sits flat at the family root; `1_search/` and `2_review/` hold vendored originals only, each stamped with LICENSE and `metadata.haipipe.vendored_from` (nine from ARIS @0472e53, two from nature-paper-skills @44cff42). `3_synthesize/` and `workflow-phases/` are gone. `ref/external-skill-map.md` lists the vendored table and the call-or-read rule.
+
+## 0.16.0 · 2026-09-21
+
+- Make the Block a live `discovery-block` Board from `open-block` onward.
+- Add `scripts/board_sync.py` to form or repair `board.md`, refresh the managed
+  Job/Group roster, and optionally rebuild/check the derived Board site.
+- Document the Block → Board, Job → Group, Task Folder → Page mapping and the
+  structural, Run-batch, Page-CHECK, and close checkpoints across Discovery
+  references and agents.
+
 ## 0.15.2 · 2026-09-20
 
 - Bind Task and typed-record confidence to type-specific evidence anchors,
@@ -71,7 +84,7 @@ the plugin-level `CHANGELOG.md`. The type specialists keep their own
 
 - Delete the Discovery Idea family and remove its compatibility route and Page
   types; unsupported Idea manifests now fail validation.
-- Add live `3_synthesize` for cross-Result integration and Page CONTENT,
+- Add live `haipipe-discovery-synthesize` for cross-Result integration and Page CONTENT,
   separating it from `2_review` per-Subject source inspection.
 - Align the D1 workflow table, BJTR addendum, migration helper, and agents with
   Search → Review → Synthesize.
@@ -164,7 +177,7 @@ the plugin-level `CHANGELOG.md`. The type specialists keep their own
 - Adopt the latest Page contract: Outline owns `outline/evidence/`, typed CITE
   items, verification, and the derived Discovery Bib.
 - Keep Discovery Paper/Source Runs and Results in their own sibling lanes and
-  treat `haipipe-plugin-evidence` as compatibility-only.
+  treat `haipipe-workbench-evidence` as compatibility-only.
 
 ## [0.7.0] — 2026-09-02
 
@@ -174,8 +187,8 @@ the plugin-level `CHANGELOG.md`. The type specialists keep their own
 - Split one-Subject L4 evidence acquisition from authoritative L3 Page
   synthesis and publish the full Workflow Table in
   `haipipe-discovery-workflow`.
-- Route all citation/Bib authority through `haipipe-plugin-evidence`; remove
-  the standalone Bibex Plugin dependency.
+- Route all citation/Bib authority through `haipipe-workbench-evidence`; remove
+  the standalone Bibex Workbench dependency.
 
 ## [0.6.2] — 2026-09-01
 
@@ -248,7 +261,7 @@ the plugin-level `CHANGELOG.md`. The type specialists keep their own
 ## [0.4.1] — 2026-09-01
 
 - Bind every materialized Paper Run to the optional
-  `haipipe-plugin-execution` surface: exact Run/Result pairs define it, while
+  `haipipe-workbench-execution` surface: exact Run/Result pairs define it, while
   Topic `scripts/` remains optional supporting material.
 - Keep Discovery lifecycle ownership in the Discovery workflow; the presenter
   adds no execution or closure authority.
@@ -471,9 +484,9 @@ JL ruling 2026-07-12 ("加一个 ask folder，把它们放到一块儿"; pairs w
 ### Added (JL: "I think we should have them")
 - **Type specialist skills**, one per bucket, mirroring the sibling-layer pattern
   (haipipe-data-source etc.):
-  - `1_search/haipipe-discovery-search/` — owns the Search Execute (find + read ->
+  - `haipipe-discovery-search/` — owns the Search Execute (find + read ->
     sources.md + notes.md), dispatches the six 1_search workers.
-  - `2_review/haipipe-discovery-review/` — owns the Review Execute (judge -> verdict.md,
+  - `haipipe-discovery-review/` — owns the Review Execute (judge -> verdict.md,
     synthesize -> landscape.md) and is the new canonical home of the Review Output
     Contract (moved from the orchestrator, pointer left behind).
   - `3_idea/haipipe-discovery-idea/` — owns the Idea Execute (generate -> ideas.md,
@@ -637,7 +650,7 @@ JL ruling 2026-07-12 ("加一个 ask folder，把它们放到一块儿"; pairs w
 - **Folder renamed `discover/` to `discovery/`.** The layer concept now reads as
   a noun, matching the `discoveries/` artifact dir and the task/probe/insight
   sibling layers. (The skill itself was renamed too, see above.) Cross-reference
-  path fixups in `STRUCTURE.md`, the blueprint, and the plugin CHANGELOG are a
+  path fixups in `STRUCTURE.md`, the blueprint, and the workbench CHANGELOG are a
   follow-up.
 - **Narrative layer retired across discovery docs.** A discovery now has exactly
   two parents: a delivery lifecycle (`paper` / `application`) for L* landscape /

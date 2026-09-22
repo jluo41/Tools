@@ -10,6 +10,15 @@ from .dialect_task_block import page_info as task_page_info
 from .stage_contract import contract_status
 
 
+# Discovery's incremental Board helper keeps a small managed Job span inside
+# `## Pages`. These comments are source metadata, never group introduction
+# prose; ignoring this reserved pair keeps the generated Board free of helper
+# plumbing while leaving every other authored HTML comment untouched.
+_DISCOVERY_BOARD_MARKER = re.compile(
+    r"^<!--\s*haipipe:discovery-board-jobs:(?:start|end)\s*-->$"
+)
+
+
 def split_blocks(src):
     out, cur, buf = {}, None, []
     for ln in src.split("\n"):
@@ -59,12 +68,12 @@ def parse_board(board):
                 # board touches, embedded file-by-file into the RELATED FOLDERS
                 # index fold at build time.
                 related=sec(bs, "Related Folders"),
-                # A Board-level Plugin is opt-in through the Board Links
+                # A Board-level Workbench is opt-in through the Board Links
                 # section. The generated page exposes only this capability
-                # flag; the Plugin surface owns its own read-only projection.
-                # Paper Plugin is the canonical Board-level entry. Keep the
+                # flag; the Workbench surface owns its own read-only projection.
+                # Paper Workbench is the canonical Board-level entry. Keep the
                 # old key as a compatibility alias for older Boards.
-                board_paper=LINKS.get("paper-plugin", LINKS.get("board-console", "")), dir="")
+                board_paper=LINKS.get("paper-workbench", LINKS.get("board-console", "")), dir="")
 
 
 def parse_doc(d, paths):
@@ -151,7 +160,7 @@ def parse_dir(d):
         # A DESIGN page replaced the skill page (JL 260815: "we don't have the
         # page for the Skill anymore. It will be the design"): the same grammar,
         # but the prefix now names what the page DOES — argue the unit's design,
-        # settle on a selection, and carry the unit's bytes in its plugins —
+        # settle on a selection, and carry the unit's bytes in its workbenches —
         # rather than the dead mirror kind. Skill-* stays parseable for
         # archives and for boards that have not converted.
         design_m = re.match(r"Design-(\d+)-(.+)$", p.stem)
@@ -368,6 +377,8 @@ def parse_dir(d):
     in_fence = False
     for raw in pages_txt.split("\n"):
         ln = raw.strip()
+        if _DISCOVERY_BOARD_MARKER.fullmatch(ln):
+            continue
         if in_fence:                       # 组介绍里的 ``` ascii 图：整段按原样收，不 strip（保住对齐）
             gintro.setdefault(group, []).append(raw)
             if ln.startswith("```"):

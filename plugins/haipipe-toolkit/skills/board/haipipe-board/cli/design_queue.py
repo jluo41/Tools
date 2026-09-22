@@ -33,6 +33,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
+sys.path.insert(0, str(HERE.parents[3] / "servers" / "_host"))  # the `live` namespace
 
 from live import design_actions as acts  # noqa: E402
 from live.designboard import DESIGN_GROUP, is_design_board  # noqa: E402

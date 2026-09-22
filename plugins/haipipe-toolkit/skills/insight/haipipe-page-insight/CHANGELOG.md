@@ -1,0 +1,101 @@
+## 1.2.1 — 2026-09-21
+
+- Move the Task-side topic/data Page contract under the Insight family at
+  `skills/insight/haipipe-page-insight`; keep the public skill name and Task
+  route unchanged.
+
+## 1.2.0 — 2026-09-20
+
+- Separate RI allocation from final evidence freezing; add immutable binding.yaml and freeze CLI. Distinguish producer execution/Ticket/receipt from consumer RI. Preserve old frozen packets and support explicit next-version correction.
+- Migration: preserve existing records; see the scoped migration reference and current handoff contract.
+
+## 1.1.1 — 2026-09-15
+
+- Make `/haipipe-insight task "<topic>" [<board>]` the preferred public entry
+  for the task-side Insight Page while retaining `/haipipe-task insight` as a
+  behavior-identical compatibility alias.
+- Align the Task Insight scaffold reference with the current `items-v2`
+  contract.
+
+## 1.1.0 — 2026-09-13
+
+- Make `riNN` the first-class Insight Run: each RI points to one immutable
+  normal R ticket and freezes a new dataset binding without overwriting R.
+- Add the v2 instance/input and `haipipe.insight-run/v1` Ticket contracts,
+  deterministic `bind` scaffolding, R→RI hash checks, and Page Runs-surface
+  support while retaining items-v1 `#rNN@vNNN` as readable history.
+
+## 1.0.0 — 2026-09-07
+
+- Replace single-question Page granularity with a topic/data instance whose
+  Insight Items are local Run tickets with versioned DIKW Results.
+- Add instance/item schemas, workflow and item tables, resumable checkpoints,
+  shared Task recipe binding, migration, and precise Result/RF references.
+- Evaluate Application reuse at the accepted item Result, preserving the
+  contextual I1/I5 bridge and leaving unrelated open items independent.
+
+## 0.8.0 — 2026-09-07
+
+- Rename the public skill from `haipipe-page-for-insight` to
+  `haipipe-page-insight`; the task-only, consumer-neutral DIKW contract is
+  unchanged.
+
+## 0.7.0 — 2026-09-04
+
+- Reparent the Insight Page Type directly to `haipipe-page` after retirement
+  of the standalone Task Page variant.
+- Replace active Probe/PageX intake with the shared Supporting Run, frozen
+  Local Input, and local Evidence Item Run graph.
+- Align runtime storage and lifecycle language with the Outline-owned Context,
+  Bullet, and Evidence workspaces and the five Page phases.
+
+## 0.6.4 — 2026-08-31
+
+- Make the consumption boundary explicit: RF is unsigned, consumer-neutral
+  evidence. An Application may use it only through its own I1-registered,
+  contextual, human-signed I5 bridge; it never binds RF directly to Design.
+
+## 0.6.3 — 2026-08-31
+
+- Align the agent discovery manifest with the task-only contract: Task Insight
+  Page, consumer-neutral DIKW, and Reusable Findings rather than an
+  Application-local Design Handoff.
+
+## 0.6.2 — 2026-08-31
+
+- Remove the retired Application scope completely. This Page Type is now one
+  task-only, consumer-neutral D→I→K→W chain ending in Reusable Findings;
+  downstream workflows borrow it through PageX and own their own handoffs.
+
+## 0.6.1 — 2026-08-31
+
+- Replace retired Application Page-Type references with the phase-owned
+  I2-I5 Folder contracts under `haipipe-insight-workflow`.
+- Show Probe, PageX, and Display under their canonical `evidence/` parent.
+
+## 0.4.0 — 2026-08-20
+
+- Moved the runtime home to `<DataSubject>-InsightBoard/1-I-insights/` under the
+  two-board split, beneath the new `page-type: meta` head page.
+- Added the Meta Page to the boundary block: Meta says what data exists, this Page
+  makes claims from it.
+- Dropped Artifact from the no-Probe list; the type was retired on 260820.
+
+## 0.3.0 — 2026-08-20
+
+- Moved the Page Type from the Task skill set into the Application skill set.
+- Kept Task-backed source, run, staleness, human-reading, and Probe authority.
+- Reframed the grain as one Application Insight question and added the fixed
+  Application Need, Question, Source Map, DIKW, and Design Handoff divisions.
+- D/I/K stay evidence-led; W is explicitly application-contextual.
+
+## 0.2.0 — 2026-08-19
+
+- **A SUBCLASS of `haipipe-page-for-task`.** New `parent:` key (JL 260819: "we
+  will make it a special subclass of task folder, and we will also have the
+  D, I, K, W for the insight page as well").
+- It INHERITS one-page-per-folder, the run-bound verdict, the trace rule and the
+  read-it closing rule. It REPLACES only the division grammar: task's
+  `Why · Concept · Data · Method · Result · Meaning(last)` becomes the DIKW chain
+  `Data → Information → Knowledge → Wisdom`, which this contract already carried.
+- Wisdom is the one division that may be absent, and an empty one is a status.

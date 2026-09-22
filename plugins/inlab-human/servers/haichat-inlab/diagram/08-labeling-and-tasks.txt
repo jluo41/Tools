@@ -1,0 +1,60 @@
+✏️  Labeling (the PI inbox) + the tasks feed
+═══════════════════════════════════════════════════════════════════
+
+The ACTION group is where a case EARNS something. Two surfaces: Annotate
+(subjective-label) and Tasks (the project's haipipe task-group). Both read
+artifacts that already exist on disk — the console does not run the panel.
+
+─§ subjective-label: the researcher is the PI, not a labeler ─────
+
+  🧑 researcher (PI) ── talks only to ──▶ 🤖 Moderator
+                                            │ orchestrates (hidden)
+        ┌───────────────────────────────────┼───────────────────────┐
+     🧩 sampler/prober   👥 labeler panel   ⚖️ analyzer   🖼️ gallery-keeper
+     (pick 20-30)        (3-5 personas)     (A/B/C/D)     (sole writer)
+        └───────────────────────────────────┴───────────────────────┘
+  per iteration the PI sees AT MOST ~5-10 decisions. The panel LABELS;
+  the PI ADJUDICATES. Convergence proved vs public-dataset human κ.
+
+─§ Annotate view = the Moderator's window (read + 1 write) ───────
+
+  ✏️ Annotate — dim: agreeableness ▾   status: validated · κ 0.937
+  ┌──────────────────────────────┬──────────────────────────────┐
+  │ 📥 needs the PI (inbox)       │ 📜 guideline v01..v04 (+diff) │
+  │  A) boundary case → [labels]  │ 🖼️ gallery (gold cases)       │
+  │  B) rule gap → refine         │ 📈 κ trajectory               │
+  │  ▶ /sl-iterate via HaiChat    │                              │
+  └──────────────────────────────┴──────────────────────────────┘
+  ⚠️ the ONLY write here is the PI's decision → human_decisions.jsonl.
+     bulk labeling runs via /sl-scale through HaiChat — never a button here.
+
+─§ How labels reach a CASE (overlay, keyed by id) ────────────────
+
+  🗂️ INLAB_LABEL_STORES = { "PhyReview_v0": ".../tasks", ... }   (per-dataset!)
+        │  authoritative map — a dataset absent from it has NO labeling,
+        │  so picking ACIBench doesn't show PhyReview's dimensions
+        ▼
+  📌 case id ═══ join ═══ 🖼️ gallery / 📥 batch id
+     (e.g. healthgrades_165) ─▶ label NONE · boundary · reasoning
+  ⚠️ ids that don't line up simply show no overlay — honest, not empty-faked.
+     (legacy single INLAB_LABEL_STORE still works: applies to every dataset)
+
+─§ artifacts the label store already carries ────────────────────
+
+  📁 tasks/B01_dim_agreeableness/
+     ├── .state.json              status · iteration · κ trajectory
+     ├── guideline/guideline.md + versions/v01..v04.md + changelog
+     ├── gallery/gallery.json     gold cases {text,label,reasoning,difficulty}
+     └── iterNN/batch.jsonl       the labeled batch (gold)
+
+─§ 📋 Tasks view — the haipipe task feed ─────────────────────────
+
+  🗂️ INLAB_PROJECTS_ROOT = examples/   (Project-* folders)
+        │  tasks_api scans task-groups, classifies by SERIES (A/B/C/D…)
+        ▼
+  📋 what work produced this data / model — the pipeline provenance beside
+     the human, so INSIGHT (Model card + Tasks) answers "where did this
+     come from?" next to DATA and ACTION.
+
+     see 07-case-builder.txt  →  the CASE that a label attaches to
+     see 02-how-it-came.txt   →  score + label are the two lineages converging

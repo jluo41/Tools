@@ -290,10 +290,10 @@ def check_group_order(d, text, rep):
 
 
 # `### <label> · <folder>` is how `## Pages` binds a group row to a directory,
-# and `live/paper.py:_GROUP_RE` reads the folder as ONE non-space token. A
+# and `servers/workbench-paper/paper.py:_GROUP_RE` reads the folder as ONE non-space token. A
 # heading that spells the folder with a space (`### Ba · ManSci Main`) therefore
 # matches nothing, the group vanishes, and every consumer downstream of it
-# reports zero: the paper plugin showed `no S- rows in C8` and
+# reports zero: the paper workbench showed `no S- rows in C8` and
 # `0 Section page(s)` on a board whose static site had rendered all 21 pages
 # correctly, because build.py groups by a different rule and never noticed
 # (JL 260921). A heading that cannot bind is worse than a wrong one: nothing
@@ -325,15 +325,15 @@ def check_pages_group_folders(d, text, rep):
     heads = [l.rstrip() for l in body.splitlines() if l.startswith("### ")]
     if not heads:
         return
-    # A board that HAS a live plugin surface is broken by an unbindable heading;
+    # A board that HAS a live workbench surface is broken by an unbindable heading;
     # a Task or Discovery block has no such consumer today, so the same heading
     # is a latent defect rather than a live one. Severity follows that, so the
-    # gate does not block boards whose convention predates the plugin.
+    # gate does not block boards whose convention predates the workbench.
     dialect = re.search(r"^dialect:\s*(\S+)\s*$", text, re.M)
     plugged = (dialect and dialect.group(1).strip() == "paper") or board_kind(d) in {
         "design-board", "insight-board", "labeling-board"}
     sev = ERROR if plugged else WARN
-    tail = ("" if plugged else " this board has no live plugin surface today, so"
+    tail = ("" if plugged else " this board has no live workbench surface today, so"
             " nothing is broken yet; it binds to nothing the moment it gets one")
     for line in heads:
         got = PAGES_HEAD.match(line)
@@ -342,7 +342,7 @@ def check_pages_group_folders(d, text, rep):
                     "a `## Pages` group heading must read `### <label> \u00b7 <folder>` "
                     "with the folder as the directory name and no spaces in it; this "
                     "one binds to nothing, so the group and every page under it "
-                    "disappear from the plugin and the roster without any error."
+                    "disappear from the workbench and the roster without any error."
                     + tail)
             continue
         folder = got.group("folder")
@@ -576,7 +576,7 @@ def check_face(path, name, rep, links, page_ids, decision_only=False):
                     f"title at or below {MAX_PAGE_TITLE_WORDS} (JL 260827)")
     for canon in REQUIRED:
         # `Done when` is satisfied by the page's PLAN once the page migrated to
-        # haipipe-plugin-outline 0.16.0 and kept no copy.
+        # haipipe-workbench-page 0.16.0 and kept no copy.
         if canon == "Done when" and page_aims_text(text, path)[1]:
             continue
         if not has_section(text, canon):
@@ -1003,7 +1003,7 @@ def check_content_attribution(text, name, rep):
                 rep.add(WARN, "content-attribution", "%s:%d" % (name, base + i),
                         "Content is the official document and this line carries "
                         + " and ".join(hits) + "; state the rule itself and move "
-                        "the who/when to a Log row (haipipe-page-content, the "
+                        "the who/when to a Log row (haipipe-page-writing, the "
                         "present-tense rule).")
 
 
@@ -1030,7 +1030,7 @@ def _latest_plan_approved(path):
 
 def check_section_sentences(text, path, name, rep):
     """The CONTENT/WRITE contract on a Section Page using an approved plan
-    (haipipe-page-content §①): every Content sentence ends `<!-- realizes:
+    (haipipe-page-writing §①): every Content sentence ends `<!-- realizes:
     C.P.B -->` (`sentence-without-realizes`), and every sentence that carries a
     number (a comma-grouped count, a decimal, `8.69 million`, a percentage) has
     a `> Value:` lane under it (`number-without-lane`). Gated on the approved
@@ -1067,7 +1067,7 @@ def check_section_sentences(text, path, name, rep):
         if "realizes:" not in st:
             rep.add(WARN, "sentence-without-realizes", "%s:%d" % (name, base + i),
                     "a Section sentence drafted from an approved plan names its slot: "
-                    "end it with `<!-- realizes: C<n>.P<m>.B<k> -->` (haipipe-page-content §①)")
+                    "end it with `<!-- realizes: C<n>.P<m>.B<k> -->` (haipipe-page-writing §①)")
         realization = re.search(r"<!--\s*realizes:\s*(C\d+\.P\d+\.B\d+)\s*-->", st)
         target = realization.group(1) if realization else ""
         has_citation = bool(re.search(r"\\cite(?:p|t)?\*?(?:\[[^\]]*\])*\{[^}]+\}", core))
@@ -1096,7 +1096,7 @@ def check_section_sentences(text, path, name, rep):
                 rep.add(WARN, "number-without-lane", "%s:%d" % (name, base + i),
                         "this sentence states a number and no `> Value:` lane follows it; "
                         "write the source Page, bracket or Evidence Item and its state "
-                        "(haipipe-page-content §①)")
+                        "(haipipe-page-writing §①)")
 
 
 def check_retired_sections(text, name, rep):
@@ -1359,7 +1359,7 @@ def check_generated_block(text, name, rep, path=None):
         blocks.append((tag, tail[0]))
     if not blocks:
         return
-    # The Log may live on the page OR, since haipipe-plugin-outline 0.16.0, in
+    # The Log may live on the page OR, since haipipe-workbench-page 0.16.0, in
     # `outline/<stem>-log.md`. Reading only the page made this check lose its
     # input the moment a page migrated: `latest` went "" for ever and a stale
     # form block could never be reported again. A finding count dropping because
@@ -1394,7 +1394,7 @@ def _one_generated_block(tag, block, latest, name, rep):
 
 
 def check_evidence_file(path, name, rep):
-    """`outline/<stem>-evidence.md` is DERIVED (haipipe-plugin-outline 0.22.0):
+    """`outline/<stem>-evidence.md` is DERIVED (haipipe-workbench-page 0.22.0):
     the typed table (`<stem>-evidence-items.md`, specified at SHAPE and planned
     at SURVEY) joined to local Results, one record per Evidence Item, its Status
     one word of the item ladder,
@@ -1432,7 +1432,7 @@ def check_evidence_file(path, name, rep):
 
 
 def check_discussion_file(path, name, rep):
-    """`outline/<stem>-discussion.md` holds OPEN questions only (haipipe-plugin-
+    """`outline/<stem>-discussion.md` holds OPEN questions only (haipipe-workbench-
     outline 0.18.0, JL 260831: "the solved one go to logs, and only leave the
     one we have not solved"). A thread that is settled, decided or dropped has
     moved: its ruling is one `### YYMMDD · D<nn> …` record in `-log.md`. A
@@ -1452,7 +1452,7 @@ def check_discussion_file(path, name, rep):
             rep.add(WARN, "discussion-settled-thread", name,
                     f"thread `{m.group(1)}` is settled and still in `outline/{f.name}`; the discussion "
                     f"holds open questions only, so its ruling belongs in `outline/{path.stem}-log.md` "
-                    f"as one dated record (haipipe-plugin-outline 0.18.0)")
+                    f"as one dated record (haipipe-workbench-page 0.18.0)")
 
 
 def check_requirement_file(text, path, name, rep):
@@ -1552,7 +1552,7 @@ def check_retired_blocks(text, name, rep):
 def page_aims_text(text, path):
     """The page's Aims, wherever they live.
 
-    Since `haipipe-plugin-outline` 0.16.0 the Aims live in the page's PLAN and
+    Since `haipipe-workbench-page` 0.16.0 the Aims live in the page's PLAN and
     `page.md` keeps no copy, so sourcing them from the page alone made the law
     and this checker contradict each other: obeying the law produced
     `missing-section` + `no-aims` on every migrated page (field test, JL
@@ -1574,7 +1574,7 @@ _ROUND_CACHE = {}
 
 
 def check_plan_arc(path, name, rep):
-    """haipipe-page-outline §🚦 ⓪.1: `arc:` present is mechanical. It was
+    """haipipe-page-structure §🚦 ⓪.1: `arc:` present is mechanical. It was
     parsed by nothing until NA01's field desk grepped for it (260831)."""
     if path is None:
         return
@@ -1587,7 +1587,7 @@ def check_plan_arc(path, name, rep):
 
 
 def check_feedback_coverage(path, text, name, rep):
-    """Both directions of the Round⇄page join (haipipe-page-outline ⓪ COLLECT).
+    """Both directions of the Round⇄page join (haipipe-page-structure ⓪ COLLECT).
 
     Forward: every §2B row a Round routes to this page appears in the page's
     outline/feedback/<RD>.md. Reverse: every register row names a real Round
@@ -1611,10 +1611,10 @@ def check_feedback_coverage(path, text, name, rep):
                     f"`cli/feedback.py collect` (OUTLINE ⓪)")
             continue
         have = register_ids(reg)
-        # the OTHER direction the law promises (haipipe-page-outline ⓪): an
+        # the OTHER direction the law promises (haipipe-page-structure ⓪): an
         # OPEN register row is served by a plan bullet carrying `Routed:` or
         # declined in the plan's header (`declined: <RD> <id> · <reason>`).
-        # NA01's field desk (260831) found this tooth missing while the plugin
+        # NA01's field desk (260831) found this tooth missing while the workbench
         # text claimed "both directions".
         latest = latest_outline(path.parent / "outline", path.stem)
         plan = latest.read_text(encoding="utf-8", errors="replace") if latest else ""
@@ -1994,7 +1994,7 @@ def check_design_family(d, rep):
     human or an agent caught every one: a dispatch packet that over-quoted its
     grant, a duplicate message counted twice, a grant path one directory short,
     and a unit citing its own card through a dead link. The last of those broke
-    the plugin's first law, that the wager lives on the card and the unit cites
+    the workbench's first law, that the wager lives on the card and the unit cites
     it, and nothing mechanical noticed. These checks are that gap closed.
 
     A board may declare `mode: record` on board.md. A record board holds a
@@ -2164,7 +2164,7 @@ def check_insight_family(d, rep):
                     # structure — but only a canonical outline-log record
                     # heading counts. A sentence on the Page is prose, not a
                     # receipt (round 3 friction 10), and Page `## Log` was
-                    # retired by haipipe-plugin-outline 0.16.1.
+                    # retired by haipipe-workbench-page 0.16.1.
                     heads = [line for line in log.splitlines()
                              if re.match(r"^###\s+\d{6}(?:\s+\d{3,4})?\s+·", line)]
                     if not any(qid in line and re.search(r"\bfinal\b", line)
@@ -2278,16 +2278,16 @@ def check_partition_register(text, name, rep):
     # column no sibling shares.
 
 
-def check_plugin_roster(d, rep):
+def check_workbench_roster(d, rep):
     """A page subfolder is board material only if the roster names it.
 
     The roster states this as its own opening law, and it has been broken three
     times: `outline/` was real storage for four days before it had a row,
     `direction/` and `design/` shipped with contracts and no row, and
-    `render/` shipped a SKILL that pointed at "the row this plugin expands"
+    `render/` shipped a SKILL that pointed at "the row this workbench expands"
     while that row did not exist. Prose could not stop it; a scan can.
     """
-    roster = HERE.parent / "haipipe-plugin" / "ref" / "roster.md"
+    roster = HERE.parent / "haipipe-workbench" / "ref" / "roster.md"
     if not roster.is_file():
         return
     names = set(re.findall(r'^\|\s*`([a-z_]+)/`', roster.read_text(encoding="utf-8"), re.M))
@@ -2303,7 +2303,7 @@ def check_plugin_roster(d, rep):
         # A unit inside an evidence lane (`evidence/display/S-Display-1a/…`,
         # `evidence/probe/PP01/…`)
         # also keeps a `<name>/<name>.md`, and its `assets/`, `candidates/`,
-        # `source/`, `versions/` are that plugin's own anatomy, not page
+        # `source/`, `versions/` are that workbench's own anatomy, not page
         # folders. The roster governs the page's direct children only; walking
         # into a lane reported 36 false rows on the MISQ board (JL 260831).
         if any(part in names for part in parts[:-1]):
@@ -2311,8 +2311,8 @@ def check_plugin_roster(d, rep):
         for sub in sorted(p for p in page.iterdir() if p.is_dir()):
             if sub.name.startswith("_") or sub.name in names:
                 continue
-            rep.add(WARN, "plugin-not-rostered", f"{page.name}/{sub.name}/",
-                    "this subfolder is not on the plugin roster, so no surface, "
+            rep.add(WARN, "workbench-not-rostered", f"{page.name}/{sub.name}/",
+                    "this subfolder is not on the workbench roster, so no surface, "
                     "writer or boundary is declared for it; add the row first")
 
 
@@ -2622,7 +2622,7 @@ def main():
     check_draw_folders(d, rep)
     check_design_family(d, rep)
     check_insight_family(d, rep)
-    check_plugin_roster(d, rep)
+    check_workbench_roster(d, rep)
     check_page(d, rep)
     check_css(rep)
     if not a.no_template:

@@ -6,7 +6,7 @@ membership does not change what the Page owns. For a narrow edit, assess the
 affected checks without expanding the request into a full audit.
 
 This is an operational checklist over `../SKILL.md`, `page-template.md` and
-`standalone.md`, not another Page schema or a new workflow phase. Resolve any
+`standalone.md`, not another Page schema or a new Run. Resolve any
 declared Page owner before applying its additional requirements.
 
 ## 1. Declare what is being checked
@@ -37,7 +37,7 @@ declared Page owner before applying its additional requirements.
       a Board registry. Check the actual render for the requested creation/build,
       not just command exit status; inspect imported HTML and its asset requests.
 - [ ] Generated `delivery/` files are outputs, never a second editing authority.
-      Create only the process/plugin lanes actually used by this Page.
+      Create only the process/workbench lanes actually used by this Page.
 
 Configuration can pass while content remains a draft. Default Opening and
 backstage-target scaffolding provides structure, not substantive completion.
@@ -61,7 +61,7 @@ them; they do not expand the Page Face:
 
 | Backstage record | Owner | Completion test |
 |---|---|---|
-| Outline / Draft | Draft Space and `outline/` | The current plan, Bullets, Drafts, and Mermaid remain addressable and internally consistent. |
+| Outline / Draft | Draft Space and `outline/` | The current plan, Bullets, Drafts, and the Structure list remain addressable and internally consistent. |
 | Aims / requirements | Run Space, CHECK, and `outline/` records | Targets and completion tests are available to the workflow even when no `## Aims` is rendered on the Page. |
 | Stage Contract | Page configuration and upstream records | Required inputs, venue, and handoff are resolvable without appearing in the reading surface. |
 
@@ -83,7 +83,7 @@ sequence: `P1, P2, …, PN`. `P` does not reset when `C` changes, so after
   “targets correctly recorded” from “targets achieved.” If a target remains in
   the requested completion scope, do not claim that scope complete. A held or
   waiting tick does not waive a required target.
-- **Evidence and review:** apply the owning evidence/writing/phase requirements
+- **Evidence and review:** apply the owning evidence/writing/Run requirements
   when the Page makes substantive claims or a research delivery is requested.
   Mark unsupported claims and pending human gates explicitly. A technical
   import does not trigger a new evidence Run, PDF or scholarly acceptance gate.
@@ -131,14 +131,14 @@ respective scope. N/A needs a contract- or request-based reason, not convenience
 
 Keep this reusable checklist here. Do not automatically create a Page-local
 `CHECKLIST.md`, a fifth Page section, another status ledger, or new manifest
-fields. Report findings in the response; use existing Aims, plan or phase
+fields. Report findings in the response; use existing Aims, plan or Run
 records only when updating that Page is authorized. Audits alone are read-only.
 The Markdown `setup` command writes a deterministic mechanical audit to its
 Result as `checks.json` and repeats it in `report.md`. Mechanical failures block
 the command. Its `bullet_head_readability` gate rejects clipped or dangling
 heads, planner imperatives, and setup heads outside a provisional 4–24 word
 range. Setup preserves a complete source clause instead of cutting at a word
-limit; the OUTLINE phase performs the semantic rewrite into its stricter
+limit; the structure Run performs the semantic rewrite into its stricter
 4–11-word house style. Argument coherence still requires the Bullet-only reading
 test and remains explicitly untested;
 Aim achievement and human acceptance are also untested or deferred.

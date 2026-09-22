@@ -18,7 +18,7 @@ every number.
     from exnorm import normalize
     normalize(["Walking"], minutes=30, weight_kg=82)
 
-    curl -sS localhost:8078/normalize -H 'content-type: application/json' \
+    curl -sS localhost:8070/exercise/normalize -H 'content-type: application/json' \
          -d '{"activity":"Walking","minutes":30,"weight_kg":82}'
 
 Member of the `haipipe-norm` family; read that contract first. Sibling:
@@ -244,11 +244,14 @@ LAYOUT
       aggregate.py   MET -> kcal, and the basis column
       enrich.py      the DataFrame path, for a SourceFn holding a whole frame
       constants.py   the vocabulary: four kinds, five confidences, three bases
-    server.py        FastAPI: /healthz /normalize /normalize/batch
-    run_server.sh    starts it on :8078 from a bare shell
     test_exnorm.py   34 resolver tests
-    test_server.py   15 service tests
-    examples/        21 real request/response pairs, generated
+
+  Tools/plugins/haipipe-utils/servers/       the wire, plugin-level (servers/README.md)
+    _host/serve.py         one host, every noun under one port; this one at /exercise
+    api-exercise/
+      server.py            FastAPI: /healthz /normalize /normalize/batch
+      tests/test_server.py 15 service tests
+      examples/            32 real request/response pairs, generated
 
   _WorkSpace/ExternalStore/pa_compendium/
     compendium_2024.csv   the bank, 1,111 activities
@@ -266,7 +269,7 @@ HOW TO USE IT
 
 ```bash
 # as a service (a consumer needs NO python environment)
-Tools/plugins/haipipe-utils/skills/describe-exercise/run_server.sh
+Tools/plugins/haipipe-utils/servers/_host/run.sh
 curl -sS "$EXNORM_URL/normalize/batch" -H 'content-type: application/json' \
   -d '{"activities":["Walking","Yoga"],"minutes":[30,45],"weight_kg":82}'
 
@@ -280,13 +283,14 @@ from exnorm.enrich import enrich_exercise
 df = pd.read_parquet('_WorkSpace/1-SourceStore/WellDoc2025ALS/@WellDocDataV251226/Exercise.parquet')
 print(enrich_exercise(df, weight_kg=82).ExerciseConf.value_counts())"
 
-# the suites
-cd Tools/plugins/haipipe-utils/skills/describe-exercise
-PYTHONPATH=. python test_exnorm.py && python test_server.py
+# the suites: the resolver here, the service against a running host
+cd Tools/plugins/haipipe-utils
+PYTHONPATH=skills/describe-exercise python skills/describe-exercise/test_exnorm.py
+EXNORM_URL=http://127.0.0.1:8070/exercise python servers/api-exercise/tests/test_server.py
 ```
 
-`EXNORM_URL` (default `http://127.0.0.1:8078`), `EXNORM_TRANSPORT`
-(`local` | `http`), `EXNORM_DB`, `EXNORM_MAX_BATCH`, `EXNORM_PORT`.
+`EXNORM_URL` (default `http://127.0.0.1:8070/exercise`), `EXNORM_TRANSPORT`
+(`local` | `http`), `EXNORM_DB`, `EXNORM_MAX_BATCH`; the host's port is `HAIPIPE_UTILS_PORT` (default 8070).
 
 The service is NOT authenticated and binds 127.0.0.1. Exercise logs are PHI;
 put auth in front of it before it listens on anything routable.

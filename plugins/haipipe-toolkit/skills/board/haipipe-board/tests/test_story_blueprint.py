@@ -28,7 +28,7 @@ class StoryBlueprintTest(unittest.TestCase):
         resolved = type_outline("story", SKILLS_ROOT)
         self.assertEqual("fixed", resolved["mode"])
         self.assertEqual(
-            SKILLS_ROOT / "paper/workflow-phases/haipipe-paper-story/SKILL.md",
+            SKILLS_ROOT / "paper/haipipe-paper-story/SKILL.md",
             Path(resolved["type_path"]),
         )
 

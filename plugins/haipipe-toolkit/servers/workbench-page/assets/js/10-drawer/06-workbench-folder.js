@@ -1,0 +1,65 @@
+/* 📂 Folder · the page-folder's own status, after the four work surfaces.
+ *
+ * THE GAP IT CLOSES (JL 260815: "a first item in the workbench to show the
+ * content of the page-folder status"): the rail shows the surfaces someone
+ * built; this shows what the folder actually HOLDS — which workbenches exist,
+ * how heavy each is, and whether a DERIVED one (latex, word, bibex, slide,
+ * display) now predates the .md it was made from. The folder is the truth;
+ * the tabs are surfaces over it; the first tab shows the truth.
+ *
+ * The explicit order keeps Folder after Outline, Evidence, Studio, and Delivery;
+ * asset filenames no longer decide what the reader sees.
+ *
+ * The URL is a LIVE route, not a saved view: a status written to disk starts
+ * aging as it lands, and a stale page about staleness would be absurd. The
+ * POST twin exists only so the shell's `tab: {url, write}` contract holds.
+ */
+(function () {
+  'use strict';
+
+  function pageFile(page) {
+    return (page && page.getAttribute('data-file')) || '';
+  }
+
+  function board() {
+    try { return boardPath(); } catch (e) { return location.pathname; }
+  }
+
+  function statUrl(page) {
+    var f = pageFile(page);
+    if (!f) return '';
+    return '/_board/folderstat?path=' + encodeURIComponent(board())
+         + '&file=' + encodeURIComponent(f);
+  }
+
+  function write(page, cb, err) {
+    fetch('/_board/folderstat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: board(), file: pageFile(page) })
+    }).then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) { err && err(j.err || 'folder status failed'); return; }
+        cb(j);
+      })
+      .catch(function (e) { err && err(String(e)); });
+  }
+
+  if (window.boardWorkbenches) {
+    window.boardWorkbenches.register({
+      id: 'folder',
+      label: '📂 Folder',
+      hint: "what this page's folder holds, and what has gone stale",
+      menu: 'workbench',
+      order: 50,
+      /* Only a FOLDED page owns a folder; a flat page has nothing to show. */
+      applies: function (page) {
+        return /^(.*\/)?([^\/]+)\/\2\.md$/.test(pageFile(page));
+      },
+      open: function (page) {
+        var u = statUrl(page);
+        if (u) window.open(u, '_blank', 'noopener');
+      },
+      tab: { url: statUrl, write: write }
+    });
+  }
+})();

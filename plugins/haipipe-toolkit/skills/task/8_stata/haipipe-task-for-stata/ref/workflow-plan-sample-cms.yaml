@@ -1,6 +1,6 @@
 # Definition template: one independently executable config/Ticket variant.
 # Expand variants as Run Specs only when independently commissioned.
-# Resolve placeholders, catalogue key and every Plugin-owned Workspace Cell before use.
+# Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
 # Steps and section labels describe internal work; they never allocate Runs.
 # Schema: task/haipipe-workflow/ref/plan-schema.md
 name: cms-<YEAR>
@@ -20,9 +20,9 @@ input:
   - G:/CMS/DATA/<YEAR>/Stata/mbsf_cc_summary_<YEAR>.dta
   - G:/CMS/DATA/<YEAR>/Stata/mbsf_costuse_<YEAR>.dta
 owner: haipipe-task-for-stata
-plugin:
-  id: <owning-plugin>
-  workspace_roster_ref: <plugin-definition>#workspace_roster
+workbench:
+  id: <owning-workbench>
+  workspace_roster_ref: <workbench-definition>#workspace_roster
   workspace_ids:
   - <workspace-id>
 run_specs:

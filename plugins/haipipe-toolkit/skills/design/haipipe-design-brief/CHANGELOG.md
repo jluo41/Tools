@@ -14,7 +14,7 @@
   `venue`, `designs`, `insight`, `folder` by header word; a Brief with no
   `line` column numbers its rows R1, R2 …; a line id is a key in the file,
   never a name on screen; the audience is written in plain words.
-- The Board-level Design plugin is named as the second writer: it adds lines
+- The Board-level Design workbench is named as the second writer: it adds lines
   (`add-tasks`) and writes a line's `folder` cell (`new-folder`), nothing
   else.
 - The eighth division is `What to design` (was "What to design and handoff").
@@ -53,7 +53,7 @@
 ## 1.0.0 — 2026-08-31
 
 - Migrated from `haipipe-page-for-brief` to Design workflow phase D0.
-- The Brief skill now owns both faces, plugin profile, GD0, and its Card handoff.
+- The Brief skill now owns both faces, workbench profile, GD0, and its Card handoff.
 
 ## 0.3.0 — 2026-08-20
 

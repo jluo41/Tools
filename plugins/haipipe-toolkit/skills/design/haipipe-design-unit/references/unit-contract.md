@@ -33,7 +33,7 @@ approval record is the released Commission's `decision.yaml` under
 `results/`.
 
 `item` names the Design Item register row (`outline/<stem>-design-items.md`)
-this Run serves. The checker does not interpret it; the Design plugin groups
+this Run serves. The checker does not interpret it; the Design workbench groups
 Runs by it. Commission Tickets carry it too. Historical Adopt Tickets may be
 read for audit only; they are never new worker inputs or current workflow gates.
 
@@ -81,7 +81,7 @@ acceptance:             # the rule text as released, for the card
   - "semantic: The recipient can decline without pressure or penalty. | observe: Read the whole message as its recipient, including the stated opt-out. | pass: The refusal path is explicit and no penalty or false urgency is stated. | fail: Refusal is hidden, discouraged by a threat, or made conditional on compliance. | not-verifiable: The message depends on consequences or options not supplied in the pinned inputs."
 ```
 
-The Design plugin writes this config when a person releases the Commission,
+The Design workbench writes this config when a person releases the Commission,
 and each downstream Run inherits its design fields. Only `review_mode` and the
 operation's permitted `mode` are derived: Generate uses `self`, Verify uses
 `independent`; a revise uses `revise` unless the frozen stance is `challenge`,
@@ -125,7 +125,7 @@ visual: <criterion> | observe: inspect the pinned render at <viewport/scale> | p
 The `|` separators are reserved; keep them out of criterion values. Every
 semantic/visual criterion needs distinct pass, fail, and not-verifiable
 examples or boundaries. Visual evidence names the exact rendered target,
-viewport, and scale. A config the Design plugin compiles names rule N `rNN`,
+viewport, and scale. A config the Design workbench compiles names rule N `rNN`,
 plus `rNNb`, `rNNc` for a rule quoting several phrases. Mode-specific
 rationale/forecast/member provenance must be explicit commissioned
 deliverables and criteria before release.

@@ -1,0 +1,53 @@
+📄  What the In-Lab Console IS
+═══════════════════════════════════════════════════════════════════
+
+A single-page console over the haipipe pipeline. Pick a human, read their
+record, see the cases cut from it, then attach a LABEL or a SCORE. It renders
+as a per-thread iframe embed so it sits BESIDE a HAI-Chat conversation.
+
+─§ The beside-a-thread picture ───────────────────────────────────
+
+  ┌──────────────── HAI-Chat thread (Mattermost) ─────────────────┐
+  │  💬  the conversation            │  iframe:  🩺 In-Lab Console  │
+  │  🤖  haichat-me-agent narrates   │  👥 human │ 🗂️ record │ 🧠 model │
+  │      the score in the thread     │  📌 case  │ ✏️ label  │ ▶ Run   │
+  └───────────────────────────────────────────────────────────────┘
+
+  Standalone (not embedded): a HaiChat drawer opens on the right over
+  /ws/haichat — same engine mounted as MCP, every tool call gated Allow/Deny.
+  Embedded: that drawer is HIDDEN — Mattermost IS the chat there.
+
+─§ The three-pane spine ──────────────────────────────────────────
+
+  +---------------+   +----------------------------+   +---------------+
+  | 👥 Humans     |   | 🗂️ Record / 📌 Case        |   | 🧠 Models ▶Run |
+  | (roster)      |──▶| every table / row / turn   |──▶| score card    |
+  | as-of a date  |   | ⚠️ rows the model never saw |   | + data gaps   |
+  +---------------+   +----------------------------+   +---------------+
+
+─§ ⚠️ Invariant 1 — the score is the endpoint's, verbatim ─────────
+
+  ▶ Run  ═══▶  plain HTTP POST to the model endpoint  ═══▶  score
+             (no LLM · no credentials · nothing here adjusts it)
+
+  The raw-record view even FLAGS rows that postdate the prediction index
+  date (⚠️ _after_index) instead of hiding them — you see exactly what the
+  model did and did NOT get to see.
+
+─§ ⚠️ Invariant 2 — ONE engine, shared with the agent ────────────
+
+  buttons ─┐
+           ├─▶  🔧 endpoint-predict engine  ─▶  🧠 endpoint
+  agent  ──┘     (payload build · trigger pick · gap report)
+
+  The buttons and the chat assistant reach the endpoint through the SAME
+  code. "or the demo is a lie" — see 03-boundaries.txt.
+
+─§ Inert until pointed at data ───────────────────────────────────
+
+  Nothing study-specific is committed. The service does nothing until env
+  vars mount a cohort. Same PHI discipline as the rest of the repo: stores
+  are MOUNTED read-only, never baked into a container image.
+
+     see 02-how-it-came.txt  →  why this shape
+     see 04-backend-api.txt  →  the env vars + routes

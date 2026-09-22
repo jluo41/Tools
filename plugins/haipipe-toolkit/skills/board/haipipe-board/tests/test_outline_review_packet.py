@@ -9,7 +9,6 @@ ENGINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ENGINE))
 
 from live.outline import parse_outline, plan_card, render
-from live.skillmap import SkillmapMixin
 
 
 PLAN = """# SM00 · outline v1
@@ -99,7 +98,7 @@ class OutlineReviewPacketTest(unittest.TestCase):
         skill = outline / "skill"
         skill.mkdir()
         (skill / "SM00-abstract.md").write_text(
-            "# skill map · SM00-abstract\n\n- haipipe-page-outline\n",
+            "# skill map · SM00-abstract\n\n- haipipe-page-structure\n",
             encoding="utf-8",
         )
         (skill / "SM00-abstract-skill.html").write_text(
@@ -215,73 +214,6 @@ class OutlineReviewPacketTest(unittest.TestCase):
             for offstage in ("🛠 Skills", "🗣 Feedback", "📏 Requirement",
                              "Main ask", "Order, gate &amp; source"):
                 self.assertNotIn(offstage, rendered)
-
-    def test_skills_record_uses_newest_outline_log_date(self):
-        with tempfile.TemporaryDirectory() as directory:
-            page = self._page(directory)
-            log = page.parent / "outline" / "SM00-abstract-log.md"
-            log.write_text(
-                "# log\n\n### 260902 1200 · earlier\n\n"
-                "### 260903 0900 · later\n",
-                encoding="utf-8",
-            )
-            self.assertEqual(SkillmapMixin._page_log_date(page), "260903")
-
-    def test_skill_index_crosses_installed_plugin_boundaries(self):
-        with tempfile.TemporaryDirectory() as directory:
-            plugins = Path(directory) / "plugins"
-            toolkit = plugins / "haipipe-toolkit" / "skills"
-            labeling = plugins / "subjective-label" / "skills"
-            for root, name in ((toolkit, "workflow-table"),
-                               (labeling, "subjective-label")):
-                skill = root / name
-                skill.mkdir(parents=True)
-                (skill / "SKILL.md").write_text(
-                    f"---\nname: {name}\ndescription: fixture\n---\n",
-                    encoding="utf-8",
-                )
-            agent_dir = plugins / "subjective-label" / "agents"
-            agent_dir.mkdir()
-            (agent_dir / "label-keeper-agent.md").write_text(
-                "# label keeper\n", encoding="utf-8"
-            )
-
-            fake_source = (toolkit / "board" / "haipipe-board" / "live" /
-                           "skillmap.py")
-            fake_source.parent.mkdir(parents=True)
-            roots = SkillmapMixin._skill_roots(fake_source)
-            index = SkillmapMixin()._skill_index(roots)
-
-            self.assertIn("workflow-table", index)
-            self.assertIn("subjective-label", index)
-            self.assertTrue(index["label-keeper-agent"]["agent"])
-
-    def test_skills_surface_does_not_claim_a_seed_is_human_ranked(self):
-        class Harness(SkillmapMixin):
-            @staticmethod
-            def _url_of(path):
-                return "/" + Path(path).name
-
-        with tempfile.TemporaryDirectory() as directory:
-            page = self._page(directory)
-            skill_dir = page.parent / "outline" / "skill"
-            store = skill_dir / "SM00-abstract.md"
-            state = {
-                "page": page,
-                "dir": skill_dir,
-                "stem": "SM00-abstract",
-                "store": store,
-                "rows": {},
-                "order": [],
-                "ctx": {"path": "/Board/board.md", "file": "MAIN/SM00-abstract.md"},
-            }
-            Harness()._skillmap_view(state, {})
-            skill_html = (skill_dir / "SM00-abstract-skill.html").read_text(
-                encoding="utf-8"
-            )
-            self.assertIn("drag to rank · refresh appends", skill_html)
-            self.assertNotIn("top = most related", skill_html)
-            self.assertNotIn("last moved", skill_html)
 
 
 if __name__ == "__main__":

@@ -15,6 +15,6 @@ Read `ref/stata-dialect.md`, shared `haipipe-task/fn/stage-plan.md`, and `haipip
 Stata logs, config snapshots, and summary files remain primary engine evidence.
 The Task controller writes `runtime.yaml` under the same Run identity and binds exact logs, snapshots and required Results per `ref/stata-dialect.md`.
 Keep receipt bookkeeping outside thin worker/Ticket bodies; do not fabricate Python notebooks or execution status.
-Unresolved output roots, server prerequisites, catalogue keys, or Plugin Cells block execution.
+Unresolved output roots, server prerequisites, catalogue keys, or Workbench Cells block execution.
 
 Return `status`, `summary`, `artifacts`, `next`, `task_folder`, `plan_path`, `run_specs`, and `stage`.

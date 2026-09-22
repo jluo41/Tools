@@ -17,13 +17,13 @@ A Workflow is a list of Runs; `workflow/plan.yaml` is the only authoritative def
    Uncommissioned future work stays a Spec without a Run id or Ticket.
 5. Flag notebook naming mismatches without renaming existing notebooks.
 6. Read the full workers and the numbered domain specialist's `ref/workflow-plan-sample*.yaml`.
-7. Define each independently executable config/Ticket variant as a Run Spec with a stable id, catalogue run_type, target, actor, gates, routes, Result receipt, cardinality, and Cells from the owning Plugin's Workspace roster.
+7. Define each independently executable config/Ticket variant as a Run Spec with a stable id, catalogue run_type, target, actor, gates, routes, Result receipt, cardinality, and Cells from the owning Workbench's Workspace roster.
 8. Keep data stages, notebook cells, tool calls, and pre/post execution checks as internal `steps` or gates in that Run Spec.
 9. Resolve output paths through `RESULT_STORE`, then Job `src/config-defaults.yaml` store, then the Job root.
 10. Check input/output paths against the actual project, preserve heavy store outputs, and return exact changed paths for independent review.
 
 A separately commissioned review may be another Run Spec when it has its own owner, close condition, and receipt; the label Gate 1 or Gate 2 alone does not justify a Run.
-If no Workspace surface is declared, omit the Plugin roster and Cells as the
+If no Workspace surface is declared, omit the Workbench roster and Cells as the
 shared Schema permits. An explicitly declared but unresolved roster or missing
 catalogue profile blocks definition freeze; do not invent either.
 

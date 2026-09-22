@@ -4,9 +4,13 @@ description: Search and analyze research papers, find related work, summarize ke
 allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, Skill, mcp__zotero__*, mcp__obsidian-vault__*, mcp__gemini-cli__*
 metadata:
   argument_hint: "[paper-topic-or-url]"
-  version: "0.2.2"
-  last_updated: "2026-09-07"
+  version: "0.2.3"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  haipipe:
+    vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
+    vendored_on: "2026-09-22"
+    local_changes: adapted SKILL.md (HAI Pipe adapter) and added CHANGELOG; synchronized against this ARIS tip on 2026-09-08
 ---
 
 # Research Literature Review

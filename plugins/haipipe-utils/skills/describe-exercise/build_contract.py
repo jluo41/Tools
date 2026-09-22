@@ -11,13 +11,13 @@ GENERATED. Code stays under git in the skill; only data artifacts are written to
 _WorkSpace, and every one of them is regenerable:
 
     source .venv/bin/activate && source env.sh
-    Tools/plugins/haipipe-utils/skills/describe-exercise/run_server.sh   # another shell
+    Tools/plugins/haipipe-utils/servers/_host/run.sh   # another shell
     python Tools/plugins/haipipe-utils/skills/describe-exercise/build_contract.py
 """
 import glob, json, os, sys, urllib.request
 import pandas as pd
 
-URL = os.environ.get("EXNORM_URL", "http://127.0.0.1:8078").rstrip("/")
+URL = os.environ.get("EXNORM_URL", "http://127.0.0.1:8070/exercise").rstrip("/")
 OUT = "_WorkSpace/0-RawDataStore/0-EventNorm/_ExerciseInfo/4-contract"
 LB = 0.45359237
 

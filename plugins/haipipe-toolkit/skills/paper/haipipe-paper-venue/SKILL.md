@@ -183,7 +183,7 @@ seven roles inspectable.
 
 ## 🃏 Evidence and displays
 
-Venue Pages are evidence-heavy Pages, using the same three Outline-plugin
+Venue Pages are evidence-heavy Pages, using the same three Outline-workbench
 workspaces as every current Page:
 
 ```text
@@ -200,7 +200,7 @@ Results. LAND freezes the chosen Results and any governed page-local captures
 into one Local Input, then one local Run produces a `VALUE`, `CITE`, or
 `DISPLAY` Result. Related Venue Pages and playbooks remain Context links until
 a Supporting Run Result makes their content independently auditable. There is
-no active PageX, probe, bibex, value, or display plugin; old lanes are
+no active PageX, probe, bibex, value, or display workbench; old lanes are
 migration-only input.
 
 Every number and binding rule must resolve to its Evidence Item plus full

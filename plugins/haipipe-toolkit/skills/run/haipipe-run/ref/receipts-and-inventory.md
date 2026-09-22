@@ -100,7 +100,7 @@ failure: null
 
 An unsuccessful attempt instead records the owner's failed/blocked status
 and reason. Its evidence stays recoverable before any retry. Interactive
-writing uses [RP journals](../../../page/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md),
+writing uses [RP journals](../../../page/haipipe-page-workflow/ref/interactive-writing-run.md),
 not this Task example or delegated paragraph fields.
 
 ## Inventory procedure

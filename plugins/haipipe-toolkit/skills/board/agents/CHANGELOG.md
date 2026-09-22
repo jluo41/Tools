@@ -56,7 +56,7 @@
   in its description, its opening, its procedure step 4, a fifth ⛔ row, and a
   `human_tick:` row in the return contract.
 - **`value-rules.md` R6 stopped failing legal cards.** It named a four-word
-  ladder (`planned · commissioned · answered · read`) against the plugin's eight,
+  ladder (`planned · commissioned · answered · read`) against the workbench's eight,
   so a `deferred`, `failed`, `concern` or `answered-local` card FAILED R6 on its
   first run. R6 now names all eight and points at `check-probe.py`, which had the
   right set the whole time.

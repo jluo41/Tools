@@ -37,7 +37,7 @@ QBv 页面中“no run reads it”等自述是页面当时的状态文字，不�
 |---|---|---|
 | [haipipe-paper][paper] | 28–40、54–86、152–158、227–246、497–501 | **不符合**：P0–P4 与 `[phase]` 仍是活动入口，Run 身份说明落后。F02/F05。 |
 | [haipipe-paper-workflow][workflow] | 21–30、40–79、225–247、257–281 | **不符合**：定义单位仍是 journey phase/position，没有完整 Run Spec 合同。F02。 |
-| [haipipe-plugin-paper][plugin] | 370–399；space-mapping 7–17 | **部分符合**：正确区分计划和执行，但缺 Run Type→Spec→Instance 对应，清单漏项。F06/F11。 |
+| [haipipe-workbench-paper][plugin] | 370–399；space-mapping 7–17 | **部分符合**：正确区分计划和执行，但缺 Run Type→Spec→Instance 对应，清单漏项。F06/F11。 |
 | [haipipe-paper-assemble][assemble] | 289–317、363–400、419–444、460–471 | **部分符合**：编译是有界操作，manifest 权威清楚；应绑定编译 Spec 并修正 CHECK phase 文案。F01/F02/F05。 |
 | [haipipe-paper-venue][venue] | 21–24、29–47、93–121、199–207 | **部分符合**：正确作为参考 PageType，仍用 Page phase 入口；合同缺口单独列为 F03/F07/F08。 |
 | [haipipe-paper-ideation][ideation] | 29–47、64–116、187–194 | **部分符合**：I3 与非 Run 同步边界明确，仍写 P0 phase。F02/F05/F12。 |
@@ -175,7 +175,7 @@ Story/Section/Round 继续持有长期内容与记录；G0–G5 保留既有决�
 
 ### F11 · P3 · Paper drawer 提示漏 Delivery，文案源位置说明不完整
 
-**位置与证据。** [drawer JS:7][drawer] 称 four Spaces，第 42 行 hint 只有 Setup/Ideation/Story/Run；[renderer:2801][ui-spaces] 实际显示五个，包含 Delivery。[plugin:94][plugin-copy] 将 plugin labels/briefs/hints 归到 live/paper.py，未涵盖 JS 注册处。
+**位置与证据。** [drawer JS:7][drawer] 称 four Spaces，第 42 行 hint 只有 Setup/Ideation/Story/Run；[renderer:2801][ui-spaces] 实际显示五个，包含 Delivery。[plugin:94][plugin-copy] 将 plugin labels/briefs/hints 归到 servers/workbench-paper/paper.py，未涵盖 JS 注册处。
 
 **影响。** 作者不容易发现交付入口，维护者可能在错误文件改提示。
 
@@ -246,7 +246,7 @@ Paper adapter 当前记录的三个 Page 基线 hash 与本次读取值如下；
 
 [paper]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper/SKILL.md:28
 [workflow]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-workflow/SKILL.md:21
-[plugin]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-plugin-paper/SKILL.md:370
+[plugin]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-workbench-paper/SKILL.md:370
 [assemble]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-assemble/SKILL.md:289
 [venue]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-venue/SKILL.md:21
 [ideation]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/workflow-phases/haipipe-paper-ideation/SKILL.md:29
@@ -260,7 +260,7 @@ Paper adapter 当前记录的三个 Page 基线 hash 与本次读取值如下；
 [builder-delete]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-assemble/scripts/build_delivery.py:987
 [workflow-model]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-workflow/SKILL.md:21
 [paper-verbs]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper/SKILL.md:227
-[ui-positions]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/paper.py:219
+[ui-positions]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-paper/paper.py:219
 [venue-contract]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-venue/SKILL.md:93
 [venue-template]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-venue/template.md:1
 [integration-owner]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper/ref/page-integration.md:59
@@ -271,9 +271,9 @@ Paper adapter 当前记录的三个 Page 基线 hash 与本次读取值如下；
 [naming-rp]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper/ref/run-naming.md:77
 [page-workflow]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow/SKILL.md:57
 [page-load]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow/SKILL.md:72
-[plugin-grammar]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-plugin-paper/SKILL.md:370
-[space-map]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-plugin-paper/ref/space-mapping.md:7
-[ui-map]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/paper.py:2589
+[plugin-grammar]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-workbench-paper/SKILL.md:370
+[space-map]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-workbench-paper/ref/space-mapping.md:7
+[ui-map]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-paper/paper.py:2589
 [venue-profiles]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-venue/SKILL.md:49
 [venue-template-units]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-venue/template.md:44
 [venue-readme]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/venue/README.md:31
@@ -286,9 +286,9 @@ Paper adapter 当前记录的三个 Page 基线 hash 与本次读取值如下；
 [qb-pnas]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/venue/bank/1-QBv-desks/QBv13-pnas/QBv13-pnas.md:9
 [pnas-taste]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/venue/playbook-pnas/taste.md:1
 [pnas-style]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/venue/playbook-pnas/pnas/pnas-significance/style.md:1
-[drawer]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/assets/js/10-drawer/09-plugin-paper.js:7
-[ui-spaces]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/paper.py:2801
-[plugin-copy]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-plugin-paper/SKILL.md:94
+[drawer]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-paper/assets/js/10-drawer/09-plugin-paper.js:7
+[ui-spaces]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-paper/paper.py:2801
+[plugin-copy]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-workbench-paper/SKILL.md:94
 [ideation-surfaces]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/workflow-phases/haipipe-paper-ideation/SKILL.md:101
 [page-receipt]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md:82
 [page-round-validator]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-page/src/page_lifecycle.py:656

@@ -54,8 +54,8 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
   `1.0.0+` requires explicit user approval. No compatibility path was added.
   260916: add the Design Item register (`outline/<stem>-design-items.md`,
   goal and rules only) and `item:` on every Design Run record; the Design
-  Plugin reads the Folder in five Spaces, Goal · Design · Insight · Run ·
-  Delivery, in plain words, presented by `haipipe-plugin-design`; the Brief
+  Workbench reads the Folder in five Spaces, Goal · Design · Insight · Run ·
+  Delivery, in plain words, presented by `haipipe-workbench-design`; the Brief
   table carries a `designs` count; ids are `ITEM<NN>`; register field
   `goal:`; folder shape is `2-Design/Design-<NN>-…`, never `DS`.
   260917: folder names say the goal (the first three content words of each
@@ -76,7 +76,7 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 
 - 4.0.0 (260913): clean break. Design Run ids become independent `rdNN_*`
   identities beside Page `rpNN`; v1, `rNN_design_*`, D0-D5/GD0-GD6,
-  `design/DU*/`, PageX, and old thread/plugin readers are rejected. Brief and
+  `design/DU*/`, PageX, and old thread/workbench readers are rejected. Brief and
   Unit move out of `workflow-phases/`; obsolete Design phase skills are removed.
 
 - 3.0.0 (260913): align native Design with Page 0.89 as one Folder with two
@@ -107,6 +107,6 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 - 0.5.0 (JL 260828, the one-thread-one-folder merge + the reads: second entry-kind): the board tree shows one thread folder per bet, card.md first; `reads:` may list the discovery bank so a generate/brainstorm card's warrant-theory QA file sits lawfully inside its grant — found as a live checker conflict (law 4 vs law 3) during the B00 migration, fixed by whitelisting, not by exemption.
 - 0.4.1 (JL 260828, "unify the names"): the trio reads as one line — design card → designer → design unit; "direction card"/"strategy card" retired from prose family-wide; DR ids and the direction/ folder stay as disk anchors (checker + live cards).
 - 0.3.0 (260828, JL's creativity critique): the creative half built — ① DIVERGE, an ideation slate before any card (evidence-fed AND theory-fed modes: a move from named theory or declared intuition is legal, the card carries the honesty via stance + falsification), mirroring the paper family's Ideation the design family never had; ② BET unchanged; ③ VARY, the realization law — one thesis may land a VARIANT SET (same wager, different verbalization), because wording effects are real and the design space is mostly there; variant difference is itself a testable hypothesis, the EMIT edge's natural cargo. Verb `diverge | ideate` added. Root observation: a designer who may only cite cannot surprise; the family had insight discipline applied to the wrong lane.
-  Earlier use of the same label (260827, cold-read BLOCKER fix): the door no longer denies the lane's phase machine — §The journey now names haipipe-design-workflow (D0-D4, GD0-GD5, the thread, rounds, the commission entry) and states the division of labor, exactly as haipipe-insight did for its machine; the Who-owns-what block gains the machine's row and the plugin row gains prospect + the judged: verdict line.
+  Earlier use of the same label (260827, cold-read BLOCKER fix): the door no longer denies the lane's phase machine — §The journey now names haipipe-design-workflow (D0-D4, GD0-GD5, the thread, rounds, the commission entry) and states the division of labor, exactly as haipipe-insight did for its machine; the Who-owns-what block gains the machine's row and the workbench row gains prospect + the judged: verdict line.
 - 0.2.1 (260827, cold-read audit): the mandate-first birth no longer borrows the page-state glyph `🔴` for register cells — needs land as open, unanswered cells, in the register's own vocabulary (haipipe-page-for-question).
-- 0.2.0 (JL 260824): the Reads Law now says a grant NAMES InsightBoard pages without breaching the principle layer's warrant monopoly, and covers a board that declares no reads: at all — `mode: record`, for pre-contract artifacts. 0.1.0: the door, two plugins, one agent, three declarations.
+- 0.2.0 (JL 260824): the Reads Law now says a grant NAMES InsightBoard pages without breaching the principle layer's warrant monopoly, and covers a board that declares no reads: at all — `mode: record`, for pre-contract artifacts. 0.1.0: the door, two workbenches, one agent, three declarations.

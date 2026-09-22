@@ -17,7 +17,7 @@ its own unit.
     from mednorm import normalize
     normalize(["612997"], doses=[39])
 
-    curl -sS localhost:8079/normalize -H 'content-type: application/json' \
+    curl -sS localhost:8070/medication/normalize -H 'content-type: application/json' \
          -d '{"item":"612997","dose":39}'
 
 Member of the `haipipe-norm` family; read that contract first. Siblings:
@@ -170,11 +170,14 @@ LAYOUT
       retrieve.py    the A / B / C / B2 ladder
       aggregate.py   the dose's unit and basis, and IsInsulin
       constants.py   the vocabulary
-    server.py        FastAPI: /healthz /normalize /normalize/batch
-    run_server.sh    starts it on :8079 from a bare shell
     test_mednorm.py  24 resolver tests
-    test_server.py   12 service tests
-    examples/        20 real request/response pairs, both skills
+
+  Tools/plugins/haipipe-utils/servers/       the wire, plugin-level (servers/README.md)
+    _host/serve.py         one host, every noun under one port; this one at /medication
+    api-medication/
+      server.py            FastAPI: /healthz /normalize /normalize/batch
+      tests/test_server.py 12 service tests
+      examples/            20 real request/response pairs, both halves of the insulin chain
 
   _WorkSpace/ExternalStore/medbank/
     fda_ndc_product.parquet   115,496 FDA products    the BANK
@@ -191,19 +194,20 @@ HOW TO USE IT
 
 ```bash
 # as a service (a consumer needs NO python environment)
-Tools/plugins/haipipe-utils/skills/describe-medication/run_server.sh
+Tools/plugins/haipipe-utils/servers/_host/run.sh
 curl -sS "$MEDNORM_URL/normalize/batch" -H 'content-type: application/json' \
   -d '{"items":["612997","155744"],"doses":[39,1]}'
 
 # in process (env.sh already puts this dir on PYTHONPATH)
 python -c "from mednorm import normalize; print(normalize(['612997'], doses=[39]))"
 
-# the suites
-cd Tools/plugins/haipipe-utils/skills/describe-medication
-PYTHONPATH=. python test_mednorm.py && python test_server.py
+# the suites: the resolver here, the service against a running host
+cd Tools/plugins/haipipe-utils
+PYTHONPATH=skills/describe-medication python skills/describe-medication/test_mednorm.py
+MEDNORM_URL=http://127.0.0.1:8070/medication python servers/api-medication/tests/test_server.py
 ```
 
-`MEDNORM_URL` (default `http://127.0.0.1:8079`), `MEDNORM_TRANSPORT`
-(`local` | `http`), `MEDNORM_DB`, `MEDNORM_MAX_BATCH`, `MEDNORM_PORT`.
+`MEDNORM_URL` (default `http://127.0.0.1:8070/medication`), `MEDNORM_TRANSPORT`
+(`local` | `http`), `MEDNORM_DB`, `MEDNORM_MAX_BATCH`; the host's port is `HAIPIPE_UTILS_PORT` (default 8070).
 
 NOT authenticated, binds 127.0.0.1. Medication logs are PHI.

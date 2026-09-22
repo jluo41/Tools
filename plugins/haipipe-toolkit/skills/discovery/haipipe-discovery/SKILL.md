@@ -13,30 +13,34 @@ description: >-
   /haipipe-discovery.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.15.2"
-  last_updated: "2026-09-20"
+  version: "0.17.0"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md
 ---
 
 # /haipipe-discovery · one door over D1 and its Page Face
 
-Single entry for durable external-evidence work. A Discovery `tNN_` Task Page
-Folder is one research Topic with BOTH a Page Face and a Task Face. It never references its
+Single entry for durable external-evidence work. Each `bNN_` Block forms one
+`discovery-block` Board, with `jNN_` Jobs as Groups and `tNN_` Task Folders as
+Pages. A Discovery `tNN_` Task Page Folder is one research Topic with BOTH a
+Page Face and a Task Face. It never references its
 consumer upward; consumers link to its public Run Results, typed records, or
 Page Evidence Items from their own side.
 
-For durable work, LOAD haipipe-folder and haipipe-page for the two Faces. Load
-`haipipe-plugin-outline` for the Page's Outline + Evidence Workspace and its
+For durable work, LOAD haipipe-folder and haipipe-page for the two Faces, and
+LOAD haipipe-board for the Block container and generated projection. Load
+`haipipe-workbench-page` for the Page's Outline + Evidence Workspace and its
 CITE-item/aggregate-Bib authority. Once the Task Page owns a Paper Run, LOAD `haipipe-run`
-for the neutral Level-4 contract. Then LOAD `haipipe-plugin-runs` for its
+for the neutral Level-4 contract. Then LOAD `haipipe-workbench-page/ref/run-space.md` for its
 read-only Run/Result surface. The retired standalone Evidence entry is a
-compatibility redirect only; do not treat it as a public plugin or citation
+compatibility redirect only; do not treat it as a public workbench or citation
 owner. Then read only the relevant Discovery authorities:
 
 ~~~text
 ref/lifecycle-map.md           hierarchy × lifecycle × type
 ref/bjtr-alignment.md          retrofit of old numbering to BJTR
-../workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md
+ref/board-sync.md              Block-as-Board formation and checkpoints
+../haipipe-discovery-inquiry/ref/workflow-table.md
                                 canonical Page-phase × Discovery-Run table
 ref/page-types.md              Discovery article forms and Page/Run boundary
 ref/paper-run-contract.md      Level-4 Run/Result/Bib law
@@ -45,9 +49,9 @@ ref/source-format.md           human source presentation
 ref/external-skill-map.md      ARIS pin, promoted adapters, and boundaries
 ref/external-capability-registry.md
                                 normalized external packets and family routing
-../../page/page-plugins/haipipe-plugin-outline/ref/item-table.md
+../../page/haipipe-workbench-page/ref/item-table.md
                                 typed Evidence Item and Run-lineage grammar
-../../page/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md
+../../page/haipipe-workbench-page/ref/evidence/citations.md
                                 CITE authority and derived Bib aggregation
 ~~~
 
@@ -80,16 +84,17 @@ ref/external-capability-registry.md
 ~~~
 
 These are user-facing orchestration verbs, not lifecycle phases and not a promise that every verb is a
-subcommand of `paper_runs.py`. The deterministic helper currently implements
-`check` and `build-bib`; the Discovery creator authors each Subject-specific
-ticket from `ref/paper-run-contract.md`, and the `run` verb executes that
-ticket. Worker diversity is receipt detail, not a reason to weaken the common
-Run/Result contract.
+subcommand of `paper_runs.py`. The deterministic `paper_runs.py` helper
+implements `check` and `build-bib`; `scripts/board_sync.py` owns the
+Block-as-Board source/projection seam. The Discovery creator authors each
+Subject-specific ticket from `ref/paper-run-contract.md`, and the `run` verb
+executes that ticket. Worker diversity is receipt detail, not a reason to
+weaken the common Run/Result contract.
 
 ## Model
 
 `folder-kind: discovery` resolves directly to workflow phase D1 in
-`../workflow-phases/haipipe-discovery-inquiry/SKILL.md`. That phase owns both
+`../haipipe-discovery-inquiry/SKILL.md`. That phase owns both
 faces, the Discovery domain table, and the cross-face gate; this skill
 is both the user door and executor. There is no separate
 `haipipe-discovery-workflow` skill to load.
@@ -106,31 +111,34 @@ DISCOVERY TYPE  source-map | source-reading | topic-summary | prior-art-verdict 
                 in ref/page-types.md
 ~~~
 
-The skill-set folders use the same numbered family convention as
-`haipipe-task`. Discovery has three live capability groups:
+Every skill we wrote sits flat at the family root; the numbered folders hold
+only vendored originals (listed in `ref/external-skill-map.md`). Three live
+capability groups, one skill each:
 
 ~~~text
 discovery/
-├── haipipe-discovery/                         public door
-├── workflow-phases/haipipe-discovery-inquiry/ D1 Run controller (compatibility path)
-├── 1_search/                                  acquisition family + workers
-├── 2_review/                                  per-Subject review family
-├── 3_synthesize/                              cross-Result synthesis family
-└── agents/                                    execution roles
+├── haipipe-discovery/                 public door
+├── haipipe-discovery-inquiry/         D1 Run controller
+├── haipipe-discovery-search/          1 · acquisition, identity, Run allocation
+├── haipipe-discovery-review/          2 · per-Subject reading, Result writing
+├── haipipe-discovery-synthesize/      3 · cross-Result synthesis
+├── 1_search/                          vendored originals: ARIS channels and readers, paper-analyzer
+├── 2_review/                          vendored originals: research-lit, comm-lit-review, academic-researcher
+└── agents/                            execution roles
 ~~~
 
 The external ARIS reference is pinned at `Tools/references/aris` and is pulled
-before each compatibility review. The active Discovery family promotes only
-the narrow adapters it can honor: `gemini-search` for optional broad recall
-and `openalex` for optional structured metadata. Their upstream source, commit,
-and the skills intentionally kept reference-only are listed in
-`ref/external-skill-map.md`. Additional reference procedures for provider
-routing, source tracing, citation checks, genealogy, and Result-to-Claim
-support are described in `ref/external-capability-registry.md`; they return
-packets to the local family routers and do not become new lifecycle owners.
+before each compatibility review. The eleven originals under `1_search/` and
+`2_review/` are vendored copies, each stamped with its upstream commit and
+LICENSE; `ref/external-skill-map.md` lists them beside the skills kept
+reference-only. Ours run by default, an original only when the Search or Review
+skill selects it. Additional reference procedures for provider routing, source
+tracing, citation checks, genealogy, and Result-to-Claim support are described
+in `ref/external-capability-registry.md`; they return packets to the root-level
+Search, Review and Synthesize skills and do not become new lifecycle owners.
 
-Do not replace these numbered groups with `routes/`. Only
-`workflow-phases/` declares executable phase ownership.
+Do not replace the numbered folders with `routes/`. Only
+`haipipe-discovery-inquiry/` declares executable phase ownership.
 
 When an older 0/1/2/3 or 1/2/3/4 description is encountered, use
 `ref/bjtr-alignment.md` as the retrofit authority. It maps the old labels to
@@ -172,6 +180,32 @@ A Page that files one source per Run may opt into
 `layout: one-division-per-run` instead (Concept, one `rNN` division per Run,
 Limits); see `ref/page-types.md`.
 
+## Form the Board along the way
+
+The Block is the Board container from its first durable write. The Task Folder
+is the Page Folder inside that Board. Do not wait for synthesis to create the
+Board view:
+
+1. `open-block` runs `scripts/board_sync.py <block>` to create an idempotent
+   `board.md` with `board-kind: discovery-block`, `spine:`, `close:`, Topic,
+   Pipeline, Board Map, and Pages sections.
+2. `open-job` creates the `jNN_` folder, then runs the same helper. The helper
+   refreshes only its managed Job/Group span; it does not rewrite authored Board
+   prose or invent Task rows.
+3. `open` creates the `tNN_` Page Folder and root Page under that Job. The
+   direct `jNN_/tNN_` tree supplies membership and order; `board.md` remains a
+   presentation head rather than a second Page registry.
+4. After a structural change, a Run batch, Page `04 CHECK`, and before a
+   completion claim, rebuild and check the projection:
+
+~~~bash
+python3 scripts/board_sync.py <block> --build --check --strict
+~~~
+
+The generated `board/` site is disposable. Never hand-edit it, and never
+create a Board Page for a Run. The exact mapping and checkpoint table live in
+`ref/board-sync.md`.
+
 The Page-facing Run lane is separate from the Discovery Run inventory. D1
 allocates only native Discovery `rNN` Runs for canonical paper/source Subjects.
 When the Page needs human interaction, the shared Page workflow allocates
@@ -180,14 +214,14 @@ as `rp01_p01` or `rp02_p02-p03`. Those `rpNN` identities own Page feedback,
 Versions, Steps, Bullets, and acceptance; they are not Discovery Runs, do not
 enter `R_discovery`, and must never be renamed as `rNN`.
 
-The Runs plugin is required once a Task Page owns any Paper Run. Discovery uses
+The Runs workbench is required once a Task Page owns any Paper Run. Discovery uses
 the exact `rNN` `runs/<RUNNAME>.sh <-> results/<RUNNAME>/` pair inside the
 shared Page lanes; Page-owned `rpNN` records/results may coexist there but are
 presented and validated by the Page workflow. `scripts/` stays optional and
 appears only as supporting material. Runs presents these artifacts but owns no lifecycle. The Outline
-plugin owns the Page's Evidence Workspace, CITE verification, and derived Bib;
+workbench owns the Page's Evidence Workspace, CITE verification, and derived Bib;
 the compatibility Evidence entrypoint is not an authority, and there is no
-separate Bibex plugin.
+separate Bibex workbench.
 
 ## Load-bearing Level-4 laws
 
@@ -319,7 +353,8 @@ Block = Board, Job = Group, Discovery Task = Page, and Paper/Source Run =
 execution record. SPACE Home classifies the resulting container as a Discovery
 Board from its `discoveries/` ownership path. The `## Pages` section may list
 only Job headings because the direct `jNN_/tNN_` tree supplies membership and
-default Task order.
+default Task order. Run `scripts/board_sync.py` after opening the Block, Job,
+or Task so the source head and generated projection remain current.
 
 ### 2. D1 `SCOPE`
 
@@ -396,7 +431,7 @@ python scripts/paper_runs.py check <task>
 ~~~
 
 After the shared Page workflow has produced and CHECKed the root Task Page,
-use `haipipe-plugin-outline/ref/evidence/citations.md` to validate the derived
+use `haipipe-workbench-page/ref/evidence/citations.md` to validate the derived
 aggregate under `outline/evidence/bibex/`, append
 `discovery.yaml report:`, reconcile its Run counts and canonical `evidence_bib`
 path with the inventory, reconcile Page/Aims state, set the truthful terminal
@@ -429,6 +464,8 @@ references inside the owning project.
 Migration never infers Paper Runs from `sources.md`, `notes.md`, PDFs, or typed
 records. Those artifacts remain readable migration inputs until a canonical
 Subject is deliberately admitted through `add`. After writing, run
+`scripts/board_sync.py <block> --build --check --strict` for every migrated
+Block so the new Board head and Job roster are formed before
 `paper_runs.py check` on every migrated Task Page; any failure leaves the bank
 unclosed.
 Banks produced by v0.6.1 may be repaired with `scripts/regroup_bjtr.py`; use its

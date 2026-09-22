@@ -8,7 +8,7 @@
 
 这是一份补充评估和实施计划。本轮只新增本报告；不修改原报告、技能、实现、测试或其他家族的文件，也不创建实现任务。没有调用 Design 技能、启动网页、运行生成/审核流程或执行测试。下面的代码判断来自静态阅读，验收条目均是后续工作。
 
-工作树已有大量其他会话的修改，包括 Insight、Page、共享 Board、STRUCTURE 和 references 子模块。核对时 Design 主目录、指定两个 Design 插件，以及 `live/design.py`、`live/design_actions.py`、`live/designboard.py` 相对 HEAD 无修改。原评估的 Design 证据仍可使用；跨家族结论必须按当前文件更新。
+工作树已有大量其他会话的修改，包括 Insight、Page、共享 Board、STRUCTURE 和 references 子模块。核对时 Design 主目录、指定两个 Design 插件，以及 `servers/workbench-design/design.py`、`servers/workbench-design/design_actions.py`、`servers/workbench-design/designboard.py` 相对 HEAD 无修改。原评估的 Design 证据仍可使用；跨家族结论必须按当前文件更新。
 
 ### 对原报告的修正
 
@@ -38,8 +38,8 @@
 | [haipipe-design-brief](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-brief/SKILL.md) | Brief 的 Page 工作流与 Design Commission 前置依赖清楚。未确认新的独立 P1/P2 缺陷；保留版本、签名和 Board 两类限定写入的约束。 |
 | [haipipe-design-unit](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-unit/SKILL.md) | 单 Ticket worker、独立 Verify、完整检查覆盖值得保留；Adopt、渲染写入范围、标题和参考路径需修。 |
 | [haipipe-design-workflow](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md) | 三种当前 Run Type 和 Route 已明确；列表、Projection 表、Commission 次数和重审限制需统一。 |
-| [Page Design 插件](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/SKILL.md) | 当前 action 表主要正确；示例、Steps 标签、旧“双人工门”标题和若干边界措辞落后。 |
-| [Board Design 插件](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/SKILL.md) | Adopt、队列、汇总和 CSV 说明仍是旧模型；需与已更新的投影实现对齐。 |
+| [Page Design 插件](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md) | 当前 action 表主要正确；示例、Steps 标签、旧“双人工门”标题和若干边界措辞落后。 |
+| [Board Design 插件](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md) | Adopt、队列、汇总和 CSV 说明仍是旧模型；需与已更新的投影实现对齐。 |
 | 支持指令 | Designer agent、Brief agent 配置、Unit 两份 reference、Workflow run-profile、venue schema、8 个 README、8 个 style profile，以及两个插件的 space-mapping 均纳入修复范围核对。 |
 | 历史资料 | 原评估读过的 7 份 field-test 文档及旧 changelog 作为历史材料；不充当当前运行成功证据，不纳入机械术语替换。 |
 | 实现与测试 | 静态阅读 Design 相关状态折叠、action、Board 汇总、renderer 和 checker 片段，确认测试入口；没有完成这些实现的全面代码审计，也未执行测试。 |
@@ -88,9 +88,9 @@ are separately commissioned and recorded as independently closable Runs.
 
 ### F02 · P1 · Board 文档要求当前 controller 不接受的 Adopt，并错误解释 CSV
 
-**位置与证据：**[Board SKILL](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/SKILL.md:48) 第 48–49、64–65、108、116–124、163、196、216 行分别涉及 Adopt 步骤、adopted 数量、`JL · adopt` 队列、稿件选择、CSV 过滤和动作。[Board mapping](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/ref/space-mapping.md:5) 第 5、9、12、68 行重复这些约定。
+**位置与证据：**[Board SKILL](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md:48) 第 48–49、64–65、108、116–124、163、196、216 行分别涉及 Adopt 步骤、adopted 数量、`JL · adopt` 队列、稿件选择、CSV 过滤和动作。[Board mapping](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/ref/space-mapping.md:5) 第 5、9、12、68 行重复这些约定。
 
-反证来自当前实现：[Page dispatcher](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py:1659) 拒绝 Adopt 等旧动作；[Board Delivery](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/designboard.py:417) 只展示 ready 对象，[CSV 构造](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/designboard.py:475) 同样使用 `i.get("ready")`。因此本项首先是现行文档与实现冲突，不能报告为“已观察到线上仍有 Adopt 队列”。
+反证来自当前实现：[Page dispatcher](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design.py:1659) 拒绝 Adopt 等旧动作；[Board Delivery](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/designboard.py:417) 只展示 ready 对象，[CSV 构造](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/designboard.py:475) 同样使用 `i.get("ready")`。因此本项首先是现行文档与实现冲突，不能报告为“已观察到线上仍有 Adopt 队列”。
 
 **影响：**人或 agent 会寻找 controller 拒绝的按钮；按文档使用 CSV 的消费者可能把 ready 行全部漏掉。文档中“没有 adopted 就用最新通过 records check 的 draft”还会使读者把生成自检当成足够的交付凭据。
 
@@ -110,13 +110,13 @@ are separately commissioned and recorded as independently closable Runs.
 
 ### F04 · P2 · Runs 列表、Step 标签和 Delivery projection 混在同一组说明中
 
-**位置与证据：**[Workflow Run Specs](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:48) 说每行是可独立关闭的 Run Spec，第 59 行却放入 Delivery projection，第 63–64 行又说它不是 Run。主入口 [Run Type 表](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design/SKILL.md:146) 也混入 Delivery。[Page 示例](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/SKILL.md:166) 把 Delivery 放在 STEPS 链；第 63–65、205–207 行用 Steps 指实际 Runs。实现 [卡片标签](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py:1129) 也叫 Steps，但第 1094 行实际遍历 `item["runs"]`。
+**位置与证据：**[Workflow Run Specs](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:48) 说每行是可独立关闭的 Run Spec，第 59 行却放入 Delivery projection，第 63–64 行又说它不是 Run。主入口 [Run Type 表](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design/SKILL.md:146) 也混入 Delivery。[Page 示例](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md:166) 把 Delivery 放在 STEPS 链；第 63–65、205–207 行用 Steps 指实际 Runs。实现 [卡片标签](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design.py:1129) 也叫 Steps，但第 1094 行实际遍历 `item["runs"]`。
 
 [主入口](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design/SKILL.md:65) 第 65、248 行和 Page 第 300 行仍以 design phase 描述当前工作；这是可直接改成 Design Runs 的活措辞。相反，Brief 第 38 行、Workflow 第 48 行是否定 Phase，不能据此认定存在 Phase 执行层。
 
 **影响：**读者无法从表格判断 Delivery 是否需要 id、receipt 和完成动作，也难区分 Run 内的 Step 与跨 Run 的列表。
 
-**修法：**采用第 3 节的列表优先定义；三种 Run Type 和实际 Run 清单分别说明。Run Specs 表只含真正的 Run，Delivery 放在独立的投影表或表外状态。Page/Board 实际 Run 芯片改称 `Runs`；内部点击、工具调用仍叫 Step。补充路线图的用途，不删除有用的分支图。将 [Page Actions 标题](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/SKILL.md:398) 的“two human gates”同步改为当前动作说明。
+**修法：**采用第 3 节的列表优先定义；三种 Run Type 和实际 Run 清单分别说明。Run Specs 表只含真正的 Run，Delivery 放在独立的投影表或表外状态。Page/Board 实际 Run 芯片改称 `Runs`；内部点击、工具调用仍叫 Step。补充路线图的用途，不删除有用的分支图。将 [Page Actions 标题](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md:398) 的“two human gates”同步改为当前动作说明。
 
 **验收：**表格、示例与真实卡片都不把 Delivery 当作第四个 Run；读者可区分 Run Type、Run 实例与内部 Step；当前执行说明不使用 Phase 定义工作单位。历史路径名、退役说明不做全局替换。
 
@@ -132,7 +132,7 @@ are separately commissioned and recorded as independently closable Runs.
 
 ### F06 · P2 · 人为暂缓和运行阻塞共享 hold，恢复说明不足
 
-**位置与证据：**[Page 状态 mapping](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/ref/space-mapping.md:45) 第 45 行是 Commission hold，第 57 行是任意 Run blocked。[状态折叠](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py:320) 把二者都显示为 hold。第 907–913 行 `_held_at` 检查最后的 Commission 是否真的 hold，第 931 行才开放 Release/Hold；其他阻塞可能落到第 947 行无按钮。
+**位置与证据：**[Page 状态 mapping](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/ref/space-mapping.md:45) 第 45 行是 Commission hold，第 57 行是任意 Run blocked。[状态折叠](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design.py:320) 把二者都显示为 hold。第 907–913 行 `_held_at` 检查最后的 Commission 是否真的 hold，第 931 行才开放 Release/Hold；其他阻塞可能落到第 947 行无按钮。
 
 **影响：**列表虽然能显示 failure，统一的 hold 名称仍让人难以分辨这是等待决定，还是需要修复输入/记录；没有按钮时，下一步和负责人不够明确。现有保护使本项不能被当成已证实的越权 Release 漏洞。
 
@@ -156,13 +156,13 @@ are separately commissioned and recorded as independently closable Runs.
 
 **修法：**建议保持 worker 只写 Result：Generate 的截图、计量和局部 manifest 放在其 Result 内；Verify 如需自行渲染，输出到自己的 Result。caller/presenter 从 hash-bound 产物投影或复制准备交付的图片到 Delivery，记录准确来源并保持派生过程可重建。Design Space 可读取草稿的 Result 预览，Delivery Space 仍只读 ready 对象。Render 不因此升级为额外 Run。
 
-该修改必须连带检查 [Page 的图片映射说明](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/SKILL.md:261)、[manifest 读取器](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py:650)、renderer CLI 帮助/示例及 artifact 清单约定；不能只改命令路径后留下失效的预览。禁止覆盖已固定的图像，也不能在已完成 Result 中补写验证产物。
+该修改必须连带检查 [Page 的图片映射说明](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md:261)、[manifest 读取器](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design.py:650)、renderer CLI 帮助/示例及 artifact 清单约定；不能只改命令路径后留下失效的预览。禁止覆盖已固定的图像，也不能在已完成 Result 中补写验证产物。
 
 **验收：**UI Generate/Verify 的写入差集只落在各自 Result；producer Result、共享 Delivery 和 runtime 不由 worker 改动；caller 的投影绑定确切 Generate/artifact hash；新稿不显示旧图；未通过 Verify 的预览不会进入交付集合。
 
 ### F09 · P2 · 历史 Adopt Run 的显示 id 被改成虚构的 Delivery Run id
 
-**位置与证据：**[Page Run 表](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py:897) 和第 1104 行 tooltip 对 id 执行 `.replace("_adopt_", "_delivery_")`；[Board Run 表](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/designboard.py:397) 同样如此。但 [Workflow identity 约束](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:81) 禁止 Run Space rename/copy/recount。
+**位置与证据：**[Page Run 表](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design.py:897) 和第 1104 行 tooltip 对 id 执行 `.replace("_adopt_", "_delivery_")`；[Board Run 表](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/designboard.py:397) 同样如此。但 [Workflow identity 约束](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:81) 禁止 Run Space rename/copy/recount。
 
 **影响：**显示名称与真实 Ticket/receipt 不同，复制 id 后找不到对应记录；也会误导读者认为存在 Delivery Run。链接仍指原 Ticket，不能把本项说成文件已被重命名。
 
@@ -172,7 +172,7 @@ are separately commissioned and recorded as independently closable Runs.
 
 ### F10 · P2 · “一个 Commission”计数与 Hold 后新决定的记录方式矛盾
 
-**位置与证据：**[Workflow](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:25) 第 25、41 行及 [run-profile](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/references/run-profile.md:11) 第 11–14 行使用 `1 Commission + N Generate + J Verify`；Workflow 第 94–95 行又允许 held Commission 通过新的 Commission decision 释放。[commission 实现](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design_actions.py:297) 只拒绝已有 release 的 Item，第 301–325 行每次合法决定都分配新的 `rdNN_commission_*` 和 receipt。
+**位置与证据：**[Workflow](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:25) 第 25、41 行及 [run-profile](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/references/run-profile.md:11) 第 11–14 行使用 `1 Commission + N Generate + J Verify`；Workflow 第 94–95 行又允许 held Commission 通过新的 Commission decision 释放。[commission 实现](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design_actions.py:297) 只拒绝已有 release 的 Item，第 301–325 行每次合法决定都分配新的 `rdNN_commission_*` 和 receipt。
 
 **影响：**Hold → Release 至少留下两条 Commission Run，按现行“actual Runs”公式计数会漏掉历史决定，也可能诱导实现者覆盖已完成 hold 记录。
 
@@ -182,7 +182,7 @@ are separately commissioned and recorded as independently closable Runs.
 
 ### F11 · P3 · “已有 review 不可再审”遗漏 completed 条件
 
-**位置与证据：**[Workflow Verify](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:125) 第 125–126 行禁止已 review 的 draft 再审，而第 130–132 行允许无效 review 重试。[Page action 表](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/SKILL.md:410) 同一行给 verify invalid 提供 Queue Verify，又说已有 review 就拒绝。实际 [queue_verify](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design_actions.py:426) 只用 `status == "complete"` 的目标 review 阻止重复审核。
+**位置与证据：**[Workflow Verify](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:125) 第 125–126 行禁止已 review 的 draft 再审，而第 130–132 行允许无效 review 重试。[Page action 表](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md:410) 同一行给 verify invalid 提供 Queue Verify，又说已有 review 就拒绝。实际 [queue_verify](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design_actions.py:426) 只用 `status == "complete"` 的目标 review 阻止重复审核。
 
 **影响：**按说明恢复 unresolved/invalid 的执行者可能停住；当前代码已经区分，故不据此认定重试实现损坏。
 
@@ -190,7 +190,7 @@ are separately commissioned and recorded as independently closable Runs.
 
 ### F12 · P2 · “配置原样复制”没有说明 Run 专属字段的派生
 
-**位置与证据：**[unit-contract 配置说明](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-unit/references/unit-contract.md:77) 第 77–79 行写 Generate/Verify `copy it unchanged`，第 97 行又要求 self/independent 两种 review_mode。[配置构造](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design_actions.py:330) 第 344–347 行确实派生 review_mode，必要时改变 mode。
+**位置与证据：**[unit-contract 配置说明](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-unit/references/unit-contract.md:77) 第 77–79 行写 Generate/Verify `copy it unchanged`，第 97 行又要求 self/independent 两种 review_mode。[配置构造](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design_actions.py:330) 第 344–347 行确实派生 review_mode，必要时改变 mode。
 
 **影响：**接手者无法判断“冻结”要求逐字节相同，还是只要求设计目标和规则不漂移；机械落实原样复制会把 Verify 的独立模式写错。
 

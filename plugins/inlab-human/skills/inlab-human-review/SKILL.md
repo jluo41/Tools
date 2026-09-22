@@ -13,7 +13,7 @@ Skill: inlab-human-review
 
 The chat IS the reader UI. This skill turns a session into a disciplined
 instrument: fixed case order, blind-before-assisted, structured capture.
-Response contract: `../../ref/feedback-form.md` (v0.1).
+Response contract: `../ref/feedback-form.md` (v0.1).
 
 Session protocol
 ----------------

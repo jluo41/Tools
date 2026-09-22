@@ -71,7 +71,7 @@ not a Run.
 
 ## Space bindings
 
-The Design Plugin presents the graph through five Spaces (`Space` is the only
+The Design Workbench presents the graph through five Spaces (`Space` is the only
 reader-facing word, JL 260916): Goal (the Brief line and the Insight board),
 Design (the items), Insight (what supports each item), Run, Delivery. Every
 Run names the Design Item it serves with `item: ITEM<NN>`, and the Spaces

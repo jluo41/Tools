@@ -1,0 +1,123 @@
+# Citations and Bib authority
+
+This reference is loaded by `haipipe-workbench-page` when work reads or
+writes citation entries, verifies a source, builds a citation workbench, or
+aggregates Discovery Result Bibs. The parent skill remains the only Workbench.
+
+Page-facing citation labels use the same placeholder contract as other
+Evidence Labels: write `\\cite{C_<slug>}` in prose. The `C_` token joins to the
+current CITE Result/Card and may remain unresolved while writing; the later
+resolver supplies the verified citation. A BibTeX key is Result payload
+metadata, not a replacement for the Page label. The command is a Page
+placeholder, not a claim that the authored Markdown is standalone LaTeX; each
+delivery worker translates the bound citation into its own output syntax.
+
+## One law
+
+A machine may copy a BibTeX entry verbatim from a trusted publisher/index or
+a person, subset existing entries, validate them, deduplicate exact entries,
+and stable-sort them. It MUST NOT invent or complete title, author, venue,
+year, pages, DOI, or key from model memory.
+
+A person supplying citation metadata is not the same as supplying a complete
+BibTeX entry. Formatting supplied fields into BibTeX is composition; only a
+complete supplied entry may land through the person route.
+
+## Authority mode A · Page Evidence Result
+
+```text
+<page>/results/<re-run>/
+├── result.yaml          PRIMARY · the typed CITE Result envelope
+└── payload/              PRIMARY · the cited source metadata/payload
+```
+
+The current Result declares the frozen export source explicitly:
+
+```yaml
+payload:
+  bibliography: payload/sources.bib
+```
+
+This path is relative to the selected `result.yaml` and must remain inside its
+own `payload/`. Keep the complete trusted entries unchanged. Word and LaTeX
+assemble their derived bibliography from the ledger-selected, person-verified
+CITE Results. Identical shared entries are deduplicated; conflicting entries
+with the same key block export. An old Page Bib cannot fill a missing current
+binding. The derived export Bib is not a correction or verification target.
+
+Refresh may subset entries from a trusted seed Bib. A person-supplied complete
+entry may land verbatim. The workbench regenerates freely.
+
+## Authority mode B · Discovery aggregate
+
+```text
+<task>/results/<RUNNAME>/<RUNNAME>.bib  PRIMARY · one verified Subject entry
+                         │
+                         ├── validate complete Result
+                         ├── reject key/DOI conflicts
+                         ├── deduplicate exact entries
+                         └── stable key sort
+                         ↓
+<task>/results/<re-run>/result.yaml              DERIVED · Page CITE Result
+<task>/results/<re-run>/payload/                 PRIMARY · cited source payload
+```
+
+Only Results whose runtime says `status: complete` enter the union. Every
+source Result Bib contains exactly one entry, and its key equals the Result
+Card's `cite: @Key`. Planned, running, blocked, unresolved, and superseded
+Results are excluded.
+
+The derived Task Bib is never the correction target. Verification or metadata
+repair lands in the owning Result Bib first, then the aggregate and workbench
+are rebuilt. A key or DOI conflict hard-fails instead of choosing silently.
+
+Citation content and verification judgment are separate authorities. Never add
+local verification fields to a verbatim BibTeX entry. Discovery persists the
+person judgment beside that primary entry in the owning Result receipt:
+
+```yaml
+# results/<RUNNAME>/runtime.yaml
+bib:
+  source: <trusted export URL or supplied-entry receipt>
+  mode: verbatim_copy
+  verification:
+    status: verified        # pending | verified
+    by: <person identifier>
+    at: <ISO-8601 timestamp>
+```
+
+Missing `verification` means `pending`; a machine may never write
+`status: verified`. For an ordinary Page, the authoritative CITE Evidence Item
+stores `Verified: ✅ <who> <timestamp>` on that item's authored row. The LAND
+receipt links the exact item and preserves the same person and timestamp. A
+CITE local Result is not `ready` until its payload passes Acceptance and this
+item-level gate is signed. The HTML workbench only presents these judgments
+and is never their authority. Legacy BibTeX `verified = {...}` fields remain
+readable during migration but are not the new ordinary-Page write target.
+
+The exact Paper Run contract lives in
+`../../../../discovery/haipipe-discovery/ref/paper-run-contract.md`.
+
+## Legal writers
+
+```text
+ordinary refresh        subset trusted seed entries; rebuild workbench
+ordinary human entry    land a person-supplied complete entry verbatim
+Discovery Result        copy one authoritative entry into the Result Bib
+Discovery build-bib     validate/union Result Bibs; rebuild derived Page Bib
+human verification      record the judgment beside the owning primary authority
+```
+
+The Discovery builder is deterministic code, not citation authoring.
+
+## Surface and gate
+
+The 📚 Citations segment renders one row per entry with status, DOI/URL/Scholar
+links, verification controls, and the owning Result link in Discovery mode.
+Deterministic validation proves shape and identity consistency; `verified`
+remains a person's judgment. Discovery reads it from
+`runtime.yaml#bib.verification`; ordinary Pages read the owning CITE gate.
+
+`outline/evidence/bibex/` and flat `bibex/` are retired locations. They are not
+read, merged, or used as fallback. Move their material to
+`_archive/legacy-outline-evidence/` and create a typed CITE Result instead.

@@ -1,0 +1,55 @@
+🧱  Boundaries — who owns what
+═══════════════════════════════════════════════════════════════════
+
+Four concerns, four owners. The console is deliberately THIN: it holds the
+UI and the REST, and delegates every hard truth (prediction, cases, cohort)
+to code or stores it does not own.
+
+─§ The four owners ───────────────────────────────────────────────
+
+  +----------------------------+-----------------------------------------+
+  | 🎯 Concern                 | 🏠 Where it lives                       |
+  +----------------------------+-----------------------------------------+
+  | prediction logic           | 🔧 inlab-human ENGINE (imported, never  |
+  | (payload · trigger · gaps) |    reimplemented) — endpoint-predict/    |
+  | the console UI + REST       | 🖥️ HERE (main.py / *_api.py / web/)      |
+  | the chat + score narration  | 💬 Mattermost + haichat-me-agent        |
+  | humans · endpoints · cohort | 🗂️ the STUDY REPO — injected by env      |
+  +----------------------------+-----------------------------------------+
+
+─§ ⚠️ The load-bearing principle: ONE engine ─────────────────────
+
+     🖥️ console buttons ─┐
+                         ├─▶  🔧 endpoint-predict/server.py  ─▶  🧠 endpoint
+     🤖 HaiChat agent  ──┘        imported as a LIBRARY
+                                  (also runs as an MCP server)
+
+  Import it, don't fork it. If the buttons and the assistant reached the
+  endpoint through DIFFERENT code, the console could show one thing and the
+  agent claim another. Same engine ⇒ one truth to audit.
+
+─§ Nothing study-specific is committed (env-mounted) ─────────────
+
+  🗂️ INLAB_PATIENT_STORE   dir of <human_id>.json records
+  🗂️ INLAB_ENDPOINT_STORE  packaged endpoints (a 6-EndpointStore)
+  🗂️ INLAB_REGISTRY        json {package: "http://host:port"}
+  🗂️ INLAB_DATASET_STORE   parent of many patient stores (multi data-type)
+  🗂️ INLAB_LABEL_STORE     a subjective-label project's tasks/ dir
+  🗂️ INLAB_PROJECTS_ROOT   examples/ dir of Project-* (the task feed)
+  🔧 INLAB_ENGINE          optional path to endpoint-predict (else auto-found)
+
+  ⚠️ PHI never enters an image. docker-compose MOUNTS the engine + cohort
+     read-only; it does not COPY them in.
+
+─§ Two runtimes, one console ─────────────────────────────────────
+
+  📦 standalone service (this repo)      📦 embedded in a HAI-Chat thread
+     :8091 · SPA + REST + WS drawer         iframe · REST only · drawer hidden
+     the console drives itself              Mattermost is the chat; the agent
+                                            is haichat-me-agent (same skills)
+
+  Both mount the SAME routers — the APIRouters in *_api.py are app-agnostic,
+  so the D01 demo backend can mount them next to its own /ws bridge with no
+  fork.
+
+     see 04-backend-api.txt  →  the routers + how the engine is scoped

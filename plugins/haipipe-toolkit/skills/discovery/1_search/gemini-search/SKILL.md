@@ -8,17 +8,21 @@ description: >-
 allowed-tools: Bash(*), Read, Grep, Glob, Skill, mcp__gemini-cli__*
 metadata:
   argument_hint: "[search-query]"
-  version: "0.1.0"
-  last_updated: "2026-09-07"
+  version: "0.1.1"
+  last_updated: "2026-09-22"
   source: "ARIS skills/gemini-search @ 0472e53"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  haipipe:
+    vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
+    vendored_on: "2026-09-22"
+    local_changes: adapted SKILL.md (HAI Pipe adapter) and added CHANGELOG; synchronized against this ARIS tip on 2026-09-08
 ---
 
 # Gemini Search · Discovery source adapter
 
 This is the HAI Pipe adapter for the latest ARIS Gemini search skill. It is a
 candidate scout, not a citation authority and not a Run writer. Load
-`../haipipe-discovery-search/SKILL.md` for the durable Trigger -> Subject ->
+`../../haipipe-discovery-search/SKILL.md` for the durable Trigger -> Subject ->
 Run/Result contract.
 
 ## When to use

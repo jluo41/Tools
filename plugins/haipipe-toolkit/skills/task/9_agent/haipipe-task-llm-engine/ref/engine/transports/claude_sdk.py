@@ -56,7 +56,7 @@ async def call(
         system_prompt=system_prompt,
         setting_sources=[],
         skills=[],
-        plugins=[],
+        workbenches=[],
         env=environment,
     )
 

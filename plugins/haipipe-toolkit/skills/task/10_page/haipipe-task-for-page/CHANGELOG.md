@@ -49,7 +49,7 @@ The serving-page diagram now places the address in canonical
 
 The serving Page now links its collection job as one whole Folder through
 PageX. PageX reads Page Face, plan, report and QA live; the separate `task/`
-lane and `haipipe-plugin-task` dependency are gone.
+lane and `haipipe-workbench-task` dependency are gone.
 
 ## 0.1.0 · 2026-08-31
 
@@ -61,7 +61,7 @@ QA digests, proposes the owning-block task for any value with no source
 generic dispatch for a page's TASK-route values; the Discovery route, the
 probe card address (PP<NN>.v<n>) and the one-door dispatch rule
 (haipipe-probe-q-executor-agent) are unchanged. Registered in haipipe-task
-0.10.0 (type table + keyword map), haipipe-page 0.44.0, haipipe-plugin-chat
+0.10.0 (type table + keyword map), haipipe-page 0.44.0, haipipe-workbench-chat
 0.3.0, haipipe-page-probe 0.12.0, haipipe-page-evidence 0.13.0.
 
 Field-tested same day (cold subagent, scratchpad job for SM05-results: 0 landed ·

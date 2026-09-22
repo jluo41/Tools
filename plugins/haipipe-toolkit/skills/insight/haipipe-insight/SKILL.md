@@ -262,11 +262,11 @@ register cells, dead or malformed references, and the Wisdom Handoffs that
 are actually bindable. Keep the report linked to the exact source paths so a
 demo is evidence-backed rather than generated from an empty fixture.
 
-The board-level Insight plugin presents this as the read-only Check Space.
+The board-level Insight workbench presents this as the read-only Check Space.
 It may propose the next Question Group or identify a safe repair, but it does
 not rewrite a finding, promote a register cell, overwrite evidence, or write a
 person's `signed:` row. Those are explicit owner actions in the Insight
-workflow. The Page-level Design plugin reads only the DesignBoard's declared
+workflow. The Page-level Design workbench reads only the DesignBoard's declared
 `reads:` InsightBoard and accepts only a currently eligible signed Wisdom Handoff with exact owner receipts; it never
 binds directly to D, I, or K.
 

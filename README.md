@@ -9,7 +9,7 @@ upstream projects in `references/`.
 | Package | Focus | Guide |
 |---|---|---|
 | **haipipe** | Research and ML workflows across evidence, task Runs, first-class Insight and Design, papers, and the data → model → endpoint pipeline | [HAI-Pipe guide](plugins/haipipe-toolkit/README.md) |
-| **haipipe-utils** | Normalization skills that turn cohort-specific food and exercise text into typed measurements with provenance | [Utilities guide](plugins/haipipe-utils/README.md) |
+| **haipipe-utils** | Normalization skills that turn cohort-specific food, exercise, medication and insulin text into typed measurements with provenance, plus the `servers/` API host that serves them | [Utilities guide](plugins/haipipe-utils/README.md) |
 | **inlab-human** | Clinician studies of deployed prediction endpoints, including blind-then-assisted review | [In-Lab Human guide](plugins/inlab-human/README.md) |
 | **subjective-label** | Human-grounded construct building and corpus labeling with calibration and audit workflows | [Subjective Label guide](plugins/subjective-label/README.md) |
 

@@ -95,7 +95,7 @@ commissioned bet, not evidence or permission to exceed the source boundary.
    `textarea`), never a styled `div`: a div that looks like a field is not
    counted as a tap target and its edge is never measured. A changed screen is
    a new version; a pinned picture is never overwritten.
-5. Iterate within the config's `max_iterations` (the plugin writes 2; it is
+5. Iterate within the config's `max_iterations` (the workbench writes 2; it is
    the budget inside this one Generate run, and nothing counts revise runs
    across an item). Preserve useful alternatives and check
    outcomes, not private chain-of-thought. If criteria conflict or the budget

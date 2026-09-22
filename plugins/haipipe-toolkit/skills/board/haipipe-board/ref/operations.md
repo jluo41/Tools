@@ -30,8 +30,9 @@ python3 <skill>/cli/build.py <board-folder>
 The reader-facing base URL resolves in this order:
 
 1. explicit command value;
-2. `JJLUO_PUBLIC_URL` or `JJLUO_TAILSCALE_URL` from the repository's
-   `.server_config/settings.env`;
+2. `DOMAIN` from the repository's `.server_config/settings.env` (any
+   `<PREFIX>_DOMAIN` spelling is accepted), or the `HAIPIPE_DOMAIN` environment
+   variable;
 3. `HAIPIPE_BOARD_URL` from the current environment or repository `env.sh`;
 4. `http://127.0.0.1:5599`.
 
@@ -104,7 +105,7 @@ build and the appropriate regression tests.
 One server serves the repository root and all Boards beneath it:
 
 ```bash
-.venv/bin/python <skill>/cli/serve.py --root <repo-root>
+.venv/bin/python <toolkit>/servers/_host/serve.py --root <repo-root>
 ```
 
 `serve.py` requires the project environment when live Chat dependencies are
@@ -115,7 +116,7 @@ exception. The terminal endpoint is a real shell; never expose it casually.
 The Page reading surface is read-only. Its retired comment, sentence-edit,
 Card, discussion, and resolve POST routes return 405, including stale browser
 requests. Copy a passage prompt into an agent conversation to request source
-changes. Explicit plugin workspaces still manage their own records, Chat
+changes. Explicit workbench workspaces still manage their own records, Chat
 sessions, drawings, and Board structure. Source updates are complete after
 the Markdown lands and the Board rebuilds. Rebuild generated Board assets and
 restart `serve.py` when upgrading to this reading-only interface.
@@ -132,7 +133,7 @@ python3 <skill>/cli/refold.py <board-folder> --apply
 ```
 
 `regroup` places root Pages into ordered Group folders. `refold` gives each
-Page its own Folder and moves Page-owned plugin material with it. Do not apply
+Page its own Folder and moves Page-owned workbench material with it. Do not apply
 either operation to an already-canonical subject tree merely to make it look
 like a design Board. Always run `check.py` after moving because real paths in
 `## Links` may require rebasing.

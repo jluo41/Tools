@@ -4,8 +4,8 @@ description: "model-fitting job specialist: scaffolds {NN}_<name>/ jobs that fit
 argument-hint: "[project_id] [group] [job-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.1.3"
-  last_updated: "2026-09-20"
+  version: "0.1.4"
+  last_updated: "2026-09-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -21,13 +21,12 @@ Always end with the structured return block (status / task_folder / run_name / f
 ## GPU queue handoff
 
 When the fit job uses a real GPU, a multi-run sweep, or an OOM fallback, also
-read `../../haipipe-task-gpu/SKILL.md` and
-`../../haipipe-task-gpu-training/SKILL.md`. Keep training semantics,
-checkpoints, and metrics here; let the generic GPU specialist own
-exclusive-card preflight, sequential Ticket handoff, teardown, and queue
-receipts, while the training companion owns checkpoint integrity, safe
-resume, preemption, effective-batch accounting, and training-specific
-fallbacks.
+read the fit-owned companions `haipipe-task-gpu/SKILL.md` and
+`haipipe-task-gpu-training/SKILL.md`. Keep training semantics, checkpoints,
+and metrics here; let the generic GPU companion own exclusive-card preflight,
+sequential Ticket handoff, teardown, and queue receipts, while the training
+companion owns checkpoint integrity, safe resume, preemption, effective-batch
+accounting, and training-specific fallbacks.
 
 
 

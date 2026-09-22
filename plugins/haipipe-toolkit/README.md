@@ -54,7 +54,7 @@ The neutral spine is `skills/run/haipipe-run/SKILL.md`; its
 profiles, and its references define identity/history and receipt/inventory
 rules. Workflow agents, domain owners, workers and presenters use these rules.
 Page evidence wiring is
-owned by `skills/page/page-plugins/haipipe-plugin-outline/`.
+owned by `skills/page/haipipe-workbench-page/`.
 
 
 Commands
@@ -80,9 +80,10 @@ Commands
 ```
 
 Discovery work is addressed as discoveries → bNN Block → jNN Job → tNN Task
-Page → rNN Run. Its 1_search, 2_review, and 3_synthesize folders are live
-capability families, not additional levels: Search finds, Review inspects one
-source, and Synthesize combines accepted Results. The D1 and Page 00–04
+Page → rNN Run. Its Search, Review, and Synthesize skills sit at the family root and are
+capabilities, not additional levels: Search finds, Review inspects one
+source, and Synthesize combines accepted Results; `1_search/` and `2_review/`
+hold vendored originals only. The D1 and Page 00–04
 workflows are separate axes. See
 `skills/discovery/haipipe-discovery/ref/bjtr-alignment.md`.
 
@@ -134,6 +135,17 @@ skills/
 └── run/               🎟 the neutral Level-4 Run/Result contract
 ```
 
+Beside `skills/`, the plugin carries its infrastructure at plugin level, none
+of it a skill:
+
+```
+servers/               🌐 everything a browser is served by: _host/ (serve.py, auth,
+│                         the `live` namespace), haipipe-board/, haipipe-page/, and one
+│                         workbench-<name>/ per live tab; see servers/README.md
+mcp-servers/           🔌 MCP servers (codex-image2)
+agents/                🤖 plugin-level agent definitions
+```
+
 **There is no `_archive/` in this tree, and that is deliberate** (JL 260822:
 "我既然把它变成 archive 了，意思就是说要把它们都删掉"). Retiring a skill means
 DELETING it. Nine archive roots holding 487 files were removed on 260822; they are
@@ -147,7 +159,8 @@ Where to read next
 
 ```
 skills/run/haipipe-run/SKILL.md  the neutral Level-4 Run/Result contract
-skills/page/page-workflows/     the Page Context → Outline → Evidence → Content → Check loop
+skills/page/haipipe-page-workflow/  the Page workflow: the list of Runs and their routes
+skills/page/workflow-runs/                 one skill per Page Run: context · structure · scratch · writing · evidence · revise · delivery · check
 skills/STRUCTURE.md      the skill-tree mental model
 skills/board/README.md   the first-class Board family and its reviewer
 ```

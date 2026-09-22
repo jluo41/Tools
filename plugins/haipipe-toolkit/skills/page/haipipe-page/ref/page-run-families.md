@@ -31,7 +31,7 @@ owner-native rNN / bNN.jNN.tNN.rNN  Supporting Run; never renamed to RP/RE/RD
 
 | Family | Meaning | Canonical identity | Owns | Does not own |
 |---|---|---|---|---|
-| `RP` | Page Writing Run | `rp-struct-01`, `rp-scratch-01_C1.P1`, `rp-sec-01`, `rp-para-01_P03-P05` | bounded human/Page interaction, Scratch capture, feedback Steps, candidate structure/prose; `rp-struct-01` fuses SHAPE + SURVEY | final Page Content, evidence truth, delivery acceptance |
+| `RP` | Page Writing Run | `rp-struct-01`, `rp-scratch-01_C1.P1`, `rp-sec-01`, `rp-para-01_P03-P05`, `rp-revise-01_C1.P3` | bounded human/Page interaction, Scratch capture, feedback Steps, candidate structure/prose; `rp-struct-01` fuses SHAPE + SURVEY | final Page Content, evidence truth, delivery acceptance |
 | `RE` | Page Evidence Run | `re-value-01_<slug>`, `re-display-01_<slug>`, `re-cite-01_<slug>` | one Evidence Item's frozen input, evidence work, and current Result lineage | upstream source truth, unrelated items, whole-Page acceptance |
 | `RD` | Page Delivery Run | `rd01_web`, `rd02_latex`, `rd03_word` | one delivery target/version, artifact, and build receipt | Page prose authority, Evidence truth, human CHECK close |
 
@@ -45,15 +45,16 @@ use the canonical forms above.
 
 ### RP · Page Writing Run
 
-`RP` has four explicit kind tokens. The kind is part of the identity; there
+`RP` has five explicit kind tokens. The kind is part of the identity; there
 are no hidden numeric bands:
 
 | Identity | Scope | Required output and boundary |
 |---|---|---|
-| `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, and Mermaid representation |
+| `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Page direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, typed evidence decisions, and structure list |
 | `rp-scratch-NN_<target>` | human Scratch capture | rough thinking for one Section (`C1`) or whole paragraph group (`C1.P1`) in the current Outline grammar; there is no separate subsection node and B/symbol rows are not Scratch targets; the person manually triggers Finish Scratch, which asks the AI for a Summary before closing; does not edit `Draft:` prose |
 | `rp-sec-NN` | Section-level writing | one named Section drafting/revision session and its review loop |
 | `rp-para-NN_Pxx[-Pyy]` | paragraph-level writing | one fixed paragraph or contiguous paragraph group |
+| `rp-revise-NN_<target>` | Revise: before and after | two frozen texts of one target (two Versions of a writing Run, an accepted Version against a delegated paragraph Result, or two built Page versions) compared into one change ledger; every row decided; the accepted text returns to the owning writing Run as a Version; owns decisions, never prose (`haipipe-page-revise`) |
 
 `NN` starts at `01` independently for each kind. `rp-struct-01` is the first
 Structure Run and contains both SHAPE and SURVEY. It can have several human
@@ -218,6 +219,7 @@ runs/rp-struct-NN.md
 runs/rp-scratch-NN_<target>.md
 runs/rp-sec-NN.md
 runs/rp-para-NN_Pxx[-Pyy].md
+runs/rp-revise-NN_<target>.md
 runs/re-value-NN_<slug>.md
 runs/re-display-NN_<slug>.md
 runs/re-cite-NN_<slug>.md
@@ -233,7 +235,7 @@ storage.
 
 ## Boundaries
 
-- `RP`, `RE`, and `RD` are Page-local Run families, not workflow phases.
+- `RP`, `RE`, and `RD` are Page-local Run families, not Runs.
 - RP kind tokens are `struct`, `scratch`, `sec`, and `para`; paragraph identities expose
   their exact `Pxx` target or contiguous range.
 - RE kind tokens are `value`, `display`, and `cite`; `display_kind` distinguishes

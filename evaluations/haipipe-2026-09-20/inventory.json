@@ -12,7 +12,7 @@
     "0_utils/whoop-connect/SKILL.md"
   ],
   "board": [
-    "board/board-plugins/haipipe-plugin-design-board/SKILL.md",
+    "design/haipipe-workbench-design/SKILL.md",
     "board/haipipe-board/SKILL.md",
     "board/haipipe-board-routing/SKILL.md",
     "board/haipipe-folder/SKILL.md"
@@ -66,6 +66,7 @@
   "insight": [
     "insight/haipipe-insight/SKILL.md",
     "insight/haipipe-insight-workflow/SKILL.md",
+    "insight/haipipe-page-insight/SKILL.md",
     "insight/workflow-phases/haipipe-insight-data/SKILL.md",
     "insight/workflow-phases/haipipe-insight-information/SKILL.md",
     "insight/workflow-phases/haipipe-insight-knowledge/SKILL.md",
@@ -77,12 +78,12 @@
     "page/haipipe-page/SKILL.md",
     "page/haipipe-plugin/SKILL.md",
     "page/haipipe-sentence/SKILL.md",
-    "page/page-plugins/haipipe-plugin-delivery/SKILL.md",
-    "page/page-plugins/haipipe-plugin-design/SKILL.md",
-    "page/page-plugins/haipipe-plugin-folder/SKILL.md",
-    "page/page-plugins/haipipe-plugin-outline/SKILL.md",
-    "page/page-plugins/haipipe-plugin-runs/SKILL.md",
-    "page/page-plugins/haipipe-plugin-studio/SKILL.md",
+    "page/haipipe-workbench-page/ref/delivery.md",
+    "design/haipipe-workbench-design/SKILL.md",
+    "page/haipipe-workbench-page/ref/folder.md",
+    "page/haipipe-workbench-page/SKILL.md",
+    "page/haipipe-workbench-page/ref/run-space.md",
+    "page/haipipe-workbench-studio/SKILL.md",
     "page/page-workflows/haipipe-page-check/SKILL.md",
     "page/page-workflows/haipipe-page-content/SKILL.md",
     "page/page-workflows/haipipe-page-context/SKILL.md",
@@ -95,7 +96,7 @@
     "paper/haipipe-paper-assemble/SKILL.md",
     "paper/haipipe-paper-venue/SKILL.md",
     "paper/haipipe-paper-workflow/SKILL.md",
-    "paper/haipipe-plugin-paper/SKILL.md",
+    "paper/haipipe-workbench-paper/SKILL.md",
     "paper/workflow-phases/haipipe-paper-ideation/SKILL.md",
     "paper/workflow-phases/haipipe-paper-round/SKILL.md",
     "paper/workflow-phases/haipipe-paper-section/SKILL.md",
@@ -147,6 +148,8 @@
     "task/4_individual/haipipe-individual-inference-report/SKILL.md",
     "task/4_individual/haipipe-task-for-individual/SKILL.md",
     "task/5_fit/haipipe-task-for-fit/SKILL.md",
+    "task/5_fit/haipipe-task-for-fit/haipipe-task-gpu/SKILL.md",
+    "task/5_fit/haipipe-task-for-fit/haipipe-task-gpu-training/SKILL.md",
     "task/6_eval/haipipe-task-for-eval/SKILL.md",
     "task/7_display/haipipe-task-for-display/SKILL.md",
     "task/8_stata/haipipe-task-for-stata/SKILL.md",
@@ -154,10 +157,7 @@
     "task/9_agent/haipipe-task-llm-engine/SKILL.md",
     "task/haipipe-page-task/SKILL.md",
     "task/haipipe-task/SKILL.md",
-    "task/haipipe-task-gpu/SKILL.md",
-    "task/haipipe-task-gpu-training/SKILL.md",
-    "task/haipipe-workflow/SKILL.md",
-    "task/page-types/haipipe-page-insight/SKILL.md"
+    "task/haipipe-workflow/SKILL.md"
   ],
   "writing": [
     "writing/haipipe-paper-revise-humanizer/SKILL.md",

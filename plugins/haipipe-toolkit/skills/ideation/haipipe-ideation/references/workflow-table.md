@@ -2,8 +2,9 @@
 
 The executable Workflow Run Spec list is [workflow-runs.md](workflow-runs.md).
 This table maps capabilities and gates to those Runs; its I labels are not
-Workflow nodes. The numbered directories are capability families, like Discovery's
-`1_search/2_review/3_synthesize`. They do not replace the durable BJTR address
+Workflow nodes. The numbered stage names are capability vocabulary, like Discovery's
+Search/Review/Synthesize; the numbered folders on disk hold vendored originals
+only. They do not replace the durable BJTR address
 and never create a local ideation Run.
 
 | ID | Capability family | Purpose | Canonical writes | Owner execution | Exit | Human gate |

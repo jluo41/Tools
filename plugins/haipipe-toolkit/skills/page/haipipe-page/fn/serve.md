@@ -1,7 +1,7 @@
 ---
 name: haipipe-page-serve
 description: >-
-  Serve one self-contained Page Folder for live reading and plugin interaction. Distinguish
+  Serve one self-contained Page Folder for live reading and workbench interaction. Distinguish
   live standalone Page hosting from a static build and route Board or SPACE
   hosting to haipipe-board.
 argument-hint: "<page-folder> [--read-only]"
@@ -39,7 +39,7 @@ nested Page Folder. Python 3.11 or newer is required.
 
 | Operation | Source of truth | What a refresh sees |
 |---|---|---|
-| `serve` | Current Page source on disk | The current Markdown/Page Face and live plugin projections |
+| `serve` | Current Page source on disk | The current Markdown/Page Face and live workbench projections |
 | `build` | Page source at build time | The last generated `delivery/web/` export |
 
 The standalone `GET /` path reloads the current Page source before rendering.
@@ -50,10 +50,10 @@ run `build` when a portable static artifact or a downstream Board projection
 must be refreshed. Generated HTML is never an edit target.
 The Page Face has no chat launcher or comment composer. Authored comments
 remain readable as Notes. Context-bound prompt-copy controls stay in Draft and
-supported plugin spaces; copying is inert until the person pastes and sends.
+supported workbench spaces; copying is inert until the person pastes and sends.
 
-Page plugins may retain their own bounded interactions, including autosaving
-Scratch notes and manual Finish. `--read-only` disables those plugin writes too.
+Page workbenches may retain their own bounded interactions, including autosaving
+Scratch notes and manual Finish. `--read-only` disables those workbench writes too.
 
 ## Start the server
 
@@ -65,13 +65,17 @@ Use an installed Python 3.11+ interpreter and the Page engine's CLI:
   [--public-url <configured-origin>]
 ```
 
+`page.py serve` imports the standalone server from the plugin-level servers
+tree, `plugins/haipipe-toolkit/servers/haipipe-page/standalone_server.py`; the
+Page skill folder itself holds no server code.
+
 The CLI also accepts `--token`; obtain it from the protected environment or
 `PAGE_SERVER_TOKEN`, never from Page Markdown, a log, or the reply. The
 defaults are `127.0.0.1:8765`, with no token needed for a loopback-only
 server. A non-loopback binding requires `--token` or `--read-only`.
 
 For Draft Scratch note autosave and Finish, omit `--read-only`. Pass it when
-every plugin interaction must also be read-only.
+every workbench interaction must also be read-only.
 
 For a user-facing request, use the workspace's supported background process
 manager so the agent turn returns after startup. Do not start a second listener
@@ -85,14 +89,15 @@ choose an available port after identifying the conflict.
    local-only server, verify the loopback URL from the same machine.
 3. Require a successful response for `/`; a successful process start alone is
    not a hosted Page.
-4. Return the Page Folder, mode (`reader with live plugins` or `all interactions read-only`), source path, BOTH
-   verified URLs (the Page and its plugin surface), and whether static
+4. Return the Page Folder, mode (`reader with live workbenches` or `all interactions read-only`), source path, BOTH
+   verified URLs (the Page and its workbench), and whether static
    `delivery/web/` is current or not required. One URL is an incomplete reply.
 
-In Physician-SPACE, a reader-facing reply uses `JJLUO_PUBLIC_URL` from
-`.server_config/settings.env`. Never substitute `localhost`, `127.0.0.1`, or
-`file://` for that configured origin. Do not publish private inputs without
-the person's authority.
+`<DOMAIN>` is the origin the reader will use. The server prints the DOMAINs it
+answers at when it starts; `--public-url` (or `HAIPIPE_DOMAIN`) names a
+configured one such as a Tailscale IP. Never substitute `file://` for it, and
+use a loopback DOMAIN only for the person at this machine. Do not publish
+private inputs without the person's authority.
 
 ## Stop conditions
 
@@ -101,55 +106,56 @@ the person's authority.
 - Board index, aggregate navigation, Board-only terminal, and multi-Page
   hosting belong to `haipipe-board/fn/serve.md`.
 - A successful build is reported separately from server reachability and
-  plugin interaction mode.
+  workbench interaction mode.
 - Never claim that `serve` refreshed a static export. For a Board source edited
   outside the browser, use the Board watcher or run its build explicitly.
 
 ## Two URLs, always both
 
 A reply that gives one URL is incomplete. The Page itself and the Page's live
-plugin surface are different addresses, and which server owns them depends on
+workbench surface are different addresses, and which server owns them depends on
 how this Page is hosted.
 
-| Hosting | page url | plugin url (🧭 Outline) |
+| Hosting | page url | workbench url (opens 📃 Page) |
 |---|---|---|
-| standalone (`page.py serve`) | `<origin>/` | `<origin>/_board/outline?path=<page-rel>&file=<page-rel>` |
-| Board-hosted (`haipipe-board/fn/serve.md`) | `<origin>/<board-path>/board/<group-key>/<stem>.html` | `<origin>/_board/outline?path=<board-path>/<page-rel>&file=<page-rel>` |
+| standalone (`page.py serve`) | `<DOMAIN>/` | `<DOMAIN>/w` |
+| Board-hosted (`haipipe-board/fn/serve.md`) | `<DOMAIN>/b/<board-slug>/<page-id>` | `<DOMAIN>/w/<board-slug>/<page-id>` |
 
-Two rules decide whether these resolve, and both are easy to get wrong:
+A tab word after the workbench url opens that tab instead: `runs`, `delivery`,
+`folder`, `evidence`, `value`, `design`, `insight`, `labeling`
+(`<DOMAIN>/w/<board-slug>/<page-id>/runs?run=<exact-run-id>` deep-links one
+Run card; the query rides along). Both short routes redirect to the canonical
+long form, `/_board/<route>?path=…&file=…`, and the server composes that query
+itself from what is on disk: `path` is relative to `--root`, `file` is the Page
+Face relative to the Board root, and a caller never has to build either. The
+long form still works, and `file=` may be omitted on it too.
 
-- `path` is relative to the server's `--root`, with no leading slash.
-- `file` is relative to the **Board root**, not the Page folder, and not a bare
-  basename. `live/base.py:target` walks up from `path` to the nearest
-  `board.md` and then joins `file` onto that Board, so
-  `file=<stem>.md` returns 404 `找不到安全的 Page source` for a Page that sits
-  two folders below the Board. Pass
-  `file=<group>/<stem>/<stem>.md`.
+`<DOMAIN>` is a variable: the origin the reader will use, one of those the
+server printed at startup (loopback, the Tailscale IP, or the configured
+`--public-url`). The link body after it never changes.
 
-`file=` is mandatory on every plugin route; omitting it is also a 404.
+When the Page sits on a Board, also return that Board's own workbench url,
+`<DOMAIN>/w/<board-slug>`: the Page's plan is half the picture and the
+Board-level surface is where its row lives. `haipipe-board/fn/serve.md` owns
+that route.
 
-When the Page sits on a Board, also return that Board's own plugin URL: the
-Page's plan is half the picture and the Board-level surface is where its row
-lives. `haipipe-board/fn/serve.md` owns that route mapping; read it rather
-than guessing from the folder name.
-
-Verify both by request, not by construction. A plugin URL assembled from a
-template and never fetched is not a verified URL, and there are two distinct
-failures a template cannot see: a 404 from the `file=` rule above, and a 200
-whose every count renders as zero because the declaring Markdown does not
-bind. Fetch it, and read one real value off the response, a title or a row
-count, before reporting it.
+Verify both by request, not by construction. A URL assembled and never fetched
+is not a verified URL: follow the redirect and read one real value off the
+response, a title or a row count, before reporting it. A 200 whose every count
+renders as zero means the declaring Markdown does not bind, which no
+string-building can detect.
 
 ## Return packet
 
 ```text
 PAGE · SERVE
 target:       <Page Folder>
-mode:         reader with live plugins | all interactions read-only
+mode:         reader with live workbenches | all interactions read-only
 source:       <relative source path>
-board-url:    <verified Board URL when this Page is Board-hosted, else none>
-plugin-url:   <verified /_board/outline URL for this Page, or none>
-url:          <verified configured URL of the standalone Page server>
+domain:        <DOMAIN the reader will use; the others the server printed>
+board-url:     <DOMAIN>/b/<board-slug>/<page-id>  when Board-hosted, else none
+workbench-url: <DOMAIN>/w/<board-slug>/<page-id>  or <DOMAIN>/w when standalone; verified
+url:           <DOMAIN>/                           the standalone Page, when standalone
 static:       current | stale | not required
 editing:      Page source is read-only; Scratch note autosave/Finish unless `--read-only`
 next:         <one concrete next action, if any>

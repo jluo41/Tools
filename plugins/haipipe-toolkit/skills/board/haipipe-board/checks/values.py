@@ -5,7 +5,7 @@
 
 ⚠️ KNOWN DEFECT (found 260820, not yet fixed): `RECIPES` below is a fixed,
 UNSCOPED dict keyed on bare `PP<NN>.v<n>` strings — built for one Dash-type
-page's own board-health metrics (phase/run/lane/audit counts). Every OTHER
+page's own board-health metrics (Run/lane/audit counts). Every OTHER
 page's `PP01.v1`, `PP02.v1`, etc. mean something else entirely (a regression
 coefficient, a row count, anything a card names), and they COLLIDE on the same
 keys, so this check misapplies the Dash page's recipe to every page's values
@@ -26,9 +26,9 @@ about comparing 5 to 5 needs a person.
     🧑 the person owns    is this the right number to be asking for?
 
 So `read: ✅` stops meaning "I checked the arithmetic" and starts meaning "I
-agree with the judgment inside the question". PP01's `5 phases` is the worked
+agree with the judgment inside the question". PP01's `5 Runs` is the worked
 example: counting the folders is mechanical, and whether COMPILE counts as a
-phase at all is not.
+Run at all is not.
 
 Each recomputation below is an evidence item this board actually surveyed, and the
 recipe is the one its item row (or its outbound card's `executor/q-executor.md`) names. A value this file cannot
@@ -47,15 +47,15 @@ ENGINE = Path(__file__).resolve().parents[1]
 SKILLS = ENGINE.parents[1]
 sys.path.insert(0, str(ENGINE))
 
-from src.page_phase import ORDER as PAGE_PHASE_ORDER
+from src.page_progress import ORDER as PAGE_RUN_ORDER, run_of
 
 
 # ── the recipes, one per value id ────────────────────────────────────────────
-def _phase_census():
-    d = SKILLS / "page/page-workflows"
-    contracts = [d / f"haipipe-page-{phase.lower()}/SKILL.md"
-                 for phase in PAGE_PHASE_ORDER]
-    cards = (d / "haipipe-page-workflow/ref/phase-cards.md").read_text(
+def _run_census():
+    d = SKILLS / "page"
+    contracts = [d / "workflow-runs" / f"haipipe-page-{run}/SKILL.md"
+                 for run in PAGE_RUN_ORDER]
+    cards = (d / "haipipe-page-workflow/ref/run-cards.md").read_text(
         encoding="utf-8", errors="replace")
     ticks = re.search(r"(?ms)^## 🧾 Person-reserved ticks, gathered.*?```text\n(.*?)```",
                       cards)
@@ -63,14 +63,14 @@ def _phase_census():
     if ticks:
         n_ticks = len([l for l in ticks.group(1).splitlines()
                        if l.strip() and not l.lstrip().startswith(("tick", "──"))])
-    return {"phases_declared": len(PAGE_PHASE_ORDER),
+    return {"runs_declared": len(PAGE_RUN_ORDER),
             "contracts_shipping": sum(path.is_file() for path in contracts),
             "person_reserved_ticks": n_ticks}
 
 
 def _run_index(board: Path):
     runs = sorted((board / "_runs").rglob("*.json"))
-    phases, receipts = set(), 0
+    runs_seen, receipts = set(), 0
     for f in runs:
         try:
             d = json.loads(f.read_text(encoding="utf-8"))
@@ -78,12 +78,12 @@ def _run_index(board: Path):
             continue
         r = d.get("receipts") or (d if isinstance(d, list) else [])
         receipts += len(r)
-        phases |= {x.get("phase") for x in r if isinstance(x, dict)}
-    five = ["CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "CHECK"]
-    covered = [p for p in five if p in phases]
+        runs_seen |= {run_of(x.get("run") or x.get("phase")) for x in r if isinstance(x, dict)}
+    five = list(PAGE_RUN_ORDER)
+    covered = [p for p in five if p in runs_seen]
     return {"runs_total": len(runs), "receipts_total": receipts,
             "coverage": "%d of 5" % len(covered),
-            "phases_never_run": len(five) - len(covered)}
+            "runs_never_run": len(five) - len(covered)}
 
 
 def _lane_census(board: Path):
@@ -126,13 +126,13 @@ def _auditor(board: Path):
 
 # value id -> (recipe key, how to pull the expected number out of the row)
 RECIPES = {
-    "PP01.v1": ("phase_census", "phases_declared"),
-    "PP01.v2": ("phase_census", "contracts_shipping"),
-    "PP01.v3": ("phase_census", "person_reserved_ticks"),
+    "PP01.v1": ("run_census", "runs_declared"),
+    "PP01.v2": ("run_census", "contracts_shipping"),
+    "PP01.v3": ("run_census", "person_reserved_ticks"),
     "PP02.v1": ("run_index", "runs_total"),
     "PP02.v2": ("run_index", "receipts_total"),
     "PP02.v3": ("run_index", "coverage"),
-    "PP02.v4": ("run_index", "phases_never_run"),
+    "PP02.v4": ("run_index", "runs_never_run"),
     "PP03.v1": ("lane_census", "probe_cards_total"),
     "PP03.v2": ("lane_census", "planned"),
     "PP03.v3": ("lane_census", "probe_read_ticked"),
@@ -170,7 +170,7 @@ def sweep(board: Path):
                 continue
             recipe, field = RECIPES[key]
             if recipe not in recipes:
-                recipes[recipe] = {"phase_census": _phase_census,
+                recipes[recipe] = {"run_census": _run_census,
                                    "run_index": lambda: _run_index(board),
                                    "lane_census": lambda: _lane_census(board),
                                    "auditor": lambda: _auditor(board)}[recipe]()

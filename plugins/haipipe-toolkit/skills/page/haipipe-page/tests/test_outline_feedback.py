@@ -16,12 +16,13 @@ from unittest.mock import patch
 
 PAGE_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PAGE_ROOT))
+sys.path.insert(0, str(PAGE_ROOT.parents[2] / "servers" / "haipipe-page"))  # standalone_server
 
 from live.outline import OutlineMixin, plan_card  # noqa: E402
 from live.outline_feedback import (feedback_items, paragraphs, run_rows,  # noqa: E402
                                    save_feedback)
 from src.page_workspace import load_page  # noqa: E402
-from src.standalone_server import create_server  # noqa: E402
+from standalone_server import create_server  # noqa: E402
 
 
 PLAN = """# S-test · outline v1.1
@@ -282,7 +283,7 @@ class WriteSideTest(FeedbackFixture):
         self.assertEqual(result["run"], "rp-para-02_P03")
         ticket = (self.folder / "runs" / "rp-para-02_P03.md").read_text(encoding="utf-8")
         self.assertIn("paragraphs: P03", ticket)
-        self.assertIn("Mermaid Structure description: P03 · C2.P3 · Sources", ticket)
+        self.assertIn("Structure description: P03 · C2.P3 · Sources", ticket)
         v001 = (self.folder / "results" / "rp-para-02_P03" / "v001.md").read_text(encoding="utf-8")
         self.assertIn("Prior Version: none", v001)
         self.assertIn("- Target: `C2.P3.B1` · P03", v001)
@@ -338,7 +339,7 @@ class WriteSideTest(FeedbackFixture):
         handler = OutlineMixin()
         handler.target = lambda p: (self.page.name, self.folder)
         result, err = handler.plug_outline({
-            "action": "scratch", "phase": "finish", "scope": "paragraph",
+            "action": "scratch", "step": "finish", "scope": "paragraph",
             "target": "C1.P2", "notes": "Explain the design move.",
             "summary": "This legacy field is ignored.",
         })
@@ -382,7 +383,7 @@ class StandaloneWireTest(FeedbackFixture):
         self.assertIn('data-scratch-scope="paragraph"', body)
         self.assertNotIn("Save note", body)
         scratch = {
-            "action": "scratch", "phase": "finish", "scope": "paragraph",
+            "action": "scratch", "step": "finish", "scope": "paragraph",
             "target": "C1.P2", "notes": "Start with the visit.",
             "file": self.page.name, "path": "",
         }

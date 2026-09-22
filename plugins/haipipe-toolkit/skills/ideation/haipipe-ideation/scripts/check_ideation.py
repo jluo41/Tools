@@ -547,6 +547,7 @@ class GateCheck(SelectionChecks):
                 [
                     "canonical_id",
                     "title",
+                    "question",
                     "claim",
                     "method",
                     "hypothesis",
@@ -558,6 +559,9 @@ class GateCheck(SelectionChecks):
                 ],
                 path,
             )
+            question = value.get("question")
+            if self.nonempty(question) and not str(question).strip().endswith("?"):
+                self.fail("unframed-idea", path, "question must be the research question this Idea asks: one sentence ending in ?")
             claims = value.get("core_claims")
             if not isinstance(claims, list) or not claims:
                 continue

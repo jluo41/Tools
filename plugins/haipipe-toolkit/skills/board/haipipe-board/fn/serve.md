@@ -37,16 +37,28 @@ Board's rendered index. The reader-facing routes are:
 
 | Surface | Route |
 |---|---|
-| SPACE Home | `<origin>/` or `<origin>/boards` |
-| Board index | `<origin>/b/<board-slug>` |
-| One Page in that Board | `<origin>/b/<board-slug>/<page-id>` |
+| SPACE Home | `<DOMAIN>/` or `<DOMAIN>/boards` |
+| Board index | `<DOMAIN>/b/<board-slug>` |
+| One Page in that Board | `<DOMAIN>/b/<board-slug>/<page-id>` |
+| The Board's workbench | `<DOMAIN>/w/<board-slug>` |
+| One Page's workbench | `<DOMAIN>/w/<board-slug>/<page-id>[/<tab>]` |
 
-The short route redirects to the canonical generated file so relative assets,
-live panes, and write-back paths keep the correct origin. Obtain
-`<board-slug>` from the discovered Board and `<page-id>` from its resolved
-rendered Page link or index; never invent either value from a folder name.
-Verify the exact final Board or Page route before returning it. An unknown or
-ambiguous slug is a 404, not permission to guess another Board.
+`b` is the reader's address, `w` the worker's, and they take the same two
+words. Both redirect to the canonical long route, so relative assets, live
+panes, and write-back paths keep the correct origin, and the server fills in
+the long route's query itself. Obtain `<board-slug>` from the discovered Board
+(the folder name without its `NN-` ordinal and `-YYMMDD` date) and `<page-id>`
+from the Board's page id (`QA1`, `S-Label-1`); never invent either value.
+`<tab>` is one of `runs`, `delivery`, `folder`, `evidence`, `value`, `design`,
+`insight`, `labeling`; omitted, the Page's workbench opens on 📃 Page. An
+unknown slug, page, or tab is a 404 that says why, not permission to guess.
+
+`<DOMAIN>` is a variable, not a value to type: the origin the person will use.
+The server prints every DOMAIN it answers at when it starts (loopback, the
+Tailscale IP when the bind reaches it, and the configured origin from
+`--public-url`, the `HAIPIPE_DOMAIN` environment variable, or the `DOMAIN` line
+of `<root>/.server_config/settings.env`). The link body after `<DOMAIN>` is the
+same for all of them.
 
 ## Read before serving
 
@@ -73,8 +85,11 @@ is the repository virtual environment because live Chat routes may require its
 SDK:
 
 ```bash
-<repo-root>/.venv/bin/python <board-engine>/cli/serve.py --root <root>
+<repo-root>/.venv/bin/python <servers>/_host/serve.py --root <root>
 ```
+
+`<servers>` is the plugin-level servers tree, `plugins/haipipe-toolkit/servers`,
+a sibling of `skills/`; the Board skill folder itself holds no server code.
 
 When settings are not available, the CLI accepts these relevant overrides:
 
@@ -88,10 +103,14 @@ When settings are not available, the CLI accepts these relevant overrides:
 --daemon <logfile>     detach with output in a named log
 ```
 
-Omitted host, port, SPACE name, public URL, and auth file are read from the
-non-secret values in `<root>/.server_config/settings.env` when available. Do
-not print that file, copy credentials into a Board, or put a real password in
-the function reply.
+Omitted host, port, SPACE name, DOMAIN, and auth file are read from the
+non-secret keys of `<root>/.server_config/settings.env` when available:
+`BIND_HOST`, `PORT`, `SPACE_NAME`, `DOMAIN`, `AUTH_FILE`, `NO_AUTH` (a
+deployment may prefix them, `<PREFIX>_DOMAIN`). Do not print that file, copy
+credentials into a Board, or put a real password in the function reply.
+`--only <workbench>` serves one workbench's routes and nothing else; the
+labeling host under `plugins/subjective-label/servers/_host/serve.py` is that
+flag with `labeling` filled in.
 
 For a non-loopback host, use an auth file by default. `--no-auth` is allowed
 only when the person explicitly accepts the trusted private-network boundary.
@@ -136,9 +155,12 @@ Page, even though the source Markdown is already current.
 4. Return the root scope, selected Board(s), server URL, authentication mode,
    build freshness, and watcher state.
 
-In Physician-SPACE, resolve the reader-facing origin from `JJLUO_PUBLIC_URL`
-in `.server_config/settings.env`. Use the verified configured URL in the
-reply; never substitute `localhost`, `127.0.0.1`, or `file://`.
+Resolve `<DOMAIN>` from the server's startup print or, before it starts, from
+`--public-url`, `HAIPIPE_DOMAIN`, or the `DOMAIN` line of
+`.server_config/settings.env`. A reader-facing reply uses the DOMAIN the reader
+will actually use (the configured origin or the Tailscale IP), never a bare
+`localhost` or `file://` substitute; a loopback DOMAIN is right only for the
+person sitting at this machine.
 
 ## Stop conditions
 
@@ -154,39 +176,38 @@ reply; never substitute `localhost`, `127.0.0.1`, or `file://`.
 
 A served Board answers at two different addresses and a reply that gives only
 one is incomplete. The reader wants the Board; the person doing the work wants
-the plugin surface that shows the Board's own journey.
+the workbench surface that shows the Board's own journey.
 
 | URL | What it is | Shape |
 |---|---|---|
-| board | the generated static site, wrapped in the reader shell | `<origin>/<board-path>/board/index.html` |
-| plugin | the live, storage-less plugin surface for this Board kind | `<origin>/_board/<route>?path=<board-path>/board.md&file=board.md` |
+| board | the generated static site, wrapped in the reader shell | `<DOMAIN>/b/<board-slug>` |
+| workbench | the live, storage-less workbench for this Board kind | `<DOMAIN>/w/<board-slug>` |
 
-`<board-path>` is the Board folder relative to the server's `--root`, with no
-leading slash. `file=board.md` is mandatory on every plugin route: the handler
-returns 400 without it, and 400 again when `board.md` does not declare the
-dialect or kind that route serves.
+Both are short routes that redirect to the canonical long form. The workbench
+redirect picks the route from what `board.md` declares and fills in
+`path=<board-path>/board.md&file=board.md` itself:
 
-Pick the plugin route from what `board.md` declares:
-
-| board.md declares | Plugin route |
+| board.md declares | Long route behind `/w/<board-slug>` |
 |---|---|
 | `dialect: paper` | `/_board/paper` |
-| `board-kind: design-board` | `/_board/design-board` |
-| `board-kind: insight-board` | `/_board/insight-board` |
-| `board-kind: labeling-board` | `/_board/labeling-board` |
-| none of the above | no board-level plugin; return `plugin-url: none` |
+| `board-kind: design-board`, or a Design Board by layout | `/_board/design-board` |
+| `board-kind: insight-board`, or an InsightBoard by layout | `/_board/insight-board` |
+| `board-kind: labeling-board`, or Pages that own labeling jobs | `/_board/labeling-board` |
+| none of the above | 404 with the reason; return `workbench-url: none` |
 
-A page-level surface is a different thing and is not this field. 🧭 Outline
-answers at
-`/_board/outline?path=<board-path>/<page-rel>&file=<page-rel>`, where
-`<page-rel>` is the Page Face relative to the BOARD root, not a bare basename;
-it belongs to one Page, not to the Board. `haipipe-page/fn/serve.md` owns it.
+The long form stays valid, and `file=` may now be omitted on every route: the
+server derives it from `path=` (a Board folder or anything under its generated
+`board/` is `board.md`; a Page folder is its registered or same-stem Face).
 
-Verify both by request, not by construction. A plugin URL that was assembled
-from a template and never fetched is not a verified URL: the common failure is
-a 200 that renders every count as zero because `board.md` does not bind, which
-no amount of string-building can detect. Fetch it, and read one number off the
-response before reporting it.
+A page-level workbench is a different thing and is not this field. One Page's
+workbench answers at `<DOMAIN>/w/<board-slug>/<page-id>[/<tab>]` and belongs
+to that Page, not to the Board; `haipipe-page/fn/serve.md` owns it.
+
+Verify both by request, not by construction. A URL that was assembled and never
+fetched is not a verified URL: the common failure is a 200 that renders every
+count as zero because `board.md` does not bind, which no amount of
+string-building can detect. Fetch it, follow the redirect, and read one number
+off the response before reporting it.
 
 ## Return packet
 
@@ -194,8 +215,9 @@ response before reporting it.
 BOARD · SERVE
 root:         <selected root>
 boards:       <Board scope or list>
-board-url:    <verified configured URL of board/index.html>
-plugin-url:   <verified /_board/<route> URL, or none for this board kind>
+domain:        <DOMAIN the reader will use; the others the server printed>
+board-url:     <DOMAIN>/b/<board-slug>           verified by request
+workbench-url: <DOMAIN>/w/<board-slug>           verified, or none for this board kind
 auth:         loopback | auth-file | trusted-private exception
 build:        current | rebuilt | stale | blocked
 watchers:     <active Board watchers, or none>

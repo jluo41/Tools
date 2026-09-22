@@ -49,7 +49,7 @@
   release assignments and retained only as development provenance.
 - Any future `1.0.0+` requires explicit user approval.
 - 2026-09-16: the Ticket gained `item: ITEM<NN>`, naming the Design Item the
-  Run serves; the checker does not interpret it, the Design plugin groups
+  Run serves; the checker does not interpret it, the Design workbench groups
   Runs by it.
 
 ## 4.0.1 · 2026-09-13

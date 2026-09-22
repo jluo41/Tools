@@ -1,0 +1,55 @@
+🧬  Data lineage in the UI — one dataset, four stages
+═══════════════════════════════════════════════════════════════════
+
+The four DATA views are the SAME dataset shown at successive pipeline
+stages. Put Source next to Record (drag the tab) and you watch the cleaning
+happen row-for-row. Each view has a banner naming its store.
+
+─§ view ↔ store ↔ transform ──────────────────────────────────────
+
+  +-----------+------------------+--------------------------------------+
+  | 👁️ View    | 🗂️ Store          | ⚙️ What you see                       |
+  +-----------+------------------+--------------------------------------+
+  | 📄 Raw     | 0-RawDataStore   | files exactly as they arrived        |
+  | 🗂️ Source  | 1-SourceStore    | ProcName_to_ProcDf — parsed tables   |
+  | 🧾 Record  | 2-RecStore       | RecordFn: cleaned, PID-keyed, binned |
+  | 📌 Case    | 3-CaseStore      | one case = one annotation/pred point |
+  +-----------+------------------+--------------------------------------+
+
+    📄 ──▶ 🗂️ ──▶ 🧾 ──▶ 📌
+   arrive  parse  clean  cut
+   (⚙️ SourceFn · HumanFn+RecordFn · TriggerFn+CaseFn between the arrows)
+
+─§ ⚠️ The as-of discipline (Raw / Source view) ───────────────────
+
+  the chart is rendered AS OF the prediction index date. In the raw view,
+  rows that POSTDATE it are FLAGGED, not hidden:
+
+    row_date ≤ index_date   →  ✅ the model saw this
+    row_date >  index_date   →  ⚠️ _after_index  (the future — model never saw it)
+
+─§ The human-type axis (why patient AND physician fit) ───────────
+
+  the pipeline is generic over a HUMAN. patient / physician are siblings,
+  not different architectures — the choice is CONFIG, not schema:
+
+        🧑 Human  (record layer is keyed by HumanID)
+       ┌────────────┴────────────┐
+    HmACIPtt (patient)        HmPhy (physician)
+    RawHumanID = PatientID    RawHumanID = NPI
+    streams: Dialogue/Note    streams: Review/Profile
+
+  ⚠️ Records do NOT choose which humans. A Review stream no more "knows"
+     it's a physician than CGM "knows" it's a patient. The human TYPE is
+     picked by the mounted dataset; WHICH individuals, by the cohort/case
+     config — never by the record schema.
+
+─§ Datasets = data types (the topbar picker) ─────────────────────
+
+  🗃️ ACIBench_v0   patient ↔ doctor conversations   (207 humans)
+  🗃️ PhyReview_v0  physician reviews                 (demo store)
+  🗃️ MIMIC-IV …    ICU timelines                     (when mounted)
+
+  picking one re-scopes the roster AND the cases (see 04 — engine scoping).
+
+     see 07-case-builder.txt  →  how the 📌 Case view actually cuts a case

@@ -3,6 +3,10 @@ alphaxiv — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## 0.1.2 · 2026-09-22
+
+- Stamped as a vendored original: LICENSE copied from ARIS, `metadata.haipipe.vendored_from` = `https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53`. The numbered folder now holds vendored originals only; the Search, Review and Synthesize skills we wrote sit at the family root.
+
 ## [0.1.1] — 2026-09-04
 
 - Move the invocation hint under supported metadata and repair the canonical

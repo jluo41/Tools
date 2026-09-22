@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """One screen: what a board, a group, or a page SAYS right now.
 
-The three strips answer WHERE (`pagestatus.py` a group, `pagephase.py` a
-phase, `pagecontext.py` the related-page packet); none answers WHAT. This
+The three strips answer WHERE (`pagestatus.py` a group, `pageprogress.py` the
+next Run, `pagecontext.py` the related-page packet); none answers WHAT. This
 tool prints the summary surfaces the contracts already require — a page's
 title, Opening visible paragraph, Aims joined to States; a board's spine,
 Topic paragraph and roster — so a reader knows what the thing claims

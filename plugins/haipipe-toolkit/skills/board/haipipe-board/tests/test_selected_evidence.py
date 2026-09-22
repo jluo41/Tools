@@ -115,7 +115,7 @@ def test_both_writers_reject_invalid_selection_before_conversion(tmp_path, metho
     out.mkdir()
     class Fake(ExportMixin):
         root = tmp_path
-        def _export_target(self, payload, plugin): return page, out, tmp_path, None
+        def _export_target(self, payload, workbench): return page, out, tmp_path, None
         def _canon_ctx(self, board, payload): return {}
         def _run(self, *args, **kwargs): raise AssertionError('Converter must not run')
     result, error = getattr(Fake(), method)({})
@@ -132,7 +132,7 @@ def test_word_stages_only_selected_display(tmp_path):
     out.mkdir()
     class Fake(ExportMixin):
         root = tmp_path
-        def _export_target(self, payload, plugin): return page, out, tmp_path, None
+        def _export_target(self, payload, workbench): return page, out, tmp_path, None
         def _canon_ctx(self, board, payload): return {}
         def _rebuild_ui(self, route, payload): return '', ''
         def _run(self, cmd, **kwargs):

@@ -42,8 +42,8 @@ MINIMAL_PAGE_FACE = True
 # Keys are scanned from the SOURCE with fences and backticks stripped — the
 # same illustration rule the bibex workbench applies — and a key the bib lacks
 # is simply absent here (the workbench's red card already reports it).
-# The two small parsers mirror live/export.py's (the server side of the same
-# plugin).
+# The two small parsers mirror servers/workbench-page/export.py's (the server side of the same
+# workbench).
 
 _CITE_RE = re.compile(r"\\cite(p|t)?\*?(?:\[[^\]]*\])*\{([^}]+)\}")
 
@@ -231,13 +231,13 @@ def _outline_status_class(status):
 def _outline_grid(page_src):
     """Render the Page's compact plan-and-evidence review table.
 
-    The Outline plugin still owns its richer plan card and Evidence lens.  This
+    The Outline workbench still owns its richer plan card and Evidence lens.  This
     projection is intentionally a real table for a Section reader: C/P rows
     give narrative hierarchy; B rows carry their Bullet text, routed Feedback, a compact
     evidence identity, Supporting Runs, and a local Run. Item status remains
     encoded by the Evidence chip colour and its title; a separate Status column
     would repeat that state while stealing width from the plan.  Every chip is
-    a deep link into the Outline plugin: Feedback lands on its Context record,
+    a deep link into the Outline workbench: Feedback lands on its Context record,
     an Evidence chip lands on its Evidence Space item row, and a Run lands
     on its Runs-lens card.  The compact table never opens a popover of its own.
     """
@@ -253,7 +253,7 @@ def _outline_grid(page_src):
     gate = "approved" if approved else "approved: ⬜"
 
     # The Page shows only the four reader-facing cycles.  Evidence-item states
-    # remain available in the Outline plugin, not beside the plan table.
+    # remain available in the Outline workbench, not beside the plan table.
     cycle_order = ("SHAPE", "SURVEY", "LAND", "EMBED")
     current_cycle = typed["cycle"].upper()
     current_index = (cycle_order.index(current_cycle)
@@ -508,7 +508,7 @@ def _outline_grid(page_src):
         """Render only the reader-facing Point in the compact Page table.
 
         Plan annotations are process material.  They remain in ``outline/``
-        and in the Outline plugin instead of leaking into the reading face.
+        and in the Outline workbench instead of leaking into the reading face.
         """
         point = block["point"]
         label = "[%s · %s]" % (point["number"], point["role"])
@@ -541,7 +541,7 @@ def _outline_grid(page_src):
         evidence, supporting, local = evidence_cell(address)
         # The address is the Bullet's permalink.  Both a Board-hosted Page and
         # a standalone Page send the same Outline route; the host only decides
-        # whether that route opens in its plugin pane or as a direct page.
+        # whether that route opens in its workbench pane or as a direct page.
         rows.append('<tr class="outline-grid-bullet"><th scope="row">'
                     '<a class="outline-bullet-link" '
                     'href="%s&amp;lens=div&amp;focus=%s" '
@@ -1359,7 +1359,7 @@ def _render_question(q, prv, nxt):
     page_src = pathlib.Path(_bd.BASE or ".") / q["file"] if q.get("file") else None
     # A folded Page keeps process records in its outline/ folder.  The main
     # Page therefore renders only the product and compact Outline projection;
-    # Files, Discussion, and Log belong to the Outline plugin workspaces.
+    # Files, Discussion, and Log belong to the Outline workbench workspaces.
     has_outline_folder = bool(
         page_src and (page_src.parent / "outline").is_dir()
     )
@@ -1403,7 +1403,7 @@ def _render_question(q, prv, nxt):
         f'<section class="slide q {cls}" id="{q["id"]}"'
         f' data-title="{esc(q["title"])}" data-file="{esc(q.get("file",""))}"'
         f' data-session="{esc(q.get("session",""))}"'
-        # A plugin surface gates on the page's declared type (JL 260807), so the type
+        # A workbench surface gates on the page's declared type (JL 260807), so the type
         # has to survive into the DOM; before this it lived only in the source head.
         f' data-page-type="{esc(q.get("page_type",""))}"'
         f' data-folder-kind="{esc(q.get("folder_kind",""))}">'

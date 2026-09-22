@@ -2,7 +2,7 @@
 
 This is the reader-facing completion contract for a Page. It is the small
 packet a person uses to inspect the result in chat; it is not a replacement for
-the phase receipt, the evidence ledger, or the workflow audit bundle.
+the Run receipt, the evidence ledger, or the workflow audit bundle.
 
 ## When it is required
 
@@ -22,16 +22,16 @@ Select the routine writing packet below for a feedback Step. The four-surface
 packet is for formal review/delivery. For that formal packet, the main response
 contains these four user-check surfaces plus the read-only Delivery Workspace
 consistency receipt. Detailed
-source paths, logs, manifests, hashes, and phase receipts stay in the durable
+source paths, logs, manifests, hashes, and Run receipts stay in the durable
 records and may be mentioned only when they explain a missing or stale surface.
 
 When a person says enter, continue, resume, or review an open Page Run before
 giving new feedback, use the pre-Step review packet below. It shows the latest
 saved candidate, the fixed structure/Section/paragraph scope, the frozen
-Mermaid Structure description for every selected paragraph when prose is in
+Structure description for every selected paragraph when prose is in
 scope, and the next proposed Step number. It does not append a new Step or
 claim a new durable record. Never return only a status summary or links when
-the person has asked to enter a Step: return the full selected scope, Mermaid
+the person has asked to enter a Step: return the full selected scope, Structure
 descriptions where applicable, sentence labels for prose, review scope, and
 all three links.
 
@@ -44,13 +44,13 @@ Use this packet before new feedback arrives:
 ```markdown
 ## ✍️ <rp-struct-NN | rp-sec-NN | rp-para-NN_Pxx[-Pyy]> · next Step <vNNN/sNNN>
 
-### P01 · <C.P> · <Mermaid Structure description>
+### P01 · <C.P> · <Structure description>
 
 > **S1** <latest complete saved sentence>
 >
 > **S2** <latest complete saved sentence>
 
-### P02 · <C.P> · <Mermaid Structure description>
+### P02 · <C.P> · <Structure description>
 
 > **S3** <latest complete saved sentence>
 >
@@ -68,7 +68,7 @@ review/rating → diagnose → revise cycle and the post-revision
 review/diagnosis. Do not
 write `sNNN` to the Version journal until the person supplies feedback,
 acceptance, or an explicit close. Resolve each description from the closed
-`rp-struct-01` index or its authored `outline/<stem>-logic.mmd`; if
+`rp-struct-01` index in the Outline; if
 the description is missing or ambiguous, show a named blocker rather than
 inventing one.
 
@@ -82,11 +82,11 @@ After a saved writing Step:
 2. Immediately show the complete saved candidate for the fixed Run scope. For
    a paragraph Run, show the full selected one-to-three paragraphs in reader
    order, including unchanged sentences. Put each paragraph under its own
-   visible `### PNN · Cn.Pm · <Mermaid Structure description>` label and its
+   visible `### PNN · Cn.Pm · <Structure description>` label and its
    own Markdown blockquote. For a Section Run, show the complete Section
    candidate followed by its review/rating, diagnosis, revision summary, and
    post-revision review/diagnosis. For a structure/Bullet Run, show the
-   Mermaid map, ordered Bullets, and the `P01..PN` index. Sentence labels are
+   structure list (divisions and paragraphs), ordered Bullets, and the `P01..PN` index. Sentence labels are
    chat review coordinates only. Prefix every sentence with a stable bold
    review label, but do not write those labels into the Workspace candidate or
    final Page Content. Use exactly the saved Workspace's reader
@@ -114,12 +114,12 @@ After a saved writing Step:
    Acceptance, status, navigation, and presenter-only Steps create no Track
    Changes card. Current Run expands only the latest Step; earlier Steps remain
    collapsed until the reader opens them.
-4. Show the Section Mermaid before the paragraph only when the argument or
+4. Show the Section's structure rows before the paragraph only when the argument or
    paragraph relationships changed; a wording edit needs no repeated diagram.
 5. For a routine writing packet, put **all three direct clickable links at the very end**:
    `[Draft Space](<verified …&lens=div>) ·
    [Evidence Space](<verified …&lens=evidence>) ·
-   [Current Run](<verified …/_board/runs?path=…&file=…&run=<exact-run-id>>)`. The
+   [Current Run](<verified <DOMAIN>/w/<board-slug>/<page-id>/runs?run=<exact-run-id>>)`. The
    Current Run route opens the readable Run projection and expands its current
    Step plus prior history; it is not a raw Markdown, result-directory, or
    Python implementation link.
@@ -134,7 +134,7 @@ Provide them when explicitly requested or when this turn actually changed those
 artifacts. A stale PDF is labelled stale and never delays a prose-only turn.
 
 Between Steps or Runs, follow
-`../../page-workflows/haipipe-page-workflow/ref/interactive-execution-policy.md`.
+`../../haipipe-page-workflow/ref/interactive-execution-policy.md`.
 If a heavy action is useful, return its scoped approval request first; do not
 start it silently while preparing the next paragraph packet.
 
@@ -154,13 +154,14 @@ than inventing a live link or substituting a localhost/raw-HTML URL.
 ```text
 1. Draft and Evidence Spaces
    return both direct links from the same verified Board route:
-     🧭 Draft Space  `<Board URL…&lens=div>` · Mermaid + read-only paragraph/Draft table
+     🧭 Draft Space  `<Board URL…&lens=div>` · Structure list + paragraph/Draft table
      ▤ Outline table    `<Board URL…>` · the compact Page projection
    The `lens=div` link is the direct Draft Space route; do not make the
    reader open the default Page and hunt for the tab.
-   `<Board URL>` means the verified page-specific `/_board/outline?path=…&file=…`
-   route; preserve its query and append these parameters (use `?` only when a
-   base route has no query string).
+   `<Board URL>` means the verified page-specific workbench url,
+   `<DOMAIN>/w/<board-slug>/<page-id>`; the server composes the long route's
+   `path=` and `file=`, so append only these parameters (`?lens=div`,
+   `?lens=evidence`), and they ride through the redirect.
 
 2. Evidence you can open now
    return the direct Evidence Space route even when no item is ready:
@@ -174,7 +175,7 @@ than inventing a live link or substituting a localhost/raw-HTML URL.
                 its Run and its Result
    plus the direct Evidence Space → typed section/card link above.  Do not use the
    embedded `/_board/evidence?...&embed=1` iframe URL as the primary response
-   link; it is an implementation detail of the Outline plugin.
+   link; it is an implementation detail of the Outline workbench.
    An item that is not ready is listed as `not current · <blocking step>`.
 
 3. Content state
@@ -259,7 +260,7 @@ Before returning the packet:
    display changed. Routine preview changes do not refresh published Content;
 4. verify that every linked file exists and is newer than the source it
    projects, or report it as stale;
-5. verify the exact configured `JJLUO_PUBLIC_URL` Board route with a
+5. verify the exact configured `<DOMAIN>` Board route with a
    lightweight successful request before returning it as a link; the Evidence
    Workspace deep links share that origin.
 

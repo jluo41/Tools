@@ -34,7 +34,7 @@ Family-level changes. Skill implementation history remains in
   canonical Page family: Board owns container/Group/roster/aggregate behavior;
   Page owns individual Page state, workflow, renderer, and standalone use.
 - Fix the family source map and every active Board-owned cross-family link.
-  Board-local Page/plugin/workflow entries are compatibility links only.
+  Board-local Page/workbench/workflow entries are compatibility links only.
 - Separate Page Run, Task Run, and Page workflow-pass vocabulary; update write
   routing to current Aims and typed `outline/` records.
 - Add owner-scoped Folder-contract validation and standing V1 boundary tests.
@@ -75,7 +75,7 @@ in this sweep, worst first:
   `approved:` / `verified` / `read:` / `accepted:`. Dispatching it would have
   written a person's tick. Rules files, README and agent (0.3.0) now agree.
 - **`value-rules.md` R6 failed legal cards**: four states named against the
-  plugin's eight, so any `deferred`, `failed`, `concern` or `answered-local` card
+  workbench's eight, so any `deferred`, `failed`, `concern` or `answered-local` card
   failed on its first run.
 - **`cli/pagecontext.py` could serve four of seven phases.** `--phase OUTLINE`
   errored and `--phase PROBE` silently returned EVIDENCE's scope, because a
@@ -86,7 +86,7 @@ in this sweep, worst first:
   drifted from.
 - **Three files told a cold agent to read a page-type deleted on 260819.** The
   reviewer and creator agents pointed at `haipipe-page-for-skill/SKILL.md` and
-  `haipipe-plugin-meeting` at `haipipe-page-for-meeting/SKILL.md`. The skill
+  `haipipe-workbench-meeting` at `haipipe-page-for-meeting/SKILL.md`. The skill
   page's inverted Opening rule survives in `cli/skillpage.py` and `cli/check.py`,
   which is where they point now.
 - **`board/README.md` was three rulings behind**: "six Page Types" (twelve ship),
@@ -100,26 +100,26 @@ in this sweep, worst first:
 - **`haipipe-probe` did not implement its own newest ruling**: 0.14.0 recorded
   "only `haipipe-probe-q-executor-agent` may cross" and §③ still described a
   direct bank call, never naming the agent (0.17.0). Its `state:` list was also
-  short by `answered-local`, the word `haipipe-plugin-probe` claims to borrow
+  short by `answered-local`, the word `haipipe-workbench-probe` claims to borrow
   from it.
 - **`ref/roster.md`** had no `outline/` row while `<page>/outline/` had been real
   storage since 260817 — against the file's own opening law — and its `probe/`
   row carried three retired words (`raised→working→bound`, `binding:`).
-  `live/plugview.py`'s empty-state panel taught the same retired ladder.
+  `servers/workbench-page/plugview.py`'s empty-state panel taught the same retired ladder.
 
 Not fixed, reported only: `measured-cost.md` §OUTLINE (fast path, main session)
 still contradicts `haipipe-page-workflow` §🧭 (an in-thread outline edit leaves
-no receipt) inside one skill folder; `phase-cards.md` still calls `approved:` a
+no receipt) inside one skill folder; `run-cards.md` still calls `approved:` a
 blocking exit; the controller's `LEGAL.OUTLINE` allows an OUTLINE→DRAFT edge no
 contract names; `probe/haipipe-probe/test/run-checker-tests.sh` points at a
 script that no longer exists. Three `haipipe-board` tests fail at HEAD, unchanged
 by this sweep (`test_aims_state`, `test_home`, `test_status`).
 
 
-## 2026-08-15 · The display plugin gets its skill; the roster catches up
+## 2026-08-15 · The display workbench gets its skill; the roster catches up
 
 `page-plugins/haipipe-plugin-display/` joins draw, latex, and word (JL 260815:
-"we might have the page-plugins in skills/page/page-plugins"). Display is the
+"we might have the page-plugins in skills/page/page-plugins"; folder retired 2026-09-22). Display is the
 first FAMILY-WRITER variant: its writer is a routing decision across five
 renderer kinds plus the human `accepted:` tick, which is exactly the knowledge
 a roster row cannot hold and QPf5 could only hold with the board open. The
@@ -129,7 +129,7 @@ unit contract verbatim, never forking it. The roster's stale `display/` row
 (DERIVED · planned · declared) is corrected to MIXED · 🟢 built 260815, and
 `probe/` gets its missing row (🟡 surface built; QPf9 aims open).
 
-## 2026-08-15 · The slide variant retires; a deck is plugin material
+## 2026-08-15 · The slide variant retires; a deck is workbench material
 
 `page-types/haipipe-page-for-slide/` leaves the family (JL, ruled on the design
 board's QPf3): a page's talk lives at `<page>/slide/<page>-deck.html`, authored
@@ -202,7 +202,7 @@ haipipe-board-sentence                 ->  haipipe-sentence
 `haipipe-board-reviewer-agent`.
 
 - `haipipe-page-for-labeling` moved with the stem even though the
-  subjective-label plugin maintains it, because a variant named after a base
+  subjective-label workbench maintains it, because a variant named after a base
   skill that no longer exists is a dangling name.
 - Folders were renamed with the skills, so every folder still equals its
   `name:`. Skill discovery is recursive, so no install path changed shape.

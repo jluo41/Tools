@@ -178,9 +178,9 @@ def test_neutral_run_presenter_and_family_workflows_use_granular_dialect():
         TOOLKIT_ROOT
         / "skills"
         / "page"
-        / "page-plugins"
-        / "haipipe-plugin-runs"
-        / "SKILL.md",
+        / "haipipe-workbench-page"
+        / "ref"
+        / "run-space.md",
         PLUGIN_ROOT / "skills" / "subjective-label" / "SKILL.md",
         PLUGIN_ROOT / "skills" / "subjective-label-workflow" / "SKILL.md",
         PLUGIN_ROOT / "skills" / "label-building" / "SKILL.md",

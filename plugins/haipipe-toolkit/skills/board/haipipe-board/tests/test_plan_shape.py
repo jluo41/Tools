@@ -45,11 +45,11 @@ class ResolvedSectionShapeTest(unittest.TestCase):
         self.assertEqual(
             [],
             self.findings(
-                "workflow-phases/haipipe-paper-section/ref/generic-template.md"
+                "paper/haipipe-paper-section/ref/generic-template.md"
             ),
         )
 
-    def test_phase_owned_folder_kind_resolves_its_page_face(self):
+    def test_run_owned_folder_kind_resolves_its_page_face(self):
         with tempfile.TemporaryDirectory() as temporary:
             page = Path(temporary) / "K01-claim.md"
             page.write_text(
@@ -91,7 +91,7 @@ class ResolvedSectionShapeTest(unittest.TestCase):
         declaration = type_outline("insight", SKILLS_ROOT)
         self.assertTrue(
             declaration["type_path"].endswith(
-                "task/page-types/haipipe-page-insight/SKILL.md"
+                "insight/haipipe-page-insight/SKILL.md"
             )
         )
 

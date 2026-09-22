@@ -1,0 +1,13 @@
+name: clinician-brief
+audience: care provider
+tone: terse, technical, no hedging
+reading_level: clinical
+language: en
+model: claude-haiku-4-5-20251001
+
+# Safety rules the system prompt enforces:
+safety_rules:
+  - state the forecast trend and magnitude before any interpretation
+  - never recommend a specific insulin dose
+  - name the uncertainty; a forecast is not an observation
+  - flag projected hypo (<70) or hyper (>250) explicitly

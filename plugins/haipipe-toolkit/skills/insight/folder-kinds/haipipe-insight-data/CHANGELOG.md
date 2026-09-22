@@ -23,7 +23,7 @@
 ## 1.0.3 — 2026-09-01
 
 - Rename the optional presenter from Execution to Runs; Execute remains with
-  the owning workflow and the plugin exposes declared Run/Result attempts.
+  the owning workflow and the workbench exposes declared Run/Result attempts.
 
 ## 1.0.2 — 2026-09-01
 
@@ -41,7 +41,7 @@
 ## 1.0.0 — 2026-08-31
 
 - Renamed to `haipipe-insight-data` and migrated into workflow phase I2.
-- Added explicit Page Face, Task Face, plugin selection, GI2, and handoff.
+- Added explicit Page Face, Task Face, workbench selection, GI2, and handoff.
 
 Recovered from the SKILL.md frontmatter summary on 260827, when the family retired the `summary:` field: version history lives here and is never loaded at invocation.
 

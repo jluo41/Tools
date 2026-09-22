@@ -1,0 +1,60 @@
+/* Databricks skin — a REMAP of the same Mattermost token names, nothing more.
+ *
+ * Components never know which skin is active: they style against the tokens in
+ * theme/mattermost.css, and this file overrides those tokens when the document
+ * carries data-skin="databricks" (set by main.tsx: standalone pages default to
+ * this skin; iframe embeds keep the host's Mattermost theme; `?theme=` forces).
+ *
+ * Palette follows the Databricks product UI (du Bois): oat chrome, navy text,
+ * blue primaries. Lava #FF3621 is brand-only — the topbar dot — never buttons.
+ */
+:root[data-skin='databricks'] {
+    /* chrome (nav rail, topbar) — oat, dark-navy text */
+    --sidebar-bg: #f9f7f4;
+    --sidebar-text: #1b3139;
+    --sidebar-text-hover-bg: #eeeae4;
+    --sidebar-text-active-border: #2272b4;
+    --sidebar-header-bg: #f9f7f4;
+
+    /* content */
+    --center-channel-bg: #ffffff;
+    --center-channel-color: #11171c;
+    --center-channel-color-rgb: 27, 49, 57;
+    --center-channel-bg-rgb: 255, 255, 255;
+
+    /* actions — du Bois blue */
+    --button-bg: #2272b4;
+    --button-bg-rgb: 34, 114, 180;
+    --button-color: #ffffff;
+    --link-color: #2272b4;
+
+    /* semantic */
+    --error-text: #c82d4c;
+    --online-indicator: #308613;
+    --away-indicator: #de7921;
+    --dnd-indicator: #c82d4c;
+
+    /* brand */
+    --brand-accent: #ff3621;
+
+    --radius-s: 4px;
+    --radius-m: 8px;
+    --font-family: "DM Sans", "Inter", -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root[data-skin='databricks'] {
+        --sidebar-bg: #1f272d;
+        --sidebar-text: #e8ecf0;
+        --sidebar-text-hover-bg: #2c353c;
+        --sidebar-header-bg: #1f272d;
+        --center-channel-bg: #11171c;
+        --center-channel-color: #e8ecf0;
+        --center-channel-color-rgb: 232, 236, 240;
+        --center-channel-bg-rgb: 17, 23, 28;
+        --button-bg: #4299e0;
+        --button-bg-rgb: 66, 153, 224;
+        --link-color: #4299e0;
+    }
+}

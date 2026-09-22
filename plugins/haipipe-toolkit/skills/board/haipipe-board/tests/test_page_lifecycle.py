@@ -20,7 +20,7 @@ def version(label):
 
 def producer(
     step,
-    phase,
+    token,
     before,
     after,
     route,
@@ -36,8 +36,8 @@ def producer(
     return {
         "step": step,
         "round": round,
-        "phase": phase,
-        "actor": actor or f"producer-{phase.lower()}",
+        "phase": token,
+        "actor": actor or f"producer-{token.lower()}",
         "role": "producer",
         "builder_actor": builder,
         "status": "ok",
@@ -52,7 +52,7 @@ def producer(
         "route": route,
         "requested_route": route,
         "reopens_promise": reopens,
-        "reason": f"{phase} exercised its declared authority",
+        "reason": f"{token} exercised its declared authority",
         "artifacts": ["page.md"],
         "evidence": ["page.md"],
         "findings": [],
@@ -155,7 +155,7 @@ class PageLifecycleAuditTest(unittest.TestCase):
         land.update(cycle="LAND", next_cycle="WRITE")
         trace = run([land, producer(2, "CONTENT", "v1", "v2", "CHECK"),
                      check(3, "v2")])
-        self.assertIn("evidence-content-without-embed", self.codes(trace))
+        self.assertIn("evidence-writing-without-embed", self.codes(trace))
 
     def test_current_full_page_route_closes(self):
         value = run(
@@ -171,8 +171,8 @@ class PageLifecycleAuditTest(unittest.TestCase):
         self.assertClean(value)
         self.assertEqual(
             [
-                "CONTEXT->OUTLINE", "OUTLINE->EVIDENCE", "EVIDENCE->OUTLINE",
-                "OUTLINE->CONTENT", "CONTENT->CHECK", "CHECK->CLOSE",
+                "context->structure", "structure->evidence", "evidence->structure",
+                "structure->writing", "writing->check", "check->CLOSE",
             ],
             traversed_edges(value["receipts"]),
         )
@@ -216,7 +216,7 @@ class PageLifecycleAuditTest(unittest.TestCase):
             ]
         )
         self.assertClean(value)
-        self.assertEqual(["DRAFT->CHECK", "CHECK->CLOSE"], traversed_edges(value["receipts"]))
+        self.assertEqual(["writing->check", "check->CLOSE"], traversed_edges(value["receipts"]))
 
     def test_full_optional_survey_route_closes(self):
         """DRAFT may send a claim without a run back to OUTLINE (SURVEY); the
@@ -288,11 +288,11 @@ class PageLifecycleAuditTest(unittest.TestCase):
             ]
         )
         self.assertClean(value)
-        self.assertIn("EVIDENCE", " ".join(traversed_edges(value["receipts"])))
+        self.assertIn("evidence", " ".join(traversed_edges(value["receipts"])))
         self.assertNotIn("PROBE", " ".join(traversed_edges(value["receipts"])))
 
     def test_check_can_route_to_evidence(self):
-        """The current phase token, under its current name."""
+        """The current Run token, under its current name."""
         value = run(
             [
                 check(1, "v1", "EVIDENCE"),
@@ -326,7 +326,7 @@ class PageLifecycleAuditTest(unittest.TestCase):
         self.assertEqual(audit_run(old), audit_run(new))
         self.assertEqual(traversed_edges(old["receipts"]),
                          traversed_edges(new["receipts"]))
-        self.assertIn("EVIDENCE", " ".join(traversed_edges(old["receipts"])))
+        self.assertIn("evidence", " ".join(traversed_edges(old["receipts"])))
 
     def test_check_to_draft_begins_a_new_round(self):
         value = run(
@@ -390,16 +390,18 @@ class PageLifecycleAuditTest(unittest.TestCase):
         )
         self.assertIn("max-steps-exceeded", self.codes(value))
 
-    def test_route_phase_and_round_mismatches_are_detected(self):
+    def test_route_run_and_round_mismatches_are_detected(self):
         value = run(
             [
                 check(1, "v1", "DRAFT", reopens=True),
-                producer(2, "REVISE", "v1", "v2", "CHECK", round=1),
+                # DRAFT and REVISE are both the writing Run now, so the mismatch
+                # needs a genuinely different Run answering the route.
+                producer(2, "EVIDENCE", "v1", "v2", "CHECK", round=1),
                 check(3, "v2"),
             ]
         )
         codes = self.codes(value)
-        self.assertIn("route-phase-mismatch", codes)
+        self.assertIn("route-run-mismatch", codes)
         self.assertIn("round-sequence", codes)
 
     def test_blocked_worker_must_hold(self):
@@ -467,10 +469,10 @@ class PageLifecycleAuditTest(unittest.TestCase):
         value.pop("packet")
         self.assertIn("missing-packet", self.codes(value))
 
-    def test_packet_start_phase_must_match_first_receipt(self):
+    def test_packet_start_run_must_match_first_receipt(self):
         value = run([check(1, "v1")])
         value["packet"]["start_phase"] = "DRAFT"
-        self.assertIn("start-phase-mismatch", self.codes(value))
+        self.assertIn("start-run-mismatch", self.codes(value))
 
     def test_unknown_page_ruling_is_rejected(self):
         value = run([check(1, "v1")])
@@ -500,7 +502,7 @@ class PageLifecycleAuditTest(unittest.TestCase):
         receipt.pop("next_cycle")
         self.assertClean(run([receipt]))
 
-    def test_nonterminal_next_cycle_must_match_routed_phase(self):
+    def test_nonterminal_next_cycle_must_match_routed_run(self):
         first = producer(1, "CONTENT", "v0", "v1", "CHECK")
         first["cycle"] = "WRITE"
         first["next_cycle"] = "WRITE"
@@ -510,12 +512,12 @@ class PageLifecycleAuditTest(unittest.TestCase):
         first["next_cycle"] = "CHECK"
         self.assertClean(run([first, second]))
 
-    def test_current_cycle_receipt_requires_matching_phase_and_next_cycle(self):
+    def test_current_cycle_receipt_requires_matching_run_and_next_cycle(self):
         first = producer(1, "CONTENT", "v0", "v1", "CHECK")
         first["cycle"] = "LAND"
         second = check(2, "v1")
         codes = self.codes(run([first, second]))
-        self.assertIn("phase-cycle-mismatch", codes)
+        self.assertIn("run-cycle-mismatch", codes)
         self.assertIn("missing-next-cycle", codes)
 
     def test_receipt_round_cannot_exceed_declared_bound(self):
@@ -549,8 +551,8 @@ class PageLifecycleAuditTest(unittest.TestCase):
         gate = {"required": True, "status": "pending",
                 "evidence": ["outline approved: line, unticked"]}
         steps = []
-        for i, phase in enumerate(("OUTLINE", "EVIDENCE", "OUTLINE", "EVIDENCE"), 1):
-            r = producer(i, phase, "v1", "v1", "HOLD")
+        for i, token in enumerate(("OUTLINE", "EVIDENCE", "OUTLINE", "EVIDENCE"), 1):
+            r = producer(i, token, "v1", "v1", "HOLD")
             r["human_gate"] = dict(gate)
             steps.append(r)
         value = run(steps, status="hold", gate_required=True)
@@ -568,15 +570,17 @@ class PageLifecycleAuditTest(unittest.TestCase):
         value = run([r1, r2], status="hold", gate_required=True)
         self.assertIn("receipt-after-terminal", self.codes(value))
 
-    def test_prepare_pause_still_requires_a_legal_next_phase(self):
+    def test_prepare_pause_still_requires_a_legal_next_run(self):
         gate = {"required": True, "status": "pending",
                 "evidence": ["outline approved: line, unticked"]}
-        r1 = producer(1, "OUTLINE", "v1", "v1", "HOLD")
+        # A pause at context may continue only into context or structure; a
+        # writing step (REVISE, now the writing Run) is not legal from it.
+        r1 = producer(1, "CONTEXT", "v1", "v1", "HOLD")
         r1["human_gate"] = dict(gate)
         r2 = producer(2, "REVISE", "v1", "v1", "HOLD")
         r2["human_gate"] = dict(gate)
         value = run([r1, r2], status="hold", gate_required=True)
-        self.assertIn("route-phase-mismatch", self.codes(value))
+        self.assertIn("route-run-mismatch", self.codes(value))
 
     def test_cold_check_is_legal_from_a_prepare_pause(self):
         gate = {"required": True, "status": "pending",
@@ -587,7 +591,7 @@ class PageLifecycleAuditTest(unittest.TestCase):
         value = run([r1, r2], status="revise", gate_required=True)
         codes = self.codes(value)
         self.assertNotIn("receipt-after-terminal", codes)
-        self.assertNotIn("route-phase-mismatch", codes)
+        self.assertNotIn("route-run-mismatch", codes)
 
     def test_close_stays_terminal_even_with_an_open_gate(self):
         gate = {"required": True, "status": "pending",
@@ -614,19 +618,19 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertIsNotNone(m)
         js = {}
         for row in re.finditer(r"(\w+): \[([^\]]*)\]", m.group(1)):
-            js[row.group(1)] = set(re.findall(r"'([A-Z]+)'", row.group(2)))
+            js[row.group(1)] = set(re.findall(r"'([A-Za-z]+)'", row.group(2)))
         self.assertEqual({k: set(v) for k, v in LEGAL_ROUTES.items()}, js)
 
     def test_workflow_separates_producer_and_reviewer_agents(self):
-        # One producer agent per current producing phase;
+        # One producer agent per producing Run;
         # the base agent is the dispatch FALLBACK, and the judge is never in
         # the producer map.
         self.assertIn("const PRODUCER_AGENTS = {", self.script)
         for agent_name in (
             "haipipe-page-context-agent",
-            "haipipe-page-outline-agent",
+            "haipipe-page-structure-agent",
             "haipipe-page-evidence-agent",
-            "haipipe-page-content-agent",
+            "haipipe-page-writing-agent",
         ):
             self.assertIn(agent_name, self.script)
         self.assertIn(
@@ -643,8 +647,8 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertIn("checked_version", self.script)
         self.assertIn("version_id exactly as <source_sha256>:<render_sha256>", self.script)
 
-    def test_workflow_uses_routes_not_a_fixed_phase_sequence(self):
-        self.assertIn("let current = startPhase", self.script)
+    def test_workflow_uses_routes_not_a_fixed_run_sequence(self):
+        self.assertIn("let current = startRun", self.script)
         self.assertIn("current = route", self.script)
         self.assertNotIn("DRAFT → PROBE → REVISE → CHECK", self.script)
 
@@ -659,11 +663,11 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertIsNotNone(m)
         self.assertIn("status: 'blocked'", m.group(1))
 
-    def test_phase_contract_controls_whether_an_owner_gate_is_hardened(self):
+    def test_run_contract_controls_whether_an_owner_gate_is_hardened(self):
         """The generic Page loop does not invent a RULING for every Folder."""
         self.assertIn("const pageRuling = String(parsed.page_ruling || 'legacy-default')",
                       self.script)
-        self.assertIn("const phaseWaivesOwnerGate = pageRuling === 'none'",
+        self.assertIn("const runWaivesOwnerGate = pageRuling === 'none'",
                       self.script)
         self.assertIn("pageRuling === 'domain-gate' || pageRuling === 'local'",
                       self.script)
@@ -714,20 +718,20 @@ class PageLifecycleWorkflowContractTest(unittest.TestCase):
         self.assertIn("parsed.workflow_runtime_id = workflowRuntimeId", self.script)
         self.assertIn("workflow_runtime_id: workflowRuntimeId", self.script)
 
-    def test_mechanical_error_repair_routes_are_legal_from_every_phase(self):
+    def test_mechanical_error_repair_routes_are_legal_from_every_run(self):
         match = re.search(
             r"const MECHANICAL_REPAIR_ROUTE = \{(.*?)\n\}", self.script, re.S
         )
         self.assertIsNotNone(match)
         repair = dict(
-            re.findall(r"(\w+):\s*'([A-Z]+)'", match.group(1))
+            re.findall(r"(\w+):\s*'([A-Za-z]+)'", match.group(1))
         )
         self.assertEqual(set(LEGAL_ROUTES), set(repair))
-        for phase, route in repair.items():
-            with self.subTest(phase=phase, route=route):
-                self.assertIn(route, LEGAL_ROUTES[phase])
-        for phase in ("OUTLINE", "EVIDENCE"):
-            self.assertEqual(phase, repair[phase])
+        for run, route in repair.items():
+            with self.subTest(run=run, route=route):
+                self.assertIn(route, LEGAL_ROUTES[run])
+        for run in ("structure", "evidence"):
+            self.assertEqual(run, repair[run])
         self.assertIn(
             "route = MECHANICAL_REPAIR_ROUTE[current] || 'HOLD'", self.script
         )

@@ -1,0 +1,63 @@
+🖥️  Frontend shell — rail · dock · one reducer
+═══════════════════════════════════════════════════════════════════
+
+A Databricks-grammar shell: a nav rail opens VIEWS, tab strips hold them
+open, any tab drags to any edge to split. Two drivers (the clinician's hands
+and the HaiChat agent) move it through the SAME reducer.
+
+─§ The topbar — three nested pickers ─────────────────────────────
+
+  🩺 In-Lab Console   🗃️[ Data type ▾ ]   👥[ Human ▾ ]   🕒 as-of DATE   💬 HaiChat
+                          │                    │
+                      dataset scopes        one human = one workspace
+                      the roster + cases    (individual ⇄ group toggle)
+
+─§ The nav rail — the lab's paradigm (views.ts) ──────────────────
+
+  +-----------+-------------------------------------------+
+  | 🗂️ DATA    | 📄 Raw · 🗂️ Source · 🧾 Record · 📌 Case  |  the same dataset,
+  +-----------+-------------------------------------------+  4 pipeline stages
+  | 🔬 INSIGHT | 🧬 Internal · 🌐 External · 🧠 Model · 📋 Tasks |
+  +-----------+-------------------------------------------+
+  | ⚡ ACTION  | ✅ Checklist · ✏️ Annotate                |  it EARNS a label/score
+  +-----------+-------------------------------------------+
+  | 🎛️ CONSOLE | ❤️ Health   (rail footer)                 |
+  +-----------+-------------------------------------------+
+
+─§ Dock layout — VS-Code-like, agent-drivable ────────────────────
+
+  ┌──────┬─────────────────────┬────────────────────┬──────────┐
+  │ rail │ 🗂️ Source │ 🧠 Model │ ✅ Checklist  ✕  ◫ │ 🤖 HaiChat │
+  │      ├─────────────────────┼────────────────────┤  drawer   │
+  │      │   active view       │  drag a tab to any │ (standa-  │
+  │      │                     │   EDGE to re-dock  │  lone)    │
+  └──────┴─────────────────────┴────────────────────┴──────────┘
+  Every open view stays MOUNTED (hidden, not destroyed) so a sort / run
+  history survives a tab switch.
+
+─§ ⚠️ Two drivers, ONE reducer (Console.tsx) ─────────────────────
+
+  🧑 clinician's gesture ─┐                         origin='user'
+                          ├─▶  dispatch(action, origin)  ─▶ effect + run history
+  🤖 HaiChat tool call  ──┘   (rail click, tab, split, ▶Run… all ConsoleActions)
+                                                       origin='agent'
+  Same actions, same effects, same visible history. The only difference is a
+  🤖 badge and the Allow/Deny card the agent already passed. No second path
+  into the UI to audit, no second way to make a score.
+
+─§ State lives in useConsole.ts (not the views) ──────────────────
+
+  a dock re-parent REMOUNTS a view → anything expensive is held in the hook:
+    🗃️ datasets · dataset          which data type is active (scopes fetches)
+    🔎 individual | group  (level)  ScopeStub fills a view's not-yet-built depth
+    👥 patients · patientId · chart the selected human + their chart
+    🧠 models · modelPkg · runs     the run history (Databricks-Jobs style)
+    🧭 nav · highlight              WHERE the reader looks (so the agent can too)
+
+─§ SPA routing ───────────────────────────────────────────────────
+
+  /individual  ┐  React-router client routes; main.py hands back index.html
+  /group       ┘  so a refresh / bookmark on either loads the app, not a 404.
+
+     see 06-data-lineage-views.txt  →  what each DATA view renders
+     see 04-backend-api.txt         →  the routes these fetches hit

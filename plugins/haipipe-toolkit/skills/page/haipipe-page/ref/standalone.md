@@ -27,9 +27,9 @@ python3 <page-engine>/cli/page.py build /absolute/my-page
 python3 <page-engine>/cli/page.py serve /absolute/my-page --host <configured-host> --port <available-port> --public-url <configured-origin>
 ```
 
-Use `PAGE_SERVER_TOKEN` for a remotely reachable server with plugin writes enabled. Do not put a
+Use `PAGE_SERVER_TOKEN` for a remotely reachable server with workbench writes enabled. Do not put a
 real token into command history, logs, or the reply. The server supports a
-login URL/session cookie. Add `--read-only` to disable plugin writes too; this does
+login URL/session cookie. Add `--read-only` to disable workbench writes too; this does
 not make private content appropriate for public publishing. Respect repository
 hosting policy; in Physician-SPACE use the configured Tailscale origin, not a
 reader-facing loopback link. Verify the exact public URL before sharing it.
@@ -104,11 +104,11 @@ agent's foreground session open.
 
 The Page website has no Source editor and refuses Page-source save requests.
 Edit the registered Markdown and imported material on disk. The browser still
-renders the current source and exposes read-only plugin projections. Draft
+renders the current source and exposes read-only workbench projections. Draft
 Scratch note autosave and Finish remain available unless the server is started with
-`--read-only`; that flag disables plugin writes as well.
+`--read-only`; that flag disables workbench writes as well.
 The Page Face has no chat launcher or comment composer; authored comments stay
-readable as Notes, and copy-prompt controls remain inside the Draft/plugin
+readable as Notes, and copy-prompt controls remain inside the Draft/workbench
 surfaces.
 
 ## Read site versus working site
@@ -116,18 +116,18 @@ surfaces.
 | Surface | Capability |
 |---|---|
 | `build` → `delivery/web/index.html` | Static reading export and imported assets; no write-back |
-| `serve` → Page | Read-only Page source; category-plugin pane for Outline, Runs, Delivery and Folder, plus optional domain-owned Labeling when direct `labeling/` exists; Scratch note autosave/Finish unless `--read-only` |
+| `serve` → Page | Read-only Page source; category-workbench pane for Outline, Runs, Delivery and Folder, plus optional domain-owned Labeling when direct `labeling/` exists; Scratch note autosave/Finish unless `--read-only` |
 | Board | Groups, membership, navigation and aggregate build over the same Face |
 
 No Board is required for these Page operations. The independent server keeps
-the existing `/_board/*` plugin route names as compatibility endpoint names
+the existing `/_board/*` workbench route names as compatibility endpoint names
 only; it resolves its single Page directly. Evidence remains inside Outline
 rather than becoming a second picker row. Those names do not imply
 that `board.md`, a Board registry or a Board Python package is needed.
 Board-only agent/terminal and external evidence-producer actions are not
 standalone server capabilities. Do not report an unavailable action as done.
 The optional Labeling presenter is loaded from the separate subjective-label
-plugin and reads only safe receipts and `rlNN` envelopes. Its lower transport
+workbench and reads only safe receipts and `rlNN` envelopes. Its lower transport
 points back to the current Codex task; it does not invent a standalone semantic
 writer or expose protected corpus text through Source/static routes.
 

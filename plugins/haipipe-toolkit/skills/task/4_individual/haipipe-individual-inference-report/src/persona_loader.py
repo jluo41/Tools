@@ -13,7 +13,7 @@ A persona = a folder with three files:
     - an absolute path to any folder on disk
 
 This means downstream users (Samsung, clinicians) can keep proprietary
-personas outside this plugin and just point --persona at them.
+personas outside this workbench and just point --persona at them.
 """
 
 from __future__ import annotations

@@ -18,7 +18,7 @@ REQUIRED_SECTIONS = (
     "Input",
     "Page Face",
     "Task Face",
-    "Plugins",
+    "Workbenches",
     "Gate and Closure",
     "Handoff",
     "Files",
@@ -80,10 +80,13 @@ def read_contract(path: Path) -> FolderContract | None:
 
 def discover(skills_root: Path) -> list[FolderContract]:
     contracts: list[FolderContract] = []
-    # Unmigrated sibling families keep their paths; only owner metadata
-    # determines resource semantics. A directory name creates no lifecycle.
+    # Sibling families may use different paths; only owner metadata determines
+    # resource semantics. A directory name creates no lifecycle.
     paths = set(skills_root.glob("*/folder-kinds/*/SKILL.md"))
-    paths.update(skills_root.glob("*/workflow-phases/*/SKILL.md"))
+    # Workflow controllers sit flat at their family root (no workflow-phases/ folder).
+    paths.update(skills_root.glob("*/haipipe-*-inquiry/SKILL.md"))
+    paths.update(skills_root.glob("*/haipipe-*-workflow/SKILL.md"))
+    paths.update(skills_root.glob("*/haipipe-paper-*/SKILL.md"))
     for path in sorted(paths):
         if any(part.startswith("_") for part in path.relative_to(skills_root).parts):
             continue

@@ -14,11 +14,11 @@ from live.chat import QUALITY_READONLY, chat_scope, quality_tool_allowed  # noqa
 class QualityCheckContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        chat_dir = HERE / "assets/js/10-drawer/20-chat"
+        chat_dir = HERE.parents[2] / "servers/workbench-studio/assets/js/10-drawer/20-chat"
         cls.client = "\n".join(
             f.read_text(encoding="utf-8") for f in sorted(chat_dir.glob("*.js"))
         )
-        cls.server = (HERE / "live/chat.py").read_text(encoding="utf-8")
+        cls.server = (HERE.parents[2] / "servers/workbench-studio/chat.py").read_text(encoding="utf-8")
 
     def test_client_sends_a_dedicated_scoped_quality_check(self):
         self.assertIn("✅ Quality Check", self.client)

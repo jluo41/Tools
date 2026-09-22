@@ -11,7 +11,7 @@ applied to JUDGE personas. Same three files:
     - an absolute path to any folder on disk
 
 External judge libraries (Samsung clinical-review, IRB safety panels,
-research-only rubrics) live OUTSIDE the plugin.
+research-only rubrics) live OUTSIDE the workbench.
 """
 
 from __future__ import annotations

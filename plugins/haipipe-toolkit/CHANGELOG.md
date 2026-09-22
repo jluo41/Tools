@@ -3,6 +3,111 @@ haipipe-toolkit — Changelog
 
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
+### paper-ideation: an Idea is a research question · 2026-09-22
+
+- `haipipe-paper-ideation` 1.1.0: the research question is the Idea's name (division heading,
+  first field, Ideas (ranked) cell, Workbench card lead); fields are defined relative to it;
+  the count is the number of distinct questions, not a batch quota; title-only cards are
+  `unframed`. `haipipe-ideation` 0.7.0 adds the Idea Card's required `question` and the
+  `unframed-idea` check; `haipipe-ideation-generate` 0.2.0 writes the question first.
+  Workbench Idea Cards lead with the question and fold the writing plan away (JL).
+
+### workbench-paper: Research Questions carry their claims · 2026-09-22
+
+- Story Space `Claims & Hypothesis` → `Research Questions` (`#story/questions`, old anchor
+  aliased). One card per C3 RQ; its C5 propositions are nested cards with their rclaim
+  Discussion rows. Claims keep their word and their support-state vocabulary; only the grain
+  flipped (JL: "combine them"). `haipipe-workbench-paper` 0.6.0.
+
+### skills/page/workflow-runs: one skill per Page Run, and the Revise Run · 2026-09-22
+
+- No more "phase" (JL: "no term of phases"): the Page lifecycle is its Run list. `src/page_phase.py`
+  → `src/page_progress.py`, `cli/pagephase.py` → `cli/pageprogress.py`, `ref/phase-cards.md` →
+  `ref/run-cards.md`; receipts carry `run`/`start_run` with Run keys (`context · structure ·
+  evidence · writing · check`, = the skill suffixes) and old uppercase `phase` tokens are mapped on
+  read in one place per language; the stepper is 📄 Page Runs; `pagecontext.py --run`. The word
+  survives only for legacy data (`phase.yaml`, old receipts), the Workflow tool's own `phase()` API,
+  and subjective-label's P0–P5 vocabulary, which is that plugin's.
+
+- Draft Space: **Revise view** (one box per paragraph pre-filled with its Draft, one Save, each
+  Save a ledger Step of `rp-revise-NN_<C.P>`), the **Structure card as editable plain text**
+  (click to edit like Scratch, `action: structure`; no Mermaid, no `.mmd`), and the copy buttons
+  renamed `run-structure` · `run-section` · `run-paragraph` with short prompts.
+  `servers/workbench-page/{outline_structure,outline_revise}.py` are new; the Mermaid SVG
+  renderer is gone from `outline.py` and `runs.py`. Page-family docs swept for the vocabulary.
+- The Page workbench tab is **📃 Page** (was 🧭 Outline; asked by JL). Route id `outline`,
+  `/_board/outline`, and the `/w/…/page` tab word are unchanged; Draft · Evidence · Run ·
+  Delivery keep their names; the `## 🧭 Outline` Page section is untouched.
+- `skills/page/pages/` → `skills/page/pages-example/` (asked by JL): the folder holds one
+  specimen Page Folder, `haipipe-page-guide`, and no `SKILL.md`, so the installers never treat it
+  as a skill; the name now says it is an example, not a lane. Its own source-path records were
+  repointed; nothing outside the folder referenced it.
+- `skills/page/page-workflows/` is gone. `haipipe-page-workflow` (the list of Runs) sits
+  flat beside `haipipe-page`; each Run Spec has one skill under `skills/page/workflow-runs/`, named
+  by the Run: `haipipe-page-context`, `haipipe-page-structure` (was `haipipe-page-outline`),
+  `haipipe-page-scratch` (new), `haipipe-page-writing` (was `haipipe-page-content`),
+  `haipipe-page-evidence`, `haipipe-page-revise` (new), `haipipe-page-delivery` (new),
+  `haipipe-page-check`. The 00–04 phase labels survive as route and Step names only.
+- New Run `rp-revise-NN_<target>` (asked by JL): compare two frozen texts of one target and
+  settle every change; the Result is a change ledger the Run Space renders as red/green
+  cards with a Decision line; the accepted text returns to the writing Run as a Version.
+  `servers/workbench-page/runs.py` recognises the kind, groups it under Page Writing →
+  Revise, and shows the Decision.
+
+### workbench-url, /w/, DOMAIN, --only, generic settings · 2026-09-22
+
+- `workbench-url` replaces `plugin-url` in both serve functions, and both URLs
+  are short: `<DOMAIN>/b/<board>[/<page>]` for the reader, `<DOMAIN>/w/<board>[/<page>[/<tab>]]`
+  for the worker. `home.py:resolve_workbench()` picks the Board-level route
+  from `board.md`, resolves page ids through the Board grammar, and composes
+  `path=`, `file=` (and `page=` for labeling); the standalone Page server
+  answers `/w[/<tab>]`. `base.py:derive_file()` lets `file=` be omitted on
+  every long route.
+- DOMAIN is a variable: `serve.py` prints every origin it answers at
+  (configured · tailscale · loopback) and never bakes one into a link.
+- `settings.env` keys are generic: `SPACE_NAME`, `DOMAIN`, `BIND_HOST`,
+  `TAILSCALE_ADDRESS`, `PORT`, `AUTH_FILE`, `ACCESS_MODE`, `NO_AUTH`, with any
+  `<PREFIX>_` accepted and the old `PUBLIC_URL` / `LOCAL_PORT` spellings read
+  as aliases. No personal prefix remains in code, tests, or docs (`AGENTS.md`
+  now says so).
+- Every `haipipe-plugin-<x>` skill is now `haipipe-workbench-<x>` in its owning
+  family: `skills/page/haipipe-workbench` (the roster, was `haipipe-plugin`),
+  `page/haipipe-workbench-page`, `page/haipipe-workbench-studio`,
+  `design/haipipe-workbench-design` (+ `ref/design-board.md`, the Board grain),
+  `paper/haipipe-workbench-paper`, the new `insight/haipipe-workbench-insight`
+  (+ `ref/insight-board.md`), and `subjective-label/.../haipipe-workbench-labeling`.
+  `page-plugins/` and `board-plugins/` are gone; JS parts, tests, and checks
+  carry the same word (`05-workbenches.js`, `window.boardWorkbenches`).
+- `serve.py --only <workbench>` serves one workbench's routes and nothing else
+  (`host_registry.WORKBENCH_ROUTES`); `plugins/subjective-label/servers/_host/serve.py`
+  is that flag with `labeling`, giving the labeling workbench its own host.
+  The toolkit host starts without subjective-label (labeling routes 404).
+
+### page-plugins/ mirrors servers/ · 2026-09-21
+
+- `skills/page/page-plugins/` holds exactly three skills, one per Page
+  workbench: `haipipe-workbench-page` (renamed from `haipipe-plugin-outline`;
+  absorbs the retired `haipipe-plugin-runs`, `haipipe-plugin-folder`, and
+  `haipipe-plugin-delivery` as `ref/run-space.md`, `ref/folder.md`,
+  `ref/delivery.md`), `haipipe-workbench-studio`, `haipipe-workbench-design`.
+- The md2tex/md2docx/docx2pdf writers moved from `skills/page/page-plugins/`
+  to `servers/workbench-page/exporters/`, beside `export.py`, their caller.
+- Every reference in skills, servers, tests, agents, and evaluations was
+  renamed in one sweep; skill names are the only strings that changed.
+
+### servers/ · the browser-facing layer leaves skills/ · 2026-09-21
+
+- New plugin-level `servers/` tree, a sibling of `skills/`, `agents/` and
+  `mcp-servers/`: `_host/` (serve.py, auth, config, the `live` namespace, shell
+  JS), `haipipe-board/`, `haipipe-page/`, and five workbenches: `workbench-page/`
+  (outline, evidence, value, runs, delivery, folder), `workbench-paper/`,
+  `workbench-studio/`, `workbench-insight/`, `workbench-design/`.
+  `subjective-label` ships `servers/workbench-labeling/`. The 🛠 skill map
+  workbench and its routes were retired. See `servers/README.md`.
+- The Board and Page skills keep their grammar, CLIs, refs and tests; no server
+  code remains under `skills/`. Routes (`/_board/...`) and both serve doors
+  (`/haipipe-board serve`, `/haipipe-page serve`) are unchanged.
+
 ### Paper Ideation naming · 2026-09-08
 
 - Renamed the P0 owner from `haipipe-page-ideation` to

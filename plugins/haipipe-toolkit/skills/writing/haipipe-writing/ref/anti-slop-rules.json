@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "owner": "haipipe-writing",
   "scope": "diagnostic-only; never an automatic rewrite or acceptance gate",
-  "description": "Machine-readable anti-slop rules for the Haipipe writing adapter. Vocabulary tiers adapted from brandonwise/humanizer, phrases from hardikpandya/stop-slop and blader/humanizer.",
+  "description": "Machine-readable anti-slop rules for the Haipipe writing adapter. Vocabulary tiers adapted from brandonwise/humanizer, phrases from hardikpandya/stop-slop and blader/humanizer. Entries marked `lang: zh` carry the Chinese-register rules adapted from VincentOld/stop-slop-zh; sentence statistics stay English-tuned.",
   "provenance": [
     {
       "source": "aashaexo/soundshuman",
@@ -26,6 +26,12 @@
       "source": "brandonwise/humanizer",
       "license": "MIT",
       "role": "tiered vocabulary and metric rationale"
+    },
+    {
+      "source": "VincentOld/stop-slop-zh",
+      "path": "SKILL.md",
+      "license": "MIT",
+      "role": "Chinese-register rules 1, 2, 3 and 6 (虚词, 排比三件套, 名词化, 元评论与八股连接词) as the `lang: zh` phrase and regex entries"
     }
   ],
   "vocabulary": {
@@ -121,7 +127,45 @@
     { "match": "breathtaking", "fix": null, "category": "promotional", "weight": 4 },
     { "match": "rich cultural heritage", "fix": null, "category": "promotional", "weight": 4 },
     { "match": "commitment to excellence", "fix": null, "category": "promotional", "weight": 4 },
-    { "match": "in the heart of", "fix": null, "category": "promotional", "weight": 3 }
+    { "match": "in the heart of", "fix": null, "category": "promotional", "weight": 3 },
+    {"match": "非常", "category": "zh-filler", "weight": 1, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去；意思不变就该删"},
+    {"match": "十分", "category": "zh-filler", "weight": 1, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去；意思不变就该删"},
+    {"match": "极其", "category": "zh-filler", "weight": 1, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去；意思不变就该删"},
+    {"match": "真的", "category": "zh-filler", "weight": 1, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去；意思不变就该删"},
+    {"match": "其实", "category": "zh-filler", "weight": 1, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去；意思不变就该删"},
+    {"match": "一种", "category": "zh-filler", "weight": 1, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去；意思不变就该删"},
+    {"match": "本质上", "category": "zh-filler", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去模糊语气"},
+    {"match": "说白了", "category": "zh-filler", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去模糊语气"},
+    {"match": "客观来讲", "category": "zh-filler", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去模糊语气"},
+    {"match": "坦白说", "category": "zh-filler", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去模糊语气"},
+    {"match": "一定程度上", "category": "zh-filler", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去模糊语气"},
+    {"match": "在某种意义上", "category": "zh-filler", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去模糊语气"},
+    {"match": "做出选择", "category": "zh-nominalization", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "选择"},
+    {"match": "实现增长", "category": "zh-nominalization", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "增长"},
+    {"match": "采取措施", "category": "zh-nominalization", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "写出具体动作"},
+    {"match": "起到作用", "category": "zh-nominalization", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "写出做了什么"},
+    {"match": "给予支持", "category": "zh-nominalization", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "支持"},
+    {"match": "提供保障", "category": "zh-nominalization", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "保障"},
+    {"match": "让我们来探讨", "category": "zh-meta", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去预告，直接进入内容"},
+    {"match": "接下来我将", "category": "zh-meta", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去预告，直接进入内容"},
+    {"match": "在本文中", "category": "zh-meta", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去预告，直接进入内容"},
+    {"match": "下面我们来看", "category": "zh-meta", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去预告，直接进入内容"},
+    {"match": "让我为你详细讲解", "category": "zh-meta", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去预告，直接进入内容"},
+    {"match": "以下是几点", "category": "zh-meta", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去预告，直接进入内容"},
+    {"match": "首先", "category": "zh-connective", "weight": 1, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去或换不同的开篇句"},
+    {"match": "其次", "category": "zh-connective", "weight": 1, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去或换不同的开篇句"},
+    {"match": "再者", "category": "zh-connective", "weight": 1, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去或换不同的开篇句"},
+    {"match": "综上所述", "category": "zh-connective", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去总结套话"},
+    {"match": "总而言之", "category": "zh-connective", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去总结套话"},
+    {"match": "由此可见", "category": "zh-connective", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去总结套话"},
+    {"match": "总的来说", "category": "zh-connective", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去总结套话"},
+    {"match": "概括而言", "category": "zh-connective", "weight": 2, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去总结套话"},
+    {"match": "值得注意的是", "category": "zh-emphasis-shell", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去强调虚壳"},
+    {"match": "值得一提的是", "category": "zh-emphasis-shell", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去强调虚壳"},
+    {"match": "不得不说", "category": "zh-emphasis-shell", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去强调虚壳"},
+    {"match": "毫无疑问", "category": "zh-emphasis-shell", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去强调虚壳"},
+    {"match": "不容忽视", "category": "zh-emphasis-shell", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去强调虚壳"},
+    {"match": "我们必须认识到", "category": "zh-emphasis-shell", "weight": 3, "lang": "zh", "source": "VincentOld/stop-slop-zh", "fix": "删去强调虚壳"}
   ],
   "regex": [
     {
@@ -264,6 +308,42 @@
       "category": "language",
       "weight": 1,
       "note": "Rule of three. Often legitimate; counted lightly and matters in clusters."
+    },
+    {
+      "id": "zh-triplet-shi",
+      "pattern": "是[^，。；！？\\n]{1,15}，是[^，。；！？\\n]{1,15}，更是",
+      "category": "zh-structure",
+      "weight": 3,
+      "lang": "zh",
+      "source": "VincentOld/stop-slop-zh",
+      "note": "排比三件套：保留最有力的一句，其余删去（规则 2）"
+    },
+    {
+      "id": "zh-triplet-jiyao",
+      "pattern": "既要[^，。；！？\\n]{1,15}，?又要[^，。；！？\\n]{1,15}，?还要",
+      "category": "zh-structure",
+      "weight": 3,
+      "lang": "zh",
+      "source": "VincentOld/stop-slop-zh",
+      "note": "既要…又要…还要…：拆成一句或分段（规则 2）"
+    },
+    {
+      "id": "zh-nominalization-jinxing",
+      "pattern": "进行了?[\\u4e00-\\u9fff]{2}",
+      "category": "zh-nominalization",
+      "weight": 2,
+      "lang": "zh",
+      "source": "VincentOld/stop-slop-zh",
+      "note": "“进行 + 动词”几乎总是名词化：直接用那个动词（规则 3）"
+    },
+    {
+      "id": "zh-nominalization-jiayi",
+      "pattern": "加以[\\u4e00-\\u9fff]{2}",
+      "category": "zh-nominalization",
+      "weight": 2,
+      "lang": "zh",
+      "source": "VincentOld/stop-slop-zh",
+      "note": "“加以 + 动词”：直接用那个动词（规则 3）"
     }
   ]
 }

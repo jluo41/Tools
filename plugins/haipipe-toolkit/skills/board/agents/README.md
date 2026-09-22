@@ -60,7 +60,7 @@ Board operations and synchronization  → ../haipipe-board/SKILL.md
 Board source and rendering grammar    → ../haipipe-board/ref/board-form.md
 Cold-read rules and prompt            → ../haipipe-board/ref/writing-rules.md
 Mechanical checks                     → ../haipipe-board/cli/check.py
-Page workflow-pass packet + receipt  → ../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md
+Page workflow-pass packet + receipt  → ../../page/haipipe-page-workflow/ref/page-run-contract.md
 Board-hosted pass adapter            → ../haipipe-board/ref/page-lifecycle.workflow.js
 Lifecycle receipt audit               → ../haipipe-board/cli/pageflow.py
 Design rulings                        → ../../diagrams/BoardSkillBoard-260722/
@@ -70,15 +70,15 @@ Registration
 ------------
 
 Agent source definitions live in this folder and in
-`../../page/page-workflows/agents/`. Claude's plugin convention only discovers
+`../../page/page-workflows/agents/`. Claude's workbench convention only discovers
 top-level `agents/*.md`, so each live agent has a symlink under
 `../../../agents/` to its source. As of 260819 the symlinked roster is:
 
 ```text
 haipipe-board-reviewer-agent    haipipe-page-approver-agent
 haipipe-page-auditor-agent      haipipe-page-creator-agent
-haipipe-page-context-agent      haipipe-page-outline-agent
-haipipe-page-evidence-agent     haipipe-page-content-agent
+haipipe-page-context-agent      haipipe-page-structure-agent
+haipipe-page-evidence-agent     haipipe-page-writing-agent
 haipipe-page-check-agent
 (+ the task family's haipipe-task-creator-agent, haipipe-task-reviewer-agent)
 ```

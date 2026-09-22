@@ -1,6 +1,6 @@
 ---
 name: haipipe-page-creator-agent
-description: "Write-scoped PRODUCER BASE for one target Board Page. The workflow controller normally dispatches haipipe-page-context-agent, haipipe-page-outline-agent, haipipe-page-evidence-agent, or haipipe-page-content-agent; this base keeps create-page/revise-opening and stands in only when a current producer is missing. It emits an auditable dispatch receipt, self-checks without approving, never touches board.md, never performs CHECK, and never settles a human decision. Trigger: write board page, revise board opening, Page producer fallback, CONTEXT OUTLINE EVIDENCE CONTENT."
+description: "Write-scoped PRODUCER BASE for one target Board Page. The workflow controller normally dispatches haipipe-page-context-agent, haipipe-page-structure-agent, haipipe-page-evidence-agent, or haipipe-page-writing-agent; this base keeps create-page/revise-opening and stands in only when a current producer is missing. It emits an auditable dispatch receipt, self-checks without approving, never touches board.md, never performs CHECK, and never settles a human decision. Trigger: write board page, revise board opening, Page producer fallback, CONTEXT OUTLINE EVIDENCE CONTENT."
 tools:
   - Read
   - Write
@@ -54,11 +54,11 @@ the assignment packet as a substitute for loading the skill. At minimum, read:
    operation        dispatch    contract loaded
    ────────────────────────────────────────────────────────────────────
    create-page      CREATE      ../../page/haipipe-page
-   revise-opening   CONTENT     ../../page/page-workflows/haipipe-page-content
+   revise-opening   CONTENT     ../../page/workflow-runs/haipipe-page-writing
    ```
 
    Every workflow dispatch operation's row lives in
-   `../../page/page-workflows/haipipe-page-workflow/ref/producer-contract.md`, loaded
+   `../../page/haipipe-page-workflow/ref/producer-contract.md`, loaded
    when this agent stands in for a missing producer. It is not restated
    here: a restated table is a mirror, and every mirror on this board drifted
    within a day.
@@ -106,7 +106,7 @@ Own when `operation: revise-opening`:
 
 Own when `operation: context | outline | evidence | content`:
 
-- Reading `../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md` and the matching owner
+- Reading `../../page/haipipe-page-workflow/ref/page-run-contract.md` and the matching owner
   contract before touching the target.
 - Performing exactly the assigned dispatch and returning its recommended route.
 - CONTEXT: generate only the source-bound off-stage Context record.
@@ -145,6 +145,6 @@ Do not:
 ## The shared producer contract moved out (260819)
 
 The assignment packet, the procedure, the house rules and the return contract
-now live at `../../page/page-workflows/haipipe-page-workflow/ref/producer-contract.md`,
+now live at `../../page/haipipe-page-workflow/ref/producer-contract.md`,
 loaded by every producer agent and by this agent when it stands in as the
 fallback. This file keeps only what is THIS agent's own: the two verbs above.

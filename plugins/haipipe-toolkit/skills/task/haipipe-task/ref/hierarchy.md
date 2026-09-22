@@ -92,7 +92,7 @@ tNN_<task>/
 │   └── r02_<run>.sh
 ├── sbatch/                      optional; serves only this Task
 └── studio/                      optional; the Page's kept chat and draw
-    └── chat/<YYMMDD-HHMM>/      one kept session (haipipe-plugin-studio)
+    └── chat/<YYMMDD-HHMM>/      one kept session (haipipe-workbench-studio)
         ├── digest.md            what it decided · the reading path
         └── transcript.md        the raw exchange · reference only
 ```

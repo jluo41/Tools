@@ -52,11 +52,13 @@ from pathlib import Path
 sys.path.insert(0, sys.argv[1])
 import src, live
 from src import page_parse
+import live.outline
 assert str(Path(sys.argv[2]) / 'src') in src.__path__
-assert str(Path(sys.argv[2]) / 'live') in live.__path__
+assert Path(live.outline.__file__).resolve().parent == Path(sys.argv[3]) / 'workbench-page'
 assert Path(page_parse.__file__).resolve().parent == Path(sys.argv[2]) / 'src'
 """
-    subprocess.run([sys.executable, "-B", "-c", code, str(ENGINE), str(PAGE)],
+    subprocess.run([sys.executable, "-B", "-c", code, str(ENGINE), str(PAGE),
+                    str(ENGINE.parents[2] / "servers")],
                    cwd=ENGINE, check=True, capture_output=True, text=True)
 
 

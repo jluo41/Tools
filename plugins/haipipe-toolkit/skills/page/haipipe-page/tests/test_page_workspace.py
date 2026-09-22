@@ -131,9 +131,26 @@ def test_render_revalidates_attachment_and_private_lanes(tmp_path):
         render_page(page)
 
 
-def test_runtime_copied_without_board(tmp_path):
-    isolated = tmp_path / "runtime"
+SERVERS = ENGINE.parents[2] / "servers"
+
+
+def isolated_runtime(tmp_path):
+    """A copy of the workbench's Page skill plus its servers tree, and nothing else.
+
+    No Board skill is copied: the Page engine must run with only its own
+    grammar and the plugin-level servers (presenters and reader assets) that
+    ``skills/page/haipipe-page`` reaches at ``../../../servers``.
+    """
+    workbench = tmp_path / "workbench"
+    isolated = workbench / "skills" / "page" / "haipipe-page"
     shutil.copytree(ENGINE, isolated, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    shutil.copytree(SERVERS, workbench / "servers",
+                    ignore=shutil.ignore_patterns("__pycache__", "tests", "checks"))
+    return isolated
+
+
+def test_runtime_copied_without_board(tmp_path):
+    isolated = isolated_runtime(tmp_path)
     source = tmp_path / "hello.txt"
     source.write_text("No Board installation required.")
     destination = tmp_path / "standalone"
@@ -164,8 +181,7 @@ def test_runtime_copied_without_board(tmp_path):
 
 
 def test_setup_cli_accepts_file_then_folder(tmp_path):
-    isolated = tmp_path / "runtime"
-    shutil.copytree(ENGINE, isolated, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    isolated = isolated_runtime(tmp_path)
     source = tmp_path / "working-note.md"
     source.write_text(
         "# Working Note\n\n## Problem\n\nA revision can lose context.\n\n"
@@ -196,20 +212,22 @@ def test_setup_cli_accepts_file_then_folder(tmp_path):
 
 
 def test_page_styles_are_shared_with_board(tmp_path):
-    from src.page_assets import css
-    board_assets = ENGINE.parents[1] / "board/haipipe-board/assets/css"
-    for part in (ENGINE / "assets/css").glob("*.css"):
-        adapter = board_assets / part.name
-        assert adapter.is_symlink()
-        assert adapter.resolve() == part.resolve()
+    """One file per stylesheet part: the Board bundle reads the Page's own parts."""
+    from src.page_assets import ASSETS, css
+    import host_assets  # servers/_host, on sys.path via src/__init__.py
+    board_parts = {part.name: part for part in host_assets.parts("css", ".css")}
+    page_parts = sorted((ASSETS / "css").glob("*.css"))
+    assert page_parts
+    for part in page_parts:
+        assert board_parts[part.name].resolve() == part.resolve()
     original = tmp_path / "input.txt"
     original.write_text("Shared appearance.")
     markup = render_page(create_page(original, tmp_path / "page"))
     assert css() in markup
     assert 'class="single split standalone"' in markup
     assert '<main id="reading" class="wrap">' in markup
-    assert 'id="page-plugin-config"' in markup
-    assert markup.index('🧭 Outline') < markup.index('📤 Delivery') < markup.index('📂 Folder')
+    assert 'id="page-workbench-config"' in markup
+    assert markup.index('📃 Page') < markup.index('📤 Delivery') < markup.index('📂 Folder')
     assert '⚙️ Runs' not in markup
     assert '>Evidence</a>' not in markup
 

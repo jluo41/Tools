@@ -12,8 +12,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.8.0"
-  last_updated: "2026-09-13"
+  version: "2.9.0"
+  last_updated: "2026-09-21"
   summary: "Discovery orchestrator for explicit Block-Job-Task-Run addresses."
 ---
 
@@ -21,6 +21,11 @@ metadata:
 
 LOAD haipipe-discovery first. It owns the current hierarchy, D1 routing, and Page handoff,
 and Level-4 contract. Do not substitute historical flat sources.md behavior.
+
+Treat each `bNN_` Block as a live Discovery Board from creation onward. The
+creator calls `scripts/board_sync.py` after structural changes; the orchestrator
+must require a rebuilt, strict Board check before returning a user-facing
+completion state. `board/` is derived and never hand-edited.
 
 ## Boundary
 
@@ -63,9 +68,10 @@ owns relevance, Subject resolution, deduplication, Run allocation, and writes.
 
 ## FULL protocol
 
-1. Resolve the Discovery bank, `bNN_` Block, `jNN_` Job, and `tNN_` Task Page
-   structurally. New paths must expose all three prefixes; never infer `tNN`
-   from a bare `NN_` folder.
+1. Resolve the Discovery bank, `bNN_` Block/Board, `jNN_` Job/Group, and
+   `tNN_` Task/Page Folder structurally. New paths must expose all three
+   prefixes; never infer `tNN` from a bare `NN_` folder. If the Board head is
+   missing or stale, sync it before dispatching creator work.
 2. Creator runs D1 SCOPE; reviewer checks the Topic question, canonical
    `discovery_type`, root Page promise, Page/Task Faces, source coverage, and
    candidate rule.
@@ -81,7 +87,8 @@ owns relevance, Subject resolution, deduplication, Run allocation, and writes.
    that CONTENT commissions no Discovery writing Run.
 7. After Page `04 CHECK` closes the Page, creator runs D1 CLOSE and reconciles
    the Task Face; any hard failure routes backward and CLOSE cannot claim ok;
-   Reviewer runs the final gate.
+   Reviewer runs the final gate. The final packet includes `<block>/board.md`
+   and the rebuilt `<block>/board/` projection.
 
 ## Question routing
 
@@ -119,6 +126,8 @@ address:       <bNN.jNN.tNN>
 address_compact:<bNNjNNtNN>
 mode:          full | enrich
 page:          <root Page path>
+board_source:  <bNN Block>/board.md
+board_generated:<bNN Block>/board/
 discovery_type:<canonical Page Type>
 runs:          {planned, running, complete, blocked, unresolved}
 typed_record:  <path | none>

@@ -14,7 +14,9 @@ from urllib.parse import quote
 
 HERE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
-_spec = importlib.util.spec_from_file_location("live_outline", HERE / "live" / "outline.py")
+sys.path.insert(0, str(HERE.parents[2] / "servers" / "_host"))   # the `live` namespace
+_spec = importlib.util.spec_from_file_location(
+    "live_outline", HERE.parents[2] / "servers" / "workbench-page" / "outline.py")
 lo = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(lo)
 

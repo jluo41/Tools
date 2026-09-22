@@ -44,7 +44,7 @@ For LLMRec details, read [references/llmrec-native-sdk.md](references/llmrec-nat
   environment from `DEEPSEEK_API_KEY`; never persist the key in the SDK home.
   Never expose `env.sh` or unrelated research secrets to the child runtime.
 - Run from a neutral working directory outside the repository. Disable shell,
-  file, memory, plugin, app, browser, computer-use, and multi-agent tools.
+  file, memory, workbench, app, browser, computer-use, and multi-agent tools.
 - A1 requires live web search. A2 resumes exactly the matching A1 session with
   every tool disabled. B starts a fresh session and requires live web search.
 - Preserve raw SDK events, tool traces, model identity, usage, rollout path,

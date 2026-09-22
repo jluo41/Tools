@@ -33,7 +33,7 @@ only accepted Design schemas. Run record and Result stem are one Run identity.
 ## Run record fields
 
 There are two shapes: the Commission decision run record, written by the
-Design plugin for a person, and worker run records (Generate, Verify), read by
+Design workbench for a person, and worker run records (Generate, Verify), read by
 `haipipe-design-unit`. They are not interchangeable: `check_unit.py` rejects a
 worker run record written in the decision shape ("unexpected worker").
 
@@ -70,7 +70,7 @@ run: rd02_generate_item01            # equals the file stem
 operation: generate                  # generate | verify; matches the stem
 worker: haipipe-design-unit          # exactly this
 actor: designer-context-01           # a plain string naming the worker context
-item: ITEM01                         # the plugin groups by it; the checker ignores it
+item: ITEM01                         # the workbench groups by it; the checker ignores it
 target: <the item's title>
 config: {path: scripts/config/rd02_generate_item01.yaml, sha256: <hash>}
 approval:
@@ -146,7 +146,7 @@ worker writes to Delivery. Existing Delivery manifests are legacy display input.
 
 ## Runtime receipt
 
-A worker run's receipt, as the plugin queues it and `complete_run` closes it:
+A worker run's receipt, as the workbench queues it and `complete_run` closes it:
 
 ```yaml
 run: rd02_generate_item01

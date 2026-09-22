@@ -1,7 +1,7 @@
 """Build a current (v0.4.0 / v2) Design Folder from a few item specs.
 
 One source of fixture truth for the Design presenter tests AND the demo board
-under ``skills/diagrams/DesignPlugin-Demo-260916-DesignBoard``.  Every Ticket,
+under ``skills/diagrams/DesignWorkbench-Demo-260916-DesignBoard``.  Every Ticket,
 Result, and receipt it writes satisfies ``haipipe-design-unit/scripts/check_unit.py``
 so the presenter is exercised on contract-valid bytes, never on stubs.
 
@@ -21,12 +21,12 @@ import yaml
 
 HERE = Path(__file__).resolve().parent
 SKILLS = HERE.parents[2]
-DEMO_BOARD = SKILLS / "diagrams" / "DesignPlugin-Demo-260916-DesignBoard"
-DEMO_INSIGHT = SKILLS / "diagrams" / "DesignPlugin-Demo-260916-InsightBoard"
+DEMO_BOARD = SKILLS / "diagrams" / "DesignWorkbench-Demo-260916-DesignBoard"
+DEMO_INSIGHT = SKILLS / "diagrams" / "DesignWorkbench-Demo-260916-InsightBoard"
 UNIT_CHECKER = SKILLS / "design" / "haipipe-design-unit" / "scripts" / "check_unit.py"
 
 STAGES = ("commissioned", "generate-failed", "generated", "verified", "adopted", "declined")
-HANDOFF_REL = "../../../DesignPlugin-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md"
+HANDOFF_REL = "../../../DesignWorkbench-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md"
 
 
 def digest(path: Path) -> str:
@@ -408,7 +408,7 @@ def build_insight_board(board: Path) -> Path:
     page = board / "1-F-full" / "FW01-send-salience" / "FW01-send-salience.md"
     page.parent.mkdir(parents=True, exist_ok=True)
     (board / "board.md").write_text(
-        "# Design Plugin Playground · InsightBoard\nboard-kind: insight-board\n"
+        "# Design Workbench Playground · InsightBoard\nboard-kind: insight-board\n"
         "spine: One signed Wisdom handoff that the sibling DesignBoard reads.\n"
         "close: The one W page is signed; nothing else is asked of this fixture.\n"
         "store: results/demo-insight\n\n## Topic\n\nA one-page InsightBoard fixture: it exists so the "

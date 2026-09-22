@@ -122,7 +122,9 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- haipipe-individual + sub-skills    run library
 |   |-- haipipe-task-for-individual/       task-author leg
 |-- 5_fit/                              🏋️ domain 5 — fit (train); shares 2_nn's /haipipe-nn lib
-|   |-- haipipe-task-for-fit/               task-author leg
+|   |-- haipipe-task-for-fit/               task-author leg + fit-owned GPU execution companions
+|   |   |-- haipipe-task-gpu/               shared fit queue, preflight, and receipt rules
+|   |   |-- haipipe-task-gpu-training/       checkpoint, resume, and training fallback rules
 |-- 6_eval/                             📈 domain 6 — eval / statistical analysis
 |   |-- haipipe-task-for-eval/              task-author leg
 |-- 7_display/                          🖼️ domain 7 — display (figures / tables)

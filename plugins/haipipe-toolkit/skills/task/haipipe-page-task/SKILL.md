@@ -199,9 +199,9 @@ names it as missing instead of returning an older preview.
 - haipipe-page/SKILL.md · shared Page Face and reader-facing packet
 - haipipe-task/ref/task-page.md · Task Page grammar and READING closure
 - haipipe-task/ref/task-page-template.md · new Task Page shape
-- haipipe-plugin-outline/ref/plan-grammar.md · typed DISPLAY planning
-- haipipe-plugin-outline/ref/item-table.md · DISPLAY Result envelope
-- haipipe-plugin-outline/ref/evidence/displays.md · Page display lane and chip
+- haipipe-workbench-page/ref/plan-grammar.md · typed DISPLAY planning
+- haipipe-workbench-page/ref/item-table.md · DISPLAY Result envelope
+- haipipe-workbench-page/ref/evidence/displays.md · Page display lane and chip
 - haipipe-display/SKILL.md · renderer routing
 - display/ref/display-unit-output-contract.md · unit files and invariants
 - display/ref/display-intake-contract.md · approved numeric intake

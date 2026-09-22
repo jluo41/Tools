@@ -1,5 +1,9 @@
 # haipipe-run · CHANGELOG
 
+## 0.28.0 · 2026-09-22
+
+- `ref/run-catalog.md`: Page RP gains the `revise` kind (`rp-revise-NN_<target>`).
+
 ## 0.27.0 · 2026-09-20
 
 Define a Run as a bounded commission with preserved attempts; explain Workflow
@@ -48,7 +52,7 @@ are labels bound to a Result/Card, not child Runs.
 
 ## 0.24.0 · 2026-09-13
 
-Define the Page projection as Run P, Run E, and Supporting Runs inside Plugin
+Define the Page projection as Run P, Run E, and Supporting Runs inside Workbench
 Outline. Native external Runs keep their identity and are inspected by
 reference rather than copied into the Page.
 

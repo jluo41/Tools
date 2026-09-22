@@ -33,8 +33,8 @@
 
 - [check_unit.py](../../plugins/haipipe-toolkit/skills/design/haipipe-design-unit/scripts/check_unit.py)：可选 render 证据的范围、身份和 hash 校验，图片不计入内容数量。
 - [render_screen.py](../../plugins/haipipe-toolkit/skills/design/haipipe-design-unit/scripts/render_screen.py)：Result 写入边界、版本不可覆盖、精确视口及双轴溢出检查。
-- [design.py](../../plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py)：状态、历史 ID、Result 图片读取、交付时重新校验。
-- [design_actions.py](../../plugins/haipipe-toolkit/skills/board/haipipe-board/live/design_actions.py)：冻结 stance 派生、退役 Adopt 写入拒绝。
+- [design.py](../../plugins/haipipe-toolkit/servers/workbench-design/design.py)：状态、历史 ID、Result 图片读取、交付时重新校验。
+- [design_actions.py](../../plugins/haipipe-toolkit/servers/workbench-design/design_actions.py)：冻结 stance 派生、退役 Adopt 写入拒绝。
 - [test_design_repairs.py](../../plugins/haipipe-toolkit/skills/board/haipipe-board/tests/test_design_repairs.py) 与 [test_render_screen.py](../../plugins/haipipe-toolkit/skills/design/haipipe-design-unit/tests/test_render_screen.py)：新增行为回归。
 
 ### 新上下文验证后的补充修正

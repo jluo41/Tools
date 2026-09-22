@@ -185,7 +185,7 @@ async def _run_claude(args: argparse.Namespace, prompt: str, system: str, model:
         # side can load the normal skills/tools when the human takes over.
         setting_sources=[],
         skills=[],
-        plugins=[],
+        workbenches=[],
         env=environment,
     )
     raw_events: list[dict[str, Any]] = []

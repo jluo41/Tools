@@ -42,7 +42,7 @@ Paths in the tables are relative to the repository root.
 | Design workflow and `haipipe-design-unit` | Commissioning, generating, or verifying a Design Item | Caller-owned identity/receipt, independent commission and review, frozen inputs | Design config, generation criteria, reviewer independence, and native result schema |
 | Subjective Labeling workflows | Planning, allocating, resuming, and auditing the 25 operation kinds | Shared identity, pairing, attempts, terminal receipts, and counting | Operation catalogue, human authority, protected data handling, domain gates, and promotion |
 | `table-workflow` | Showing a catalogue, specification table, runtime inventory, or human queue | Resolvable type/profile references, planned-versus-actual grain, and deduplication | Table shape, Workspace/Cell projections, and presentation |
-| `table-task` and `haipipe-plugin-runs` | Reading status and showing Run/Result records | Native resolvers, missing-record findings, display-state mapping, and one identity per Run | Read-only views; they do not allocate, execute, accept, or repair records on display |
+| `table-task` and `haipipe-workbench-page` | Reading status and showing Run/Result records | Native resolvers, missing-record findings, display-state mapping, and one identity per Run | Read-only views; they do not allocate, execute, accept, or repair records on display |
 | Project/Board maintainers and skill authors | Adding a dialect or changing shared Run behavior | Extension requirements and the consumer map | Project structure and their own domain contract; no new horizontal Folder owner is needed |
 
 ### Evidence for these consumers
@@ -52,7 +52,7 @@ Direct references are present in:
 - [Task Workflow](../../plugins/haipipe-toolkit/skills/task/haipipe-workflow/SKILL.md), [Folder](../../plugins/haipipe-toolkit/skills/board/haipipe-folder/SKILL.md), and [Task hierarchy](../../plugins/haipipe-toolkit/skills/task/haipipe-task/ref/hierarchy.md).
 - [Discovery](../../plugins/haipipe-toolkit/skills/discovery/haipipe-discovery/SKILL.md), [Page Workflow](../../plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow/SKILL.md), [Page Evidence](../../plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-evidence/SKILL.md), and [Page Content](../../plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-content/SKILL.md).
 - [Paper](../../plugins/haipipe-toolkit/skills/paper/haipipe-paper/SKILL.md), [Ideation](../../plugins/haipipe-toolkit/skills/ideation/haipipe-ideation/SKILL.md), [Insight Workflow](../../plugins/haipipe-toolkit/skills/insight/haipipe-insight-workflow/SKILL.md), and [Task-side Insight](../../plugins/haipipe-toolkit/skills/task/page-types/haipipe-page-insight/SKILL.md).
-- [Design worker](../../plugins/haipipe-toolkit/skills/design/haipipe-design-unit/SKILL.md), [Labeling](../../plugins/subjective-label/skills/subjective-label/SKILL.md), [Workflow tables](../../plugins/haipipe-toolkit/skills/0_utils/table-workflow/SKILL.md), [Task tables](../../plugins/haipipe-toolkit/skills/0_utils/table-task/SKILL.md), and [Run presenter](../../plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-runs/SKILL.md).
+- [Design worker](../../plugins/haipipe-toolkit/skills/design/haipipe-design-unit/SKILL.md), [Labeling](../../plugins/subjective-label/skills/subjective-label/SKILL.md), [Workflow tables](../../plugins/haipipe-toolkit/skills/0_utils/table-workflow/SKILL.md), [Task tables](../../plugins/haipipe-toolkit/skills/0_utils/table-task/SKILL.md), and [Run presenter](../../plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/run-space.md).
 
 This is a traced consumer map, not a claim that every consumer implementation has been fully audited.
 
@@ -62,10 +62,10 @@ These programs parse or write domain records. Updating `SKILL.md` does not autom
 
 | Implementation | Dependency relevant to this update |
 |---|---|
-| `skills/page/haipipe-page/live/runs.py` | Reads native Tickets/receipts; recognizes writing operations and RP identities; maps status; locates Results. Keep waiting distinct from completion and diagnose missing receipts. |
+| `servers/workbench-page/runs.py` | Reads native Tickets/receipts; recognizes writing operations and RP identities; maps status; locates Results. Keep waiting distinct from completion and diagnose missing receipts. |
 | `skills/page/page-workflows/haipipe-page-content/cli/promote_paragraph.py` | Consumes the delegated paragraph profile. Preserve its distinction from interactive RP writing. |
 | `skills/task/page-types/haipipe-page-insight/scripts/insight_items.py` | Resolves and validates RI execution identities, dataset bindings, versions, and review records. |
-| `skills/board/haipipe-board/live/design_actions.py` and `live/design.py` | Allocate/write Design records and route UI actions. The current public action router rejects retired Adopt actions; historical helpers/records still exist. Preserve that distinction. |
+| `servers/workbench-design/design_actions.py` and `servers/workbench-design/design.py` | Allocate/write Design records and route UI actions. The current public action router rejects retired Adopt actions; historical helpers/records still exist. Preserve that distinction. |
 | `skills/design/haipipe-design-unit/scripts/check_unit.py` | Enforces native Design Ticket and Result shapes; a generic receipt example cannot replace these schemas. |
 | `plugins/subjective-label/engine/run_catalog.py` | Defines 25 operation names and computes planned instances. Its planned count is not proof of allocation. |
 

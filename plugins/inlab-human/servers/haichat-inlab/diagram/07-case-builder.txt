@@ -1,0 +1,66 @@
+📌  The case is BUILT, not found — Trigger · Key · CaseFn
+═══════════════════════════════════════════════════════════════════
+
+A record is one human's whole timeline. A CASE is one point cut from it —
+one encounter, one review, one 5-min window. Three functions decide it, and
+all three are selectable (that's the design frontier for the Case view).
+
+─§ The three functions (haipipe fn_case/) ────────────────────────
+
+  +----------------+----------------------------------------+------------------+
+  | 🔧 Function    | 🎯 Decides                              | 🗂️ Lives in       |
+  +----------------+----------------------------------------+------------------+
+  | 🎯 TriggerFn   | WHICH moments become cases + the ObsDT  | fn_case/fn_trigger|
+  | 🔑 Key         | how a case is IDENTIFIED (case_id_cols) | inside TriggerFn |
+  | 🧩 CaseFn (×N) | WHAT facet each case carries            | fn_case/case_casefn|
+  +----------------+----------------------------------------+------------------+
+
+─§ How a case is assembled ───────────────────────────────────────
+
+  🧑 Human(PID) timeline
+       │  🎯 TriggerFn = ACIEncounterEntry   (one case per encounter)
+       ▼
+  📌 case  🔑 key = [PID · EncounterID · ObsDT]
+       │
+       ├─ 🧩 ACIDialogueBase  ─▶ the [doctor]/[patient] transcript
+       ├─ 🧩 ACINoteBase      ─▶ the SOAP note
+       ├─ 🧩 ACIContextBase   ─▶ chief complaint / demographics
+       └─ 🧩 ACITranscript…   ─▶ ASR variants
+                                 (CaseFn is a LIST — tick which facets show)
+
+  swap the trigger → the same human re-cuts:
+    🎯 ACIEncounterEntry ─▶ 1 case per visit
+    🎯 CGM5MinEntry      ─▶ 1 case per 5-min point   (a long human → many cases)
+    🎯 MimicAdmissionEntry ─▶ 1 case per admission
+
+─§ Already cooked on disk (real, not hypothetical) ───────────────
+
+  📁 3-CaseStore/ACIBench_v0RecSet/@v0CaseSet-ACIEncounterEntry/
+     ├── df_case.parquet          207 keyed cases (PID·EncounterID·ObsDT + facets)
+     ├── @ACIDialogueBase.parquet  ┐
+     ├── @ACINoteBase.parquet      ├─ one file per CaseFn facet
+     ├── @ACIContextBase.parquet   ┘
+     └── manifest.json
+  naming: @v{V}CaseSet-{Trigger}[-{Filter}...]
+
+─§ The Case view as a case-BUILDER (design target) ───────────────
+
+  📌 Case
+  🎯 Trigger: [ ACIEncounterEntry ▾ ]  🔑 Key: PID·EncounterID·ObsDT
+  🧩 CaseFns: ☑Dialogue ☑Note ☐Context ☐Transcript
+  🔎 scope:   ● Individual (pt-D2N001) — 1 case ✏️label   ○ Group — 207 cases
+  ────────────────────────────────────────────────────────────────
+   📌 case  PID·D2N001·2023-01-01
+      ☑ Dialogue → 56 turns   ☑ Note → SOAP
+
+  ⚠️ today the view reads record rows as a stand-in; the target is to read the
+     cooked CaseSet (df_case + @CaseFn facets), backed by a real fn catalog
+     (13 triggers · 95 casefns on disk).
+
+─§ One anchor, two consumers ─────────────────────────────────────
+
+              📌 CASE
+        ┌───────┴───────┐
+     🧠 SCORE          ✏️ LABEL
+   (model endpoint)  (subjective-label panel)
+   06 · 04 predict    08-labeling-and-tasks.txt

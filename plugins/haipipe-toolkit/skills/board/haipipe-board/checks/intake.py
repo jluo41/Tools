@@ -4,12 +4,12 @@
     python3 checks/intake.py [--board DIR ...]
 
 A display unit's `intake/manifest.yaml` exists so that staleness is COMPUTABLE
-(`haipipe-plugin-outline/ref/evidence/displays.md` §❄️): the unit copied its sources and recorded a
+(`haipipe-workbench-page/ref/evidence/displays.md` §❄️): the unit copied its sources and recorded a
 sha256, so anyone can ask whether the copy still matches what is on disk now.
 Nothing asked.
 
 JL 260819 caught it by reading: "things here is still the old way … check again to
-see whether they are aligned semantically". The loop's phase ORDER changed that
+see whether they are aligned semantically". The loop's Run ORDER changed that
 day, and four of five figures on `QPw00-page-loop` still draw the old one. The
 manifests already knew; no tool was looking.
 

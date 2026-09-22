@@ -64,9 +64,9 @@ _WorkSpace/A-LLMRecPhy/4-LLMCallStore/v2026-08/audits/
 | DeepSeek | `claude-agent-sdk` via `https://api.deepseek.com/anthropic` | expose only `WebSearch`, `WebFetch` | expose no tools and disallow web tools |
 
 For Codex, deny approvals, use a read-only sandbox, and explicitly disable shell,
-unified execution, memories, apps, plugins, multi-agent, browser, computer use,
+unified execution, memories, apps, workbenches, multi-agent, browser, computer use,
 and image generation. For Claude and DeepSeek, set
-`permission_mode="dontAsk"`, clear setting sources, skills, and plugins, and
+`permission_mode="dontAsk"`, clear setting sources, skills, and workbenches, and
 expose only the protocol's allowed tools. DeepSeek requires
 `DEEPSEEK_API_KEY`; translate it to the Anthropic-compatible child environment
 for the call only, and never copy it into the isolated SDK home or artifacts.

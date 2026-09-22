@@ -19,7 +19,7 @@ Board 家族能说明 Board 如何登记 Page、维护成员顺序、选择领�
 | [`haipipe-board/SKILL.md`](../../plugins/haipipe-toolkit/skills/board/haipipe-board/SKILL.md) | 全文，332 行 | PARTIAL | Board 路由、结构、状态、命令、审批和示例 |
 | [`haipipe-board-routing/SKILL.md`](../../plugins/haipipe-toolkit/skills/board/haipipe-board-routing/SKILL.md) | 全文，265 行 | N/A | 路由是操作程序，不是 Workflow 定义 |
 | [`haipipe-folder/SKILL.md`](../../plugins/haipipe-toolkit/skills/board/haipipe-folder/SKILL.md) | 全文，305 行 | FAIL | Phase 仍是活跃身份和 Workflow 表格粒度 |
-| [`haipipe-plugin-design-board/SKILL.md`](../../plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/SKILL.md) | 全文，218 行 | PARTIAL | 有跨 Folder Run ledger，但工作流仍称 Adopt 为步骤/状态 |
+| [`haipipe-workbench-design/SKILL.md`](../../plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md) | 全文，218 行 | PARTIAL | 有跨 Folder Run ledger，但工作流仍称 Adopt 为步骤/状态 |
 
 另读了 Board `README.md`；主 Board 的 `ref/board-form.md`、`ref/operations.md`、`ref/writing-rules.md`、`ref/board-example.md`、`ref/insight-space-mapping.md`、`fn/serve.md`；Page lifecycle workflow 实现；routing lanes 和 regroup 实现；Board agent、reviewer、auditor、creator、approver 文件及 approve-rules；Folder/Board parser 和状态、DesignBoard 投影相关实现。
 
@@ -51,9 +51,9 @@ Board 家族能说明 Board 如何登记 Page、维护成员顺序、选择领�
 
 ### P1 — DesignBoard 的 Adopt 指令与当前 ready/Delivery 状态不符
 
-**证据：** [`haipipe-plugin-design-board/SKILL.md`](../../plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/SKILL.md) 第 48–49 行把流程列为 Commission、Generate、Verify、Adopt；第 64–66、87–90、107–124、144–164 行持续将任务/Run/交付描述为 `adopted`，并说明 adopt 操作。其支持映射 [`ref/space-mapping.md`](../../plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/ref/space-mapping.md) 第 5、9–13、34–35、68 行也复述 Adopt 状态。
+**证据：** [`haipipe-workbench-design/SKILL.md`](../../plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md) 第 48–49 行把流程列为 Commission、Generate、Verify、Adopt；第 64–66、87–90、107–124、144–164 行持续将任务/Run/交付描述为 `adopted`，并说明 adopt 操作。其支持映射 [`ref/space-mapping.md`](../../plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/ref/space-mapping.md) 第 5、9–13、34–35、68 行也复述 Adopt 状态。
 
-当前投影代码 [`live/design.py`](../../plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py) 第 38–39 行将 `adopt` 映射为 Delivery，并注释这是 legacy storage；第 514–520 行以独立 Verify 通过作为 Delivery gate，旧 adopt 记录可保留但不要求；第 715–718、880–882 行将 ready 基于 Verify 推导，旧记录映射到 Delivery。UI [`live/designboard.py`](../../plugins/haipipe-toolkit/skills/board/haipipe-board/live/designboard.py) 第 301–303、417–420、475–494 行展示 ready 任务并在导出中发送 `state=ready`。代码审阅显示文档与现行投影语义不一致；未启动 UI 实测。
+当前投影代码 [`servers/workbench-design/design.py`](../../plugins/haipipe-toolkit/servers/workbench-design/design.py) 第 38–39 行将 `adopt` 映射为 Delivery，并注释这是 legacy storage；第 514–520 行以独立 Verify 通过作为 Delivery gate，旧 adopt 记录可保留但不要求；第 715–718、880–882 行将 ready 基于 Verify 推导，旧记录映射到 Delivery。UI [`servers/workbench-design/designboard.py`](../../plugins/haipipe-toolkit/servers/workbench-design/designboard.py) 第 301–303、417–420、475–494 行展示 ready 任务并在导出中发送 `state=ready`。代码审阅显示文档与现行投影语义不一致；未启动 UI 实测。
 
 **影响：** 用户可能以为 Verify 后必须执行一个不存在的 Adopt Run，或认为 CSV 会输出 `state=adopted`，从而漏掉已经完成的交付或误判批次状态。
 

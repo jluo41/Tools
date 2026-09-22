@@ -15,14 +15,14 @@
 | 技能 | 已检查的支撑材料与交互面 | Workflow/Run |
 |---|---|---|
 | `plugins/haipipe-toolkit/skills/page/haipipe-page/SKILL.md` | `fn/runs.md`、`fn/serve.md`、`fn/reflect.md`；`ref/glossary.md`、`page-run-families.md`、`page-template.md`、`page-checklist.md`、`standalone.md`、`user-check-packet.md`；Page/Board Outline presenter、Page workflow stepper 与 standalone picker 源码 | **失败**：glossary 明确把重复单位定义为 phase；当前用户包仍显示 phase。RP/RE/RD Run 和内部 Step 的局部边界较清楚。 |
-| `plugins/haipipe-toolkit/skills/page/haipipe-plugin/SKILL.md` | `ref/roster.md`；Page 插件选择器脚本与独立页面工作区 picker | **部分**：将 Page 生命周期展示成 phases；与当前实际插件入口和 roster 中已移除的控件不一致。 |
+| `plugins/haipipe-toolkit/skills/page/haipipe-workbench/SKILL.md` | `ref/roster.md`；Page 插件选择器脚本与独立页面工作区 picker | **部分**：将 Page 生命周期展示成 phases；与当前实际插件入口和 roster 中已移除的控件不一致。 |
 | `plugins/haipipe-toolkit/skills/page/haipipe-sentence/SKILL.md` | 句子级反馈说明、comment/change/typed-lane 控件相关源码 | **不适用**：它定义句子反馈动作与标记，不定义 Workflow；内容本身区分已发布评论与 Draft Run 反馈。 |
-| `plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-delivery/SKILL.md` | `ref/latex.md`、`word.md`、`slide.md`、`render.md`、`_shared-export/README.md`；与 Design render 写入端的契约对读 | **部分**：RD/交付收据和各输出很明确；Render manifest 与 Design writer 对同一文件采用不同 schema，LaTeX/Word 引用的 display 路径也与 Evidence 当前契约冲突。 |
-| `plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/SKILL.md` | `ref/space-mapping.md`；Design actions/runtime；Page Delivery Render 约定 | **部分**：独立 Design 家族和 `rdNN` 记录明确，但用户可见的 `STEPS` 把独立 Run 记录显示为 Steps。 |
-| `plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-folder/SKILL.md` | Page roster、Outline/Studio/Delivery/Folder 的插件顺序说明、当前 picker | **不适用（此技能不定义 Workflow）**：Folder 是材料/导航 surface；当前发现的是 Runs 顶层位置等导航说明陈旧，而非本技能把 Phase 定义为工作单位。 |
-| `plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-outline/SKILL.md` | `ref/content-preview.md`、`evidence-bundle.md`、`evidence/citations.md`、`displays.md`、`pagex.md`、`values.md`、`item-table.md`、`plan-grammar.md`、`record-shape.md`、`review-packet.md`、`skill-record.md`、`space-mapping.md`、`specimen-section-plan.md`；Board Outline live presenter | **部分**：Run Spec/Run 分层和 Step 语义总体好，但 reader-facing Page 结构陈述过时，space mapping 仍将旧标签映射为 Workflow phase。 |
-| `plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-runs/SKILL.md` | Page 共享 roster；中立 `plugins/haipipe-toolkit/skills/run/haipipe-run/SKILL.md` 的身份、计数、Step 边界 | **通过（本技能局部模型）**：区分 Workflow map/Run Specs 与 Run instances；明确不把 Step、gate、工具调用或兼容 label 升格为 Run。共享 roster 的旧 phase/pass 说法仍需同步修正。 |
-| `plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-studio/SKILL.md` | `ref/chat.md`、`ref/draw.md`；Board `live/chat.py` 活跃系统提示 | **失败**：Studio chat 资料与活跃 prompt 把交互按 5 个 Page phase 派发，prompt 要求每条回复显示 phase/cycle；Draw lane 有清晰的对象所有权与写入确认边界。 |
+| `plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/delivery.md` | `ref/latex.md`、`word.md`、`slide.md`、`render.md`、`servers/workbench-page/exporters/README.md`；与 Design render 写入端的契约对读 | **部分**：RD/交付收据和各输出很明确；Render manifest 与 Design writer 对同一文件采用不同 schema，LaTeX/Word 引用的 display 路径也与 Evidence 当前契约冲突。 |
+| `plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md` | `ref/space-mapping.md`；Design actions/runtime；Page Delivery Render 约定 | **部分**：独立 Design 家族和 `rdNN` 记录明确，但用户可见的 `STEPS` 把独立 Run 记录显示为 Steps。 |
+| `plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/folder.md` | Page roster、Outline/Studio/Delivery/Folder 的插件顺序说明、当前 picker | **不适用（此技能不定义 Workflow）**：Folder 是材料/导航 surface；当前发现的是 Runs 顶层位置等导航说明陈旧，而非本技能把 Phase 定义为工作单位。 |
+| `plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/SKILL.md` | `ref/content-preview.md`、`evidence-bundle.md`、`evidence/citations.md`、`displays.md`、`pagex.md`、`values.md`、`item-table.md`、`plan-grammar.md`、`record-shape.md`、`review-packet.md`、`skill-record.md`、`space-mapping.md`、`specimen-section-plan.md`；Board Outline live presenter | **部分**：Run Spec/Run 分层和 Step 语义总体好，但 reader-facing Page 结构陈述过时，space mapping 仍将旧标签映射为 Workflow phase。 |
+| `plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/run-space.md` | Page 共享 roster；中立 `plugins/haipipe-toolkit/skills/run/haipipe-run/SKILL.md` 的身份、计数、Step 边界 | **通过（本技能局部模型）**：区分 Workflow map/Run Specs 与 Run instances；明确不把 Step、gate、工具调用或兼容 label 升格为 Run。共享 roster 的旧 phase/pass 说法仍需同步修正。 |
+| `plugins/haipipe-toolkit/skills/page/haipipe-workbench-studio/SKILL.md` | `ref/chat.md`、`ref/draw.md`；Board `servers/workbench-studio/chat.py` 活跃系统提示 | **失败**：Studio chat 资料与活跃 prompt 把交互按 5 个 Page phase 派发，prompt 要求每条回复显示 phase/cycle；Draw lane 有清晰的对象所有权与写入确认边界。 |
 | `plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-check/SKILL.md` | Page check agent、`agents/README.md`、Board `approve-rules`、用户检查包 | **部分**：CHECK dispatcher 被称为非 Run，但仍以 phase 为路由单位；用户闸门卡漏显示 owner ruling 和完成计数。 |
 | `plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-content/SKILL.md` | `ref/paragraph-run.md`、paragraph promotion 源码、interactive writing Run、user-check-packet | **部分**：将 paragraph feedback 放在 Run 内的 Step 边界清楚，但 CONTENT 发布门槛与 Outline 冲突。 |
 | `plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-context/SKILL.md` | `ref/context-record.md`、workflow contract、用户检查包 | **部分**：PREPARE 被视为 phase 内周期；流程层仍由 phase dispatch 组织。 |
@@ -45,7 +45,7 @@ Page 的人机协作设计有值得保留的强项：
 - `page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md:23-55,150-193,239-285` 与 `writing-step-template.md` 把一个可闭合目标定义成 Run，把原始反馈、候选文本、评分、诊断和修订保存为该 Run 中的 Step/Version。保存或应用不等于用户接受。
 - `page/haipipe-page/ref/user-check-packet.md:28-129,131-244` 按用户可读顺序呈现范围、完整候选文本、状态与直接证据链接；Draft、Evidence Result、已采用 Content 与 Page PDF 有区分。
 - Draft Table/Reading 只读、Scratch 是唯一浏览器写入口的原则在当前 Outline 说明与 `outline.py` presenter 中一致。句子技能也清楚区分发布后的 comment rail 与 Draft Run 内反馈（`haipipe-sentence/SKILL.md:55-61,74-84,150-184`）。
-- Content 与 Evidence 技能反复说明 adopt/build/pre-check 等动作是 Run 内部动作或 Step，不自动新建 Run（`haipipe-page-content/SKILL.md:27-34,75-87,119-138,159-220`；`haipipe-page-evidence/SKILL.md:23-30,105-119`）。Design 插件把 Goal、项目状态、责任人与用户可读操作解释得好（`haipipe-plugin-design/SKILL.md:60-88,243-268,398-460`）。
+- Content 与 Evidence 技能反复说明 adopt/build/pre-check 等动作是 Run 内部动作或 Step，不自动新建 Run（`haipipe-page-content/SKILL.md:27-34,75-87,119-138,159-220`；`haipipe-page-evidence/SKILL.md:23-30,105-119`）。Design 插件把 Goal、项目状态、责任人与用户可读操作解释得好（`haipipe-workbench-design/SKILL.md:60-88,243-268,398-460`）。
 
 ## 4. 优先问题与建议
 
@@ -59,7 +59,7 @@ Page 的人机协作设计有值得保留的强项：
 
 ### P1 — 活跃 Studio prompt 仍强制五阶段派发
 
-**证据。** `board/haipipe-board/live/chat.py:702-725` 以五个 indexed phases 和 cycle 组织回复，要求每次答复显示 phase/cycle，并规定 WRITE、重复 phase 与 per-commissioned-paragraph Run。插件引用 `page-plugins/haipipe-plugin-studio/ref/chat.md:112-153` 同样称 chat 是 interactive RUN controller、把动词派给 phase，并把每个 pass 称为 Run；而前文 `:25-30` 又说 chat 本身不构成 Run。新 interactive writing 契约把普通反馈定义为现有 Writing Run 内的 Step。
+**证据。** `servers/workbench-studio/chat.py:702-725` 以五个 indexed phases 和 cycle 组织回复，要求每次答复显示 phase/cycle，并规定 WRITE、重复 phase 与 per-commissioned-paragraph Run。插件引用 `haipipe-workbench-studio/ref/chat.md:112-153` 同样称 chat 是 interactive RUN controller、把动词派给 phase，并把每个 pass 称为 Run；而前文 `:25-30` 又说 chat 本身不构成 Run。新 interactive writing 契约把普通反馈定义为现有 Writing Run 内的 Step。
 
 **问题与影响。** 这段是会作用于现场 agent 的 system prompt，不是纯历史措辞。它可能导致每条回复强行带阶段标签、把用户的反馈误当新 phase/pass、过度派单，或将普通段落反馈错误地建成一次 Run。
 
@@ -67,7 +67,7 @@ Page 的人机协作设计有值得保留的强项：
 
 ### P1 — Outline Shape 批准与 CONTENT 发布授权有冲突
 
-**证据。** `page-workflows/haipipe-page-content/SKILL.md:69-73` 与 `page-workflows/haipipe-page-workflow/SKILL.md:514` 认为用户明确要求继续 CONTENT 足够，即使历史 `approved:` 为空；`page-workflows/haipipe-page-outline/SKILL.md:573-600` 则规定未勾选 Content-release gate 必须 HOLD，且要求批准的 G>=1 Shape。`page-plugins/haipipe-plugin-outline/ref/plan-grammar.md:276-280` 把明确批准描述为 promotion/release 事件，`review-packet.md:74-82` 说泛泛聊天反应不等于批准。
+**证据。** `page-workflows/haipipe-page-content/SKILL.md:69-73` 与 `page-workflows/haipipe-page-workflow/SKILL.md:514` 认为用户明确要求继续 CONTENT 足够，即使历史 `approved:` 为空；`page-workflows/haipipe-page-outline/SKILL.md:573-600` 则规定未勾选 Content-release gate 必须 HOLD，且要求批准的 G>=1 Shape。`haipipe-workbench-page/ref/plan-grammar.md:276-280` 把明确批准描述为 promotion/release 事件，`review-packet.md:74-82` 说泛泛聊天反应不等于批准。
 
 **问题与影响。** 用户会被告知“已授权进入 CONTENT”，同时流程又要求 HOLD。Agent 可能擅自把“go ahead”当成对特定 Shape 的批准，也可能重复要求用户对已经接受的 Shape 再授权。
 
@@ -75,7 +75,7 @@ Page 的人机协作设计有值得保留的强项：
 
 ### P1 — 共享 roster 提供了当前界面不存在或明确禁止的动作
 
-**证据。** `page/haipipe-plugin/ref/roster.md:43` 说 Draft Space 有 note composer，会将反馈追加到待处理 Step；但 Outline SKILL `:325-343,453-470,610-615` 规定只有 Scratch 可写，Draft Table/Reading 只读，无 feedback composer，且当前 `page/haipipe-page/live/outline.py:3278-3299` 只有 `action:scratch` 并拒绝旧 feedback action。roster `:41` 说 Run Space 有 Scripts 区域；`haipipe-plugin-runs/SKILL.md:163-167,344-368` 明确禁止在 Run Space 展示 Scripts tree/summary。roster `:35` 仍描述人类 Adopt 决定，当前 Design SKILL `:413,419-426` 说 Verify 后没有此类 decision Run/门槛，`board/haipipe-board/live/design.py:1659-1660` 拒绝 adopt 等旧 action。
+**证据。** `page/haipipe-plugin/ref/roster.md:43` 说 Draft Space 有 note composer，会将反馈追加到待处理 Step；但 Outline SKILL `:325-343,453-470,610-615` 规定只有 Scratch 可写，Draft Table/Reading 只读，无 feedback composer，且当前 `servers/workbench-page/outline.py:3278-3299` 只有 `action:scratch` 并拒绝旧 feedback action。roster `:41` 说 Run Space 有 Scripts 区域；`haipipe-workbench-page/ref/run-space.md:163-167,344-368` 明确禁止在 Run Space 展示 Scripts tree/summary。roster `:35` 仍描述人类 Adopt 决定，当前 Design SKILL `:413,419-426` 说 Verify 后没有此类 decision Run/门槛，`servers/workbench-design/design.py:1659-1660` 拒绝 adopt 等旧 action。
 
 **问题与影响。** roster 被 Studio、Delivery、Runs、Folder 多个技能共同引用，是跨页面的权威清单。它会让用户/agent寻找不存在的 composer、Scripts 区域或 Adopt 控件，或对旧写入路径发请求。
 
@@ -83,7 +83,7 @@ Page 的人机协作设计有值得保留的强项：
 
 ### P2 — Design 与 Delivery 对同一 Render manifest 定义了互不兼容的格式
 
-**证据。** Design SKILL `page-plugins/haipipe-plugin-design/SKILL.md:261-268,419-427` 把 `delivery/render/manifest.json` 绑定到确切 Generate candidate，并称 Verify 是 readiness gate。当前 `board/haipipe-board/live/design_actions.py:525-538` 把它当按 item/candidate/version 递增的 JSON list，复制候选字节并写 `render`、`sha256`、`version`；`live/design.py:651-654` 也按该列表读图。Delivery `page-plugins/haipipe-plugin-delivery/ref/render.md:15-21,23-39,57-59` 却定义一个带 design/warrants/render 三个 stamp 的单 artifact/version 文档，并包含人类 accepted 状态。
+**证据。** Design SKILL `../design/haipipe-workbench-design/SKILL.md:261-268,419-427` 把 `delivery/render/manifest.json` 绑定到确切 Generate candidate，并称 Verify 是 readiness gate。当前 `servers/workbench-design/design_actions.py:525-538` 把它当按 item/candidate/version 递增的 JSON list，复制候选字节并写 `render`、`sha256`、`version`；`servers/workbench-design/design.py:651-654` 也按该列表读图。Delivery `haipipe-workbench-page/ref/delivery.md:15-21,23-39,57-59` 却定义一个带 design/warrants/render 三个 stamp 的单 artifact/version 文档，并包含人类 accepted 状态。
 
 **问题与影响。** 同路径会被两个插件按不同 schema 读写。Design 可能生成 Delivery 无法读的 list；Delivery 可能覆盖 Design 用于预览的结构。谁负责“ready”也可能从 Verify 门槛漂移成人工 render acceptance。
 
@@ -91,7 +91,7 @@ Page 的人机协作设计有值得保留的强项：
 
 ### P2 — Page reader-facing 内容结构在 Outline 插件中仍是四区
 
-**证据。** `page-plugins/haipipe-plugin-outline/SKILL.md:151-166` 把 Page 展示为 Opening、Outline、Content、Aims 四个 reader-facing section；新 Page 主说明 `haipipe-page/SKILL.md:586-633` 和模板 `ref/page-template.md:16-22,29-37` 只定义 Opening 与 Content，Outline/Aims 为 backstage 工作面；`ref/page-checklist.md:46-67` 也保持两部分结构。Outline `:438-445` 还称生成的 compact Outline table 位于 Board page，容易与 Page 正文中的 Outline reader section 混淆。
+**证据。** `haipipe-workbench-page/SKILL.md:151-166` 把 Page 展示为 Opening、Outline、Content、Aims 四个 reader-facing section；新 Page 主说明 `haipipe-page/SKILL.md:586-633` 和模板 `ref/page-template.md:16-22,29-37` 只定义 Opening 与 Content，Outline/Aims 为 backstage 工作面；`ref/page-checklist.md:46-67` 也保持两部分结构。Outline `:438-445` 还称生成的 compact Outline table 位于 Board page，容易与 Page 正文中的 Outline reader section 混淆。
 
 **问题与影响。** 实施者可能在最终 Page 中多渲染两个流程/计划区，把作者工作台内容暴露给读者，或误删 Board 中的独立投影。
 
@@ -99,7 +99,7 @@ Page 的人机协作设计有值得保留的强项：
 
 ### P2 — Outline space mapping 把兼容标签呈现为 Workflow phase
 
-**证据。** `page-plugins/haipipe-plugin-outline/ref/space-mapping.md:28-43` 的标题为 `Workflow phase`，并把 SHAPE/SURVEY、LAND/EMBED、CHECK 映射到“工作阶段”，其中 `CHECK` 指向 Delivery Space；紧接着 `:45-78` 的规范表却将单位定义为 Run Specs，并把 Check 描述成跨 Draft/Evidence/Runtime/Delivery 的只读检查。Workflow table `page-workflows/haipipe-page-workflow/ref/workflow-table.md:5` 也说旧 controller labels 不是 Phase authority。
+**证据。** `haipipe-workbench-page/ref/space-mapping.md:28-43` 的标题为 `Workflow phase`，并把 SHAPE/SURVEY、LAND/EMBED、CHECK 映射到“工作阶段”，其中 `CHECK` 指向 Delivery Space；紧接着 `:45-78` 的规范表却将单位定义为 Run Specs，并把 Check 描述成跨 Draft/Evidence/Runtime/Delivery 的只读检查。Workflow table `page-workflows/haipipe-page-workflow/ref/workflow-table.md:5` 也说旧 controller labels 不是 Phase authority。
 
 **问题与影响。** 读者会按旧标签把 SHAPE、LAND、CHECK 当成独立 Workflow 单位，或者只检查 Delivery，而不是审查 Page Check 实际要读的多处证据；这与同一文件的 Run Spec 投影表相互矛盾。
 
@@ -107,13 +107,13 @@ Page 的人机协作设计有值得保留的强项：
 
 ### P2 — Workflow 指令引用已退休 Evidence 路径
 
-**证据。** `page-workflows/haipipe-page-workflow/SKILL.md:280-281` 说可从 `outline/evidence/display/`、`outline/evidence/bibex/` 与 `delivery/latex/` 读取；Outline 当前 evidence refs `page-plugins/haipipe-plugin-outline/ref/evidence/displays.md:180-185` 与 `citations.md:107-109` 已退休前两条路径；`user-check-packet.md:239-244` 明确禁止读取/返回这些位置或 fallback；Page Evidence `SKILL.md:369-378` 也称旧 `outline/evidence/` 已归档。
+**证据。** `page-workflows/haipipe-page-workflow/SKILL.md:280-281` 说可从 `outline/evidence/display/`、`outline/evidence/bibex/` 与 `delivery/latex/` 读取；Outline 当前 evidence refs `haipipe-workbench-page/ref/evidence/displays.md:180-185` 与 `citations.md:107-109` 已退休前两条路径；`user-check-packet.md:239-244` 明确禁止读取/返回这些位置或 fallback；Page Evidence `SKILL.md:369-378` 也称旧 `outline/evidence/` 已归档。
 
 **问题与影响。** Agent 可能引用过时预览/引用来源，让用户检查到 stale artifact，或在未找到文件时走到不安全的 legacy fallback。
 
 **建议。** 将允许读取来源写成当前 RE Result payload/Card 路径与 Page-level `delivery/latex` PDF；display 的 `preview.pdf` 明确来自相应 RE Result payload。将旧路径只列在明确的历史/迁移说明里，不与“eligible current evidence”放在同一句。
 
-**补充冲突。** 这不只出现在 Workflow SKILL：当前 Delivery refs `page-plugins/haipipe-plugin-delivery/ref/latex.md:38-39` 和 `word.md:36-37` 仍把 `<page>/outline/evidence/display/` 定义为正在使用的 display 来源，Word `:29-30` 仍从 `bibex/<stem>.bib` 读当前引用。需由 Evidence 与 Delivery owner 共同确认实际兼容边界和当前写入源；仅从 Workflow 文档删除旧路径不足以修复。
+**补充冲突。** 这不只出现在 Workflow SKILL：当前 Delivery refs `haipipe-workbench-page/ref/delivery.md:38-39` 和 `word.md:36-37` 仍把 `<page>/outline/evidence/display/` 定义为正在使用的 display 来源，Word `:29-30` 仍从 `bibex/<stem>.bib` 读当前引用。需由 Evidence 与 Delivery owner 共同确认实际兼容边界和当前写入源；仅从 Workflow 文档删除旧路径不足以修复。
 
 ### P2 — Run 的 `Held` 状态没有出现在已定义的状态枚举
 
@@ -133,15 +133,15 @@ Page 的人机协作设计有值得保留的强项：
 
 ### P3 — Design 详情把 Run 记录标成 `STEPS`
 
-**证据。** `page-plugins/haipipe-plugin-design/SKILL.md:166-167` 的单项时间线标题为 `STEPS`，例子是 Commission ✓ → Generate ✓ → Verify ✓ → Delivery；但 `:408-417` 把 Commission/Generate/Verify 说明为各自 `rdNN` Run，且 `:413` 明确 Delivery-ready 本身没有 decision Run。`ref/space-mapping.md:6,8-9` 也称这些为 Steps。
+**证据。** `../design/haipipe-workbench-design/SKILL.md:166-167` 的单项时间线标题为 `STEPS`，例子是 Commission ✓ → Generate ✓ → Verify ✓ → Delivery；但 `:408-417` 把 Commission/Generate/Verify 说明为各自 `rdNN` Run，且 `:413` 明确 Delivery-ready 本身没有 decision Run。`ref/space-mapping.md:6,8-9` 也称这些为 Steps。
 
-**问题与影响。** 用户无法区分显示对象究竟是执行 Run，还是某个 Run 的内部操作；把 ready handoff 当成 Run 还会导致错误计数。Insight 与 Design 是独立 first-class 家族；Page 可以消费它们的 Supporting Runs/Results。`haipipe-plugin-design` 是 Page 展示/接入面，不意味着 Design 从属已退休的 Application 父族。
+**问题与影响。** 用户无法区分显示对象究竟是执行 Run，还是某个 Run 的内部操作；把 ready handoff 当成 Run 还会导致错误计数。Insight 与 Design 是独立 first-class 家族；Page 可以消费它们的 Supporting Runs/Results。`haipipe-workbench-design` 是 Page 展示/接入面，不意味着 Design 从属已退休的 Application 父族。
 
 **建议。** 若时间线记录的是 Commission/Generate/Verify 的独立 `rdNN`，将标题改为 Runs/Run history；将 Delivery-ready 显示为派生状态或 handoff，不增加 Run。对非独立可关闭操作则保留 Step 一词。
 
 ### P3 — 页面插件入口和 Folder 排序说明彼此不一致
 
-**证据。** `haipipe-plugin/SKILL.md:89-91` 把“Page phases stepper”列为 Plugin picker 项，但 picker 脚本 `board/assets/js/10-drawer/65-plugin-pageflow.js:1-27` 将其标为 internal lifecycle view/no Plugin row；`page_workspace.py:300-318` 的独立 picker 项是 Outline、Delivery、Folder、可选 Labeling。另 `haipipe-plugin-folder/SKILL.md:37-40` 说 Folder 位于 Outline、Studio、top-level `⚙ Runs`、Delivery 之后，而共享 roster `:34,39-43` 与 Runs `SKILL.md:21-26` 把 Runs 放在 Outline 内。
+**证据。** `haipipe-plugin/SKILL.md:89-91` 把“Page phases stepper”列为 Plugin picker 项，但 picker 脚本 `board/assets/js/10-drawer/65-plugin-pageflow.js:1-27` 将其标为 internal lifecycle view/no Plugin row；`page_workspace.py:300-318` 的独立 picker 项是 Outline、Delivery、Folder、可选 Labeling。另 `haipipe-workbench-page/ref/folder.md:37-40` 说 Folder 位于 Outline、Studio、top-level `⚙ Runs`、Delivery 之后，而共享 roster `:34,39-43` 与 Runs `SKILL.md:21-26` 把 Runs 放在 Outline 内。
 
 **问题与影响。** 新上下文中的 agent 可能寻找不存在的 picker 行，或把 Runs 作为顶层插件误放进导航。
 
@@ -177,7 +177,7 @@ Page 的人机协作设计有值得保留的强项：
 
    **After:** `Workflow — the declared list of Run Specs for this Page goal, with each Run's route and close rule. A Workflow may be reopened; reopening does not create a new workflow unit.` `Run — one bounded, addressable attempt instantiated from a Run Spec. Steps, feedback turns, controller dispatches, and tool calls stay inside a Run or in routing metadata unless they independently meet the Run contract.` `Compatibility fields such as phase, cycle, and start_phase may remain in serialized controller receipts; they do not name Workflow units.`
 
-2. 对 `board/haipipe-board/live/chat.py:702-725` 的活跃 prompt，建议改为：
+2. 对 `servers/workbench-studio/chat.py:702-725` 的活跃 prompt，建议改为：
 
    **Before:** `Announce the current phase and cycle in every reply.`
 
@@ -201,7 +201,7 @@ Page 的人机协作设计有值得保留的强项：
 
    **After:** `Read current Evidence from its referenced RE Result payload and Card. A display preview PDF is inside that current Result payload; the Page-level delivery/latex PDF is a delivery artifact. Do not fall back to retired outline/evidence/display/ or outline/evidence/bibex/ paths.`
 
-6. 对 Design timeline (`haipipe-plugin-design/SKILL.md:166-167`)，建议改为：
+6. 对 Design timeline (`haipipe-workbench-design/SKILL.md:166-167`)，建议改为：
 
    **Before:** `STEPS — Commission ✓ → Generate ✓ → Verify ✓ → Delivery`
 

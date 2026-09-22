@@ -157,7 +157,7 @@ class LabelingSurfaceTest(unittest.TestCase):
         self.assertIn('<meta name="viewport"', body)
         self.assertIn('aria-label="Labeling Spaces"', body)
         self.assertIn('role=tabpanel', body)
-        # a Workflow map returned 260918 as a view inside the Run Space (like the Paper plugin), never its own Space
+        # a Workflow map returned 260918 as a view inside the Run Space (like the Paper workbench), never its own Space
         self.assertNotIn("Workflow Space", body)
         for retired in ("Human Space", "Data &amp; Label", "Guideline Space",
                         "Run Spec × Space", "DICES", "Q_overall", "safety_gold"):
@@ -685,6 +685,10 @@ class LabelingRoundDrawTest(unittest.TestCase):
         self.assertNotIn("Paste it into a Claude chat", label)
 
 
+# The labeling workbench ships with the subjective-label workbench.
+LABELING_JS = (Path(__file__).resolve().parents[5] / "subjective-label" / "servers"
+               / "workbench-labeling" / "assets" / "js" / "10-drawer" / "60-workbench-labeling.js")
+
 class LabelingBoardLevelTest(unittest.TestCase):
     """Zoom out: one card per labeling job on the Board; zoom in: the card opens the job."""
 
@@ -732,18 +736,18 @@ class LabelingBoardLevelTest(unittest.TestCase):
         self.assertIn('href="/_board/labeling-board?path=/demo/board.md">← All labeling jobs</a>', body)
 
     def test_registry_offers_board_level_only_on_index_or_dash(self):
-        script = (Path(__file__).resolve().parents[1] / "assets" / "js" /
-                  "10-drawer" / "60-plugin-labeling.js").read_text(encoding="utf-8")
+        script = LABELING_JS.read_text(encoding="utf-8")
         self.assertIn("id: 'labeling-board'", script)
         self.assertIn("applies: boardApplies", script)
         self.assertIn("/_board/labeling-board", script)
 
 
 class LabelingRegistrationTest(unittest.TestCase):
-    def test_registry_is_a_right_pane_plugin_and_has_no_retired_commands(self):
-        script = (Path(__file__).resolve().parents[1] / "assets" / "js" /
-                  "10-drawer" / "60-plugin-labeling.js").read_text(encoding="utf-8")
-        self.assertIn("menu: 'plugin'", script)
+    def test_registry_is_a_right_pane_workbench_and_has_no_retired_commands(self):
+        script = LABELING_JS.read_text(encoding="utf-8")
+        # 60-workbench-labeling.js ships with plugins/subjective-label and has not been
+        # renamed yet; the registry maps its `menu: 'plugin'` to 'workbench'.
+        self.assertRegex(script, r"menu: '(?:workbench|plugin)'")
         self.assertIn("tab: { url: url, write: write }", script)
         self.assertIn("function isSurfacePage(page)", script)
         self.assertNotIn("type === 'labeling'", script)
@@ -754,10 +758,10 @@ class LabelingRegistrationTest(unittest.TestCase):
         for retired in ("/label-init", "/label-round", "/label-evaluate", "/label-complete"):
             self.assertNotIn(retired, script)
 
-    def test_assembled_browser_asset_contains_only_the_new_labeling_plugin(self):
+    def test_assembled_browser_asset_contains_only_the_new_labeling_workbench(self):
         built = assets.js()
         self.assertIn("id: 'labeling'", built)
-        self.assertIn("menu: 'plugin'", built)
+        self.assertIn("menu: 'workbench'", built)
         self.assertIn("S-Label-Dash", built)
         for retired in ("/sl-init", "/sl-round", "/sl-evaluate", "/sl-complete"):
             self.assertNotIn(retired, built)

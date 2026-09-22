@@ -1,0 +1,206 @@
+## 0.12.0 · 2026-09-22
+
+- Moved to `skills/page/workflow-runs/`; the description leads with the gate (`Page.check`).
+
+## 0.11.0 · 2026-09-21
+
+- Apply Paper submission-readiness overlay rows to their owning Section Pages
+  while keeping cover-letter and whole-paper checks at Paper level.
+
+## 0.10.2 · 2026-09-20
+
+- Clarify that CHECK is dispatched by the Page Workflow and is not itself a Run.
+
+## 0.10.1 · 2026-09-20
+
+- Use owner-defined closing gates and a complete evidence-led human review packet.
+
+## 0.10.0 · 2026-09-20
+
+- Reference the shared Writing base rubric and retain independent whole-Page mechanics, actor and immutable-version checks.
+
+## 0.9.0 — 2026-09-15
+
+- Make CHECK the independent whole-Page completion gate of the Workflow
+  Runtime; retain CHECK as a compatibility dispatch label.
+
+## 0.8.1 — 2026-09-06
+
+- Replace remaining live generation-only reopen language with explicit Shape
+  and evidence revision routes.
+
+## 0.8.0 — 2026-09-06
+
+- Read the exact `v<G>.<S>[.<E>]` plan at CHECK and recognize inherited Shape
+  approval on evidence-only revisions.
+
+## 0.7.3 — 2026-09-04
+
+- Resolve closing policy through the exact Page Face owner, including a
+  canonical family owner such as `haipipe-task` loaded once.
+
+## 0.7.2 — 2026-09-04
+
+- Read ordinary-Page CITE verification from its authored Evidence Item row,
+  with Discovery runtime and BibTeX fields retained only in their proper modes.
+- Remove CHECK from CHECK's legal `next_cycle`; terminal routes omit the field.
+
+## 0.7.1 — 2026-09-04
+
+- Use the canonical Page dependency order.
+- Route an absent/incomplete Run graph to OUTLINE/SURVEY, but a complete graph
+  whose local Result is missing, invalid, or stale to EVIDENCE/LAND.
+- Carry the target cycle separately from the Page-phase route.
+
+## 0.6.7 — 2026-09-03
+
+- Route citation verification through the Outline Evidence Workspace and make
+  the legacy `read:`/Probe row migration-only; new Pages use typed Evidence
+  Items without a `evidence/probe/` lane.
+
+## 0.6.6 — 2026-09-03
+
+- Follow the ranked Skills order at its canonical `outline/skill/` path.
+
+## 0.6.5 — 2026-09-02
+
+- Resolve manuscript Section writing instructions from authored W records in
+  `outline/<stem>-requirement.md`; retain source-level Writing Style only as
+  non-Section compatibility.
+
+## 0.6.4 — 2026-09-02
+
+- Assign the citation `verified` gate to `haipipe-workbench-evidence`; the
+  separate Bibex Workbench no longer exists.
+
+## 0.6.3 — 2026-08-31
+
+- Replace the universal five-tick claim with artifact-selected workbench ticks
+  plus phase-owned `page_ruling`; CHECK reuses a domain gate and does not mint
+  a duplicate Page approval.
+- Canonicalize evidence paths in the gate table.
+
+## 0.6.2 — 2026-08-31
+
+- **§📏 The rubric** moved here from `haipipe-page` §🔍 (four axes with their
+  judges, the review units, the four verdicts, the batch-voice readability
+  unit, the one-row report, the read-only rule). `haipipe-page` keeps the
+  requirement-resolution order and points here.
+
+## 0.6.1 — 2026-08-18
+
+- Pointer added to `../../haipipe-page-workflow/ref/run-cards.md` §⑦, which
+  states this phase and every sibling in the SAME six fields
+  (`❓ ASKS · 📥 READS · 📤 WRITES · 🚪 EXITS · ✋ TICK · 🔀 ROUTES`). This
+  contract still owns the reasoning; the card is the readable-across-phases
+  summary, and the contract wins when they disagree.
+- Board backlink retargeted: `QPw7`/`QPw8`/`QPw9` became `QPw00a`/`QPw00r`/
+  `QPw00g` when JL ruled that pages which are not phases may not carry
+  phase numbers.
+- **Coherence sweep (260819)**: CHECK routes to all SEVEN of CLOSE | OUTLINE |
+  PROBE | EVIDENCE | DRAFT | REVISE | HOLD, in §🔀, the receipt, and the
+  description; the ticks table's `verified` and `read:` lanes are ③c and ③v
+  per run-cards; the common path reads PREPARE(①②③) → DRAFT → REVISE →
+  CHECK.
+
+
+## 0.6.0 — 2026-08-18
+
+The tick roster was WRONG at 0.5.0: five, not four.
+
+- 0.5.0 rostered FOUR person-reserved ticks and omitted the probe card's `read:`,
+  whose reserving rule is `haipipe-workbench-probe`: "Only a person may tick it, and
+  a changed `target` or a re-pulled `proof/` drops the tick back."
+  Caught by an independent CHECK on `QPw00g-human-gate` the same day.
+- Recorded which two of the five REVERT on changed inputs: `read:` and
+  `accepted: ✅`. The other three do not.
+- Recorded the sixth human-reserved write that is deliberately excluded because it
+  is an ORDER and not a field: the row rank in `skill/` and `pagex/`.
+- Corrected "no single surface collects them": `servers/workbench-page/outline.py`
+  already collects four of the five, read-only, with no `<n> of <n>` count and
+  no row for the Page Type's RULING.
+
+## 0.5.0 — 2026-08-18
+
+The gate is ACCEPT-BIASED, and the four ticks are rostered (JL 260818).
+
+- Added `## ✋ The gate is ACCEPT-BIASED`, on JL's words "human should be more
+  likely to accept it": present a gate only when `mechanical_errors` for that
+  page is ZERO, so the gate is a confirmation rather than an inspection.
+- Stated the one line the bias may not move: silence is not consent, and a
+  required gate with no durable passed evidence still routes to HOLD.
+- Rostered the board's FOUR ticks a machine may never write, with the file each
+  lives on, the rule that reserves it, and its phase: `approved:` ①,
+  `verified` ④, `accepted: ✅` ⑦, the Page Type's ruling ⑦.
+- Recorded that no single surface collects the four, and pointed at `QPw00g`.
+- Added the Board page backlink: `QPw6-check` argues this phase.
+
+## 0.4.0 — 2026-08-16
+
+CHECK judges the BUILT artifact, not only the Markdown (JL 260816).
+
+- Added the built-artifact gate with six deterministic findings computed by the
+  new `haipipe-board/src/page_evidence.py` and reported by `cli/check.py`:
+  `display-declared-not-rendered` (naming the first missing step),
+  `display-cited-not-embedded`, `display-rendered-not-cited`,
+  `display-accept-stale`, `latex-untitled`, `projection-stale`.
+- Stated the three-count rule: declared, rendered, and accepted are independent,
+  folder count is never completed work, and a version whose declared count
+  exceeds its rendered count does not pass.
+- CHECK administers display-walk step ⑤ ACCEPT and never ticks it.
+- Phase token PROBE -> EVIDENCE throughout.
+
+haipipe-page-check · Changelog
+==============================
+
+Skill-scoped changelog (never loaded at invocation; read on demand). Versions match
+SKILL.md frontmatter `version:`. Newest first.
+
+**v0-series rule:** inherited from `haipipe-board`; this skill stays on `0.x.x` and
+never reaches `1.0.0` without JL's explicit say-so.
+
+## 0.3.1 - 2026-08-05
+
+- Opening now states CHECK's own risk (becoming a hidden revision) instead of the shared ownership couplet.
+
+## 0.3.0 - 2026-08-04
+
+- Adds the shared RUN receipt and immutable version gate: CHECK records the
+  source/render identity, verdict, findings, evidence, route, and human gate.
+- Enforces producer != judge, re-CHECK after every content change, CLOSE only
+  after pass, and HOLD for missing human evidence or concurrent mutation.
+
+## 0.2.0 - 2026-08-04
+
+- Renamed from `haipipe-board-page-for-stage-check` and moved under `page-phases/`.
+- CHECK now applies to any Page Type, judges one concrete version, and routes to close, REVISE, PROBE, DRAFT new round, or an explicit hold.
+- Removes the assumptions that CHECK is always last, always human, or always feeds the next DRAFT.
+- Corrects `new round`: it reopens the promise on the same persistent Page and does not automatically create another unit.
+
+## 0.1.0 - 2026-08-04
+
+**Created** (JL: "ok, I agree, please go ahead and make them.").
+
+Split out of the family workers so the four-phase loop has ONE rulebook instead of
+one per family. Measured 260804: the paper and application families each shipped
+their own draft/probe/revise/check hubs (1,263 lines against 531), and NONE of the
+eight loaded `haipipe-page` at all, so each had copied the page grammar from
+memory. `haipipe-paper-draft` still named `## Items to Finish` five times, a
+section renamed that morning.
+
+- Host-agnostic on purpose: names no venue, no markup, no checker. A family worker
+  adds its artifact knowledge and obeys this file.
+- Settles `QC6 A4.1`: paper and application share a CONTRACT, not folder names.
+## 0.7.0 · 2026-09-04
+
+- Number CHECK as `04` and define it explicitly as the whole-Page gate.
+- Replace DRAFT/REVISE repair routes with `CONTENT`; add `CONTEXT` for stale
+  policy, requirements, ownership, and related information.
+- Keep CHECK independent: it reads all three Outline workspaces, judges one
+  exact built version, repairs nothing, and remains the only phase that may
+  CLOSE.
+- Remove PageX rank from the active human-gate inventory.
+## 0.8.1 — 2026-09-06
+
+- Express OUTLINE re-entry using the generation/Shape/evidence version contract
+  instead of the retired single-counter notation.

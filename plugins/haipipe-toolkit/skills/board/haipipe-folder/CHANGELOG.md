@@ -9,7 +9,7 @@
 
 ## 0.6.1 · 2026-09-12
 
-- Point Page and plugin ownership links at their canonical `skills/page/`
+- Point Page and workbench ownership links at their canonical `skills/page/`
   homes after the Board/Page family split.
 
 ## 0.6.0 · 2026-09-08
@@ -39,7 +39,7 @@
 
 ## 0.4.1 · 2026-09-04
 
-- Retire PageX from current Folder plugin selection. Cross-Folder context now
+- Retire PageX from current Folder workbench selection. Cross-Folder context now
   uses explicit Context Workspace source addresses; cross-Folder evidence uses
   full Supporting Run ids or frozen Local Input addresses. Existing PageX
   material remains read-only migration history.
@@ -97,4 +97,4 @@
 - Establish Folder as the neutral work object with Page and Task faces.
 - Place Folder-kind semantics in domain workflow phases rather than Page-Type skills.
 - Define the phase metadata/section contract and legacy `page-type:` bridge.
-- Retire the architectural need for a separate Task plugin; PageX binds Folders.
+- Retire the architectural need for a separate Task workbench; PageX binds Folders.

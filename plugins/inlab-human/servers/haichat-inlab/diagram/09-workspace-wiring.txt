@@ -1,0 +1,106 @@
+🔗  Wiring — how _WorkSpace reaches the In-Lab UI
+═══════════════════════════════════════════════════════════════════
+
+The pipeline cooks parquet stores into _WorkSpace. The console does NOT read
+those parquets. Between them sits a thin BRIDGE: a cohort-packaging step that
+flattens a RecSet/CaseSet into per-human JSON, plus env vars that MOUNT the
+result read-only. This file is that bridge.
+
+─§ The gap, and the bridge across it ─────────────────────────────
+
+  🗄️ _WorkSpace (parquet, pipeline-native)          🖥️ Console (json, UI-native)
+  +----------------------------+                    +----------------------+
+  | 2-RecStore/<RecSet>/       |                    | 👥 roster + 🧾 record  |
+  |   Record-*/RecAttr.parquet |  ── build cohort ─▶| per-human <id>.json   |
+  | 3-CaseStore/@v0CaseSet-*/  |     (flatten →     |   source_tables +     |
+  |   df_case.parquet          |      per-human)    |   layers.record       |
+  +----------------------------+         │          +----------------------+
+                                         ▼
+                             📦 _WorkSpace/InLabStore/<dataset>/patients/*.json
+                                         │  🔧 env mount (read-only)
+                                         ▼
+                              INLAB_DATASET_STORE ─▶ the engine reads it
+
+  ⚠️ the engine (endpoint-predict) expects ONE json per human. RecSet parquet
+     is NOT that shape — the build step is what makes them meet.
+
+> JL: do you mean here we copy the data again?
+>> CC0718: yes — TODAY the build step writes a 2nd physical copy (RecSet
+>>   parquet → new per-human json under InLabStore/). Why it exists: the engine
+>>   reads ONE <id>.json per human, but a RecSet is columnar parquet sharded by
+>>   STREAM (Record-*.ACIDialogue/…), not per-human — the copy bridges the shape.
+>>   Cost you're right to flag: duplication + can go STALE vs the RecSet + one
+>>   more PHI copy to secure.
+>>   No-copy alternative = an ADAPTER (read path): point the console at
+>>   2-RecStore directly; on GET /patients it lists humans from Human-*/, and on
+>>   GET a human it FILTERS each stream parquet to that PID and assembles the
+>>   json IN MEMORY. Single source of truth, always fresh, zero dup — at the cost
+>>   of a parquet filter per request (cacheable). This is the "durable form"
+>>   named in the ⚠️ below. Which do you want? (see chat)
+
+─§ Every console mount ← its _WorkSpace source ───────────────────
+
+  +------------------+---------------------------+-------------+-------------+
+  | 🖥️ Console needs  | 🗄️ _WorkSpace source       | 🔀 via       | 🌐 router    |
+  +------------------+---------------------------+-------------+-------------+
+  | 👥 patients/record| 2-RecStore/<RecSet>        | BUILD→json  | console_api |
+  | 📌 cases          | 3-CaseStore/@v0CaseSet-*   | BUILD/read  | labeling_api|
+  | 🧠 endpoints      | 6-EndpointStore            | as-is       | console_api |
+  | ✏️ labels         | examples/Project-*/tasks   | as-is       | labeling_api|
+  | 📋 task feed      | examples/ (Project-*)      | as-is       | tasks_api   |
+  +------------------+---------------------------+-------------+-------------+
+
+  converted (parquet→json) : patients · cases
+  used as-is (dir mount)   : endpoints · labels · projects
+
+─§ The env vars that mount each one ──────────────────────────────
+
+  🔧 INLAB_DATASET_STORE  = _WorkSpace/InLabStore        (parent of <dataset>/patients)
+  🔧 INLAB_PATIENT_STORE  = …/InLabStore/ACIBench_v0/patients   (single, back-compat)
+  🔧 INLAB_ENDPOINT_STORE = _WorkSpace/6-EndpointStore
+  🔧 INLAB_REGISTRY       = …/endpoints.json            {package: url}
+  🔧 INLAB_LABEL_STORES   = {"PhyReview_v0": "examples/Project-Subjective-Label/tasks"}
+  🔧 INLAB_PROJECTS_ROOT  = examples/
+  🔧 (planned) INLAB_CASE_STORE = _WorkSpace/3-CaseStore
+
+─§ The BUILD step (RecSet → per-human json) ──────────────────────
+
+  🗄️ 2-RecStore/ACIBench_v0RecSet/
+       Human-HmACIPtt/ · Record-HmACIPtt.ACIDialogue/ · .ACINote/ · .ACIEncounter/
+                    │  ⚙️ for each PID: gather its rows from every stream
+                    ▼
+  📦 InLabStore/ACIBench_v0/patients/pt-D2N001.json
+     {
+       patient_id, summary{cohort, table_counts, not_scoreable_reason},
+       provenance: [],                     ← no endpoint scored it yet → say so
+       source_tables: { Dialogue:[…], Note:[…], Encounter:[…] },
+       layers: { record: { tables: {…} } } ← what the 🧾 Record view renders
+     }
+
+  ⚠️ two ways to produce this json — the design fork (see JL note above):
+     ① COPY (now): scratch converter writes it to disk. simple · fast reads ·
+        but DUPLICATES the RecSet + can go stale + extra PHI copy.
+     ② ADAPTER (durable): console reads 2-RecStore directly, assembles the
+        per-human json at request time. single source of truth · zero dup ·
+        always fresh · costs one parquet filter per request (cacheable).
+
+─§ End-to-end trace (ACIBench) ───────────────────────────────────
+
+  cook           2-RecStore/ACIBench_v0RecSet  (RecordFn output, 207 humans)
+   ▼ build       InLabStore/ACIBench_v0/patients/pt-D2N001.json … (207 files)
+   ▼ mount       INLAB_DATASET_STORE=_WorkSpace/InLabStore
+   ▼ scope       GET /api/patients?dataset=ACIBench_v0  → ep.PATIENT_STORE set
+   ▼ render      👥 roster: pt-D2N001 …  🧾 record: Dialogue/Note/Encounter
+   ▼ cut         📌 case = ACIEncounterEntry over 3-CaseStore/@v0CaseSet-*
+   ▼ attach      ✏️ label (if a label store maps this dataset) / 🧠 score (if endpoint)
+
+─§ Adding a new dataset (the checklist) ──────────────────────────
+
+  1. 🍳 cook the RecSet    → 2-RecStore/<Name>RecSet   (/haipipe-data record)
+  2. 📦 build the cohort   → InLabStore/<dataset>/patients/*.json
+  3. 🔧 it auto-appears    → INLAB_DATASET_STORE autodiscovers <dataset>/patients
+  4. ✏️ (optional) map a label store in INLAB_LABEL_STORES[<dataset>]
+  5. 🧠 (optional) package an endpoint → 6-EndpointStore + registry entry
+
+     see 04-backend-api.txt  →  the routes + engine scoping
+     see 06-data-lineage-views.txt / 07-case-builder.txt  →  what gets rendered

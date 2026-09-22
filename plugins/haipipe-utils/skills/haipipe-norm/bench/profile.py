@@ -47,8 +47,10 @@ class Profile:
     conf_order: List[str]           # most-trusted first
     trusted: List[str]              # must be a contiguous PREFIX of conf_order
 
-    port: int                       # which 5-api-examples fixtures are mine
-    url_env: str
+    port: int                       # the standalone port before the host (:8077 ...); still matched
+                                    # so fixtures published before 2026-09-21 keep routing
+    url_env: str                    # <NOUN>NORM_URL, the routing key a generated curl.sh names
+    prefix: str                     # the host prefix, /food ...: what a curl.sh points at today
     dest: pathlib.Path              # the _XInfo folder this member reports into
     examples: pathlib.Path          # where its fixtures live
 
@@ -84,7 +86,7 @@ class Profile:
             "scaled": list(self.scaled), "conf_field": self.conf_field,
             "source_field": self.source_field, "basis_field": self.basis_field,
             "conf_order": list(self.conf_order), "trusted": list(self.trusted),
-            "port": self.port, "dest": str(self.dest),
+            "port": self.port, "prefix": self.prefix, "dest": str(self.dest),
         }
 
 

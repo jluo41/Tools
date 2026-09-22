@@ -86,8 +86,8 @@ Engine and board-page work shipped in `haipipe-board` 0.108.0-0.110.0; this is t
 ## 0.1.2 - 2026-08-02
 
 - Repointed the door test from `QC6 §7` to `QC1b §1` after that page's 260802 Content rebuild,
-  and corrected the named next step: the drawer's lane instructions live in `live/chat.py`, not
-  in `cli/serve.py`, since the `QC2c` live-layer split.
+  and corrected the named next step: the drawer's lane instructions live in `servers/workbench-studio/chat.py`, not
+  in `servers/_host/serve.py`, since the `QC2c` live-layer split.
 
 ## 0.1.1 - 2026-08-02
 

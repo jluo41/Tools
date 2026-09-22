@@ -84,7 +84,7 @@ the Folder/Page owner and current mode before continuing work. The approver
 does not dispatch the next Run or grant workflow release.
 
 For Page Outline work, follow
-[the Content-release gate](../../../page/page-workflows/haipipe-page-outline/SKILL.md).
+[the Content-release gate](../../../page/workflow-runs/haipipe-page-structure/SKILL.md).
 A checked `v0.*` plan may proceed through permitted SURVEY, LAND and EMBED
 work in copilot or auto. CONTENT remains held until its required human approval
 is durably recorded. Auto may record review debt but cannot treat it as approval.

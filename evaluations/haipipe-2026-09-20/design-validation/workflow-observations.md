@@ -4,7 +4,7 @@ The eight-venue brief-only workflow is understandable and the ordinary contract/
 
 ## 1. Ready delivery can expose changed, unverified bytes
 
-**Priority at discovery: high; repaired and revalidated.** On the first run, `plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py:519`, `_verified_design`, selected an item by state and a completed Verify verdict, then returned the artifact's current text and stored hash at lines 542–544. `design_snapshot` populated ready before independently returning audit findings. `live/designboard.py:483` used `item.ready` for CSV inclusion without excluding invalid hashes.
+**Priority at discovery: high; repaired and revalidated.** On the first run, `plugins/haipipe-toolkit/servers/workbench-design/design.py:519`, `_verified_design`, selected an item by state and a completed Verify verdict, then returned the artifact's current text and stored hash at lines 542–544. `design_snapshot` populated ready before independently returning audit findings. `servers/workbench-design/designboard.py:483` used `item.ready` for CSV inclusion without excluding invalid hashes.
 
 The synthetic specimen was created with a passing Generate and Verify, then its `content/sms.txt` was explicitly changed as a corruption fixture. The checker correctly reported the changed artifact. Before repair, both the Page projection and actual CSV helper returned:
 
@@ -21,7 +21,7 @@ The first whole-harness rerun exposed a harness isolation issue: the held fixtur
 
 ## 2. Blocked/HOLD wording changed during validation
 
-**Resolved on final reread.** The first `design/haipipe-design-workflow/SKILL.md` read said: `HOLD is a person's decision at Commission, and a blocked receipt shows as hold.` That conflicted with `references/run-profile.md`, the plugin state mapping, and `live/design.py:320`, which correctly display a separate blocked state.
+**Resolved on final reread.** The first `design/haipipe-design-workflow/SKILL.md` read said: `HOLD is a person's decision at Commission, and a blocked receipt shows as hold.` That conflicted with `references/run-profile.md`, the plugin state mapping, and `servers/workbench-design/design.py:320`, which correctly display a separate blocked state.
 
 The current text at `design/haipipe-design-workflow/SKILL.md:180` now says Commission HOLD displays as `commission held`, while blocked names the affected Run/repair owner and offers no release action. The fixture confirms the current behavior. This validator made no repository edit; the source changed concurrently, so the earlier conflict is not an outstanding finding.
 

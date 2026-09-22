@@ -121,7 +121,7 @@ table:
 |---|---|---|
 | `/workflow-table` | Run Spec graph, Workspace Cells, Run demand, Human Actions, Skill Coverage | concrete task inventory |
 | `/task-table` | one row per task folder, with plan and observed runtime lenses | Workflow Run Spec graph |
-| future `/board-table` | Board Page/Page Folder-level join of Page Face, Task Face, plugin lanes, and Runs | current `folderstat` inventory or Outline authority |
+| future `/board-table` | Board Page/Page Folder-level join of Page Face, Task Face, workbench lanes, and Runs | current `folderstat` inventory or Outline authority |
 
 No `board-table` skill or unified Board Table is installed yet. Do not invent
 one from a Folder tab, and do not place Board-level planning fields in a Task
@@ -316,7 +316,7 @@ person who owns the task writes its `develops:` line.
   code and runs the other columns read). Config files remain inside that Task
   Face; they are summarized in the row and expanded in Config Catalog.
 - The current Folder already has separate projections: the
-  `haipipe-plugin-folder` tab is live material inventory, Outline is the
+  `haipipe-workbench-page/ref/folder.md` (the 📂 Folder tab) is live material inventory, Outline is the
   Page/plan projection, and Runs presents runtime. They are not yet one
   unified Board Table; that is a future sibling contract.
 - `haipipe-task` owns the tree grammar (`ref/block-job-task-run.md`,

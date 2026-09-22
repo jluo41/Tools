@@ -4,15 +4,15 @@
     python3 cli/context-record.py <page.md>          one page
     python3 cli/context-record.py --all <board-dir>  every page on the board
 
-`haipipe-page-context` (00 CONTEXT) owns the record; `haipipe-plugin-outline`
+`haipipe-page-context` (00 CONTEXT) owns the record; `haipipe-workbench-page`
 keeps it off-stage for Folder inspection rather than presenting a fourth Space. The law shipped
 in 0.34.0 with `ref/context-record.md` and no generator, while the other three
 Outline records each had one (`requirement.py`, `feedback.py`,
 `evidence-status.py`), so every page reported `CONTEXT: owed` and the only way
-to satisfy the phase was to hand-write a file the contract calls generated.
+to satisfy the Run was to hand-write a file the contract calls generated.
 
 The six CTX rows are fixed and ordered. Each row states a resolution status,
-the facts the next phase may rely on, and the exact source addresses with a
+the facts the next Run may rely on, and the exact source addresses with a
 freshness fact. This is a PROJECTION: the source files stay authoritative and
 nothing here is a human tick.
 
@@ -47,7 +47,7 @@ from src.outline_version import latest_outline, version_tag  # noqa: E402
 def owners(kind):
     """Resolve ownership from the contract that declares this Page kind.
 
-    There is deliberately no central Page-Type registry. Phase-owned Folder
+    There is deliberately no central Page-Type registry. Run-owned Folder
     contracts are authoritative when present; otherwise the Page-Face skill
     found by ``plan_shape`` supplies the family and face names.
     """
@@ -186,7 +186,7 @@ def build(page_md: Path, board: Path) -> str:
     structure = fm(text, "structure-source")
     division = fm(text, "structure-division")
     style = fm(text, "style-from")
-    ctx3_sources = [src(root, SKILLS / "page/page-workflows/haipipe-page-outline/SKILL.md")]
+    ctx3_sources = [src(root, SKILLS / "page/workflow-runs/haipipe-page-structure/SKILL.md")]
     if base_page:
         ctx3_sources.extend(src(root, p) for p in (
             SKILLS / "page/haipipe-page/SKILL.md",
@@ -199,7 +199,7 @@ def build(page_md: Path, board: Path) -> str:
         ctx3_sources.append(f"`{structure}`" + (f" {division}" if division else ""))
     ctx3 = row("CTX3 · Policy, structure, and style",
                "resolved" if (structure or kind != "section") else "missing", [
-                   ("Outline policy", "haipipe-page-outline · SHAPE + SURVEY"),
+                   ("Outline policy", "haipipe-page-structure · SHAPE + SURVEY"),
                    ("Expected structure",
                     f"`{structure}`" + (f" · {division}" if division else "") if structure
                     else f"{face_owner} contract"),
@@ -221,7 +221,7 @@ def build(page_md: Path, board: Path) -> str:
                "resolved" if (f_ids or requires) else "not-applicable", [
                    ("Rows", (f"{len(f_ids)} Files rows" if f_ids else "no Files rows")
                     + (f" · requires {requires}" if requires else "")),
-                   ("Packet", f"`cli/pagecontext.py {page_md.name} --phase CONTEXT`"),
+                   ("Packet", f"`cli/pagecontext.py {page_md.name} --run context`"),
                ], [src(root, files_rec)] if files_rec.is_file() else [])
 
     # ── CTX5 feedback and open decisions ─────────────────────────────────

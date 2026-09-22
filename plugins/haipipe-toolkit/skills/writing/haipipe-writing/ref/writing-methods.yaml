@@ -1,22 +1,42 @@
 # Metadata interpreted by the Writing agent; not an automatic dispatcher.
+# Paths are relative to this file. `vendored-skill` entries live in the numbered
+# folders beside haipipe-writing/ (1_style, 2_evaluate) as project-provided skills.
 schema_version: 1
 default_methods: []
 methods:
   - id: academic-humanizer
     roles: [evaluator]
     scopes: [section, paragraph, paragraph-group, file]
-    provider: installed-skill
+    provider: vendored-skill
     entry:
       kind: skill
       name: academic-humanizer
-      path: null
-    version: null
-    availability: resolve-at-use
+      path: ../../2_evaluate/academic-humanizer/SKILL.md
+    version: "0.3.2"
+    availability: bundled
     adapter: methods/academic-humanizer.md
     inputs: [candidate, baseline, requirements, available-evidence]
     output: evaluation-findings-v1
     permitted_actions: [read-inputs, return-findings]
-    provenance: AIScientists-Dev/academic-humanizer (MIT); installation supplied by host
+    register: academic  # papers, theses, rebuttals, NSF/NIH proposals
+    provenance: AIScientists-Dev/academic-humanizer@02281d83 (MIT); vendored 2026-09-22, see external/README.md
+
+  - id: humanizer
+    roles: [evaluator]
+    scopes: [section, paragraph, paragraph-group, file]
+    provider: vendored-skill
+    entry:
+      kind: skill
+      name: humanizer
+      path: ../../2_evaluate/humanizer/SKILL.md
+    version: "3.0.0"
+    availability: bundled
+    adapter: methods/humanizer.md
+    inputs: [candidate, baseline, requirements]
+    output: evaluation-findings-v1
+    permitted_actions: [read-inputs, return-findings]
+    register: general  # Pages, notes, documentation; not for academic-humanizer's registers
+    provenance: blader/humanizer@9862685f (MIT); vendored 2026-09-22, see external/README.md
 
   - id: writing-dna
     roles: [style]
@@ -25,13 +45,14 @@ methods:
     entry:
       kind: packet
       field: writing_dna
+    distiller: ../../1_style/writing-dna-skill/SKILL.md   # produces the frozen profile; never launched by this worker
     version: frozen-profile
     availability: requires-packet
     adapter: writing-dna-adapter.md
     inputs: [writing_dna, requirements, content-map]
     output: style-choices-and-trace
     permitted_actions: [read-profile, return-style-choices]
-    provenance: writing-dna-skill; actual profile producer/version recorded by host
+    provenance: larashero3-dotcom/writing-dna-skill@ee3d97ee (MIT); distiller vendored 2026-09-22; profile producer/version recorded by host
 
   - id: anti-slop
     roles: [evaluator]

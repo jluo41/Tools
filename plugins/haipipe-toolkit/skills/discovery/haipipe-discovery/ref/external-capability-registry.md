@@ -14,7 +14,7 @@ current Discovery family before invoking an external worker.
 | infra | Optional retrieval infrastructure | It may supply context, but it never owns a Result, Bib, or Page. |
 | out-of-scope | A different product or lifecycle | Do not route ordinary Discovery work to it. |
 
-## 1_search · candidate acquisition
+## 1 Search · candidate acquisition (`haipipe-discovery-search`)
 
 ### Active HAI adapters
 
@@ -50,7 +50,7 @@ The HAI search specialist deduplicates this packet, resolves the canonical
 Subject, records channel coverage, and is the only component allowed to call
 the Task Page's add operation.
 
-## 2_review · one-Subject reading
+## 2 Review · one-Subject reading (`haipipe-discovery-review`)
 
 ### Accepted reference procedures
 
@@ -78,7 +78,7 @@ The review specialist writes the packet into the existing same-stem Result
 contract. It never infers a topic conclusion from one paper and never builds
 the aggregate Bib.
 
-## 3_synthesize · cross-Result integration
+## 3 Synthesize · cross-Result integration (`haipipe-discovery-synthesize`)
 
 ### Accepted reference procedures
 

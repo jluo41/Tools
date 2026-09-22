@@ -1,0 +1,46 @@
+🗺️  haichat-inlab — Diagram Set (navigation)
+═══════════════════════════════════════════════════════════════════
+
+The In-Lab Console = a clinician-facing window over the haipipe pipeline,
+embeddable as a per-thread iframe beside a HAI-Chat conversation. This folder
+explains WHAT it is, HOW it came to be, and HOW it's designed — one topic per
+file, scan top-to-bottom.
+
+─§ Read in this order ────────────────────────────────────────────
+
+  📄 01-overview.txt          what it is · the beside-a-thread picture · 2 invariants
+  🌱 02-how-it-came.txt       genesis: the haipipe pipeline it sits on + why a console
+  🧱 03-boundaries.txt        who owns what · the ONE shared engine · env-mounted stores
+  🔌 04-backend-api.txt       FastAPI: 4 routers → engine / label / case / task stores
+  🖥️  05-frontend-shell.txt    rail groups · dock layout · two-drivers-one-reducer
+  🧬 06-data-lineage-views.txt Raw→Source→Record→Case · the human-type axis
+  📌 07-case-builder.txt      Trigger / Key / CaseFn — the case is BUILT, not found
+  ✏️  08-labeling-and-tasks.txt subjective-label PI inbox · the tasks feed
+  🔗 09-workspace-wiring.txt  how _WorkSpace parquet stores reach the console (the bridge)
+
+─§ The one-paragraph version ─────────────────────────────────────
+
+  Pick a HUMAN (patient / physician) → read their RECORD → see the CASES cut
+  from it → attach a LABEL (subjective-label panel) or a SCORE (model endpoint).
+  Nothing here computes a score; the endpoint does. Nothing here is baked in;
+  every store is mounted by env. The buttons and the chat agent reach the
+  endpoint through the SAME engine, or the demo is a lie.
+
+─§ Where the code lives ──────────────────────────────────────────
+
+  plugins/inlab-human/servers/haichat-inlab/
+  ├── main.py            FastAPI app: 4 routers + SPA + /individual /group routes
+  ├── console_api.py     patients · models · predict · datasets (engine-backed)
+  ├── labeling_api.py    cases (record-driven) · labeling dims · decisions
+  ├── tasks_api.py       the haipipe task feed (INLAB_PROJECTS_ROOT)
+  ├── haichat_api.py     WS /ws/haichat — Agent SDK + engine-as-MCP
+  ├── diagram/           ← you are here
+  └── web/               React + Vite SPA (Console.tsx, useConsole.ts, views.ts…)
+
+  engine (shared, the plugin's own, two folders up):
+    plugins/inlab-human/mcp-servers/endpoint-predict/server.py
+
+─§ Legend used across this set ───────────────────────────────────
+
+  🧑 human   🗂️ store/data   🔧 engine   🌐 REST   🧠 model/endpoint
+  🤖 agent   ✏️ label        📌 case      🔁 loop    ⚠️ invariant / careful

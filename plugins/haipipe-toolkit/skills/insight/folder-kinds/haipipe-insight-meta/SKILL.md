@@ -74,7 +74,7 @@ Routine resource updates and GI evaluations remain control records. An accepted
 Run Result satisfies only its declared target; Page CHECK/CLOSE and the
 Folder's GI conditions still govern citation and register settlement.
 
-## Plugins
+## Workbenches
 
 - `outline` required for Context, inventory, and source Evidence Items;
 - full Supporting Run Results are required for cross-Folder evidence; a related

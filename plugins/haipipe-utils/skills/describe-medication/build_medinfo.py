@@ -276,8 +276,8 @@ def main():
                  "with it; the seam between them is measured in _InsInfo/README.md."),
         producer="Tools/plugins/haipipe-utils/skills/describe-medication/build_medinfo.py",
         rerun=("source .venv/bin/activate && source env.sh\n"
-               "Tools/plugins/haipipe-utils/skills/describe-medication/run_server.sh  # another shell\n"
-               "Tools/plugins/haipipe-utils/skills/describe-insulin/run_server.sh     # another shell\n"
+               "Tools/plugins/haipipe-utils/servers/_host/run.sh  # another shell\n"
+               "Tools/plugins/haipipe-utils/servers/_host/run.sh     # another shell\n"
                "python Tools/plugins/haipipe-utils/skills/describe-medication/build_medinfo.py"),
         dest=DEST, stats=stats, pages=pages,
         sections=[

@@ -168,7 +168,7 @@ def _point(text: str) -> str:
     """Produce a complete provisional reader move; the full prose stays at right.
 
     Setup must never manufacture apparent concision by cutting a source clause
-    after an arbitrary word count.  The later OUTLINE phase may rewrite a long
+    after an arbitrary word count.  The later structure Run may rewrite a long
     provisional head into the stricter 4–11-word house style with semantic
     judgment; deterministic setup preserves the complete clause for that review.
     """
@@ -373,7 +373,7 @@ def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences:
         f"target: {page.source.name}\nresult: results/{run}\n---\n\n"
         f"- Goal: Turn “{title}” into a substantive standalone Page setup.\n"
         f"- Mode: {mode}.\n"
-        "- Scope: Page-owned source, planning records, plugin inputs, and static delivery.\n"
+        "- Scope: Page-owned source, planning records, workbench inputs, and static delivery.\n"
         "- Success: the existing Page state is preserved, built, and reported; a new Markdown Page also receives semantic draft records.\n",
         encoding="utf-8",
     )

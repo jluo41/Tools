@@ -2,6 +2,22 @@ CHANGELOG — describe-food
 ================================================================================
 
 
+0.4.1 — 2026-09-21
+--------------------------------------------------------------------------------
+
+The service left the skill. `server.py`, `test_server.py` and `examples/` moved to
+`Tools/plugins/haipipe-utils/servers/api-food/`, and `run_server.sh` was replaced by
+the plugin-level host `servers/_host/serve.py`, which mounts every normalizer under
+one port. The food routes are unchanged; they are reached at
+`http://127.0.0.1:8070/food` instead of `:8077`, so `client.py` changed only its
+default URL. `foodnorm/` stays here: servers import skills, never the reverse.
+
+`foodnorm/constants.py` no longer dies at import when no SPACE root sits above the
+file (a bare Tools checkout, or Tools reached through a symlink that `resolve()`
+unwinds): the bank path falls back to a default that does not exist and
+`/healthz` reports `degraded` instead of the service failing to start.
+
+
 0.4.0 — 2026-08-21
 --------------------------------------------------------------------------------
 

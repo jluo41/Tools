@@ -124,7 +124,7 @@ class RelatedBoardPageContextTest(unittest.TestCase):
         self.assertNotIn("This cycle must never be traversed", packet)
         self.assertEqual([], self.codes())
 
-    def test_phase_filter_accepts_all_and_ignores_other_phases(self):
+    def test_run_filter_accepts_all_and_ignores_other_runs(self):
         self.write_source(
             "- `reads · EVIDENCE` · [QB2 §2](evidence/QB2-evidence.md)\n"
             "- `contrasts · ALL` · [QB2 §1](evidence/QB2-evidence.md)"

@@ -7,8 +7,8 @@ tools:
   - Glob
 model: inherit
 metadata:
-  version: "1.10.0"
-  last_updated: "2026-09-07"
+  version: "1.11.0"
+  last_updated: "2026-09-21"
   summary: "Reviewer for BJTR Task Page + Paper Run architecture."
 ---
 
@@ -21,6 +21,24 @@ revise with exact paths and defects.
 I do not search for papers, invent metadata, create Results, or decide what an
 external consumer should claim. I inspect creator/checker receipts and may not
 invoke a mutation-capable shell.
+
+## Board gate
+
+The Block is the Board and the Task Folder is its Page Folder. Before passing
+any structural or terminal handoff, verify:
+
+~~~text
+[ ] board.md exists at the bNN Block root and declares board-kind: discovery-block
+[ ] spine:, close:, Topic, Pipeline, Board Map, and Pages are present
+[ ] the managed Job span names each direct jNN_ folder once, with the exact folder token
+[ ] no individual Task, Run, Result, or Page body is duplicated into board.md
+[ ] board/ was rebuilt from source and Board check --strict has no errors
+[ ] every discovered tNN Page is under the expected jNN Group and has the Discovery folder-kind
+~~~
+
+If the source or projection is stale, return `revise` with the exact Block path
+and ask the creator to run `scripts/board_sync.py <block> --build --check
+--strict`. A green Page/Run receipt does not substitute for a Board check.
 
 ## SCOPE gate
 
@@ -142,5 +160,6 @@ stage:
 defects:
   - <path>: <contract violation>
 evidence_checked:
+board_check: pass | revise
 summary:
 ~~~

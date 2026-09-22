@@ -13,8 +13,8 @@ description: >-
   haipipe-discovery for external source execution.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.2"
-  last_updated: "2026-09-20"
+  version: "0.7.0"
+  last_updated: "2026-09-22"
   folder_owner: canonical
   primary_face: direction
   page_ruling: none
@@ -81,23 +81,30 @@ replace the sole I3 human selection receipt.
 
 ## Numbered capability families
 
-The directory numbers follow the same law as Discovery's
-`1_search/2_review/3_synthesize`: they are capability groups, not BJTR levels,
-Run ids, or extra folders in a project artifact.
+Every skill we wrote sits flat at the family root. The numbered folders hold
+only vendored originals from `references/`, one folder per stage that has any:
+the numbers are the stage vocabulary (1 Generate, 2 Test, 3 Select), and Select
+has no external original, so there is no `3_select/` folder. `writing/` and
+`discovery/` follow the same law; `task/` is the exception, its numbers being
+permanent domain ids.
 
 ```text
 ideation/
-├── haipipe-ideation/                         public door + shared contracts
-├── 1_generate/
-│   └── haipipe-ideation-generate/            evidence → diverse admitted cards
-├── 2_test/
-│   ├── haipipe-ideation-test/                stage router + test matrix
-│   ├── haipipe-novelty-check/                claim × closest-work verification
-│   ├── haipipe-idea-pressure-test/           falsifiability + feasibility
-│   ├── haipipe-journal-fit/                  broad screen + deep venue fit
-│   └── haipipe-nature-paper-review/          Nature-family editorial overlay
-└── 3_select/
-    └── haipipe-ideation-select/              portfolio + human gate + handoff
+├── haipipe-ideation/                 public door + shared contracts
+├── haipipe-ideation-generate/        1 · evidence → diverse admitted cards
+├── haipipe-ideation-test/            2 · stage router + test matrix
+├── haipipe-novelty-check/            2 · claim × closest-work verification
+├── haipipe-idea-pressure-test/       2 · falsifiability + feasibility
+├── haipipe-journal-fit/              2 · broad screen + deep venue fit
+├── haipipe-nature-paper-review/      2 · Nature-family editorial overlay
+├── haipipe-ideation-select/          3 · portfolio + human gate + handoff
+├── 1_generate/                       vendored originals, callable
+│   ├── framing-research-questions/   science-superpowers · fuzzy interest → falsifiable question
+│   └── idea-creator/                 ARIS · generate and rank ideas from a direction
+└── 2_test/
+    ├── novelty-check/                ARIS · literature novelty sweep
+    ├── kill-argument/                ARIS · two-thread adversarial attack and defense
+    └── paper-reviewer/               nature-paper-skills · reviewer-side critical evaluation
 ```
 
 Load only the current stage. `haipipe-ideation-test` loads its specialist for
@@ -105,6 +112,20 @@ the requested axis; a generic test loads novelty, pressure, and journal fit,
 while Nature review is loaded only when the user names Nature or a
 Nature-family target remains live. Each specialist is directly invocable for
 a one-off task without forcing the durable owner-bound Workflow.
+
+Ours run by default. A vendored original runs only when the user names it or a
+stage skill selects it as an independent second pass: `haipipe-ideation-generate`
+may call `framing-research-questions` to sharpen a fuzzy interest into a
+falsifiable question (that question is the Idea Card's `question`, the Idea's
+name on the Paper Ideation Page and its Workbench card; `title` is only a
+handle) and `idea-creator` as an alternate generation lens;
+`haipipe-novelty-check` compares against `novelty-check`;
+`haipipe-idea-pressure-test` against `kill-argument`;
+`haipipe-nature-paper-review` against `paper-reviewer`. An original's output is a
+proposal packet: the stage skill normalizes it, records it in the receipt, and
+keeps every authority listed in
+[references/external-skill-map.md](references/external-skill-map.md). The
+originals never write cards, select an Idea, or open a Run.
 
 ## Boundary and loading order
 
@@ -148,7 +169,7 @@ Then load the current numbered capability owner:
 
 Discovery is the external-evidence executor: its live work is search, per-source
 review, and cross-Result evidence synthesis. A checked Discovery
-`3_synthesize` Page is the input to this layer. Discovery has no Idea route or
+`haipipe-discovery-synthesize` Page is the input to this layer. Discovery has no Idea route or
 compatibility redirect; new semantic direction and Idea Cards start here.
 
 ## Grain and durable home
@@ -257,7 +278,7 @@ changes:
    Landscape, Opportunity Map, and candidate set into that same evergreen Page.
    Treat this as a semantic-source update followed by a Page working-projection
    update; do not claim that adopted Page Content or delivery is current unless
-   the Page release barrier has opened and `haipipe-page-content` has completed
+   the Page release barrier has opened and `haipipe-page-writing` has completed
    its Page-level pass.
 2. **2 Test:** run every admitted card through claim-level closest-work
    verification, falsifiability and feasibility review, and broad journal
@@ -324,7 +345,7 @@ stop at the Page OUTLINE/SHAPE workflow until any required human decision is
 made. Ideation does not send prose changes through this adapter. A narrow Page
 update may refresh the working projection and leave adopted Content and
 `delivery/` stale by design. Only after all required Page Runs and evidence
-Results are ready may `haipipe-page-content` perform the Page-level CONTENT pass
+Results are ready may `haipipe-page-writing` perform the Page-level CONTENT pass
 and refresh delivery.
 
 The sync operation itself is not a Page Run, does not mint `rpNN`, and does not

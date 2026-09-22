@@ -46,7 +46,7 @@ PROFILE = Profile(
     conf_order=["GOOD", "OK", "ALIAS", "WEAK", "MISS"],
     trusted=list(TRUSTED),
 
-    port=8079, url_env="MEDNORM_URL",
+    port=8079, url_env="MEDNORM_URL", prefix="/medication",
     dest=INFO / "6-benchmark", examples=INFO / "5-api-examples",
 
     # An id through the lexicon, a generic name, a brand, a class the FDA does

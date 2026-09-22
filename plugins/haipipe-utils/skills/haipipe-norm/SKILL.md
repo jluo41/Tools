@@ -58,7 +58,10 @@ can move or be rewritten without a caller changing.
 
 A member picks its transport from `<MEMBER>_TRANSPORT`: `local` in process by
 default, `http` against a running service. `local` is the default because a
-pipeline cook must not fail because a daemon was down.
+pipeline cook must not fail because a daemon was down. The service is the
+member's api lane, `servers/api-<noun>/server.py`, which the plugin host
+`servers/_host/serve.py` mounts at `http://127.0.0.1:8070/<noun>`; `<MEMBER>_URL`
+names that address and `client.py` appends `/normalize/batch`.
 
 A workspace declares where the members live. That is what `env.sh` is for: a
 space is the unit of work, and each space puts the normalizer skill dirs it wants
@@ -248,6 +251,11 @@ on sight instead of on a suffix they have to read to the end of.
         test_<noun>norm.py  regression suite
         benchmark/          cells, spec, metric. The harness is xbench's.
 
+    servers/api-<noun>/         the same normalize() on the wire (servers/README.md)
+        server.py           FastAPI: /healthz /normalize /normalize/batch
+        tests/test_server.py the black-box service suite, run against <MEMBER>_URL
+        examples/           recorded request/response cases, generated
+
 Then add one line to the workspace `env.sh` putting that skill dir on
 `PYTHONPATH`, and register nothing else: the plugin manifest already covers the
-folder.
+folder, and the host mounts `servers/api-<noun>/server.py` by folder name.

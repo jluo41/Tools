@@ -47,7 +47,7 @@ Procedure
    A frozen bundle is immutable — changes mean a new --bundle-id.
 ```
 
-Output contract: `../../ref/review-bundle-schema.md` (v0.1).
+Output contract: `../ref/review-bundle-schema.md` (v0.1).
 
 Return contract
 ---------------

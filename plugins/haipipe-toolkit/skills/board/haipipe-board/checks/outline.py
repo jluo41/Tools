@@ -13,7 +13,7 @@ already been broken once during the build:
     lenses. Silent, and worse than a crash.
 
   ② NO ANCHOR IS EVER INVENTED. `§` was in use on these boards before this
-    plugin, meaning a division of ANOTHER page (`QB6 §7`), a sub-division
+    workbench, meaning a division of ANOTHER page (`QB6 §7`), a sub-division
     (`§5.1`), a named section (`§Required Inputs`), and, in ordinary prose on
     a paper-section page, the manuscript's own section ("Every number §4
     prints"). Shape-matching flagged four innocent pages; POSITION flags none.
@@ -33,6 +33,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent      # the engine dir
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parents[2] / "servers" / "_host"))   # the `live` namespace
 from live.outline import parse_outline, plan_card, render, _anchors, _latest_plan  # noqa: E402
 from src.plan_shape import check as plan_shape_check                  # noqa: E402
 from src.plan_shape import check_serves, check_coverage              # noqa: E402
@@ -139,7 +140,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--boards", nargs="*", default=None,
                     help="board folders to sweep; default: every board under "
-                         "the toolkit and its sibling plugins")
+                         "the toolkit and its sibling workbenches")
     args = ap.parse_args()
     fails = []
     gaps = []
@@ -294,13 +295,13 @@ def main():
                                               errors="replace")
                     for msg in plan_shape_check(p, plan_txt, SKILLS):
                         fails.append(f"{p.name} plan-shape-off-type: {msg}")
-                    # self-consistency test ② (haipipe-page-outline §🚦): a
+                    # self-consistency test ② (haipipe-page-structure §🚦): a
                     # `serves:` pointing at a bullet the plan does not have.
                     # Three of this board's own cards did on 260819, and a
                     # person read all three out before any tool noticed.
                     for msg in check_serves(p, plan_txt):
                         fails.append(f"{p.name} serves-address-stale: {msg}")
-                    # bullet grammar (haipipe-plugin-outline §✂️): a HEAD plus
+                    # bullet grammar (haipipe-workbench-page §✂️): a HEAD plus
                     # its folded Note:/Answered:/Drawn: line, on EVERY plan —
                     # no legacy carve-out (JL 260819, "remove all the
                     # legacy-grammar").
@@ -308,7 +309,7 @@ def main():
                         fails.append(f"{p.name} bullet-missing-note: {msg}")
                     for msg in paragraph_order_findings(plan_txt):
                         gaps.append(f"{p.name} paragraph-order: {msg}")
-                    # the head and Note law (haipipe-plugin-outline
+                    # the head and Note law (haipipe-workbench-page
                     # ref/plan-grammar.md §3-§4): a head over 11 words, a Note
                     # on two source lines, or a Note that quotes the page's own
                     # sentence FAILS; a code-word head under 4 words is
@@ -333,7 +334,7 @@ def main():
                     # the OUTLINE part is what SURVEY and LAND are FOR, so failing
                     # the sweep on it would cry wolf on 8 pages that are simply not finished.
                     # It stays a HARD exit inside that page's own OUTLINE gate
-                    # (haipipe-page-outline §🚦 test ①), where it belongs.
+                    # (haipipe-page-structure §🚦 test ①), where it belongs.
                     gaps.extend(f"{p.name}: {m}" for m in check_coverage(p, plan_txt))
             except Exception:
                 fails.append(f"{p.name} CRASH "

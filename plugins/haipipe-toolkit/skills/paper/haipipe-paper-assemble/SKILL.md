@@ -12,13 +12,13 @@ description: >-
 metadata:
   version: "0.8.0"
   last_updated: "2026-09-20"
-  summary: "Paper-level source-driven document assembly; page-level Word export remains a separate plugin."
+  summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
 
 # /haipipe-paper-assemble · build the paper from source
 
 This is the paper-level document contract. It is different from
-`haipipe-plugin-delivery/ref/word.md`, which exports one Board Page for a coauthor. Assembly
+`haipipe-workbench-page/ref/delivery.md`, which exports one Board Page for a coauthor. Assembly
 combines the Story's Section Narrative rows and the Section Pages into the complete deliverable
 for one desk.
 

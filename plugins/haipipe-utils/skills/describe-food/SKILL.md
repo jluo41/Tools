@@ -174,6 +174,11 @@ TRANSPORT is the one thing that varies, from `FOODNORM_TRANSPORT`:
             A cook must not fail because a daemon was down.
     http    POST $FOODNORM_URL/normalize/batch -- the same contract over the wire.
 
+The service is `Tools/plugins/haipipe-utils/servers/api-food/server.py`, mounted at
+`/food` by the plugin's host, `servers/_host/serve.py` (so `FOODNORM_URL` defaults to
+`http://127.0.0.1:8070/food`); its 24 recorded request/response cases and its service suite
+sit beside it. `foodnorm/` stays here; the arrow points from servers to skills only.
+
 
 THE PROBLEM
 --------------------------------------------------------------------------------

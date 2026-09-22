@@ -52,7 +52,7 @@ from .pk_table import (ALIASES, COMBINATIONS, PK, PK_BASIS, REFERENCE_BASIS,
 from .lexicon import lookup as lexicon_lookup
 
 DEFAULT_TRANSPORT = os.environ.get("INSNORM_TRANSPORT", "local")
-DEFAULT_URL = os.environ.get("INSNORM_URL", "http://127.0.0.1:8080")
+DEFAULT_URL = os.environ.get("INSNORM_URL", "http://127.0.0.1:8070/insulin")
 
 GOOD, OK, ALIAS, AMBIGUOUS, MISS = "GOOD", "OK", "ALIAS", "AMBIGUOUS", "MISS"
 TRUSTED = (GOOD, OK, ALIAS)

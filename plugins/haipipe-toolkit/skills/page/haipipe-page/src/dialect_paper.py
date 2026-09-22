@@ -571,12 +571,12 @@ class Paper:
                 self.by_short.setdefault(_short(u.id), u)
                 if u.label:
                     self.by_label.setdefault(u.label, u)
-        # PAGE-PLUGIN units (haipipe-plugin, QPf5): a folded page owns its
+        # PAGE-WORKBENCH units (haipipe-workbench, QPf5): a folded page owns its
         # material, so a unit may also live at <page>/display/<unit>/ inside
         # the BOARD folder. float.tex stays the one unit test, ids stay global,
         # and a `> Display:` lane or inline id chips against them like any
         # workspace unit. Deduped by id: a workspace unit wins over a stray
-        # same-named plugin copy, matching the source-over-build rule above.
+        # same-named workbench copy, matching the source-over-build rule above.
         if board_dir is not None and Path(board_dir).is_dir():
             for f in sorted(Path(board_dir).rglob("display/*/float.tex")):
                 d = f.parent

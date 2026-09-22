@@ -36,6 +36,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir (this file lives in cli/)
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parents[2] / "servers" / "_host"))  # the `live` namespace
 
 from live.write import WriteMixin        # noqa: E402  — ③, imported not copied
 from src.common import group_stem, page_files        # noqa: E402

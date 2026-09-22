@@ -95,7 +95,7 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
     `Stage: PLAN. Task Folder: ${taskFolder}. Type hint: ${hintType || 'auto-detect from script'}.\n\n` +
     `Read haipipe-task/fn/stage-plan.md and haipipe-workflow/ref/plan-schema.md.\n` +
     `Read and improve workflow/plan.yaml in place. Read the workers and the numbered domain specialist sample.\n` +
-    `Write one authoritative run_specs roster with bounded targets, catalogue keys, actors, gates, routes, receipts, cardinality and Plugin-owned Workspace Cells.\n` +
+    `Write one authoritative run_specs roster with bounded targets, catalogue keys, actors, gates, routes, receipts, cardinality and Workbench-owned Workspace Cells.\n` +
     `Preserve domain procedures under run_specs[].steps. Controller commands, Steps and gates do not allocate Runs.\n` +
     `Existing plan-script files may remain only as read-only projections using plan, run_spec_ids and steps.\n` +
     `Resolve scripts/config/<run>, runs/<run> and OUTPUT_ROOT/<task>/results/<run> exactly.` + shapeRule + retryNote,
@@ -110,7 +110,7 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
   planReview = await agent(
     `Stage: PLAN review. Task Folder: ${taskFolder}.\n\n` +
     `Review workflow/plan.yaml against haipipe-workflow/ref/plan-schema.md.\n` +
-    `Check run_specs as the sole roster, independent Run boundaries, real Plugin Workspace membership, catalogue keys, input/output paths, gates and route targets.\n` +
+    `Check run_specs as the sole roster, independent Run boundaries, real Workbench Workspace membership, catalogue keys, input/output paths, gates and route targets.\n` +
     `Any script plans must be read-only projections referencing the same Run Spec ids; internal steps do not add cardinality.\n` +
     `Return verdict: pass, warn, revise, blocked, or fail, with exact paths and feedback.`,
     { label: `plan:review:${attempt}`, phase: 'Plan', agentType: 'haipipe-task-reviewer-agent', schema: REVIEWER_RESULT }

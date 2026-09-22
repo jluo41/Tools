@@ -16,6 +16,11 @@
 - Patient-store contract: extractor scrubs outcome fields (Label/Split/ground_truth*) from all tables — caught a real gold leak in PD2D's Cohort table — and stores per-endpoint trigger records.
 - Verified live against two locally-served endpoints: scores returned with the expected risk bands, and a cross-model run (a patient scored by the *other* study's model) completes with an explicit missing-tables gap report rather than a silent partial-data prediction. (Per-patient scores are study data — they stay in the study repo, not in this shared plugin.)
 
+## 0.2.2 — 2026-09-21
+- `servers/haichat-inlab/` — the HAI-Chat In-Lab Console (FastAPI routers + React SPA, design diagrams, Dockerfile) moves in from `HAIChat-SPACE/haichat-inlab/`: server code lives with its plugin, and HAIChat-SPACE builds it from `Tools/plugins/inlab-human/servers/haichat-inlab` through its `Tools` submodule. No behaviour change.
+- `console_api._resolve_engine()` and `message_api` persona lookup try the plugin-sibling paths first (`../../mcp-servers/endpoint-predict`, `../../../haipipe-toolkit/skills/task/4_individual`), then the old `Tools/plugins/...` walk-up, so the console runs from inside the plugin without `INLAB_ENGINE`.
+- `ref/` moved under `skills/ref/`; every relative link in the skills, the README and `build_bundle.py` repointed.
+
 ## 0.2.1 — 2026-07-10
 Fixes found by monitoring a real console session that spent ~80s on discovery instead of inference:
 - `predict_cli.py`: console verbs added (`list-patients`, `get-patient`, `list-models`, `prepare-payload`, `predict-for-patient`) — the fallback path previously exposed only the 3 network verbs, so a session without live MCP tools had nothing to fall back to.

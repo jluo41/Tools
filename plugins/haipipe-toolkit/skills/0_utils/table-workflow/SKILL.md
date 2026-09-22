@@ -1,7 +1,7 @@
 ---
 name: workflow-table
 description: >-
-  Design, audit, and render a canonical Workflow × Workspace table. One Plugin
+  Design, audit, and render a canonical Workflow × Workspace table. One Workbench
   or work object declares multiple member Workspaces; one Workflow declares a
   directed Run Spec graph; every Run Spec × Workspace intersection is a Cell
   that binds skills, interaction, authority, and projections. Use for Page,
@@ -20,7 +20,7 @@ The two axes are exactly:
 
 ```text
 rows     = Workflow Run Specs
-columns  = member Workspaces declared by one Plugin/work object
+columns  = member Workspaces declared by one Workbench/work object
 cell     = one Run Spec × one member Workspace
 ```
 
@@ -35,7 +35,7 @@ Spec can materialize zero or more actual Run Instances.
 ## Core ownership
 
 ```text
-Plugin/work object ──declares──> plural Workspace roster
+Workbench/work object ──declares──> plural Workspace roster
 Workflow          ──declares──> directed Run Spec graph
 Run Spec × member Workspace ──is──> Cell
 Run Spec          ──owns──> target · actor · action · gates · routes · cardinality
@@ -53,7 +53,7 @@ Run Instance      ──materializes from──> one Run Spec
 
 ## Workspace roster
 
-One Plugin/work object declares multiple Workspaces:
+One Workbench/work object declares multiple Workspaces:
 
 ```yaml
 workspace_roster:
@@ -74,7 +74,7 @@ retired Plan, Create, and Review surfaces are not part of its roster.
 Use `runtime` as the stable id for the Workspace that presents Runs. Its UI
 label may be `Run`; the Workspace itself is not another Run.
 
-In the Page/Outline plugin, the reader-facing word for a member Workspace is
+In the Page/Outline workbench, the reader-facing word for a member Workspace is
 `Space`: `Draft Space`, `Evidence Space`, `Run Space`, and `Delivery Space`.
 The normalized contract keeps `workspace_id` and `Workspace` in schemas and
 coordinates as stable internal terms; this is a vocabulary alias, not a new
@@ -135,7 +135,7 @@ references the row's Gate/Route; it never carries a conflicting copy.
 
 ## Worked Design table
 
-Design uses one Plugin with five Spaces and three Run Spec kinds; the cells
+Design uses one Workbench with five Spaces and three Run Spec kinds; the cells
 follow `haipipe-design-workflow`'s Space bindings:
 
 | Run Spec row | Goal | Design | Insight | Run (`runtime`) | Delivery |
@@ -220,7 +220,7 @@ See the shared [Run catalogue](../../run/haipipe-run/ref/run-catalog.md).
 
 ## Design or audit procedure
 
-1. Resolve the one Plugin/work object and plural Workspace roster.
+1. Resolve the one Workbench/work object and plural Workspace roster.
 2. Resolve the Workflow's Run Spec list and dependency/Route graph.
 3. Check each Run Spec against `haipipe-run`: independent closure, target,
    actor, action, Gate, Route, receipt, and cardinality.
@@ -234,7 +234,7 @@ See the shared [Run catalogue](../../run/haipipe-run/ref/run-catalog.md).
 
 ## Validation gates
 
-- exactly one Plugin/work object declares a plural Workspace roster;
+- exactly one Workbench/work object declares a plural Workspace roster;
 - Workspace ids are unique and every Cell references one member;
 - Workflow rows are Run Specs, never Phases, Steps, Versions, retries, actual
   Run Instances, files, calls, or views;

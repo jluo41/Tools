@@ -1,7 +1,7 @@
 """Bounded cross-Page context declared under ``## Files``.
 
 ``Related Board Pages`` is a selective reading map, not dependency inference.
-The current Page names which target Page fragment matters in which Page Phase;
+The current Page names which target Page fragment matters in which Page Run;
 the resolver follows those rows exactly once and never walks rows found in a
 target Page.
 """
@@ -14,17 +14,26 @@ from .common import ALIAS, PAGENAME
 from .parse import parse_dir
 
 
-# Current Page phases. Legacy row tokens still parse into the authority that
-# owns them now, so an old Related Board Pages record remains useful.
-PHASE_ALIASES = {
-    "PROBE": "EVIDENCE",
-    "DRAFT": "CONTENT",
-    "REVISE": "CONTENT",
-    "COMPILE": "CONTENT",
+# The Page's Runs, by key (= the skill suffix). Rows written before 2026-09-22
+# use uppercase tokens; they still parse into the Run that owns them now, so an
+# old Related Board Pages record remains useful.
+LEGACY_RUN = {
+    "CONTEXT": "context", "OUTLINE": "structure", "PROBE": "evidence",
+    "EVIDENCE": "evidence", "DRAFT": "writing", "REVISE": "writing",
+    "COMPILE": "writing", "CONTENT": "writing", "CHECK": "check",
 }
-PHASES = ("CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "CHECK")
-ROW_PHASES = PHASES + ("ALL",)
-READABLE_ROW_PHASES = ROW_PHASES + tuple(PHASE_ALIASES)
+RUNS = ("context", "structure", "evidence", "writing", "check")
+ROW_RUNS = RUNS + ("ALL",)
+READABLE_ROW_RUNS = ROW_RUNS + tuple(LEGACY_RUN)
+
+
+def run_of(token):
+    raw = str(token or "").strip()
+    if raw.upper() == "ALL":
+        return "ALL"
+    if raw.lower() in RUNS:
+        return raw.lower()
+    return LEGACY_RUN.get(raw.upper(), raw)
 RELATIONS = ("reads", "constrained by", "continues", "contrasts")
 
 RELATED_HEADING_RE = re.compile(
@@ -32,7 +41,7 @@ RELATED_HEADING_RE = re.compile(
 )
 RELATED_ROW_RE = re.compile(
     r"^\s*[-*]\s+`(?P<relation>reads|constrained by|continues|contrasts)"
-    r"\s+·\s+(?P<phase>" + "|".join(READABLE_ROW_PHASES) + r")`\s+·\s+"
+    r"\s+·\s+(?P<run>" + "|".join(READABLE_ROW_RUNS) + r")`\s+·\s+"
     r"\[(?P<page_id>[A-Za-z][A-Za-z0-9-]*)\s+"
     r"(?P<scope>page|§\d+(?:\.\d+)*)\]"
     r"\((?P<path>[^)\s]+)\)\s*$"
@@ -42,7 +51,7 @@ RELATED_ROW_RE = re.compile(
 @dataclass(frozen=True)
 class RelatedPageRef:
     relation: str
-    phase: str
+    run: str
     page_id: str
     scope: str
     path: str
@@ -168,13 +177,13 @@ def scan_related_rows(text, whole=False):
             findings.append(RelatedFinding(
                 "ERROR", "related-row-form", line_no,
                 "use `- `reads · EVIDENCE` · [QB7 §3](group/QB7-page.md)` "
-                "with a supported relation, Page Phase, Page id, scope, and Board-relative path",
+                "with a supported relation, Page Run, Page id, scope, and Board-relative path",
             ))
             continue
         row = match.groupdict()
-        # A row written `· PROBE ·` selects the same phase as `· EVIDENCE ·`,
+        # A row written `· PROBE ·` or `· EVIDENCE ·` selects the evidence Run,
         # so the retired token never silently stops matching its own rows.
-        row["phase"] = PHASE_ALIASES.get(row["phase"], row["phase"])
+        row["run"] = run_of(row["run"])
         refs.append(RelatedPageRef(line=line_no, **row))
     return refs, findings
 
@@ -232,11 +241,11 @@ def audit_related_rows(source_path, text=None):
     registry = _page_registry(board_root)
     seen = set()
     for ref in refs:
-        key = (ref.relation, ref.phase, ref.page_id, ref.scope, ref.path)
+        key = (ref.relation, ref.run, ref.page_id, ref.scope, ref.path)
         if key in seen:
             findings.append(RelatedFinding(
                 "WARN", "duplicate-related-row", ref.line,
-                "the same relation, phase, Page, and scope is declared twice",
+                "the same relation, Run, Page, and scope is declared twice",
             ))
         seen.add(key)
 
@@ -312,13 +321,12 @@ def extract_scope(target_text, scope, include_frame=True):
     return "\n\n".join(pieces).strip()
 
 
-def related_context_packet(source_path, phase):
-    """Build a one-hop Markdown packet for rows matching ``phase`` or ``ALL``."""
-    phase = (phase or "").upper()
-    phase = PHASE_ALIASES.get(phase, phase)
-    if phase not in PHASES:
+def related_context_packet(source_path, run):
+    """Build a one-hop Markdown packet for rows matching ``run`` or ``ALL``."""
+    run = run_of(run)
+    if run not in RUNS:
         raise RelatedContextError(
-            f"phase must be one of {', '.join(PHASES)}; got {phase or '<empty>'}"
+            f"run must be one of {', '.join(RUNS)}; got {run or '<empty>'}"
         )
     source = Path(source_path).resolve()
     text = source.read_text(encoding="utf-8")
@@ -332,14 +340,14 @@ def related_context_packet(source_path, phase):
 
     text, whole = related_source(source, text)
     refs, _ = scan_related_rows(text, whole)
-    selected = [ref for ref in refs if ref.phase in (phase, "ALL")]
+    selected = [ref for ref in refs if ref.run in (run, "ALL")]
     board_root = find_board_root(source)
     out = [
-        f"# Related Board Pages · {source.name} · {phase}",
+        f"# Related Board Pages · {source.name} · {run}",
         "Traversal: one hop only; rows declared by a target Page are not followed.",
     ]
     if not selected:
-        out.append("No Related Board Pages rows match this phase.")
+        out.append("No Related Board Pages rows match this Run.")
         return "\n\n".join(out) + "\n"
 
     emitted = set()
@@ -355,7 +363,7 @@ def related_context_packet(source_path, phase):
         framed_targets.add(ref.path)
         out.extend([
             f"## {ref.page_id} {ref.scope} · {ref.relation}",
-            f"Source: `{ref.path}` · declared for `{ref.phase}`",
+            f"Source: `{ref.path}` · declared for `{ref.run}`",
             extract_scope(target_text, ref.scope, include_frame=include_frame),
         ])
     return "\n\n".join(out) + "\n"

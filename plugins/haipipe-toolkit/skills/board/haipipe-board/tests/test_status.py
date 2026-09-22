@@ -7,10 +7,11 @@ from unittest.mock import patch
 
 
 HERE = Path(__file__).resolve().parent.parent  # the engine dir
-SPEC = importlib.util.spec_from_file_location("board_status", HERE / "status.py")
+HOST = HERE.parents[2] / "servers" / "_host"     # the server host
+SPEC = importlib.util.spec_from_file_location("board_status", HOST / "status.py")
 STATUS = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(STATUS)
-SERVE_SPEC = importlib.util.spec_from_file_location("board_serve", HERE / "cli" / "serve.py")
+SERVE_SPEC = importlib.util.spec_from_file_location("board_serve", HOST / "serve.py")
 SERVE = importlib.util.module_from_spec(SERVE_SPEC)
 SERVE_SPEC.loader.exec_module(SERVE)
 from live.chat import _scratch_context_fingerprint  # noqa: E402
@@ -60,7 +61,7 @@ class StatusStripTest(unittest.TestCase):
             next_action="finish the renderer", root=root,
         )
         lines = strip.splitlines()
-        self.assertEqual(len(lines), 4)   # 🧭 · state · ⏱️ phase · → next
+        self.assertEqual(len(lines), 4)   # 🧭 · state · ⏱️ progress · → next
         for row in lines[:-1]:
             self.assertTrue(row.endswith("  "))
         self.assertIn("⏱️", lines[2])
@@ -119,8 +120,8 @@ class StatusStripTest(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         (root / ".server_config").mkdir()
         (root / ".server_config" / "settings.env").write_text(
-            "JJLUO_PUBLIC_URL=http://tailnet.example.test:5601\n"
-            "JJLUO_AUTH_FILE=${HOME}/.config/jjluo-spaces/test.auth\n",
+            "DOMAIN=http://tailnet.example.test:5601\n"
+            "AUTH_FILE=${HOME}/.config/spaces/test.auth\n",
             encoding="utf-8",
         )
         with patch.dict(os.environ, {"HAIPIPE_BOARD_URL": "http://wrong.test:5599"}):

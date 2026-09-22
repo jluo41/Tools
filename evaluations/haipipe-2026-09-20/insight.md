@@ -2,13 +2,18 @@
 
 **实施状态（2026-09-20）：** 用户已授权落实更新。第 1–9 节保留修改前评估与设计讨论；实际修订及验证结果见第 10 节。旧路径和源码行号属于评估快照，不代表更新后的目录。
 
+**目录归属更新（2026-09-21）：** Task-side `haipipe-page-insight` 已从
+`skills/task/page-types/` 移到 `skills/insight/haipipe-page-insight/`。它仍
+服务 Task Insight route，公开 Skill 名称不变；当前 inventory 将它计入
+Insight family。下文旧路径只用于说明当日评估证据。
+
 **总体结论：** Insight 路由、证据来源和 signed Design Handoff 边界写得细；Task 侧的 riNN、Application-context InsightBoard 与签名手递大体可区分。但 Application Board 控制器仍把 I0–I5 分类当作工作流骨架，以 CELL 而不是 Run 身份推进。按“Workflow 由 Runs 构成”这一强制标准，Insight 工作流整体**不通过**。Task 侧已有真实 riNN Runs，且正确地没有把 checkpoint、LLM 调用或工具执行另算成 Run。目标模型不再有 Phase 概念：本报告提到的 live Phase 词汇、字段和路径，是当前文档/持久化格式里的待迁移遗留项，不是建议保留的目标抽象。
 
 ## 1. 快照与审阅边界
 
 - 审阅日期：2026-09-20。
 - 基线提交：f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217，与评估 Brief 记录一致。
-- 当前树有 8 个已修改的 references/ 子模块指针；evaluations/ 是未跟踪目录，现有 BRIEF.md、inventory.json、sessions.json 属于共享评估资料。本报告仅写入 evaluations/haipipe-2026-09-20/insight.md，没有修改技能、代码或其他报告。
+- 当前树有 8 个已修改的 references/ 子模块指针；evaluations/ 是未跟踪目录，现有 BRIEF.md、inventory.json、sessions.json 属于共享评估资料。本报告原始评估阶段仅写入 evaluations/haipipe-2026-09-20/insight.md，没有修改技能、代码或其他报告；后续目录归属更新见上方说明。
 - 初始八项 Insight 清单与磁盘一致：八个当前 SKILL.md 均存在，未发现新增的 Insight SKILL.md。另按 Brief 要求审阅 Task 侧 haipipe-page-insight/SKILL.md 和 haipipe-task/fn/insight.md。
 - 没有执行被审阅的技能、脚本、测试或外部服务；下文走查都是桌面推演，不是现场用户测试或运行时验证。
 

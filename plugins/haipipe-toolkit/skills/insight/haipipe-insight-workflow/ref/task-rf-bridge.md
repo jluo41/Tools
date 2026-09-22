@@ -27,7 +27,7 @@ cross-scope authority bridge with five mechanically readable assertions:
    completes its local Evidence Run. Page navigation alone is not evidence.
 
 Legacy one-chain Page/RF references require a verified exact alias using
-`haipipe-page-insight/ref/migration.md`; never select a new item by text or
+`../../haipipe-page-insight/ref/migration.md`; never select a new item by text or
 `latest`.
 
 When all five hold, GI4 reads the external chain as the K/W parent and no

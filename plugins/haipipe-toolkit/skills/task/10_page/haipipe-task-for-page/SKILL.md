@@ -276,5 +276,5 @@ haipipe-task-for-page/
 
 The base is `haipipe-task` (hierarchy, lifecycle commands, and Run/Result anatomy). The
 Page-side contracts it serves but never edits are
-`haipipe-page-outline`, `haipipe-page-evidence`, and
-`haipipe-plugin-outline/ref/item-table.md`.
+`haipipe-page-structure`, `haipipe-page-evidence`, and
+`haipipe-workbench-page/ref/item-table.md`.

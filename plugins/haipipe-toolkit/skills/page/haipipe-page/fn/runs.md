@@ -25,7 +25,7 @@ fn/Runs
 Resolve and read the Page Face, current Outline and candidate Content, then
 enumerate allocated Page Run Tickets and their paired Results. Read
 `../SKILL.md` and
-`../../page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
+`../../haipipe-page-workflow/ref/interactive-writing-run.md`.
 When task-side work is relevant, read the owning Task/Discovery Run profile;
 do not infer its identity or lifecycle from the Page.
 
@@ -65,7 +65,7 @@ that already has a draft Shape. RP identities state their scope explicitly:
 
 | IDs | Scope | Human-facing work |
 |---|---|---|
-| `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, evidence decisions, and Mermaid representation |
+| `rp-struct-NN` | Page Structure Run: SHAPE + SURVEY | Direction, coverage/non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph jobs, evidence decisions, and structure list |
 | `rp-sec-NN` | Section-level | One named Section drafting/revision session/round and its review loop |
 | `rp-para-NN_Pxx[-Pyy]` | Paragraph-level | One fixed paragraph or contiguous paragraph group |
 
@@ -86,13 +86,12 @@ Later structure/Bullet refinement is a separately commissioned Run such as
 `rp-struct-02`, not a prose Run. A Survey pass is not such a refinement: it is
 the SURVEY cycle of the open `rp-struct-01`.
 
-Starting or resuming `rp-struct-01` must create or refresh
-`outline/<stem>-logic.mmd` from the current plan. This is the Run's primary
-review artifact: it shows the complete Page argument flow and every `P01..PN`
-node. While the structure Run is open, Draft Space renders the map expanded above
-the plan; if the file is absent, the presenter names that absence as a blocker
-instead of silently showing only Bullets. Every structural feedback Step
-updates the plan, paragraph index, and Mermaid source together before asking
+Starting or resuming `rp-struct-01` works on the current plan's headings and
+Bullets. The Run's primary review artifact is the Structure card Draft Space
+reads from that plan: every division and paragraph with its `P01..PN` id,
+shown as a text list above the Bullet table. There is no separate map file to
+create or refresh. Every structural feedback Step
+updates the plan and paragraph index together before asking
 for more feedback. The SURVEY cycle additionally records the per-Item evidence
 route and planned Supporting/Local work in the same paired Structure Result;
 it does not execute or claim those Results.
@@ -130,7 +129,7 @@ Candidate positions are planning labels, not promises of future identities.
 Use scope-valid canonical identities after selection:
 
 ```text
-rp-struct-01             whole-Page Mermaid Structure + P01..PN index
+rp-struct-01             whole-Page Structure + P01..PN index
 rp-struct-02             structure/Bullet refinement
 rp-sec-01                Section-level drafting/revision round
 rp-sec-02                later independent Section round
@@ -143,7 +142,7 @@ scope-valid; put the full descriptive goal in the Goal column. Paragraph Runs
 must expose the exact serial or contiguous range. `rp` means Run of Page, and
 its counter is independent from Task `rNN`.
 
-For every selected paragraph Run, copy the frozen Mermaid Structure description
+For every selected paragraph Run, copy the frozen Structure description
 from the Page-global paragraph index into the Goal and review packet. The
 description is a stable reader-facing label, such as `Scope and acceptance`;
 it is not a new paragraph title and must not be regenerated from draft prose.
@@ -202,7 +201,7 @@ Version, later feedback belongs to the current or next completed Step; do not
 create one file or Run per Step.
 
 Use the next free typed Page-local RP only at allocation time, except that the
-first selected Mermaid Structure candidate always receives `rp-struct-01`.
+first selected Structure candidate always receives `rp-struct-01`.
 The `struct`, `sec`, and `para` sequences are independent from one another and
 from Task `rNN`; `rp-para-01_P03` and `r01` may coexist. If the human changes
 the requested goal enough that it is independently closable, propose or start
@@ -219,5 +218,5 @@ Once selected work is saved, follow the interactive-writing contract and the
 Page user-check packet. Report the actual typed RP identity, current
 `vNNN/sNNN`, saved scope, feedback disposition, and next human decision. For
 `rp-struct-01`, show the
-current Mermaid Structure and `P01..PN` mapping first. Do not present an
+current Structure and `P01..PN` mapping first. Do not present an
 unselected proposal as `Ready`, `Waiting`, or `Held` in the Runs inventory.

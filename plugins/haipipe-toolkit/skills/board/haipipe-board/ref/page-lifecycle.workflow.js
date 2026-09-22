@@ -2,7 +2,7 @@ export const meta = {
   name: 'haipipe-page-lifecycle',
   description: 'Route one Page through CONTEXT, OUTLINE, EVIDENCE, CONTENT, and an independent CHECK.',
   phases: [
-    { title: 'Produce', detail: 'a phase-scoped producer performs any phase except CHECK' },
+    { title: 'Produce', detail: 'a Run-scoped producer performs any Run step except check' },
     { title: 'Snapshot', detail: 'rebuild, run mechanical checks, and identify the exact Page version' },
     { title: 'Check', detail: 'a fresh read-only judge evaluates and routes that version' },
   ],
@@ -43,12 +43,22 @@ const runId = workflowRuntimeId
 parsed.workflow_runtime_id = workflowRuntimeId
 parsed.run_id = workflowRuntimeId
 const intent = parsed.intent
-let startPhase = String(parsed.start_phase || '').toUpperCase()
+// Run keys are the skill suffixes; receipts and packets before 2026-09-22 used
+// uppercase tokens. runOf() is the one place that knows the old words.
+const LEGACY_RUN = { CONTEXT: 'context', OUTLINE: 'structure', PROBE: 'evidence', EVIDENCE: 'evidence',
+                     DRAFT: 'writing', REVISE: 'writing', COMPILE: 'writing', CONTENT: 'writing', CHECK: 'check' }
+const runOf = (v) => {
+  const raw = String(v || '').trim()
+  if (!raw) return ''
+  if (['CLOSE', 'HOLD'].includes(raw.toUpperCase())) return raw.toUpperCase()
+  return LEGACY_RUN[raw.toUpperCase()] || raw.toLowerCase()
+}
+let startRun = runOf(parsed.start_run || parsed.start_phase)
 const limits = parsed.limits || {}
 const maxSteps = limits.max_steps || 12
 const maxRounds = limits.max_rounds || 3
 // ── COPILOT | AUTO (260821) ──────────────────────────────────────────────
-// Not two rule sets — ONE, read two ways. The selected plugin ticks and any
+// Not two rule sets — ONE, read two ways. The selected workbench ticks and any
 // owner RULING are the same in both; what changes is what happens while one is
 // UNANSWERED:
 //
@@ -60,7 +70,7 @@ const maxRounds = limits.max_rounds || 3
 //
 // This is JL's 260818 ruling made executable: "human not to approve, they to
 // break" — the RUN proceeds on `checked: ✅` alone, and a plan nobody objected
-// to is not blocked. It defers plugin ticks and obeys the phase-owned RULING
+// to is not blocked. It defers workbench ticks and obeys the Run-owned RULING
 // policy below.
 const mode = String(parsed.mode || 'copilot').toLowerCase()
 if (!['copilot', 'auto'].includes(mode)) {
@@ -68,12 +78,12 @@ if (!['copilot', 'auto'].includes(mode)) {
   return { status: 'blocked', reason: `unknown mode ${mode}; use copilot | auto`, receipts: [] }
 }
 
-// OWNER RULING IS PHASE-OWNED. `page_ruling` is resolved from the Folder's
-// phase contract before dispatch: `none` adds no Page gate; `domain-gate`
+// OWNER RULING IS RUN-OWNED. `page_ruling` is resolved from the Folder's
+// Run contract before dispatch: `none` adds no Page gate; `domain-gate`
 // reuses the owning workflow gate; `local` adds a Page-local gate. Missing
 // metadata means a legacy Page: preserve the historical behavior in which
 // AUTO hardens a local gate while COPILOT honors the caller's declaration.
-// Plugin ticks (`approved:` `verified` `read:` `accepted:`) remain selected by
+// Workbench ticks (`approved:` `verified` `read:` `accepted:`) remain selected by
 // actual artifacts and may be deferred onto the owed ledger.
 const pageRuling = String(parsed.page_ruling || 'legacy-default').toLowerCase()
 if (!['none', 'domain-gate', 'local', 'legacy-default'].includes(pageRuling)) {
@@ -81,14 +91,14 @@ if (!['none', 'domain-gate', 'local', 'legacy-default'].includes(pageRuling)) {
   return { status: 'blocked', reason: `unknown page_ruling ${pageRuling}; use none | domain-gate | local`, receipts: [] }
 }
 const declaredGate = parsed.human_gate || { required: false, rule: '' }
-const phaseWaivesOwnerGate = pageRuling === 'none'
-const phaseOwnsGate = !phaseWaivesOwnerGate && (pageRuling === 'domain-gate' || pageRuling === 'local')
+const runWaivesOwnerGate = pageRuling === 'none'
+const runOwnsGate = !runWaivesOwnerGate && (pageRuling === 'domain-gate' || pageRuling === 'local')
 const legacyAutoGate = pageRuling === 'legacy-default' && mode === 'auto'
-const hardenOwnerGate = !declaredGate.required && (phaseOwnsGate || legacyAutoGate)
+const hardenOwnerGate = !declaredGate.required && (runOwnsGate || legacyAutoGate)
 const ownerGateLabel = pageRuling === 'domain-gate'
-  ? 'phase-owned domain gate'
+  ? 'Run-owned domain gate'
   : pageRuling === 'local'
-    ? 'phase-owned local RULING'
+    ? 'Run-owned local RULING'
     : pageRuling === 'legacy-default'
       ? 'legacy Page RULING'
       : 'declared human gate'
@@ -103,64 +113,57 @@ const humanGate = hardenOwnerGate
 // fail the audit on its own receipt.
 parsed.human_gate = humanGate
 parsed.page_ruling = pageRuling
-if (!board || !page || !runId || !intent || !parsed.start_phase) {
-  log('page-lifecycle: missing board, page, run_id, intent, or start_phase')
+if (!board || !page || !runId || !intent || !startRun) {
+  log('page-lifecycle: missing board, page, run_id, intent, or start_run')
   return { status: 'blocked', reason: 'missing required raw-material packet field', receipts: [] }
 }
-if (startPhase === 'PROBE') startPhase = 'EVIDENCE' // retired 260901; old packets still parse
-if (['DRAFT', 'REVISE', 'COMPILE'].includes(startPhase)) startPhase = 'CONTENT'
-parsed.start_phase = startPhase
-if (!['CONTEXT', 'OUTLINE', 'EVIDENCE', 'CONTENT', 'CHECK'].includes(startPhase)) {
-  log(`page-lifecycle: unknown start_phase=${startPhase}`)
-  return { status: 'blocked', reason: `unknown start_phase ${startPhase}`, receipts: [] }
+parsed.start_run = startRun
+delete parsed.start_phase
+if (!['context', 'structure', 'evidence', 'writing', 'check'].includes(startRun)) {
+  log(`page-lifecycle: unknown start_run=${startRun}`)
+  return { status: 'blocked', reason: `unknown start_run ${startRun}`, receipts: [] }
 }
 
-const ROUTES = ['CONTEXT', 'OUTLINE', 'EVIDENCE', 'CONTENT', 'CHECK', 'CLOSE', 'HOLD']
-const PHASE_CYCLES = {
-  CONTEXT: ['PREPARE'],
-  OUTLINE: ['SHAPE', 'SURVEY'],
-  EVIDENCE: ['LAND', 'EMBED'],
-  CONTENT: ['WRITE'],
-  CHECK: ['CHECK'],
+const ROUTES = ['context', 'structure', 'evidence', 'writing', 'check', 'CLOSE', 'HOLD']
+const RUN_CYCLES = {
+  context: ['PREPARE'],
+  structure: ['SHAPE', 'SURVEY'],
+  evidence: ['LAND', 'EMBED'],
+  writing: ['WRITE'],
+  check: ['CHECK'],
 }
 const legalNextCycle = (route, nextCycle) =>
   (['CLOSE', 'HOLD'].includes(route)
     ? !String(nextCycle || '').trim()
-    : (PHASE_CYCLES[route] || []).includes(String(nextCycle || '').toUpperCase()))
-// CURRENT grammar comes first. The DRAFT/REVISE/COMPILE rows and edges remain
-// below only so the Python auditor can verify immutable historical receipts.
+    : (RUN_CYCLES[route] || []).includes(String(nextCycle || '').toUpperCase()))
+// Legal routes by Run key. Historical receipts are audited by the Python auditor
+// (src/page_lifecycle.py), which maps their old tokens through the same table.
 const LEGAL = {
-  CONTEXT: ['CONTEXT', 'OUTLINE', 'HOLD'],
-  OUTLINE: ['CONTEXT', 'OUTLINE', 'EVIDENCE', 'CONTENT', 'DRAFT', 'HOLD'],
-  EVIDENCE: ['CONTEXT', 'EVIDENCE', 'OUTLINE', 'CONTENT', 'HOLD'],
-  CONTENT: ['CONTEXT', 'CONTENT', 'OUTLINE', 'EVIDENCE', 'CHECK', 'HOLD'],
-  DRAFT: ['DRAFT', 'OUTLINE', 'REVISE', 'CHECK', 'HOLD'],
-  REVISE: ['REVISE', 'COMPILE', 'OUTLINE', 'EVIDENCE', 'DRAFT', 'CHECK', 'HOLD'],
-  COMPILE: ['COMPILE', 'CHECK', 'REVISE', 'HOLD'],
-  CHECK: ['CLOSE', 'CONTEXT', 'OUTLINE', 'EVIDENCE', 'CONTENT', 'DRAFT', 'REVISE', 'HOLD'],
+  context: ['context', 'structure', 'HOLD'],
+  structure: ['context', 'structure', 'evidence', 'writing', 'HOLD'],
+  evidence: ['context', 'evidence', 'structure', 'writing', 'HOLD'],
+  writing: ['context', 'writing', 'structure', 'evidence', 'check', 'HOLD'],
+  check: ['CLOSE', 'context', 'structure', 'evidence', 'writing', 'HOLD'],
 }
 
-// A deterministic failure returns to the phase that owns the broken artifact.
-// In particular, OUTLINE-part phases cannot jump to REVISE, which owns existing
+// A deterministic failure returns to the Run that owns the broken artifact.
+// In particular, the structure Run cannot jump into writing, which owns existing
 // Page prose rather than outlines, item rows, or evidence bindings.
 const MECHANICAL_REPAIR_ROUTE = {
-  CONTEXT: 'CONTEXT',
-  OUTLINE: 'OUTLINE',
-  EVIDENCE: 'EVIDENCE',
-  CONTENT: 'CONTENT',
-  DRAFT: 'REVISE',
-  REVISE: 'REVISE',
-  COMPILE: 'REVISE',
-  CHECK: 'CONTENT',
+  context: 'context',
+  structure: 'structure',
+  evidence: 'evidence',
+  writing: 'writing',
+  check: 'writing',
 }
 
 const PRODUCER_RESULT = {
   type: 'object',
-  required: ['actor', 'status', 'phase', 'cycle', 'route', 'reason', 'reopens_promise', 'artifacts', 'evidence'],
+  required: ['actor', 'status', 'run', 'cycle', 'route', 'reason', 'reopens_promise', 'artifacts', 'evidence'],
   properties: {
     actor: { type: 'string' },
     status: { type: 'string', enum: ['ok', 'blocked', 'failed'] },
-    phase: { type: 'string', enum: ['CONTEXT', 'OUTLINE', 'EVIDENCE', 'CONTENT'] },
+    run: { type: 'string', enum: ['context', 'structure', 'evidence', 'writing'] },
     cycle: { type: 'string', enum: ['PREPARE', 'SHAPE', 'SURVEY', 'LAND', 'EMBED', 'WRITE'] },
     route: { type: 'string', enum: ROUTES },
     next_cycle: { type: 'string', enum: ['PREPARE', 'SHAPE', 'SURVEY', 'LAND', 'EMBED', 'WRITE', 'CHECK'] },
@@ -246,7 +249,7 @@ function gateShape(result) {
     : { required: !!humanGate.required, status: humanGate.required ? 'pending' : 'not-required', evidence: [] }
 }
 
-log(`page-lifecycle: run=${runId}, page=${page}, start=${startPhase}, mode=${mode}, maxSteps=${maxSteps}, maxRounds=${maxRounds}`)
+log(`page-lifecycle: run=${runId}, page=${page}, start=${startRun}, mode=${mode}, maxSteps=${maxSteps}, maxRounds=${maxRounds}`)
 
 phase('Snapshot')
 let currentVersion = await snapshot('initial')
@@ -265,28 +268,28 @@ if (!currentVersion || currentVersion.status !== 'ok') {
   }
 }
 
-let current = startPhase
+let current = startRun
 let round = parsed.round || 1
 let receipts = []
 let producerActors = {}
-// One producer agent per current producing phase. CHECK has its own fresh,
-// read-only judge and therefore does not appear here.
+// One producer agent per producing Run. check has its own fresh, read-only
+// judge and therefore does not appear here.
 const PRODUCER_AGENTS = {
-  CONTEXT: 'haipipe-page-context-agent',
-  OUTLINE: 'haipipe-page-outline-agent',
-  EVIDENCE: 'haipipe-page-evidence-agent',
-  CONTENT: 'haipipe-page-content-agent',
+  context: 'haipipe-page-context-agent',
+  structure: 'haipipe-page-structure-agent',
+  evidence: 'haipipe-page-evidence-agent',
+  writing: 'haipipe-page-writing-agent',
 }
 
-// CONTEXT, OUTLINE, and CHECK inherit the session tier. EVIDENCE and CONTENT
+// context, structure, and check inherit the session tier. evidence and writing
 // execute an approved plan and use the bounded high tier.
-const PHASE_EFFORT = {
-  EVIDENCE: 'high',
-  CONTENT: 'high',
+const RUN_EFFORT = {
+  evidence: 'high',
+  writing: 'high',
 }
 
 for (let step = 1; step <= maxSteps; step++) {
-  if (current === 'CHECK') {
+  if (current === 'check') {
     phase('Check')
     const review = await agent(
       `Perform CHECK on exactly one Board Page in a fresh, read-only context.\n\n` +
@@ -295,7 +298,7 @@ for (let step = 1; step <= maxSteps; step++) {
       `Load the canonical chain: haipipe-page, haipipe-page-workflow, haipipe-page-check, the Folder-owning workflow, the exact Page Type, then its family checker. ` +
       `Run the Board's read-only checker, compute the same source:render SHA-256 identity, and HOLD if it differs from the expected version. ` +
       `Judge mechanics, function, evidence, readability, the local closing rule, and any human gate. ` +
-      `Do not edit, rebuild, or cure a finding. Route to CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT, or HOLD, and name next_cycle when routing to a Page phase. ` +
+      `Do not edit, rebuild, or cure a finding. Route to CLOSE, context, structure, evidence, writing, or HOLD, and name next_cycle when routing to a Page Run. ` +
       `CLOSE requires verdict=pass and durable evidence for every required human gate.`,
       {
         label: `check:r${round}:s${step}`,
@@ -312,7 +315,7 @@ for (let step = 1; step <= maxSteps; step++) {
       const receipt = {
         step,
         round,
-        phase: 'CHECK',
+        run: 'check',
         cycle: 'CHECK',
         actor: 'workflow-controller',
         role: 'controller',
@@ -353,7 +356,7 @@ for (let step = 1; step <= maxSteps; step++) {
       route = 'HOLD'
       reviewStatus = 'blocked'
       verdict = 'blocked'
-      reason = `${reason}; reviewer omitted or mismatched next_cycle for its Page-phase route`
+      reason = `${reason}; reviewer omitted or mismatched next_cycle for its Run route`
     }
     if (review.checked_version !== currentVersion.version_id) {
       route = 'HOLD'
@@ -387,18 +390,18 @@ for (let step = 1; step <= maxSteps; step++) {
       reason = mode === 'auto'
         ? `${reason}; AUTO reached CHECK and stopped at the required ` +
           `${ownerGateLabel}. Everything mechanical passed. See the ` +
-          `owed ticks: cli/pagephase.py <page-dir> --owed`
+          `owed ticks: cli/pageprogress.py <page-dir> --owed`
         : `${reason}; required human gate lacks durable passed evidence`
     }
     if (step === maxSteps && !['CLOSE', 'HOLD'].includes(route)) {
       route = 'HOLD'
-      reason = `${reason}; max_steps=${maxSteps} reached before another phase could run`
+      reason = `${reason}; max_steps=${maxSteps} reached before another Run step could run`
     }
 
     const receipt = {
       step,
       round,
-      phase: 'CHECK',
+      run: 'check',
       cycle: 'CHECK',
       actor: review.actor,
       role: 'judge',
@@ -435,13 +438,12 @@ for (let step = 1; step <= maxSteps; step++) {
   }
 
   phase('Produce')
-  const phaseSkill = current.toLowerCase()
   const producer = await agent(
-    `Perform exactly one ${current} phase for one Board Page.\n\n` +
+    `Perform exactly one step of the ${current} Run for one Board Page.\n\n` +
     `Board: ${board}\nPage: ${pageAbs}\nPage (board-relative, for the receipt): ${page}\n` +
     `Assignment packet: ${JSON.stringify(parsed)}\nCurrent round: ${round}\nCurrent version: ${currentVersion.version_id}\n\n` +
-    `Read the ⚡ Brief at the top of haipipe-page-${phaseSkill} first; then load the canonical chain: haipipe-page, haipipe-page-workflow, the current phase, the Folder-owning workflow, the exact Page Type, phase policy and material refs, and any selected Run workers. The Page surface already installs the presenter. ` +
-    `Follow the phase boundary. CONTEXT, OUTLINE, and EVIDENCE share haipipe-plugin-outline but may write only their own records. ` +
+    `Read the ⚡ Brief at the top of haipipe-page-${current} first; then load the canonical chain: haipipe-page, haipipe-page-workflow, the current Run's skill, the Folder-owning workflow, the exact Page Type, Run policy and material refs, and any selected Run workers. The Page surface already installs the presenter. ` +
+    `Follow the Run boundary. The context, structure, and evidence Runs share haipipe-workbench-page but may write only their own records. ` +
     `Do not rebuild, run CHECK, approve the result, touch board.md, or alter a human gate. ` +
     (mode === 'auto'
       ? `MODE: auto — nobody is watching this run. A review confirmation ` +
@@ -454,12 +456,12 @@ for (let step = 1; step <= maxSteps; step++) {
         `Verified gate is signed. A person's standing 🛑 still wins. `
       : `MODE: copilot — a person is attending. An unticked person-reserved gate is ` +
         `a legitimate HOLD; stop and name which tick and which file. `) +
-    `Return one phase receipt and suggest the next legal route. CONTENT owns Draft, Revise, Build, and Pre-check as internal WRITE movements, not separate phases.`,
+    `Return one Run receipt (field `run`) and suggest the next legal route. The writing Run owns Draft, Revise, Build, and Pre-check as internal WRITE movements, not separate Runs.`,
     {
       label: `${current.toLowerCase()}:r${round}:s${step}`,
       phase: 'Produce',
       agentType: PRODUCER_AGENTS[current] || 'haipipe-page-creator-agent',
-      effort: PHASE_EFFORT[current],
+      effort: RUN_EFFORT[current],
       schema: PRODUCER_RESULT,
     }
   )
@@ -468,7 +470,7 @@ for (let step = 1; step <= maxSteps; step++) {
     const receipt = {
       step,
       round,
-      phase: current,
+      run: current,
       cycle: '',
       actor: PRODUCER_AGENTS[current] || 'haipipe-page-creator-agent',
       role: 'producer',
@@ -485,7 +487,7 @@ for (let step = 1; step <= maxSteps; step++) {
       route: 'HOLD',
       requested_route: 'HOLD',
       reopens_promise: false,
-      reason: 'phase producer unavailable',
+      reason: 'Run producer unavailable',
       artifacts: [],
       evidence: [],
       findings: ['producer returned no receipt'],
@@ -502,22 +504,22 @@ for (let step = 1; step <= maxSteps; step++) {
     afterSnapshot = await snapshot(`r${round}:s${step}:${current.toLowerCase()}`)
   }
 
-  let route = producer.route
+  let route = runOf(producer.route)
   let reason = producer.reason
   let status = producer.status
   let findings = producer.findings || []
   if (status !== 'ok') {
     route = 'HOLD'
-  } else if (producer.phase !== current || !LEGAL[current].includes(route) || route === 'CLOSE' ||
-      (current === 'EVIDENCE' && route === 'CONTENT' && producer.cycle !== 'EMBED')) {
+  } else if (runOf(producer.run) !== current || !LEGAL[current].includes(route) || route === 'CLOSE' ||
+      (current === 'evidence' && route === 'writing' && producer.cycle !== 'EMBED')) {
     status = 'failed'
     route = 'HOLD'
-    reason = `${reason}; producer returned a phase or route outside ${current} authority`
-    findings = findings.concat(['producer phase or route violated the lifecycle grammar'])
+    reason = `${reason}; producer returned a Run or route outside ${current} authority`
+    findings = findings.concat(['producer Run or route violated the lifecycle grammar'])
   } else if (!legalNextCycle(route, producer.next_cycle)) {
     status = 'failed'
     route = 'HOLD'
-    reason = `${reason}; producer omitted or mismatched next_cycle for its Page-phase route`
+    reason = `${reason}; producer omitted or mismatched next_cycle for its Run route`
     findings = findings.concat(['producer next_cycle violated the lifecycle grammar'])
   } else if (!afterSnapshot || afterSnapshot.status !== 'ok') {
     status = 'failed'
@@ -537,7 +539,7 @@ for (let step = 1; step <= maxSteps; step++) {
   }
   if (step === maxSteps && !['CLOSE', 'HOLD'].includes(route)) {
     route = 'HOLD'
-    reason = `${reason}; max_steps=${maxSteps} reached before another phase could run`
+    reason = `${reason}; max_steps=${maxSteps} reached before another Run step could run`
   }
 
   const receipt = {

@@ -1,3 +1,53 @@
+## 1.1.0 · 2026-09-22
+
+- No more "phase": `cli/pagephase.py` is `cli/pageprogress.py` (the progress strip: which Run is
+  next); `ref/page-lifecycle.workflow.js` writes receipts with `run` and `start_run`, routes and
+  tables use Run keys, `--run` on the context packet; `checks/values.py` counts Runs;
+  `tests/test_page_progress_ledger.py` and the lifecycle tests follow. Receipts written before
+  2026-09-22 (uppercase `phase` tokens) stay auditable through one legacy map.
+
+## 1.0.15 · 2026-09-22
+
+- `fn/serve.md` returns `board-url: <DOMAIN>/b/<board-slug>` and
+  `workbench-url: <DOMAIN>/w/<board-slug>` (`plugin-url` is gone). The short
+  routes table gains `/w/`, `<DOMAIN>` is defined as the reader's origin, and the
+  settings keys are the generic `BIND_HOST`, `PORT`, `SPACE_NAME`, `DOMAIN`,
+  `AUTH_FILE`, `NO_AUTH`. `ref/operations.md` resolves the origin from `DOMAIN`.
+
+## 1.0.14 · 2026-09-21
+
+- Move every server file out of the skill into the plugin-level `servers/`
+  tree: `cli/serve.py` → `servers/_host/serve.py`; `live/base.py`, `live/auth.py`
+  and `src/server_config.py` → `servers/_host/`; the Board presenters (home,
+  structure, write, activity, shell, legacy PageX view) → `servers/haipipe-board/`;
+  chat/term/xcal/autodraw/autodeck → `servers/workbench-studio/`; design →
+  `servers/workbench-design/`; insight → `servers/workbench-insight/`; paper →
+  `servers/workbench-paper/`; export and plugview → `servers/workbench-page/`
+  (with the Page's outline, evidence, value, runs, delivery and folder
+  presenters); labeling → `plugins/subjective-label/servers/workbench-labeling/`.
+  Five workbenches remain: page, paper, studio, insight, design. Browser JS/CSS parts,
+  `board-mark.svg`, `xcal-boot.js`, vendored xterm, `status.py`, the server checks
+  and the auth/config tests moved with their owners.
+- Drop the 9 `live/` and 9 `assets/css/` symlinks into the Page skill; `live` is
+  now one namespace over every server folder (`servers/_host/live/__init__.py`).
+- `src/assets.py` becomes a bridge to `servers/_host/host_assets.py`, which
+  concatenates `assets/js/**` and `assets/css/**` from every server folder in
+  sorted relative order; the assembled `board.js`/`board.css` are byte-identical.
+- `src/__init__.py` puts `servers/_host` on `sys.path` for the grammar modules
+  that read live projections (`page_board.py`, Page setup).
+- Retire the 🛠 skill map workbench (`live/skillmap.py`, `83-workbench-skillmap.js`):
+  the `/_board/skill`, `skill-order`, `skill-entry`, `skillview` and `mdview`
+  routes are gone; the `outline/skill/` lane remains an authored store.
+- Verified: 61 responses and 33 files identical under `servers/_host/tests/gate_live.py`;
+  the static build of a fixture Board is identical; the test suite's failure set
+  is unchanged.
+
+## 1.0.13 · 2026-09-21
+
+- Ignore the Discovery Board helper's reserved Job-span comments while parsing
+  `## Pages`, so the managed markers never render as Group prose.
+- Document the incremental Discovery Block-to-Board synchronization seam.
+
 ## 1.0.12 · 2026-09-20
 
 - Make the Page reader copy-only; reject retired prose-edit endpoints, update Studio dispatch, and export the ledger-selected evidence.
@@ -18,16 +68,16 @@
 
 ## 1.0.10 · 2026-09-18
 
-- `live/paper.py`: reading polish after a twenty-view Chrome audit of the Paper
-  Plugin (12px type floor, unclipped card headlines, deduplicated card
-  subline, tree name tooltips). See haipipe-plugin-paper 0.2.2.
+- `servers/workbench-paper/paper.py`: reading polish after a twenty-view Chrome audit of the Paper
+  Workbench (12px type floor, unclipped card headlines, deduplicated card
+  subline, tree name tooltips). See haipipe-workbench-paper 0.2.2.
 - `cli/check.py`: `retired-design-shape` skips `board/` and any `_` folder,
   the same reading `check_draw_folders` already applies: a record parked
   under `_archive/` is a person's deliberate parking and is not asked to
   migrate. Its message now names the parking as the third answer beside
   migrating and deleting (B00's `2-DS-design/DS01`, 18 errors, JL 260918).
-- `live/insightboard.py`: the Insight board's Run Space › Workflow map takes the
-  paper board's shape (haipipe-plugin-paper 0.2.1): a `Folder on this board`
+- `servers/workbench-insight/insightboard.py`: the Insight board's Run Space › Workflow map takes the
+  paper board's shape (haipipe-workbench-paper 0.2.1): a `Folder on this board`
   column resolved on the served board, a width that fits the page, and a
   Folder tree × Run type card (the real board folder, then the Task home and
   Results store, each folder tagged with the run type that writes it). It
@@ -35,44 +85,44 @@
 
 ## 1.0.9 · 2026-09-18
 
-- `live/paper.py`: the Delivery Space's `pages` fact reads
+- `servers/workbench-paper/paper.py`: the Delivery Space's `pages` fact reads
   `readiness.not_ready` from `delivery/build-manifest.json` as the engine
   writes it, one `{id, reasons}` dict per page (`build_delivery.py`), and
   still accepts the older bare-id list. Before this, any paper with a build
   and one unready page answered HTTP 500 (`sequence item 0: expected str
   instance, dict found`); Paper-ScalingGlucose-NatSeries2026 was the first
-  real board to hit it. `tests/test_paper_plugin.py` now writes the engine's
+  real board to hit it. `tests/test_paper_workbench.py` now writes the engine's
   real shape into its fixture manifest.
-- `live/paper.py`: Run Space › Workflow map joins the Run-Type map to the
-  paper's folder tree (`haipipe-plugin-paper/ref/space-mapping.md`, second
+- `servers/workbench-paper/paper.py`: Run Space › Workflow map joins the Run-Type map to the
+  paper's folder tree (`haipipe-workbench-paper/ref/space-mapping.md`, second
   table), resolving each folder slot on the served board.
 - Fold each Job on a Task or Discovery Block index: `index_rows(...,
   fold_groups=True)` wraps a group in a closed `<details class="gfold">` whose
   `<summary>` is the heading with its task count, like the SPACE Home project
   fold. The title opens the fold; a small ↗ opens the Job page. No script is
   needed, and `80-restore.js` keeps an opened Job open across reloads. Generic
-  Boards keep their open group list. Styles in `assets/css/40-structure.css`;
+  Boards keep their open group list. Styles in `servers/haipipe-board/assets/css/40-structure.css`;
   `tests/test_task_block_board.py` asserts the closed fold.
 
 ## 1.0.8 · 2026-09-18
 
-- Add the Board-level Paper Plugin route: `GET /_board/paper` (`live/paper.py`,
-  `PaperPluginMixin`) renders Setup · Ideation · Story · Run · Delivery live from
+- Add the Board-level Paper Workbench route: `GET /_board/paper` (`servers/workbench-paper/paper.py`,
+  `PaperWorkbenchMixin`) renders Setup · Ideation · Story · Run · Delivery live from
   the paper board's Markdown on every request and stores nothing. It reads the
   project's task home (`tasks/` or `task/`) and `discoveries/` as Block › Job ›
   Task › Run trees, joins each Evidence Item to its Local Run and Supporting
-  Runs, and reads `delivery/` receipts. Contract: `paper/haipipe-plugin-paper`.
-- Register the 📄 Paper drawer tab (`assets/js/10-drawer/09-plugin-paper.js`) on
+  Runs, and reads `delivery/` receipts. Contract: `paper/haipipe-workbench-paper`.
+- Register the 📄 Paper drawer tab (`servers/workbench-paper/assets/js/10-drawer/09-workbench-paper.js`) on
   any board whose `board.md` says `dialect: paper`; `page_board.py` exposes it
-  as `data-board-dialect`, and `parse.py` keeps the older `paper-plugin` /
+  as `data-board-dialect`, and `parse.py` keeps the older `paper-workbench` /
   `board-console` Links key readable.
-- `tests/test_paper_plugin.py`: five tests over a synthetic paper board.
+- `tests/test_paper_workbench.py`: five tests over a synthetic paper board.
 
 ## 1.0.7 · 2026-09-15
 
 - Replace the retired `live/outline_comments.py` symlink (and the dangling
   `outline_comments.js` / `outline_preview.js` links) with
-  `live/outline_feedback.py`, the Draft Space note composer.
+  `servers/workbench-page/outline_feedback.py`, the Draft Space note composer.
 - Replace `tests/test_outline_comments.py` with `tests/test_outline_feedback.py`;
   drop the obsolete `test_outline_preview_ui.cjs` (its script is gone); the
   Outline tests now allow exactly one textarea, the note composer's.
@@ -183,7 +233,7 @@
 
 ## 0.173.0 · 2026-09-08
 
-- Outline plugin, Bullet Workspace: every `C<n>.P<m>` paragraph is a native
+- Outline workbench, Bullet Workspace: every `C<n>.P<m>` paragraph is a native
   expand/collapse group holding its own Bullets; each Bullet has an in-browser
   editor and each paragraph an append control. Writes go through
   `POST /_board/outline` with `action: edit-bullet | append-bullet` into the
@@ -245,7 +295,7 @@
 
 ## 0.171.0 · 2026-09-06
 
-- Route the typed Evidence chip on the Outline plugin's Bullet Workspace plan
+- Route the typed Evidence chip on the Outline workbench's Bullet Workspace plan
   card to `Evidence Workspace → Evidences` at the exact item card, the same
   one-URL route (`lens=workspace&seg=items&focus=run-<item>`) the compact Page
   chip takes; the Outline document switches lens in place and keeps the route
@@ -277,13 +327,13 @@
 ## 0.169.0 · 2026-09-06
 
 - Make compact Outline Evidence chips (for example `E2V.DesignCounts`) open
-  the existing Outline plugin at Evidence Workspace → Evidences with the exact
+  the existing Outline workbench at Evidence Workspace → Evidences with the exact
   item card focused, scrolled into view, and highlighted, replacing the
   Page-level native popover. The chip keeps its label, status colour,
   accessible label and title, and the `none` / `missing` cells are unchanged.
 - Carry the Evidence Workspace segment explicitly in the atomic route
   (`lens=workspace&seg=items|runs&focus=run-<item>[&run=…]`) from the Page
-  anchor through the drawer plugin, the Outline frame, and the nested Evidence
+  anchor through the drawer workbench, the Outline frame, and the nested Evidence
   frame; the shell's direct-route ownership already keeps it authoritative
   through Page-load refresh races.
 - Remove the generated compact-page Evidence popover markup and its CSS;
@@ -301,7 +351,7 @@
   record in Context Workspace.
 - Prevent both route competitors from erasing precise destinations: stop the
   generic Page router from handling an Outline deep-link click, and discard or
-  defer stale default plugin aims while an explicit Outline route owns the
+  defer stale default workbench aims while an explicit Outline route owns the
   current Page.
 - Add a phone-sized browser regression covering three Run families and one
   Feedback decision, plus a fallback-Popover run.
@@ -354,7 +404,7 @@
   Pages; synchronize a top-level Writing Style section only as a compatibility
   path when an older stage Page already carries one.
 - Archive a folded Page as one whole Folder and write its archive record to
-  `outline/<stem>-log.md`, preserving every Page-local plugin artifact.
+  `outline/<stem>-log.md`, preserving every Page-local workbench artifact.
 - Move one-time Page-shape migrations, the retired Meeting Page generator,
   the Board-wide Excalidraw seeder, and route-based evidence-topic tooling into
   an explicit `legacy/` boundary.
@@ -395,7 +445,7 @@
 
 - Add `cli/context-record.py`, the generator for the 00 CONTEXT record
   `outline/<stem>-context.md`. The phase law and its `ref/context-record.md`
-  shipped in `haipipe-plugin-outline` 0.34.0 without one, while the other
+  shipped in `haipipe-workbench-page` 0.34.0 without one, while the other
   three Outline records each had a generator, so every Page reported
   `CONTEXT: owed` and the only way to satisfy the phase was to hand-write a
   file the contract calls generated. It resolves CTX1-CTX6 from the Page,
@@ -416,7 +466,7 @@
 
 ## 0.162.0 · 2026-09-04
 
-- Route all generic Page material through the five public Plugin skills.
+- Route all generic Page material through the five public Workbench skills.
 - Remove DRAFT/REVISE redirect skills and agents; historical receipt tokens
   remain readable through the lifecycle auditor.
 - Retire Page-local meeting routes with an explicit 410 pointing to
@@ -480,7 +530,7 @@
 
 - Make `▤ Outline table` on the Page a real five-column review grid. C/P rows
   retain narrative hierarchy; B rows join the source plan to typed evidence,
-  the surveyed source/run path, and live status. The Outline plugin's richer
+  the surveyed source/run path, and live status. The Outline workbench's richer
   plan card and all `outline/` records remain unchanged.
 
 ## 0.160.0 · 2026-09-01
@@ -488,7 +538,7 @@
 - Replace the Page-level `Diagram` section with `Outline`. `🧭 Outline` now
   presents an optional Page-authored ASCII narrative map and a read-only
   `▤ Outline table` from the current versioned plan. Existing `## Diagram`
-  sources remain readable as a compatibility alias; `outline/` and its plugin
+  sources remain readable as a compatibility alias; `outline/` and its workbench
   remain the canonical process authority.
 
 ## 0.159.1 · 2026-09-01
@@ -500,7 +550,7 @@
 - The item table (JL 260901, "evidence is linked to the runs!!!"):
   `src/item_table.py` (read the table, derive the ladder word per row,
   `summarize` for the strip); `cli/evidence-status.py` writes the table joined
-  to the disk (Status first, `cycle: …` on the plan line); `live/outline.py`'s
+  to the disk (Status first, `cycle: …` on the plan line); `servers/workbench-page/outline.py`'s
   pill knows the ladder words; `cli/outline-pass.py` prints the cycle line;
   `tests/test_item_table.py` pins the derivation (bound · landed · folded ·
   stale · deferred · dropped · blocked, and a typed Status is ignored).
@@ -509,7 +559,7 @@
   enums, agent map and effort map drop it and gain `cycle`; `src/page_phase.py`
   and `cli/pagephase.py` draw five phase rows, OUTLINE/EVIDENCE fed by the
   table (`→ now: … · cycle …`); `src/page_context.py` aliases `· PROBE ·`
-  rows to EVIDENCE; the pageflow stepper, `checks/values.py`, `live/chat.py`'s
+  rows to EVIDENCE; the pageflow stepper, `checks/values.py`, `servers/workbench-studio/chat.py`'s
   workflow prompt and the pagex docstrings follow.
 
 ## 0.158.9 · 2026-08-31
@@ -648,7 +698,7 @@ __chatNewSession) · 🗂 ✨ ⚙ as POPUP menus floating above the composer
 (closed by default, click-away closes; reverses the 260815 "list first"
 boot) · 🖌 draw fold remote (shell exposes __studioToggleDraw) · ➤ send.
 GUI chat text 14px → 12.5px (bubbles, textarea 13px, code 11.5px).
-86-plugin-task.js and 87-plugin-meeting.js menu rows REMOVED (JL).
+86-workbench-task.js and 87-workbench-meeting.js menu rows REMOVED (JL).
 folderstat speaks the two-part grammar: category chips, grammar-aware gaps
 line, flat pre-sweep lanes named for the sweep. Studio draw half folds
 (⌄/⌃ + composer 🖌), per reader, remembered.
@@ -661,19 +711,19 @@ shell tab id `studio` stages the draw frame above the chat pane, both live
 strip and menu rows folded, stored tab sets migrate on load (chat/draw →
 studio, slides → delivery); want() lands away-asks in the room; the draw
 watcher and GUI/TUI segment follow. The deck's ✨ authoring bar moved into
-the 📤 Delivery Slides segment (live/delivery.py #sbar, explicit press →
+the 📤 Delivery Slides segment (servers/workbench-page/delivery.py #sbar, explicit press →
 /_board/autodeck). The 260815 "no chat under the canvas" refusal stays
 true of the draw LANE; the room is JL's 260831 ask.
 
 ## 0.153.0 · 2026-08-31
 
-The 📤 Delivery tab (live/delivery.py + /_board/delivery), the evidence
+The 📤 Delivery tab (servers/workbench-page/delivery.py + /_board/delivery), the evidence
 fold's twin: 🏠 What's built · 📜 LaTeX · 📝 Word (both built on click via
 their own routes) · 🎞 Slides (read-only, never auto-authored) · 📱 Render
-(ghost until its route). 82-plugin-exports.js → 82-plugin-delivery.js, one
+(ghost until its route). 82-workbench-exports.js → 82-workbench-delivery.js, one
 registry row replacing the 📜 and 📝 rows; the native 🎞 tab stays (a tool
 keeps its surface). 🧾 Evidence gained the 🔗 Pagex segment and
-85-plugin-pagex.js folded away (the saved view's pens ride inline). Also
+85-workbench-pagex.js folded away (the saved view's pens ride inline). Also
 repaired: SKILL.md frontmatter had drifted to 0.151.2 while the changelog
 stood at 0.152.3.
 
@@ -715,14 +765,14 @@ replaced). Engine suite 291 passed, 0 failed.
 
 ## 0.152.0 · 2026-08-31
 
-The 🧾 Evidence tab (JL: "one evidence plugin, to present bibex, display,
-etc"): new `live/evidence.py` — GET `/_board/evidence` composes five segments
+The 🧾 Evidence tab (JL: "one evidence workbench, to present bibex, display,
+etc"): new `servers/workbench-page/evidence.py` — GET `/_board/evidence` composes five segments
 (⧉ By bullet = the `outline/<stem>-evidence.md` snapshot · 📚 Citations ·
 🚪 Cards · 🧮 Values · 🖼 Displays; a missing saved view is built on click
 through the lane's own POST route) — plus its POST twin, wired in serve.py
-(GET/HEAD/POST + EvidenceTabMixin). JS fold: `84-plugin-evidence.js` now
-registers the ONE row; bibex left `82-plugin-exports.js`;
-`08-plugin-value.js` deleted (its live `/_board/value` route stays, as a
+(GET/HEAD/POST + EvidenceTabMixin). JS fold: `84-workbench-evidence.js` now
+registers the ONE row; bibex left `82-workbench-exports.js`;
+`08-workbench-value.js` deleted (its live `/_board/value` route stays, as a
 segment). Storage, writers, walls and the three human gates unchanged.
 Driven in real Chrome on SM05-results: menu → tab → segments → live Values.
 
@@ -746,13 +796,13 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 ## 0.151.0 — 2026-08-31
 
 - **A probe id is `PP<NN>` standing alone**: `cli/evidence-status.py` and
-  `live/outline.py` (four sites) read `PP\d+` with a `(?<![A-Za-z0-9-])`
+  `servers/workbench-page/outline.py` (four sites) read `PP\d+` with a `(?<![A-Za-z0-9-])`
   guard, so a Round row id in a `Routed: RD01 S0-PP2` line is no longer a
   card; SM00's evidence file printed `📮 PP2 · no card` three times for bare
   marks (now `📮 —`, same counts).
-- **The page chat** (`live/chat.py`, `haipipe-plugin-chat` 0.2.0): the four
+- **The page chat** (`servers/workbench-studio/chat.py`, `haipipe-workbench-chat` 0.2.0): the four
   rule strings became `PAGE_RULES_BODY` and `BOARD_RULES_BODY` carrying the
-  compact where-a-message-lands table and pointing at the plugin; new
+  compact where-a-message-lands table and pointing at the workbench; new
   `page_folder_context()` in `prime_context` (page type, the plan and its
   tick, open `D<nn>` threads, open feedback rows, evidence counts, the `skill/`
   and `task/` lists); `Skill` left `SCOPED_OFF` and `scoped` loads
@@ -777,10 +827,10 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   receipt-lite).
 - **`ref/writing-rules.md` §A heading is a lookup key**: the five tests and
   the H1 verb-phrase rule, moved from `haipipe-page`.
-- **`haipipe-plugin/ref/roster.md`**: the `outline/` row rewritten to seven
+- **`haipipe-workbench/ref/roster.md`**: the `outline/` row rewritten to seven
   kinds with a pointer at `ref/record-shape.md`; the `chat/` row goes 🟢 with
   the keep step's log record.
-- **`live/outline.py _aim_rows`** reads the merged-States row `- ⬜ A1.1 · …`
+- **`servers/workbench-page/outline.py _aim_rows`** reads the merged-States row `- ⬜ A1.1 · …`
   (optional tick before the id, the `AIM_RE` set) and uses that tick as the
   state when no `**Now:**` follows; every 🎯 mark had read "not on the page yet"
   on a page whose Aims carry ticks (found by MISQ-Board on SM03).
@@ -788,12 +838,12 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   the other two sites; `Routed: RD01 S1-PP5` had produced a false "names PP5
   and no such probe exists" gap on every plan following the specimen (field
   test F10, and MISQ-Board independently).
-- **The aim id pattern has the same guard** (`live/outline.py` plan chips,
+- **The aim id pattern has the same guard** (`servers/workbench-page/outline.py` plan chips,
   `cli/evidence-status.py`): `P\d+` had matched the `P5` inside
   `Routed: RD01 S3-PP5`, so SM03's tab drew ghost `🎯 P5 · not on the page
   yet` chips beside real Aims (found with MISQ-Board, 260831). `_aim_rows`'
   anchored row regexes are untouched.
-- **The page chat runs the workflow** (`haipipe-plugin-chat` §🔁): the rules
+- **The page chat runs the workflow** (`haipipe-workbench-chat` §🔁): the rules
   text carries the seven phases with their verbs and skills, and
   `prime_context` injects the phase strip from `src/page_phase.py compact()`.
 
@@ -808,13 +858,13 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   sections` · `appendix` · `rounds`), so the paper's shape shows without a
   folder rename. `sidebar_rows` takes `meta=` for the dialect; a board with
   one token per group, and every non-paper board, renders exactly as before.
-- **`check.py check_plugin_roster` stays at the page's direct children**: a
-  unit inside a plugin lane (`display/S-Display-1a/`, `probe/PP01/`) also
+- **`check.py check_workbench_roster` stays at the page's direct children**: a
+  unit inside a workbench lane (`display/S-Display-1a/`, `probe/PP01/`) also
   keeps a `<name>/<name>.md`, and its `assets/`, `candidates/`, `source/`,
-  `versions/` are that plugin's anatomy; walking into the lane reported 36
-  false `plugin-not-rostered` rows on the MISQ board.
+  `versions/` are that workbench's anatomy; walking into the lane reported 36
+  false `workbench-not-rostered` rows on the MISQ board.
 - **Sentence edit sees through an invisible mark** (JL 260831, SM00 P1.S1
-  refused with "这句话在源文件里没找到"): `live/write.py _plain_sentence`
+  refused with "这句话在源文件里没找到"): `servers/haipipe-board/write.py _plain_sentence`
   strips `<!-- … -->` comments, so the visible text matches a source line
   carrying the DRAFT phase's `<!-- realizes: C2.P1.B1 -->` binding, and
   `edit_sentence` splits the trailing marks off and writes them back
@@ -831,13 +881,13 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   `cli/pagecontext.py` works on both (a Related row is read by its grammar
   under `- **Role**: related`). `ref/page-template.md` and
   `ref/board-form.md` say where the file map lives.
-- **Aims back on the page** (QPf12 row 2): `live/outline.py plan_card` reads
+- **Aims back on the page** (QPf12 row 2): `servers/workbench-page/outline.py plan_card` reads
   the page's `## Aims` first; a plan row fills only an id the page lacks.
 
 
 ## 0.148.3 — 2026-08-31
 
-- **`cli/requirement.py` writes four venue-only records** (haipipe-plugin-outline
+- **`cli/requirement.py` writes four venue-only records** (haipipe-workbench-page
   0.18.1): `venue_records` parses the desk division into V1 Shape (+Arc),
   V2 Size (the format fence's ALL-CAPS rows, `measured …` split off into the
   fold), V3 Refused, V4 Moves (first four slot names); `narrative_records`
@@ -850,7 +900,7 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 
 ## 0.148.2 — 2026-08-31
 
-- **`live/outline.py` renders every sibling file as RECORDS** (haipipe-plugin-
+- **`servers/workbench-page/outline.py` renders every sibling file as RECORDS** (haipipe-workbench-
   outline 0.18.0 §🧾): `_records` parses `### <ID> · <headline>` + `- **Label**:`
   rows + folded detail + `>` lanes, and the old shapes too (bare `YYMMDD ·` log
   rows get a headline cut at the first sentence; `- id · head` feedback rows;
@@ -867,7 +917,7 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 
 ## 0.148.1 — 2026-08-31
 
-- **`cli/feedback.py collect` projects the Round's words** (haipipe-plugin-outline
+- **`cli/feedback.py collect` projects the Round's words** (haipipe-workbench-page
   0.17.4): `src/feedback.py parse_round` now returns `feedback`, `work` and
   `parents` per row and the §2A `order` as `verdicts[pid][3]`; the register
   record gains `- **Feedback**:`, `- **Work**:`, one `- **Parent R<nn>**:` per
@@ -892,14 +942,14 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   `### Decision Now` group's `- [ ]` boxes instead of flipping the page to
   legacy counting, and `check.py`'s `aim-without-state` reads the same
   source. A page still carrying `## States` is read exactly as before.
-- **Outline is the first Plugin row and the pane's boot tab** (JL 260831:
-  "make the outline the first plugin and the default plugin"). `shell.py`'s
+- **Outline is the first Workbench row and the pane's boot tab** (JL 260831:
+  "make the outline the first workbench and the default workbench"). `shell.py`'s
   menu now leads with the registry default (it was ranked first only in the
   strip since 260830, so the menu still opened 💬 Chat, 🖌 Draw, 🎞 Slides,
   📂 Folder, then 🧭), and `paintTabs()` re-aims a pane that boots VISIBLE at
   the default once, instead of only when the pane was hidden.
 - **GUI is the Chat form a fresh reader gets** (JL 260831: "if choose the
-  Chat Plugin, make the GUI the default"). `shell.py`'s `wanted` fell back to
+  Chat Workbench, make the GUI the default"). `shell.py`'s `wanted` fell back to
   `'tui'`, and the drawer's two `board-tui-default` readers treated a missing
   key as TUI; all three now default to GUI, and a stored choice still wins.
 
@@ -909,7 +959,7 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   so every paragraph-opening sentence (140 on the MISQ board) got its badge
   appended after `</p>` and the block break dropped it to its own line.
 - **`ref/board-example.md` shows the merged Aims** (its two example pages
-  still carried `## States`), and `live/shell.py` no longer prints
+  still carried `## States`), and `servers/haipipe-board/shell.py` no longer prints
   `SyntaxWarning: invalid escape` on every start (`/\.html/`, `/\?pane=/`).
 - **`cli/states-merge.py`**: the migration for a page still carrying
   `## States`: tick and `Now:` onto each Aim row, `### Decision Now` to the top
@@ -921,8 +971,8 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 
 ## 0.147.4 — 2026-08-31
 
-- **`live/outline.py` renders the sibling files as lenses** (`_lenses`,
-  `_md_lite`; haipipe-plugin-outline 0.17.3): the 🧭 tab gains one chip per
+- **`servers/workbench-page/outline.py` renders the sibling files as lenses** (`_lenses`,
+  `_md_lite`; haipipe-workbench-page 0.17.3): the 🧭 tab gains one chip per
   existing `outline/<stem>-{requirement,discussion,feedback,evidence,log}.md`,
   rendered read-only through `src/body.py inline`. Served on the next server
   start; `serve.py` imports `live.outline` at load.
@@ -931,9 +981,9 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 ## 0.147.3 — 2026-08-31
 
 - **`Routed:` is a folded line** in `src/plan_shape.py:252` and
-  `live/outline.py:1279`; the 0.11.0 law named it and neither parser knew
+  `servers/workbench-page/outline.py:1279`; the 0.11.0 law named it and neither parser knew
   it, so the renderer cut the body at the mark and dropped 8 of NA01's 16.
-- **`feedback-unserved`**: the direction the plugin text promised and
+- **`feedback-unserved`**: the direction the workbench text promised and
   `feedback-coverage` did not test. An OPEN register row with no `Routed:`
   bullet and no `declined:` line. Failing-first on real pages: 104 findings
   across 15 unfolded Section pages, 0 on the folded NA01.
@@ -946,8 +996,8 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 ## 0.147.3 — 2026-08-31
 
 - **`cli/evidence-status.py`** writes `outline/<stem>-evidence.md`
-  (haipipe-plugin-outline 0.17.2): the 🧭 join as a dated file, reusing
-  `live/outline.py`'s `_latest_plan`, `_disk_state`, `_aim_rows` and `_live`,
+  (haipipe-workbench-page 0.17.2): the 🧭 join as a dated file, reusing
+  `servers/workbench-page/outline.py`'s `_latest_plan`, `_disk_state`, `_aim_rows` and `_live`,
   plus the ↩ backlink so a bare mark a card serves counts as raised.
 - **Two teeth in `check.py`**: `evidence-stale` (any file under the five lanes
   newer than the MEASURED stamp; proven by backdating SM08 → 1, regenerate →
@@ -979,9 +1029,9 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 
 - **🧭 Outline is the split pane's FIRST tab and its default** (JL 260830: "the
   outline will be shown as the default and be ranked to be the first, not the
-  Chat. This is very important"). `live/shell.py` seeded `openSet = ['chat']`
+  Chat. This is very important"). `servers/haipipe-board/shell.py` seeded `openSet = ['chat']`
   and `var tab = 'chat'` on its own and never read the page registry, so the
-  260818 `boardPlugins.setDefault('outline')` reached only the FAB. The shell
+  260818 `boardWorkbenches.setDefault('outline')` reached only the FAB. The shell
   now asks `getDefault()`, ranks that id first in the strip (a stored set keeps
   the reader's other tabs; only the rank is corrected), and lands the first
   open on it. Verified in Chrome via CDP on a private server: fresh storage →
@@ -994,7 +1044,7 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   the pre-260731 name ("Where we are"), so the lookup returned None and the
   head comment ("`retired-section` reports it") described behaviour the table
   did not have: 1,026 lines on 20 MISQ pages passed silently. Proven 0 → 20.
-- **Aims may live in the plan** (`page_aims_text`, haipipe-plugin-outline
+- **Aims may live in the plan** (`page_aims_text`, haipipe-workbench-page
   0.16.0): `REQUIRED` accepts `Done when` from `outline/<stem>-outline-v<N>.md`
   when the page keeps no copy, so obeying the law no longer earns
   `missing-section` + `no-aims` (field test, SM08).
@@ -1016,7 +1066,7 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   cannot drift (the 0.147.1 lesson). `check.py` gains `feedback-uncollected`
   and `feedback-coverage`, both directions, proven failing-first: 13 + 16
   findings before the first collect, 0 after.
-- **`page_aims_text`**: Aims may live in the plan (`haipipe-plugin-outline`
+- **`page_aims_text`**: Aims may live in the plan (`haipipe-workbench-page`
   0.16.0); `REQUIRED` no longer demands a page section the law moved. Found
   by the SM08 field test as ERROR `missing-section` on a page obeying the law.
 - **`check_generated_block` reads `outline/<stem>-log.md`**: moving the Log
@@ -1093,7 +1143,7 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 ## 0.144.0 — 2026-08-27
 
 - The repository root's `.server_config/` is now the primary hosting contract
-  for Board startup and reader links. `serve.py` reads non-secret `JJLUO_*`
+  for Board startup and reader links. `serve.py` reads non-secret settings
   host, port, public URL, SPACE name, and auth-file path values when matching
   flags are omitted; explicit CLI values still win.
 - `status.py` and the Board launcher follow the same precedence, while the
@@ -1148,7 +1198,7 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 - Synced the roster with Page 0.38.0 after Dash retired: twelve live variants
   remain, including Application's four-type Brief/Insight/Design/Artifact set.
 - Removed the stale early overview of four Board-owned variants; Board now owns
-  only `for-stage`, while generated Skill/Agent/Meeting filename kinds use plugins.
+  only `for-stage`, while generated Skill/Agent/Meeting filename kinds use workbenches.
 
 
 ## 0.141.2 — 2026-08-20
@@ -1198,8 +1248,8 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   closes QB2's standing Decision Now row on option A. Gone: the
   `activity_spans` and `activity_ticks` tables, `activity_conn`,
   `activity_num`, `activity_day_parts`, the `start`/`pulse`/`stop` ops, the
-  282-line browser beacon in `assets/js/50-activity.js`, and the 576K
-  `.haipipe-board/activity.sqlite3` itself. `live/activity.py` 446 → 283
+  282-line browser beacon in `servers/haipipe-board/assets/js/50-activity.js`, and the 576K
+  `.haipipe-board/activity.sqlite3` itself. `servers/haipipe-board/activity.py` 446 → 283
   lines, the script 282 → 167.
   The evidence it was dead: every SELECT against those two tables was the
   timer reading its OWN rows to write the next one, and `activity_stats` was
@@ -1258,13 +1308,13 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 
 - 📁 `cli/refold.py`: ONE PAGE, ONE FOLDER, as a command. The shape was ruled on
   260815 and the engine has read it ever since (`_page_home()` is
-  `<name>/<name>.md`, `_in_plugin()` keeps discovery out of every other
+  `<name>/<name>.md`, `_in_workbench()` keeps discovery out of every other
   subfolder, and `check.py` climbs to the board root so a folded page's
   board-relative Files rows still resolve). What was missing was the migration,
   so a board that wanted the shape had to be moved by hand, page by page, and
   the paper board's 73 pages were still flat a day later. `regroup.py` decides
   which GROUP a page belongs to; this decides that the page gets a home of its
-  own, which is what gives its plugins somewhere to live.
+  own, which is what gives its workbenches somewhere to live.
   It moves the page-keyed material in with the page — the group had been
   holding it side by side, `display/<page>/`, `QA-probe/<page>/`,
   `draw/<id>.excalidraw` — and preserves the INNER path rather than flattening
@@ -1312,12 +1362,12 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   `src/common.py`: `group_stem()` strips the number before anything reads the
   letter (so an unnumbered board keeps working with no migration) and
   `board_is_numbered()` answers whether this board opted in. Four readers strip
-  through it — `live/chat.py` `group_folder()` + the group session prefix,
-  `live/term.py`'s group terminal title, `cli/sentencerun.py`'s page URL — and
+  through it — `servers/workbench-studio/chat.py` `group_folder()` + the group session prefix,
+  `servers/workbench-studio/term.py`'s group terminal title, `cli/sentencerun.py`'s page URL — and
   the generated route is unchanged, `7-QC-engine/` still renders to `board/QC/`.
   Two writers, one rule each: `cli/regroup.py` always numbers, because it lays
   the whole set down at once and `groups_of()` now carries each heading's
-  reading-order position; `＋Q` in `live/structure.py` numbers only when the
+  reading-order position; `＋Q` in `servers/haipipe-board/structure.py` numbers only when the
   board already does, so a legacy board never grows one numbered folder among
   eight bare ones. A board is numbered or it is not, and no writer may
   manufacture the middle.
@@ -1345,14 +1395,14 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   second copy of drag-and-persist is how the two would drift.
 
 - 📄 Page phases PANEL: the 🪜 Workflow menu's second member arrives, the one
-  the registry reserved the seat for. `65-plugin-pageflow.js` shows the
+  the registry reserved the seat for. `65-workbench-pageflow.js` shows the
   DRAFT/PROBE/REVISE/CHECK loop with the INDEX on the LEFT and content on the
   RIGHT (JL 260816: "把 workflow 放在最左边…跟具体的内容分开" — the first cut
   put each phase's job sentence inside its strip cell and scrolled off the
   screen): the index holds ①–④ phase names only, marks ▲ here / · next, and a
   ×n visit count; the right column holds the selected phase's job + contract
   and the run record. Reads ONLY the RUN receipts under `_runs/page/` through
-  the new `GET /_board/pageruns` (`live/pageruns.py`, matched by the receipt's
+  the new `GET /_board/pageruns` (`servers/workbench-page/pageruns.py`, matched by the receipt's
   own `page` field, never the folder name). No receipts is an answer, not an
   error: the panel states the run contract's entry rule (existing page →
   CHECK, new page → DRAFT). NO locks — the loop has none. v1 is read-only; its
@@ -1423,7 +1473,7 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
   `\citep{luo2026eventglucose}` compiles to "[Luo et al., 2026]" inline
   with a bibtex References page, one store feeding chip, block, and PDF.
 - Built pages gained a 📚 References block above the folds
-  (`src/page_question.py` + `assets/css/64-refs.css`): one numbered entry
+  (`src/page_question.py` + `servers/haipipe-page/assets/css/64-refs.css`): one numbered entry
   per cited key, authors (year), title, venue, doi/link, resolved from the
   page's own bib and never invented. The inline chip + card stay body.py's;
   this is the other half of what a citing page owes its reader.
@@ -1466,24 +1516,24 @@ Driven in real Chrome on SM05-results: menu → tab → segments → live Values
 
 ## 0.128.0 - 2026-08-15
 
-- The right pane's tabs became an OPEN SET, per page (haipipe-plugin):
+- The right pane's tabs became an OPEN SET, per page (haipipe-workbench):
   the strip renders from the set, a tab appears on an explicit click — the ＋
   menu lists what the page could open, with ● where material already exists —
   the active tab carries its own ✕ (out of the set, focus to the left
   neighbour, last one closes the pane), and the pane's `✕ close` keeps meaning
   the whole pane. The set persists per page in `board-split-tabs:<path>`.
 - Registry entries may carry `tab: {url(page), write(page,cb,err)}` and the
-  shell builds their tab from it, so plugin N+1 ships by registering; Draw and
+  shell builds their tab from it, so workbench N+1 ships by registering; Draw and
   Slides keep their window hooks for now.
-- Three DERIVED paper-facing plugins shipped through that spec
-  (`82-plugin-exports.js` + `live/export.py`): `/_board/latex` (md2tex + a
+- Three DERIVED paper-facing workbenches shipped through that spec
+  (`82-workbench-exports.js` + `servers/workbench-page/export.py`): `/_board/latex` (md2tex + a
   standalone xelatex master → `latex/<stem>.pdf`), `/_board/word` (md2docx +
   docx2pdf's PDF twin → `word/<stem>.docx` + view), `/_board/bibex`
   (extract-only subset of the paper's `0-*.bib` → `bibex/<stem>.bib` + cards;
   never invents an entry, per citation-craft.md). `--paper-root` is discovered
   by walking up for a `0-*.bib`; pages outside a paper export cite-less.
-- The contract itself is the new `page/haipipe-plugin` skill
-  (SKILL.md + ref/roster.md): a plugin is STORAGE + SURFACE + WRITER +
+- The contract itself is the new `page/haipipe-workbench` skill
+  (SKILL.md + ref/roster.md): a workbench is STORAGE + SURFACE + WRITER +
   BOUNDARY, named once in the roster.
 
 
@@ -1539,7 +1589,7 @@ JL's final evidence-page design (ruled 260806) executed:
 
 ## 0.121.0 - 2026-08-06
 
-**Chip-card PDF previews fold shut** (JL: "the evidence card doesn't work, I cannot click it", S-Main-1). Root cause verified by driving a real Chrome over CDP: an open display card stacked two 24em `<object>` PDF previews inside its 60vh scroll box, pushing the file links ~900px below the card's fold, and the PDF plugin swallowed the wheel, so the card could neither be scrolled nor clicked where it mattered. `src/body.py` now wraps each pdf preview in a closed `<details class="ccfold">` whose summary wears the figcaption's face; `assets/css/60-chips.css` styles the fold. A card opens compact (header, body, one summary line per preview, links visible); one click expands the PDF in place (verified expanding to 348px and collapsing again). Image, text, and reference previews are unchanged.
+**Chip-card PDF previews fold shut** (JL: "the evidence card doesn't work, I cannot click it", S-Main-1). Root cause verified by driving a real Chrome over CDP: an open display card stacked two 24em `<object>` PDF previews inside its 60vh scroll box, pushing the file links ~900px below the card's fold, and the PDF workbench swallowed the wheel, so the card could neither be scrolled nor clicked where it mattered. `src/body.py` now wraps each pdf preview in a closed `<details class="ccfold">` whose summary wears the figcaption's face; `servers/haipipe-page/assets/css/60-chips.css` styles the fold. A card opens compact (header, body, one summary line per preview, links visible); one click expands the PDF in place (verified expanding to 348px and collapsing again). Image, text, and reference previews are unchanged.
 
 
 ## 0.120.1 - 2026-08-05
@@ -1600,7 +1650,7 @@ the content division"; proven on the boardform board's QA4).
 - `cli/check.py`: a media embed (`![](…)`) satisfies the division-figure rule,
   since a rendered embed is a figure in the renderer's own vocabulary; the
   caption rule still applies.
-- `assets/css/60-chips.css`: `.fightml` frame styles, slide-proportioned
+- `servers/haipipe-page/assets/css/60-chips.css`: `.fightml` frame styles, slide-proportioned
   (16:9), scoped like `figpdf`.
 
 
@@ -1679,8 +1729,8 @@ JL asked whether selecting a few words and commenting makes an evidence card, an
 The grammar already had a home for it. `render_apparatus` carried a `「…」` quoted form, but only on the bare-initials shape, and the canonical `> Comment WHO` branch runs first, so `> Comment JL 「words」: text` printed its brackets as prose.
 
 - `src/body.py` — the `Comment` branch takes an OPTIONAL `「…」` span and renders it in `.qt` ahead of the text. The three older shapes are untouched.
-- `live/write.py` — `add_comment` accepts `quote` and writes `> Comment WHO 「the words」: text`. It is kept only when the words really occur in that source line, so a selection crossing two sentences records nothing rather than something wrong, and it never blocks the comment itself: a remark must always land.
-- `assets/js/10-drawer/10-comment/30-write.js` — sends the `quote` it was already holding.
+- `servers/haipipe-board/write.py` — `add_comment` accepts `quote` and writes `> Comment WHO 「the words」: text`. It is kept only when the words really occur in that source line, so a selection crossing two sentences records nothing rather than something wrong, and it never blocks the comment itself: a remark must always land.
+- `servers/_host/assets/js/10-drawer/10-comment/30-write.js` — sends the `quote` it was already holding.
 
 **A card is still a different thing, on purpose.** A card answers what a phrase IS and holds one answer; a remark is a person talking about the line. 🪪 Card remains the button that makes the other one, and `QB5 §5.1` now says so where a reader meets the question.
 
@@ -1693,7 +1743,7 @@ The grammar already had a home for it. `render_apparatus` carried a `「…」` 
 
 JL asked how `haipipe-writing` wires in. The answer is one place, and it is the `> ✎` change record: this file and `haipipe-writing/cli/wdiff.py` both computed the word-level diff with difflib and agreed byte for byte on every case tried, which is agreement by luck. The next edit to either splits them, and the record is a review trail somebody reads months later.
 
-- `live/write.py` — `_change_diff` now calls `wdiff(host="board")`. It is LOOKED UP BY PATH, not imported, because every unit in this family must stay deletable from every other; the local computation survives as the fallback for a checkout with no `haipipe-writing` beside it.
+- `servers/haipipe-board/write.py` — `_change_diff` now calls `wdiff(host="board")`. It is LOOKED UP BY PATH, not imported, because every unit in this family must stay deletable from every other; the local computation survives as the fallback for a checkout with no `haipipe-writing` beside it.
 - `tests/test_change_diff.py` — compares the fallback against the shared function over ten pairs, including an empty side, a full replacement and an unchanged sentence. Drift is now a red test.
 
 **🌐 `tests/drive_board.py`** — a second recorded drive, 16 checks, against the REAL board instead of a fixture, and it writes nothing so it is safe to point at a live one. It answers the question the sentence drive cannot: a sentence can work perfectly on a page nobody can reach.
@@ -1731,7 +1781,7 @@ JL asked directly: when I add a comment, or I do an edit, does the page only upd
 
 **Adding a typed lane** never asked for a repaint at all. It printed "✔ saved", closed its form, and left the lane to arrive whenever the background poll noticed, which backs off to five seconds on a page nobody has touched.
 
-- `assets/js/40-sentence/00-apparatus.js` — both forms now CLOSE first and then call `window.__boardRefresh()`. The rule this sets: a writer clears its own draft before it asks for the page back.
+- `servers/_host/assets/js/40-sentence/00-apparatus.js` — both forms now CLOSE first and then call `window.__boardRefresh()`. The rule this sets: a writer clears its own draft before it asks for the page back.
 
 All four write paths now repaint in 0.4s and hold the reader's place: card 883→883, comment 1204→1204, edit 1925→1925 with 16 open sections before and after, typed lane unchanged across the save.
 
@@ -1795,9 +1845,9 @@ JL delegated the ruling. The three options drafted on `QB5` were all wrong in th
     > Card stable value: what should open when someone clicks those words
 
 - `src/body.py` — `CARD_LANE`, `_split_cards`, `_wrap_span`, and a `head=` on `_chip`. Cards are pulled out of the apparatus BEFORE it renders, so a sentence carrying only cards keeps its plain `<p>` and never grows an empty drawer with a `⚑ 0` badge.
-- `live/write.py` — `add_card` behind `POST /_board/card`, with three refusals: the sentence must be found exactly once, the words must really be in that source line, and the same card may not be written twice.
+- `servers/haipipe-board/write.py` — `add_card` behind `POST /_board/card`, with three refusals: the sentence must be found exactly once, the words must really be in that source line, and the same card may not be written twice.
 - `assets/js` — 🪪 Card beside 💬 Comment, offered only when the selected words are genuinely in the sentence, because a button that can only fail is worse than no button.
-- `assets/css/60-chips.css` — the words stay PROSE. A `\citep{}` chip replaced a marker nobody wanted to read and may look like a control; a span card sits on words the author wrote, so it keeps the text's font, colour and weight and takes one dotted underline.
+- `servers/haipipe-page/assets/css/60-chips.css` — the words stay PROSE. A `\citep{}` chip replaced a marker nobody wanted to read and may look like a control; a span card sits on words the author wrote, so it keeps the text's font, colour and weight and takes one dotted underline.
 - `sentenceText` gained its one exception: it deletes every `button`, because a paper chip's label is not the source text. A span card's label IS the source text, so it is unwrapped instead. Without this every later write on that sentence would miss its anchor forever.
 - `check.py` learned `Card`, which it had been reporting as a legacy `> C:` comment.
 
@@ -1816,7 +1866,7 @@ JL delegated the ruling. The three options drafted on `QB5` were all wrong in th
   button so I can copy the decision easier?"). A decision row is the one block a
   person routinely moves OFF the board, into a chat or a message, and copying it
   by hand meant dragging across ten wrapped lines and collecting the checkbox
-  glyph with them. `assets/js/45-decision-copy.js` + `.dcopy` in `10-focus.css`.
+  glyph with them. `servers/haipipe-board/assets/js/45-decision-copy.js` + `.dcopy` in `10-focus.css`.
 - Hidden at rest, revealed on `:hover` and `:focus-within` so the keyboard
   reaches it, and always visible on coarse pointers. Scoped to rows under a
   `Decision Now` summary; the board's other checkbox rows are legacy checklists
@@ -1890,7 +1940,7 @@ JL delegated the ruling. The three options drafted on `QB5` were all wrong in th
   days as "why is it so slow"; every measurement taken in that time said the
   server answered in 20 to 70 ms, and every one of them was correct.
 
-  `log_boards()` now prunes in place, the same fix `live/home.py` got that
+  `log_boards()` now prunes in place, the same fix `servers/haipipe-board/home.py` got that
   morning and this second copy did not, plus a two-second cache so ten tabs
   loading at once pay for one walk.
 
@@ -1948,7 +1998,7 @@ sentence QB4 now contradicts.
   (`stage.py`, `skillpage.py`, `regroup.py`, `refs.py`, `xcal.py`,
   `gate_live.py`), `ref/board-form.md` §6's build/watch commands, its
   `regroup.py` and `stage.py new` invocations, and `structure_op()`, which
-  lives in `live/structure.py` and not in `serve.py`.
+  lives in `servers/haipipe-board/structure.py` and not in `serve.py`.
 - Content is numbered all the way down: the template's example divisions are
   `### 1 ·` / `### 2 ·`, its group title `**1.1 ·**`, its paragraph
   `#### 2.1 ·` (it was `#### P1.`).
@@ -2078,7 +2128,7 @@ quick actions now ask about open Aim States and never present the legacy
 
 ## 0.90.0 - 2026-07-31
 
-**serve.py re-execs itself onto the venv, ending the 3.9 saga.** The checklist's very next run after shipping caught the live 5599 on system python 3.9 for the THIRD time in one day (pages 200, every 💬 turn dead) — three restarts by three hands, all hitting the same invisible trap that serve.py's docstring, a memory, and a QC8 log line all already warned about. A rule people keep forgetting belongs in code: `main()` now tries `import claude_agent_sdk` right after parse_args, and on failure `os.execv`s itself onto `<--root>/.venv/bin/python` when that exists. Loop-safe twice over (the venv python resolves equal to itself, and under the venv the import succeeds before the branch is reached); if the venv is also SDK-less it warns once and keeps serving rather than dying. Proven by starting serve.py under `/usr/bin/python3` (3.9) on a scratch port: `GET /_board/health` answered `python 3.13.14, sdk true` — the process traded itself in before binding. Shipped with the alignment lap JL asked for: `checks/run.py --full` re-run against SDK-Talk's latest code (assets split into 24 parts, router click queue, drawer restore fix) — full tier green (pty ①–⑦, CHATOK, termnav 12/12), the 0.86 follow() fix verified intact inside `assets/js/10-drawer/40-follow.js`, ledger 0.85→0.89 sequential with no collisions. Recorded on QC8.
+**serve.py re-execs itself onto the venv, ending the 3.9 saga.** The checklist's very next run after shipping caught the live 5599 on system python 3.9 for the THIRD time in one day (pages 200, every 💬 turn dead) — three restarts by three hands, all hitting the same invisible trap that serve.py's docstring, a memory, and a QC8 log line all already warned about. A rule people keep forgetting belongs in code: `main()` now tries `import claude_agent_sdk` right after parse_args, and on failure `os.execv`s itself onto `<--root>/.venv/bin/python` when that exists. Loop-safe twice over (the venv python resolves equal to itself, and under the venv the import succeeds before the branch is reached); if the venv is also SDK-less it warns once and keeps serving rather than dying. Proven by starting serve.py under `/usr/bin/python3` (3.9) on a scratch port: `GET /_board/health` answered `python 3.13.14, sdk true` — the process traded itself in before binding. Shipped with the alignment lap JL asked for: `checks/run.py --full` re-run against SDK-Talk's latest code (assets split into 24 parts, router click queue, drawer restore fix) — full tier green (pty ①–⑦, CHATOK, termnav 12/12), the 0.86 follow() fix verified intact inside `servers/_host/assets/js/10-drawer/40-follow.js`, ledger 0.85→0.89 sequential with no collisions. Recorded on QC8.
 
 
 ## 0.89.0 - 2026-07-31
@@ -2164,7 +2214,7 @@ Then JL sent a screenshot: "make these two styles consistent." The Board Map hea
 
 ## 0.77.0 - 2026-07-31
 
-**Group-level chat: the third altitude.** JL: "for each Question group, we can also add the chat icon for them, and then we can add the sdk or cli to discuss about this Question group." Every group heading on the index gains 💬 beside ＋Q and 🗄; it opens the drawer attached to the GROUP. The design move that made it cheap: a group's session identity is its FOLDER path (`QC-engine/`), so `term_key`, HOLD, parking, the sidecar registry, names, and the picker all work unchanged — `live/chat.py` and `live/term.py` only grew `is_dir()` branches (session_of reads the registry's newest entry since a folder has no header line; remember_session skips the header write; the picker prefix is the folder's letter). `group_folder()` maps a heading ("QC · Engine") to its folder; serve.py resolves a `group` param on the session routes in place of `target()`. Scope sits between board and page: a group session may edit any `.md` inside its folder, and `group_prime_context` orients it with the group's pages and their states. The client threads `group` through chat, term, sessions, session-name, release, and the pagehide beacon. Verified live: a scoped SDK turn on QC answered through the group session (auto-named `QC-group-chat-smoke`), the picker listed it with the letter prefix, and the ⌨ group terminal resumed the drawer's session — the same two-front-ends-one-session law as pages. Recorded on QD1.
+**Group-level chat: the third altitude.** JL: "for each Question group, we can also add the chat icon for them, and then we can add the sdk or cli to discuss about this Question group." Every group heading on the index gains 💬 beside ＋Q and 🗄; it opens the drawer attached to the GROUP. The design move that made it cheap: a group's session identity is its FOLDER path (`QC-engine/`), so `term_key`, HOLD, parking, the sidecar registry, names, and the picker all work unchanged — `servers/workbench-studio/chat.py` and `servers/workbench-studio/term.py` only grew `is_dir()` branches (session_of reads the registry's newest entry since a folder has no header line; remember_session skips the header write; the picker prefix is the folder's letter). `group_folder()` maps a heading ("QC · Engine") to its folder; serve.py resolves a `group` param on the session routes in place of `target()`. Scope sits between board and page: a group session may edit any `.md` inside its folder, and `group_prime_context` orients it with the group's pages and their states. The client threads `group` through chat, term, sessions, session-name, release, and the pagehide beacon. Verified live: a scoped SDK turn on QC answered through the group session (auto-named `QC-group-chat-smoke`), the picker listed it with the letter prefix, and the ⌨ group terminal resumed the drawer's session — the same two-front-ends-one-session law as pages. Recorded on QD1.
 
 
 ## 0.76.0 - 2026-07-31
@@ -2209,7 +2259,7 @@ Then JL sent a screenshot: "make these two styles consistent." The Board Map hea
 
 ## 0.69.0 - 2026-07-31
 
-**The ⌨ black screen's real root cause, found by clicking the board in a real browser.** JL asked "did you clicked it yourself?" — and the answer was no: every prior green was wire-level (a Python WS client speaking ttyd's protocol), which is exactly why the defect survived four ALL-PASS batteries. Driving a real Chrome (headed and headless, CDP, no libraries) through the actual gesture — fab → 💬 → ⌨ — reproduced JL's black pane deterministically, and the instrument trail (netlog: full 200 body downloaded; script-tag listeners: both assets LOAD; a MutationObserver on the toast) finally surfaced the swallowed exception: `You must set the allowProposedApi option to true to use proposed API`, thrown by `loadAddon(Unicode11Addon)` and eaten by `termOpen`'s catch into a 3-second toast. One line fixes it: `allowProposedApi: true` in the Terminal constructor. After the fix the same clicked run paints the full Claude Code TUI in the drawer (screenshot-verified), WS open, 45 buffer lines. Three more fixes from the same independent check of the QC8 split: `USE_TTYD` had stayed behind in serve.py while `terminal()` moved (every term open crashed `NameError`; the fix then hit `terminal()`'s local `base` string shadowing the module — aliased `_base`); `live/xcal.py` resolved `xcal-boot.js` against its new `__file__` (`live/assets/`, absent — every excalidraw scene 500'd; now `base.HERE`); and a rapid respawn after release races the dying claude for the same session (`kill_term` registers the pid in `DYING`, the next spawn waits up to 2s in `wait_dying`; three zero-spacing e2e runs pass). Lesson, in QD3's words: an exception after `termView(true)` IS a black pane — the wire can be perfect while the front end dies silently in a catch. Recorded on QD3, QD3m, and QC8.
+**The ⌨ black screen's real root cause, found by clicking the board in a real browser.** JL asked "did you clicked it yourself?" — and the answer was no: every prior green was wire-level (a Python WS client speaking ttyd's protocol), which is exactly why the defect survived four ALL-PASS batteries. Driving a real Chrome (headed and headless, CDP, no libraries) through the actual gesture — fab → 💬 → ⌨ — reproduced JL's black pane deterministically, and the instrument trail (netlog: full 200 body downloaded; script-tag listeners: both assets LOAD; a MutationObserver on the toast) finally surfaced the swallowed exception: `You must set the allowProposedApi option to true to use proposed API`, thrown by `loadAddon(Unicode11Addon)` and eaten by `termOpen`'s catch into a 3-second toast. One line fixes it: `allowProposedApi: true` in the Terminal constructor. After the fix the same clicked run paints the full Claude Code TUI in the drawer (screenshot-verified), WS open, 45 buffer lines. Three more fixes from the same independent check of the QC8 split: `USE_TTYD` had stayed behind in serve.py while `terminal()` moved (every term open crashed `NameError`; the fix then hit `terminal()`'s local `base` string shadowing the module — aliased `_base`); `servers/workbench-studio/xcal.py` resolved `xcal-boot.js` against its new `__file__` (`live/assets/`, absent — every excalidraw scene 500'd; now `base.HERE`); and a rapid respawn after release races the dying claude for the same session (`kill_term` registers the pid in `DYING`, the next spawn waits up to 2s in `wait_dying`; three zero-spacing e2e runs pass). Lesson, in QD3's words: an exception after `termView(true)` IS a black pane — the wire can be perfect while the front end dies silently in a catch. Recorded on QD3, QD3m, and QC8.
 
 
 ## 0.68.0 - 2026-07-31
@@ -2224,7 +2274,7 @@ Then JL sent a screenshot: "make these two styles consistent." The Board Map hea
 
 ## 0.67.0 - 2026-07-31
 
-**The drawer shows the trace, not just the answer.** JL put the board's chat drawer and the VS Code plugin side by side and asked what differed, then named it: "make the thinking and tool calling to be out as well." The drawer had been discarding the trace on both sides of the wire: `live/chat.py` emitted `{"t":"tool","name":…}` with no input and never emitted a tool RESULT at all, and `board.js` wrote that bare name into the transient waiting line, which the next event overwrote — so a turn that ran ten tools left no evidence of any of them. Now `ToolUseBlock` carries `id`, `brief`, and a truncated input preview (Bash reads as its command, everything else as indented JSON), `UserMessage`'s `ToolResultBlock` is emitted as `t:"tool_result"` and matched to its card by `tool_use_id`, and the drawer renders one collapsible card per call in the plugin's shape: what ran, its input, then its output, with errors marking the card instead of vanishing. Cards are closed by default so a tool-heavy turn stays readable, and previews cap at 4000 chars because a card is a preview, not a log viewer. One visible bug fell out of the same screenshot comparison and is fixed here: `mdInline` handled code, bold, and italic but not `[text](url)`, so the status strip's own link printed as literal text with the full URL showing; links now render, restricted to http/https so an escaped `javascript:` cannot ride in. Verified live with a turn that forces a real Read (thinking streamed, the card carried the resolved path and the file's first lines); QC8's gate re-run green. One checker bug surfaced on the way and is fixed here: `check.py`'s dead-href scan read the whole file rather than the scripts-stripped `bare` it computes two lines above, so `board.js`'s own anchor builder was reported as a rendered link with an unresolvable href; a string inside inlined JavaScript is a program, not markup. Recorded on QD2.
+**The drawer shows the trace, not just the answer.** JL put the board's chat drawer and the VS Code workbench side by side and asked what differed, then named it: "make the thinking and tool calling to be out as well." The drawer had been discarding the trace on both sides of the wire: `servers/workbench-studio/chat.py` emitted `{"t":"tool","name":…}` with no input and never emitted a tool RESULT at all, and `board.js` wrote that bare name into the transient waiting line, which the next event overwrote — so a turn that ran ten tools left no evidence of any of them. Now `ToolUseBlock` carries `id`, `brief`, and a truncated input preview (Bash reads as its command, everything else as indented JSON), `UserMessage`'s `ToolResultBlock` is emitted as `t:"tool_result"` and matched to its card by `tool_use_id`, and the drawer renders one collapsible card per call in the workbench's shape: what ran, its input, then its output, with errors marking the card instead of vanishing. Cards are closed by default so a tool-heavy turn stays readable, and previews cap at 4000 chars because a card is a preview, not a log viewer. One visible bug fell out of the same screenshot comparison and is fixed here: `mdInline` handled code, bold, and italic but not `[text](url)`, so the status strip's own link printed as literal text with the full URL showing; links now render, restricted to http/https so an escaped `javascript:` cannot ride in. Verified live with a turn that forces a real Read (thinking streamed, the card carried the resolved path and the file's first lines); QC8's gate re-run green. One checker bug surfaced on the way and is fixed here: `check.py`'s dead-href scan read the whole file rather than the scripts-stripped `bare` it computes two lines above, so `board.js`'s own anchor builder was reported as a rendered link with an unresolvable href; a string inside inlined JavaScript is a program, not markup. Recorded on QD2.
 
 
 ## 0.66.0 - 2026-07-31
@@ -2234,7 +2284,7 @@ Then JL sent a screenshot: "make these two styles consistent." The Board Map hea
 
 ## 0.66.0 - 2026-07-31
 
-**QD2 M1: the drawer holds one `claude` per question.** JL asked to continue into `live/chat.py` after the QC8 split. `SessionHost` runs one asyncio loop for the process's life and owns every live `ClaudeSDKClient`; the HTTP thread only submits to it, because the SDK forbids a client crossing async runtime contexts and `chat()` previously ran a fresh `anyio.run` per POST. Three things holding a client makes necessary, all built: a stable `can_use_tool` shim (a held client keeps its connect-time callback, so without indirection message two's permission prompt would be written into message one's dead socket), eviction when the ⌨ terminal takes the same question (QD1's one-window Law), and an idle reaper at 30 minutes plus `killall` teardown, since a held client is a live process. `--no-hold` is the fuse, in the `--ttyd` pattern. Measured on the design board at the scoped tier: first token 11.34s, then 2.27s, then 1.17s, with the stage line reporting "session already up" from turn two; verified again on the live 5599 board. **Two corrections the measurement forced**, both recorded on QD2: the first build showed no win at either tier because the fingerprint folded in the resumed session id, so every turn silently reconnected while still reporting success (only the stage line exposed it); and the "8.1s per message" figure this skill's own page claimed was wrong, because a resumed session plus a warm page cache already made turn two cheap without holding. The durable case for M1 is that `interrupt`, `set_model`, `set_permission_mode`, `get_context_usage`, and `rewind_files` exist only on a live client. QC8's gate re-run green (M1 on against M1 off, 18 responses and 54 files identical); `test_hold.py` added as the two-turn latency probe.
+**QD2 M1: the drawer holds one `claude` per question.** JL asked to continue into `servers/workbench-studio/chat.py` after the QC8 split. `SessionHost` runs one asyncio loop for the process's life and owns every live `ClaudeSDKClient`; the HTTP thread only submits to it, because the SDK forbids a client crossing async runtime contexts and `chat()` previously ran a fresh `anyio.run` per POST. Three things holding a client makes necessary, all built: a stable `can_use_tool` shim (a held client keeps its connect-time callback, so without indirection message two's permission prompt would be written into message one's dead socket), eviction when the ⌨ terminal takes the same question (QD1's one-window Law), and an idle reaper at 30 minutes plus `killall` teardown, since a held client is a live process. `--no-hold` is the fuse, in the `--ttyd` pattern. Measured on the design board at the scoped tier: first token 11.34s, then 2.27s, then 1.17s, with the stage line reporting "session already up" from turn two; verified again on the live 5599 board. **Two corrections the measurement forced**, both recorded on QD2: the first build showed no win at either tier because the fingerprint folded in the resumed session id, so every turn silently reconnected while still reporting success (only the stage line exposed it); and the "8.1s per message" figure this skill's own page claimed was wrong, because a resumed session plus a warm page cache already made turn two cheap without holding. The durable case for M1 is that `interrupt`, `set_model`, `set_permission_mode`, `get_context_usage`, and `rewind_files` exist only on a live client. QC8's gate re-run green (M1 on against M1 off, 18 responses and 54 files identical); `test_hold.py` added as the two-turn latency probe.
 
 
 ## 0.65.0 - 2026-07-31
@@ -2306,13 +2356,13 @@ Then JL sent a screenshot: "make these two styles consistent." The Board Map hea
   LOADS `haipipe-page` rather than restating the contract, which is what
   keeps it from drifting a night behind the rules.
 
-**The board can be OPERATED as three panes: index, page, chat, each refreshing on its own (QD5).** `live/shell.py` adds four routes and no dependency: `/_shell?p=<page or board folder>` serves one document holding three same-origin iframes; `<any board page>?pane=index|page|chat` serves the SAME static file with a `<style>`, a `window.__boardPane` marker and, for the index, `<base target="page">` injected at serve time, so strip the query and the byte-identical page is still there (QB2 intact). A rail click is now ordinary HTML — `target="page"` loads the sibling frame, `70-router.js` returns at its first line inside a pane, and links carry `?pane=page` out with them so a frame stays a frame. `/boards` cards gained a `⇱ Split` link, because nobody should have to type a route.
+**The board can be OPERATED as three panes: index, page, chat, each refreshing on its own (QD5).** `servers/haipipe-board/shell.py` adds four routes and no dependency: `/_shell?p=<page or board folder>` serves one document holding three same-origin iframes; `<any board page>?pane=index|page|chat` serves the SAME static file with a `<style>`, a `window.__boardPane` marker and, for the index, `<base target="page">` injected at serve time, so strip the query and the byte-identical page is still there (QB2 intact). A rail click is now ordinary HTML — `target="page"` loads the sibling frame, `70-router.js` returns at its first line inside a pane, and links carry `?pane=page` out with them so a frame stays a frame. `/boards` cards gained a `⇱ Split` link, because nobody should have to type a route.
 
 **The refresh mechanism was built three times, and each version was removed by the cost of the last.** First a server push: `/_events` streamed the path of every rewritten page and the shell reloaded the matching frame. It worked, and it holds one of the browser's six connections per origin for as long as the document lives — and a browser neither closes nor makes readable a connection belonging to a document it has replaced, so opening the split twice inside a few seconds wanted seven connections in six slots. That failure is silent by construction: the second shell's panes never loaded, its frames' `location.reload()` did nothing at all, and a queued request is indistinguishable from a slow one. Bounding the stream (a per-tab id retiring its own orphan, a 55s life, a 3s heartbeat) reduced it and could not remove it, because the terminal's WebSocket spends a second connection the same way. Second, a shell-side poll: it had to remember what it had already told a frame to do, and a reload dropped mid-navigation was then never retried, so a page could sit stale forever while the code believed it was fresh. Third, and shipped: **each pane asks about its own url** — a `HEAD` every 800 ms compared against `document.lastModified`, reload on difference, and the chat pane never asks at all. Nothing is held, nothing is remembered, and being still stale on the next tick IS the retry. Two engine fixes were needed for it and nothing else would have found them: `serve_pane` must send `Last-Modified` (the static handler gives it for free; a served pane did not, so the `HEAD` had nothing to compare), and the baseline must be `document.lastModified` rather than the first answer received (an edit landing between a frame's load and its first tick was otherwise adopted as current).
 
-**And the gap suite found a bug that was never about the split.** `checks/splitgaps.py` runs 21 assertions on a throwaway fixture with its own server and Chrome, because unlike `splitshell.mjs` these WRITE: G1 proves an ORDINARY board page is unchanged by this session (the router still swaps `div.wrap`, `20-live-refresh.js` still lands an edit in place, neither reloads — the regression surface of every change here, previously untested), G2 that scroll and open sections survive a pane refresh, G3 that all three pane kinds still read with every `<script>` stripped, G4 that a comment posted to `/_board/comment` repaints the page pane and leaves the chat pane alone. G4 failed, and the cause was `live/base.py`: `rebuild()` still pointed at `HERE / "build.py"`, which 0.99.0 moved into `cli/`. So since that release EVERY write through the server — comment, sentence edit, resolve, chat, terminal — updated the Markdown and then silently failed to rebuild the html, answering 200 with the error text tucked into a `build` field nobody reads. `checks/run.py` carried the same two stale paths. Both fixed. Also recorded: a real reload loses scroll where the old `div.wrap` swap did not, so `80-restore.js` is now LOAD-BEARING in a pane rather than the deletable thing A2.3 predicted.
+**And the gap suite found a bug that was never about the split.** `checks/splitgaps.py` runs 21 assertions on a throwaway fixture with its own server and Chrome, because unlike `splitshell.mjs` these WRITE: G1 proves an ORDINARY board page is unchanged by this session (the router still swaps `div.wrap`, `20-live-refresh.js` still lands an edit in place, neither reloads — the regression surface of every change here, previously untested), G2 that scroll and open sections survive a pane refresh, G3 that all three pane kinds still read with every `<script>` stripped, G4 that a comment posted to `/_board/comment` repaints the page pane and leaves the chat pane alone. G4 failed, and the cause was `servers/_host/live/base.py`: `rebuild()` still pointed at `HERE / "build.py"`, which 0.99.0 moved into `cli/`. So since that release EVERY write through the server — comment, sentence edit, resolve, chat, terminal — updated the Markdown and then silently failed to rebuild the html, answering 200 with the error text tucked into a `build` field nobody reads. `checks/run.py` carried the same two stale paths. Both fixed. Also recorded: a real reload loses scroll where the old `div.wrap` swap did not, so `80-restore.js` is now LOAD-BEARING in a pane rather than the deletable thing A2.3 predicted.
 
-Verified by driving it, not by reading it: `checks/splitshell.mjs` (23 assertions in headless Chrome — three frames, a rail click that moves only the page frame, the address bar following it, a rebuild that repaints only the page frame while a real `claude` keeps running in the chat pane) plus `tests/test_shell.py` (11, no browser). Green twice from a fresh browser; run back-to-back in a tab that held a shell moments ago, the refresh still lands but takes ~10s while the previous terminal socket is collected, which is the residue QD5 C4 P6 names. **And the wire itself, which was the thing JL actually felt.** He asked why opening a page takes so long; the server answers in 2 to 6 ms, so it was never the machine. Nothing had ever been compressed: a page is 172 KB, the index 244 KB, the largest page 451 KB, and `board.js` + `board.css` another 350 KB, all crossing a VS Code or ssh forward at full price. `live/base.py try_gzip()` now sends static text gzipped (GET only, above 1 KB) and `_send_html` does the same for the panes and the shell, which the static handler never sees. Measured 5.6× on a page, 7.2× on the index, 3.6× on the largest: a cold page open went 521 KB → 140 KB, and the split's first open 937 KB → 206 KB. HEAD is left alone on purpose — the panes poll with it and read only `Last-Modified` — and revalidation still answers a 0-byte 304, and a `.md` link still arrives as text rather than a download. Recorded as QD5 C2 P5 and a new Aim A2.5.
+Verified by driving it, not by reading it: `checks/splitshell.mjs` (23 assertions in headless Chrome — three frames, a rail click that moves only the page frame, the address bar following it, a rebuild that repaints only the page frame while a real `claude` keeps running in the chat pane) plus `tests/test_shell.py` (11, no browser). Green twice from a fresh browser; run back-to-back in a tab that held a shell moments ago, the refresh still lands but takes ~10s while the previous terminal socket is collected, which is the residue QD5 C4 P6 names. **And the wire itself, which was the thing JL actually felt.** He asked why opening a page takes so long; the server answers in 2 to 6 ms, so it was never the machine. Nothing had ever been compressed: a page is 172 KB, the index 244 KB, the largest page 451 KB, and `board.js` + `board.css` another 350 KB, all crossing a VS Code or ssh forward at full price. `servers/_host/live/base.py try_gzip()` now sends static text gzipped (GET only, above 1 KB) and `_send_html` does the same for the panes and the shell, which the static handler never sees. Measured 5.6× on a page, 7.2× on the index, 3.6× on the largest: a cold page open went 521 KB → 140 KB, and the split's first open 937 KB → 206 KB. HEAD is left alone on purpose — the panes poll with it and read only `Last-Modified` — and revalidation still answers a 0-byte 304, and a `.md` link still arrives as text rather than a download. Recorded as QD5 C2 P5 and a new Aim A2.5.
 
 **`/boards` took 95 seconds.** JL said he could not open it and I first read that as a network problem; it was `render_home()`. `rglob("board.md")` descends everywhere and the skip list was applied to the RESULTS, so the home page walked 366,951 entries — `.venv`, `node_modules`, `.git`, `_WorkSpace`, and the generated `board/` tree under every board — to find ten files. Warm 2.7 s, cold 95 s. Pruning `dirnames` in place during an `os.walk` leaves 11,670 entries and the page now answers in 0.12 s, measured three times in a row. Also this release: the split's url is now the PAGE's own url plus `?split` (JL: "why they don't share the same URL? It is very weird") with `/_shell?p=` kept as an alias; the shell carries a 30 px strip naming the board and the page, with 🏠, ☰ and 💬 — the same two gestures the one-document board has, where hiding a pane is a zero-width column and never an unloaded frame, so a terminal mid-command survives being put away; and the chat pane hides the drawer's own ✕ while keeping its `>_` / `←`, which is the GUI-to-TUI switch JL asked to keep. Refusing to mirror a frame that has not loaded also killed `/_shell?p=blank`, an address that named no board and 404'd on reload.
 
@@ -2526,7 +2576,7 @@ Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are t
 
 `src/page_phase.py` gains `owed_ledger()` and `render_ledger()`;
 `cli/pagephase.py` gains `--owed`. Full rationale in
-`../../page/page-workflows/haipipe-page-workflow/CHANGELOG.md` 0.20.0.
+`../../page/haipipe-page-workflow/CHANGELOG.md` 0.20.0.
 
 - `_cards()` and `_displays()` now carry `path` and `checked`; a new `_bibex()`
   returns one row per ENTRY where only a count existed before.
@@ -2550,7 +2600,7 @@ Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are t
   fences exempt as another pen's frozen transcriptions). The CHECK contract
   gained the lane; DRAFT and REVISE gained the exit checklist.
 - **The Word door cites what the LaTeX door cites** (JL 260820: "the word
-  plugin don't have the citation and reference"): export_word now converts a
+  workbench don't have the citation and reference"): export_word now converts a
   backtick key the page's own bibex defines into \citep{key} in the temp
   export copy, so md2docx renders the in-text label and the References
   section from .board-refs.bbl. Verified: "(Luo et al. 2026)" + References
@@ -2561,7 +2611,7 @@ Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are t
   before anything else. Law in page-run-contract.md §The fused ④+⑤ pass.
 
 - **The LaTeX projection reads like a document, not a dump** (JL 260820,
-  four rulings in one sitting): live/export.py's master now (1) boxes every
+  four rulings in one sitting): servers/workbench-page/export.py's master now (1) boxes every
   fence in a breakable gray tcolorbox at \footnotesize ("找一个框给框起来"),
   (2) converts a backtick key the page's own bibex defines into a real
   \citep so the References section prints (C4.P8.S2), (3) compiles with
@@ -2593,7 +2643,7 @@ Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are t
   rendered each as its own `<p>`, so the address JS bumped P per sentence
   and hardcoded S1. `src/body.py` now stamps the first sentence after a
   blank line (or any non-sentence emission) with `class="pnew"`, and
-  `assets/js/40-sentence/10-address.js` bumps P at stamps and S within —
+  `servers/_host/assets/js/40-sentence/10-address.js` bumps P at stamps and S within —
   C1.P2.S1…S8 verified in a real browser over CDP. A page built before the
   stamp has no `.pnew` and falls back to the old numbering.
 - **A display embeds under the FIRST Content sentence that cites it** (JL
@@ -2604,12 +2654,12 @@ Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are t
   citation per page embeds (`EMBED_SEEN`, cleared beside `CARDS`); later
   citations keep the chip. The inline `<object>` strips Chrome's PDF toolbar
   (`#toolbar=0&navpanes=0&view=FitH`); the card's object keeps it for
-  download/print. CSS `.dembed` in `assets/css/60-chips.css`.
+  download/print. CSS `.dembed` in `servers/haipipe-page/assets/css/60-chips.css`.
 
 - **`bullet-missing-note` is a hard check** (JL 260819: "remove all the
   legacy-grammar, I don't want to maintain the old things"):
   `src/plan_shape.py` gains `check_bullet_grammar` — every plan bullet owes a
-  folded `Note:`/`Answered:`/`Drawn:` line (`haipipe-plugin-outline` §✂️) —
+  folded `Note:`/`Answered:`/`Drawn:` line (`haipipe-workbench-page` §✂️) —
   and `checks/outline.py` fails on it, every plan, approved or not.
 - **The 🧭 plan surface's hierarchy, tuned live with JL (260819 night)**:
   paragraph rows carry their own `C<n>.P<m>` address (the renderer used to
@@ -2619,8 +2669,8 @@ Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are t
   `::before` drawer triangle is suppressed on bullet rows (the `::marker`
   kills never touched it).
 
-- **agree.py path findings zeroed (13)** — stale doc paths fixed: the BoardSkillBoard citations now resolve from the citing file (`../../../diagrams/…`; the QPs1-overall worked example had moved into `3-QPs-page-structure/`), board-local tokens (`board/QA`, `board/QC`, `display/<page name>/`, the generated site's `_assets/board.css`+`.js`, `display/<topic page name>/`) are written so the checker no longer misreads them as skills-tree citations, and every `skills/diagrams` mention names its plugin root in prose.
-- **`live/outline.py` prints the FULL address on every plan row** (`C1.P2.B1`,
+- **agree.py path findings zeroed (13)** — stale doc paths fixed: the BoardSkillBoard citations now resolve from the citing file (`../../../diagrams/…`; the QPs1-overall worked example had moved into `3-QPs-page-structure/`), board-local tokens (`board/QA`, `board/QC`, `display/<page name>/`, the generated site's `_assets/board.css`+`.js`, `display/<topic page name>/`) are written so the checker no longer misreads them as skills-tree citations, and every `skills/diagrams` mention names its workbench root in prose.
+- **`servers/workbench-page/outline.py` prints the FULL address on every plan row** (`C1.P2.B1`,
   not `P2.B1`) — JL 260819 reversed his 260817 trim: a row is quoted out of the
   pane, and there the C is the part that says where it lives.
 - **The mark is the LAST emoji on the line, end-anchored** — a first-hit scan
@@ -2636,8 +2686,8 @@ Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are t
   for a key nobody wrote.
 - **`src/plan_shape.check_coverage` gains the REVERSE join** — a display unit
   no bullet cites BY MARK is a COVERAGE failure (`retired:` opts out); README
-  `serves:` alone no longer clears it, matching `haipipe-page-outline` 0.5.0.
-- **`live/outline.py` folds every bullet's detail behind a click** — the row
+  `serves:` alone no longer clears it, matching `haipipe-page-structure` 0.5.0.
+- **`servers/workbench-page/outline.py` folds every bullet's detail behind a click** — the row
   shows HEAD + chips only; `Note:`/`Answered:`/`Drawn:` continuation text
   renders as a script-free details element with no marker (JL: "without '>'"),
   the summary hard-reset against the board shell's own drawer CSS (which had
@@ -2650,16 +2700,16 @@ Recorded on QD5, whose States now read 10 of 13 Aims met — A2.2 and A3.2 are t
   `PP03.v2` on its first run: 17 cards at `planned`, true when written and 13 four
   cards later. A value with no recipe reports `unchecked`, never as passing.
 - **`src/plan_shape.py` gains `check_serves`**, self-consistency test ② of
-  `haipipe-page-outline` §🚦: a card or display unit whose `serves:` names an
+  `haipipe-page-structure` §🚦: a card or display unit whose `serves:` names an
   address the plan does not have. Three of this board's own cards did on 260819,
   and a person read all three out by eye before any tool noticed.
 - **`src/plan_shape.py` + `checks/outline.py` gain `plan-shape-off-type`.** Every
   surviving Page Type declares a mode (`fixed` | `grammar` | `resolved`) in an
   `outline:` block under `metadata:`, and nothing read it, so a plan's division
-  shape was whatever its author felt like. `haipipe-page-outline` 0.2.0 made it
+  shape was whatever its author felt like. `haipipe-page-structure` 0.2.0 made it
   a machine exit that runs BEFORE the human tick; this is the check behind it.
   Pages with no `page-type:` key are the flexible default and return clean.
-- **`live/outline.py`**: a 🎯 aim chip opens (it was the one mark that never did);
+- **`servers/workbench-page/outline.py`**: a 🎯 aim chip opens (it was the one mark that never did);
   plan-declared Aims beat the page's when a plan renumbers divisions; a plan
   division is `## C<n>` and any other `## ` ENDS the list (the plan's trailing
   `## Aims` was rendering as 26 bullets of the last paragraph); a bare 🔢 whose
@@ -2678,7 +2728,7 @@ The page lifecycle's phase token and the first check on built page artifacts.
   `traversed_edges`, so receipts written before the rename audit identically.
 - `src/page_context.py`: `Related Board Pages` rows parse `EVIDENCE` and `PROBE`
   and both resolve to the same phase.
-- `assets/js/10-drawer/65-plugin-pageflow.js`: the stepper's second door is
+- `servers/workbench-page/assets/js/10-drawer/65-workbench-pageflow.js`: the stepper's second door is
   EVIDENCE, every phase read goes through `phaseId()`, and each door's job line
   now says what that phase DELIVERS.
 - NEW `src/page_evidence.py`, wired into `cli/check.py`'s per-page pass: reports
@@ -2694,7 +2744,7 @@ The page lifecycle's phase token and the first check on built page artifacts.
   `claim:`, `**Claim**:`, `- **Kind:**`) and aliases `Reader job`/`Evidence` to
   the contract's `caption-job`/`intake`. Reading only the bullet form called 25
   correctly-documented units litter and hid every `accepted:` tick, one of which
-  is genuinely stale. ⚠️ `live/plugview.py:122 _readme_rows` still has the
+  is genuinely stale. ⚠️ `servers/workbench-page/plugview.py:122 _readme_rows` still has the
   bullet-only rule, so the 🖼 tab shows those units with no claim, kind, or
   acceptance state; left alone because that file is another session's open work,
   and the two should share one parser.
@@ -3197,7 +3247,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 - Kept the design Board at `skills/diagrams/BoardSkillBoard-260722/`; a working
   design record still does not ship inside the skill.
 - Clarified Board placement: task, project, and paper Boards use the owning
-  unit's `diagram/`; plugin skill-design Boards share the plugin's
+  unit's `diagram/`; workbench skill-design Boards share the workbench's
   `skills/diagrams/`. `NN` sequences one topic series, so unrelated topics may
   each start at `01`.
 - Added `../agents/haipipe-board-reviewer-agent.md`, a read-only packaging of
@@ -3276,7 +3326,7 @@ boots, an image sent once and not again) and the 25 existing ones still passing.
 
 ⚠️ The cost of the split, worth naming because "open it in any Excalidraw" was an
 argument for owning the file: read straight off disk by the VS Code or Obsidian
-plugin, images show as missing, since the bytes are beside the scene rather than
+workbench, images show as missing, since the bytes are beside the scene rather than
 in it. Through the server they are there.
 
 ⚠️ Still open on `QA4a`: deleting an image element leaves its file in
@@ -3758,7 +3808,7 @@ QB3 and QA2 repointed from `build.py` to `src/common.py`.
 
 ## [0.12.1] — 2026-07-24
 
-**The drawer terminal stops smearing on emoji + CJK (QD3, JL's fig/image.png).** The cause left standing after 0.9.2's cell-metrics fix: claude's TUI counts 🟡✅💬 as 2 cells (modern wcwidth) while the vendored xterm.min.js only ships Unicode 6 width tables that say 1 — every emoji shifts the row, full-screen repaints land off-cell, and the frames interleave into the smear. Vendored `@xterm/addon-unicode11@0.8.0` (new `vendor/xterm/addon-unicode11.js`, whitelisted in serve.py's `serve_asset`, loaded right after xterm.min.js, `unicode.activeVersion = '11'`); verified offline that the v11 provider returns width 2 for 🟡✅💬汉 where V6 said 1. The stacked second cause fixed with it: Menlo has no CJK, fallback glyphs overflow the measured row — the drawer terminal's fontFamily now carries PingFang SC / Hiragino Sans GB / Microsoft YaHei and `lineHeight: 1.2` adds the headroom. Addon load is soft-fail (console warning, terminal still opens), so an older running serve.py cannot brick the drawer.
+**The drawer terminal stops smearing on emoji + CJK (QD3, JL's fig/image.png).** The cause left standing after 0.9.2's cell-metrics fix: claude's TUI counts 🟡✅💬 as 2 cells (modern wcwidth) while the vendored xterm.min.js only ships Unicode 6 width tables that say 1 — every emoji shifts the row, full-screen repaints land off-cell, and the frames interleave into the smear. Vendored `@xterm/addon-unicode11@0.8.0` (new `servers/workbench-studio/assets/vendor/xterm/addon-unicode11.js`, whitelisted in serve.py's `serve_asset`, loaded right after xterm.min.js, `unicode.activeVersion = '11'`); verified offline that the v11 provider returns width 2 for 🟡✅💬汉 where V6 said 1. The stacked second cause fixed with it: Menlo has no CJK, fallback glyphs overflow the measured row — the drawer terminal's fontFamily now carries PingFang SC / Hiragino Sans GB / Microsoft YaHei and `lineHeight: 1.2` adds the headroom. Addon load is soft-fail (console warning, terminal still opens), so an older running serve.py cannot brick the drawer.
 
 Also in 0.12.1: **`scrub_cjk_comments` scoped to `<style>`/`<script>` blocks.** Run page-wide it treated body prose as code: QD3's `GET /_board/asset/*` glob read as a `/*` comment-opener, and the span to the next `*/` (inside QE3) was silently dropped the moment CJK landed in between — five slides (QD4–QE2) gone. build.py's no-JS invariant caught it; body prose is now never scrubbed.
 
@@ -3815,7 +3865,7 @@ Also in 0.12.1: **`scrub_cjk_comments` scoped to `<style>`/`<script>` blocks.** 
 
 ## [0.8.0] — 2026-07-24
 
-**The gate shows the change (duplicating the VS Code extension, step 1).** JL: "what is the backend of the vscode claude plugin? I want to duplicate it." The backend is the `claude` binary over the stream-JSON agent protocol — exactly what the drawer already drives through `claude_agent_sdk`; the visible delta was the gate.
+**The gate shows the change (duplicating the VS Code extension, step 1).** JL: "what is the backend of the vscode claude workbench? I want to duplicate it." The backend is the `claude` binary over the stream-JSON agent protocol — exactly what the drawer already drives through `claude_agent_sdk`; the visible delta was the gate.
 
 - serve.py's permission ask events now carry `detail`: Edit → old/new strings; Write → the file's current content vs. the proposed; MultiEdit → per-edit pairs (capped at 6); Bash → the command. Truncated (4k/edit) — a gate preview, not a diff viewer.
 - the drawer renders it: − red blocks, + green blocks, commands verbatim, above Allow once / Always / Deny. Strip-scripts invariant unaffected (the gate only exists in the live layer).

@@ -58,7 +58,7 @@ PROFILE = Profile(
     conf_order=["GOOD", "OK", "ALIAS", "AMBIGUOUS", "MISS"],
     trusted=list(TRUSTED),
 
-    port=8080, url_env="INSNORM_URL",
+    port=8080, url_env="INSNORM_URL", prefix="/insulin",
     dest=INFO / "6-benchmark", examples=INFO / "5-api-examples",
 
     # A rapid analogue, a peakless basal, a premix, a therapeutic class, and a

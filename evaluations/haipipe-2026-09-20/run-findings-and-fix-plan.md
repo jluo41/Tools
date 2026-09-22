@@ -71,7 +71,7 @@ reusable defaults, and Steps remain inside their owning Run.
 
 **F04 · P2：Paper 的 journey、Page 操作和 Workflow 工作清单仍混用 Phase 术语。共享问题，实施 owner：Paper，依赖 Page。**
 
-证据：[Paper Workflow 的 Two meanings of workflow](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-workflow/SKILL.md:21) 明文定义 `journey phase` 和 `Page phase`，并列 P0–P4 与 CONTEXT–CHECK。[Paper 入口](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper/SKILL.md:227) 在 ideate/story/venue/section 中暴露 `[phase]`，240 行解释它是 Page phase。[Paper Plugin 的 Workflow grammar](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-plugin-paper/SKILL.md:370) 把 Workflow 解释为记录如何移动，展示的是计划 Run Types/Specs。
+证据：[Paper Workflow 的 Two meanings of workflow](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-workflow/SKILL.md:21) 明文定义 `journey phase` 和 `Page phase`，并列 P0–P4 与 CONTEXT–CHECK。[Paper 入口](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper/SKILL.md:227) 在 ideate/story/venue/section 中暴露 `[phase]`，240 行解释它是 Page phase。[Paper Plugin 的 Workflow grammar](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-workbench-paper/SKILL.md:370) 把 Workflow 解释为记录如何移动，展示的是计划 Run Types/Specs。
 
 影响：读者看到旅程位置、控制操作、计划种类和实际执行四种东西，却没有首先得到一个一致的 Workflow Run 清单。不过 P0–P4 作为领域导航图可以保留，Run Type 目录也可以存在；原报告不应仅凭其存在判为错误。
 

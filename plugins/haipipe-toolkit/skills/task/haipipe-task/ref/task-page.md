@@ -146,7 +146,7 @@ sentence's source line ends with its exact invisible stable backlink:
 <!-- realizes: C<n>.P<m>.B<k> -->
 ```
 
-Follow `haipipe-page-content` for paragraph-scoped writing commissions; a
+Follow `haipipe-page-writing` for paragraph-scoped writing commissions; a
 paragraph may realize several Bullets without pooling their evidence. A change
 to approved paragraph groups returns to SHAPE. This refines only the Task's
 Page Face, not its executable lifecycle or Result-store dialect. Diagrams,
@@ -195,7 +195,7 @@ fingerprint; never paste a regenerating result as an untraceable value. A
 page-local static source may enter the frozen Local Input. A cross-Folder fact
 must enter through a Supporting Run Result.
 
-The Run overview belongs to `haipipe-plugin-runs`; the evidence state belongs
+The Run overview belongs to `haipipe-workbench-page/ref/run-space.md`; the evidence state belongs
 to `outline/<stem>-evidence-items.md` and `outline/evidence/`. Neither becomes
 a Content division.
 

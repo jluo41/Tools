@@ -38,7 +38,7 @@ import sys
 CODEX_HOME = os.environ.get("CODEX_HOME", os.path.expanduser("~/.codex"))
 
 NOISE_PREFIXES = (
-    "<recommended_plugins>", "<skills_instructions>", "<in-app-browser-context",
+    "<recommended_workbenches>", "<skills_instructions>", "<in-app-browser-context",
     "<environment_context", "<permissions instructions>", "<system-reminder>",
     "<command-name>", "<local-command-stdout>", "Base directory for this skill",
     "<turn_aborted", "<user_shell_command", "<collaboration_mode",

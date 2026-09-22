@@ -1,5 +1,5 @@
 """The folded-page boundary (JL 260815): every subfolder of a page folder is a
-plugin, and discovery never enters one.
+workbench, and discovery never enters one.
 
 The rule this file pins down: `PAGENAME.match("SKILL.md")` is true, so without
 the boundary an `outline/skill/` lane holding a unit snapshot surfaces as a ghost
@@ -38,18 +38,18 @@ class PageFolderBoundary(unittest.TestCase):
         touch(self.d, "QB-delivery/QB4-overall/QB4-overall.md")
         self.assertEqual(self.names(), ["QA1-concepts.md", "QB4-overall.md"])
 
-    def test_plugin_content_is_never_a_page(self):
+    def test_workbench_content_is_never_a_page(self):
         touch(self.d, "QC/Skill-3-haipipe-page/Skill-3-haipipe-page.md")
         # the hazard this rule exists for: a snapshot whose name matches PAGENAME
         touch(self.d, "QC/Skill-3-haipipe-page/outline/skill/haipipe-page/SKILL.md")
-        # ordinary plugin material that happens to look page-shaped
+        # ordinary workbench material that happens to look page-shaped
         touch(self.d, "QC/Skill-3-haipipe-page/slide/source/QA4-deck.md")
         self.assertEqual(self.names(), ["Skill-3-haipipe-page.md"])
 
     def test_child_pages_keep_nesting(self):
         touch(self.d, "1-work/S-Paper-1a/S-Paper-1a.md")
         touch(self.d, "1-work/S-Paper-1a/S-Paper-1b/S-Paper-1b.md")
-        touch(self.d, "1-work/S-Paper-1a/draw/S-Paper-1x.md")  # plugin, not a child
+        touch(self.d, "1-work/S-Paper-1a/draw/S-Paper-1x.md")  # workbench, not a child
         self.assertEqual(self.names(), ["S-Paper-1a.md", "S-Paper-1b.md"])
 
     def test_stray_file_beside_the_pages_own_md_is_not_a_page(self):

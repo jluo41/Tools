@@ -18,7 +18,7 @@ Turn an insulin product name into the parameters of its action curve.
     normalize(["basal insulin"], dia_hours=[7.0])      # a per-patient override
     normalize(["Novolin R"], delivery=["iv"])          # the route the log stated
 
-    curl -sS localhost:8080/normalize -H 'content-type: application/json' \
+    curl -sS localhost:8070/insulin/normalize -H 'content-type: application/json' \
          -d '{"item":"Insulin lispro-aabc"}'
 
 Member of the `haipipe-norm` family, and the second half of a CHAIN with
@@ -195,31 +195,35 @@ LAYOUT
       client.py     normalize() + the local|http transport switch
       pk_table.py   17 products, 37 aliases, 2 combinations, each with its cite
       __init__.py
-    server.py       FastAPI: /healthz /normalize /normalize/batch
-    run_server.sh   starts it on :8080 from a bare shell
     test_insnorm.py 15 resolver tests
-    test_server.py  11 service tests
+
+  Tools/plugins/haipipe-utils/servers/       the wire, plugin-level (servers/README.md)
+    _host/serve.py         one host, every noun under one port; this one at /insulin
+    api-insulin/
+      server.py            FastAPI: /healthz /normalize /normalize/batch
+      tests/test_server.py 11 service tests
 ```
 
 Examples for both halves of the chain live in
-`../describe-medication/examples/`.
+`Tools/plugins/haipipe-utils/servers/api-medication/examples/`.
 
 
 HOW TO USE IT
 --------------------------------------------------------------------------------
 
 ```bash
-Tools/plugins/haipipe-utils/skills/describe-insulin/run_server.sh
+Tools/plugins/haipipe-utils/servers/_host/run.sh
 curl -sS "$INSNORM_URL/normalize/batch" -H 'content-type: application/json' \
   -d '{"items":["Insulin lispro","Insulin glargine"]}'
 
 python -c "from insnorm import normalize; print(normalize(['basal insulin'], dia_hours=[7]))"
 
-cd Tools/plugins/haipipe-utils/skills/describe-insulin
-PYTHONPATH=. python test_insnorm.py && python test_server.py
+cd Tools/plugins/haipipe-utils
+PYTHONPATH=skills/describe-insulin python skills/describe-insulin/test_insnorm.py
+INSNORM_URL=http://127.0.0.1:8070/insulin python servers/api-insulin/tests/test_server.py
 ```
 
-`INSNORM_URL` (default `http://127.0.0.1:8080`), `INSNORM_TRANSPORT`,
-`INSNORM_MAX_BATCH`, `INSNORM_PORT`.
+`INSNORM_URL` (default `http://127.0.0.1:8070/insulin`), `INSNORM_TRANSPORT`,
+`INSNORM_MAX_BATCH`; the host's port is `HAIPIPE_UTILS_PORT` (default 8070).
 
 NOT authenticated, binds 127.0.0.1. Insulin logs are PHI.

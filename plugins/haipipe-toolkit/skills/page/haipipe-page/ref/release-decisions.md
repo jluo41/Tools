@@ -4,7 +4,7 @@ This is the Page-family authority for interpreting existing acceptance and
 release decisions. It complements the Run identities in `page-run-families.md`.
 A Workflow is a list of Runs. Context collection, adoption, and whole-Page
 Check are controller operations unless independently commissioned under a
-complete Run contract. A feedback Step, retry, gate, or legacy phase label
+complete Run contract. A feedback Step, retry, gate, or legacy Run names
 does not allocate a Run.
 
 ## Profile and decision precedence

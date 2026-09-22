@@ -2,9 +2,13 @@
 name: paper-analyzer
 description: Use when deeply analyzing a single paper and producing structured notes on claims, methods, figures, evaluation, strengths, limitations, and related work.
 metadata:
-  version: "0.2.1"
-  last_updated: "2026-09-20"
+  version: "0.2.2"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  haipipe:
+    vendored_from: https://github.com/Boom5426/Nature-Paper-Skills@44cff42
+    vendored_on: "2026-09-22"
+    local_changes: adapted SKILL.md (HAI Pipe adapter) and added CHANGELOG
 ---
 # Paper Analyzer
 

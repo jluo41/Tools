@@ -28,7 +28,7 @@ the person, who decides afterwards what to change in `skills/page`.
 ```text
 one Page session (Codex · Claude · Studio Chat)
         ↓  cli/session_dump.py           read-only intake
-every user turn ⟷ the assistant's response ⟷ skills, phases, files it touched
+every user turn ⟷ the assistant's response ⟷ skills, Runs, files it touched
         ↓  this function                 read, classify, write
 skills/page/feedback/<YYMMDD>-<session-slug>.md
         ↓  the person reads              (outside this function)
@@ -86,7 +86,7 @@ For each user turn `Uxx` build three columns before writing anything:
 
 ```text
 the person's words        verbatim, original language, nothing paraphrased
-the assistant's response  what it said it understood · which skill or phase it
+the assistant's response  what it said it understood · which skill or Run it
                           loaded · which files it wrote · which Runs it opened
 the outcome               accepted · corrected in the next turn · repeated later
 ```
@@ -95,7 +95,7 @@ Then tag the turn with exactly one primary tag:
 
 | Tag | Meaning | Becomes a wanted change? |
 |---|---|---|
-| `CONFIG` | how the Page machinery should behave: Draft, Evidence or Run Space, Serve and links, RP/RE/RD Runs, phases, delivery (LaTeX, Word, CoWork copy), plugins, naming, reply shape | yes |
+| `CONFIG` | how the Page machinery should behave: Draft, Evidence or Run Space, Serve and links, RP/RE/RD Runs, Runs, delivery (LaTeX, Word, CoWork copy), workbenches, naming, reply shape | yes |
 | `CORRECTION` | the person re-explained, pushed back, or said it again | yes, and record the misreading |
 | `CONTENT` | the paper's prose, argument, evidence, or citations | no; kept in §5 so it is not mistaken for skill feedback |
 | `INSTRUCTION` | a one-off task with no preference in it | no |

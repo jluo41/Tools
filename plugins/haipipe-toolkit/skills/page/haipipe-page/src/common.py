@@ -176,7 +176,7 @@ def scene_text(scene) -> str:
     """The ONE way an Excalidraw scene is serialized (JL 260816).
 
     Two writers used to disagree: `cli/draw.py` wrote `indent=2` with raw
-    UTF-8, `live/xcal.py` wrote `indent=1` with escapes, so a scene the split
+    UTF-8, `servers/workbench-studio/xcal.py` wrote `indent=1` with escapes, so a scene the split
     had saved never round-tripped through the CLI and every `draw.py retire`
     read the difference as a phantom concurrent edit. Both call this now, so a
     scene keeps one shape whichever hand last touched it. Raw UTF-8 keeps a
@@ -358,7 +358,7 @@ SNAME = re.compile(r"^S[A-Za-z0-9]*[-_A-Za-z0-9]*\.md$")
 # `Design-<unit>-<slug>` replaced `Skill-<unit>-<slug>` on this family's own
 # board (JL 260815: "we don't have the page for the Skill anymore. It will be
 # the design"): a unit's page is a DESIGN page holding the argument plus the
-# unit's material in plugins. `Skill-` stays legal so archives and other
+# unit's material in workbenches. `Skill-` stays legal so archives and other
 # families' boards keep parsing.
 # 260820, Application runtime boards. A ONE-OR-TWO letter family followed by a
 # DIGIT: MT00-meta, D01-<slug>, I01, K01, W01 on an InsightBoard; BR00-brief,
@@ -470,11 +470,11 @@ def _page_home(p):
     return (p / f"{p.name}.md").is_file()
 
 
-def _in_plugin(p, d):
-    """True when p is not board material because a PLUGIN holds it.
+def _in_workbench(p, d):
+    """True when p is not board material because a WORKBENCH holds it.
 
     Inside a folded page's folder every subfolder that is not itself a folded
-    page is a plugin (JL 260815: "each subfolder will also be the plugin in
+    page is a workbench (JL 260815: "each subfolder will also be the workbench in
     that page"), and discovery never enters one. Child pages keep nesting, so
     a lifecycle tree still works. A page file lying directly beside the page's
     own md is a stray for the same reason. Without this rule an `outline/skill/` lane
@@ -501,7 +501,7 @@ def q_files(d):
         if any(s.startswith(("_", ".")) or s == "fig"
                for s in p.relative_to(d).parts[:-1]):
             continue
-        if _in_plugin(p, d):
+        if _in_workbench(p, d):
             continue
         yield p
 
@@ -526,7 +526,7 @@ def page_files(d):
             return False
         return (not any(s.startswith(("_", ".")) or s in {"fig", "board"}
                         for s in p.relative_to(d).parts[:-1])
-                and not _in_plugin(p, d))
+                and not _in_workbench(p, d))
 
     prefixes = tuple("QSABCDEFGHIJKLMNOPRTUVWXYZ") + ("Agent", "Meeting", "Design")
     if board_kind(d) in {"task-block", "discovery-block"}:

@@ -22,7 +22,7 @@
 ## 1.0.0 — 2026-08-31
 
 - Migrated from `haipipe-page-for-meta` to phase-owned `haipipe-insight-meta`.
-- The I0 skill now owns Meta's Page Face, Task Face, plugin profile, GI0, and handoff.
+- The I0 skill now owns Meta's Page Face, Task Face, workbench profile, GI0, and handoff.
 
 ## 0.3.0 — 2026-08-28
 

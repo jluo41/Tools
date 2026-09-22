@@ -3,6 +3,13 @@ discovery agents — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match the skill frontmatter `version:`. Newest first.
 
+## 2026-09-21 · Block-as-Board checkpoints
+
+- Creator 1.19.0, orchestrator 2.9.0, and reviewer 1.11.0 require the
+  Discovery Board source/projection at structural and terminal handoffs.
+- Keep Job headings in the managed Board span while the direct BJTR tree
+  remains membership authority; Task and Run content stays in its owner.
+
 ## 2026-09-13 · Page-native synthesis
 
 - Orchestrator 2.8.0 and creator 1.18.0 distinguish Page-owned `rp00`/`rpNN`
@@ -49,7 +56,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 - Orchestrator 2.5.0, creator 1.14.0, and reviewer 1.8.0 now distinguish
   SCOPE, optional PREPARE, one-Subject ACQUIRE Runs, L3 SYNTHESIZE, and CLOSE.
 - Citation/Bib aggregation routes through the Outline Evidence Workspace;
-  `haipipe-plugin-evidence` is compatibility-only.
+  `haipipe-workbench-evidence` is compatibility-only.
 
 ## 2026-09-01 — Explicit BJTR addresses
 

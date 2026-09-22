@@ -73,7 +73,7 @@ Published Results and closed history are immutable.
 
 ## Page interaction
 
-Read the [interactive profile](../../../page/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md)
+Read the [interactive profile](../../../page/haipipe-page-workflow/ref/interactive-writing-run.md)
 for concrete journals, working state and human closure.
 
 - Structure `rp-struct-01` combines SHAPE and SURVEY; participants share that
@@ -98,7 +98,7 @@ Delegated paragraph-writing uses its separate profile and acceptance contract.
 
 ## Insight binding and execution version
 
-The [Insight item contract](../../../task/page-types/haipipe-page-insight/ref/instance-items.md)
+The [Insight item contract](../../../insight/haipipe-page-insight/ref/instance-items.md)
 owns one immutable `riNN` binding to a base R Ticket/hash plus frozen
 research data, question, target and acceptance. Cross-owner evidence uses:
 
@@ -117,7 +117,7 @@ explicit execution-history view with its own count. Always pin the exact
 execution version/hash when consuming evidence. A base recipe is not another
 executed Run merely because RI references it. Separately commissioned upstream
 production has its own native receipt and is counted separately.
-Read [Task calls](../../../task/page-types/haipipe-page-insight/ref/task-calls.md)
+Read [Task calls](../../../insight/haipipe-page-insight/ref/task-calls.md)
 for actual recipe invocation/isolation support; a contract does not create an
 unimplemented input override.
 

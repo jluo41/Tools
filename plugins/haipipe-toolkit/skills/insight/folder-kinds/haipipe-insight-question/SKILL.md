@@ -108,7 +108,7 @@ Routine resource updates and GI evaluations remain control records. An accepted
 Run Result satisfies only its declared target; Page CHECK/CLOSE and the
 Folder's GI conditions still govern citation and register settlement.
 
-## Plugins
+## Workbenches
 
 - `outline` required, including Context links to an originating Brief need;
 - no active PageX or Probe lane: a register records identity and state, not

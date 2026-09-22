@@ -54,8 +54,8 @@ BEFORE it (validate the packet) and AFTER it (store the receipt, audit it).
 
 The controller dispatches a producer for each coordinate from its `PRODUCER_AGENTS` map
 (`haipipe-board/ref/page-lifecycle.workflow.js`): `haipipe-page-context-agent`,
-`haipipe-page-outline-agent`, `haipipe-page-evidence-agent`, and
-`haipipe-page-content-agent`; `haipipe-page-creator-agent` is the fallback for
+`haipipe-page-structure-agent`, `haipipe-page-evidence-agent`, and
+`haipipe-page-writing-agent`; `haipipe-page-creator-agent` is the fallback for
 a coordinate the map does not name. A mechanical snapshot worker builds each version, and
 `haipipe-page-check-agent` judges CHECK. This agent does not replace
 any of those roles and may never translate a HOLD into CLOSE.
@@ -67,7 +67,7 @@ describe the Workflow Runtime/pass that coordinates them.
 ## Input
 
 Load `../../page/haipipe-page/SKILL.md` and
-`../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md`. Require:
+`../../page/haipipe-page-workflow/ref/page-run-contract.md`. Require:
 
 ```text
 run_id · board · page · start_phase · intent

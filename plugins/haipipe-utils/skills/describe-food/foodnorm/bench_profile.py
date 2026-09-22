@@ -55,7 +55,7 @@ PROFILE = Profile(
     conf_order=["MEASURED", "ESTIMATED", "WEAK", "MISS"],
     trusted=["MEASURED", "ESTIMATED"],
 
-    port=8077, url_env="FOODNORM_URL",
+    port=8077, url_env="FOODNORM_URL", prefix="/food",
     dest=INFO / "6-benchmark", examples=INFO / "5-api-examples",
 
     # A plain item, a semicolon list, a stated portion, a carb declaration

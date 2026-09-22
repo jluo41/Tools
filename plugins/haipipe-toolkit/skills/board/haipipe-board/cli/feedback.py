@@ -12,7 +12,7 @@ stays read-only toward other pages. Rows are DERIVED and VERBATIM: the head,
 the ids, the Round's own `Feedback:` and `Work:` sentences, and the full
 concern of each parent R-row (0.17.4; head-only rows lost the substance, JL
 260831). `landed:` is the page's pen and survives a re-run.
-The register is outline/<stem>-feedback.md, one file grouped by Round (haipipe-plugin-outline 0.17.0).
+The register is outline/<stem>-feedback.md, one file grouped by Round (haipipe-workbench-page 0.17.0).
 """
 import argparse, re, sys
 from datetime import date
@@ -52,7 +52,7 @@ def collect(page_md: Path, board: Path) -> list[str]:
                 g += [f"**Order** · {verdict[3]}", ""]
             g += [f"**Gate** · {verdict[2]}", ""]
         for r in rows:
-            # one RECORD per row, the folder's one shape (haipipe-plugin-outline 0.18.0);
+            # one RECORD per row, the folder's one shape (haipipe-workbench-page 0.18.0);
             # Feedback / Work are the Round's words, copied whole (0.17.4); the
             # parent R-row's concern is folded detail under the card, not a row
             g += [f"### {r['id']} · {r['head']}",

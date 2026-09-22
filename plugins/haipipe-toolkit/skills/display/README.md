@@ -30,7 +30,7 @@ its unit path and owns the resulting acceptance decision. A Page Result unit use
 source unit into generated delivery files. The View caller keeps its unit at the
 View-owned path in the shared contract.
 
-A Board Page talk is authored by the `haipipe-plugin-delivery` Slides lane from
+A Board Page talk is authored by the `haipipe-workbench-page` Slides lane from
 the page and framed in its own tab; it is not a display renderer's job.
 
 ## Unit and Run boundary

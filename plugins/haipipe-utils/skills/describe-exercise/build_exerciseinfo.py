@@ -5,7 +5,7 @@ GENERATED. The producer is this file. Rerun after any Exercise frame is recooked
 or any describe-exercise change:
 
     source .venv/bin/activate && source env.sh
-    Tools/plugins/haipipe-utils/skills/describe-exercise/run_server.sh   # in another shell
+    Tools/plugins/haipipe-utils/servers/_host/run.sh   # in another shell
     python <this file>
 
 Mirrors _FoodInfo/1-per-cohort/, and adds the half food's pages do not have: the
@@ -287,7 +287,7 @@ def main():
         tagline="Every cohort's exercise data, in and out, on one page each.",
         producer="Tools/plugins/haipipe-utils/skills/describe-exercise/build_exerciseinfo.py",
         rerun=("source .venv/bin/activate && source env.sh\n"
-               "Tools/plugins/haipipe-utils/skills/describe-exercise/run_server.sh   # another shell\n"
+               "Tools/plugins/haipipe-utils/servers/_host/run.sh   # another shell\n"
                "python Tools/plugins/haipipe-utils/skills/describe-exercise/build_exerciseinfo.py"),
         dest=OUT, stats=stats, pages=pages, sections=SECTIONS)
     print(f"\nwrote {rep['dest']}  ·  {rep['cohorts']} cohorts  ·  "

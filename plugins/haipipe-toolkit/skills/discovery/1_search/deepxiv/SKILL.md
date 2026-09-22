@@ -4,9 +4,13 @@ description: Search and progressively read open-access academic papers through D
 allowed-tools: Bash(*), Read, Write
 metadata:
   argument_hint: "[query-or-paper-id]"
-  version: "0.1.1"
-  last_updated: "2026-09-04"
+  version: "0.1.2"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  haipipe:
+    vendored_from: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53
+    vendored_on: "2026-09-22"
+    local_changes: adapted SKILL.md (HAI Pipe adapter) and added CHANGELOG; synchronized against this ARIS tip on 2026-09-08
 ---
 
 # DeepXiv Paper Search & Progressive Reading

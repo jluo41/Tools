@@ -53,7 +53,7 @@ The rendered address locates the passage in a copied prompt. It is recomputed on
 haipipe-sentence           haipipe-board
 ─────────────────────            ──────────────────────────────
 what a sentence IS               rendering it (src/body.py)
-what may attach, and how         the source helpers (live/write.py)
+what may attach, and how         the source helpers (servers/haipipe-board/write.py)
 which gesture reaches which      the controls (assets/js/40-sentence/)
 where a write may land           the checker (cli/check.py)
 the two anchors                  the recorded drive (tests/drive_sentence.py)
@@ -85,7 +85,7 @@ There is no comment box at the bottom of the page and never will be: a queue dow
 Candidate sentences in the Outline Draft Space do not use this published
 sentence address grammar or a paragraph Comments composer. Copy the saved
 `C.P.B` sentence into chat and give feedback through the active Page Run;
-`haipipe-plugin-outline/ref/content-preview.md` owns that rehearsal boundary.
+`haipipe-workbench-page/ref/content-preview.md` owns that rehearsal boundary.
 Historical signed review lanes remain embedded in the Outline Markdown but are
 not rendered.
 
@@ -135,7 +135,7 @@ paths, location, quoted text, and available attached context, followed by a
 blank `My request:` field. Paste that into an agent conversation and add the
 requested action. Copying does not open chat or write to Markdown. The Page
 has no Comment, Chat, Card creation, or Edit control. Evidence-card viewing,
-folding, and navigation remain available. Explicit plugin workspaces have
+folding, and navigation remain available. Explicit workbench workspaces have
 their own controls.
 
 
@@ -223,4 +223,4 @@ haipipe-sentence/
 ```
 
 Reads `haipipe-board/ref/board-form.md` → Body grammar as the authority; owns no scripts.
-The named next step (QC1b §1): the drawer's lane instructions in `live/chat.py` become this contract's consumer instead of a second prose copy.
+The named next step (QC1b §1): the drawer's lane instructions in `servers/workbench-studio/chat.py` become this contract's consumer instead of a second prose copy.

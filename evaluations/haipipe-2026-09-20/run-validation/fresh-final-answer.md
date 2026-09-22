@@ -57,7 +57,7 @@ Contract contradiction follow-up
 
 Four concrete contradictions were found during the audit and corrected by the coordinating task. I re-read the edited source sections:
 
-- `plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-runs/SKILL.md:107` now uses the current `$OUTPUT_ROOT/<task>/results/<run>` and Task notebook paths, with historical storage separately labeled.
+- `plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/run-space.md:107` now uses the current `$OUTPUT_ROOT/<task>/results/<run>` and Task notebook paths, with historical storage separately labeled.
 - `plugins/haipipe-toolkit/skills/0_utils/table-task/SKILL.md:265` now requires planned receipts for Ready and explicitly keeps missing-receipt rows Held.
 - `plugins/haipipe-toolkit/skills/task/haipipe-task/ref/hierarchy.md:187` and its Mandatory rules now distinguish mirrored consumer stores from self-serving physical Task paths and retain historical lookup.
 - `plugins/haipipe-toolkit/skills/task/haipipe-task/ref/task-page.md:283` now resolves displays through their governed Result envelope to the caller-authorized unit.

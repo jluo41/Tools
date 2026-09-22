@@ -42,7 +42,7 @@ reversed and the real reduction happened by retirement instead.
 - RETIRED to `_todo/`, per the toolkit's park-don't-delete convention:
   `haipipe-display-poster`, `haipipe-display-slides`, their paper-side selection
   doors `paper-poster` and `paper-slides`, and `ref/content-plan-spec.md`, which
-  served that chain alone. A board page's talk is the slide plugin's deck, and
+  served that chain alone. A board page's talk is the slide workbench's deck, and
   `html-ppt` stays because that deck links its assets.
 - The ✒️ TeX-native method was NAMED in the routing tables as hand-authored and
   skill-less; the entry above closed that gap the same day.

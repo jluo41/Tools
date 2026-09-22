@@ -92,7 +92,7 @@ Routine resource updates and GI evaluations remain control records. An accepted
 Run Result satisfies only its declared target; Page CHECK/CLOSE and the
 Folder's GI conditions still govern citation and register settlement.
 
-## Plugins
+## Workbenches
 
 - `outline` required, including semantic parent-row lineage and the
   Supporting/local Result evidence graph for an exact Task item RF parent;

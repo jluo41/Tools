@@ -9,61 +9,72 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
-# Current phases are CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK. Historical
-# PROBE/DRAFT/REVISE/COMPILE tokens remain auditable; they are never emitted by
-# the current controller.
-PHASE_ALIASES = {"PROBE": "EVIDENCE"}
-PHASES = {
-    "CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "CHECK",
-    "DRAFT", "REVISE", "COMPILE",
+# The Page lifecycle is its Run list: context → structure ⇄ evidence → writing →
+# check. Receipts written before 2026-09-22 carry uppercase tokens (CONTEXT,
+# OUTLINE, PROBE, DRAFT, REVISE, COMPILE, CONTENT, CHECK); `run_token()` maps them
+# so immutable historical receipts stay auditable. Steps keep their names.
+LEGACY_RUN = {
+    "CONTEXT": "context", "OUTLINE": "structure", "PROBE": "evidence",
+    "EVIDENCE": "evidence", "DRAFT": "writing", "REVISE": "writing",
+    "COMPILE": "writing", "CONTENT": "writing", "CHECK": "check",
 }
+RUNS = {"context", "structure", "evidence", "writing", "check"}
 TERMINAL_ROUTES = {"CLOSE", "HOLD"}
-CURRENT_PHASE_CYCLES = {
-    "CONTEXT": {"PREPARE"},
-    "OUTLINE": {"SHAPE", "SURVEY"},
-    "EVIDENCE": {"LAND", "EMBED"},
-    "CONTENT": {"WRITE"},
-    "CHECK": {"CHECK"},
+CURRENT_RUN_CYCLES = {
+    "context": {"PREPARE"},
+    "structure": {"SHAPE", "SURVEY"},
+    "evidence": {"LAND", "EMBED"},
+    "writing": {"WRITE"},
+    "check": {"CHECK"},
 }
 PAGE_RULINGS = {"none", "domain-gate", "local", "legacy-default"}
-# Current edges are listed with compatibility edges on OUTLINE/CHECK. The
-# historical rows keep immutable receipts auditable after DRAFT/REVISE/COMPILE
-# were folded into CONTENT.
+# Legal routes by Run key. Historical DRAFT/REVISE/COMPILE receipts normalise to
+# `writing`, whose row is the union of their old edges, so they still audit.
 LEGAL_ROUTES = {
-    "CONTEXT": {"CONTEXT", "OUTLINE", "HOLD"},
-    "OUTLINE": {"CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT", "DRAFT", "HOLD"},
-    "EVIDENCE": {"CONTEXT", "EVIDENCE", "OUTLINE", "CONTENT", "HOLD"},
-    "CONTENT": {"CONTEXT", "CONTENT", "OUTLINE", "EVIDENCE", "CHECK", "HOLD"},
-    "DRAFT": {"DRAFT", "OUTLINE", "REVISE", "CHECK", "HOLD"},
-    "REVISE": {"REVISE", "COMPILE", "OUTLINE", "EVIDENCE", "DRAFT", "CHECK", "HOLD"},
-    "COMPILE": {"COMPILE", "CHECK", "REVISE", "HOLD"},
-    "CHECK": {
-        "CLOSE", "CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT",
-        "DRAFT", "REVISE", "HOLD",
-    },
+    "context": {"context", "structure", "HOLD"},
+    "structure": {"context", "structure", "evidence", "writing", "HOLD"},
+    "evidence": {"context", "evidence", "structure", "writing", "HOLD"},
+    "writing": {"context", "writing", "structure", "evidence", "check", "HOLD"},
+    "check": {"CLOSE", "context", "structure", "evidence", "writing", "HOLD"},
 }
 
 
-def phase_token(value: Any) -> Any:
-    """Normalize one phase or route token; PROBE reads as EVIDENCE (260901)."""
+def run_token(value: Any) -> Any:
+    """Normalize one Run or route token: legacy uppercase words map to Run keys,
+    CLOSE/HOLD stay uppercase, anything else lowercases and audits as unknown."""
     if isinstance(value, str):
-        return PHASE_ALIASES.get(value.strip().upper(), value.strip().upper())
+        raw = value.strip()
+        if raw.upper() in TERMINAL_ROUTES:
+            return raw.upper()
+        if raw.lower() in RUNS:
+            return raw.lower()
+        return LEGACY_RUN.get(raw.upper(), raw.lower())
     return value
+
+
+def _raw(value: Any) -> str:
+    """The receipt's own token, uppercased and untranslated, for DRAFT-era rules."""
+    return str(value or "").strip().upper()
+
+
+def receipt_run(receipt: dict) -> Any:
+    """The receipt's Run: `run` (current) or `phase` (receipts before 2026-09-22)."""
+    return receipt.get("run", receipt.get("phase", ""))
 
 
 def _legacy_probe(receipts: list[Any]) -> bool:
     """Detect the short-lived PROBE-as-EVIDENCE receipt shape."""
     return any(
         isinstance(r, dict)
-        and str(r.get("phase", "")).strip().upper() == "PROBE"
+        and str(receipt_run(r)).strip().upper() == "PROBE"
         and str(r.get("route", "")).strip().upper() == "REVISE"
         for r in receipts
     )
 
 
 def _trace_token(value: Any, legacy_probe: bool = False) -> Any:
-    token = phase_token(value)
-    return "EVIDENCE" if legacy_probe and token == "PROBE" else token
+    token = run_token(value)
+    return "evidence" if legacy_probe and str(token).upper() == "PROBE" else token
 
 
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -221,8 +232,9 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             _finding("missing-packet", "run", "the original raw-material packet is required")
         )
     else:
-        for field in ("run_id", "board", "page", "start_phase", "intent"):
-            if not str(packet.get(field, "")).strip():
+        for field in ("run_id", "board", "page", "start_run", "intent"):
+            value = packet.get(field, "") if field != "start_run" else (packet.get("start_run") or packet.get("start_phase", ""))
+            if not str(value).strip():
                 findings.append(
                     _finding("missing-packet-field", "run", f"packet.{field} is required")
                 )
@@ -294,19 +306,19 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                 )
             )
 
-    start_phase = _trace_token(str(packet.get("start_phase", "")), legacy_probe)
-    if start_phase and start_phase not in PHASES:
+    start_run = _trace_token(str(packet.get("start_run") or packet.get("start_phase", "")), legacy_probe)
+    if start_run and start_run not in RUNS:
         findings.append(
-            _finding("unknown-start-phase", "run", f"unknown packet start_phase {start_phase}")
+            _finding("unknown-start-run", "run", f"unknown packet start_run {start_run}")
         )
-    if start_phase and isinstance(receipts[0], dict):
-        first_phase = _trace_token(str(receipts[0].get("phase", "")), legacy_probe)
-        if first_phase != start_phase:
+    if start_run and isinstance(receipts[0], dict):
+        first_run = _trace_token(str(receipt_run(receipts[0])), legacy_probe)
+        if first_run != start_run:
             findings.append(
                 _finding(
-                    "start-phase-mismatch",
+                    "start-run-mismatch",
                     0,
-                    f"packet start_phase {start_phase} does not match first phase {first_phase}",
+                    f"packet start_run {start_run} does not match first Run {first_run}",
                 )
             )
     packet_gate = packet.get("human_gate")
@@ -345,7 +357,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             findings.append(_finding("receipt-not-object", index, "receipt must be an object"))
             continue
         receipt = raw
-        phase = _trace_token(str(receipt.get("phase", "")), legacy_probe)
+        step_run = _trace_token(str(receipt_run(receipt)), legacy_probe)
         route = _trace_token(str(receipt.get("route", "")), legacy_probe)
         cycle = str(receipt.get("cycle", "")).strip().upper()
         next_cycle = str(receipt.get("next_cycle", "")).strip().upper()
@@ -364,16 +376,16 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             findings.append(
                 _finding("step-sequence", index, f"step must be {index + 1}")
             )
-        if phase not in PHASES:
-            findings.append(_finding("unknown-phase", index, f"unknown phase {phase!r}"))
-        elif route not in LEGAL_ROUTES[phase]:
+        if step_run not in RUNS:
+            findings.append(_finding("unknown-run", index, f"unknown Run {step_run!r}"))
+        elif route not in LEGAL_ROUTES[step_run]:
             findings.append(
-                _finding("illegal-route", index, f"{phase} cannot route to {route or '<missing>'}")
+                _finding("illegal-route", index, f"{step_run} cannot route to {route or '<missing>'}")
             )
-        if phase == "EVIDENCE" and route == "CONTENT" and cycle != "EMBED":
+        if step_run == "evidence" and route == "writing" and cycle != "EMBED":
             findings.append(_finding(
-                "evidence-content-without-embed", index,
-                "Only EVIDENCE/EMBED may hand an approved evidence fold to CONTENT",
+                "evidence-writing-without-embed", index,
+                "Only the evidence Run's EMBED step may hand an approved evidence fold to writing",
             ))
         if route in TERMINAL_ROUTES and "next_cycle" in receipt:
             findings.append(
@@ -384,7 +396,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                 )
             )
         elif next_cycle:
-            allowed_cycles = CURRENT_PHASE_CYCLES.get(route, set())
+            allowed_cycles = CURRENT_RUN_CYCLES.get(route, set())
             if allowed_cycles and next_cycle not in allowed_cycles:
                 findings.append(
                     _finding(
@@ -394,13 +406,13 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                     )
                 )
         if cycle:
-            phase_cycles = CURRENT_PHASE_CYCLES.get(phase, set())
-            if phase_cycles and cycle not in phase_cycles:
+            run_cycles = CURRENT_RUN_CYCLES.get(step_run, set())
+            if run_cycles and cycle not in run_cycles:
                 findings.append(
                     _finding(
-                        "phase-cycle-mismatch",
+                        "run-cycle-mismatch",
                         index,
-                        f"phase {phase} requires cycle in {sorted(phase_cycles)}, got {cycle}",
+                        f"Run {step_run} requires cycle in {sorted(run_cycles)}, got {cycle}",
                     )
                 )
             if route not in TERMINAL_ROUTES and not next_cycle:
@@ -408,7 +420,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                     _finding(
                         "missing-next-cycle",
                         index,
-                        f"current {phase}/{cycle} receipt routing to {route} requires next_cycle",
+                        f"current {step_run}/{cycle} receipt routing to {route} requires next_cycle",
                     )
                 )
         if not actor:
@@ -469,7 +481,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                 _finding("failed-work-not-held", index, f"status {status} must route to HOLD")
             )
 
-        if phase == "CHECK":
+        if step_run == "check":
             if role not in {"judge", "controller"}:
                 findings.append(
                     _finding("check-role", index, "CHECK must be performed by a judge")
@@ -537,15 +549,12 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                         "a pass may only CLOSE or HOLD for a gate",
                     )
                 )
-            if verdict == "revise" and route not in {
-                "CONTEXT", "OUTLINE", "EVIDENCE", "CONTENT",
-                "DRAFT", "REVISE", "COMPILE"
-            }:
+            if verdict == "revise" and route not in {"context", "structure", "evidence", "writing"}:
                 findings.append(
                     _finding(
                         "revise-without-worker",
                         index,
-                        "verdict=revise must name a producing phase",
+                        "verdict=revise must name a producing Run",
                     )
                 )
             if verdict == "blocked" and route != "HOLD":
@@ -555,7 +564,7 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
         else:
             if role != "producer":
                 findings.append(
-                    _finding("producer-role", index, f"{phase} must be performed by a producer")
+                    _finding("producer-role", index, f"{step_run} must be performed by a producer")
                 )
             if route == "CLOSE":
                 findings.append(_finding("producer-closed", index, "only CHECK may CLOSE"))
@@ -589,29 +598,29 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                     )
                 )
 
-        if reopens and route != "DRAFT":
+        if reopens and _raw(receipt.get("route")) != "DRAFT":
             findings.append(
                 _finding("reopen-without-draft", index, "reopens_promise requires route=DRAFT")
             )
-        if phase not in {"DRAFT", "OUTLINE"} and route == "DRAFT" and not reopens:
+        if _raw(receipt_run(receipt)) not in {"DRAFT", "OUTLINE"} and _raw(receipt.get("route")) == "DRAFT" and not reopens:
             findings.append(
                 _finding(
                     "draft-without-reopen",
                     index,
-                    "a non-DRAFT phase may route to DRAFT only when purpose or Aims reopen",
+                    "a non-DRAFT run may route to DRAFT only when purpose or Aims reopen",
                 )
             )
 
         if previous is not None:
             previous_route = _trace_token(str(previous.get("route", "")), legacy_probe)
-            previous_phase = _trace_token(str(previous.get("phase", "")), legacy_probe)
+            previous_run = _trace_token(str(receipt_run(previous)), legacy_probe)
             # Compatibility only: old planning/evidence receipts represented
             # an open-gate HOLD as an in-run pause. Current receipts carry a
             # cycle and the controller always returns on HOLD, so only the
             # pre-cycle shape retains this historical audit exception.
             legacy_prepare_pause = (
                 previous_route == "HOLD"
-                and previous_phase in {"CONTEXT", "OUTLINE", "EVIDENCE"}
+                and previous_run in {"context", "structure", "evidence"}
                 and declared_gate_required
                 and str(_gate(previous).get("status", "")) in {"pending", "waiting"}
                 and "cycle" not in previous
@@ -625,21 +634,21 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
                 # A cold CHECK is legal on ANY version, pauses included: the
                 # judge reads and routes, it does not produce (found by the
                 # first real check-agent dispatch, 260819 step 14).
-                if phase != "CHECK" and phase not in LEGAL_ROUTES.get(previous_phase, set()):
+                if step_run != "check" and step_run not in LEGAL_ROUTES.get(previous_run, set()):
                     findings.append(
                         _finding(
-                            "route-phase-mismatch",
+                            "route-run-mismatch",
                             index,
-                            f"paused at {previous_phase}; phase {phase} is not legal from it",
+                            f"paused at {previous_run}; Run {step_run} is not legal from it",
                         )
                     )
-            elif phase != previous_route:
+            elif step_run != previous_route:
                 findings.append(
                     _finding(
-                        "route-phase-mismatch",
+                        "route-run-mismatch",
                         index,
-                        f"previous route {previous_route} requires next phase "
-                        f"{previous_route}, got {phase}",
+                        f"previous route {previous_route} requires next run "
+                        f"{previous_route}, got {step_run}",
                     )
                 )
 
@@ -656,8 +665,8 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
             previous_round = previous.get("round")
             current_round = receipt.get("round")
             should_increment = (
-                previous_route == "DRAFT"
-                and previous_phase not in {"DRAFT", "OUTLINE"}
+                _raw(previous.get("route")) == "DRAFT"
+                and _raw(receipt_run(previous)) not in {"DRAFT", "OUTLINE"}
                 and previous.get("reopens_promise") is True
             )
             expected_round = (
@@ -735,11 +744,11 @@ def audit_run(run: dict[str, Any]) -> list[Finding]:
 
 
 def traversed_edges(receipts: Iterable[dict[str, Any]]) -> list[str]:
-    """Return phase-to-route edges in execution order for audit summaries."""
+    """Return run-to-route edges in execution order for audit summaries."""
     receipts = list(receipts)
     legacy_probe = _legacy_probe(receipts)
     return [
-        f"{_trace_token(str(r.get('phase', '')), legacy_probe)}->"
+        f"{_trace_token(str(receipt_run(r)), legacy_probe)}->"
         f"{_trace_token(str(r.get('route', '')), legacy_probe)}"
         for r in receipts
     ]

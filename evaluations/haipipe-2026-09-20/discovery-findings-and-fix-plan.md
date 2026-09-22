@@ -21,7 +21,7 @@
 | D | `plugins/haipipe-toolkit/skills/discovery/` |
 | S | `plugins/haipipe-toolkit/skills/` |
 | P | `plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-workflow/` |
-| C | `plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md` |
+| C | `plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/evidence/citations.md` |
 
 注意：DESIGN.md 和 agents/ 位于 D 直接下级；Run、Page 的路径位于 S 下级。原报告的部分路径简称说明不准确，本报告以上表及完整链接为准。
 
@@ -172,7 +172,7 @@ durable Search 有“两类渠道”要求（search router:50–56）。如果�
 
 **证据与位置。** `D/haipipe-discovery/ref/paper-run-contract.md:318–345` 把 `outline/evidence/bibex/<task>.bib` 定为派生聚合，且说 D1 root 不创建本地 typed CITE item。[builder 默认路径](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/discovery/haipipe-discovery/scripts/paper_runs.py:877) :877–885 返回该路径；:926–933 的 --write 还拒绝写往其他 canonical 位置。
 
-然而 [Outline citations](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-outline/ref/evidence/citations.md:37) 的 “Authority mode B · Discovery aggregate” 在 :37–48 指向 `results/<re-run>/result.yaml` 和 payload/；:107–109 明确 `outline/evidence/bibex/`、flat bibex/ 已停用，“not read, merged, or used as fallback”。:7–13 的 Page 引用标签是 `\cite{C_<slug>}`，Bib key 只是 Result payload 元数据；Discovery 的 source-format:26、paper-run-contract:334–335 仍以直接 Result/@cite lineage 且无本地 CITE item 描述 root Page。
+然而 [Outline citations](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/evidence/citations.md:37) 的 “Authority mode B · Discovery aggregate” 在 :37–48 指向 `results/<re-run>/result.yaml` 和 payload/；:107–109 明确 `outline/evidence/bibex/`、flat bibex/ 已停用，“not read, merged, or used as fallback”。:7–13 的 Page 引用标签是 `\cite{C_<slug>}`，Bib key 只是 Result payload 元数据；Discovery 的 source-format:26、paper-run-contract:334–335 仍以直接 Result/@cite lineage 且无本地 CITE item 描述 root Page。
 
 **影响。** Discovery 可以输出自己认为 canonical 的 Bib 路径，Page 合约却要求另一个入口，且禁止旧路径 fallback。作者可能被要求重建来源、重复验证或手工拼接，完成状态也无法跨面一致。这比命名陈旧更实质。
 

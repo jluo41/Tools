@@ -55,7 +55,7 @@ from src.page_board import render, render_tree, scrub_cjk_comments, to_json, tre
 MARKERISH = re.compile(r"\\cite[pt]?\{|\{VAL:\?|\[Q-[A-Za-z]")
 _FENCE = re.compile(r"```.*?```", re.S)
 _INLINE = re.compile(r"`[^`\n]*`")
-# The v4 Page shell intentionally removes a top-level Plugin and other chrome.
+# The v4 Page shell intentionally removes a top-level Workbench and other chrome.
 # Keep the no-JS body gate substantive without measuring deleted navigation.
 MIN_STATIC_BODY = 1000
 

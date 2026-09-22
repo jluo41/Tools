@@ -8,7 +8,7 @@
 
 - HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显变化。复核时间为 2026-09-20，美国东部时间约 17:11；行号针对本次读取的工作树。
 - 当前 Board 目录仍有 4 份有效 `SKILL.md`，本次全部重读。Board 主技能和 Folder 技能已有未提交改动，Routing 和 DesignBoard 技能在本次检查时没有工作树差异。
-- 相关已有改动还涉及 Board 的 `foldercontracts.py`、`check.py`、`context-record.py`、`live/insightboard.py`、Insight Space 映射及相关测试，以及 Page 的 `folder_contract.py`、Page workflow 等。Insight 已出现 `folder-kinds/` 和 `workflow/folder.yaml` 迁移。保留这些改动，计划中的共享修改应与相应任务合并处理。
+- 相关已有改动还涉及 Board 的 `foldercontracts.py`、`check.py`、`context-record.py`、`servers/workbench-insight/insightboard.py`、Insight Space 映射及相关测试，以及 Page 的 `folder_contract.py`、Page workflow 等。Insight 已出现 `folder-kinds/` 和 `workflow/folder.yaml` 迁移。保留这些改动，计划中的共享修改应与相应任务合并处理。
 - 复核依据是源文档、声明、代码分支和路径查找；没有执行操作技能、服务、测试或浏览器流程。下文的验收条件均是未来实现后的要求，不是已取得的测试结果。
 
 | 当前技能 | 本次覆盖 | Workflow/Run 指标 | 证据与边界 |
@@ -16,7 +16,7 @@
 | [haipipe-board](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/SKILL.md) | 全文 332 行 | PARTIAL | 42–48 行混用旧 RP 命名与 workflow pass；README 仍用 Phase 表描述流程；已明确 pass 不等于 Page Run |
 | [haipipe-board-routing](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board-routing/SKILL.md) | 全文 265 行 | N/A | 123–153 行是路由操作的五步程序，不定义独立 Workflow；67 行把 group 定义为责任范围，合理 |
 | [haipipe-folder](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-folder/SKILL.md) | 全文 274 行 | PASS（当前模型） | 42–45、123、175–188 行以 Run Spec 定义工作流；235–249 行把旧 Phase 文件限定为身份读取兼容；剩余 shell 示例问题不构成 Phase 模型失败 |
-| [haipipe-plugin-design-board](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/SKILL.md) | 全文 218 行 | PARTIAL | 48–49 行仍把 Commission、Generate、Verify、Adopt 并列为 Steps；Run Space 确有按 Run 展示的记录，但最后一个单位已不符合 Design owner |
+| [haipipe-workbench-design](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md) | 全文 218 行 | PARTIAL | 48–49 行仍把 Commission、Generate、Verify、Adopt 并列为 Steps；Run Space 确有按 Run 展示的记录，但最后一个单位已不符合 Design owner |
 
 本次支持材料核对覆盖：Board README；`ref/board-form.md`、`ref/operations.md`、`ref/insight-space-mapping.md`、DesignBoard `ref/space-mapping.md`；Board agent roster、approver 与 approve-rules；`fn/serve.md` 的范围规则；`regroup.py`、`lanes.py`、Folder parser/CLI、Page 状态生成、workflow receipt 路径、Design/Insight 相关投影。共享合约定向核对了 `haipipe-run`、Page workflow/outline、Page Run families、Design workflow/door/brief 和 Insight door。支持材料是按发现定位复核，并非重新逐行审计所有代码。
 
@@ -32,7 +32,7 @@
 
 原报告指出 Folder 把 Phase 当身份、Workflow Table 以 Phase/Cycle 为行。当前 [Folder 技能 42–79、121–123、175–188、235–249 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-folder/SKILL.md:42) 已明确：Folder kind 是资源身份，Workflow 使用 bounded Run Specs；新身份记录为 `workflow/folder.yaml`；旧 Phase 字段不产生执行权威。
 
-这已延伸到实现：[Page Folder parser 54–78、117–164、179–180 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-page/src/folder_contract.py:54) 去掉 `FolderContract.phase`，优先读取 `folder.yaml`，legacy fallback 只返回 `folder-kind`；[Folder CLI 42–52 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/cli/foldercontracts.py:42) 显示 Folder contracts。[Insight Space 映射 47–62 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/ref/insight-space-mapping.md:47) 与 [InsightBoard UI 1366–1384 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/insightboard.py:1366) 也已分开 Run Spec、实际 Run 和 Folder resource。
+这已延伸到实现：[Page Folder parser 54–78、117–164、179–180 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-page/src/folder_contract.py:54) 去掉 `FolderContract.phase`，优先读取 `folder.yaml`，legacy fallback 只返回 `folder-kind`；[Folder CLI 42–52 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/cli/foldercontracts.py:42) 显示 Folder contracts。[Insight Space 映射 47–62 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/ref/insight-space-mapping.md:47) 与 [InsightBoard UI 1366–1384 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-insight/insightboard.py:1366) 也已分开 Run Spec、实际 Run 和 Folder resource。
 
 结论：不重复提出整套 Folder Phase 重构。由现有迁移的 owner 完成兼容验收：canonical 文件优先；缺省时旧文件只贡献 kind；不合法身份/冲突不静默 fallback；新写入没有 Phase 身份/进度字段；保留旧记录字节；UI 不把 Folder resource 数量当 Run 数量。当前代码证据支持模型已修，但此报告没有执行测试，不能确认跨家族迁移已全部完成。剩余文字/示例问题见 F05、F10。
 
@@ -52,9 +52,9 @@
 
 **F02 · P1 · DesignBoard 的 adopted/Adopt 与当前 ready/Delivery 合约冲突**
 
-证据：[DesignBoard 技能 48–49、64–65、87–90、107–124、162–164、216 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/SKILL.md:48) 写 “Steps are Commission, Generate, Verify, Adopt”，queue 示例为 `JL · adopt`，还说发送系统取 `state=adopted`，CSV 包括其他状态及 declined。其 [Space 映射 5–13、34–35、68 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/ref/space-mapping.md:5) 同样过时。
+证据：[DesignBoard 技能 48–49、64–65、87–90、107–124、162–164、216 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md:48) 写 “Steps are Commission, Generate, Verify, Adopt”，queue 示例为 `JL · adopt`，还说发送系统取 `state=adopted`，CSV 包括其他状态及 declined。其 [Space 映射 5–13、34–35、68 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/ref/space-mapping.md:5) 同样过时。
 
-当前 [Design workflow 41–64、135–142 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:41) 规定实际 Runs 为 `1 Commission + N Generate + J Verify`；Delivery 是只读交付投影。实现 [design.py 514–530、715–718 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py:514) 从独立 Verify 记录推导 ready；[designboard.py 301–303、417–432、475–494 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/designboard.py:475) 使用 ready 计数，导出只收录有 ready draft 的项，不把普通未验证/declined 草稿混入该 bundle。
+当前 [Design workflow 41–64、135–142 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:41) 规定实际 Runs 为 `1 Commission + N Generate + J Verify`；Delivery 是只读交付投影。实现 [design.py 514–530、715–718 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design.py:514) 从独立 Verify 记录推导 ready；[designboard.py 301–303、417–432、475–494 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/designboard.py:475) 使用 ready 计数，导出只收录有 ready draft 的项，不把普通未验证/declined 草稿混入该 bundle。
 
 影响：读者可能等待额外 Adopt 决定、找不存在的新动作，或按文档筛选 CSV 导致没有可发送记录。此处不仅是换词，交付集合和完工判断也不同。
 
@@ -142,7 +142,7 @@ Board 主技能树只展示 Page 下的 `workflow/`，没有画出当前 Board a
 
 **F12 · P3 · DesignBoard new-folder 的 row 参数缺少直接定义**
 
-证据：[DesignBoard 技能 73–84、144–145 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/SKILL.md:144) 解释过隐藏的 Brief row id，但动作签名仅写 `{row}`；[Space 映射 49–57 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/ref/space-mapping.md:49) 同样如此。[UI 318 行和 new_folder 633–646 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/designboard.py:633) 表明传入值是 row 的内部 `id`，无显式 line 列时为 `R<N>`，不是屏幕任务标题或整数下标。
+证据：[DesignBoard 技能 73–84、144–145 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md:144) 解释过隐藏的 Brief row id，但动作签名仅写 `{row}`；[Space 映射 49–57 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/ref/space-mapping.md:49) 同样如此。[UI 318 行和 new_folder 633–646 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/designboard.py:633) 表明传入值是 row 的内部 `id`，无显式 line 列时为 `R<N>`，不是屏幕任务标题或整数下标。
 
 影响：由 API/agent 调用时会猜错参数并得到“not in Brief”拒绝；按钮本身提供正确值，因此没有证据证明正常 UI 点击失败。
 
@@ -150,7 +150,7 @@ Board 主技能树只展示 Page 下的 `workflow/`，没有画出当前 Board a
 
 **F13 · P2 · 新确认：历史 Design Run 的显示 ID 被改写为不存在的 Delivery ID**
 
-证据：[DesignBoard renderer 394–400 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/designboard.py:394) 在 Run 列执行 `r["id"].replace("_adopt_", "_delivery_")`；[Page Design renderer 897、1104 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py:897) 的链接文字/tooltip 也改写 ID。与此同时，[Design workflow 81–82 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:81) 要求呈现同一 Run identity，不 mint、rename、copy 或 recount。
+证据：[DesignBoard renderer 394–400 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/designboard.py:394) 在 Run 列执行 `r["id"].replace("_adopt_", "_delivery_")`；[Page Design renderer 897、1104 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design.py:897) 的链接文字/tooltip 也改写 ID。与此同时，[Design workflow 81–82 行](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/haipipe-design-workflow/SKILL.md:81) 要求呈现同一 Run identity，不 mint、rename、copy 或 recount。
 
 影响：历史 `rd01_adopt_x` 会看起来像 `rd01_delivery_x`，用户复制到搜索、收据定位或讨论中时难以对应磁盘。确认的是显示文字改写；底层 ticket_path 仍指向原文件，不应说成源码文件被重命名或链接已证实损坏。
 

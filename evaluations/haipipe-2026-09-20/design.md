@@ -50,9 +50,9 @@ create another Run. A passed Verify makes the design ready for Delivery.
 
 ### P1 · Board 插件仍把 Adopt 当作当前 Run 和用户待办
 
-`plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/SKILL.md:48` 到 `:49` 写“Steps are Commission, Generate, Verify, Adopt”；`:108` 到 `:110` 说 Run Space 的等待队列包含 `JL · adopt`；`:113` 到 `:124` 用 adopted 状态选择交付和 CSV 行；`:163` 到 `:164` 把 adopt 路由到 Page-level；`:195` 到 `:196` 还称 checker 会审计只有 Commission 与 Adopt Runs 的目录。
+`plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md:48` 到 `:49` 写“Steps are Commission, Generate, Verify, Adopt”；`:108` 到 `:110` 说 Run Space 的等待队列包含 `JL · adopt`；`:113` 到 `:124` 用 adopted 状态选择交付和 CSV 行；`:163` 到 `:164` 把 adopt 路由到 Page-level；`:195` 到 `:196` 还称 checker 会审计只有 Commission 与 Adopt Runs 的目录。
 
-这些是当前正文与用户看到的列表、待办相连，不是历史数据描述。对照之下，page 插件的 action 表 `haipipe-plugin-design/SKILL.md:408` 到 `:417` 只有 Commission、Generate、Verify、重试、添加 Design Item 和补充草稿请求；`:413` 明说 ready-for-Delivery 没有决策 Run。当前 Page changelog `page/page-plugins/haipipe-plugin-design/CHANGELOG.md:5` 到 `:9` 也明确：Verify 通过即进入 Delivery；live surface 不创建 Adopt action/state/counter/batch button。只读代码核对确认 `board/haipipe-board/live/design.py:1659` 到 `:1660` 会把 adopt/decline 请求拒绝为 unknown action，而 `:355` 到 `:357` 将旧 adoption 记录作为已 ready 的 Delivery 读取。也就是说，Board 文档告诉人去做一个当前控制器拒绝的动作。
+这些是当前正文与用户看到的列表、待办相连，不是历史数据描述。对照之下，page 插件的 action 表 `haipipe-workbench-design/SKILL.md:408` 到 `:417` 只有 Commission、Generate、Verify、重试、添加 Design Item 和补充草稿请求；`:413` 明说 ready-for-Delivery 没有决策 Run。当前 Page changelog `design/haipipe-workbench-design/CHANGELOG.md:5` 到 `:9` 也明确：Verify 通过即进入 Delivery；live surface 不创建 Adopt action/state/counter/batch button。只读代码核对确认 `servers/workbench-design/design.py:1659` 到 `:1660` 会把 adopt/decline 请求拒绝为 unknown action，而 `:355` 到 `:357` 将旧 adoption 记录作为已 ready 的 Delivery 读取。也就是说，Board 文档告诉人去做一个当前控制器拒绝的动作。
 
 **影响：**Board 读者可能停在不存在的人工队列，或误以为 CSV 里只有 `state=adopted` 才能供下游使用。当前 projection 的 ready 状态与 Board 文档的 adopted 总数不能作为同一份状态解释。
 
@@ -76,7 +76,7 @@ evidence; the current writer does not create them.
 
 ### P1 · Page 的 `Steps` 示例把 Delivery 错放进 Run 链
 
-Page 插件先规定 `haipipe-plugin-design/SKILL.md:63` 到 `:65` 里步骤要用 Run 名称，然后在示例卡 `:166` 显示 `STEPS Commission ✓ JL → Generate ✓ → Verify ✓ → Delivery`；`:205` 到 `:207` 又称“item's Runs”作为 Steps 芯片。可是 Workflow `haipipe-design-workflow/SKILL.md:59` 与 `:63` 已明确 Delivery projection 不是 Run。
+Page 插件先规定 `haipipe-workbench-design/SKILL.md:63` 到 `:65` 里步骤要用 Run 名称，然后在示例卡 `:166` 显示 `STEPS Commission ✓ JL → Generate ✓ → Verify ✓ → Delivery`；`:205` 到 `:207` 又称“item's Runs”作为 Steps 芯片。可是 Workflow `haipipe-design-workflow/SKILL.md:59` 与 `:63` 已明确 Delivery projection 不是 Run。
 
 **影响：**人在唯一面板上看见一个 Run 清单，但无法判断 Delivery 是否有记录、编号、结果或关闭条件。当前文档把正确的概念定义与实际示例做成了互相矛盾的界面。
 
@@ -125,7 +125,7 @@ Style Profile 又重复要求 `[ ] Card id, grant, and exact render version reso
 
 ### P2 · `blocked` 和人为暂缓的 `hold` 汇成同一个用户状态
 
-Page 的状态折叠 `page/page-plugins/haipipe-plugin-design/ref/space-mapping.md:45` 用 `hold` 表示人暂不发布 Commission，且表单回到 Release；`:57` 又把任意 Run 的 `blocked` 状态折叠成相同的 `hold`，等待人处理 `failure:`。`haipipe-design/SKILL.md:83` 也只有一个 `hold` 状态。
+Page 的状态折叠 `design/haipipe-workbench-design/ref/space-mapping.md:45` 用 `hold` 表示人暂不发布 Commission，且表单回到 Release；`:57` 又把任意 Run 的 `blocked` 状态折叠成相同的 `hold`，等待人处理 `failure:`。`haipipe-design/SKILL.md:83` 也只有一个 `hold` 状态。
 
 **影响：**列表中的“hold”可能让人以为可以重新发布 Commission，即使实际是某个 Run 因缺少来源或损坏记录而 blocked；期望的负责人和按钮不同。
 
@@ -151,8 +151,8 @@ Page 的状态折叠 `page/page-plugins/haipipe-plugin-design/ref/space-mapping.
 | `haipipe-design-brief` | 部分 | Brief 是 Design Commission 的前置条件，不是执行 Run；其 Page Workflow 委托给 Page owner。但“not a Design workflow phase”仍使用禁用词，也没有直接用 Run 描述这个依赖。 |
 | `haipipe-design-unit` | 不适用（Workflow 定义）/部分（Run 边界） | 它是单次 Generate/Verify worker，正确区分调用与 Run，并指出内部草拟不是额外 Run；但 Unit 合约仍含当前 Adopt 模型和历史术语。 |
 | `haipipe-design-workflow` | 部分 | Run Spec/Run instance、Route 和内部 Step 边界写得清楚；但规范名称仍为 `directed graph`，且“no Design Phase layer”保留旧术语。 |
-| `haipipe-plugin-design` | 部分 | 核心按钮对应实际 Commission/Generate/Verify Run；卡片将 Delivery 放进 Steps/Run chips，偏离该 Run 清单。 |
-| `haipipe-plugin-design-board` | 不通过 | 当前文档仍把 Adopt 当作步骤、等待项、Run 与 CSV 决策状态，和 Page 的新 writer / ready projection 冲突。 |
+| `haipipe-workbench-design` | 部分 | 核心按钮对应实际 Commission/Generate/Verify Run；卡片将 Delivery 放进 Steps/Run chips，偏离该 Run 清单。 |
+| `haipipe-workbench-design` | 不通过 | 当前文档仍把 Adopt 当作步骤、等待项、Run 与 CSV 决策状态，和 Page 的新 writer / ready projection 冲突。 |
 | Venue schema + 8 README（支持材料） | 不通过 | 强制 `Phase use` 和 `terminal: adopted`，要求 Verify 后 adopt/decline；不是独立技能，但会实际被 Unit 读取。 |
 
 **整个 Design 范围：不通过。** 合规边界有明显优点（内部 Step 不自动扩成 Run、交付投影不需要新 Run），但当前所有使用路径还没有统一执行用户指定的 Workflow/Run 定义。

@@ -23,7 +23,7 @@ Workflow Execution
 └── Run Instances, each joined to one Run Spec and one receipt
 ```
 
-The Workflow is projected through a Plugin-owned Workspace roster:
+The Workflow is projected through a Workbench-owned Workspace roster:
 
 ```text
 Run Spec × member Workspace = Cell
@@ -36,7 +36,7 @@ Skill and actual Run Instance are not additional axes.
 
 | Layer | Stable responsibility |
 |---|---|
-| Plugin | member Workspace roster and stable ids |
+| Workbench | member Workspace roster and stable ids |
 | Run Type | reusable defaults and close semantics |
 | Run Spec | one planned graph node: target, actor, action, gates, routes, cardinality |
 | Cell | one Run Spec × Workspace binding for Skill, interaction, authority, and projection |

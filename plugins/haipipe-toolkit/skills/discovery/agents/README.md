@@ -1,13 +1,18 @@
 # Discovery agents
 
 The agents execute the contract owned by haipipe-discovery. They do not define
-an alternate folder shape.
+an alternate folder shape. A Block is a live Discovery Board from its first
+durable write; a Task Folder is the Page Folder rendered inside that Board.
+Use `haipipe-discovery/scripts/board_sync.py` at structural and handoff
+checkpoints. The Board engine builds `board/`; no agent edits generated files.
 
-The numbered `1_search`, `2_review`, and `3_synthesize` directories are the
-live skill-family groups, matching the organization of `haipipe-task`. Search
-resolves candidates, Review inspects one source/Result, and Synthesize combines
-accepted Results. They are not agent stages or D1 phases. Agents dispatch into
-the live families while D1 remains the sole Discovery workflow phase.
+The three live capability skills sit flat at the family root:
+`haipipe-discovery-search` resolves candidates, `haipipe-discovery-review`
+inspects one source/Result, and `haipipe-discovery-synthesize` combines accepted
+Results. The numbered `1_search/` and `2_review/` folders hold only the vendored
+originals those skills may call. None of this is an agent stage or a D1 phase.
+Agents dispatch into the live skills while D1 remains the sole Discovery
+workflow phase.
 
 If a legacy description uses 0/1/2/3 or 1/2/3/4 as if those were folders, use
 `../haipipe-discovery/ref/bjtr-alignment.md`. The project address is always
@@ -31,12 +36,12 @@ compact address: bNNjNNtNNrNN
 ## Flow
 
 ~~~text
-D1 SCOPE       creator -> reviewer
+D1 SCOPE       creator -> reviewer                         Board head present
 D1 PREPARE     creator -> reviewer                         optional
 D1 ACQUIRE     creator resolves Trigger -> one Run/Result pair per Subject
 D1 SYNTHESIZE  Bib builder -> shared Page workflow -> reviewer
 Page CHECK     fresh Page checker
-D1 CLOSE       creator reconciles Task Face -> reviewer
+D1 CLOSE       creator reconciles Task Face -> Board build/check -> reviewer
 ~~~
 
 `discovery_type` chooses the root article form; Search, Review, and Synthesize
@@ -64,3 +69,8 @@ Questions are handled through the ordinary Discovery Run/Result path. A consumer
 never writes into the Discovery bank: it records Supporting Run ids and owns any
 Local Run/Result needed for a focal Page Evidence Item. There is no separate
 answer-bank side door or folder.
+
+Board source is deliberately small: `board.md` declares the Block identity,
+spine, close condition, Pipeline, map, and managed Job headings. The direct
+`jNN_/tNN_` tree supplies membership and Task order. Do not paste Task state,
+Result prose, or Run inventories into the Board source.

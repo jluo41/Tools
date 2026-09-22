@@ -16,7 +16,7 @@
 | Run 家族 | `plugins/haipipe-toolkit/skills/run/haipipe-run/SKILL.md`（689 行） | 全文逐段阅读；核对定义、所有权、命名、生命周期、实例化、收据、推广、审计及交互例子 | 未执行 Skill、命令、外部服务或测试；Run 目录没有其他 `SKILL.md`、README、脚本、模板或资产 |
 | Run 元数据 | `.../run/haipipe-run/agents/openai.yaml`（4 行） | 全文阅读，包括可见名称、简介与默认提示词 | 无 |
 | Run 历史 | `.../run/haipipe-run/CHANGELOG.md`（60 行） | 全文阅读；将历史 Phase 文字与当前规范分开 | 历史条目只作演变证据，不当作当前运行行为 |
-| Run 直接引用的方言契约 | Task `task-page.md`、`workflow-runtime.md`、`hierarchy.md`、`plan-schema.md`；Page `interactive-writing-run.md`、`paragraph-run.md`、`haipipe-plugin-runs/SKILL.md`；Paper `run-naming.md`；Insight `instance-items.md`、`task-calls.md`；Design `run-profile.md`；Discovery `paper-run-contract.md`；Labeling `ref-run.md` | 检查了与 Run/Step、Workflow 表示、Phase、身份、结果、闭合和路径相关的段落及被主 Skill 依赖的断言；其中 Page 交互、Workflow Runtime、Paper 命名、Design 方言、Insight 实例是重点核对项 | 这些跨家族文件不是本次分配的完整评估对象；没有逐行审计其中所有非 Run 内容。主 Skill 中 `instance-items.md` 引用路径未能按相对路径解析，详见发现 3 |
+| Run 直接引用的方言契约 | Task `task-page.md`、`workflow-runtime.md`、`hierarchy.md`、`plan-schema.md`；Page `interactive-writing-run.md`、`paragraph-run.md`、`haipipe-workbench-page/ref/run-space.md`；Paper `run-naming.md`；Insight `instance-items.md`、`task-calls.md`；Design `run-profile.md`；Discovery `paper-run-contract.md`；Labeling `ref-run.md` | 检查了与 Run/Step、Workflow 表示、Phase、身份、结果、闭合和路径相关的段落及被主 Skill 依赖的断言；其中 Page 交互、Workflow Runtime、Paper 命名、Design 方言、Insight 实例是重点核对项 | 这些跨家族文件不是本次分配的完整评估对象；没有逐行审计其中所有非 Run 内容。主 Skill 中 `instance-items.md` 引用路径未能按相对路径解析，详见发现 3 |
 | 主要消费者追踪 | Task 模板和计划/报告函数、Page 词汇表/入口/Workflow、Paper Workflow/入口/插件、Insight Workflow/Page-Type、Design Workflow/Run Profile | 按简报要求检查关键用户入口与可执行指令，核实共享 Run 合约如何被引用；仅报告职责归属和证据 | 此处是消费者追踪，不替代各家族的完整评估；没有检查所有子文件、实现代码或 UI 运行效果 |
 
 ### 清单对账与边界
@@ -59,7 +59,7 @@
 
 ### P1 · Paper 与 Insight 的消费者还把 Workflow 单位称为 Phase；Insight 另有已退休的 Application 父层说法
 
-**Paper 证据。** `plugins/haipipe-toolkit/skills/paper/haipipe-paper-workflow/SKILL.md:21-30,42-63,239-247` 以 journey Phases/positions 表达 P0–P4；公开路由 `plugins/haipipe-toolkit/skills/paper/haipipe-paper/SKILL.md:28-40,197-203,227-246,462,497-501` 仍暴露 `[phase]`。Paper 插件 `plugins/haipipe-toolkit/skills/paper/haipipe-plugin-paper/SKILL.md:370-399` 又用 Run Type/计划行与已分配 Run 表示工作，未明确把 concrete Runs 列成 Workflow 清单。
+**Paper 证据。** `plugins/haipipe-toolkit/skills/paper/haipipe-paper-workflow/SKILL.md:21-30,42-63,239-247` 以 journey Phases/positions 表达 P0–P4；公开路由 `plugins/haipipe-toolkit/skills/paper/haipipe-paper/SKILL.md:28-40,197-203,227-246,462,497-501` 仍暴露 `[phase]`。Paper 插件 `plugins/haipipe-toolkit/skills/paper/haipipe-workbench-paper/SKILL.md:370-399` 又用 Run Type/计划行与已分配 Run 表示工作，未明确把 concrete Runs 列成 Workflow 清单。
 
 **Insight 证据。** `plugins/haipipe-toolkit/skills/insight/haipipe-insight-workflow/SKILL.md:38-62` 用 I0–I5 RunTypes、Run Specs、Routes 与 Runtime frontier 表达 Workflow；六个当前 rung 文件仍位于 `skills/insight/workflow-phases/` 并使用 `metadata.phase`。Task 侧 Insight 说明 `plugins/haipipe-toolkit/skills/task/page-types/haipipe-page-insight/ref/workflow-table.md:3-6,25-32` 还称其为 “Application I0-I5 ladder”，并保留 “Phase × Run Map”；其父 Skill `.../haipipe-page-insight/SKILL.md:150-152,231` 复述此模型。
 

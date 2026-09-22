@@ -1,0 +1,208 @@
+# The producer contract · packet, procedure, house rules, return shape
+
+Shared by every Page controller worker (`haipipe-workbench/agents/haipipe-page-*-agent`)
+and by `haipipe-page-creator-agent` when it stands in as the dispatch fallback.
+Moved here 260819 from the creator agent's body, because a PRODUCER reading
+another agent's file was the one relationship in the roster nobody could hold
+in their head (CHECK's judge still reads its reviewer base until the judge ref is
+carved out — the one standing exception, recorded, not hidden) (JL: "is this for the board or for the page? I am confused"),
+and because shared law belongs in a contract, not in a worker. One copy, here,
+loaded like any other ref.
+
+**The STAND-IN rule.** An agent type not yet registered in the running session
+is executed by a general-purpose stand-in whose FIRST action is reading the
+worker agent's file as its identity, then this contract. The receipt's `actor:`
+names the ROLE (the worker agent), and the stand-in signs nothing else.
+
+`CONTEXT`, `OUTLINE`, `EVIDENCE`, and `CONTENT` are serialized controller
+dispatch labels. They select Run Spec owner skills and do not own lifecycle,
+Gate, Route, or Run identity. The Workflow Run Spec owns those fields.
+
+## Interactive-turn exception
+
+A direct human-feedback writing turn follows `interactive-writing-run.md`,
+not a fresh full producer dispatch. Load applicable skills once; on subsequent
+turns reuse still-current authority and read the affected source slice plus
+neighbors. Refresh stale policy/plan inputs. Save raw feedback and exact prose
+before replying. Broad generation, Build, and cold review below apply to
+formal controller completion, not every local wording edit. An explicitly
+delegated Run worker still follows this packet.
+
+## The assignment packet
+
+The caller supplies this. If a required field is missing, return `blocked`
+naming the field rather than guessing it.
+
+```text
+required:
+  operation:   create-page | revise-opening | context | outline | evidence | content
+  path:        the exact file path to write, inside its group folder
+  id:          the page id (P01, S-Main-2, ...)
+  title:       the short title, unique on this board
+  board:       the board folder path, for relative links only
+optional:
+  opening:     for create-page, the question or stage this page OWNS
+  siblings:    for create-page, pages a reader might confuse with this one:
+               id, title, and what each owns
+  kind:        Q (default) | S
+  state:       the starting state line; defaults to 🔴 OPEN
+  owner:       defaults to JL for a decision, CC for a stage
+  sources:     files this page must read and cite
+  constraints: anything the human already ruled that the page must respect
+  run_id:      required for context | outline | evidence | content
+  round:       required for outline | evidence | content
+  version:     required source:render identity for content
+  intent:      required run-level purpose for every Page workflow operation
+  cycle:       PREPARE for context · SHAPE | SURVEY for outline ·
+               LAND | EMBED for evidence · WRITE for content
+  evidence_units: optional for evidence — the display units whose intake this
+               worker must freeze, each `{unit, kind, source}`; the receipt
+               returns the renderer that then owes the RENDER step
+```
+
+For `create-page`, `opening` and `siblings` are required. `siblings` is the
+field that makes parallel writing safe. It is how your
+Opening can say what is covered elsewhere without your reading elsewhere, and
+it is what stops two agents from claiming the same decision.
+
+For `revise-opening`, the existing `path` is the source of truth. The packet
+must carry facts and scope, not a sentence formula. Read the whole target page;
+do not read sibling pages and do not change any section other than Opening.
+
+For `content`, `run_id`, `round`, `version`, and `intent`
+are required. Treat `sources` and `constraints` as the complete raw-material
+boundary. A missing source or undeclared second write routes to HOLD instead of
+being guessed.
+
+## Procedure
+
+1. Load the Page base, router, current Run Spec owner, Folder-owning workflow or
+   canonical family skill, exact Page Face owner, Run Spec references/policy, and
+   any required Run workers in the canonical
+   order in `haipipe-page-workflow`. The Page surface already installs the
+   shared Outline presenter; a worker loads only its exact refs. Do not skip the page spec; the
+   section set is not negotiable and a section a renderer does not know renders
+   nowhere.
+2. For every operation except initial `create-page`, read the target Page from
+   first line to last before drafting. For `create-page`, use `siblings` to
+   separate ownership without reading sibling pages.
+3. Read every file in `sources`. Cite only what you read. A file you could not
+   read is named in your return as unread, never quietly dropped.
+4. For `create-page`, draft the page in the template's section order. Earn each
+   section: empty beats wrong, and a section with nothing to say is left out
+   rather than padded. State the scope in Opening against `siblings` without
+   creating a separate `## Boundary` section.
+5. For `revise-opening`, draft from the page's actual subject and evidence.
+   Treat the review questions in the page skill as diagnostic probes, not
+   sentence slots. Replace only the Opening body.
+6. For `context`, `outline`, `evidence`, or `content`, perform
+   only the authority named by the loaded Run Spec contract. Three workers write
+   somewhere OTHER than the page body, and writing into the body instead is the
+   Run/authority boundary being crossed rather than a stylistic choice:
+
+   ```text
+   context   ─▶ <page>/outline/<stem>-context.md, generated. It points to
+                source authorities and writes no plan, evidence, or Page prose.
+   outline   ─▶ versioned plan and authored Evidence Item specifications/routes
+                under outline/. No Page prose; transcribe only durable human approvals.
+   evidence  ─▶ ready local Evidence Item Results and frozen inputs, plus
+                Result bindings in the authored item table. Leave CITE
+                `Verified` and display `accepted:` to their human authorities;
+                EMBED appends ready Result bindings in the next plan version.
+   ```
+
+   Stop before the returned route begins. Record a
+   non-trivial Page change in Log as part of the produced version; never write a
+   later CHECK result into that Log.
+7. Self-check the result against the page skill and `writing-rules.md`. Confirm
+   the Opening is page-specific and that substituting another page's subject
+   would make it false or nonsensical. In `revise-opening`, diff the file and
+   confirm nothing outside Opening changed. This check informs the return; it
+   does not award a final pass.
+8. Write the target to the exact `path` given. During EVIDENCE you may also
+   create an `outline/evidence/bibex/` entry landed verbatim from a person, and per unit in
+   `evidence_units` its `README.md`, `intake/`,
+   `recipe/`, `assets/` and `preview.pdf`: render, pick and build are
+   EVIDENCE's since 260819 (the LAND cycle). Never tick `accepted:`, which stays CHECK's.
+9. Perform the generators/builds required by the current Run Spec through its
+   declared mechanical builder. In a controller-dispatched pass, return the
+   source work and required build paths so that separate builder can regenerate,
+   check, and snapshot the version before the next dispatch. In a direct session,
+   complete those same build and rendered-inspection steps before claiming
+   formal delivery. An explicitly requested adoption-only operation may save
+   and verify Content without building, but must report delivery unrefreshed
+   and may not route to CHECK as a completed built version. Record who built and what was actually inspected. CONTENT's
+   Build movement remains mandatory; a producer never impersonates the
+   independent CHECK judge or declares an unseen Board updated.
+
+## House rules that fail review if broken
+
+- One sentence per line. The renderer joins lines, so a hard-wrapped sentence
+  is visibly broken on the page.
+- No em-dashes. Use a colon, semicolon, comma, parentheses, or a new sentence.
+- English only.
+- Real citations. A file path in `outline/<stem>-files.md` is a file you read, and every row
+  says what that file does for this page.
+- The page's own words, not coined labels. Use the board's existing vocabulary.
+- On a Q or S Page, each Aim has a stable id, one status emoji, its target,
+  `Done when:`, and `Now:` in the same Aims row. Never create a separate
+  States section or mirror that row into another ledger.
+
+## Return contract
+
+```text
+actor:    <your own agent name, exactly as dispatched>
+status:   ok | blocked | failed
+operation: create-page | revise-opening | context | outline | evidence | content
+Run:    CONTEXT | OUTLINE | EVIDENCE | CONTENT
+          (serialized dispatch label only; not semantic authority)
+cycle:    PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE
+path:     <the file written, or none>
+id:       <page id>
+title:    <title as written>
+kind:     Q | S
+state:    <the state line written>
+sections: <the sections the page earned>
+scope:    <the sibling ids this page points at from Opening>
+sources:
+  read:   <files read and cited>
+  unread: <files named in the packet that could not be read, or none>
+open:     <what this page leaves for the human to decide, or none>
+route:    CONTEXT | OUTLINE | EVIDENCE | CONTENT | CHECK | HOLD
+next_cycle: PREPARE | SHAPE | SURVEY | LAND | EMBED | WRITE | CHECK
+            (the cycle inside `route`; omit only when routing to HOLD)
+reason:   <which Run Spec authority was exercised and why this route follows>
+reopens_promise: false (current grammar; name a promise change in reason and route to OUTLINE)
+artifacts: JSON LIST of repo-relative paths, every file written, target
+           first; [] when none
+evidence:  JSON LIST of exact source locations or artifacts supporting the
+           receipt
+findings:  JSON LIST of remaining defects; [] when none
+human_gate: {"required": <the packet's value>,
+             "status": "not-required|pending|passed",
+             "evidence": [<paths to the durable ticks>]}
+open_questions: <consequential unknowns or none>
+self_check:
+  canonical_sources_loaded: yes | no
+  full_target_read: yes | no | n/a
+  opening_page_specific: yes | no
+  outside_opening_unchanged: yes | no | n/a
+needs:    <what the caller must still do: register in board.md, rebuild, review>
+blocked:  <the missing field or unreadable input, when status is blocked>
+```
+
+`route` names the next controller dispatch label; `cycle` names the internal
+action just performed; `next_cycle` names the requested action under that
+dispatch. Never place
+`SHAPE`, `SURVEY`, `LAND`, or `EMBED` in `route`.
+
+⚠️ **Four of these fields are TYPED, and the auditor enforces the types.**
+`artifacts`, `evidence` and `findings` are JSON lists, never prose strings, and
+`human_gate.required` must equal the packet's on EVERY step. A step that broke
+either shape was auditor-rejected live on 260819: `missing-artifacts-list` and
+`human-gate-contract-mismatch` are both `src/page_lifecycle.py` finding codes.
+
+For batch CREATE or `revise-opening`, the caller registers pages as needed, runs
+one build/check, and dispatches `haipipe-board-reviewer-agent`. For RUN, the
+controller snapshots the version after this receipt and follows its route; only
+the reviewer may emit CLOSE.

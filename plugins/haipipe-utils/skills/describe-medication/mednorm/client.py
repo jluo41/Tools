@@ -39,7 +39,7 @@ from .dialect import parse
 from .retrieve import resolve
 
 DEFAULT_TRANSPORT = os.environ.get("MEDNORM_TRANSPORT", "local")
-DEFAULT_URL = os.environ.get("MEDNORM_URL", "http://127.0.0.1:8079")
+DEFAULT_URL = os.environ.get("MEDNORM_URL", "http://127.0.0.1:8070/medication")
 
 Scalarish = Union[None, float, int, str, Sequence]
 

@@ -4,7 +4,7 @@ description: >-
   The neutral Folder contract shared by Board pages, workflow artifacts, and
   executable task units. Every Folder has a Page Face for reading and judgment
   and a Task Face for intent, work, progress, and closure; a declared resource owner or canonical family skill owns both faces and selects
-  optional plugins such as Outline or Runs.
+  optional workbenches such as Outline or Runs.
   Use when defining a Folder kind, authoring a Folder owner skill, deciding
   whether something is a page or a task, binding Run Specs to Folder resources, or routing a legacy page-type.
   Trigger: folder contract, page face, task face, folder kind, Folder ownership, Run Spec, /haipipe-folder.
@@ -40,16 +40,16 @@ Either face may be physically minimal when the owner has no work for it.
 ## Ownership
 
 One declared resource or canonical family skill owns the Folder kind, both
-faces, selected plugins, closure and handoff. Its workflow declares the graph
+faces, selected workbenches, closure and handoff. Its workflow declares the graph
 of bounded Run Specs. A Folder kind is resource identity; workflow progress is
 recorded on Runs and their dependencies.
 
 ```text
 door         family invariants and user verbs
 workflow     Run Specs, dependencies/routes, dispatch, receipts, completion
-Folder owner Page Face + Task Face + resource closure + plugins + handoff
+Folder owner Page Face + Task Face + resource closure + workbenches + handoff
 native Run   Ticket + bounded target + worker + Result + receipt
-plugin       reusable storage/presentation/writer capability
+workbench       reusable storage/presentation/writer capability
 ```
 
 ### Stable address and resource identity
@@ -106,7 +106,7 @@ Job-backed Task  <job>/<task>/runs/<run>.sh ↔ $OUTPUT_ROOT/<task>/results/<run
 ```
 
 Page Writing uses Markdown Tickets (`runs/rp-*.md`) under the
-[interactive writing profile](../../page/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md).
+[interactive writing profile](../../page/haipipe-page-workflow/ref/interactive-writing-run.md).
 Design uses YAML Tickets (`runs/rdNN_<operation>_<slug>.yaml`) under
 [haipipe-design-workflow](../../design/haipipe-design-workflow/SKILL.md).
 Neither requires a shell wrapper merely to count as a Run.
@@ -114,7 +114,7 @@ Neither requires a shell wrapper merely to count as a Run.
 The Task owner resolves `$OUTPUT_ROOT` from its declared store or the Job.
 Existing records in older `results/<task>/` stores retain their resolver;
 do not copy or relocate them to imitate another dialect. `scripts/`, config, and
-notebooks are conditional supporting projections. `haipipe-plugin-runs` is the
+notebooks are conditional supporting projections. `haipipe-workbench-page` is the
 optional presenter over the logical Run spine. It does not replace the
 universal Task Face or own Execute, lifecycle, or closure authority.
 `haipipe-run` owns the shared Level-4 identity, pairing, receipt, lifecycle, and
@@ -135,11 +135,11 @@ third authority beside the Page Face and Task Face:
 The current Folder already exposes parts of the future Board view, but as
 separate surfaces:
 
-- `haipipe-plugin-folder` / `folderstat.py` is the live **display inventory**:
+- `haipipe-workbench-page/ref/folder.md` / `folderstat.py` is the live **display inventory**:
   one row per material lane, with counts, age, and narrow staleness.
 - Page `Outline` is the **plan/evidence projection** for the current Page
   workflow.
-- `haipipe-plugin-runs` is the **runtime projection** over Tickets, Results,
+- `haipipe-workbench-page/ref/run-space.md` is the **runtime projection** over Tickets, Results,
   and receipts.
 
 These are not yet a unified `Board Table`. Do not add a `board-table/` Folder
@@ -168,7 +168,7 @@ It then carries these sections in this order:
 ## Input
 ## Page Face
 ## Task Face
-## Plugins
+## Workbenches
 ## Gate and Closure
 ## Handoff
 ## Files
@@ -199,7 +199,7 @@ controls without synthetic Run ids.
 `page_ruling` tells the shared Page Workflow whether CHECK owes an owner-level
 person decision. `domain-gate` reuses the owner's named human gate receipt;
 `local` names a distinct Page-Face ruling in the Folder contract; `none` means
-closure is mechanical apart from any selected plugin ticks.
+closure is mechanical apart from any selected workbench ticks.
 
 Run the structural gate after adding or revising a Folder owner:
 
@@ -221,20 +221,20 @@ metadata:
   legacy_page_type: task   # optional compatibility key
 ```
 
-The skill owns both faces, selected plugins, cross-face closure and handoff.
+The skill owns both faces, selected workbenches, cross-face closure and handoff.
 Its Page Face uses `haipipe-page-workflow`; execution uses the family's Run
 Specs and native workers. No extra lifecycle object or identity record is
 required. Both owner forms resolve by `folder_kind`; `legacy_page_type` is
 only a read alias for old Pages.
 
-## Plugin selection
+## Workbench selection
 
-A Folder owner selects plugins; plugins never decide the owner. Record each selected
-plugin as required, optional, or forbidden and state why. Cross-Folder input
-does not require a separate binding plugin: bounded informational context is
+A Folder owner selects workbenches; workbenches never decide the owner. Record each selected
+workbench as required, optional, or forbidden and state why. Cross-Folder input
+does not require a separate binding workbench: bounded informational context is
 named by source address in the off-stage Context record; evidence is bound through an
 Evidence Item's full Supporting Run id or frozen Local Input address. There is
-no separate Task plugin. `PageX` is read-only migration history and must not be
+no separate Task workbench. `PageX` is read-only migration history and must not be
 selected, scaffolded, or written for a new Folder.
 
 ## Compatibility
@@ -265,7 +265,7 @@ current resource owner. New domain Pages write `folder-kind:`.
 - One declared resource/family skill owns each Folder kind and both faces.
 - Resource identity is separate from Run progress and dependency state.
 - Both faces name the same subject, version and closure boundary.
-- Each selected plugin has a purpose; empty capability folders do not exist.
+- Each selected workbench has a purpose; empty capability folders do not exist.
 - Cross-Folder inputs use exact Context source addresses or Evidence Item
   Supporting/Local Run bindings.
 - Runs launch through native Tickets, pair one declared Result and receipt,
@@ -279,5 +279,5 @@ current resource owner. New domain Pages write `folder-kind:`.
 - `../haipipe-board/src/folder_contract.py` discovers and validates Folder owner contracts.
 - `../haipipe-board/cli/foldercontracts.py` is the executable inventory/gate.
 - `../../page/haipipe-page/SKILL.md` owns the shared Page frame and Page workflow entry.
-- `../../page/haipipe-plugin/SKILL.md` owns reusable plugin mechanics.
+- `../../page/haipipe-workbench/SKILL.md` owns reusable workbench mechanics.
 - `../../run/haipipe-run/SKILL.md` owns the neutral Level-4 Run contract.

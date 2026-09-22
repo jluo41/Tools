@@ -37,7 +37,7 @@ No confirmed documentation or static integration mismatch remains in the reviewe
 - Board Delivery now blocks a cited D_ token absent from selected Result labels, as well as invalid or unready current Results, instead of exporting a pending marker or using stale evidence. Direct shared-writer use still preserves pending markers for drafts.
 - Direct use of the shared writers keeps unresolved display tokens readable as pending text; Board Delivery enforces current Result selection and cited D_ label bindings.
 
-Main code paths: page/haipipe-page/src/evidence_selection.py, page/haipipe-page/src/page_evidence.py, board/haipipe-board/live/export.py, page/page-plugins/_shared-export/md2tex.py, and page/page-plugins/_shared-export/md2docx.py. The matching guidance is in page-workflows/haipipe-page-check/SKILL.md and page-plugins/haipipe-plugin-delivery/ref/{latex,word}.md.
+Main code paths: page/haipipe-page/src/evidence_selection.py, page/haipipe-page/src/page_evidence.py, servers/workbench-page/export.py, ../servers/workbench-page/exporters/md2tex.py, and ../servers/workbench-page/exporters/md2docx.py. The matching guidance is in page-workflows/haipipe-page-check/SKILL.md and haipipe-workbench-page/ref/{latex,word}.md.
 
 ## Review and limits
 

@@ -59,7 +59,7 @@ Hard rules (enforced across the family)
 3. **gold is invisible** during a session. Only the report skill reads it.
 4. **Study data lives with the study** (the project repo), never in this plugin.
 
-Contracts: `../../ref/review-bundle-schema.md` · `../../ref/feedback-form.md`.
+Contracts: `../ref/review-bundle-schema.md` · `../ref/feedback-form.md`.
 
 Return contract
 ---------------

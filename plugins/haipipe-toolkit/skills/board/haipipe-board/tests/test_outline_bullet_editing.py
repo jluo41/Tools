@@ -124,57 +124,34 @@ class OutlineBulletEditingTest(unittest.TestCase):
             self.assertIn("Another point", rendered)
             self.assertNotIn("approved: ⬜", rendered)
 
-    def test_logic_map_renders_at_top_of_draft_space(self):
-        logic = """%% Derived from S-page-outline-v1.1.md.
-flowchart TD
-    P1[\"P1 · First move<br/>Clinical problem\"]
-    P2[\"P2 · Second move<br/>Study question\"]
-    P1 -->|\"What follows?\"| P2
-    classDef default fill:transparent,stroke-width:0px;
-        """
+    def test_structure_card_renders_as_text_at_top_of_draft_space(self):
         with tempfile.TemporaryDirectory() as directory:
             page = self._page(directory)
-            (page.parent / "outline" / "S-page-logic.mmd").write_text(
-                logic, encoding="utf-8"
-            )
             plan = page.parent / "outline" / "S-page-outline-v1.1.md"
             rendered = render(
                 "S-page", parse_outline(plan.read_text(encoding="utf-8")), page,
                 root=directory, path_q="/Board/board.md", file_q="S-page/S-page.md",
             )
 
-        self.assertEqual(rendered.count('class="card logic-card"'), 1)
-        self.assertLess(rendered.index('class="card logic-card"'),
+        self.assertEqual(rendered.count('class="card structure-card"'), 1)
+        self.assertLess(rendered.index('class="card structure-card"'),
                         rendered.index('class="card plan-card minimal-plan"'))
-        self.assertIn('class="logic-svg"', rendered)
-        self.assertIn("Clinical problem", rendered)
-        self.assertIn("What follows?", rendered)
-        self.assertIn("Mermaid", rendered)
-        self.assertIn("outline/S-page-logic.mmd", rendered)
-        self.assertNotIn("Mermaid source", rendered)
-        # The raw Mermaid source is intentionally not projected into the
-        # reader-facing Draft Space; only the rendered diagram and its source
-        # path are exposed.
-        self.assertNotIn("flowchart TD", rendered)
-        self.assertIn("outline/S-page-logic.mmd", rendered)
+        self.assertIn('<pre class="structure-text" data-structure-edit tabindex="0">'
+                      'C1 · Introduction\n  C1.P1 · Establish the point</pre>', rendered)
+        self.assertIn('<form class="structure-form" hidden', rendered)
+        self.assertIn('id="group-C1-P1"', rendered)
+        self.assertIn("outline/S-page-outline-v1.1.md", rendered)
+        self.assertIn(">⧉ run-structure<", rendered)
+        self.assertNotIn("Mermaid", rendered)
+        self.assertNotIn("logic-card", rendered)
 
-    def test_open_first_page_run_expands_mermaid_structure(self):
-        logic = """%% Candidate for rp00_mermaid-structure.
-flowchart TD
-    P01[\"P01 · First move\"]
-    P02[\"P02 · Second move\"]
-    P01 --> P02
-        """
+    def test_open_first_page_run_does_not_change_the_structure_card(self):
         with tempfile.TemporaryDirectory() as directory:
             page = self._page(directory)
-            (page.parent / "outline" / "S-page-logic.mmd").write_text(
-                logic, encoding="utf-8"
-            )
-            runtime = page.parent / "results" / "rp00_mermaid-structure"
+            runtime = page.parent / "results" / "rp-struct-01"
             runtime.mkdir(parents=True)
             (runtime / "runtime.yaml").write_text(
-                "run: rp00_mermaid-structure\nstatus: waiting-for-feedback\n",
-                encoding="utf-8",
+                "run: rp-struct-01\nstatus: waiting-for-feedback\n", encoding="utf-8",
             )
             plan = page.parent / "outline" / "S-page-outline-v1.1.md"
             rendered = render(
@@ -182,27 +159,9 @@ flowchart TD
                 root=directory, path_q="/Board/board.md", file_q="S-page/S-page.md",
             )
 
-        self.assertIn('<details class="card logic-card" aria-label="Mermaid">', rendered)
-        self.assertIn("P01 · First move", rendered)
-
-    def test_open_first_page_run_names_missing_mermaid_structure(self):
-        with tempfile.TemporaryDirectory() as directory:
-            page = self._page(directory)
-            runtime = page.parent / "results" / "rp00_mermaid-structure"
-            runtime.mkdir(parents=True)
-            (runtime / "runtime.yaml").write_text(
-                "run: rp00_mermaid-structure\nstatus: waiting-for-feedback\n",
-                encoding="utf-8",
-            )
-            plan = page.parent / "outline" / "S-page-outline-v1.1.md"
-            rendered = render(
-                "S-page", parse_outline(plan.read_text(encoding="utf-8")), page,
-                root=directory, path_q="/Board/board.md", file_q="S-page/S-page.md",
-            )
-
-        self.assertIn('<details class="card logic-card" aria-label="Mermaid">', rendered)
-        self.assertIn("open Mermaid Structure Run", rendered)
-        self.assertIn("outline/S-page-logic.mmd", rendered)
+        self.assertIn('<details class="card structure-card" open aria-label="Structure">', rendered)
+        self.assertIn("Establish the point", rendered)
+        self.assertNotIn("review now", rendered)
 
     def test_point_form_renders_role_statement_annotations_and_transition(self):
         point_plan = PLAN.replace(

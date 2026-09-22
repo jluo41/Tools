@@ -99,7 +99,7 @@ Folder with three files:
 ```
 
 `--persona` accepts a name (resolved under shipped/) or an absolute path to any folder on disk.
-External judge libraries (clinical IRB rubrics, Samsung-internal red-team panels, ablation rubrics for research) live outside the plugin.
+External judge libraries (clinical IRB rubrics, Samsung-internal red-team panels, ablation rubrics for research) live outside the workbench.
 
 Required fields in `persona.yaml`:
 - `rubric`            (label, e.g. `safety-review`, `patient-comprehension`)

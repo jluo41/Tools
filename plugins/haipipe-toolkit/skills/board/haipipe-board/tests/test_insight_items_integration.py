@@ -10,7 +10,7 @@ from src.insight_instances import contract, render_items
 from src.page_question import render_outline
 from live.runs import local_runs, render as render_runs
 
-SCRIPTS = Path(__file__).resolve().parents[3] / "task/page-types/haipipe-page-insight/scripts"
+SCRIPTS = Path(__file__).resolve().parents[3] / "insight/haipipe-page-insight/scripts"
 sys.path.insert(0, str(SCRIPTS))
 from test_insight_items import fixture, ri_fixture, write
 

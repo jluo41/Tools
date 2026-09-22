@@ -55,9 +55,9 @@ class ScratchTest(unittest.TestCase):
     def failing_summary(self, *_args):
         raise ValueError("AI summary unavailable")
 
-    def save(self, scope, target, phase="save", run_id="", summary=""):
+    def save(self, scope, target, step="save", run_id="", summary=""):
         return save_scratch(self.page, {
-            "scope": scope, "target": target, "phase": phase,
+            "scope": scope, "target": target, "step": step,
             "run_id": run_id, "notes": "First thought\nSecond thought",
             "summary": summary,
         }, summarizer=self.ai_summary)
@@ -101,7 +101,7 @@ class ScratchTest(unittest.TestCase):
 
     def test_ai_summary_failure_keeps_finish_open(self):
         result, err = save_scratch(self.page, {
-            "scope": "section", "target": "C1", "phase": "finish",
+            "scope": "section", "target": "C1", "step": "finish",
             "notes": "Keep the section focused.",
         }, summarizer=self.failing_summary)
         self.assertIsNone(result)
@@ -112,7 +112,7 @@ class ScratchTest(unittest.TestCase):
         self.assertIsNone(err, err)
         first = result["run"]
         result, err = save_scratch(self.page, {
-            "scope": "paragraph", "target": "C1.P1", "phase": "save",
+            "scope": "paragraph", "target": "C1.P1", "step": "save",
             "run_id": first, "notes": "Refine the causal hinge.", "summary": "",
         }, summarizer=self.ai_summary)
         self.assertIsNone(err, err)

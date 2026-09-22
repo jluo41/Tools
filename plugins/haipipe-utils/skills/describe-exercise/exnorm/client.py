@@ -62,7 +62,7 @@ from .dialect import parse
 from .retrieve import resolve
 
 DEFAULT_TRANSPORT = os.environ.get("EXNORM_TRANSPORT", "local")
-DEFAULT_URL = os.environ.get("EXNORM_URL", "http://127.0.0.1:8078")
+DEFAULT_URL = os.environ.get("EXNORM_URL", "http://127.0.0.1:8070/exercise")
 
 Scalarish = Union[None, float, int, str, Sequence]
 

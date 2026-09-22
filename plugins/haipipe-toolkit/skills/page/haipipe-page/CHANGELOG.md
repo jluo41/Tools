@@ -1,3 +1,44 @@
+## 0.116.1 · 2026-09-22
+
+- Docs: the structure review artifact is the Structure card (text list from the Outline), not
+  `outline/<stem>-logic.mmd`; "Structure description" replaces "Mermaid Structure description".
+
+## 0.116.0 · 2026-09-22
+
+- No more "phase": a Page's lifecycle is its Run list. `src/page_phase.py` is `src/page_progress.py`
+  (`run_progress()`, Run keys `context · structure · evidence · writing · check`, `run_of()` maps the
+  old uppercase tokens); `src/page_lifecycle.py` audits receipts by `run` (legacy `phase` read);
+  `cli/pagecontext.py --run <run>` replaces `--phase`; the SKILL's lifecycle table lists Runs, not
+  numbered phases; `ref/page-run-families.md` and the docs say Run everywhere.
+
+## 0.115.0 · 2026-09-22
+
+- `ref/page-run-families.md`: fifth RP kind `rp-revise-NN_<target>` (the Revise Run) and
+  its storage row.
+
+## 0.114.0 · 2026-09-22
+
+- `fn/serve.md` returns `workbench-url: <DOMAIN>/w/<board-slug>/<page-id>`
+  (`<DOMAIN>/w` standalone) beside `board-url`; the two-rules section about
+  composing `file=` by hand is gone because the server composes it. The
+  glossary, check packet, and SKILL serve snippet use `<DOMAIN>` and the generic
+  settings keys.
+
+## 0.113.0 · 2026-09-21
+
+- Move the served layer out of the skill into the plugin-level `servers/` tree:
+  `src/standalone_server.py` → `servers/haipipe-page/standalone_server.py`;
+  `assets/` (page.css/js, workbenches.js, workspace.*, `css/` parts) →
+  `servers/haipipe-page/assets/`; the Outline, Evidence, Value, Runs,
+  Delivery and Folder presenters → `servers/workbench-page/`, one workbench for
+  everything the Page's 🧭 tab and its sibling tabs render.
+  `cli/page.py serve` imports the standalone server from there; `init`, `setup`,
+  `inspect` and `build` are unchanged.
+- `src/page_assets.py` reads the reader appearance from `servers/haipipe-page/assets`;
+  `src/__init__.py` makes the `live` namespace importable for the grammar
+  modules that read live projections. No Board skill is required, but the
+  workbench's `servers/` tree is (tests copy `skills/page/haipipe-page` + `servers/`).
+
 ## 0.112.0 · 2026-09-21
 
 - Route Paper Section CHECKs to the Paper submission-readiness overlay while
@@ -6,7 +47,7 @@
 ## 0.111.0 · 2026-09-21
 
 - Make the standalone Page Face read-only on every host, keep Scratch notes
-  autosaving only in its plugin space, and reject browser Page-source saves.
+  autosaving only in its workbench space, and reject browser Page-source saves.
 
 ## 0.110.0 · 2026-09-20
 
@@ -32,7 +73,7 @@
 - Wire Draft Scratch Mode to one inline Section or whole paragraph-group
   control; B/symbol rows remain read-only reading material.
 - Keep the selected Outline Markdown authoritative while storing the Scratch
-  registry beside the plan and the durable receipt under `runs/`/`results/`.
+  registry beside the plan and the durable receipt under `workflow-runs/`/`results/`.
 
 ## 0.105.0 · 2026-09-15
 
@@ -42,7 +83,7 @@
 ## 0.104.0 · 2026-09-15
 
 - Add the Draft Space paragraph note thread (JL 260915): a (+) on every `C.P`
-  row opens a folded `💬 Notes` list and composer (`live/outline_feedback.py`).
+  row opens a folded `💬 Notes` list and composer (`servers/workbench-page/outline_feedback.py`).
   A saved note is appended as a pending-Step `#### Feedback F<nn>` item
   (Id · Target · Kind explore|wording|accept · By · Human comment · Agent
   interpretation: pending) to the owning Page Writing Run's
@@ -111,11 +152,11 @@
 
 ## 0.96.0 · 2026-09-13
 
-- Make Plugin Outline the single home for Bullet, Evidence, and Run workspaces.
+- Make Workbench Outline the single home for Bullet, Evidence, and Run workspaces.
 - Present Evidence from `results/*/result.yaml` first, while retaining old
   Outline evidence files as read-only compatibility input.
 - Split Run Workspace into Run P, Run E, and inspectable Supporting Runs, and
-  remove Runs from the top-level Plugin registry.
+  remove Runs from the top-level Workbench registry.
 
 ## 0.95.1 · 2026-09-13
 
@@ -340,7 +381,7 @@
 ## 0.69.0 · 2026-09-12
 
 - Keep plan-only `Note:` annotations out of the compact reader Outline table;
-  they remain available through the owning `outline/` records and plugin.
+  they remain available through the owning `outline/` records and workbench.
 - Remove the now-unused note-list styling from the shared Page renderer so
   standalone and Board-hosted Pages keep the same reading boundary.
 
@@ -355,7 +396,7 @@
 
 ## 0.67.0 · 2026-09-12
 
-- Give standalone Pages the category-plugin picker and persistent right pane
+- Give standalone Pages the category-workbench picker and persistent right pane
   used by Board Pages: Outline, Runs, Delivery, and Folder in canonical order.
 - Keep Evidence inside Outline, omit unsupported Studio, and remove the
   editor-shaped Source workspace from read-only hosts.
@@ -476,7 +517,7 @@
 - Land an accepted process ruling in its owning skill before applying it to
   affected Pages, and record the governing skill version in the Page receipt.
 - Align the compact Page Outline contract with its existing Feedback column.
-- Align the base Page with the Outline plugin's deep-linked Evidence cards and
+- Align the base Page with the Outline workbench's deep-linked Evidence cards and
   the phase-specific EMBED routes for `v0` and approved generations.
 - Route purpose, Aim-promise, and structure changes back to SHAPE while keeping
   prose-only realization changes under CONTENT.
@@ -542,14 +583,14 @@
 
 ## 0.57.2 · 2026-09-04
 
-- Clarify that phases load exact Outline-plugin refs as material contracts;
+- Clarify that phases load exact Outline-workbench refs as material contracts;
   the Page surface installs the shared presenter once.
 
 ## 0.57.1 · 2026-09-04
 
 - Align Paper and Design registry evidence rows with typed Evidence Items,
-  Supporting/local Runs, and the shared Outline plugin; remove active PageX,
-  probe-card value, and standalone bibex/display plugin requirements.
+  Supporting/local Runs, and the shared Outline workbench; remove active PageX,
+  probe-card value, and standalone bibex/display workbench requirements.
 
 ## 0.56.2 · 2026-09-03
 
@@ -593,7 +634,7 @@
 
 - Replace the Page's optional `Diagram` section with `Outline`. The Page now
   shows its optional narrative map plus a read-only `▤ Outline table` projected
-  from the current `outline/<stem>-outline-v<N>.md`; the outline plugin and all
+  from the current `outline/<stem>-outline-v<N>.md`; the outline workbench and all
   eight canonical process records remain unchanged and authoritative.
 
 ## 0.53.0 · 2026-09-01
@@ -757,7 +798,7 @@ home and this file points at it:
   as the phase's agent, and both leave the same trace (artifact, one log
   record, receipt); a person's chat ruling is transcribed with the quote;
   `outline/` is the process folder with seven record kinds, grammar in
-  `haipipe-plugin-outline/ref/`; the location grammar gains the bullet address
+  `haipipe-workbench-page/ref/`; the location grammar gains the bullet address
   and the `D<nn>` thread.
 - **Kept as is**: the type-resolution table and the generated inventory block
   (its `—` cells are `pagetypes.py`'s output, not hand-written); `### Decision
@@ -768,7 +809,7 @@ home and this file points at it:
 
 - **The page is the Aims' only home** (JL 260831, BoardSkillBoard QPf12 row 2:
   "In the Page as well, and should map to the content"). Reverses
-  haipipe-plugin-outline 0.16.0's "the page keeps no copy": one row per Aim
+  haipipe-workbench-page 0.16.0's "the page keeps no copy": one row per Aim
   with tick, `Done when:` and `Now:` on the page; the plan keeps the shape and
   its 🎯 marks and no Aim rows; `### A<n>` maps to Content division `<n>`,
   which `check.py group-no-division` already enforces.
@@ -848,7 +889,7 @@ character; every rule kept, every retirement narration moved here.
 - **§📁 `What a page is on disk` ADDED.** The base contract for what a page IS
   never showed the page's own folder; `<page-dir>/` lived in `haipipe-paper`
   and `paper/README.md`, so a consumer owned the definition of the thing. The
-  lane roster stays `haipipe-plugin`'s.
+  lane roster stays `haipipe-workbench`'s.
 - **The admission test opens §🧬 as the grain law.** "A property every page
   carries cannot tell one kind of page from another" is the sentence that
   decides what earns a Page Type, and it was buried mid-file inside a
@@ -916,8 +957,8 @@ character; every rule kept, every retirement narration moved here.
 ## 0.36.0 — 2026-08-19
 
 - **Four Page Types DELETED**: `for-design` (104L, 3 pages declared it, no
-  speciality left), `for-meeting` (78L, 0 pages, it is a plugin and
-  `haipipe-plugin-meeting` already ships), `for-skill` (311L, 0 pages, same),
+  speciality left), `for-meeting` (78L, 0 pages, it is a workbench and
+  `haipipe-workbench-meeting` already ships), `for-skill` (311L, 0 pages, same),
   `for-view` (0 pages declared it, everything is a view now). JL ruled each.
 - **No `page-type:` key is the DEFAULT**, and no `question` type was created for
   it: "question itself just to be very flexible" (JL 260819).
@@ -997,7 +1038,7 @@ story architecture and source allocation rather than ownership of all claims.
 **Seven Page Phases, not four.** §🎭's table and its authority test now list
 OUTLINE, DRAFT, PROBE, EVIDENCE, REVISE, COMPILE, CHECK, with the load path for
 each. The three splits and the failure each one allowed stay in
-`page-workflows/haipipe-page-workflow`; this table only stopped contradicting
+`haipipe-page-workflow`; this table only stopped contradicting
 them. The authority test gains `the section list itself is being agreed →
 OUTLINE`, `a marked hole has no card open for it → PROBE`, and `a card is open
 and its answer must land → EVIDENCE`.
@@ -1005,10 +1046,10 @@ and its answer must land → EVIDENCE`.
 ## 0.29.0 - 2026-08-16
 
 **display, literature and value retired as Page Types** (JL 260816): "every page
-will have them, so I will treat them more like the page plugins." They fail the
+will have them, so I will treat them more like the page workbenches." They fail the
 admission law for the plainest reason available: a property EVERY page carries
 cannot distinguish one kind of page from another, so it changes no closing rule,
-and a kind that changes no closing rule is plugin material (the same law that
+and a kind that changes no closing rule is workbench material (the same law that
 retired for-slide at 0.26.0).
 
 - Type resolution drops step ② entirely. `route: outward` / `route: inward` no
@@ -1019,11 +1060,11 @@ retired for-slide at 0.26.0).
 - `paper/page-types/haipipe-page-for-{display,literature,value}/` moved whole to
   `paper/page-types/_archive/`, which `install.sh` prunes, so the retired
   contracts stay readable without shipping.
-- Each already had a plugin lane shipping BESIDE its type, which is what made the
+- Each already had a workbench lane shipping BESIDE its type, which is what made the
   duplication visible: `<page>/display/` (QPf5), `<page>/bibex/` (QPf8),
   `<page>/probe/` (QPf9) on the design board.
 - The four family DASHES SURVIVE. A dash is a rollup page with its own closing
-  rule, and it rolls up pages carrying a plugin exactly as well as pages that
+  rule, and it rolls up pages carrying a workbench exactly as well as pages that
   wore a type.
 **The four per-family DASHES merged into one** (JL 260816, same session: "maybe
 just one thing for all"). Their `closes when` cells were identical character for
@@ -1063,7 +1104,7 @@ warning; `ref/page-template.md` carries the same rule beside the title contract.
 
 ## 0.27.0 - 2026-08-15
 
-**RUN moved out to `page-workflows/haipipe-page-workflow`** (JL 260815, ruled in
+**RUN moved out to `haipipe-page-workflow`** (JL 260815, ruled in
 the Page-Workflow session): the workflow gets one nameable HEAD skill beside its
 four member contracts, matching the one-folder-one-workflow shape every family's
 `page-workflows/` follows. `ref/page-run-contract.md` moved with it. This skill
@@ -1075,7 +1116,7 @@ the renamed `page-phases/` to `page-workflows/`.
 ## 0.26.0 - 2026-08-15
 
 **for-slide retired** (JL 260815, ruled on the design board's QPf3): a deck is
-plugin material at `<page>/slide/<page>-deck.html`, authored by an agent
+workbench material at `<page>/slide/<page>-deck.html`, authored by an agent
 (`/_board/autodeck`) and regenerated on demand, never a Page Type.
 
 - Type resolution drops the step-③ key `page-type: slide`.
@@ -1216,7 +1257,7 @@ The slide binding (division · source · render · acceptance) is its typed reco
 
 - The Decision Now reservation now admits the unsettled S-page exception (`### Needs JL · tick these`) instead of stating the rule as settled while a variant contradicted it.
 - The "A CHANGE IS FINISHED" paragraph split to one sentence per line; the QC1b consumer chain split at its double colon.
-- The boundary figure names `cli/serve.py` and `cli/check.py` with their dir, as it already did for `src/`.
+- The boundary figure names `servers/_host/serve.py` and `cli/check.py` with their dir, as it already did for `src/`.
 
 ## 0.15.0 - 2026-08-04
 
@@ -1316,8 +1357,8 @@ The slide binding (division · source · render · acceptance) is its typed reco
 - Repointed every design-board citation after `QC1b`'s 260802 Content rebuild: the door test
   moved from `QC6 §7` to `QC1b §1`, the anchored-write rule from `QC6 §9` to `QC1b §4`, and the
   human-decision rule from `QC6 §10` to `QC1b §5`.
-- Corrected the named next step. The rule strings it must replace are not in `cli/serve.py` and
-  there are not one of them: they moved to `live/chat.py` in the `QC2c` live-layer split, and
+- Corrected the named next step. The rule strings it must replace are not in `servers/_host/serve.py` and
+  there are not one of them: they moved to `servers/workbench-studio/chat.py` in the `QC2c` live-layer split, and
   there are four (`CHAT_RULES`, `FULL_RULES`, `BOARD_CHAT_RULES`, `BOARD_FULL_RULES`).
 
 ## 0.8.0 — 260802
@@ -1433,7 +1474,7 @@ The slide binding (division · source · render · acceptance) is its typed reco
 - Adopt `00 CONTEXT`, `01 OUTLINE`, `02 EVIDENCE`, `03 CONTENT`, and
   `04 CHECK` as the Page phases.
 - Add generated `outline/<stem>-context.md` and start new Page Runs at CONTEXT.
-- Replace active DRAFT/REVISE phase authority with `haipipe-page-content`.
+- Replace active DRAFT/REVISE phase authority with `haipipe-page-writing`.
 - Remove PageX from new Page evidence storage; keep old lanes read-only and
   route cross-Folder evidence through Supporting Run Results.
 ## 0.58.0 · 2026-09-06

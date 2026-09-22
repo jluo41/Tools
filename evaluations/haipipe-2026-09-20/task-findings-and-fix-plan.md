@@ -8,6 +8,17 @@
 
 本消息授权的是问题说明和计划。本会话没有另一项独立获批的实施任务；本次只新建本补充报告，保留原报告和所有已有工作区改动，没有开始修复技能、代码或执行运维流程。
 
+## 后续归属更新（2026-09-21）
+
+随后已按当前 Task domain 结构落地一个范围收窄：
+`haipipe-task-gpu` 和 `haipipe-task-gpu-training` 现在位于
+`T/5_fit/haipipe-task-for-fit/` 下，公开 `name:` 保持不变，因此按名称
+调用仍兼容。GPU 是 Fit Task 的执行修饰，不再作为独立 Task type；通用
+GPU companion 只负责 Fit 的队列、卡占用、teardown 和 receipt，训练
+companion 负责 checkpoint/resume、preemption 与训练专属 fallback。评估、
+serving 和 engine 的 GPU 工作仍由各自 owner 负责。原文中这两项的旧路径
+以本节为准；Run 边界结论保持不变。
+
 ## 1. 当前快照与复核范围
 
 - HEAD 仍是 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`；但工作区已不等于该 commit。根 README、多个其他家族、8 个 `references/*` 子模块工作树均有预存改动，另有未跟踪的 `AGENTS.md`、`evaluations/` 和 Insight 新目录。
@@ -25,7 +36,7 @@
 | Task config 应从 `scripts/config/` 改为 `configs/` | **撤回该迁移建议。** 当前权威 `T/haipipe-task/ref/hierarchy.md:16,83-92`、`ref/task-structure.md:75-95`、`fn/run.md:13,23` 均使用 `scripts/config/`；Data Task 自身 `SKILL.md:25-38` 也如此。原报告把历史 Data review 的 `configs/` 修复记录误当作当前权威。Data reviewer 的路径本身正确，快捷清单缺项仍成立（F07）。 |
 | Display seed 中 `b01j01t01r01` 不是完整 Run id | **撤回该判断。** `skills/run/haipipe-run/SKILL.md:354-358` 明确它是 Task 的完整 owner-native identity。仍需解决的是 source_runs 与最终 provenance 没有一致保留同一组来源字段（F20）。 |
 | Raw 所在家族没有远端 receipt 规则，应默认单独建 conversion Run | **收窄。** `T/haipipe-task/ref/databricks-execution.md:24-33,206-211` 已定义同一 Ticket 的 deploy/run/fetch 和 cluster receipt。Raw specialist 的 convert-only 流程没有清楚接上这一契约（F04）。默认可让转换留在 extraction Run 内，不应机械多建一个 Run。 |
-| GPU training 的 train/validation/test phases 构成 Workflow 错误 | **仅保留 P3 用词建议。** `T/haipipe-task-gpu-training/SKILL.md:113-120` 的语境是指标覆盖的数据划分，不是 Workflow 行。改叫 splits/sets 会更清楚，但不能把三种数据集升级为三个 Runs。 |
+| GPU training 的 train/validation/test phases 构成 Workflow 错误 | **仅保留 P3 用词建议，已随 Fit 归属更新。** `T/5_fit/haipipe-task-for-fit/haipipe-task-gpu-training/SKILL.md:113-120` 的语境是指标覆盖的数据划分，不是 Workflow 行；现行文字使用 “data splits”。不能把三种数据集升级为三个 Runs。 |
 | Remote pull plan 没有 Run specs，所以判 PARTIAL | **改为 N/A。** `T/1_data/haipipe-data-remote/fn/fn-plan.md:4-8,105-131` 描述一次 transport 操作内的多个 pull，并返回操作摘要；它没有声明自己是 Task Workflow definition。CLI 调用列表不能仅因是有序计划就被强制变成 Run roster。 |
 | Fit/Eval/Display/Agent 用 `phases:` 样例，却只判 PARTIAL | **统一为 FAIL。** 它们与 Data/Algo/Endpoint/Individual 使用同一个被明文禁止的顶层 roster，不能因其他段落写得好而减轻这一指标。 |
 | 所有四步生命周期说法都必须废除 | **收窄为 Workflow 单位问题。** Plan/Build/Execute/Report 可保留为操作或命令；错误是把它们作为 domain Phases、计划 rows 或独立身份权威。Task-for-page 的本地问题因此列 PARTIAL；它未直接给出 `phases:` YAML。 |
@@ -246,8 +257,8 @@ Endpoint SKILL 的当前 80–88 行是 config 字段，原报告对此处的 ph
 |---|---|---|
 | `haipipe-task` | FAIL | F01 的定义/生成/报告冲突；F03 路径。 |
 | `haipipe-workflow` | PASS | Run Specs/Instances/Steps 明确；现有 runtime 修改保留兼容边界。 |
-| `haipipe-task-gpu` | PASS | SKILL:35-53：queue 只调度有 config/Ticket/Result/receipt 的既有 Runs。 |
-| `haipipe-task-gpu-training` | PASS | SKILL:97-120：fallback、resume、独立配置保持 Run 边界；数据 phases 仅建议叫 splits。 |
+| `5_fit/haipipe-task-for-fit/haipipe-task-gpu` | PASS | fit-owned companion；queue 只调度有 config/Ticket/Result/receipt 的既有 Runs。 |
+| `5_fit/haipipe-task-for-fit/haipipe-task-gpu-training` | PASS | fit-owned companion；fallback、resume、独立配置保持 Run 边界；数据 splits 不创建额外 Runs。 |
 | `haipipe-page-task` | PARTIAL | F21：controller 被叫 workflow phase。 |
 | `10_page/haipipe-task-for-page` | PARTIAL | F21 命令/例外边界；F03 Result 路径。 |
 | `page-types/haipipe-page-insight` | PASS | 现有改动已修 map；ref/workflow-table:25-46 明确活动不分配 Run。 |

@@ -13,6 +13,12 @@
 - Treat `references/` as upstream content. Edit it only when the task targets that source. Before doing so, inspect the submodule status, read any scoped `AGENTS.md` and project guidance, and avoid broad formatting changes or unintended submodule pointer updates.
 - The root `AGENTS.md` applies to this repository. Nested `AGENTS.md` files add instructions for their own directories.
 
+## Keep it general
+
+- Nothing in code, configuration keys, defaults, or documentation names one person, one lab, or one deployment. Settings keys are generic (`DOMAIN`, `BIND_HOST`, `PORT`, `AUTH_FILE`, `SPACE_NAME`, `NO_AUTH`), display defaults are neutral (`SPACE Home`), and examples use placeholders such as `<DOMAIN>` or `example.test`. A deployment-specific prefix belongs in that deployment's `settings.env`, not in the repository.
+- Servers never bake an origin into a page, a redirect, or a printed link. `DOMAIN` is a variable: the same origin-relative link body (`/b/<board>/<page>`, `/w/<board>/<page>/<tab>`) is reached through `http://127.0.0.1:<port>`, a Tailscale IP, or a configured public origin.
+- A plugin's `servers/` may depend on the shared host in `plugins/haipipe-toolkit/servers/_host`, but the dependency is declared in that plugin's `servers/README.md`, and the shared host must start when the other plugin is absent.
+
 ## Keep repository metadata aligned
 
 - The top-level package inventory is the set of direct child directories in `plugins/`. When adding or retiring a package, keep its plugin manifest, `.claude-plugin/marketplace.json`, and the README package table aligned. Every marketplace `source` must resolve to an existing package directory.

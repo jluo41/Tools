@@ -4,8 +4,8 @@ then you slice it with slice_grid.py. See lesson/13, lesson/14.
 
 Drives the codex-image2 bridge directly (its MCP tools may not be registered in
 a given session). Requires the `codex` CLI on PATH + the codex-image2 bridge from
-the haipipe-toolkit plugin. Point CODEX_IMAGE2_SERVER at server.py, or rely on the
-default sibling-plugin path below.
+the haipipe-toolkit workbench. Point CODEX_IMAGE2_SERVER at server.py, or rely on the
+default sibling-workbench path below.
 
 Usage:
     gen_icon_grid.py <workspace_cwd> <reference.png> <out_name.png> <prompt.txt> [timeout=300]
@@ -19,7 +19,7 @@ import importlib.util, os, sys
 from pathlib import Path
 
 # The bridge lives at <haipipe-toolkit>/mcp-servers/codex-image2/server.py. This skill has moved
-# between plugin layouts more than once (own plugin, nested under haipipe-display-diagram, now a
+# between workbench layouts more than once (own workbench, nested under haipipe-display-diagram, now a
 # sibling skill inside haipipe-toolkit), so resolve by SEARCHING upward instead of counting
 # parents: walk the ancestors and take the first hit, either inside an ancestor itself or inside
 # an ancestor's haipipe-toolkit/ child. Override with CODEX_IMAGE2_SERVER when it lives elsewhere.
@@ -40,7 +40,7 @@ if not Path(BRIDGE).is_file():
     sys.exit(
         f"ERROR: codex-image2 bridge not found (searched every ancestor of this script for "
         f"{REL} and haipipe-toolkit/{REL}; got {BRIDGE!r}).\n"
-        "This is a hard prerequisite of the pipeline. Install the haipipe-toolkit plugin, or set "
+        "This is a hard prerequisite of the pipeline. Install the haipipe-toolkit workbench, or set "
         "CODEX_IMAGE2_SERVER to its mcp-servers/codex-image2/server.py, then rerun.")
 
 spec = importlib.util.spec_from_file_location("codex_image2_server", BRIDGE)

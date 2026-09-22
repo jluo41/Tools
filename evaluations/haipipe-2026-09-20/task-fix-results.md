@@ -4,6 +4,20 @@
 
 本仓库另有并行工作和既有修改；本轮未 reset、clean、提交，也未修改 references 子模块。下表描述本轮 Task 修复，不把整个工作区 diff 都归为本轮产物。
 
+## 后续归属更新（2026-09-21）
+
+按用户后续要求，GPU 两个执行 companion 已收拢到 Fit domain：
+
+- `plugins/haipipe-toolkit/skills/task/5_fit/haipipe-task-for-fit/haipipe-task-gpu/`
+- `plugins/haipipe-toolkit/skills/task/5_fit/haipipe-task-for-fit/haipipe-task-gpu-training/`
+
+公开 `name:` 保持 `haipipe-task-gpu` 与 `haipipe-task-gpu-training`，因此
+按 Skill 名称的调用保持兼容。GPU 不再作为独立 Task type；Fit owner 负责
+训练模型、数据和指标，两个 companion 分别负责通用 Fit 队列和训练专属
+checkpoint/resume/preemption/fallback。评估、serving、engine 的 GPU 任务
+仍由对应 domain owner 负责。原先将它们列为 Task 根下独立技能的评估路径，
+以此更新为准。
+
 ## 修复对应表
 
 | 项 | 已落地内容 | 验收边界 |
@@ -30,9 +44,13 @@
 | F20 | Display source_runs 和 derived_from 贯通完整 Run id、确切 artifact 与 SHA-256。 | 未读取实际来源数据。 |
 | F21 | Page 使用 controller/command 术语和 owner-native 引用；Discovery 重排仅在明确请求时进入，依从 Discovery owner，去除自动提交要求。 | 未改写任何真实 Page。 |
 | F22 | Task README 补齐 10_page，Display 范围准确，Insight/Design 为独立家族；DESIGN 标记历史，TODO 保留四个命令而非 Workflow Phase。 | 既有 Insight/Workflow 改动保留。 |
+| GPU ownership follow-up | 将 `haipipe-task-gpu` 与 `haipipe-task-gpu-training` 放入 `5_fit/haipipe-task-for-fit/`；移除独立 `gpu` Task type 路由；将 generic GPU 文案收窄到 Fit，并把 `train/validation/test` 改为 data splits。 | 路径、Skill 名称与相对引用静态核对；未执行 GPU 训练或调度。 |
 
 ## 检查记录
 
+- 后续 Fit ownership 调整的两个 moved Skills 通过 `skill-creator` quick validation；Fit
+  entrypoint 的既有 `argument-hint` warning 仍与基线相同。旧路径 grep 无残留，
+  相关 Markdown 通过 `git diff --check`。
 - 本轮结束时，对 Task 已修改文件集合进行 Python AST、YAML/JSON 和 SKILL frontmatter 静态解析，无解析错误；Raw Shell `bash -n`、Workflow JavaScript 函数体解析、`git diff --check` 通过。
 - `skill-creator` 的 `quick_validate` 检查了 32 个相关技能：16 通过；16 仅因既有 `argument-hint` 被该通用 validator 拒绝，与 HEAD 基线相同，保留兼容字段。详情：`task-fix-skill-validator.json`。
 - fresh-context 规划复核：`task-fix-validation-core.md`。临时 Algo/Stata 计划和脚手架说明已人工复核；最终无遗留的已报告范围内冲突。

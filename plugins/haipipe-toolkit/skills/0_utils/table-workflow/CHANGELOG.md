@@ -31,7 +31,7 @@
 
 ## 0.4.3 · 2026-09-15
 
-- Make Workflow × Workspace the canonical grammar: one plugin/work object
+- Make Workflow × Workspace the canonical grammar: one workbench/work object
   declares a plural Workspace roster of member Workspaces, a domain Workflow
   declares Phase/Cycle rows, and each row/Workspace intersection is a
   coordinate-keyed Cell.
@@ -40,7 +40,7 @@
   coordinates while keeping projections and actual Run inventory separate.
 - Add a worked Design matrix for Plan/Create/Review/Run/Delivery and preserve
   the `N_generate + J_verify` actual Run count.
-- Clarify that one Plugin/work object declares a plural `workspace_roster` of
+- Clarify that one Workbench/work object declares a plural `workspace_roster` of
   member Workspaces; Cell `workspace_id` references one member Workspace.
 
 ## 0.4.2 · 2026-09-08

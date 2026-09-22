@@ -61,7 +61,7 @@
 - Strengthen GI2 to the I2 owner contract: accepted QA answer, path, and named
   run are all required.
 - Map the Page owner RULING explicitly: none for I0-I4, GI5 receipt for I5;
-  Probe read remains a nested plugin tick.
+  Probe read remains a nested workbench tick.
 
 1.0.1 · 260831
 - Clarify that the two named gates are Insight cross-phase authority transfers;

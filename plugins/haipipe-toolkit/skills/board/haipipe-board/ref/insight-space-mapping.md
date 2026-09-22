@@ -1,6 +1,6 @@
 # Insight Board Spaces · UI ↔ Workflow ↔ artifacts
 
-Insight plugins use one public naming rule:
+Insight workbenches use one public naming rule:
 
 ```text
 Space = the user-facing workspace surface
@@ -8,7 +8,7 @@ Space = the user-facing workspace surface
 
 `Workspace` is not a competing reader-facing term. It may remain in legacy
 query parameters, CSS classes, or internal compatibility names, but new UI
-labels and current plugin prose use `Space`.
+labels and current workbench prose use `Space`.
 
 ## The Insight Spaces
 
@@ -116,7 +116,7 @@ The display consumes recorded `run_type`, `owner`, `actor`, `target`, `inputs`,
 addresses permit selection in a multi-target definition. These are read-side
 inputs, not new native Run authority or a replacement central catalogue.
 Where an owner does not publish worker/type/target metadata, that owner must
-supply it; this plugin does not infer a worker from a Folder kind.
+supply it; this workbench does not infer a worker from a Folder kind.
 
 ## Topic and question evolution
 

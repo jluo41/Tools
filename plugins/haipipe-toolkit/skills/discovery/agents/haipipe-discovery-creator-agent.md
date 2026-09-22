@@ -12,8 +12,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.18.0"
-  last_updated: "2026-09-13"
+  version: "1.19.0"
+  last_updated: "2026-09-21"
   summary: "Creator for BJTR Task Page + one-Subject Paper Run architecture."
 ---
 
@@ -22,6 +22,12 @@ metadata:
 LOAD haipipe-discovery first and follow its refs, including
 `ref/bjtr-alignment.md` when a legacy numbered path is encountered. I create;
 the reviewer evaluates. I never review my own work.
+
+The Block is also the Discovery Board. Use
+`haipipe-discovery/scripts/board_sync.py` at every structural checkpoint; the
+Board helper owns only `board.md`'s managed Job span and the Board CLI owns the
+derived `board/` site. Never hand-edit generated HTML or duplicate Task rows in
+the Board source.
 
 ## D1 SCOPE
 
@@ -41,7 +47,14 @@ needs them. New manifests write one canonical `discovery_type`; legacy
 Every new segment uses `<level-letter><NN>_<noun>_<qualifier>`. Resolve or mint
 Block, then Job, then Task. `discoveries/` is the bank, not a Block. The Page
 stem equals the Task folder stem. Stamp readable and compact Task addresses in
-the manifest.
+the manifest. After creating a Block, Job, or Task Folder, run:
+
+~~~bash
+python3 plugins/haipipe-toolkit/skills/discovery/haipipe-discovery/scripts/board_sync.py <block> --build --check --strict
+~~~
+
+The direct `jNN_/tNN_` tree remains the Board membership authority; the helper
+does not list individual Tasks in `board.md`.
 
 ## D1 PREPARE
 
@@ -91,6 +104,8 @@ paper.pdf        optional
 The Card cite key must equal the Result Bib key. On failure write blocked or
 unresolved truthfully. A complete status around missing artifacts is a lying
 receipt. Runtime also records `bib.source` and `bib.mode: verbatim_copy`.
+After a Run batch changes a Task's visible state, rebuild and check the owning
+Discovery Board before handing the Task to SYNTHESIZE.
 
 ## D1 SYNTHESIZE · Page workflow handoff
 
@@ -120,10 +135,12 @@ paper/source-only local Run inventory. Page-owned `rpNN` interaction remains
 outside that inventory and must satisfy the Page release barrier before CONTENT.
 When useful, D1 may write one
 optional Task-side typed record (`summary.md`, `verdict.md`, or `landscape.md`).
-D1 SYNTHESIZE asks `haipipe-plugin-outline/ref/evidence/citations.md` to build
+D1 SYNTHESIZE asks `haipipe-workbench-page/ref/evidence/citations.md` to build
 the deterministic citation aggregate under `outline/evidence/bibex/`. The
 typed record and Bib build are not Runs; the Outline Evidence Workspace does
-not replace the owning Result.
+not replace the owning Result. After Page `04 CHECK`, rebuild and strictly
+check the Board so its generated status and navigation are current before D1
+CLOSE.
 
 ## D1 CLOSE · after Page CHECK
 
@@ -134,6 +151,8 @@ not replace the owning Result.
 5. Append project log events.
 6. Reconcile the full Supporting/Local Run graph when this Discovery Page is
    consumed elsewhere; never create a separate question ticket or answer bank.
+7. Run `board_sync.py <block> --build --check --strict` and include the Board
+   source path plus generated Board path in the handoff.
 
 D1 CLOSE cannot report ok while Page CHECK is open, the checker fails, or a material Trigger is unresolved.
 
@@ -155,6 +174,9 @@ discovery_type:
 runs: {planned, running, complete, blocked, unresolved}
 typed_record:
 evidence_bib:
+board:
+  source: <block>/board.md
+  generated: <block>/board/
 summary:
 not_done:
 ~~~

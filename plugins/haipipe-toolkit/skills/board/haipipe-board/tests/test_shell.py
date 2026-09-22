@@ -117,9 +117,9 @@ class ShellDocTest(unittest.TestCase):
         self.assertIn('name="index" id="fi" data-src="/b/board/index.html?pane=index"', self.doc)
         self.assertIn('name="chat"  id="fc" data-src="/b/board/QD/QD5-x.html?pane=chat"', self.doc)
 
-    def test_the_plugin_pane_is_visible_on_a_first_visit(self):
+    def test_the_workbench_pane_is_visible_on_a_first_visit(self):
         self.assertIn("var off = true;", self.doc)      # the rail
-        self.assertIn("var hidden = false;", self.doc)  # the direct plugin strip
+        self.assertIn("var hidden = false;", self.doc)  # the direct workbench strip
         self.assertIn("if (savedPane !== null) hidden = savedPane !== '1';", self.doc)
 
     def test_no_placeholder_survives_into_the_served_document(self):
@@ -149,10 +149,10 @@ class ShellDocTest(unittest.TestCase):
     def test_internal_frames_use_embed_not_a_second_reader_view(self):
         self.assertIn("?embed", self.doc)
 
-    def test_plugin_frame_detects_html_from_the_url_path_only(self):
-        """A plugin query may end in an encoded Page URL whose value is .html.
+    def test_workbench_frame_detects_html_from_the_url_path_only(self):
+        """A workbench query may end in an encoded Page URL whose value is .html.
 
-        That does not make the plugin endpoint itself an HTML Page. The old
+        That does not make the workbench endpoint itself an HTML Page. The old
         raw-string suffix test appended ``?embed`` to Labeling's ``page=``
         value and the right pane landed on a 400 response.
         """
@@ -162,12 +162,12 @@ class ShellDocTest(unittest.TestCase):
     def test_registry_tabs_are_filtered_by_the_live_pages_applies_gate(self):
         """A type-specific tab must not remain in another Page's menus."""
         self.assertIn(
-            "w.boardPlugins.applicable(w.boardPlugins.livePage()).forEach",
+            "w.boardWorkbenches.applicable(w.boardWorkbenches.livePage()).forEach",
             self.doc,
         )
-        self.assertNotIn("w.boardPlugins.all().forEach(function (e)", self.doc)
+        self.assertNotIn("w.boardWorkbenches.all().forEach(function (e)", self.doc)
 
-    def test_direct_plugin_tabs_can_close_and_stay_closed(self):
+    def test_direct_workbench_tabs_can_close_and_stay_closed(self):
         """The first page visit opens its palette; later visits honor a close."""
         self.assertIn("xdefs().forEach(function (entry) { openSet.push(entry.id); });",
                       self.doc)
@@ -181,7 +181,7 @@ class ShellDocTest(unittest.TestCase):
         self.assertIn("if (plus) plus.hidden = true;", self.doc)
         self.assertIn("overflow-x:auto", self.doc)
 
-    def test_active_plugin_close_is_a_touch_target_not_a_tiny_glyph(self):
+    def test_active_workbench_close_is_a_touch_target_not_a_tiny_glyph(self):
         """The active tab must be reliably closable on a phone."""
         self.assertIn("width:36px;min-width:36px", self.doc)
         self.assertIn("touch-action:manipulation", self.doc)

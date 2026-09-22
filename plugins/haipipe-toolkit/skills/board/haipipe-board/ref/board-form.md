@@ -10,7 +10,7 @@ This file defines current Board source shape. `SKILL.md` owns routing;
 | Generic | omit `board-kind` | Page-shaped Markdown below the Board root | Q/S Pages grouped and ordered by `## Pages` |
 | Task Block | `board-kind: task-block` | direct `jNN_*/tNN_*` Task tree | Block → Board, Job → Group, Task → Page |
 | Discovery Block | `board-kind: discovery-block` | direct `jNN_*/tNN_*` Discovery tree | Block → Board, Job → Group, Discovery Task → Page |
-| Design Board | `board-kind: design-board` | Brief and Design Folder tree | Design tasks, Items and native Runs through `haipipe-plugin-design-board` |
+| Design Board | `board-kind: design-board` | Brief and Design Folder tree | Design tasks, Items and native Runs through `haipipe-workbench-design/ref/design-board.md` |
 | Insight Board | `board-kind: insight-board` | Meta, Question and DIKW Page tree | Insight-owned resources, questions and native Runs through `haipipe-insight` and the Board presenter |
 
 The kind changes discovery and projection only. It does not change the base
@@ -18,7 +18,7 @@ Page contract or create a new Page Type.
 
 Design and Insight are independent family owners. Use their current Folder
 contracts and generators; Q/S templates and generic regrouping do not define
-their source trees. See `haipipe-plugin-design-board` and
+their source trees. See `haipipe-workbench-design/ref/design-board.md` and
 `haipipe-insight` → `haipipe-insight-workflow` for their native work.
 
 ## Generic Board tree
@@ -42,7 +42,7 @@ their source trees. See `haipipe-plugin-design-board` and
 ```
 
 The Board folder normally lives under the owning task, project, or paper. A
-plugin skill-design Board lives under the plugin's `skills/diagrams/` folder.
+workbench skill-design Board lives under the workbench's `skills/diagrams/` folder.
 `NN` orders Boards within one topic series. The date is the creation date and
 never changes.
 
@@ -85,6 +85,14 @@ Job Results path.
 A Discovery Block uses the same structural projection but declares
 `board-kind: discovery-block`; its Pages declare `folder-kind: discovery`, and
 its Paper/Source Results remain Folder-local under each Discovery Task.
+
+Discovery forms this Board incrementally with
+`haipipe-discovery/scripts/board_sync.py`: the helper creates or repairs the
+Board head and managed Job headings, while this Board engine remains the owner
+of `board/` build/check output. The direct `jNN_/tNN_` tree remains the
+membership authority; the Board source does not duplicate Task or Run rows. The
+two reserved `haipipe:discovery-board-jobs` comments are source markers and are
+ignored by the Board parser, so they never appear as Group prose.
 
 ## board.md
 
@@ -129,7 +137,7 @@ the editable source tree separate from the generated web routes.
 ## Pages is presentation, not membership
 
 A Generic Board discovers supported Page filenames anywhere below its root,
-excluding hidden, generated, archived, and plugin-owned segments. `## Pages`
+excluding hidden, generated, archived, and workbench-owned segments. `## Pages`
 then assigns their display Groups and order. An unlisted Page remains visible
 under a warning Group; registration failure must not hide work.
 
@@ -198,7 +206,7 @@ uses `🔴`, `🟡`, `✅`, or `⏸️` and is a different field.
 └── <stem>-log.md
 ```
 
-The Outline plugin owns their schemas. Writers append or regenerate the
+The Outline workbench owns their schemas. Writers append or regenerate the
 specific record they own; they do not recreate Page-level process sections.
 
 ## Links and embeds
@@ -262,7 +270,7 @@ The Page reading surface offers navigation, folding, evidence viewing, and
 `⧉ Copy prompt` for a passage or heading. It has no inline editor, Comment,
 or Chat button. Copied prompts carry the source path and quoted context;
 the reader pastes them into an agent conversation and adds a request.
-Scripts may enhance this reading surface and explicit plugin workspaces;
+Scripts may enhance this reading surface and explicit workbench workspaces;
 they may not become the content source.
 
 ## Compatibility boundary

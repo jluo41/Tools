@@ -10,7 +10,7 @@ workflow_table:
 
   workspace_roster:
     id: <stable-roster-id>
-    declared_by: <one Plugin/work object>
+    declared_by: <one Workbench/work object>
     workspaces:
       - id: <stable-workspace-id>
         label: <reader-facing label>
@@ -263,7 +263,7 @@ Cells without becoming a Workflow axis.
 ## Audit checklist
 
 ```text
-[ ] one Plugin/work object declares plural member Workspaces
+[ ] one Workbench/work object declares plural member Workspaces
 [ ] one Run Spec row per independently closable Workflow node
 [ ] every row has type, target, actor, action, close rule, receipt, cardinality
 [ ] every route resolves; entry and terminal sets exist

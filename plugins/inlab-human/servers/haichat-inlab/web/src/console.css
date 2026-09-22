@@ -1,0 +1,2160 @@
+/* In-lab console — layout + component styles.
+ *
+ * Every colour is a Mattermost design token — nothing is hard-coded — so these
+ * styles inherit the user's real HAI-Chat theme (light, dark, or custom) when the
+ * console is embedded in a thread, and fall back to the Denim defaults in
+ * theme/mattermost.css when it is served standalone.
+ *
+ * Chat styling is NOT here: in HAI-Chat, Mattermost is the chat.
+ */
+
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    /* fixed-height shell: every scroll region lives inside a pane, so the shell
+     * itself must never scroll — clip it so a runaway view can't drag the topbar
+     * and nav rail off-screen. */
+    overflow: hidden;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--sidebar-header-bg);
+    color: var(--sidebar-text);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    flex: 0 0 auto;
+}
+.topbar .logo {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+.topbar .roster-sub {
+    color: var(--sidebar-text);
+    opacity: 0.6;
+}
+.topbar-space {
+    flex: 1 1 auto;
+}
+/* lava brand dot — only visible under the databricks skin */
+.brand-dot {
+    display: none;
+}
+:root[data-skin='databricks'] .brand-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--brand-accent);
+}
+
+.layout {
+    display: grid;
+    /* grid-template-columns is set inline by the shell (resizable panes) */
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* rail | main | (splitter + HaiChat drawer) */
+.layout-shell {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.side {
+    overflow-y: auto;
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+}
+
+.center {
+    min-width: 0;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--center-channel-bg);
+}
+
+.pane-section {
+    padding: 12px;
+}
+.pane-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    margin-bottom: 8px;
+}
+
+.badge {
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    text-transform: none;
+}
+.badge.empty {
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+}
+
+.chip {
+    font-size: 10px;
+    padding: 0 5px;
+    border-radius: var(--radius-s);
+    background: rgba(var(--button-bg-rgb), 0.12);
+    color: var(--button-bg);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.dot.live {
+    background: var(--online-indicator);
+}
+.dot.down {
+    background: var(--dnd-indicator);
+}
+.dot.busy {
+    background: var(--away-indicator);
+}
+
+/* roster (patients + models) */
+.roster {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.roster-item {
+    padding: 7px 8px;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+.roster-item:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+}
+.roster-item.selected {
+    background: rgba(var(--button-bg-rgb), 0.1);
+    border-left-color: var(--button-bg);
+}
+.roster-item.dead {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+.roster-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+.roster-id {
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+.roster-sub {
+    font-size: 11px;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+}
+.roster-sub.center {
+    text-align: center;
+}
+.muted {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+}
+
+/* chart */
+.chart {
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+}
+.demographics {
+    margin-bottom: 10px;
+}
+.chart-table {
+    margin-bottom: 6px;
+}
+.chart-table summary {
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 0;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.chart-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+.chart-table td {
+    padding: 3px 4px;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.8);
+    vertical-align: top;
+}
+
+/* the chart is rendered AS OF the prediction date — make that impossible to miss */
+.as-of {
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--center-channel-color);
+    background: rgba(255, 188, 31, 0.18);
+    border-radius: var(--radius-s);
+    padding: 2px 6px;
+    display: inline-block;
+}
+
+/* buttons */
+.run-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: var(--radius-s);
+    background: var(--button-bg);
+    color: var(--button-color);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+.run-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.run-btn.ghost {
+    background: transparent;
+    color: var(--button-bg);
+    border: 1px solid rgba(var(--button-bg-rgb), 0.4);
+}
+.run-btn.stop {
+    background: var(--error-text);
+}
+
+/* score card */
+.score-card {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    text-align: center;
+}
+.score-value {
+    font-size: 32px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+.score-band {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+.band-high {
+    color: var(--dnd-indicator);
+}
+.band-moderate {
+    color: var(--away-indicator);
+}
+.band-low {
+    color: var(--online-indicator);
+}
+
+.alert {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: var(--radius-s);
+    font-size: 11px;
+    text-align: left;
+}
+.alert.warn {
+    background: rgba(255, 188, 31, 0.16);
+    color: var(--center-channel-color);
+}
+.alert.error {
+    background: rgba(210, 75, 78, 0.14);
+    color: var(--error-text);
+}
+
+/* draggable dividers */
+.splitter {
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+    flex: 0 0 auto;
+}
+.splitter:hover,
+.splitter:active {
+    background: var(--button-bg);
+}
+.splitter.vertical {
+    cursor: col-resize;
+    width: 6px;
+}
+.splitter.horizontal {
+    cursor: row-resize;
+    height: 6px;
+}
+
+/* the DATA layers: raw -> source -> record. Each view says which stage it is. */
+.layer-banner {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    background: rgba(var(--button-bg-rgb), 0.06);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+}
+.layer-step {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: var(--button-bg);
+    color: var(--button-color);
+    white-space: nowrap;
+}
+.layer-banner code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    white-space: nowrap;
+}
+
+/* raw files (stage 1) */
+.raw-file {
+    margin-bottom: 8px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+}
+.raw-file-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+.raw-file-head:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.05);
+}
+.raw-file-pre {
+    margin: 0;
+    padding: 10px 12px;
+    max-height: 420px;
+    overflow: auto;
+    font-size: 11px;
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    white-space: pre;
+}
+
+/* raw explorer */
+.raw {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    /* the whole flex chain above (.pane → .pane-body → .group → .center) sets
+     * min-height:0 so an inner .view-scroll can scroll; .raw is the last link and
+     * must too, or a long list grows past the pane and the BODY scrolls instead —
+     * carrying the topbar and nav rail off-screen. */
+    min-height: 0;
+}
+.raw .pad {
+    padding: 24px;
+}
+.raw-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    flex: 0 0 auto;
+}
+.raw-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 0 16px 8px;
+    flex: 0 0 auto;
+}
+.raw-tab {
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    background: transparent;
+    color: var(--center-channel-color);
+    border-radius: var(--radius-s);
+    padding: 3px 8px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.raw-tab.active {
+    background: var(--button-bg);
+    color: var(--button-color);
+    border-color: var(--button-bg);
+}
+.raw-tab.active .badge {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+.raw-tab.empty {
+    opacity: 0.45;
+}
+.raw-grid-wrap {
+    flex: 1;
+    overflow: auto;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+}
+.raw-grid {
+    border-collapse: collapse;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+}
+.raw-grid th {
+    position: sticky;
+    top: 0;
+    background: var(--center-channel-bg);
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 2px solid rgba(var(--center-channel-color-rgb), 0.16);
+    font-weight: 600;
+    color: rgba(var(--center-channel-color-rgb), 0.7);
+}
+.raw-grid td {
+    padding: 4px 10px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.85);
+    vertical-align: top;
+}
+/* free-text columns (notes, dialogue, JSON blobs): cap the width and wrap onto
+ * multiple lines instead of running off-screen. pre-wrap keeps a transcript's own
+ * line breaks — a dialogue then reads one turn per line. */
+.raw-grid td.wrap,
+.raw-grid th.wrap {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 220px;
+    max-width: 480px;
+}
+.raw-grid tr.after-index {
+    background: rgba(255, 188, 31, 0.14);
+}
+.raw-grid .rownum {
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+}
+.raw-foot {
+    padding: 6px 16px;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    flex: 0 0 auto;
+}
+
+/* ── nav rail (grouped by the paradigm: DATA / INSIGHT / ACTION) ─────────── */
+.navrail {
+    width: 160px;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 6px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    overflow-y: auto;
+}
+.navrail.collapsed {
+    width: 52px;
+}
+.nr-group {
+    margin-bottom: 10px;
+}
+.nr-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.55;
+    padding: 6px 8px 4px;
+}
+.nr-divider {
+    height: 1px;
+    margin: 6px 8px;
+    background: rgba(var(--center-channel-color-rgb), 0.16);
+}
+.nr-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+}
+.nr-item:hover {
+    background: var(--sidebar-text-hover-bg);
+}
+.nr-item.active {
+    border-left-color: var(--sidebar-text-active-border);
+    background: rgba(var(--button-bg-rgb), 0.1);
+    color: var(--button-bg);
+    font-weight: 600;
+}
+.navrail.collapsed .nr-item {
+    justify-content: center;
+    padding: 6px 0;
+}
+.nr-icon {
+    font-size: 15px;
+}
+.nr-foot {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+}
+
+/* rail: a view that is open but not focused gets a dot (VSCode-ish) */
+.nr-item {
+    position: relative;
+}
+.nr-dot {
+    position: absolute;
+    right: 6px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(var(--center-channel-color-rgb), 0.45);
+}
+.navrail.collapsed .nr-dot {
+    right: 4px;
+    top: 6px;
+}
+
+/* ── dock layout (recursive split tree; see layout.ts) ───────────────────── */
+.split {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+}
+.split.row {
+    flex-direction: row;
+}
+.split.col {
+    flex-direction: column;
+}
+/* a slot holds one child plus the splitter that follows it */
+.split-slot {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex-grow: 0;
+    flex-shrink: 1;
+}
+.split.row > .split-slot {
+    flex-direction: row;
+}
+.split.col > .split-slot {
+    flex-direction: column;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background: var(--center-channel-bg);
+}
+.group.focused > .tabstrip {
+    background: rgba(var(--button-bg-rgb), 0.07);
+}
+
+/* the pane's content area — the drop-zone preview is positioned against this */
+.pane-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+}
+
+/* live preview: WHERE the dragged tab will land */
+.dockzone {
+    position: absolute;
+    background: rgba(var(--button-bg-rgb), 0.22);
+    border: 2px solid var(--button-bg);
+    pointer-events: none;
+    z-index: 5;
+}
+.dockzone.center {
+    inset: 0;
+}
+.dockzone.left {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+}
+.dockzone.right {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 50%;
+}
+.dockzone.top {
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 50%;
+}
+.dockzone.bottom {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50%;
+}
+
+/* ── tab strip (VSCode-style: open views coexist) ────────────────────────── */
+.tabstrip {
+    display: flex;
+    align-items: stretch;
+    flex: 0 0 auto;
+    overflow-x: auto;
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+}
+/* which group the rail will open into, when the view is split */
+.tabstrip.focused {
+    background: rgba(var(--button-bg-rgb), 0.06);
+}
+/* drop target while dragging a tab across the divider */
+.tabstrip.dragover {
+    outline: 2px dashed var(--button-bg);
+    outline-offset: -2px;
+}
+.tabstrip-space {
+    flex: 1 1 auto;
+}
+.tab-action {
+    flex: 0 0 auto;
+    border: none;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 0 10px;
+    cursor: pointer;
+}
+.tab-action:hover {
+    color: var(--button-bg);
+    background: rgba(var(--button-bg-rgb), 0.1);
+}
+
+/* drop a tab on the right edge to CREATE the split (VSCode's gesture) */
+.edge-drop {
+    flex: 0 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px dashed transparent;
+}
+.edge-drop.over {
+    flex: 0 0 40%;
+    background: rgba(var(--button-bg-rgb), 0.08);
+    border-left: 2px dashed var(--button-bg);
+}
+.edge-hint {
+    display: none;
+    font-size: 11px;
+    color: var(--button-bg);
+    font-weight: 600;
+}
+.edge-drop.over .edge-hint {
+    display: block;
+}
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+    cursor: pointer;
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.1);
+    border-top: 2px solid transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.7);
+    user-select: none;
+}
+.tab:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+}
+.tab.active {
+    background: var(--center-channel-bg);
+    border-top-color: var(--button-bg);
+    color: var(--center-channel-color);
+    font-weight: 600;
+}
+.tab-close {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 10px;
+    padding: 1px 3px;
+    border-radius: var(--radius-s);
+    opacity: 0;
+    cursor: pointer;
+}
+.tab:hover .tab-close,
+.tab.active .tab-close {
+    opacity: 0.55;
+}
+.tab-close:hover {
+    opacity: 1;
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+}
+
+/* an open-but-inactive view stays MOUNTED and hidden — its state survives */
+.pane {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+.pane.hidden {
+    display: none;
+}
+
+/* ── patient combobox (topbar) ───────────────────────────────────────────── */
+.combo {
+    position: relative;
+}
+.combo-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    font-size: 13px;
+    cursor: pointer;
+}
+.combo-label {
+    font-size: 11px;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.combo-value {
+    font-family: var(--font-mono);
+    font-weight: 600;
+}
+.combo-caret {
+    opacity: 0.6;
+    font-size: 10px;
+}
+.combo-pop {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 30;
+    width: 300px;
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.2);
+    border-radius: var(--radius-m);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+.combo-search {
+    margin: 8px;
+    padding: 6px 8px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: inherit;
+    font-size: 13px;
+}
+.combo-list {
+    overflow-y: auto;
+    padding: 0 8px 8px;
+}
+.combo-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+    padding: 8px 4px 4px;
+}
+.combo-empty {
+    padding: 8px;
+}
+
+/* ── patient card (persistent preview strip) ─────────────────────────────── */
+.patient-card {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+}
+.pc-main {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.pc-id {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 14px;
+}
+.pc-tables {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+/* ── views ───────────────────────────────────────────────────────────────── */
+.view-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    min-height: 0;
+}
+.stub-card {
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.28);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+}
+.stub-body {
+    margin-top: 10px;
+}
+
+/* checklist (ACTION) */
+.cl-bar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.cl-bar-btns {
+    display: flex;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+.cl-btn {
+    width: auto;
+    margin-top: 0;
+    padding: 6px 14px;
+    font-size: 12px;
+}
+.cl-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.cl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-left: 3px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+    cursor: pointer;
+}
+.cl-item:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+}
+.cl-item.done {
+    opacity: 0.55;
+}
+.cl-item.done .cl-title {
+    text-decoration: line-through;
+}
+.cl-item input {
+    margin-top: 3px;
+    flex: 0 0 auto;
+}
+.cl-body {
+    min-width: 0;
+}
+.cl-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 3px;
+}
+.cl-prio {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+.cl-prio.high {
+    background: rgba(210, 75, 78, 0.16);
+    color: var(--dnd-indicator);
+}
+.cl-prio.medium {
+    background: rgba(255, 188, 31, 0.2);
+    color: var(--away-indicator);
+}
+.cl-prio.low {
+    background: rgba(var(--center-channel-color-rgb), 0.1);
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+}
+.cl-meta {
+    margin-top: 4px;
+    font-size: 11px;
+    color: rgba(var(--center-channel-color-rgb), 0.5);
+}
+.cl-foot {
+    display: flex;
+    gap: 8px;
+    padding: 8px 2px;
+}
+/* high-priority items get a red spine — they are the ones that change how a score reads */
+.cl-item:has(.cl-prio.high) {
+    border-left-color: var(--dnd-indicator);
+}
+
+/* model view: runs history, Databricks-Jobs-style */
+.runs {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+.model-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 6px;
+}
+.runs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+.runs-table th {
+    text-align: left;
+    padding: 5px 8px;
+    border-bottom: 2px solid rgba(var(--center-channel-color-rgb), 0.16);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.7);
+}
+.runs-table td {
+    padding: 5px 8px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+}
+.runs-table tbody tr {
+    cursor: pointer;
+}
+.runs-table tbody tr:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+}
+.runs-table tbody tr.selected {
+    background: rgba(var(--button-bg-rgb), 0.1);
+}
+
+/* forecast chart (CGM endpoints answer with a trajectory, not a score) */
+.fc-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+.fc-last {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+}
+.fc-svg {
+    width: 100%;
+    height: 200px;
+    display: block;
+}
+.fc-band {
+    fill: rgba(61, 184, 135, 0.12);
+}
+.fc-grid {
+    stroke: rgba(var(--center-channel-color-rgb), 0.18);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+}
+.fc-tick {
+    font-size: 9px;
+    fill: rgba(var(--center-channel-color-rgb), 0.5);
+    font-family: var(--font-mono);
+}
+.fc-line {
+    fill: none;
+    stroke: var(--button-bg);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+.fc-line.ctx {
+    stroke: rgba(var(--center-channel-color-rgb), 0.45);
+    stroke-width: 1.4;
+}
+/* what actually happened — dashed, so the forecast is never mistaken for it */
+.fc-line.observed {
+    stroke: var(--online-indicator);
+    stroke-width: 1.8;
+    stroke-dasharray: 5 3;
+}
+.fc-anchor {
+    stroke: var(--away-indicator);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+    vector-effect: non-scaling-stroke;
+}
+.fc-legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding-top: 6px;
+}
+.fc-legend .sw {
+    display: inline-block;
+    width: 14px;
+    height: 3px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.fc-legend .sw.fc {
+    background: var(--button-bg);
+}
+.fc-legend .sw.obs {
+    background: var(--online-indicator);
+}
+.fc-legend .sw.ctx {
+    background: rgba(var(--center-channel-color-rgb), 0.45);
+}
+
+/* model view: sidebar (pick a model) | card + run */
+.mv {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+}
+.mv-side {
+    flex: 0 0 210px;
+    overflow-y: auto;
+    padding: 12px 8px;
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+}
+.roster-item.offline {
+    opacity: 0.55;
+}
+.mv-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+.mv-tabs {
+    display: flex;
+    gap: 4px;
+    flex: 0 0 auto;
+    padding: 8px 12px 0;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+}
+.mv-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.65);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+}
+.mv-tab.active {
+    color: var(--button-bg);
+    border-bottom-color: var(--button-bg);
+}
+.mv-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* the model card */
+.mc {
+    padding: 12px 16px;
+}
+.mc-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.mc-title {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 15px;
+}
+.mc-mode {
+    padding: 10px 12px;
+    border-radius: var(--radius-m);
+    margin-bottom: 12px;
+    font-size: 12px;
+    border-left: 3px solid;
+}
+.mc-mode.ok {
+    background: rgba(61, 184, 135, 0.1);
+    border-left-color: var(--online-indicator);
+}
+.mc-mode.warn {
+    background: rgba(255, 188, 31, 0.14);
+    border-left-color: var(--away-indicator);
+}
+.mc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+.mc-table td {
+    padding: 4px 8px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    vertical-align: top;
+}
+.mc-k {
+    width: 170px;
+    color: rgba(var(--center-channel-color-rgb), 0.55);
+    white-space: nowrap;
+}
+.mc-v {
+    font-family: var(--font-mono);
+    word-break: break-word;
+}
+.mc-pre {
+    margin: 0 0 12px;
+    padding: 10px;
+    background: rgba(var(--center-channel-color-rgb), 0.05);
+    border-radius: var(--radius-s);
+    font-size: 11px;
+    overflow-x: auto;
+}
+
+/* health */
+.health-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+.health-table td {
+    padding: 5px 8px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    vertical-align: top;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* ── HaiChat drawer ──────────────────────────────────────────────────────── */
+.chat-toggle {
+    padding: 5px 12px;
+    border: 1px solid rgba(var(--button-bg-rgb), 0.5);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--button-bg);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.chat-toggle.active {
+    background: var(--button-bg);
+    color: var(--button-color);
+}
+.drawer {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+}
+.drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    flex: 0 0 auto;
+}
+.drawer-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 13px;
+}
+.drawer-close {
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.6;
+    font-size: 14px;
+}
+.drawer-close:hover {
+    opacity: 1;
+}
+.drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.drawer-hello {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.28);
+    border-radius: var(--radius-m);
+}
+.drawer-msg {
+    padding: 8px 10px;
+    border-radius: var(--radius-m);
+    font-size: 13px;
+    max-width: 92%;
+    white-space: pre-wrap;
+}
+.drawer-msg.user {
+    align-self: flex-end;
+    background: rgba(var(--button-bg-rgb), 0.12);
+}
+.drawer-msg.assistant {
+    align-self: flex-start;
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+}
+.drawer-input {
+    display: flex;
+    gap: 6px;
+    padding: 10px 12px;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    flex: 0 0 auto;
+}
+.drawer-input input {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    color: inherit;
+    font-size: 13px;
+}
+.drawer-input .send {
+    width: 38px;
+    margin-top: 0;
+    flex: 0 0 auto;
+}
+.drawer-head-btns {
+    display: flex;
+    gap: 8px;
+}
+.drawer-msg .cursor {
+    opacity: 0.5;
+    animation: blink 1s step-end infinite;
+}
+
+/* markdown inside assistant bubbles — compact, bubble-safe */
+.drawer-msg.md p,
+.drawer-msg.md ul,
+.drawer-msg.md ol {
+    margin: 0 0 8px;
+}
+.drawer-msg.md > *:last-child {
+    margin-bottom: 0;
+}
+.drawer-msg.md ul,
+.drawer-msg.md ol {
+    padding-left: 18px;
+}
+.drawer-msg.md li {
+    margin: 2px 0;
+}
+.drawer-msg.md h1,
+.drawer-msg.md h2,
+.drawer-msg.md h3,
+.drawer-msg.md h4 {
+    margin: 10px 0 6px;
+    font-size: 13px;
+}
+.drawer-msg.md code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 0 4px;
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+}
+.drawer-msg.md pre {
+    margin: 6px 0;
+    padding: 8px;
+    overflow-x: auto;
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+}
+.drawer-msg.md pre code {
+    padding: 0;
+    background: transparent;
+}
+.drawer-msg.md table {
+    border-collapse: collapse;
+    margin: 6px 0;
+    font-size: 12px;
+    display: block;
+    overflow-x: auto;
+}
+.drawer-msg.md th,
+.drawer-msg.md td {
+    padding: 3px 8px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+}
+.drawer-msg.md blockquote {
+    margin: 6px 0;
+    padding: 2px 10px;
+    border-left: 3px solid rgba(var(--center-channel-color-rgb), 0.2);
+    color: rgba(var(--center-channel-color-rgb), 0.7);
+}
+.drawer-msg.md a {
+    color: var(--link-color);
+}
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+.drawer-info {
+    align-self: center;
+    font-size: 10px;
+    color: rgba(var(--center-channel-color-rgb), 0.45);
+}
+
+/* tool activity — visible, compact */
+.tc-chip {
+    align-self: flex-start;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 3px 8px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: 10px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+}
+.tc-args {
+    color: rgba(var(--center-channel-color-rgb), 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tr-block {
+    align-self: flex-start;
+    max-width: 100%;
+    font-size: 11px;
+}
+.tr-block summary {
+    cursor: pointer;
+    color: rgba(var(--center-channel-color-rgb), 0.55);
+}
+.tr-block.error summary {
+    color: var(--error-text);
+}
+.tr-block pre {
+    margin: 4px 0 0;
+    padding: 6px 8px;
+    max-height: 180px;
+    overflow: auto;
+    background: rgba(var(--center-channel-color-rgb), 0.05);
+    border-radius: var(--radius-s);
+    font-size: 10px;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* the human-in-the-loop gate */
+.appr-card {
+    align-self: stretch;
+    padding: 10px;
+    border: 1px solid var(--away-indicator);
+    border-left-width: 3px;
+    border-radius: var(--radius-m);
+    background: rgba(255, 188, 31, 0.08);
+}
+.appr-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+.appr-input {
+    margin: 0 0 8px;
+    padding: 6px 8px;
+    max-height: 120px;
+    overflow: auto;
+    background: rgba(var(--center-channel-color-rgb), 0.05);
+    border-radius: var(--radius-s);
+    font-size: 10px;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+.appr-btns {
+    display: flex;
+    gap: 8px;
+}
+.appr-btns .run-btn {
+    width: auto;
+    margin-top: 0;
+    padding: 5px 16px;
+    font-size: 12px;
+}
+
+/* sortable columns */
+.raw-grid th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+.raw-grid th.sortable:hover {
+    color: var(--button-bg);
+}
+.raw-grid th.sorted {
+    color: var(--button-bg);
+}
+.sort-caret {
+    margin-left: 5px;
+    opacity: 0.35;
+    font-size: 9px;
+}
+.raw-grid th.sorted .sort-caret {
+    opacity: 1;
+}
+
+/* ── two drivers ──────────────────────────────────────────────────────────────
+ *
+ * HaiChat moves this console too. Everything it touched is marked, because a tab
+ * that opens under the clinician's hands is a poltergeist unless it is attributed —
+ * and a score whose author the reader cannot see is the thing this console exists
+ * to prevent. The mark clears the moment the clinician clicks the tab: once they
+ * have looked at it, it is theirs.
+ */
+
+.nr-item.by-agent,
+.tab.by-agent {
+    box-shadow: inset 2px 0 0 var(--online-indicator);
+}
+.nr-bot,
+.tab-bot {
+    font-size: 9px;
+    line-height: 1;
+    margin-right: 2px;
+    opacity: 0.85;
+}
+.nr-bot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+
+/* the agent's pointing finger: a ringed row, scrolled into view, that fades */
+@keyframes ring-in {
+    from { background: rgba(var(--button-bg-rgb), 0.35); }
+    to   { background: rgba(var(--button-bg-rgb), 0.12); }
+}
+.raw-grid tr.ringed {
+    background: rgba(var(--button-bg-rgb), 0.12);
+    box-shadow: inset 3px 0 0 var(--button-bg);
+    animation: ring-in 1.2s ease-out;
+}
+.hl-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    margin: 6px 12px 0;
+    border-radius: 4px;
+    font-size: 12px;
+    background: rgba(var(--button-bg-rgb), 0.10);
+    border-left: 3px solid var(--button-bg);
+}
+
+/* what the agent DID to the console, in the transcript */
+.ui-act {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    margin: 2px 0 2px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-left: 2px solid rgba(var(--center-channel-color-rgb), 0.22);
+}
+.ui-act.gated {
+    border-left-color: var(--button-bg);
+}
+.ui-act.failed {
+    color: var(--error-text);
+    border-left-color: var(--error-text);
+    text-decoration: line-through;
+}
+
+/* the patient boundary — a hard, visible line in the conversation */
+.chat-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+}
+.chat-divider::before,
+.chat-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(var(--center-channel-color-rgb), 0.18);
+}
+
+/* Follow mode: a capability the clinician GRANTS, not a default */
+.follow-toggle {
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.18);
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.62);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+.follow-toggle.on {
+    background: rgba(var(--online-indicator-rgb), 0.16);
+    border-color: var(--online-indicator);
+    color: var(--center-channel-color);
+}
+
+/* the drawer is HIDDEN, never unmounted: closing it must not kill the session */
+.drawer-slot {
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+    transition: width 0.12s ease-out;
+}
+.drawer-slot.hidden {
+    width: 0 !important;
+    border: 0;
+}
+
+/* ── case view + annotate (subjective labeling) ─────────────────────────── */
+.case-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+}
+.case-search {
+    flex: 1;
+    min-width: 180px;
+    padding: 6px 10px;
+    font-size: 12px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--center-channel-color);
+}
+.case-card {
+    margin: 8px 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+}
+.case-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+.case-id {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+}
+.case-text {
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+}
+.case-anns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+.case-ann {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.badge.label-high { background: rgba(63, 67, 80, 0.12); color: var(--online-indicator); }
+.badge.label-low { background: rgba(63, 67, 80, 0.12); color: var(--dnd-indicator); }
+.badge.label-none { opacity: 0.75; }
+
+.lb-topic { padding: 8px 12px 0; }
+.lb-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+}
+.lb-h { padding: 10px 12px 4px; }
+.lb-pad { padding: 0 12px 8px; }
+.lb-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+    padding: 0 12px 12px;
+}
+@media (max-width: 920px) {
+    .lb-cols { grid-template-columns: minmax(0, 1fr); }
+}
+.lb-pre {
+    white-space: pre-wrap;
+    font-size: 12px;
+    line-height: 1.5;
+    max-height: 380px;
+    overflow: auto;
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+}
+.lb-decide {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+.lb-label-btn {
+    width: auto;
+    margin-top: 0;
+    padding: 4px 12px;
+    font-size: 12px;
+}
+.lb-note { flex: 1; min-width: 160px; }
+.lb-table { margin: 0 0 8px; }
+.lb-gold { margin: 8px 0; }
+.badge.lb-status-validated,
+.badge.lb-status-scaled { color: var(--online-indicator); }
+.badge.lb-status-iterating { color: var(--away-indicator); }
+
+/* ── the labeling FORGE (group Annotate) ─────────────────────────────────── */
+/* empty state: no instrument yet → start one */
+.fg-start {
+    max-width: 560px;
+    margin: 24px auto;
+    padding: 28px 24px;
+    text-align: center;
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.28);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+}
+.fg-start-icon { font-size: 34px; }
+.fg-start-title { font-size: 16px; font-weight: 700; margin-top: 6px; }
+.fg-start-sub {
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    margin: 10px 0 16px;
+}
+.fg-start-btn { width: auto; margin: 0 auto; padding: 9px 20px; font-size: 14px; }
+.fg-start-foot { margin-top: 12px; }
+.fg-new { opacity: 0.8; }
+
+/* the loop: the sl pipeline as a stage bar */
+.fg-stages {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 4px 12px 2px;
+}
+.fg-stage {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.18);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.fg-stage:disabled { opacity: 0.45; cursor: not-allowed; }
+.fg-stage.done {
+    border-color: rgba(var(--center-channel-color-rgb), 0.12);
+    color: var(--online-indicator);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+}
+.fg-stage.rec {
+    border-color: var(--button-bg);
+    box-shadow: 0 0 0 1px var(--button-bg) inset;
+}
+.fg-stage.ghost { margin-left: auto; font-weight: 500; opacity: 0.85; }
+.fg-stage-icon { font-family: var(--font-mono); }
+.fg-stage-next { color: var(--button-bg); font-weight: 700; }
+.fg-loop-foot { padding: 4px 12px 8px; }
+
+.fg-guideline { max-height: 340px; }
+
+/* gallery as sections (not a table) */
+.fg-section { padding: 4px 12px 10px; }
+.fg-section-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0 4px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.1);
+    margin-bottom: 6px;
+}
+.fg-card {
+    padding: 8px 10px;
+    margin: 6px 0;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+}
+.fg-card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.fg-why {
+    margin-top: 4px;
+    font-style: italic;
+    opacity: 0.85;
+}
+.fg-more { padding: 2px 0 0; }
+
+/* ── data-type picker (topbar) ──────────────────────────────────────────── */
+.ds-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 0 0 auto;
+    font-size: 12px;
+}
+.ds-select {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    max-width: 220px;
+}
+
+/* ── case dialogue: render a transcript as speaker turns ─────────────────── */
+.case-text.dialogue {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 340px;      /* a 56-turn conversation scrolls inside its own card */
+    overflow: auto;
+    padding-right: 4px;
+}
+.turn {
+    display: flex;
+    gap: 8px;
+    font-size: 12.5px;
+    line-height: 1.4;
+}
+.turn-who {
+    flex: 0 0 64px;
+    text-align: right;
+    font-weight: 600;
+    text-transform: lowercase;
+    color: rgba(var(--center-channel-color-rgb), 0.55);
+}
+.turn-doctor .turn-who { color: var(--button-bg); }
+.turn-patient .turn-who { color: var(--online-indicator); }
+.turn-said { flex: 1; min-width: 0; }
+
+/* ── individual ⇄ group scope toggle (topbar) ───────────────────────────── */
+.level-toggle {
+    display: inline-flex;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.2);
+    border-radius: var(--radius-s);
+    overflow: hidden;
+    flex: 0 0 auto;
+}
+.level-toggle button {
+    border: none;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.7);
+    font-size: 12px;
+    padding: 5px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.level-toggle button.active {
+    background: var(--button-bg);
+    color: var(--button-color);
+    font-weight: 600;
+}
+.group-indicator {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--center-channel-color);
+    background: rgba(var(--button-bg-rgb), 0.1);
+    border-radius: var(--radius-s);
+    padding: 4px 10px;
+    white-space: nowrap;
+}
+.scope-line {
+    margin-top: 6px;
+    line-height: 1.5;
+}
+
+/* ── tasks view (project work linked to a scope) ────────────────────────── */
+.task-project {
+    margin: 2px 0 10px;
+}
+.task-proj-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px 4px;
+}
+.task-list {
+    display: flex;
+    flex-direction: column;
+}
+.task-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
+    font-size: 13px;
+}
+.task-row:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+}
+.task-status {
+    flex: 0 0 auto;
+    font-size: 11px;
+}
+.task-series {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--button-bg);
+    background: rgba(var(--button-bg-rgb), 0.12);
+    border-radius: var(--radius-s);
+    padding: 0 5px;
+    flex: 0 0 auto;
+}
+.task-title {
+    color: var(--center-channel-color);
+}
+.task-status-label {
+    font-size: 10px;
+    flex: 0 0 auto;
+}
+
+/* ── record chart ─────────────────────────────────────────────────────────────
+   The record layer as a timeline. Plotly owns the plot area; these rules only
+   frame it and style the row a chart click points at. */
+.record-chart {
+    border-bottom: 1px solid var(--line, rgba(128, 128, 128, .25));
+    padding: 4px 6px 2px;
+}
+
+.record-chart-hint {
+    font-size: 11px;
+    opacity: .55;
+    padding: 2px 4px 6px;
+}
+
+/* the row a clicked point resolves to — distinct from .ringed, which is HaiChat's */
+.raw-grid tr.picked > td {
+    background: rgba(47, 127, 209, .16);
+    box-shadow: inset 0 0 0 1px rgba(47, 127, 209, .5);
+}
+
+/* Plotly injects its own light-mode colours; keep the modebar legible on dark */
+@media (prefers-color-scheme: dark) {
+    .record-chart .modebar-btn path {
+        fill: rgba(230, 230, 230, .75);
+    }
+}
+
+/* ── message panel (② compose ▸ ③ judge ▸ ④ clinician) ───────────────────────
+   Three steps under ▶ Run. The wall banner is not decoration: a reader cannot
+   otherwise tell that the composer never saw the ground truth. */
+.msg-panel { padding: 10px 12px; display: flex; flex-direction: column; gap: 12px; }
+
+.msg-wall {
+    font-size: 12px;
+    padding: 7px 10px;
+    border-radius: 5px;
+    background: rgba(209, 68, 63, .08);
+    border: 1px solid rgba(209, 68, 63, .35);
+}
+
+.msg-step {
+    border: 1px solid var(--line, rgba(128, 128, 128, .25));
+    border-radius: 6px;
+    padding: 9px 11px;
+}
+
+.msg-step.dim { opacity: .5; }
+
+.msg-step-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.msg-num { font-size: 15px; opacity: .65; }
+.msg-select { margin-left: auto; font-size: 12px; padding: 3px 6px; }
+.msg-rules { margin-top: 5px; font-size: 11px; }
+
+.msg-out { margin-top: 9px; }
+
+.msg-nl {
+    font-size: 14px;
+    line-height: 1.55;
+    padding: 11px 13px;
+    border-radius: 8px;
+    background: rgba(47, 127, 209, .09);
+    border: 1px solid rgba(47, 127, 209, .28);
+}
+
+.msg-prompt {
+    margin-top: 7px;
+    font-size: 11px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    max-height: 260px;
+    overflow: auto;
+    padding: 8px;
+    border-radius: 5px;
+    background: rgba(128, 128, 128, .1);
+}
+
+.msg-scores { width: 100%; border-collapse: collapse; margin-top: 9px; font-size: 12px; }
+.msg-scores td { padding: 5px 7px; vertical-align: top; border-top: 1px solid var(--line, rgba(128,128,128,.2)); }
+.msg-dim { white-space: nowrap; font-weight: 600; }
+.msg-score { width: 2.4em; text-align: center; font-weight: 700; }
+.msg-score.good { color: #3aa76d; }
+.msg-score.fair { color: #e8833a; }
+.msg-score.poor { color: #d1443f; }
+.msg-why { opacity: .8; }
+
+.msg-note {
+    width: 100%;
+    margin-top: 8px;
+    min-height: 52px;
+    font: inherit;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 5px;
+    resize: vertical;
+}
+
+.msg-verdicts { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
+.btn.tiny { font-size: 11px; padding: 2px 7px; margin-top: 6px; }
+.btn.ok { border-color: rgba(58, 167, 109, .6); }
+.btn.danger { border-color: rgba(209, 68, 63, .6); }
+
+/* ── pipeline bar: ▶ Run │ 🔍 Interpret ✉️ Message ⚖️ Judge 🩺 Feedback ──────
+   One row, left to right, so the bar reads as the flow. The divider is the
+   boundary between the endpoint's own number and everything generated from it. */
+.pipe { display: flex; flex-direction: column; gap: 10px; }
+
+.pipe-bar {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.pipe-left { display: flex; flex-direction: column; gap: 3px; }
+
+.pipe-run {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    background: #2f6fb5;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.pipe-run:disabled { opacity: .45; cursor: not-allowed; }
+
+.pipe-arrow { align-self: center; opacity: .4; font-size: 17px; }
+
+.pipe-right { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.pipe-steps { display: flex; gap: 7px; flex-wrap: wrap; }
+
+.pipe-step {
+    font-size: 12.5px;
+    padding: 8px 13px;
+    border-radius: 6px;
+    border: 1px solid var(--line, rgba(128, 128, 128, .4));
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.pipe-step:disabled { opacity: .38; cursor: not-allowed; }
+.pipe-step.done { border-color: rgba(58, 167, 109, .65); }
+.pipe-step.open { background: rgba(47, 127, 209, .13); border-color: rgba(47, 127, 209, .6); }
+.pipe-step .tick { color: #3aa76d; margin-left: 5px; font-weight: 700; }
+
+.pipe-cap { font-size: 10.5px; opacity: .55; padding-left: 2px; }
+.pipe-cap-human { opacity: .85; }
+
+.pipe-panel {
+    border: 1px solid var(--line, rgba(128, 128, 128, .28));
+    border-radius: 7px;
+    padding: 10px 12px;
+}
+
+.pipe-panel-head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+/* ── scope themes: 👤 Individual is blue, 👥 Group is red ─────────────────────
+   Scope is a MODE — one patient's chart vs a whole cohort — and mistaking one
+   for the other is the expensive mistake this console can make. So it is not
+   signalled by a label alone: swapping the accent tokens on :root re-colours
+   the nav rail, tab underlines, buttons, badges and links in one move, because
+   everything downstream already reads --button-bg / --link-color.
+
+   Only the ACCENT changes. Background, text and surfaces stay the user's real
+   HAI-Chat theme — a scope must not fight the light/dark theme it sits in. */
+
+:root[data-scope='individual'] {
+    --button-bg: #2272b4;
+    --button-bg-rgb: 34, 114, 180;
+    --link-color: #2272b4;
+    --scope-tint: rgba(34, 114, 180, .10);
+}
+
+:root[data-scope='group'] {
+    --button-bg: #b8382c;
+    --button-bg-rgb: 184, 56, 44;
+    --link-color: #b8382c;
+    --scope-tint: rgba(184, 56, 44, .10);
+}
+
+/* Dark surfaces need a lighter accent to keep contrast legible. */
+@media (prefers-color-scheme: dark) {
+    :root[data-scope='individual'] {
+        --button-bg: #4299e0;
+        --button-bg-rgb: 66, 153, 224;
+        --link-color: #4299e0;
+        --scope-tint: rgba(66, 153, 224, .14);
+    }
+    :root[data-scope='group'] {
+        --button-bg: #e0685a;
+        --button-bg-rgb: 224, 104, 90;
+        --link-color: #e0685a;
+        --scope-tint: rgba(224, 104, 90, .14);
+    }
+}
+
+/* A quiet tint on the scope toggle so the mode reads even at a glance away from
+   the accent-coloured chrome. */
+.level-toggle { border-radius: 6px; }
+.level-toggle button.active { background: var(--button-bg); color: #fff; }
+
+/* My panels hard-coded a blue; make them follow the scope instead. */
+.pipe-run { background: var(--button-bg); }
+.msg-nl {
+    background: rgba(var(--button-bg-rgb), .09);
+    border-color: rgba(var(--button-bg-rgb), .28);
+}
+.pipe-step.open {
+    background: rgba(var(--button-bg-rgb), .13);
+    border-color: rgba(var(--button-bg-rgb), .6);
+}
+.raw-grid tr.picked > td {
+    background: rgba(var(--button-bg-rgb), .16);
+    box-shadow: inset 0 0 0 1px rgba(var(--button-bg-rgb), .5);
+}

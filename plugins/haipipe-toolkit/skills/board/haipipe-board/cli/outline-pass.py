@@ -4,12 +4,12 @@
     python3 cli/outline-pass.py <page>.md            run everything, print the receipt-lite
     python3 cli/outline-pass.py <page>.md --no-build skip the board rebuild
 
-haipipe-page-outline §①: regenerate the three derived files (context,
+haipipe-page-structure §①: regenerate the three derived files (context,
 requirement, feedback), derive Evidence live from the authored Item contract
 and current Results, run the plan checks for THIS page (hard: any ❌ exits 1),
 run cli/check.py scoped to the page, rebuild the board, and print what the
 pass must read before writing a bullet. It writes no plan, no thread and no
-log record: those are the phase's own pen.
+log record: those are the Run's own pen.
 """
 import argparse, importlib.util, re, subprocess, sys
 from pathlib import Path

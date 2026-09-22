@@ -538,7 +538,7 @@ def main():
     d, _ = fixture_board.build()
     port = free_port()
     srv = subprocess.Popen(
-        [sys.executable, str(HERE.parent / "cli" / "serve.py"),
+        [sys.executable, str(HERE.parents[3] / "servers" / "_host" / "serve.py"),
          "--root", str(d), "--port", str(port), "--host", "127.0.0.1"],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     base = f"http://127.0.0.1:{port}"

@@ -8,8 +8,8 @@ description: >-
   academic voice, humanize, writing feedback and prose evaluation.
   Page owns planning, Run state and acceptance. Trigger: /haipipe-writing.
 metadata:
-  version: "0.21.0"
-  last_updated: "2026-09-21"
+  version: "0.22.0"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -78,7 +78,15 @@ cannot change authoritative plans, Evidence, Page acceptance or delivery.
 Freeze the actual entry/version/hash in the host's effective packet. A required
 unavailable method blocks; an optional one is visibly skipped. No method is
 selected by default. An explicitly supplied DNA or anti-slop packet selects
-its existing adapter once. The retired HAI humanizer is not a second entry point.
+its existing adapter once.
+
+The external skills this worker can call are vendored beside it, one numbered
+folder per role: `../1_style/writing-dna-skill/` (the Writing DNA distiller)
+and `../2_evaluate/academic-humanizer/`, `../2_evaluate/humanizer/` (the two
+evaluators: academic register, general register). Pick one evaluator per
+candidate by register, never both. Every other anti-AI writing skill is read,
+not called: [ref/external/README.md](ref/external/README.md) says what each is
+and what of it already lives in `ref/anti-slop-rules.json` and `ref/ai-tells.md`.
 
 ## Evaluate before returning
 
@@ -107,7 +115,7 @@ style. Academic voice retains evidence-tied hedging and legitimate passive voice
 ## 🤝 Interactive Page writing
 
 When the host is a collaborative Page Writing Run, load
-`../../page/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
+`../../page/haipipe-page-workflow/ref/interactive-writing-run.md`.
 The host saves original feedback and the Step result; this worker owns the
 requested prose patch, not Run allocation, human acceptance or publication.
 
@@ -386,6 +394,12 @@ label and host timestamp explicitly when generating a record.
   Shared Section/paragraph/file request, protected meaning and return contract.
 - `ref/method-adapter-contract.md`, `ref/writing-methods.yaml`
   Resolve selected capabilities, permissions, inputs, outputs and method trace.
+- `ref/methods/academic-humanizer.md`, `ref/methods/humanizer.md`
+  The two evaluator adapters: academic register, general register.
+- `ref/external/README.md`
+  The anti-AI writing shelf: what we call, what we only read, what was taken from each.
+- `../1_style/writing-dna-skill/` · `../2_evaluate/academic-humanizer/` · `../2_evaluate/humanizer/`
+  The vendored external skills, each with its LICENSE and a CHANGELOG stamping the upstream commit.
 - `ref/evaluation.md`, `ref/evaluation-rubric.md`
   Bounded self-review and the common criteria also used by Page CHECK.
 - `ref/method-attribution.md`

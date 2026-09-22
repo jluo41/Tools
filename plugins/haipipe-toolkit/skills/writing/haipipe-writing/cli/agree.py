@@ -89,24 +89,24 @@ def cited_paths(text):
     return out
 
 
-def resolve(tok, own_dir, skill_dir, skills_root, plugin_root, repo_root):
+def resolve(tok, own_dir, skill_dir, skills_root, workbench_root, repo_root):
     """-> the name of the FIRST base the token resolves under, or None.
 
     Order is deliberate: the canonical form is a `<skills>/`-rooted path, so
     `skills-root` is tried before the accidents. A token that resolves only
-    under `plugin-root` or `cwd` is the humanizer's defect exactly: it works
+    under `workbench-root` or `cwd` is the humanizer's defect exactly: it works
     from one directory and fails from the one a session actually starts in.
     """
     bare = PLACEHOLDER.sub("", tok)
     for name, base in (("skills-root", skills_root), ("own-dir", own_dir),
                        ("skill-dir", skill_dir), ("repo-root", repo_root),
-                       ("plugin-root", plugin_root)):
+                       ("workbench-root", workbench_root)):
         if base and (base / bare).exists():
             return name
     return None
 
 
-def audit_skill(skill_dir, skills_root, plugin_root, repo_root):
+def audit_skill(skill_dir, skills_root, workbench_root, repo_root):
     """-> (version_finding | None, [path findings])"""
     skill_dir = Path(skill_dir).resolve()
     ver_finding, paths = None, []
@@ -129,11 +129,11 @@ def audit_skill(skill_dir, skills_root, plugin_root, repo_root):
             head = PLACEHOLDER.sub("", tok).split("/")[0]
             if head not in FAMILIES:
                 continue
-            base = resolve(tok, md.parent, skill_dir, skills_root, plugin_root, repo_root)
+            base = resolve(tok, md.parent, skill_dir, skills_root, workbench_root, repo_root)
             if base is None:
                 paths.append((md, line, tok, "DEAD"))
-            elif base == "plugin-root":
-                paths.append((md, line, tok, "resolves only from the plugin root"))
+            elif base == "workbench-root":
+                paths.append((md, line, tok, "resolves only from the workbench root"))
     return ver_finding, paths
 
 
@@ -153,9 +153,9 @@ def main():
     nver = npath = 0
     for skill in targets:
         skills_root = next((q for q in skill.parents if q.name == "skills"), None)
-        plugin_root = skills_root.parent if skills_root else None
+        workbench_root = skills_root.parent if skills_root else None
         repo_root = next((q for q in skill.parents if (q / "pyproject.toml").exists()), None)
-        ver, paths = audit_skill(skill, skills_root, plugin_root, repo_root)
+        ver, paths = audit_skill(skill, skills_root, workbench_root, repo_root)
         if not ver and not paths:
             if not a.quiet:
                 print("✅ %s" % skill.name)

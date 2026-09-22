@@ -4,6 +4,10 @@ comm-lit-review — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## 0.1.1 · 2026-09-22
+
+- Stamped as a vendored original: LICENSE copied from ARIS, `metadata.haipipe.vendored_from` = `https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep@0472e53`. The numbered folder now holds vendored originals only; the Search, Review and Synthesize skills we wrote sit at the family root.
+
 ## [0.1.0] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.0.1; older entries below keep their original numbers).

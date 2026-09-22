@@ -22,8 +22,8 @@
     },
     {
       "name": "inlab-human",
-      "description": "In-lab human interaction with deployed prediction endpoints — the Claude Code chat is the UI. CONSOLE mode (default): patient-first on-demand inference — list patients, view the full chart, list available models (Endpoint_Set packages + live status), and run 'this model on this patient': the endpoint-predict MCP tool prepares the payload (required tables + trigger record), POSTs to the endpoint, and returns the score verbatim with a data-gaps report. STUDY mode: formal reader protocol (frozen review_bundle.json, blind→assisted session, decision-influence metrics vs gold). Endpoint-agnostic: local Flask, Databricks, SageMaker — same wire contract.",
-      "version": "0.2.1",
+      "description": "In-lab human interaction with deployed prediction endpoints — the Claude Code chat is the UI, and servers/haichat-inlab is the browser console. CONSOLE mode (default): patient-first on-demand inference — list patients, view the full chart, list available models (Endpoint_Set packages + live status), and run 'this model on this patient': the endpoint-predict MCP tool prepares the payload (required tables + trigger record), POSTs to the endpoint, and returns the score verbatim with a data-gaps report. STUDY mode: formal reader protocol (frozen review_bundle.json, blind→assisted session, decision-influence metrics vs gold). Endpoint-agnostic: local Flask, Databricks, SageMaker — same wire contract.",
+      "version": "0.2.2",
       "source": "./plugins/inlab-human",
       "category": "research"
     },

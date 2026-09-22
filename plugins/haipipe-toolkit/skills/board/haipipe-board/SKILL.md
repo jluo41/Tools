@@ -7,8 +7,8 @@ description: >-
   one sentence to haipipe-sentence. Trigger: board, open a board, add a
   question, close the board, 开板, 加一题, 关板, /haipipe-board.
 metadata:
-  version: "1.0.12"
-  last_updated: "2026-09-20"
+  version: "1.1.0"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md
 ---
 
@@ -27,18 +27,21 @@ how child work objects become Groups and Pages. Markdown is authoritative;
 | Page | `haipipe-page` | self-contained Folder, file intake, renderer, source editor, standalone hosting, lifecycle entry |
 | Page workflow | `haipipe-page-workflow` | `RUN` verb, workflow-pass routing, packet, receipt, stop conditions |
 | Sentence | `haipipe-sentence` | comment, edit, card |
-| Page lane | the matching plugin | Outline, Studio, Runs, Delivery, Folder, or domain lane |
+| Page lane | the matching workbench | Outline, Studio, Runs, Delivery, Folder, or domain lane |
 | Board Insight lane | `haipipe-insight` → `haipipe-insight-workflow` | independent Insight owner; Board presents resource Folders, Question registers, partitions, and native Runs through `ref/insight-space-mapping.md` |
-| Board Design lane | `haipipe-plugin-design-board` | Design task list and aggregate over Design Folders; `haipipe-design-workflow` owns native Design Runs |
+| Board Design lane | `haipipe-workbench-design/ref/design-board.md` | Design task list and aggregate over Design Folders; `haipipe-design-workflow` owns native Design Runs |
 
 One-Page work always routes through `haipipe-page`, even when invoked from the
 Board. `haipipe-page` exposes the `RUN` verb; `haipipe-page-workflow` owns its
 grammar. This skill supplies Board chrome, aggregate checking, Board hosting
 and deterministic lifecycle adapters; the Page owner defines the Run Specs. The shared Page
-parser, renderer and live Outline/Evidence presenters are owned by
-`skills/page/haipipe-page`; old Board module paths are compatibility links.
-Standalone Page creation/build/serve uses that skill's `cli/page.py` without
-`board.md`. Board registration is optional and points at the same source.
+parser and renderer are owned by `skills/page/haipipe-page`. Everything a
+browser is served by, the HTTP host and every live workbench (Outline, Runs,
+Studio, Delivery, Folder, Design, Insight, Paper), lives in the plugin-level
+`servers/` tree (`plugins/haipipe-toolkit/servers`, see its `README.md`); this
+skill holds no server code. Standalone Page creation/build/serve uses the Page
+skill's `cli/page.py` without `board.md`. Board registration is optional and
+points at the same source.
 
 A **Workflow is a list of Runs**, declared as bounded Run Specs with dependencies
 and routes. Keep its runtime execution and owner-native Run identities distinct:
@@ -55,7 +58,7 @@ and routes. Keep its runtime execution and owner-native Run identities distinct:
   dispatch, snapshots and gate checks do not allocate Runs unless the owner
   independently commissions them under the Run contract.
 
-Serialized `phase`, `cycle`, and `next_cycle` fields are controller coordinates,
+Serialized `run`, `cycle`, and `next_cycle` fields are controller coordinates,
 not Workflow units. Historical compact IDs such as `rp00_mermaid-structure`
 remain readable compatibility input; new allocation uses the canonical forms.
 Board hosts projections without minting or renaming their identities.
@@ -72,7 +75,7 @@ to Board metadata, not to the independent Page's base contract.
 | omitted / generic | Board Pages discovered from the Board tree | Q decisions and S lifecycle Pages grouped by `board.md ## Pages` |
 | `task-block` | direct `jNN_*/tNN_*` Task tree | Block = Board, Job = Group, Task = Page, Run = execution record |
 | `discovery-block` | direct `jNN_*/tNN_*` Discovery tree | Block = Board, Job = Group, Discovery Task = Page, Paper/Source Run = execution record |
-| `design-board` | Brief and Design Folder tree | Design tasks and Items across Folders; `haipipe-plugin-design-board` presents native Design Runs |
+| `design-board` | Brief and Design Folder tree | Design tasks and Items across Folders; `haipipe-workbench-design/ref/design-board.md` presents native Design Runs |
 | `insight-board` | Insight-owned Meta, Question and DIKW Page tree | resource scope, questions, evidence and native Runs; `haipipe-insight` owns the work |
 
 A Task Block does not create another Task Page Type. Each Task Page declares
@@ -97,11 +100,11 @@ creating or changing Board structure.
 ├── diagram/                       Board-owned design context when applicable
 ├── _runs/page/<page-id>/           Board-hosted Workflow Runtime JSON receipts
 └── board/                         generated site; never hand-edit
-    └── insight.html               generated Board-level Insight plugin page, InsightBoards only
+    └── insight.html               generated Board-level Insight workbench page, InsightBoards only
 ```
 
 Boards created for a task, project, or paper normally live under that owner's
-`diagram/<NN>-<topic>-<YYMMDD>/`. Skill-design Boards live under the plugin's
+`diagram/<NN>-<topic>-<YYMMDD>/`. Skill-design Boards live under the workbench's
 `skills/diagrams/`. The date records creation and never changes. Group-folder
 numbers mirror `## Pages` order; Page identity never depends on that number.
 
@@ -134,7 +137,7 @@ QA1-example.md
 
 **The token after `·` is the group's FOLDER, not its prose title.** It is
 the directory name exactly as it sits on disk, and it may not contain a space:
-`live/paper.py:_GROUP_RE` reads the heading as `^###\s+(.+?)\s+·\s+(\S+)$`, so
+`servers/workbench-paper/paper.py:_GROUP_RE` reads the heading as `^###\s+(.+?)\s+·\s+(\S+)$`, so
 `### Ba · ManSci Main` matches nothing at all. The group then vanishes silently
 and every consumer under it reports zero rows while the generated site still
 looks right, because `cli/build.py` groups by a different rule (JL 260921). Put
@@ -156,12 +159,12 @@ the Board-relative `jNN_<job>/tNN_<task>/tNN_<task>.md` path.
 | “create a Board” | OPEN: agree spine, close condition, and Page list before writing |
 | “add a question/group” | resolve Board kind and existing members first; generic Q/S creation or the native owner updates its tree, then register order and rebuild |
 | “build/rebuild” | `cli/build.py <board-folder>` |
-| “serve” | read `fn/serve.md`, then use `cli/serve.py --root <selected-root>` |
+| “serve” | read `fn/serve.md`, then use `<toolkit>/servers/_host/serve.py --root <selected-root>` |
 | “update one Page” | route to `haipipe-page` |
 | “run one Page” | route to `haipipe-page`; `RUN` invokes one `haipipe-page-workflow` pass |
 | “comment/edit/card” | route to `haipipe-sentence` |
-| “draw” | route to `haipipe-plugin-studio` |
-| “compile/export” | route to `haipipe-plugin-delivery` |
+| “draw” | route to `haipipe-workbench-studio` |
+| “compile/export” | route to `haipipe-workbench-page` |
 | “close” | verify every Page and the Board `close:` condition |
 
 For an InsightBoard, the full build also emits `board/insight.html`, and the
@@ -266,14 +269,14 @@ never writes a Board roster into Project or SPACE metadata.
 ## 🚫 Preserve these invariants
 
 The live Draft Space presents the selected Outline's Bullet/Draft table in two
-columns, grouped by paragraph. `live/outline_preview.py` reads and writes
+columns, grouped by paragraph. `servers/workbench-page/outline_preview.py` reads and writes
 embedded `Draft:` fields in `outline/<stem>-outline-v*.md`; the selected
 Outline remains the sole Shape, tag, evidence-decision, and Draft authority.
 Do not render a `+ Bullet` button, append form, editor, or separate Comments
 composer. Draft Space is read-only; candidate changes belong to the owning
 Page/Run workflow and its Markdown write. Historical signed review lanes stay
 preserved in Markdown and never publish as Content.
-See `haipipe-plugin-outline/ref/content-preview.md` for the SHAPE/CONTENT boundary.
+See `haipipe-workbench-page/ref/content-preview.md` for the SHAPE/CONTENT boundary.
 Render a Page's authored `<stem>-logic.mmd` as a safe derived Mermaid Structure
 before the plan and paragraph groups. While the selected Structure Run
 (`rp-struct-01` initially) is active,
@@ -287,7 +290,7 @@ standalone Page modes.
 - A build must remain readable after every `<script>` is removed.
 - A compact Page Run link must land on the exact card in `Outline → Run Space`,
   preserving its Evidence Item and Run address even while
-  the Page or plugin is still loading. A pending default refresh must not
+  the Page or workbench is still loading. A pending default refresh must not
   consume, discard, or overwrite that deep-link state; the normal route must
   not trap a mobile reader in a long popover.
 - A compact Page Feedback link must land on the exact record in the off-stage
@@ -297,13 +300,13 @@ standalone Page modes.
   (`lens` + `seg` + `focus`), scrolled into view and highlighted. The compact
   Page opens no Evidence popover and keeps no second copy of the item's
   fields; `none` and `missing` cells stay inert text with their reason on
-  hover. The typed Evidence chip inside the Outline plugin's Bullet
+  hover. The typed Evidence chip inside the Outline workbench's Bullet
   Draft Space takes the same route to the same card, switching lens in
   place; it opens no popover either. A `Routed:` value may name several
   rows separated by spaces, commas, or semicolons, and every Feedback
   chip's focus id must equal a register record id.
 - A routine Page-changing reader response must return the three direct
-  Outline-plugin Space links derived from the same verified public Board URL:
+  Outline-workbench Space links derived from the same verified public Board URL:
   `&lens=div` for **Draft Space**, `&lens=evidence` for **Evidence Space**, and
   `&lens=run&run=<id>` for **Run Space**. A formal delivery response also
   returns `&lens=delivery` for **Delivery Space**, which is the read-only
@@ -312,7 +315,7 @@ standalone Page modes.
   projections, but never replace these direct links.
 - Archive moves source under `_archive/`; it never deletes the record.
 - One Board has one `board.md`; do not create a second roster or `STATUS.md`.
-- Page-local folders are plugins; a new folder name needs a real plugin owner.
+- Page-local folders are workbenches; a new folder name needs a real workbench owner.
 - Compatibility readers may parse historical shapes, but no current writer may
   generate them.
 - Historical rationale belongs in `CHANGELOG.md`, not this operating contract.
@@ -327,7 +330,7 @@ standalone Page modes.
 | `ref/writing-rules.md` | writing or reviewing Page prose |
 | `ref/board-example.md` | a minimal current source-tree example is useful |
 | `ref/page-lifecycle.workflow.js` | maintaining the Board-hosted workflow-pass adapter; workflow law remains in `haipipe-page-workflow` |
-| `ref/insight-space-mapping.md` | defining the Insight plugin's four Spaces and Run Space views |
+| `ref/insight-space-mapping.md` | defining the Insight workbench's four Spaces and Run Space views |
 | `fn/serve.md` | serving one Board or a root containing multiple Boards |
 
 Compatibility-only readers and schemas live under `ref/legacy/`. They are not
@@ -353,12 +356,12 @@ haipipe-board/
 ├── SKILL.md                 compact door and routing contract
 ├── fn/serve.md              host one Board or selected SPACE root
 ├── ref/                     current schemas and conditional procedures
-├── cli/                     current commands
-├── src/                     build and audit implementation
-├── live/                    server capabilities
-├── assets/ + vendor/        generated-site dependencies
-├── checks/ + tests/         acceptance and regression coverage
+├── cli/                     current commands (build, check, watch, ...)
+├── src/                     build and audit implementation; src/assets.py bridges to the served bundle
+├── checks/ + tests/         content acceptance and regression coverage
 ├── legacy/                  non-authoring compatibility utilities only
-├── status.py                Board attachment renderer
 └── CHANGELOG.md             history
+
+../../../servers/            the HTTP host, Board presenters, every workbench,
+                             browser assets, vendored xterm, server checks
 ```

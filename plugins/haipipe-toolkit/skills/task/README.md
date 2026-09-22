@@ -58,6 +58,12 @@ Chinese mnemonic:
 The number is a permanent domain id, not a full pipeline order. New domains are
 appended and existing ids are not renumbered.
 
+GPU is an execution modifier of a Fit Task rather than a separate domain. The
+Fit family owns `haipipe-task-gpu` for queue/preflight/receipt mechanics and
+`haipipe-task-gpu-training` for checkpoint/resume and training-specific
+fallbacks. Evaluation, serving, and engine tasks keep their own GPU execution
+owners.
+
 ## Page contracts
 
 ```text
@@ -67,8 +73,8 @@ task/haipipe-task/ref/
 task/haipipe-page-task/
 └── SKILL.md                     display-rich reader contract for Task Pages
 
-task/page-types/
-└── haipipe-page-insight/       topic/data instance with item Runs and DIKW Results
+insight/
+└── haipipe-page-insight/       Task-side topic/data instance with item Runs and DIKW Results
 ```
 
 The preferred public Insight entry is `/haipipe-insight task`; the older

@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 
-ASSET = Path(__file__).resolve().parent.parent / "assets" / "js" / "80-restore.js"
+ASSET = (Path(__file__).resolve().parents[4] / "servers" / "_host" / "assets" / "js" / "80-restore.js")
 
 
 class RestoreAssetTest(unittest.TestCase):

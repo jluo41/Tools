@@ -8,8 +8,8 @@ description: >-
   Paper, and Labeling profiles. Trigger: Run contract, Run catalogue, Run
   ticket, runtime receipt, orphan Result, /haipipe-run.
 metadata:
-  version: "0.27.0"
-  last_updated: "2026-09-20"
+  version: "0.28.0"
+  last_updated: "2026-09-22"
 ---
 
 # /haipipe-run · one commission, one identity, preserved history
@@ -53,7 +53,7 @@ for each call. Ordinary shell commands do not automatically become Runs.
 | Allocate, reuse, retry, reopen, or resolve storage | [Identity and history](ref/identity-and-history.md) |
 | Scaffold/read receipts, report status, count, or audit | [Receipts and inventory](ref/receipts-and-inventory.md) |
 | Compose multiple Runs or maintain a shared frontier | [Workflow](../../task/haipipe-workflow/SKILL.md) and its [runtime contract](../../task/haipipe-workflow/ref/workflow-runtime.md) |
-| Present Runs in a Page | [Run presenter](../../page/page-plugins/haipipe-plugin-runs/SKILL.md) |
+| Present Runs in a Page | [Run presenter](../../page/haipipe-workbench-page/ref/run-space.md) |
 
 ## What earns a Run
 
@@ -92,7 +92,7 @@ A Workspace never becomes the execution owner. Do not create a horizontal
 `run-for-<folder-kind>` owner. Use the existing native owner and selected worker.
 When a Workflow declares Workspaces, bind its Cells using
 [workflow-table](../../0_utils/table-workflow/SKILL.md); a standalone Run does
-not require inventing a Plugin roster or aggregate controller.
+not require inventing a Workbench roster or aggregate controller.
 
 A Spec can materialize zero, one, or many instances. Symbolic cardinality is
 planned demand; only allocated native records describe actual work. A Runtime
@@ -106,7 +106,7 @@ terminal route may default to `CLOSE`; nonterminal routes are explicit.
 Inputs, dependencies and a domain payload can be empty; target, actor, action,
 close rule and durable outcome cannot. Resolve required facts through the
 profile/Ticket/receipt rather than copying every field into every dialect.
-A controller `phase()` label is adapter metadata, not an authority or Run node.
+A controller `Run()` label is adapter metadata, not an authority or Run node.
 
 ## Choose the next action
 

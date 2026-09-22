@@ -89,7 +89,7 @@
 
 ### R04 · P2 · 身份错误被 Board 检查吞掉，Ask 写入又使用另一套身份读取
 
-**文件与证据。** [check.py:1973](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/cli/check.py:1973) 在 canonical 记录无效或与 Page 冲突时返回空字符串；第 2016–2019 行因此跳过 kind-specific checks，没有报告 identity error。[groom_snapshot:1501](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/insightboard.py:1501) 调用此 checker，无 findings 时给出 clean 结果。另一方面 [_pages:135](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/insightboard.py:135) 只读 Page metadata，[register_question:1733](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/insightboard.py:1733) 据此选择并写 register。
+**文件与证据。** [check.py:1973](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/cli/check.py:1973) 在 canonical 记录无效或与 Page 冲突时返回空字符串；第 2016–2019 行因此跳过 kind-specific checks，没有报告 identity error。[groom_snapshot:1501](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-insight/insightboard.py:1501) 调用此 checker，无 findings 时给出 clean 结果。另一方面 [_pages:135](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-insight/insightboard.py:135) 只读 Page metadata，[register_question:1733](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-insight/insightboard.py:1733) 据此选择并写 register。
 
 **影响。** 同一无效/冲突身份可能在 Context 被拒绝、在 Board 检查中消失、在 Ask 中仍被写入。一个 Wisdom 页也可能失去 signature finding，却不新增 identity finding。这里确认的是检查和写入前置条件不一致，未证明实际 Design release 绕过。
 
@@ -111,7 +111,7 @@
 
 ### R06 · P2 · 内置 Ask 尚未覆盖空 register 和新控制收据合同
 
-**文件与证据。** [Question:124](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/folder-kinds/haipipe-insight-question/SKILL.md:124) 允许空 register，但 [_append_question_row:1751](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/insightboard.py:1751) 通过已存在的 `Q[DIKW]` 行定位 grid，空 grid 会报错。第 1783–1796 行写旧式日期句子，canonical log 不存在时退回 Page `## Log`，没有 runtime id 或精确 control binding；直接 Ask POST 返回成功前也没有后续控制记录步骤。当前 [控制器:377](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/haipipe-insight-workflow/SKILL.md:377) 和 [Run 合同:184](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/haipipe-insight-workflow/ref/run-workflow.md:184) 要求 owner log 的可索引控制收据。
+**文件与证据。** [Question:124](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/folder-kinds/haipipe-insight-question/SKILL.md:124) 允许空 register，但 [_append_question_row:1751](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-insight/insightboard.py:1751) 通过已存在的 `Q[DIKW]` 行定位 grid，空 grid 会报错。第 1783–1796 行写旧式日期句子，canonical log 不存在时退回 Page `## Log`，没有 runtime id 或精确 control binding；直接 Ask POST 返回成功前也没有后续控制记录步骤。当前 [控制器:377](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/haipipe-insight-workflow/SKILL.md:377) 和 [Run 合同:184](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/haipipe-insight-workflow/ref/run-workflow.md:184) 要求 owner log 的可索引控制收据。
 
 **影响。** 首个问题无法通过内置 writer 写入；直接 UI/CLI 注册完成后，也可能没有新 controller 合同可引用的 registration receipt。agent 外层可以另外补记，因此不能据此说所有 agent 注册都失败。
 
@@ -121,7 +121,7 @@
 
 ### R07 · P2 · “有签名”被界面当成当前可交给 Design
 
-**文件与证据。** [handoff_records:480](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/insightboard.py:480) 只凭 `_SIGNED` 的匹配设置 `signed` 和 `bindable`；[Delivery:1469](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/insightboard.py:1469) 把签名数量称为 “ready for design”。实际 consumer [live/design.py:164](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py:164) 据此返回 `status: bound`。但 [Wisdom:62](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/folder-kinds/haipipe-insight-wisdom/SKILL.md:62) 要求完整 signed payload 和依赖仍当前，[Handoff:106](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/folder-kinds/haipipe-insight-wisdom/SKILL.md:106) 还要求 GI6 receipt。
+**文件与证据。** [handoff_records:480](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-insight/insightboard.py:480) 只凭 `_SIGNED` 的匹配设置 `signed` 和 `bindable`；[Delivery:1469](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-insight/insightboard.py:1469) 把签名数量称为 “ready for design”。实际 consumer [servers/workbench-design/design.py:164](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-design/design.py:164) 据此返回 `status: bound`。但 [Wisdom:62](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/folder-kinds/haipipe-insight-wisdom/SKILL.md:62) 要求完整 signed payload 和依赖仍当前，[Handoff:106](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/folder-kinds/haipipe-insight-wisdom/SKILL.md:106) 还要求 GI6 receipt。
 
 **影响。** 新 partition/verdict 导致 W held/stale 后，历史签名仍可保留；界面却继续显示 ready/bound，用户无法分辨历史签署与当前可消费状态。
 
@@ -151,7 +151,7 @@
 
 ### R10 · P2 · 分区说明仍教旧 Task 配置与输出路由
 
-**文件与证据。** [partition.md:33](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/haipipe-insight/ref/partition.md:33) 的当前 grammar 要求 `tasks/<group>/_thresholds.yaml`、`configs/<partition>.yaml`，并说手动 rerun 采用配置内 `store:`、dispatching probe 用 `RESULT_STORE` 覆盖。当前 [Task:123](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/task/haipipe-task/SKILL.md:123) 使用 `scripts/config/<run>.yaml`；[Output root:153](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/task/haipipe-task/SKILL.md:153) 的顺序是 consumer `RESULT_STORE` → Job `src/config-defaults.yaml` 的 store → Job 本身。Insight 已把 Probe 定为只读历史。旧 Task 布局还被 [_task_calls:1099](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/board/haipipe-board/live/insightboard.py:1099) 的 `*/*/configs/*.yaml` 枚举沿用。
+**文件与证据。** [partition.md:33](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/insight/haipipe-insight/ref/partition.md:33) 的当前 grammar 要求 `tasks/<group>/_thresholds.yaml`、`configs/<partition>.yaml`，并说手动 rerun 采用配置内 `store:`、dispatching probe 用 `RESULT_STORE` 覆盖。当前 [Task:123](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/task/haipipe-task/SKILL.md:123) 使用 `scripts/config/<run>.yaml`；[Output root:153](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/task/haipipe-task/SKILL.md:153) 的顺序是 consumer `RESULT_STORE` → Job `src/config-defaults.yaml` 的 store → Job 本身。Insight 已把 Probe 定为只读历史。旧 Task 布局还被 [_task_calls:1099](/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-insight/insightboard.py:1099) 的 `*/*/configs/*.yaml` 枚举沿用。
 
 **影响。** 新项目按分区说明创建配置时可能走错 owner path 或误判输出位置；Board 的 Task-home 视图可能漏掉现行布局的调用。不能由此推断 aggregate Run inventory 也失效，它有独立 runtime reader。
 

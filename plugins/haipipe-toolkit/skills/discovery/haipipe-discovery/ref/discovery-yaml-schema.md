@@ -8,6 +8,7 @@ replaces the other. Level-4 Run inventory is derived from `runs/` and
 ```text
 discoveries/                                  bank
 └── b01_<noun>_<qualifier>/                   Block
+    ├── board.md                               Discovery Board head
     └── j01_<noun>_<qualifier>/               Job
         └── t01_<noun>_<qualifier>/           Task Page
             ├── t01_<noun>_<qualifier>.md
@@ -30,6 +31,13 @@ Full Level-4 contract: `paper-run-contract.md`.
 The old 0/1/2/3 and 1/2/3/4 labels are not manifest levels. See
 `bjtr-alignment.md` for the retrofit: the path is always Block bNN, Job jNN,
 Task tNN, and Run rNN; D1 and Page numbers remain workflow records.
+
+The Block is a `haipipe-board` container from creation onward. Its
+`board.md` declares `board-kind: discovery-block`; the Job folders are Board
+Groups and the Task folders are Board Pages. The direct `jNN_/tNN_` tree is the
+membership authority. Keep the Board head and generated `board/` projection in
+sync with `scripts/board_sync.py`; do not copy Run inventories, Result prose,
+or Page bodies into the manifest or Board source.
 
 New manifests point `report.evidence_bib` to the Outline-owned
 `outline/evidence/bibex/` lane. A legacy root `evidence/bibex/` path may be

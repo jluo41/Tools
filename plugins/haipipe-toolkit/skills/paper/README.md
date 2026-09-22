@@ -8,8 +8,8 @@ are defined by `haipipe-paper-story`; retired Page names are not aliases.
 
 ## Active architecture
 
-`haipipe-paper` routes requests to the relevant owner. A Workflow is a list of
-Runs: `haipipe-paper-workflow/ref/run-workflow.md` defines bounded Specs,
+`haipipe-paper` routes requests to the relevant owner. The Paper Runs layer is
+owned by `haipipe-paper-workflow`: `ref/run-workflow.md` defines bounded Specs,
 dependencies, routes and completion; the Runtime indexes actual native Runs.
 Ideation/Story/Section/Round/Venue Pages hold content. G0–G5, sync, routing and
 Page controller passes are controls. Step and Version stay inside a Run.
@@ -52,7 +52,7 @@ and historical `pm-/pa-/pr-/pj...` or compact `rp00/rpNN` records. Existing
 identities are not renamed; reused Results keep their exact native address.
 
 There is no View layer and no Paper-level Literature, Value, or Display Page
-Type or plugin. CITE, VALUE, and DISPLAY are typed Results presented in the
+Type or workbench. CITE, VALUE, and DISPLAY are typed Results presented in the
 Outline Evidence Workspace of the Page that consumes them.
 
 ## Paper layout
@@ -78,7 +78,7 @@ Paper-<Slug>/                        no 0-paperboard/ wrapper · board.md at the
 paper/
 ├── haipipe-paper/
 │   └── SKILL.md              one public Paper door and routing contract
-├── haipipe-plugin-paper/
+├── haipipe-workbench-paper/
 │   ├── SKILL.md              the Paper Board-level work console contract
 │   └── ref/                   Space mapping and presentation references
 ├── haipipe-paper-workflow/
@@ -86,12 +86,11 @@ paper/
 ├── haipipe-paper-assemble/
 │   ├── SKILL.md              complete-paper source-driven DOCX/PDF contract
 │   └── ref/                   config example and assembly references
-├── workflow-phases/          retained compatibility path for self-owned PageTypes
-│   ├── haipipe-paper-ideation/     Idea portfolio projection
-│   ├── haipipe-paper-story/        Paper Story prospective blueprint
-│   ├── haipipe-paper-section/
-│   └── haipipe-paper-round/
-│                             (retired literature/value/display/dash Page Types deleted 260822)
+├── haipipe-paper-ideation/  research-question Ideas PageType projection
+├── haipipe-paper-story/     Paper Story PageType / prospective blueprint
+├── haipipe-paper-section/   manuscript Section PageType
+├── haipipe-paper-round/     feedback Round PageType
+│                             (retired literature/value/display/dash PageTypes deleted 260822)
 ├── haipipe-paper-venue/   shared Venue PageType: a QBv bank record
 ├── venue/                    the shared QBv desk bank (bank/), prose playbooks,
 │                             and the literature bank
@@ -110,7 +109,7 @@ skill edit alone does not certify the example's content.
 
 ## Complete-paper document build
 
-There are two different Word exports. `haipipe-plugin-delivery/ref/word.md` renders one Page
+There are two different Word exports. `haipipe-workbench-page/ref/delivery.md` renders one Page
 for coauthor review. `haipipe-paper-assemble` builds the complete manuscript
 from the Section Pages' own `delivery/latex/<page>.tex` body fragments,
 regenerating the paper's `delivery/latex/` whole (0.4.0). The latter is

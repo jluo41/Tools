@@ -83,7 +83,7 @@ not claim a replacement or fabricate a new receipt. Preserve frozen Round
 ## Paper judgment Runs
 
 Idea and Story cards support bounded judgment sessions. Page prose and structure
-use the shared RP contract when separately commissioned. Each card the Paper Plugin shows
+use the shared RP contract when separately commissioned. Each card the Paper Workbench shows
 on those Spaces may keep its discussion in one Paper-owned judgment Run, in the same
 `runs/` + `results/` pair every Page has, with human feedback Steps in the
 journal exactly as `rp-para` keeps them:

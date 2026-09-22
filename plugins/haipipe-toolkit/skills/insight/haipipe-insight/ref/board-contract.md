@@ -106,6 +106,6 @@ W rung      haipipe-insight-wisdom        counsel + the signed Design Handoff
 ```
 
 These are resource contracts. Each named skill owns its Folder kind's Page
-Face, Task Face, plugins, closure and handoff. They live under `folder-kinds/`.
+Face, Task Face, workbenches, closure and handoff. They live under `folder-kinds/`.
 Actual work selects the Run Specs defined by the controller; a Folder kind
 never creates a Run identity. Legacy `page-type:` keys resolve to these owners.

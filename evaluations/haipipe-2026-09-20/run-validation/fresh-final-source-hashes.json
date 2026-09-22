@@ -86,12 +86,12 @@
   },
   {
     "id": "S18",
-    "path": "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-runs/SKILL.md",
+    "path": "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/run-space.md",
     "sha256": "c050440ee34286664fd774ffb791a74a4a0fd208e43307dfb245faf64b570ce0"
   },
   {
     "id": "S19",
-    "path": "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-page/live/runs.py",
+    "path": "/Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-page/runs.py",
     "sha256": "9b5d27978ac137cf154c1cbee73e1432bfc82b87a30c32320919577bb4b38502"
   },
   {

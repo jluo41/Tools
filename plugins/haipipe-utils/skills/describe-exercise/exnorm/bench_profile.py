@@ -50,7 +50,7 @@ PROFILE = Profile(
     conf_order=["GOOD", "OK", "ALIAS", "WEAK", "MISS"],
     trusted=list(TRUSTED),
 
-    port=8078, url_env="EXNORM_URL",
+    port=8078, url_env="EXNORM_URL", prefix="/exercise",
     dest=INFO / "6-benchmark", examples=INFO / "5-api-examples",
 
     # Deliberately mixed: one that resolves cleanly, one multi-word, one the

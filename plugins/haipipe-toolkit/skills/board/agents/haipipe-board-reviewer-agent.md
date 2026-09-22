@@ -37,7 +37,7 @@ copy is exactly what goes a night out of date while the contract moves:
    VARIANT was deleted on 260819 (`Skill-`/`Agent-` are filename kinds on the
    base Page plus Outline's `ref/skill-record.md`, not a Page Type). Both are executable,
    so the rule is checked rather than merely written.
-4. `../../page/page-workflows/haipipe-page-check/SKILL.md` for the judgment and
+4. `../../page/workflow-runs/haipipe-page-check/SKILL.md` for the judgment and
    routing boundary. If the assignment asks whether another Run or controller
    dispatch was performed correctly, also load its owner's contract.
 5. `../haipipe-board/ref/writing-rules.md` for the cold-read standard.
@@ -48,7 +48,7 @@ copy is exactly what goes a night out of date while the contract moves:
 ```text
 input:   Board folder, optional changed pages, and optional expected Page version
 output:  pass | revise | blocked, plus one route legal from CHECK per
-         ../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md § Legal routes
+         ../../page/haipipe-page-workflow/ref/page-run-contract.md § Legal routes
 role:    independent, zero-background reviewer
 ```
 
@@ -68,7 +68,7 @@ Own:
 Do not:
 
 - Edit, create, move, archive, or delete any file.
-- Run `build.py`, `watch.py`, `serve.py`, `stage.py`, or `live/xcal.py`; they write.
+- Run `build.py`, `watch.py`, `serve.py`, `stage.py`, or `servers/workbench-studio/xcal.py`; they write.
 - Resolve comments, tick boxes, change state, or decide a decision.
 - Praise, summarize, or redesign the Board when reporting a defect.
 - Infer project facts that are not present in the files supplied.
@@ -155,7 +155,7 @@ actor:    haipipe-board-reviewer-agent
 status:   pass | revise | blocked
 verdict:  pass | revise | blocked
 route:    one route legal from CHECK; the table lives in
-          ../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md
+          ../../page/haipipe-page-workflow/ref/page-run-contract.md
           § Legal routes, never restated here
           ⚠️ mechanical.errors is PAGE-SCOPED, never board-scoped. The workflow-pass
           controller forces CONTENT while it is above zero, so counting another

@@ -59,7 +59,7 @@ audience × behavior job × primary venue.
 
 The list of designs is a table under the `What to design` heading, and it is
 the only table in the Brief whose header holds `audience`, `job` and `venue`
-together; the Design plugins read the first such table as the list, so no
+together; the Design workbenches read the first such table as the list, so no
 other Brief table (an audience table under Audience Set and Behavior, say)
 may put all three in its header. Columns are matched by header word:
 
@@ -85,8 +85,8 @@ may put all three in its header. Columns are matched by header word:
   yet.
 
 Two writers touch this table. This skill owns the Brief's prose, needs, and
-signed inputs, and may add or change any line. The Board-level Design plugin,
-`haipipe-plugin-design-board`, also adds lines (`add-tasks`, ids continuing
+signed inputs, and may add or change any line. The Board-level Design workbench,
+`haipipe-workbench-design/ref/design-board.md`, also adds lines (`add-tasks`, ids continuing
 `R<N>`, creating the section when the Brief has none) and writes a line's
 `folder` cell when it opens that line's folder (`new-folder`); those cells and
 lines are the only Brief edits it makes.
@@ -97,7 +97,7 @@ Resolve `born-of:` and `reads:`; reconcile opportunity, audience, behavior,
 outcome/kill, venue, and promise; raise unanswered needs; bind already accepted
 core inputs; and release the list of designs. Do not answer a need locally.
 
-## Plugins
+## Workbenches
 
 - exact signed-W path/Page-version/content-hash/signature/GI6 receipt required
   for evidence-first birth or accepted core inputs; PageX is invalid;

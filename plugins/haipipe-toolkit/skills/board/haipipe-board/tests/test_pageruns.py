@@ -8,8 +8,9 @@ from pathlib import Path
 from live.pageruns import page_runs
 
 
-def receipt(step, phase, route, verdict=""):
-    return {"step": step, "round": 1, "phase": phase, "route": route,
+def receipt(step, token, route, verdict=""):
+    # receipts as written before 2026-09-22: uppercase tokens in a `phase` field
+    return {"step": step, "round": 1, "phase": token, "route": route,
             "verdict": verdict, "status": "ok", "reason": "r"}
 
 
@@ -46,10 +47,10 @@ class PageRunsTest(unittest.TestCase):
             "run-b", "QB1-form.md", [receipt(1, "CHECK", "CLOSE", "close")]))
         got = page_runs(self.board, "QPw-group/QPw1-loop/QPw1-loop.md")
         self.assertEqual([r["run_id"] for r in got], ["run-a"])
-        self.assertEqual(got[0]["last"]["phase"], "CHECK")
-        self.assertEqual(got[0]["last"]["route"], "REVISE")
+        self.assertEqual(got[0]["last"]["run"], "check")
+        self.assertEqual(got[0]["last"]["route"], "writing")
         self.assertEqual(got[0]["steps"], 2)
-        self.assertEqual(got[0]["start_phase"], "DRAFT")
+        self.assertEqual(got[0]["start_run"], "writing")
 
     def test_newest_run_first(self):
         import os

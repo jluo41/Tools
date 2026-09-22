@@ -78,12 +78,13 @@ def type_outline(kind: str, skills_root: pathlib.Path) -> dict:
     )
     canonical = _canonical_owners(kind, skills_root)
     hits = ([folder_owner.path] if folder_owner else canonical
+            # Insight's Task-side Page contract is owned by the Insight family,
+            # so it lives beside the family skill rather than under page-types.
+            or list(skills_root.glob("*/haipipe-page-%s/SKILL.md" % kind))
             # Insight is the first Page Type using the shorter public name;
             # keep the legacy fallback for remaining unmigrated variants.
             or list(skills_root.glob("*/page-types/haipipe-page-%s/SKILL.md" % kind))
             or list(skills_root.glob("*/page-types/haipipe-page-for-%s/SKILL.md" % kind))
-            # Retained Paper source path; these skills own PageTypes, not Phases.
-            or list(skills_root.glob("*/workflow-phases/haipipe-paper-%s/SKILL.md" % kind))
             or list(skills_root.glob("paper/haipipe-paper-%s/SKILL.md" % kind)))
     if not hits:
         return {"missing": kind}
@@ -343,7 +344,7 @@ def rewrite_paragraph_addresses(text: str, mapping: dict[str, str]) -> str:
 def plan_addresses(plan_text: str) -> set:
     """-> every C<n>.P<n>.B<n> a plan actually HAS.
 
-    The same walk `live/outline.py` does, so the two cannot disagree about what
+    The same walk `servers/workbench-page/outline.py` does, so the two cannot disagree about what
     an address is: `## C<n>` opens a division, any other `## ` ends the plan's
     divisions, `### ` opens a paragraph, and the explicit ``B<n>`` token is
     the Bullet identity.  Unnumbered ``-`` rows are not addressable and are
@@ -369,7 +370,7 @@ def plan_addresses(plan_text: str) -> set:
 def check_serves(page_src: pathlib.Path, plan_text: str):
     """-> [finding] · every card and unit `serves:` names a REAL plan address.
 
-    Self-consistency test ② of `haipipe-page-outline` §🚦. It exists because on
+    Self-consistency test ② of `haipipe-page-structure` §🚦. It exists because on
     260819 three of this board's own cards pointed at bullets that had been
     renumbered after the tick, and a person read all three out by eye before any
     tool noticed. An address is FROZEN before a card points at it, so a stale one
@@ -401,7 +402,7 @@ def check_serves(page_src: pathlib.Path, plan_text: str):
 def check_bullet_grammar(plan_text: str):
     """-> [finding] · `bullet-missing-note`: a bullet with no folded detail line.
 
-    The bullet grammar is `haipipe-plugin-outline` §✂️ (260819): a terse HEAD,
+    The bullet grammar is `haipipe-workbench-page` §✂️ (260819): a terse HEAD,
     then a `Note:`/`Annotation:`/`Transition:`/`Answered:`/`Drawn:`
     continuation the surface folds, the mark last — every bullet carries one
     of the three. EVERY plan, approved or
@@ -456,7 +457,7 @@ _MARKS = {"📮": "probe", "🧮": "value", "🔢": "value", "🖼": "display", 
 def check_coverage(page_src: pathlib.Path, plan_text: str):
     """Return findings for typed Evidence Items, with legacy mark fallback.
 
-    Self-consistency test ① of `haipipe-page-outline` §④. A SURVEY receipt
+    Self-consistency test ① of `haipipe-page-structure` §④. A SURVEY receipt
     reports `items: n of n`, and nothing recomputed it, so a receipt could
     claim a coverage its own disk did not have.
 
@@ -561,7 +562,7 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
         served |= {"C%s.P%s.B%s" % a for a in (_ADDR.findall(m.group(1)) if m else [])}
 
     # ONE LAW IN TWO READERS, for real this time (260819 smoke): join wrapped
-    # bullets the way live/outline.py does, so a mark on a continuation line
+    # bullets the way servers/workbench-page/outline.py does, so a mark on a continuation line
     # is not invisible; then THE MARK IS THE LAST EMOJI in the end-anchored
     # window, so a dual-emoji legacy tail (`📚 Gray2021 · 🧮 proof`) owes ONE
     # kind, not two.
@@ -666,7 +667,7 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
     return out
 
 
-# ── the head, Point and annotation law (haipipe-plugin-outline ref/plan-grammar.md §3, §4) ──
+# ── the head, Point and annotation law (haipipe-workbench-page ref/plan-grammar.md §3, §4) ──
 _MARK_EMOJI = "🎯📚📮🧮🔢🖼"
 NOTE_MAX = 30          # the specimen's longest Note is 27 words
 _LABEL_RE = re.compile(
@@ -680,7 +681,7 @@ _POINT_INLINE_LABEL_RE = re.compile(
     r"\s+(?=(?:Note|Annotation|More|Role|Transition|Evidence|Accept|"
     r"Answered|Drawn|Routed):)"
 )
-# ``live/outline.py`` keeps an indented phrase-only annotation visible while
+# ``servers/workbench-page/outline.py`` keeps an indented phrase-only annotation visible while
 # it joins wrapped Markdown lines for the legacy evidence scan.  This private
 # separator prevents a lowercase dash from being mistaken for prose; it is
 # consumed here before the reader-facing Point is rendered.

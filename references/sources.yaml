@@ -237,6 +237,13 @@ references:
     license: MIT
     notes: "Distills author-owned writing style into reusable language, structure, cognitive, source, and visual guidance; reference only."
 
+  - name: academic-humanizer
+    path: references/academic-humanizer
+    type: git-submodule
+    url: https://github.com/AIScientists-Dev/academic-humanizer
+    license: MIT
+    notes: "Academic and grant-proposal humanizer; vendored copy at plugins/haipipe-toolkit/skills/writing/2_evaluate/academic-humanizer (commit 02281d83, 2026-09-22). Builds on blader/humanizer."
+
   - name: stop-slop-zh
     path: references/stop-slop-zh
     type: git-submodule

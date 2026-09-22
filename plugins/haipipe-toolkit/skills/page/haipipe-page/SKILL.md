@@ -11,8 +11,8 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.112.0"
-  last_updated: "2026-09-21"
+  version: "0.116.1"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -21,7 +21,9 @@ metadata:
 This is the executable door for ONE PAGE, with or without a Board. Say
 `haipipe-page <file>`, `make this HTML file a Page Folder`,
 `create a new page on <topic>`, `working on <page>`, or `run <page>`.
-The canonical skill and runtime live in `skills/page/haipipe-page`.
+The canonical skill and grammar live in `skills/page/haipipe-page`; the
+standalone server, the reader appearance and the live workspaces are served
+from the workbench's `servers/` tree (`servers/haipipe-page`, `servers/workbench-page`).
 An ordinary file is imported into a new Folder; an existing Page Face or
 Page Folder is opened in place. Never silently wrap an existing Page again.
 
@@ -34,17 +36,17 @@ standalone server and editing    Board hosting adapter to the same Page code
 Page template and base contract  aggregate checker and cross-Page rules
 ```
 
-The Page owns its parser, renderer, workspace server and template. Board calls
-that same implementation through compatibility imports; it does not own a
-second Page renderer. The authoritative template is `ref/page-template.md`.
-Legacy Board paths remain compatibility links, not parallel authorities.
+The Page owns its parser, renderer and template. Its standalone server and
+live workspaces sit in the plugin-level `servers/` tree, and the Board host
+loads the very same modules through the shared `live` namespace; neither side
+owns a second Page renderer. The authoritative template is `ref/page-template.md`.
 
 ## ⚡ Fast feedback Step
 
 When the person gives wording feedback on an already open Page Run, use the
 fast foreground path by default. Read only the Run resume view, the latest
 Version tail, the named paragraph slice, its dependent Bullet, and the frozen
-Mermaid description. Make one bounded patch, update the required small Run
+Structure description. Make one bounded patch, update the required small Run
 projections, perform one narrow check, and return the review packet. Target
 under two minutes. Do not reread the whole Page, update the plan for a
 wording-only change, rebuild anything, run broad tests, verify the browser, or
@@ -73,7 +75,7 @@ readiness are current.
 
 ## 🏃 Page Run families inside Outline
 
-Load `ref/page-run-families.md` before naming or allocating a Page Run. Plugin
+Load `ref/page-run-families.md` before naming or allocating a Page Run. Workbench
 Outline's Run Space presents three semantic areas plus the owner-native
 Supporting group, in both standalone and Board-hosted mode:
 
@@ -108,7 +110,7 @@ participate: record `participants` on the Run and `contributors` on each Step.
 `rp-struct-02` is a later independent structure/Bullet refinement, not a new
 participant or Survey pass. These Runs settle Page direction, coverage and
 non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph
-jobs, typed evidence decisions, and the Mermaid map. After structure closes, Section Runs use
+jobs, typed evidence decisions, and the structure list. After structure closes, Section Runs use
 `rp-sec-NN`; paragraph Runs use `rp-para-NN_Pxx[-Pyy]` and expose their exact
 Page-global paragraph target. `RE` uses the focal-result kinds `value`,
 `display`, and `cite`; `DISPLAY` covers table, figure, and algorithm block
@@ -117,17 +119,19 @@ through `display_kind`. One RE Result/Card may expose many `$V_xxx$`,
 label is not another Run. The Result root `labels:` manifest is the shared
 binding source; Draft Space and Evidence Card renderers must preserve the
 authored token in expandable provenance even when a resolved value is shown.
-While a structure Run is open, its review artifact is
-`outline/<stem>-logic.mmd`; the shared Draft Space renders it as a collapsed,
-user-openable disclosure above the plan. A missing map is a visible blocker,
-never an empty surface.
+While a structure Run is open, its review artifact is the Structure card at
+the top of the shared Draft Space: the plan's `## C<n>` and `### C<n>.P<m>`
+headings as plain text, read from the selected Outline, which the person can
+click into and edit (rename, reorder, add or drop empty paragraphs; points
+stay with their heading). There is no map file; a plan without divisions
+shows only the `run-structure` button, never an empty card.
 
 The canonical Page Run namespace has no new aliases. The kind token must match
 the scope, and a paragraph target must be exact; a mismatched identity is held
 as a contract error and cannot unlock later work. Retired compact identities in
 existing records remain readable history but are not allocated for new Runs. A
-phase-controller invocation is a **Page workflow pass**,
-not a Page Run object. Owner-native phase receipts remain machine workflow
+Run-controller invocation is a **Page workflow pass**,
+not a Page Run object. Owner-native Run receipts remain machine workflow
 records: Page-heavy standalone Folders commonly use `workflow/receipts/`, while
 the current Board controller's compatibility bundle uses
 `<board>/_runs/page/<page-id>/`. An unallocated `new-*` route is still only an
@@ -151,7 +155,7 @@ a direct bounded editing request counts as selecting the matching interaction.
 
 The first structure Run is always `rp-struct-01`, even when imported content
 already suggests a Shape. It iterates until the person explicitly
-closes the Mermaid Structure, Outline Bullets, and Page-global paragraph index
+closes the Structure, Outline Bullets, and Page-global paragraph index
 `P01..PN`. Later structure/Bullet revisions may use `rp-struct-02`, etc. Only
 after the structure contract is closed may `fn/Runs` propose Section-level
 Runs in `rp-sec-NN` or paragraph groups in `rp-para-NN_Pxx[-Pyy]`. Every
@@ -181,7 +185,7 @@ check, and current Version/Step projection. Update an Evidence requirement
 during a Step only when the cycle changes what the paragraph must cite, measure,
 or show.
 Between Steps or Runs, use
-`page-workflows/haipipe-page-workflow/ref/interactive-execution-policy.md`:
+`haipipe-page-workflow/ref/interactive-execution-policy.md`:
 heavy builds, exports, broad checks, delegated Task Runs, and sub-agent
 analysis require an explicit scoped approval before dispatch.
 
@@ -268,22 +272,22 @@ blocking on the listener. One skill invocation performs all requested mechanical
 substeps; do not make the user request them separately.
 
 The built `delivery/web/` is a portable static reading site. The server always
-renders Page source read-only and adds the same category-plugin pane used by
+renders Page source read-only and adds the same category-workbench pane used by
 Board Pages. Standalone advertises only real top-level presenters: Outline,
 Delivery, Folder, plus an optional domain-owned Labeling presenter when a
-direct `labeling/` lane and the subjective-label plugin are present. The
+direct `labeling/` lane and the subjective-label workbench are present. The
 standalone Labeling surface uses the current Codex task as its Chat transport;
 Studio remains Board-hosted until its chat/draw backend is extracted. Evidence
-and Run stay internal Outline workspaces, never duplicate top-level Plugins.
+and Run stay internal Outline workspaces, never duplicate top-level Workbenches.
 Choose the configured
-reader-facing origin for links; exposing plugin writes beyond loopback requires
+reader-facing origin for links; exposing workbench writes beyond loopback requires
 a token. The standalone Page Face has no Chat launcher, comment composer, or
 Page-source save control. Edit Markdown and imported material on disk. Bounded
-plugin read views remain available in either server mode. `--read-only`
-disables plugin writes; without it, Scratch notes autosave and Finish is a
+workbench read views remain available in either server mode. `--read-only`
+disables workbench writes; without it, Scratch notes autosave and Finish is a
 separate manual action. Do not publish private inputs without the user's
 authority. Static files do not provide save-back.
-Report build, server reachability, and plugin interaction mode separately; do
+Report build, server reachability, and workbench interaction mode separately; do
 not claim hosting from a successful build alone.
 
 Board registration is optional and separate: register the same Page Face,
@@ -318,11 +322,11 @@ Steps/Versions; Scratch is the explicitly bounded exception for rough human
 notes. Draft Space has no legacy note thread or feedback composer. Delivery Workspace
 is the read-only source-to-artifact consistency projection; it does not replace
 the human Page CHECK gate.
-See `haipipe-plugin-outline/ref/content-preview.md` for the write boundary.
+See `haipipe-workbench-page/ref/content-preview.md` for the write boundary.
 
 Use `ref/user-check-packet.md` for the two response modes: a routine Writing
 Step returns its exact Run/Version/Step heading, complete selected paragraphs,
-a frozen Mermaid Structure description beside each paragraph address, a numbered
+a frozen Structure description beside each paragraph address, a numbered
 blockquote review passage, a brief change explanation, and the three
 final Draft Space, Evidence Space, and Run Space links;
 a formal delivery also returns the Delivery Workspace consistency receipt and
@@ -345,8 +349,8 @@ and `runs/` belong to that one Folder. Do not create a Page Folder beneath the
 Task Folder; the parent `jNN_<job>/` remains only the Job container.
 
 A page is one markdown file (the PRODUCT: what the page asserts) beside one
-process folder (how it came to assert it) and the plugin lanes it actually
-uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
+process folder (how it came to assert it) and the workbench lanes it actually
+uses. The roster of legal folder names is `haipipe-workbench/ref/roster.md`.
 
 ```text
 <page>/
@@ -354,7 +358,6 @@ uses. The roster of legal folder names is `haipipe-plugin/ref/roster.md`.
 ├── <page>.md      Opening · Content                         THIS reader contract
 ├── outline/       HUMAN process: plan and durable process records
 │   ├── <stem>-context.md  generated context projection for all Page Run Specs
-│   ├── <stem>-logic.mmd    derived Mermaid Structure reviewed by rp-struct-NN
 │   ├── <stem>-evidence-items.md  authored Evidence Item contracts
 │   └── _archive/legacy-outline-evidence/  retired folder material only
 ├── workflow/      MACHINE process: Workflow Runtime/compatibility receipts
@@ -383,7 +386,7 @@ shared Task Face. It presents Page Writing, Page Evidence, and Supporting Runs.
 A native Run pairs its ticket with either a Folder-local Result or the Task
 dialect's resolved `$OUTPUT_ROOT/results/<task>/<run>/`, but the Page surface
 shows the Result first when its card opens; scripts, config, and notebooks
-stay in Folder/detail inspection. Run is never a top-level Page Plugin or a
+stay in Folder/detail inspection. Run is never a top-level Page Workbench or a
 lifecycle owner.
 
 New Page Evidence is an `RE` Page ticket plus a bound Result. A Folder-local
@@ -409,7 +412,7 @@ their counts, where the product and the rendered page live), regenerated
 whole and never hand-edited — the structure's law lives HERE and in the
 roster, so a hand-written copy per folder would be a second authority that
 drifts. GitHub renders it where the board cannot reach; the 📂 tab computes
-the same walk live (`live/folderstat.py`, whose `--write` becomes the
+the same walk live (`servers/workbench-page/folderstat.py`, whose `--write` becomes the
 generator).
 
 A folder is created only when it is used. Values are typed Evidence Items;
@@ -425,17 +428,17 @@ cannot become a second value door. A reusable derivation, a source-data change, 
 numeric result belongs in the linked executable Folder and its Run Result
 binding. The
 the `outline/` process files, their ids, labels and writers are
-`haipipe-plugin-outline/ref/record-shape.md`; the plan's grammar is
+`haipipe-workbench-page/ref/record-shape.md`; the plan's grammar is
 `ref/plan-grammar.md` beside it. A Run Spec owner loads the exact
-Outline-plugin refs it needs as schema/material contracts. The Page surface installs
-`haipipe-plugin-outline` once as the presenter; the presenter skill is not
-appended to each phase's execution dependency chain.
+Outline-workbench refs it needs as schema/material contracts. The Page surface installs
+`haipipe-workbench-page` once as the presenter; the presenter skill is not
+appended to each Run's execution dependency chain.
 
 ## 🧬 One owner claims the Page Face
 
 A property every Page carries cannot tell one Folder kind from another. A Page
 shows something, cites something, states a number; so display, literature and
-value are plugins. A Run Workflow/Run Spec owner or declared family skill owns
+value are workbenches. A Run Workflow/Run Spec owner or declared family skill owns
 the Folder kind and its Page Face. A fixed Page Type may own a Page directly. No
 `folder-kind:` or `page-type:` key is the flexible base.
 
@@ -500,32 +503,35 @@ Task Page surface and never creates a second Page frame or execution owner.
 ## 🎭 Page Run Workflow, independent of Folder kind
 
 A Page Face persists while its Page Run Workflow authority changes. The page
-workflow (`page-workflows/haipipe-page-workflow`) has a directed Run Spec graph;
-the five labels below are only the compatibility dispatch projection, independent
-of the domain workflow that owns the Folder kind:
+workflow (`haipipe-page-workflow`) is a directed graph of Runs; each Run has one
+skill under `skills/page/workflow-runs/`, independent of the domain workflow that owns
+the Folder kind:
 
 ```text
-index     phase/cycle     skill                                  gate
-──────────────────────────────────────────────────────────────────────────────────
-00        CONTEXT/PREPARE  page-workflows/haipipe-page-context     ⚙ resolved context
-01        OUTLINE/SHAPE    page-workflows/haipipe-page-outline     👤 approved:
-          OUTLINE/SURVEY   page-workflows/haipipe-page-outline     👤 Decide per item
-02        EVIDENCE/LAND    page-workflows/haipipe-page-evidence    ⚙ local work exhausted; external gates named
-          EVIDENCE/EMBED   page-workflows/haipipe-page-evidence    ⚙ v0 → SHAPE · G>=1 → CONTENT
-03        CONTENT/WRITE    page-workflows/haipipe-page-content     ⚙ cold pre-check ready
-04        CHECK/CHECK      page-workflows/haipipe-page-check       👤 accepted:
+run        step              skill                          gate
+────────────────────────────────────────────────────────────────────────────────────
+context    PREPARE           workflow-runs/haipipe-page-context      ⚙ resolved context
+structure  SHAPE             workflow-runs/haipipe-page-structure    👤 approved:
+           SURVEY            workflow-runs/haipipe-page-structure    👤 Decide per item
+scratch    Save · Finish     workflow-runs/haipipe-page-scratch      👤 Finish Scratch
+evidence   LAND              workflow-runs/haipipe-page-evidence     ⚙ local work exhausted; external gates named
+           EMBED             workflow-runs/haipipe-page-evidence     ⚙ v0 → SHAPE · G>=1 → writing
+writing    WRITE             workflow-runs/haipipe-page-writing      ⚙ cold pre-check ready
+revise     compare · decide  workflow-runs/haipipe-page-revise       👤 every change decided
+delivery   build             workflow-runs/haipipe-page-delivery     ⚙ build receipt current
+check      CHECK             workflow-runs/haipipe-page-check        👤 accepted:
 ```
 
 The evidence loop law: SHAPE specifies typed Evidence Items; SURVEY
 plans zero-to-many Execution/Discovery Supporting Runs plus exactly one Page
 `RE` lineage per item; LAND produces one ready local Result/Card; EMBED
 interprets it. The ledger is `outline/<stem>-evidence-items.md`
-(`haipipe-plugin-outline/ref/item-table.md`).
+(`haipipe-workbench-page/ref/item-table.md`).
 
 Collaborative writing uses persistent `RP` Runs across one Page under
-`../page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md`.
+`../haipipe-page-workflow/ref/interactive-writing-run.md`.
 `rp-struct-NN` is the Page Structure Run: its SHAPE and SURVEY cycles settle
-Mermaid Structure, Outline Bullets, Point roles, paragraph jobs, and typed
+Structure, Outline Bullets, Point roles, paragraph jobs, and typed
 evidence decisions; it does not write full prose or execute evidence work.
 Several people may contribute Steps to the same `rp-struct-01`; record
 `participants` and per-Step `contributors` rather than creating one Run per
@@ -541,9 +547,9 @@ required evidence Results are complete, one Page-level CONTENT pass adopts the
 agreed wording. It then commissions one or more `RD` Delivery Runs for the
 declared targets without commissioning an additional delegated Task Run for
 every accepted paragraph. `RD` is a delivery identity, not a second CONTENT or
-CHECK phase.
+check gate.
 The historical/explicitly delegated single-paragraph profile remains in
-`haipipe-page-content/ref/paragraph-run.md`. Neither path adds a plugin.
+`haipipe-page-writing/ref/paragraph-run.md`. Neither path adds a workbench.
 
 ### 🧬 Writing DNA handoff
 
@@ -576,7 +582,7 @@ The HAI-side adapter and three-pass realization rules are
 
 Resolve one invocation as: Folder → base Page Face → Run Workflow/Run Spec-owned
 Folder kind or declared Page Type → current Run Spec → Run Spec-selected and
-page-local plugins.
+page-local workbenches.
 The cycles form a routing grammar, not a conveyor belt: each may repeat,
 SURVEY and LAND are skipped when the page promises nothing it cannot already
 support, and CHECK may route to any earlier cycle. When the visible operation
@@ -594,11 +600,11 @@ a concrete version is judged                   → CHECK
 ```
 
 `RUN` is the router verb, deliberately not `ADVANCE`; it is owned by
-`page-workflows/haipipe-page-workflow`, whose `ref/page-run-contract.md` holds
+`haipipe-page-workflow`, whose `ref/page-run-contract.md` holds
 the packet, receipt, version, role-separation and stop rules, and whose
-`ref/phase-cards.md` states every phase in the same six fields. A pass may run
+`ref/Run-cards.md` states every Run in the same six fields. A pass may run
 inside a person's session (the page chat, which resolves Run owners and controller operations and reads the
-strip: `haipipe-plugin-studio/ref/chat.md` §🔁) or as that phase's agent; both leave the same
+strip: `haipipe-workbench-studio/ref/chat.md` §🔁) or as that Run's agent; both leave the same
 trace (the artifact, one log record, the receipt).
 
 ## 📑 Two sections on stage, and nothing else
@@ -610,7 +616,7 @@ Folder surfaces. `check.py` may still inspect those records, but their presence
 must not add another main Page section.
 
 ```text
-#   section    conveys · the reader question                 phase authority              omit
+#   section    conveys · the reader question                 Run authority              omit
 ────────────────────────────────────────────────────────────────────────────────────────────────
 1   🚪 Opening what is this page, why should I care?         CONTENT defines and clarifies      never
 2   Content    what does this page actually establish?       CONTENT writes and builds          Q may · S never
@@ -656,7 +662,7 @@ secondary compact handle, such as `primary total-MME association
 A manuscript `page-type: section` tightens the reader surface: `🚪 Opening`
 renders exactly one paragraph and has no reader drawer. Its page-owned prose
 rules live as authored `W<n>` records in `outline/<stem>-requirement.md`, after
-its generated venue `V<n>` records. The Outline plugin exposes both through
+its generated venue `V<n>` records. The Outline workbench exposes both through
 one `📏 Requirement` lens to CONTEXT, OUTLINE, CONTENT, and CHECK. The Section
 product source carries no `### Writing Style`; post-paragraph notes and Stage
 Contract remain source-side and do not appear on the manuscript review
@@ -709,7 +715,7 @@ its own.
 
 The RUN `from` selector accepts the existing Page controller operation names
 (CONTEXT, OUTLINE, EVIDENCE, CONTENT, CHECK); its parser/API may retain the
-field name `phase`. This help wording does not add a Run-id selector.
+field name `run`. This help wording does not add a Run-id selector.
 
 **Preview**: `cli/preview.py <page>` prints one screen (title, the Opening's
 visible paragraph, the Aims with their `Now:` lines, the Content divisions,
@@ -731,16 +737,15 @@ ROOT="$(git rev-parse --show-toplevel)"
 set -a
 source "$ROOT/.server_config/settings.env"
 set +a
-python3 "$ROOT/$JJLUO_SERVER_SCRIPT" --root "$ROOT" \
-  --host "$JJLUO_BIND_HOST" --port "$JJLUO_LOCAL_PORT" \
-  --space-name "$JJLUO_SPACE_NAME" --public-url "$JJLUO_PUBLIC_URL" \
-  --no-auth
+python3 plugins/haipipe-toolkit/servers/_host/serve.py --root "$ROOT"
+# host, port, SPACE name, DOMAIN and auth file come from
+# $ROOT/.server_config/settings.env (BIND_HOST, PORT, SPACE_NAME, DOMAIN, AUTH_FILE)
 ```
 
-Open `<JJLUO_PUBLIC_URL>/b/<board-slug>/<page-id>` in a browser. The short
+Open `<DOMAIN>/b/<board-slug>/<page-id>` in a browser. The short
 route redirects to the canonical generated file; `<page-id>` is the resolved
 Page id (for example, `b01j03t04` for a Task Page). The Board index is
-`<JJLUO_PUBLIC_URL>/b/<board-slug>`. If the server is already running, reuse
+`<DOMAIN>/b/<board-slug>`; its workbench is `<DOMAIN>/w/<board-slug>/<page-id>`. If the server is already running, reuse
 it; do not start a second listener. Use the configured public URL for a
 reader-facing reply and never substitute `localhost`, `127.0.0.1`, or
 `file://`. The short-route and server details are owned by
@@ -796,7 +801,7 @@ retype the shape · a three-to-five-word title stating the purpose · the
 Opening as one visible paragraph above the first blank line · Content as
 numbered parts, each with a caption, a figure and a short intro · Aims with
 their `Now:` lines · `outline/<stem>-files.md` with any Related Board Page row
-the current phase needs · register in `board.md` only if requested · build, check, read the
+the current Run needs · register in `board.md` only if requested · build, check, read the
 RENDER, report the finding count.
 
 **Interactive work on**: when the person asks what interaction is needed, use
@@ -815,7 +820,7 @@ or use the broad repair/build loop below for that request.
 
 **General Page work on**: ONE page is the deliverable. Read the whole file and its
 `outline/` first; if the files record declares Related Board Pages, load the
-one-hop packet from `cli/pagecontext.py <page> --phase <PHASE>` · run the
+one-hop packet from `cli/pagecontext.py <page> --run <run>` · run the
 checker and fix the mechanical findings in bulk · then read for what no
 checker reaches (the weak-English axis, one question per part, an Opening that
 says more than the title) · a rule nobody wrote down goes in three places (the
@@ -825,7 +830,7 @@ when the page cannot be made correct without it, named file by file · never
 rewrite a sibling page's content.
 
 **Run**: human-feedback writing uses the persistent profile above. For automated
-phase work, the bounded loop lives with `page-workflows/haipipe-page-workflow`.
+Run work, the bounded loop lives with `haipipe-page-workflow`.
 The dispatch stays in the session you typed it in: a subagent is not handed
 the `Workflow` tool. A new page is CREATEd first (Board registration is optional) and RUN starts
 at CONTEXT; an existing page with no known next authority starts at CHECK.
@@ -907,7 +912,7 @@ purpose and each paragraph's job line. A more specific source refines a
 broader one and never silently contradicts it; a conflict is reported and
 that criterion is not judged until the owner resolves it. The rubric (four
 axes, four verdicts, the review units, the batch-voice test, the report row)
-is `page-workflows/haipipe-page-check` §📏; `check.py --strict` supplies the
+is `workflow-runs/haipipe-page-check` §📏; `check.py --strict` supplies the
 mechanical half, the page's `✅ Quality Check` runs the rubric in the page
 chat, and `haipipe-page-check-agent` runs it in a fresh context.
 
@@ -915,7 +920,7 @@ chat, and `haipipe-page-check-agent` runs it in a fresh context.
 
 Every term this family uses is defined in `ref/glossary.md` beside the path it
 names: Context record, plan, Bullet, Evidence Item, Supporting Run, Local
-Input, local Run, Result, availability, next action, phase, and receipt. Load
+Input, local Run, Result, availability, next action, Run, and receipt. Load
 it when a reader asks what a word means or when you are about to coin one;
 `writing-rules.md` forbids a phrase that is neither the source's own wording
 nor defined where a reader can find it.
@@ -943,7 +948,7 @@ Every id inside a fenced figure renders as a link.
 - Every heading passes `writing-rules.md`'s five lookup-key tests;
   `grep -n '^#\+ .*, '` returns only clauses that state a second rule.
 - No section states a rule a cited authority owns (`board-form.md` §4,
-  `page-template.md`, `writing-rules.md`, `haipipe-plugin-outline`), except
+  `page-template.md`, `writing-rules.md`, `haipipe-workbench-page`), except
   where this file adds what a machine may write.
 - Every path this file names resolves on disk; each `##` section answers one
   reader question.
@@ -967,4 +972,4 @@ Owns `ref/page-template.md`, `cli/page.py`, `src/` and the shared `live/`
 Page presenters. Board `ref/board-form.md` §4 remains the shared frame
 reference during extraction. Board `cli/preview.py` and
 `cli/pagecontext.py` live with the machinery. The lifecycle packet and receipt
-spec belong to `page-workflows/haipipe-page-workflow/ref/page-run-contract.md`.
+spec belong to `haipipe-page-workflow/ref/page-run-contract.md`.

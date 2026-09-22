@@ -1,3 +1,24 @@
+## 0.7.0 · 2026-09-22
+
+- Idea Card: new required `question` (the research question the Idea asks, one sentence
+  ending in `?`), the Idea's name everywhere downstream; `title` is a handle derived from
+  it. `check_ideation.py` requires it and reports `unframed-idea` when it does not end in
+  `?`. Asked by JL 260922 ("write the idea in terms of the research question"); the Paper
+  Ideation Page (haipipe-paper-ideation 1.1.0) heads each Idea division with it.
+
+## 0.6.0 · 2026-09-22
+
+- Family layout: every skill we wrote sits flat at the family root; `1_generate/`
+  and `2_test/` now hold vendored originals only (`framing-research-questions`
+  from science-superpowers @3150a27, `idea-creator`, `novelty-check` and
+  `kill-argument` from ARIS @0472e53, `paper-reviewer` from nature-paper-skills
+  @44cff42; all MIT, each with LICENSE, CHANGELOG and a `metadata.haipipe`
+  stamp). `3_select/` is gone because Select has no external original.
+- Routing rule in the door: ours by default, an original only when named or
+  selected as an independent second pass; originals never write cards, select,
+  or open a Run. `references/external-skill-map.md` gained the vendored table
+  with commits and licences, and pins for the read-only sources.
+
 ## 0.5.2 · 2026-09-20
 
 - Added evidence-bound interpretation-confidence anchors and abstention rules, alongside qualitative novelty-confidence and identification-credibility anchors.

@@ -123,3 +123,18 @@ if __name__ == "__main__":
         test()
         print("✅", test.__name__)
     print(f"✅ {len(tests)} anti-slop tests passed")
+
+
+def test_chinese_register_rules_fire_without_word_boundaries():
+    text = (
+        "其实这是一种非常重要的能力。写作是一种思考，是一种表达，更是一种修行。"
+        "我们首先要进行优化，综上所述，值得注意的是效果显著。\n"
+    )
+    result = anti_slop.audit_text(text, RULES)
+    ids = {item["id"] for item in result["findings"]}
+    assert {
+        "phrase:其实", "phrase:非常", "phrase:一种", "phrase:首先", "phrase:综上所述",
+        "phrase:值得注意的是", "zh-triplet-shi", "zh-nominalization-jinxing",
+    } <= ids
+    assert result["diagnostic_only"] is True
+    assert result["rules_version"] == "1.1.0"

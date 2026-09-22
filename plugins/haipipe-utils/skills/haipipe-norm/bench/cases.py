@@ -19,7 +19,8 @@ WHOSE CASE IS IT
 ================================================================================
 `curl.sh` names the endpoint, and that is the routing key. It matters because
 `_MedInfo/5-api-examples` holds BOTH members: `4-insulin/` posts to
-INSNORM_URL on 8080 while its siblings post to MEDNORM_URL on 8079. A chain
+INSNORM_URL (the host's `/insulin` prefix) while its siblings post to MEDNORM_URL
+(`/medication`). A chain
 shares an _XInfo folder, so a folder is not a member.
 """
 import json
@@ -34,14 +35,19 @@ def _is_error(response) -> bool:
     return isinstance(response, dict) and "detail" in response
 
 
-def discover(examples: pathlib.Path, port: int, url_env: str = "") -> List[Dict]:
-    """Every fixture under `examples` whose curl.sh points at `port`."""
+def discover(examples: pathlib.Path, port: int, url_env: str = "",
+             prefix: str = "") -> List[Dict]:
+    """Every fixture under `examples` whose curl.sh points at this member: by the
+    env var it names, by the host prefix it posts to, or by the standalone port
+    it used before the host (fixtures published before 2026-09-21)."""
     out = []
     for req in sorted(examples.rglob("request.json")):
         case = req.parent
         curl = (case / "curl.sh").read_text() if (case / "curl.sh").exists() else ""
         if curl:
-            mine = (f":{port}" in curl) or (url_env and url_env in curl)
+            mine = ((url_env and url_env in curl)
+                    or (prefix and f"{prefix}/" in curl)
+                    or (f":{port}/" in curl))
             if not mine:
                 continue
         rel = case.relative_to(examples)

@@ -76,8 +76,11 @@ class AimsStateTest(unittest.TestCase):
 
     def test_current_page_generators_keep_status_inside_aims(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
-        for rel in ("live/structure.py", "cli/stage.py", "cli/skillpage.py"):
-            text = (root / rel).read_text(encoding="utf-8")
+        servers = root.parents[2] / "servers"
+        for rel, path in (("servers/haipipe-board/structure.py", servers / "haipipe-board" / "structure.py"),
+                          ("cli/stage.py", root / "cli" / "stage.py"),
+                          ("cli/skillpage.py", root / "cli" / "skillpage.py")):
+            text = path.read_text(encoding="utf-8")
             for heading in ("Aims", "States", "Files", "Discussion", "Log"):
                 self.assertNotRegex(text, rf'(?m)^## {heading}\s*$', rel)
 
@@ -97,16 +100,16 @@ class AimsStateTest(unittest.TestCase):
             with self.subTest(page_type=page_type):
                 self.assertIn(f"haipipe-paper-{page_type}", door)
                 self.assertTrue(
-                    (paper_root / "workflow-phases" / f"haipipe-paper-{page_type}" / "SKILL.md").is_file()
+                    (paper_root / f"haipipe-paper-{page_type}" / "SKILL.md").is_file()
                 )
         for page_type in ("roadmap", "narrative"):
             with self.subTest(page_type=page_type):
                 self.assertFalse(
-                    (paper_root / "workflow-phases" / f"haipipe-paper-{page_type}").exists()
+                    (paper_root / f"haipipe-paper-{page_type}").exists()
                 )
                 self.assertNotIn(f"| `haipipe-paper-{page_type}` |", door)
         self.assertFalse((paper_root / "_old").exists())
-        self.assertNotIn("retired-workflow-phases-260907", door)
+        self.assertNotIn("workflow-phases", door)
         self.assertNotIn("seed still routes here", door)
         self.assertNotIn("seed` accepted as alias", door)
         self.assertIn("haipipe-paper-venue", door)
@@ -119,7 +122,7 @@ class AimsStateTest(unittest.TestCase):
     def test_active_paper_types_do_not_teach_legacy_checkbox_progress(self):
         root = Path(__file__).resolve().parent.parent  # the engine dir
         paper = root.parents[1] / "paper"
-        for path in (list(paper.glob("workflow-phases/haipipe-paper-*/SKILL.md"))
+        for path in (list(paper.glob("haipipe-paper-*/SKILL.md"))
                      + list(paper.glob("page-types/haipipe-page-*/SKILL.md"))
                      + [paper / "haipipe-paper-venue" / "SKILL.md"]):
             text = path.read_text(encoding="utf-8")

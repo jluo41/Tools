@@ -23,9 +23,9 @@
 ## 0.6.0 — 2026-09-04
 
 - Enter concrete Venue work through the canonical five-phase Page chain.
-- Replace active PageX/probe/bibex/value/display plugin language with typed
+- Replace active PageX/probe/bibex/value/display workbench language with typed
   VALUE/CITE/DISPLAY Results over Supporting Runs, one Local Input, and one
-  local Run in the shared Outline plugin.
+  local Run in the shared Outline workbench.
 - Declare `page_ruling: none`; paper targeting remains a Narrative/journey
   decision rather than a second Venue-page gate.
 

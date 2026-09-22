@@ -7,10 +7,14 @@ venue and preservation rules are now part of the shared Writing request and
 academic evaluation adapter. Git retains the retired skill's implementation
 and history; it is not an installed runtime dependency.
 
-The external academic-humanizer entry must be resolved separately when selected.
+The academic-humanizer entry now resolves to the vendored copy at
+`../../2_evaluate/academic-humanizer/` (commit `02281d83`, 2026-09-22).
 Its original repository is https://github.com/AIScientists-Dev/academic-humanizer.
 The repository's references/academic-humanizer checkout remains provenance
-material. Preserve the actual installed provider's additional notices when
+material. The general-register `humanizer` entry resolves to
+`../../2_evaluate/humanizer/` (blader/humanizer 3.0.0, commit `9862685f`, MIT;
+its LICENSE travels with the copy). `ref/external/README.md` maps every other
+reference on the anti-AI writing shelf and what was taken from each. Preserve the actual installed provider's additional notices when
 adapting further material. Anti-slop ports retain their separate notices in
 [anti-slop-attribution.md](anti-slop-attribution.md).
 

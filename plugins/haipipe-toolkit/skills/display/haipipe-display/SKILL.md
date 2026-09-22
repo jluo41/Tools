@@ -85,7 +85,7 @@ The caller supplies the unit directory. For a Page DISPLAY Result, that is
 address. A View uses the View-owned path in the shared output contract. A non-Page Paper workflow
 supplies its unit path through its Paper adapter. Renderers never choose a paper root or create a
 second unit copy. Page citations and the human `accepted:` decision belong to
-`page/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md`.
+`page/haipipe-workbench-page/ref/evidence/displays.md`.
 
 ## 📂 Files
 

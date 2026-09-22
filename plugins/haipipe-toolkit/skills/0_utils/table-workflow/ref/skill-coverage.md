@@ -93,7 +93,7 @@ only a size signal, not quality.
 
 ## Audit procedure
 
-1. Read the Plugin/work object's plural Workspace roster.
+1. Read the Workbench/work object's plural Workspace roster.
 2. Read the Workflow's Run Spec graph.
 3. Resolve every Cell's owner/worker skill bindings.
 4. Deduplicate by literal name/path while preserving all `used_by_cells`.

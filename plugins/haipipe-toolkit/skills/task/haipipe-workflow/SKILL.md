@@ -42,7 +42,7 @@ Runtime. One straightforward Run may rely on its own receipt.
 
 | Object | Owns | Does not own |
 |---|---|---|
-| Plugin | member Workspace roster and stable ids | Run execution or Workflow order |
+| Workbench | member Workspace roster and stable ids | Run execution or Workflow order |
 | Workflow | graph compiled from Spec-owned Routes, entry specs, terminal rules, Workflow I/O | concrete runtime truth or a second Route authority |
 | Run Type | reusable defaults, allowed action/result, default close rule | one target or instance id |
 | Run Spec | target/goal, actor, action/interaction, gates, routes, cardinality | current execution state or surface behavior |
@@ -94,10 +94,10 @@ cells:
 Required semantic fields are stable Spec and instance identity, Run Type,
 bounded target/goal, actor, action/interaction, lifecycle state, close rule,
 terminal outcome, and durable receipt. Inputs, dependencies, entry gate, and
-Result payload are conditional. When a Plugin Workspace roster is declared,
+Result payload are conditional. When a Workbench Workspace roster is declared,
 Cell bindings are required, with one Cell per member Workspace. A standalone
 Run/Workflow without such surfaces may omit the roster and Cells; never invent
-a Plugin merely to execute one bounded commission. A terminal Run may omit an explicit route only when `CLOSE`
+a Workbench merely to execute one bounded commission. A terminal Run may omit an explicit route only when `CLOSE`
 is its declared default.
 
 ## Human decisions and interactions
@@ -124,7 +124,7 @@ model call when they share one target and close rule.
 `/haipipe-workflow plan` creates or revises `plan.yaml`.
 
 1. Name Workflow purpose, Input, and Output.
-2. Resolve the Plugin-owned Workspace roster when the Workflow declares those
+2. Resolve the Workbench-owned Workspace roster when the Workflow declares those
    surfaces; otherwise retain a standalone definition without invented Cells.
 3. List independently closable Run Specs; reject pseudo-Runs that are only
    Steps, files, tools, or projections.
@@ -205,7 +205,7 @@ Before freezing or reporting, require:
 - human decision Runs pass the independent-close test;
 - feedback Steps and Versions are not counted as Runs;
 - planned cardinality is separate from actual allocated instances;
-- with a declared Plugin roster, every Run Spec has one Cell per member Workspace;
+- with a declared Workbench roster, every Run Spec has one Cell per member Workspace;
 - Cell Skill/interaction/projection bindings do not redefine Run Gate/Route;
 - Workspace bindings are presentation/interaction only;
 - low-level progress groups are not treated as semantic Phases;

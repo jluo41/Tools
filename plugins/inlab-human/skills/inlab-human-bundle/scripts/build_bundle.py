@@ -13,7 +13,7 @@ narrative is the ONLY LLM-produced field; everything here stays deterministic).
         --bundle-id adhd-demo-r1 --out review_bundle.json [--seed 41]
     python3 build_bundle.py --merge-narratives narratives.json --out review_bundle.json
 
-Contract: ../../../ref/review-bundle-schema.md (v0.1). Stdlib only.
+Contract: ../../ref/review-bundle-schema.md (v0.1). Stdlib only.
 """
 import argparse
 import json

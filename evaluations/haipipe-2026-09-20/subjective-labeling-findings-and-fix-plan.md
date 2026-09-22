@@ -347,12 +347,12 @@ next_action: "owner + missing input/repair/decision, or none"
 [fit-schema]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/ideation/haipipe-ideation/references/venue-fit.md:48
 [task-phase]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/task/5_fit/haipipe-task-for-fit/SKILL.md:18
 [page-phase]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-workflows/haipipe-page-check/SKILL.md:352
-[outline-phase]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-outline/SKILL.md:678
+[outline-phase]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/SKILL.md:678
 [discovery-phase]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/discovery/workflow-phases/haipipe-discovery-inquiry/SKILL.md:27
 [ideation-workflow]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/ideation/haipipe-ideation/references/workflow-table.md:1
 [paper-compat]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-workflow/SKILL.md:51
 [round-phase]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/workflow-phases/haipipe-paper-round/SKILL.md:191
-[labeling-presenter]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-runs/SKILL.md:330
+[labeling-presenter]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/run-space.md:330
 [labeling-workflow]: /Users/jluo41/Desktop/Tools-SPACE/plugins/subjective-label/skills/subjective-label-workflow/SKILL.md:52
 [ideation-runs]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/ideation/haipipe-ideation/references/workflow-runs.md:15
 [writing-current]: /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/writing/haipipe-writing/SKILL.md:73

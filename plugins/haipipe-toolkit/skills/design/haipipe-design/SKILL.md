@@ -2,7 +2,7 @@
 name: haipipe-design
 description: >-
   Canonical owner of one stable Design Folder, its Design Item register, and
-  the Design Plugin's five Spaces: Goal, Design, Insight, Run, and Delivery. Keeps Page and
+  the Design Workbench's five Spaces: Goal, Design, Insight, Run, and Delivery. Keeps Page and
   Design Run lists distinct. Use for commissioning, generating, independently
   verifying and handing off exact Design candidates. Ends when Verify passes,
   never implementation, distribution, experimentation, or measurement.
@@ -19,7 +19,7 @@ metadata:
     shape: "commission decision → generation → verification → delivery handoff"
 ---
 
-# /haipipe-design · one Plugin, five Spaces, two Run lists
+# /haipipe-design · one Workbench, five Spaces, two Run lists
 
 ## Version governance
 
@@ -27,8 +27,8 @@ Only explicit user approval may authorize `1.0.0`; until then the family stays a
 
 This Design family is exactly `v0.4.0`. Do not change that version or publish a
 `v1.x` release without explicit user permission. Architecture changes and
-field-test repairs do not authorize a version upgrade. The two Design plugins
-(`haipipe-plugin-design`, `haipipe-plugin-design-board`) version separately.
+field-test repairs do not authorize a version upgrade. The two Design workbenches
+(`haipipe-workbench-design`, `haipipe-workbench-design/ref/design-board.md`) version separately.
 
 ## Design Items
 
@@ -91,7 +91,7 @@ records invalid: a previously ready candidate no longer matches its checked reco
 ```
 
 The full fold, with who each state waits on, is in
-`haipipe-plugin-design/ref/space-mapping.md`. A Commission releases exactly
+`haipipe-workbench-design/ref/space-mapping.md`. A Commission releases exactly
 one Design Item (Release all writes one Commission per item); a second
 Release of the same item is refused, and a held Commission can be released
 later through a new Commission Run, preserving the held decision. A Generate produces a draft for exactly one item; a passed Verify makes
@@ -100,10 +100,10 @@ delivered; it rests on the Brief alone. An item is never a Page division, a
 Run, or a Result: the Page explains it, the Runs produce and judge it, the
 Result is its draft.
 
-## Plugin and Spaces
+## Workbench and Spaces
 
-`Space` is the only reader-facing word for a plugin surface (JL 260916). One
-Design Plugin presents the Folder through five Spaces, in time order:
+`Space` is the only reader-facing word for a workbench surface (JL 260916). One
+Design Workbench presents the Folder through five Spaces, in time order:
 
 | Space | Shows |
 |---|---|
@@ -122,7 +122,7 @@ reaches the screen, and an insight page shows as its label and title
 (`full-W01 · Send salience`), never its file id `FW01`. The Runs list uses real Run names;
 Steps are actions inside one Run. A Space is a
 presentation/interaction surface, never another Run or execution owner; the
-presenter is `haipipe-plugin-design`.
+presenter is `haipipe-workbench-design`.
 
 ## One Folder, two independent Workflows
 
@@ -303,7 +303,7 @@ contracts, the `2-Design/Design-NN-…` folder, and
 `rdNN_commission|generate|verify_*` ids. It does not read, migrate,
 route, validate, or continue v1 Tickets/Results, D0-D5/GD0-GD6,
 `rNN_design_*`, `design/DU*/`, `2-DS-design/DS*`, PageX, or previous
-phase-shaped Design folders; the plugin serves them with HTTP 410. A decisive
+phase-shaped Design folders; the workbench serves them with HTTP 410. A decisive
 unsupported marker ends inspection. An old `DS` link is rewritten to the
 `Design-NN` folder only when the file it names no longer exists, so a DS
 folder still on disk answers 410 for itself. There is no compatibility or

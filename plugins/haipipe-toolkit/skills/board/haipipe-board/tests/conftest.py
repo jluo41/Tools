@@ -13,3 +13,7 @@ from pathlib import Path
 _ENGINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ENGINE))
 sys.path.insert(0, str(_ENGINE / "cli"))  # the runnable scripts moved here 260801
+# The live layer (`live.*`, `serve`, `server_config`) moved to the workbench's
+# servers/ tree; its host folder resolves them wherever each module now sits.
+SERVERS = _ENGINE.parents[2] / "servers"
+sys.path.insert(0, str(SERVERS / "_host"))

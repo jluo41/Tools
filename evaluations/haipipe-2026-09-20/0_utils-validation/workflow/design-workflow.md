@@ -20,7 +20,7 @@ A valid independent fail review is complete with route generate. An invalid or u
 | generate | Empty | Read-only latest draft with a clean records check and self-check marks | Empty | Read-only agent, time, verdict n/m, checks, draft, feedback, same Run id | Read-only exact draft after its independent Verify passes |
 | verify | Empty | Read-only rule marks of the reviewed draft | Empty | Read-only independent reviewer, time, verdict n/m, checks, same Run id | Empty |
 
-All 15 Cells, including six empty ones, are explicit in design-workflow.json. Cell bindings present or collect the row's declared gate; they never add a gate or Run. The Design owner declares the Spaces and haipipe-plugin-design presents them. Skill bindings are derived from the owner workflow and the utility's worked schema.
+All 15 Cells, including six empty ones, are explicit in design-workflow.json. Cell bindings present or collect the row's declared gate; they never add a gate or Run. The Design owner declares the Spaces and haipipe-workbench-design presents them. Skill bindings are derived from the owner workflow and the utility's worked schema.
 
 Expected count per item is C + N + J, counting allocated records including held, failed, blocked and superseded Runs. On the ordinary path with one release and no earlier hold, C=1 and the expression is 1 + N + J. A first-pass success has C=1,N=1,J=1 (3 Runs); a hold then release then first-pass success has C=2,N=1,J=1 (4 Runs). These are examples, not observed runtime counts. Steps, internal revisions within the frozen target, checks, calls, Results, renderings, and Spaces add no Run identities.
 
@@ -43,4 +43,4 @@ Not assessed: no actual waiting Commission or gate was supplied. A waiting row m
 | haipipe-insight | commission@insight | 1.6.0 | 359 | source resolved; quality and field-test ? |
 | haipipe-run | commission@runtime, generate@runtime, verify@runtime | 0.26.1 | 693 | source resolved; quality and field-test ? |
 
-Sources: haipipe-design/SKILL.md (roster/count/closure), haipipe-design-workflow/SKILL.md (Specs/routes/Space bindings), its references/run-profile.md (native identity and receipts), haipipe-run/SKILL.md (Run versus Step), haipipe-plugin-design/ref/space-mapping.md (state meanings). Exact source paths and Cell bindings are preserved in design-workflow.json.
+Sources: haipipe-design/SKILL.md (roster/count/closure), haipipe-design-workflow/SKILL.md (Specs/routes/Space bindings), its references/run-profile.md (native identity and receipts), haipipe-run/SKILL.md (Run versus Step), haipipe-workbench-design/ref/space-mapping.md (state meanings). Exact source paths and Cell bindings are preserved in design-workflow.json.

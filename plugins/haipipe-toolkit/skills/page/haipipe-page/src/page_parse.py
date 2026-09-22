@@ -87,7 +87,7 @@ def parse_page(qid, txt, group="", file="", kind="question", family=""):
         # page to for-literature or for-value where the filename cannot.
         "route": "",
         # page-type: is the OTHER type key. `route:` resolves the two evidence
-        # variants; this one names the variant outright, and a plugin surface
+        # variants; this one names the variant outright, and a workbench surface
         # gates on it (JL 260807), so it has to reach the page dict and the DOM.
         "page_type": "",
         "folder_kind": "",

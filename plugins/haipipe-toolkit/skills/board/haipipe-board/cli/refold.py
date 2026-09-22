@@ -7,13 +7,13 @@
 `regroup.py` puts a page in the folder of its GROUP. This puts it in a folder of
 its OWN: `2-QB-delivery/QB1-opening.md` becomes
 `2-QB-delivery/QB1-opening/QB1-opening.md`, and from then on every subfolder
-beside that md is one of the page's plugins. `src/common.py` has read that shape
-since 260815 — `_page_home()` is `<name>/<name>.md` and `_in_plugin()` keeps
+beside that md is one of the page's workbenches. `src/common.py` has read that shape
+since 260815 — `_page_home()` is `<name>/<name>.md` and `_in_workbench()` keeps
 discovery out of everything else — so this command adds no capability. It only
 performs the move that a person otherwise does by hand, 73 times, without
 dropping a path.
 
-WHAT COMES WITH THE PAGE. Before folding, a group folder holds the plugin
+WHAT COMES WITH THE PAGE. Before folding, a group folder holds the workbench
 material of all its pages side by side, keyed by the page's name:
 `evidence/display/QBt3-for-display/`,
 `evidence/supporting-runs/QBt5-for-value/`, `draw/QBt2.excalidraw`.
@@ -67,7 +67,7 @@ def page_id(stem):
 
 
 def companions(page, board):
-    """-> [(src, dest)] the plugin material of this page, held by its group.
+    """-> [(src, dest)] the workbench material of this page, held by its group.
 
     A sibling directory of the page counts when it holds a child named for the
     page, or a drawing named for the page's id. The group's own scene

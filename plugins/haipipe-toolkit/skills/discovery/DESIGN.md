@@ -11,33 +11,45 @@ haipipe-discovery/ref/lifecycle-map.md
 haipipe-discovery/ref/paper-run-contract.md
 haipipe-discovery/ref/discovery-yaml-schema.md
 haipipe-discovery/ref/bjtr-alignment.md
+haipipe-discovery/ref/board-sync.md
 haipipe-discovery/ref/external-capability-registry.md
 ~~~
 
 This file explains their relationship; when details differ, those runtime refs
 win.
 
-## Numbered skill-family groups
+## Family layout
 
-Discovery keeps the same family-level organization used by `haipipe-task`:
+Every skill we wrote sits flat at the family root. The numbered folders hold
+only vendored originals from `references/`, one folder per stage that has any:
+the numbers are the stage vocabulary (1 Search, 2 Review, 3 Synthesize), and
+Synthesize has no external original, so there is no `3_synthesize/` folder.
+`writing/` and `ideation/` follow the same law; `task/` is the exception, its
+numbers being permanent domain ids.
 
 ~~~text
 discovery/
-├── haipipe-discovery/                         public door
-├── workflow-phases/
-│   └── haipipe-discovery-inquiry/             D1 Run controller (compatibility path)
-├── 1_search/                                  acquisition family
-│   ├── haipipe-discovery-search/              family router
-│   └── source FIND/READ workers
-│       (arxiv, semantic-scholar, exa-search, openalex, gemini-search,
-│        alphaxiv, deepxiv, paper-analyzer)
-├── 2_review/                                  per-Subject review family
-│   ├── haipipe-discovery-review/              family router
-│   └── review workers
-├── 3_synthesize/                              cross-Result synthesis family
-│   └── haipipe-discovery-synthesize/          family router
-└── agents/                                    execution roles
+├── haipipe-discovery/                 public door
+├── haipipe-discovery-inquiry/         D1 Run controller (the former workflow-phases/ path)
+├── haipipe-discovery-search/          1 · acquisition: identity, admission, Run allocation
+├── haipipe-discovery-review/          2 · per-Subject reading and Result writing
+├── haipipe-discovery-synthesize/      3 · cross-Result synthesis into the Task Page
+├── 1_search/                          vendored originals, callable
+│   ├── arxiv · semantic-scholar · exa-search · openalex · gemini-search   ARIS @0472e53 · candidate channels
+│   ├── alphaxiv · deepxiv                                                  ARIS · source reading
+│   └── paper-analyzer                                                      nature-paper-skills @44cff42
+├── 2_review/
+│   ├── research-lit · comm-lit-review                                      ARIS · review craft
+│   └── academic-researcher                                                 nature-paper-skills
+└── agents/                            execution roles (agent definitions only)
 ~~~
+
+Ours run by default. An original runs only when the Search or Review skill
+selects it as a channel or craft worker, and its output is a packet the HAI
+skill normalizes (`haipipe-discovery/ref/external-capability-registry.md`).
+Each original carries its LICENSE, a CHANGELOG stamping the upstream commit,
+and `metadata.haipipe.vendored_from`; the map of what is vendored and what is
+only read is `haipipe-discovery/ref/external-skill-map.md`.
 
 Semantic ideation is a sibling layer, not a Discovery capability family:
 
@@ -47,10 +59,10 @@ ideation/haipipe-ideation
   -> evidence bundle -> Direction/Idea Cards -> Paper P0 handoff
 ~~~
 
-The numeric prefixes order and group the skill bank, like `task/1_data`,
-`task/2_nn`, and `task/3_end`. They are not executable phase numbers and must
-not be renamed to a parallel `routes/` hierarchy. Runtime phase ownership is
-declared only under `workflow-phases/`; for Discovery that owner is D1 Inquiry.
+The numeric prefixes are stage vocabulary, like `task/1_data`, `task/2_nn`,
+and `task/3_end`. They are not executable phase numbers and must not be
+renamed to a parallel `routes/` hierarchy. Runtime phase ownership is declared
+by `haipipe-discovery-inquiry/`, the D1 Inquiry controller at the family root.
 
 The retrofit rule is recorded in `haipipe-discovery/ref/bjtr-alignment.md`:
 project work is addressed only as Block -> Job -> Task Page -> Run, while
@@ -62,9 +74,9 @@ compatibility surface.
 
 ~~~text
 bank        discoveries/
-L1 Block    bNN_<noun>_<qualifier>/
+L1 Block    bNN_<noun>_<qualifier>/  (Discovery Board; board.md)
 L2 Job      jNN_<noun>_<qualifier>/
-L3 TaskPage tNN_<noun>_<qualifier>/
+L3 TaskPage tNN_<noun>_<qualifier>/  (Page Folder)
 L4 Run      runs/rNN_<author><year>_<paper>.sh <-> results/rNN_.../
 ~~~
 
@@ -74,6 +86,13 @@ one paper. Result is the generated projection of Run, not an additional level.
 
 All four levels use `<level-letter><NN>_<noun>_<qualifier>`. Their joined
 address is `bNNjNNtNNrNN`; `discoveries/` is a bank and contributes no segment.
+
+The Block is the Board container from its first durable write. `board.md`
+declares `board-kind: discovery-block`; Job folders render as Groups and Task
+Folders render as Pages. The direct BJTR tree is membership authority, while
+`board/` is the generated projection. Discovery refreshes that split through
+`haipipe-discovery/scripts/board_sync.py` at structural, Run-batch, Page-CHECK,
+and close checkpoints.
 
 ## Two Faces
 
@@ -134,7 +153,7 @@ Search queries, candidate rows, synthesis passes, and direction generation are n
 Runs. A Run begins only after one canonical evidence Subject is admitted.
 
 The canonical table, Runs Overview, Human Actions, and Skill Coverage live at
-`workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md`. There is no
+`haipipe-discovery-inquiry/ref/workflow-table.md`. There is no
 separate Discovery workflow skill; the Discovery controller owns domain Run
 routing and the shared Page workflow owns Page artifacts. The D1 root uses the permitted no-Run route;
 consumer Pages own any Page-family Runs they commission.
@@ -166,7 +185,7 @@ runtime.yaml
 ~~~
 
 PDF, raw extraction, and captured Trigger are optional. Result Card cite key
-and Bib key are identical. `haipipe-plugin-outline/ref/evidence/citations.md`
+and Bib key are identical. `haipipe-workbench-page/ref/evidence/citations.md`
 owns the deterministic derived union of complete Result Bibs; conflicts
 hard-fail. The nested `outline/evidence/supporting-runs/` lane is pointer-only
 lineage for Page Evidence Items, not a second Discovery Run inventory.

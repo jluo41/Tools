@@ -42,7 +42,7 @@
   Design.adopt`; Gate/Route live inside each Run and expected count is
   `1 + N + J + 1`. No compatibility route was added.
 - 260916: every Run Ticket names its Design Item, first as `item: DI<NN>`
-  and, the same day, as `item: ITEM<NN>` (DI read as the Insight plugin's
+  and, the same day, as `item: ITEM<NN>` (DI read as the Insight workbench's
   Data → Information). The Workspace bindings table became Space bindings
   (`Space` is the only reader-facing word), first over three Spaces and then
   over five, Goal · Design · Insight · Run · Delivery; Commission's pinned
@@ -97,30 +97,30 @@
 - D5's verb alias renamed reconcile → page down, JL's own word and the plainer one — the round's record finally set down on the page, whole and readable. The phase NAME stays Page (the artifact-naming law wants an artifact class, and "PageDown" is a verb wearing one word). One boundary kept sharp: page down is the round-end SEAL, not the per-round sync duty — the write-back-in-the-same-round law is untouched and D5 catches what accumulation broke, it never licenses deferring write-back to the end.
 
 0.7.0 · 260828 · JL ("这个 phase 是不是专门为了更新我们的 page？…这个 phase 不然就叫 page 呢")
-- The lane gains D5 Page (reconcile) and GD6, the round seal. Root cause it cures, found the hard way the same day: every round APPENDS its own rows back (the sync law is append-shaped), but no phase owned the pages' GLOBAL claims — title, Opening, Diagram, scope, Law, board.md's Topic and close — so six rounds in, B00's pages still described round 1 and a colleague JL showed the board could not tell what it was about. D5 rereads the grown pages as documents and repairs staleness, PROSE only, decisions untouched; GD6 closes the round only when no era-frozen claim survives and stated counts match the rows on disk, with a fresh zero-background cold read (haipipe-board-reviewer-agent, judge-class, not a fifth human gate) mandatory at milestone rounds and before any outside showing. Rider: D1 renamed Direction → Card, retiring the last live use of the word deleted with haipipe-plugin-direction earlier the same day.
+- The lane gains D5 Page (reconcile) and GD6, the round seal. Root cause it cures, found the hard way the same day: every round APPENDS its own rows back (the sync law is append-shaped), but no phase owned the pages' GLOBAL claims — title, Opening, Diagram, scope, Law, board.md's Topic and close — so six rounds in, B00's pages still described round 1 and a colleague JL showed the board could not tell what it was about. D5 rereads the grown pages as documents and repairs staleness, PROSE only, decisions untouched; GD6 closes the round only when no era-frozen claim survives and stated counts match the rows on disk, with a fresh zero-background cold read (haipipe-board-reviewer-agent, judge-class, not a fifth human gate) mandatory at milestone rounds and before any outside showing. Rider: D1 renamed Direction → Card, retiring the last live use of the word deleted with haipipe-workbench-direction earlier the same day.
 
 0.6.0 · 260828 · JL (the one-thread-one-folder merge)
 - The THREAD becomes literal: one folder under design/, born at proposal holding only card.md, grown after release. D1's authority artifact is design/DU<NN>/card.md; GD2's back-pointer clause replaced by the card's state flip; release-before-realize is folder purity, a checker ERROR.
 
-0.5.1 · 260828 · consistency pass before the first brainstorm run: postures header counts four; the commission entry gains the brainstorm form; pool-unit anatomy aligned with the design plugin 0.7.1.
+0.5.1 · 260828 · consistency pass before the first brainstorm run: postures header counts four; the commission entry gains the brainstorm form; pool-unit anatomy aligned with the design workbench 0.7.1.
 
 0.5.0 · 260828 · JL ("我们是完全摒弃任何现在的 message" · "我不要求你测")
 - The BRAINSTORM posture: designing a message SET and designing an EXPERIMENT are separate acts, and charging comparator duties (control cell, allocation, predicted effect) to the act of writing is what made two rounds retreat to fielded copy. A brainstorm round lands a POOL — N newly authored messages for one audience, zero reuse, no comparator, no forecast. GD2 checks pool-target, newness and mutual distinctness; GD4 does not reach a pool unit; fielding is the task layer's decision downstream.
 
 0.3.0 · 260828 · JL ("我们肯定是要敢于创新的，敢于大胆去设计新的 message")
-- The `generate` stance joins explore and bet-against (§The three stances): field rounds 2 and 3 both retreated to redistributing fielded copy — the lawful maximum was exploitation-shaped, and the abductive move (Dorst; C-K) had no legal entry. License = warrant-insight + warrant-theory per haipipe-plugin-direction 0.4.0 law 4; boldness at the card, honesty at the verdict.
+- The `generate` stance joins explore and bet-against (§The three stances): field rounds 2 and 3 both retreated to redistributing fielded copy — the lawful maximum was exploitation-shaped, and the abductive move (Dorst; C-K) had no legal entry. License = warrant-insight + warrant-theory per haipipe-workbench-direction 0.4.0 law 4; boldness at the card, honesty at the verdict.
 - GD1 gains release-binds-existing-cards (the round-3 inversion friction: blanket recorded before its cards were authored). GD2 gains the generate novelty block; GD3 gains the acceptance-list audit ruling and the generate byte-check; GD4 admits a theory-typed direction with its QA anchor, never a numeric one.
 
 0.2.0 · 260827 · JL (cold-read repair round: 2 BLOCKER + 7 MAJOR findings from a fresh-context audit, all resolved; see also the 0.1.0 entries repaired in place)
 - The frontier unit renamed THREAD: a card until it lands (proposed/released/landed/killed), the division row after — the door's "one division per landed unit" untouched; a proposed card never blocks round-close, it carries over.
-- The judge's verdict got a home: the unit README's judged: line, written by the judge and never the arm (haipipe-plugin-design 0.4.0 §verdict); D3's authority artifact now resolves on disk.
+- The judge's verdict got a home: the unit README's judged: line, written by the judge and never the arm (haipipe-workbench-design 0.4.0 §verdict); D3's authority artifact now resolves on disk.
 - EMIT got a route: an emitted: division row + a new BR00 needs row → the register question is born NEED-FIRST from it. No third birth; no pen crosses.
 - GD5 defers to haipipe-page-for-design's acceptance-row grammar instead of inventing a third field list that failed every live row on B00.
 - The forecast's score got a home: a dated scored: line appended to prospect.md at read-back, same bookkeeping class as staleness clearing.
 - prospect.md moved to where it is actually written: D2 (the arm's step 5), checked at D3/GD4; GD2's completeness list now includes it; GD4 gained the non-retroactivity clause.
 - Receipts land only on surfaces that HAVE Logs: BR00 for GD0, the DS page for GD1-GD5, rows naming artifact ids.
-- Blanket release/accept legalized properly: a person's recorded act over a NAMED set, transcribed clerically with the person's words cited (haipipe-plugin-direction 0.3.0; app-workflow 0.8.0 in step).
-- DELIVER coinage dropped for the family word ACCEPTED; DR<NN>-<slug> slug restored; P4 mapping made self-consistent (proposal included); GD3's machine-checkable claim split (stance fidelity is the judge's cold read); reflect's third on-disk word acknowledged (judged); failed-verdict edge D3→D2 added; stale "plugin bump owed" note replaced (only the unit-no-prospect checker rule remains owed).
+- Blanket release/accept legalized properly: a person's recorded act over a NAMED set, transcribed clerically with the person's words cited (haipipe-workbench-direction 0.3.0; app-workflow 0.8.0 in step).
+- DELIVER coinage dropped for the family word ACCEPTED; DR<NN>-<slug> slug restored; P4 mapping made self-consistent (proposal included); GD3's machine-checkable claim split (stance fidelity is the judge's cold read); reflect's third on-disk word acknowledged (judged); failed-verdict edge D3→D2 added; stale "workbench bump owed" note replaced (only the unit-no-prospect checker rule remains owed).
 
 0.1.0 · 260827 · JL
 - New skill: the DesignBoard lane's phase machine, mirroring haipipe-insight-workflow 0.1.0. Five phases named by the lane's authority ARTIFACT classes (D0 Brief, D1 Direction, D2 Unit, D3 Verdict, D4 Division), a stated one-step extension of the naming law from authority page to authority artifact, since one DS page hosts many divisions.
@@ -128,5 +128,5 @@
 - Evaluation split into two mandated faces with the alias law: reflect (ex-post) — conformance to spec, rails and the grant chain — and prospect (ex-ante) — a scored forecast of the artifact in use, written to the unit's prospect.md. Three guardrails: grant-only citation, forecast-typed output that never lands on an InsightBoard, scored-not-cited. The outer loop scores forecasts against measured effect, making bets calibrate across rounds.
 - Gates GD0-GD5 as per-division assertions; GD0 = the app machine's G4, GD5 = its G5; the two human gates (card release GD1, acceptance GD5) complete the application's four, two per door.
 - The commission entry: one sentence ("design X for Y on Z, reading W") drives the round end-to-end, stopping only at the ✋ gates; a person's recorded blanket release is a person's act.
-- Owed follow-ups recorded here: haipipe-plugin-design contract bump to add prospect.md to the unit anatomy; theory anchors under verification by the 260827 discovery sweep.
+- Owed follow-ups recorded here: haipipe-workbench-design contract bump to add prospect.md to the unit anatomy; theory anchors under verification by the 260827 discovery sweep.
 - Same day: the literature section reduced to a pointer (JL: lit lives on a board page, not in a skill) — the anchors are on ApplicationSkillBoard QD4-round-theory, the full lists in five QA files under designs/Project-Application-SMSDesign/discoveries/S02_design-process-theory/ (59 verified sources, five colliding S02 groups merged same day).

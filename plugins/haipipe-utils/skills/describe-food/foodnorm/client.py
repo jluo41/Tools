@@ -33,7 +33,7 @@ PROVENANCE = ("NutritionSource", "NutritionConf", "NutritionBasis",
               "NutritionCoverage")
 
 DEFAULT_TRANSPORT = os.environ.get("FOODNORM_TRANSPORT", "local")
-DEFAULT_URL = os.environ.get("FOODNORM_URL", "http://127.0.0.1:8077")
+DEFAULT_URL = os.environ.get("FOODNORM_URL", "http://127.0.0.1:8070/food")
 
 
 def _empty(reason: str = "none") -> Dict:

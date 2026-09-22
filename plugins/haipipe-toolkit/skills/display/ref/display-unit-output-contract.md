@@ -195,7 +195,7 @@ input; a concept unit that displays verified figures declares a separate `role: 
 ## Notes
 
 - The poster and slides renderers retired 2026-08-16 (JL), with the `content-plan-spec.md` that
-  fed them; both are parked under `_todo/`. A board page's talk is the slide plugin's deck.
+  fed them; both are parked under `_todo/`. A board page's talk is the slide workbench's deck.
 - `haipipe-task-for-display` produces a canonical display-ready aggregate and its provenance.
   It does not own the paper-facing unit or promoted asset. Diagnostic task plots may exist, but
   they are not canonical assets until a display unit accepts and renders them. For a Board Page,

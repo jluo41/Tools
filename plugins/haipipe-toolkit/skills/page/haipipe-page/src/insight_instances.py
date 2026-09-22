@@ -11,7 +11,7 @@ from pathlib import Path
 
 @lru_cache(maxsize=1)
 def contract():
-    path = (Path(__file__).resolve().parents[3] / "task/page-types/haipipe-page-insight/scripts/insight_items.py")
+    path = (Path(__file__).resolve().parents[3] / "insight/haipipe-page-insight/scripts/insight_items.py")
     spec = importlib.util.spec_from_file_location("haipipe_insight_items", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

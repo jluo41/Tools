@@ -57,7 +57,7 @@ R8  NEVER DELETE THE ONLY PLACE A RULE IS WRITTEN, even when the surrounding
     the deletion a finding.
     ⚠️ NOT promoted from any break. This rule was seeded 260818 with a WORKED
     EXAMPLE THAT WAS FALSE: the README claimed the uncertainty rule lived only
-    in QPw00's `#### 1.3`. It does not. `haipipe-page-content` states
+    in QPw00's `#### 1.3`. It does not. `haipipe-page-writing` states
     the current boundary and the archived DRAFT contract restates it, which the first approver run
     established by checking all twelve deleted paragraphs. The RULE is sound
     and stays; the example was invented and is struck. A seeded rule carries no

@@ -38,12 +38,12 @@ HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显�
 | `haipipe-page/SKILL.md` | 对读改动、glossary、reader sections、用户包 | **失败**：F01、F06、F13；Folder 身份迁移只修正其中一个边界。 |
 | `haipipe-plugin/SKILL.md` | 对读 roster、picker 与子插件现行约定 | **部分**：F04、F12；旧 phase/pass 语言仍通过共享 roster 扩散。 |
 | `haipipe-sentence/SKILL.md` | 反馈 rail 与 Draft Run 路由一致；badge 文案有小歧义 | **不适用**：不定义 Workflow；局部反馈进入当前 Run 的边界正确。F15 为文案问题。 |
-| `page-plugins/haipipe-plugin-delivery/SKILL.md` | 对读四类交付引用中的问题点及 exporter | **局部通过，整体依赖 F01**：RD 单位清楚；F05、F08 是交付契约/来源问题，不应误算为 Run 计数错误。 |
-| `page-plugins/haipipe-plugin-design/SKILL.md` | 对读 action 表、manifest reader、当前 action 拒绝逻辑与真实显示标签 | **部分**：Commission/Generate/Verify 为独立 Runs；F11 将它们显示为 Steps；F04、F05 涉及旧 Adopt/Render。 |
-| `page-plugins/haipipe-plugin-folder/SKILL.md` | 对读 tab 顺序与当前 picker | **不适用**：材料/导航面，不定义 Workflow；F12 是入口说明过时。 |
-| `page-plugins/haipipe-plugin-outline/SKILL.md` | 对读正文两区/四区、Scratch、space mapping、现行 Evidence 引用 | **部分**：Run 核心清楚，F04、F06、F07、F08 仍在。 |
-| `page-plugins/haipipe-plugin-runs/SKILL.md` | `:50-90` 区分计划 Run Specs、实际 Run inventory 和内部动作；对读 live 状态映射 | **局部通过**：保留不为 Step/gate/call 建 Run 的规则；F04 是共享 roster 误述，F09 是状态投影问题。 |
-| `page-plugins/haipipe-plugin-studio/SKILL.md` | 对读 chat ref 与实际 boot prompt | **失败**：F02 的活跃指令按 phase 派发；Draw lane 的 owner 边界没有发现同类问题。 |
+| `haipipe-workbench-page/ref/delivery.md` | 对读四类交付引用中的问题点及 exporter | **局部通过，整体依赖 F01**：RD 单位清楚；F05、F08 是交付契约/来源问题，不应误算为 Run 计数错误。 |
+| `../design/haipipe-workbench-design/SKILL.md` | 对读 action 表、manifest reader、当前 action 拒绝逻辑与真实显示标签 | **部分**：Commission/Generate/Verify 为独立 Runs；F11 将它们显示为 Steps；F04、F05 涉及旧 Adopt/Render。 |
+| `haipipe-workbench-page/ref/folder.md` | 对读 tab 顺序与当前 picker | **不适用**：材料/导航面，不定义 Workflow；F12 是入口说明过时。 |
+| `haipipe-workbench-page/SKILL.md` | 对读正文两区/四区、Scratch、space mapping、现行 Evidence 引用 | **部分**：Run 核心清楚，F04、F06、F07、F08 仍在。 |
+| `haipipe-workbench-page/ref/run-space.md` | `:50-90` 区分计划 Run Specs、实际 Run inventory 和内部动作；对读 live 状态映射 | **局部通过**：保留不为 Step/gate/call 建 Run 的规则；F04 是共享 roster 误述，F09 是状态投影问题。 |
+| `haipipe-workbench-studio/SKILL.md` | 对读 chat ref 与实际 boot prompt | **失败**：F02 的活跃指令按 phase 派发；Draw lane 的 owner 边界没有发现同类问题。 |
 | `page-workflows/haipipe-page-context/SKILL.md` | `:27-49` 同时说非 Run adapter 又给出 PHASE Brief；对读身份来源迁移 | **部分**：F01；资源身份变更保留，不能把 PREPARE 自动更名成独立 Run。 |
 | `page-workflows/haipipe-page-outline/SKILL.md` | 对读 SHAPE/SURVEY 内部边界和发布 gate | **部分**：F01、F03；SHAPE/SURVEY 共享 Structure Run 的设计保留。 |
 | `page-workflows/haipipe-page-evidence/SKILL.md` | `:23-30` 正确区分 RE 与 EMBED Step；`:369-378` 明确退休来源 | **部分**：活跃 trigger 仍写 EVIDENCE phase；F01、F08。 |
@@ -69,7 +69,7 @@ HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显�
 
 ### F02 · P1 · Studio 活跃 prompt 仍按五个 Phase 组织普通反馈——仍存在
 
-**文件和证据：** `P/page-plugins/haipipe-plugin-studio/ref/chat.md:114-153` 写 `interactive RUN controller`、`performs a phase`、`agent-per-phase RUN`。`B/live/chat.py:702-725` 实际注入 `Five indexed phases`，并要求 `Announce the phase/cycle on every reply`，末尾还写 `WRITE runs without asking`。同一 prompt `:681,686-693` 保留四区 Page 与直接替换正文的旧路由；与 persistent Writing Run 指令发生竞争。
+**文件和证据：** `P/haipipe-workbench-studio/ref/chat.md:114-153` 写 `interactive RUN controller`、`performs a phase`、`agent-per-phase RUN`。`B/live/chat.py:702-725` 实际注入 `Five indexed phases`，并要求 `Announce the phase/cycle on every reply`，末尾还写 `WRITE runs without asking`。同一 prompt `:681,686-693` 保留四区 Page 与直接替换正文的旧路由；与 persistent Writing Run 指令发生竞争。
 
 **影响：** “把这句改清楚”可能被派成一个新的 phase pass，或者修改已发布 Content，而不是保存在现有 Writing Run 的候选 Step。每次都播报 phase/cycle 也挤占用户需要的候选、改动说明和下一决定。
 
@@ -91,7 +91,7 @@ HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显�
 
 ### F04 · P1 · 共享 roster 仍描述已移除的控件和动作——仍存在
 
-**文件和证据：** `P/haipipe-plugin/ref/roster.md:43` 称 Draft note composer 会追加反馈；当前 Outline `SKILL.md:320-329,453-463` 明确 Table/Reading 只读、只有 Scratch 写入口，`P/haipipe-page/live/outline.py:3291-3299` 拒绝 `feedback`、`edit-preview` 等动作。roster `:41` 称 Run Space 有 Scripts 区，但 Runs `SKILL.md:344-368` 禁止该区。roster `:35` 仍列 Adopt 按钮/Run；Design `SKILL.md:413,419-426` 不再需要它，`B/live/design.py:1659-1660` 拒绝旧 Adopt 等动作。
+**文件和证据：** `P/haipipe-plugin/ref/roster.md:43` 称 Draft note composer 会追加反馈；当前 Outline `SKILL.md:320-329,453-463` 明确 Table/Reading 只读、只有 Scratch 写入口，`P/servers/workbench-page/outline.py:3291-3299` 拒绝 `feedback`、`edit-preview` 等动作。roster `:41` 称 Run Space 有 Scripts 区，但 Runs `SKILL.md:344-368` 禁止该区。roster `:35` 仍列 Adopt 按钮/Run；Design `SKILL.md:413,419-426` 不再需要它，`B/live/design.py:1659-1660` 拒绝旧 Adopt 等动作。
 
 **影响：** 被多个插件引用的“唯一清单”告诉人和 agent 去找不存在的界面，甚至发出当前服务明确拒绝的写请求。仅修子技能无法阻止旧说明再次传播。
 
@@ -101,7 +101,7 @@ HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显�
 
 ### F05 · P2 · Render 的对象身份、来源与接受规则缺少统一契约——保留，但撤回“已证实当前两写入方覆盖”的判断
 
-**文件和证据：** Design `P/page-plugins/haipipe-plugin-design/SKILL.md:261-268` 和 `B/live/design.py:650-662` 按 `item`、`candidate`、`render` 读取 `delivery/render/manifest.json`，要求图片对应确切 Generate Run。Delivery `ref/render.md:15-21,23-43,59` 则按 Page division/render version、`design/warrants/render` 三类 stamp 和 division `accepted:` 描述相同路径。它没有给出完整 JSON schema 或明确 profile 适用范围。
+**文件和证据：** Design `P/../design/haipipe-workbench-design/SKILL.md:261-268` 和 `B/live/design.py:650-662` 按 `item`、`candidate`、`render` 读取 `delivery/render/manifest.json`，要求图片对应确切 Generate Run。Delivery `ref/render.md:15-21,23-43,59` 则按 Page division/render version、`design/warrants/render` 三类 stamp 和 division `accepted:` 描述相同路径。它没有给出完整 JSON schema 或明确 profile 适用范围。
 
 **影响：** 新 writer 无法从现有文档确定要保存哪些字段，以及 Design Verify readiness、division acceptance 和真正分发之间的关系。两种记录可能可以兼容，也可能用于不同 Folder profile；目前契约没有讲清。
 
@@ -113,7 +113,7 @@ HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显�
 
 ### F06 · P2 · 同一 Page 被定义成两区和四区——仍存在
 
-**文件和证据：** Outline 插件 `P/page-plugins/haipipe-plugin-outline/SKILL.md:151-153` 写 `four on-stage sections`：Opening/Outline/Content/Aims。主 Page `SKILL.md:586-632` 与 `ref/page-template.md:16-22,29-37` 只允许 reader-facing Opening/Content。`B/live/chat.py:681` 仍注入四区旧模型。
+**文件和证据：** Outline 插件 `P/haipipe-workbench-page/SKILL.md:151-153` 写 `four on-stage sections`：Opening/Outline/Content/Aims。主 Page `SKILL.md:586-632` 与 `ref/page-template.md:16-22,29-37` 只允许 reader-facing Opening/Content。`B/live/chat.py:681` 仍注入四区旧模型。
 
 **影响：** 作者和实现者会把工作过程、计划表或 Aims 塞进最终文章，或误以为后台 Outline 工作区该删除。
 
@@ -123,7 +123,7 @@ HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显�
 
 ### F07 · P2 · Space mapping 把旧 dispatch 当成 Workflow 单位，并缩窄 Check 范围——仍存在
 
-**文件和证据：** `P/page-plugins/haipipe-plugin-outline/ref/space-mapping.md:34-39` 的 `Workflow phase` 表含 SHAPE/SURVEY、LAND、EMBED、CHECK，且 CHECK 仅指向 Delivery；同文件 `:57-78` 的 canonical Run Spec 表把 Check 投影到 Draft、Evidence、Runtime、Delivery。Context/Check 又没有相应实例，需和 F01 一起梳理。
+**文件和证据：** `P/haipipe-workbench-page/ref/space-mapping.md:34-39` 的 `Workflow phase` 表含 SHAPE/SURVEY、LAND、EMBED、CHECK，且 CHECK 仅指向 Delivery；同文件 `:57-78` 的 canonical Run Spec 表把 Check 投影到 Draft、Evidence、Runtime、Delivery。Context/Check 又没有相应实例，需和 F01 一起梳理。
 
 **影响：** agent 可能把一次 EMBED 当成新 Run，或仅看交付文件就声称完成全页检查。
 
@@ -133,7 +133,7 @@ HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显�
 
 ### F08 · P1 · 当前 Evidence 来源与兼容目录读取规则冲突——部分文本已修正，问题仍在
 
-**文件和证据：** Workflow `P/page-workflows/haipipe-page-workflow/SKILL.md:280-281` 仍把旧 `outline/evidence/display/`、`outline/evidence/bibex/` 叫作 eligible lanes；Word `P/page-plugins/haipipe-plugin-delivery/ref/word.md:29-36` 仍读旧 bib/display。`P/haipipe-plugin/ref/roster.md:29-30` 仍列这些为当前 lane。相反，`P/haipipe-page/ref/user-check-packet.md:239-244` 禁止旧来源/fallback，Outline evidence `displays.md:184-189`、`citations.md:107-109` 及 Evidence `SKILL.md:369-378` 声明退休。
+**文件和证据：** Workflow `P/page-workflows/haipipe-page-workflow/SKILL.md:280-281` 仍把旧 `outline/evidence/display/`、`outline/evidence/bibex/` 叫作 eligible lanes；Word `P/haipipe-workbench-page/ref/delivery.md:29-36` 仍读旧 bib/display。`P/haipipe-plugin/ref/roster.md:29-30` 仍列这些为当前 lane。相反，`P/haipipe-page/ref/user-check-packet.md:239-244` 禁止旧来源/fallback，Outline evidence `displays.md:184-189`、`citations.md:107-109` 及 Evidence `SKILL.md:369-378` 声明退休。
 
 这也不只是文字遗漏：`B/live/export.py:205-239` 先读取 DISPLAY Results，再无条件枚举 legacy display fallback；`:478-484,701-713` 仍读取 `evidence_lane_dir(..., "bibex")`。`P/haipipe-page/src/common.py:45-78` 的 helper 将 Outline Evidence 或旧目录作为当前/兼容来源。当前 LaTeX `ref/latex.md:38` 已修为 RE payload，应保留。
 
@@ -145,9 +145,9 @@ HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显�
 
 ### F09 · P2 · 需要明确存储状态与显示状态；真正可见的缺口是 `ready` 映射——修正原判断
 
-**文件和证据：** `P/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md:176-190` 给出存储状态 `ready/running/waiting-for-feedback/blocked/complete`，又要求中断时投影为 `Held`。但 `P/haipipe-page/live/runs.py:1190-1191` 已实现 `blocked/held/... → Held`，所以 Held 本身不是未实现的状态。
+**文件和证据：** `P/page-workflows/haipipe-page-workflow/ref/interactive-writing-run.md:176-190` 给出存储状态 `ready/running/waiting-for-feedback/blocked/complete`，又要求中断时投影为 `Held`。但 `P/servers/workbench-page/runs.py:1190-1191` 已实现 `blocked/held/... → Held`，所以 Held 本身不是未实现的状态。
 
-另一方面，`live/runs.py:1175-1209` 的 `_status()` 将 `planned/ticket/queued` 映射为 Ready，却没有处理契约中的 `ready`；未知值最终落到 Held。当前本地 Run 行在 `:1392` 使用此函数。因此，在已有 runtime、无其他审计错误并且写入 `status: ready` 的路径上，会显示 Held。这是源码判读，未运行端到端用例。
+另一方面，`servers/workbench-page/runs.py:1175-1209` 的 `_status()` 将 `planned/ticket/queued` 映射为 Ready，却没有处理契约中的 `ready`；未知值最终落到 Held。当前本地 Run 行在 `:1392` 使用此函数。因此，在已有 runtime、无其他审计错误并且写入 `status: ready` 的路径上，会显示 Held。这是源码判读，未运行端到端用例。
 
 **影响：** 用户可能被错误告知正常待开始的 Run “Needs attention”。文档混用存储字段和显示名也容易让 writer 写入错误层的词汇。
 
@@ -169,7 +169,7 @@ HEAD 仍为 `f9a8f0b8e8941f23a1c0b5a8a45d2780a756f217`，但工作树已明显�
 
 ### F11 · P3 · Design Run 历史被标为 Steps——仍存在
 
-**文件和证据：** `P/page-plugins/haipipe-plugin-design/SKILL.md:166` 显示 `STEPS Commission → Generate → Verify → Delivery`；`:408-413` 明确前三者为独立 `rdNN`，ready 后没有 decision Run。`ref/space-mapping.md:6,8` 也混用 Steps。实际 `B/live/design.py:1091-1107` 遍历 `item["runs"]`，`:1129` 将这一列表标为 Steps。
+**文件和证据：** `P/../design/haipipe-workbench-design/SKILL.md:166` 显示 `STEPS Commission → Generate → Verify → Delivery`；`:408-413` 明确前三者为独立 `rdNN`，ready 后没有 decision Run。`ref/space-mapping.md:6,8` 也混用 Steps。实际 `B/live/design.py:1091-1107` 遍历 `item["runs"]`，`:1129` 将这一列表标为 Steps。
 
 **影响：** 使用同一系统的人会分不清 Run 是完整委托还是内部动作；Delivery-ready 还可能被误当另一 Run。
 

@@ -1,10 +1,10 @@
 {
-  "plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/CHANGELOG.md": "84704cc2d856d24d2fd7a102724dd9264eeec83cdb59da4af695e97acbf77bca",
-  "plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/SKILL.md": "ee19089a7a9e0d4b02d9d327cd9f6860df389d9c912795198d6513fdc77c9968",
-  "plugins/haipipe-toolkit/skills/board/board-plugins/haipipe-plugin-design-board/ref/space-mapping.md": "872288710129379d2041bb5377d3d7c17e7d2fea7a016c8a45d3f95d3f3711f0",
-  "plugins/haipipe-toolkit/skills/board/haipipe-board/live/design.py": "9cd8af7896fb555c41b82ac939aa90abda6b437b9bc2cd02ebf1b1ad73f4a978",
-  "plugins/haipipe-toolkit/skills/board/haipipe-board/live/design_actions.py": "fdec75caf8b2db4dfeb642c2211ec059ec133392cba09f03b5cdd2ffa71845be",
-  "plugins/haipipe-toolkit/skills/board/haipipe-board/live/designboard.py": "37dc27e7e370781a6fa5ab7fa2c4fae4844b9b40b605274f2f29fefdd16ea6d7",
+  "plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/CHANGELOG.md": "84704cc2d856d24d2fd7a102724dd9264eeec83cdb59da4af695e97acbf77bca",
+  "plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md": "ee19089a7a9e0d4b02d9d327cd9f6860df389d9c912795198d6513fdc77c9968",
+  "plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/ref/space-mapping.md": "872288710129379d2041bb5377d3d7c17e7d2fea7a016c8a45d3f95d3f3711f0",
+  "plugins/haipipe-toolkit/servers/workbench-design/design.py": "9cd8af7896fb555c41b82ac939aa90abda6b437b9bc2cd02ebf1b1ad73f4a978",
+  "plugins/haipipe-toolkit/servers/workbench-design/design_actions.py": "fdec75caf8b2db4dfeb642c2211ec059ec133392cba09f03b5cdd2ffa71845be",
+  "plugins/haipipe-toolkit/servers/workbench-design/designboard.py": "37dc27e7e370781a6fa5ab7fa2c4fae4844b9b40b605274f2f29fefdd16ea6d7",
   "plugins/haipipe-toolkit/skills/board/haipipe-board/tests/fixture_design_v2.py": "83b0670a40a2da3229c706bd6973572005f188066b6cfa7ce072d24f5a425644",
   "plugins/haipipe-toolkit/skills/board/haipipe-board/tests/test_design_board_plugin.py": "83b84ac107feba0161ad90bc4c0aa6318724d5ade0a40ca09211f692715c5054",
   "plugins/haipipe-toolkit/skills/board/haipipe-board/tests/test_design_plugin.py": "21bfb0acf95bc0e77277c9347c095b2899538d05eb550067b29ba3ee830c6733",
@@ -51,7 +51,7 @@
   "plugins/haipipe-toolkit/skills/design/venue/venue-sms/style-profile.md": "25125928637d62ef2f79de4050cb3209be10a6a0d4d26a33c053381d47de9089",
   "plugins/haipipe-toolkit/skills/design/venue/venue-ui-card/README.md": "d053530dfb4c180e624034a80d97402dd6e1b7c4f96988b1dc9029094a6a0995",
   "plugins/haipipe-toolkit/skills/design/venue/venue-ui-card/style-profile.md": "b6f4b72125565734ad32064347b6d589b9cb94cd5cc90282fa50b483c33065fa",
-  "plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/CHANGELOG.md": "b95b4ef1aa2249a2aa51543109bf7a1431a817aec3088e6492ac51c7a46cb46e",
-  "plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/SKILL.md": "308db1598717c841a6e247213dad7bcbd15340d72cee21b7a17c6a8a91b076fb",
-  "plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-design/ref/space-mapping.md": "67b17433f45fd51fd94abbca1e7eeda271457113f9836bbae28f426e31ad549d"
+  "plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/CHANGELOG.md": "b95b4ef1aa2249a2aa51543109bf7a1431a817aec3088e6492ac51c7a46cb46e",
+  "plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/SKILL.md": "308db1598717c841a6e247213dad7bcbd15340d72cee21b7a17c6a8a91b076fb",
+  "plugins/haipipe-toolkit/skills/design/haipipe-workbench-design/ref/space-mapping.md": "67b17433f45fd51fd94abbca1e7eeda271457113f9836bbae28f426e31ad549d"
 }

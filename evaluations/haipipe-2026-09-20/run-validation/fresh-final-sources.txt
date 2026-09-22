@@ -16,7 +16,7 @@ S14  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/design/hai
 S15  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/task/page-types/haipipe-page-insight/ref/instance-items.md
 S16  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper/ref/run-naming.md
 S17  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/paper/haipipe-paper-workflow/ref/run-workflow.md
-S18  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/page-plugins/haipipe-plugin-runs/SKILL.md
-S19  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-page/live/runs.py
+S18  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/page/haipipe-workbench-page/ref/run-space.md
+S19  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/servers/workbench-page/runs.py
 S20  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/SKILL.md
 S21  /Users/jluo41/Desktop/Tools-SPACE/plugins/haipipe-toolkit/skills/0_utils/table-task/ref/render_task_table.py

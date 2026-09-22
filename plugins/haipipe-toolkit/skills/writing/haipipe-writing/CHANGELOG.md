@@ -1,3 +1,19 @@
+## 0.22.0 · 2026-09-22
+
+- The external skills this worker calls are vendored beside it in numbered
+  folders: `1_style/writing-dna-skill` (@ee3d97ee), `2_evaluate/academic-humanizer`
+  (0.3.2 @02281d83), and the new general-register evaluator `2_evaluate/humanizer`
+  (blader 3.0.0 @9862685f, adapter `ref/methods/humanizer.md`). The catalog's
+  `academic-humanizer` entry resolves to its copy instead of `path: null`; the
+  `writing-dna` entry names its distiller.
+- `ref/external/README.md` digests the anti-AI writing shelf: fourteen references,
+  which three we call, and what each read-only one gave. Taken the same day: Adam's
+  two guardrail lists and deslop's "do not dilute" and "match register" into
+  `ref/ai-tells.md` §3 and §4; stop-slop-zh rules 1, 2, 3 and 6 as `lang: zh`
+  entries in `ref/anti-slop-rules.json` (1.1.0; 38 phrases, 4 patterns, covered by
+  `tests/test_anti_slop.py`). Rows added to `ref/anti-slop-attribution.md`.
+- The empty `haipipe-paper-revise-humanizer/` husk is gone.
+
 ## 0.21.0 · 2026-09-21
 
 - Document how host-specific submission-readiness overlays reuse the shared
@@ -167,7 +183,7 @@ person looking. This checks the two that are static.
 
     version   SKILL.md frontmatter against the newest CHANGELOG.md heading
     path      every cross-skill citation against what is actually on disk,
-              reporting DEAD and, separately, "resolves only from the plugin
+              reporting DEAD and, separately, "resolves only from the workbench
               root", which is the humanizer's defect exactly
 
 **Two things it got wrong first, both worth recording.** The first sweep skipped

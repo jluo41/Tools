@@ -123,7 +123,7 @@ class BasePageContextTest(unittest.TestCase):
         self.assertIn("**Status**: missing", identity)
         self.assertIn("conflicts", identity)
 
-    def test_retired_design_phase_identity_does_not_resolve(self):
+    def test_retired_design_lifecycle_identity_does_not_resolve(self):
         workflow = self.folder / "workflow"
         workflow.mkdir()
         (workflow / "phase.yaml").write_text(
@@ -136,7 +136,7 @@ class BasePageContextTest(unittest.TestCase):
 
     def test_malformed_yaml_cannot_resolve_from_a_top_level_kind(self):
         self.write_page(
-            "structure-source: workflow-phases/haipipe-paper-section/"
+            "structure-source: paper/haipipe-paper-section/"
             "ref/generic-template.md\n"
         )
         workflow = self.folder / "workflow"

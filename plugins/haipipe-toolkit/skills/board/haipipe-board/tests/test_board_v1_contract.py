@@ -27,10 +27,12 @@ class BoardV1ContractTest(unittest.TestCase):
         canonical = SKILLS / "page"
         for name in (
             "haipipe-page",
-            "haipipe-plugin",
+            "haipipe-workbench",
+            "haipipe-workbench-page",
+            "haipipe-workbench-studio",
             "haipipe-sentence",
-            "page-workflows",
-            "page-plugins",
+            "haipipe-page-workflow",
+            "workflow-runs",
         ):
             self.assertTrue((canonical / name).is_dir(), name)
             self.assertFalse((BOARD_FAMILY / name).exists(), f"board/{name} alias is retired")
@@ -40,11 +42,11 @@ class BoardV1ContractTest(unittest.TestCase):
         links = {
             BOARD_FAMILY / "haipipe-folder" / "SKILL.md": (
                 "../../page/haipipe-page/SKILL.md",
-                "../../page/haipipe-plugin/SKILL.md",
+                "../../page/haipipe-workbench/SKILL.md",
             ),
             BOARD_FAMILY / "agents" / "haipipe-page-auditor-agent.md": (
                 "../../page/haipipe-page/SKILL.md",
-                "../../page/page-workflows/haipipe-page-workflow/ref/page-run-contract.md",
+                "../../page/haipipe-page-workflow/ref/page-run-contract.md",
             ),
             BOARD_FAMILY / "agents" / "haipipe-page-creator-agent.md": (
                 "../../page/haipipe-page/SKILL.md",
@@ -52,7 +54,7 @@ class BoardV1ContractTest(unittest.TestCase):
             ),
             BOARD_FAMILY / "agents" / "haipipe-board-reviewer-agent.md": (
                 "../../page/haipipe-page/SKILL.md",
-                "../../page/page-workflows/haipipe-page-check/SKILL.md",
+                "../../page/workflow-runs/haipipe-page-check/SKILL.md",
             ),
         }
         for source, targets in links.items():

@@ -168,7 +168,7 @@ def group_canvas(meta, group, members):
     # The same ruling that keeps Excalidraw out of `## Outline` applies one level
     # up: a group page's body stays prose, and the composed drawing opens in the
     # Draw split. What the page emits is only the OWNER ADDRESS, invisible, so
-    # the plugin can derive the scene without the build and the client keeping
+    # the workbench can derive the scene without the build and the client keeping
     # two copies of the path logic.
     return (f'<div class="group-draw-owner" hidden data-scene="{esc(rel)}" '
             f'data-label="{esc(group)}"></div>')
@@ -816,8 +816,9 @@ def render(meta, qs):
 # into board/_assets/, and every generated page links that shared copy. The
 # legacy single-Markdown build still inlines them into its one output file.
 HERE = Path(__file__).resolve().parent.parent
-# Assembled from assets/js/** and assets/css/** in sorted path order; see
-# src/assets.py for why the parts exist and why the order is load-bearing.
+# Assembled from every server folder's assets/js/** and assets/css/** in sorted
+# relative path order; see servers/_host/host_assets.py (bridged by src/assets.py)
+# for why the parts exist and why the order is load-bearing.
 from . import assets as _assets            # noqa: E402
 _JS_PROBLEMS = _assets.verify()
 if _JS_PROBLEMS:
@@ -836,7 +837,7 @@ CSS = _assets.css().rstrip("\n")
 CSS_STAMP = hashlib.md5(CSS.encode("utf-8")).hexdigest()[:12]
 JS_STAMP = hashlib.md5(JS.encode("utf-8")).hexdigest()[:12]
 ASSETS_STAMP = hashlib.md5((JS + CSS).encode("utf-8")).hexdigest()[:12]
-MARK_SVG = (HERE / "assets" / "board-mark.svg").read_text(encoding="utf-8").strip()
+MARK_SVG = _assets.board_mark()
 MARK_FAVICON = ("data:image/svg+xml;base64,"
                 + base64.b64encode(MARK_SVG.encode("utf-8")).decode("ascii"))
 
@@ -1030,7 +1031,7 @@ def tree_reroot(html, up, src_dir=None, board_root=None):
         # happen to end in generated filenames.
         if bare.startswith("board/"):
             return f'{m.group("attr")}="{up}{url}"'
-        # The Board-level Insight and Design plugins are sibling projections of
+        # The Board-level Insight and Design workbenches are sibling projections of
         # the generated index, not source-relative Markdown links.
         if bare in ("insight.html", "design.html"):
             return m.group(0)
@@ -1336,7 +1337,7 @@ def render_tree(meta, qs, out_dir, only=None):
             title=esc(title), body=body, root=root, crumb=crumb,
             sidebar=sidebar, popcards=popcards,
             assets_stamp=ASSETS_STAMP, css_stamp=CSS_STAMP, js_stamp=JS_STAMP, favicon=MARK_FAVICON,
-            # The drawing host, so a plugin can open a Page's own source without
+            # The drawing host, so a workbench can open a Page's own source without
             # the browser re-deriving what the build already knows. Empty on a
             # Board that declares no `excalidraw:`, which is how 🖌 Draw stays
             # out of the menu rather than offering a surface that cannot open.
@@ -1478,13 +1479,13 @@ def render_tree(meta, qs, out_dir, only=None):
         if task_board else ""
     )
     insight_link = (
-        '<p class="gpurpose"><a href="insight.html">🔎 Open Board-level Insight plugin</a>'
+        '<p class="gpurpose"><a href="insight.html">🔎 Open Board-level Insight workbench</a>'
         ' <span class="mut">whole-board Meta · Questions · DIKW workflow view</span></p>'
         if insight_board else ""
     )
     if design_board:
         insight_link += (
-            '<p class="gpurpose"><a href="design.html">🎨 Open Board-level Design plugin</a>'
+            '<p class="gpurpose"><a href="design.html">🎨 Open Board-level Design workbench</a>'
             ' <span class="mut">lines of the Brief · every Design Item · who is waited on · adopted</span></p>'
         )
     quiet_index = pages_only_index(meta) or task_board
@@ -1513,7 +1514,7 @@ def render_tree(meta, qs, out_dir, only=None):
         snap = insight_snapshot(Path(meta["dir"]), Path(meta["dir"]), static=True)
         insight_page.write_text(render_insight_board(snap), encoding="utf-8")
         written.append(insight_page)
-    # Its Design twin: the Board-level grain of the Design plugin (Brief lines ×
+    # Its Design twin: the Board-level grain of the Design workbench (Brief lines ×
     # folders × items). Static, so the New-Folder button is omitted here.
     design_page = out_dir / "design.html"
     if design_board and not only:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""📄 Paper Plugin · view audit: drive every Space view in REAL headless Chrome.
+"""📄 Paper Workbench · view audit: drive every Space view in REAL headless Chrome.
 
 Wire green is not UI green. This opens `/_board/paper` for one or more paper
 boards on a running board server, walks all twenty `#<space>/<view>` routes at
@@ -34,7 +34,7 @@ import websocket
 CHROME = os.environ.get("CHROME_BIN", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 VIEWS = [("setup", "folders"), ("setup", "sessions"),
          ("ideation", "pool"), ("ideation", "evidence"), ("ideation", "admission"),
-         ("story", "spine"), ("story", "claims"), ("story", "tasks"), ("story", "sections"), ("story", "evidence"),
+         ("story", "spine"), ("story", "questions"), ("story", "tasks"), ("story", "sections"), ("story", "evidence"),
          ("run", "page"), ("run", "evidence"), ("run", "supporting"), ("run", "gates"), ("run", "workflow"),
          ("delivery", "manuscript"), ("delivery", "sections"), ("delivery", "displays"), ("delivery", "checks"), ("delivery", "rounds")]
 

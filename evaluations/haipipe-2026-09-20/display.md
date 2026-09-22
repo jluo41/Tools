@@ -52,7 +52,7 @@ intake 合约也把 Local Input 写到旧路径（display/ref/display-intake-con
 
 > display/agents/haipipe-display-unit-agent.md:124：“unit: <page>/display/<stem>-Display<N>-<slug>/”
 
-当前 Page evidence 文档规定 Result payload 在 <page>/results/<re-run>/payload/<unit>/（page/page-plugins/haipipe-plugin-outline/ref/evidence/displays.md:16-24），并明确 outline/evidence/display 和 flat display 都已退休（同文件:180-185）。但 Paper assembler 仍声明旧目录是当前 Section Page 的入口（paper/haipipe-paper-assemble/SKILL.md:69-78、221-235）。这是跨家族协议尚未统一，不宜只在 Display 文件中任意挑一个路径替换。
+当前 Page evidence 文档规定 Result payload 在 <page>/results/<re-run>/payload/<unit>/（page/haipipe-workbench-page/ref/evidence/displays.md:16-24），并明确 outline/evidence/display 和 flat display 都已退休（同文件:180-185）。但 Paper assembler 仍声明旧目录是当前 Section Page 的入口（paper/haipipe-paper-assemble/SKILL.md:69-78、221-235）。这是跨家族协议尚未统一，不宜只在 Display 文件中任意挑一个路径替换。
 
 **影响：**Page producer 可照 Display/agent 说明写出文件，但现行 Page reader 看不到它；Paper 的旧读取器又和 Page Result 新地址争夺写入权。新上下文 agent 没有可信唯一目标。
 

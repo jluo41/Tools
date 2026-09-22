@@ -1,3 +1,14 @@
+## 2026-09-22 · call or read
+
+- `writing/` takes the numbered-folder shape of `discovery/` and `task/`: the door
+  `haipipe-writing/`, then `1_style/` and `2_evaluate/` holding the external skills
+  it calls as adapted copies (writing-dna-skill, academic-humanizer, blader's
+  humanizer). Every other anti-AI writing reference stays in `references/` and is
+  digested in `haipipe-writing/ref/external/README.md`. haipipe-writing 0.22.0.
+- The writer is the door. There is no `1_write/` folder because no external skill
+  writes; the three read-only sources worth taking are taken (`ref/ai-tells.md` §3
+  and §4, the `lang: zh` rules).
+
 ## 2026-09-20 · one Writing entry
 
 - haipipe-writing 0.20.0 connects Page Section/Paragraph Runs to selected external

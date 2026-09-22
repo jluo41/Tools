@@ -3,7 +3,7 @@
 Build `_WorkSpace/0-RawDataStore/0-EventNorm/_FoodInfo/`.
 
     source .venv/bin/activate && source env.sh
-    Tools/plugins/haipipe-utils/skills/describe-food/run_server.sh   # another shell
+    Tools/plugins/haipipe-utils/servers/_host/run.sh   # another shell
     python Tools/plugins/haipipe-utils/skills/describe-food/build_foodinfo.py
 
 MOVED HERE FROM A TASK FOLDER, and the move is the point. This file describes
@@ -159,7 +159,7 @@ def main():
         tagline="Every cohort's food data, in and out, on one page each.",
         producer="Tools/plugins/haipipe-utils/skills/describe-food/build_foodinfo.py",
         rerun=("source .venv/bin/activate && source env.sh\n"
-               "Tools/plugins/haipipe-utils/skills/describe-food/run_server.sh   # another shell\n"
+               "Tools/plugins/haipipe-utils/servers/_host/run.sh   # another shell\n"
                "python Tools/plugins/haipipe-utils/skills/describe-food/build_foodinfo.py"),
         dest=DEST, stats=stats, pages=pages,
         sections=[

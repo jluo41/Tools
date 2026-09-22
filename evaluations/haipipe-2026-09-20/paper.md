@@ -22,7 +22,7 @@ Paper 家族有可保留的治理骨架：G0–G5 为每个人类决定列出可
 | `paper/haipipe-paper-assemble/SKILL.md` | 是，532 行 | CHANGELOG、TOML 示例、wrapper、JAMA IM/MISQ profiles、`build_delivery.py` 与 DOCX 转换代码（只读检查，未执行） | **部分**：`:359–408` 是清楚的有界编译操作；`:457` 仍称 `CHECK phase`，也未说明 Workflow Run 身份/收据。 |
 | `paper/haipipe-paper-venue/SKILL.md` | 是，210 行 | CHANGELOG、`template.md`、`venue/README.md`；当前 QBv 页面及 playbook 检查见下文 | **失败**：`:21–24` 仍称 Page phase；Venue 本身是 PageType/参考资产，不应变成 Run，且模板/实例不能满足 `:93–121,199–207` 的合同门槛。 |
 | `paper/haipipe-paper-workflow/SKILL.md` | 是，281 行 | CHANGELOG、`paper/README.md`、Run naming、Paper–Page integration；Paper Plugin 的 Run-Type map | **失败**：`:21–30,40–79,225–247` 把 P0–P4 作为当前活动位置；Workflow 没有被定义成 Runs 清单。 |
-| `paper/haipipe-plugin-paper/SKILL.md` | 是，448 行 | CHANGELOG、`ref/space-mapping.md`、当前 `live/paper.py`、drawer JS、共享 Plugin/Outline/Run 页面契约 | **失败**：`:370–399` 不把计划行冒充已执行 Run，但把 Workflow 定义为记录移动和关卡测试，展示的也是 Run-Type × Space 投影，不是 Run 清单。 |
+| `paper/haipipe-workbench-paper/SKILL.md` | 是，448 行 | CHANGELOG、`ref/space-mapping.md`、当前 `servers/workbench-paper/paper.py`、drawer JS、共享 Plugin/Outline/Run 页面契约 | **失败**：`:370–399` 不把计划行冒充已执行 Run，但把 Workflow 定义为记录移动和关卡测试，展示的也是 Run-Type × Space 投影，不是 Run 清单。 |
 | `paper/workflow-phases/haipipe-paper-ideation/SKILL.md` | 是，512 行 | CHANGELOG、`agents/openai.yaml`、Ideation manifest/sync/receipt/workflow-table 支援文档、Ideation 入口 | **部分**：`:29–47,64–116` 能力、人类选择与非 Run 同步边界清楚；P0 journey phase 和 phase 收据文案仍活动。 |
 | `paper/workflow-phases/haipipe-paper-round/SKILL.md` | 是，383 行 | CHANGELOG、`agents/openai.yaml`、Paper–Page 集成与 Page receipt 边界 | **部分**：`:26–38,60–63` 一方面明确 Page/Run 边界，一方面仍有 P4 phase 和含义不明的 Page “round” 计数。 |
 | `paper/workflow-phases/haipipe-paper-section/SKILL.md` | 是，401 行 | CHANGELOG、generic template、resolver/stat 脚本、Venue Page 与 Story 关联 | **部分**：`:25–44,96–114` 有 Section Page/内部 Runs 区分，但 P3 phase、“Section Page RUN”和 Paper-local Run owner 指示冲突。 |
@@ -34,7 +34,7 @@ Paper 家族有可保留的治理骨架：G0–G5 为每个人类决定列出可
 
 ### P1 — Paper 的活动工作流仍以 P0–P4 阶段位置为权威模型
 
-**证据。** `paper/haipipe-paper-workflow/SKILL.md:21–30` 定义：“A **journey phase** is one position in the paper journey below. A **Page phase** is one step of the shared Page lifecycle”，并列出 `P0 Ideation → P1 Story → P2 Evidence/Execution → P3 Section → Compile → P4 Round`。同文件 `:40–79,225–247,257–280` 重复位置表、流程图、“phase reading”和 P0–P4 完成检查。Umbrella `haipipe-paper/SKILL.md:54–86` 将相同旅程作为路由图，当前路径名 `paper/workflow-phases/` 仍承载四个活动技能；`paper/README.md:40–47,99–105` 还称 workflow receipt 为 phase receipt。P0/P1/P3/P4 也在 Paper UI `board/haipipe-board/live/paper.py:219–235` 显示为 “the idea pool / one prospective Story / named Section Pages / one RD page per feedback batch”。
+**证据。** `paper/haipipe-paper-workflow/SKILL.md:21–30` 定义：“A **journey phase** is one position in the paper journey below. A **Page phase** is one step of the shared Page lifecycle”，并列出 `P0 Ideation → P1 Story → P2 Evidence/Execution → P3 Section → Compile → P4 Round`。同文件 `:40–79,225–247,257–280` 重复位置表、流程图、“phase reading”和 P0–P4 完成检查。Umbrella `haipipe-paper/SKILL.md:54–86` 将相同旅程作为路由图，当前路径名 `paper/workflow-phases/` 仍承载四个活动技能；`paper/README.md:40–47,99–105` 还称 workflow receipt 为 phase receipt。P0/P1/P3/P4 也在 Paper UI `servers/workbench-paper/paper.py:219–235` 显示为 “the idea pool / one prospective Story / named Section Pages / one RD page per feedback batch”。
 
 **影响。** 人和新上下文代理会把 P0–P4 当作进度单位，汇报“当前阶段”，却找不到该位置对应的实际 Run、Run owner、输入输出或完成收据。且这些位置混有持久 Page（Ideation、Story、Section、Round）、工作通道（P2）与动作（Compile），本身并不都是 Run 实例。
 
@@ -113,7 +113,7 @@ After:  Paper Workflow lists declared Runs and routes; Paper Pages own their con
 
 ### P2 — Paper Plugin 的 Workflow 名称与映射图没有表达 Run 清单；drawer 提示也过期
 
-**证据。** `haipipe-plugin-paper/SKILL.md:370–399` 定义 Workflow 为 “how owned records move and which gate is tested”，另列 Run-Type 和 Run；`ref/space-mapping.md:1,7–17` 是 Run-Type/record × Space 投影，单元格给 `read/action/review/route/run`。当前 UI `board/haipipe-board/live/paper.py:2589–2592` 明称这是定义图、“not a Run inventory”，因此它不等于 Workflow Runs 清单。它正确提醒 planned row 不代表 actual Run（skill `:398–399`），这一条要保留。另，`haipipe-plugin-paper/SKILL.md:94–98` 称 plugin 自有 hint 都在 `live/paper.py`；实际 drawer 位于 `board/haipipe-board/assets/js/10-drawer/09-plugin-paper.js:40–42`，hint 只列 Setup/Ideation/Story/Run，漏 Delivery，注释 `:7–8` 仍说四个 Spaces；实际 Python `live/paper.py:2801–2804` 渲染五个。
+**证据。** `haipipe-workbench-paper/SKILL.md:370–399` 定义 Workflow 为 “how owned records move and which gate is tested”，另列 Run-Type 和 Run；`ref/space-mapping.md:1,7–17` 是 Run-Type/record × Space 投影，单元格给 `read/action/review/route/run`。当前 UI `servers/workbench-paper/paper.py:2589–2592` 明称这是定义图、“not a Run inventory”，因此它不等于 Workflow Runs 清单。它正确提醒 planned row 不代表 actual Run（skill `:398–399`），这一条要保留。另，`haipipe-workbench-paper/SKILL.md:94–98` 称 plugin 自有 hint 都在 `servers/workbench-paper/paper.py`；实际 drawer 位于 `servers/workbench-paper/assets/js/10-drawer/09-plugin-paper.js:40–42`，hint 只列 Setup/Ideation/Story/Run，漏 Delivery，注释 `:7–8` 仍说四个 Spaces；实际 Python `servers/workbench-paper/paper.py:2801–2804` 渲染五个。
 
 **影响。** 第一处会让用户把类型/负责人地图当成实际执行图；第二处会漏掉 Delivery，或让贡献者在错误源文件修改提示。
 

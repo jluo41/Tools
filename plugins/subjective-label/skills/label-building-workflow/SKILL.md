@@ -264,7 +264,7 @@ reduces cross-origin writes but does not authenticate the caller. Both channels
 refuse before writing a byte when the submitted id differs from the configured
 id, when the job is on HOLD, or when P0 integrity fails. The
 door's own checks are in
-`../page-plugins/haipipe-plugin-labeling/SKILL.md` §Write and authority law.
+`haipipe-workbench-labeling/SKILL.md` §Write and authority law.
 
 ## Calibration Run Specs · P1 compatibility tag
 

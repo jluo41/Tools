@@ -16,7 +16,7 @@ address of a Discovery unit. The only work address is Block–Job–Task–Run
 | Discovery domain | D1 SCOPE → PREPARE? → ACQUIRE ↔ SYNTHESIZE → CLOSE | When does the inquiry move? | Not b01/j01/t01/r01 numbering |
 | Page workflow | 00 CONTEXT → 01 OUTLINE → 02 EVIDENCE → 03 CONTENT → 04 CHECK | How is the Task Page authored and checked? | Not a Folder level |
 | Page type | source-map, source-reading, synthesis forms | What article does the Task Page promise? | Not a Run kind |
-| Skill bank | 1_search, 2_review, 3_synthesize, workflow-phases, agents | Which capability or role is loaded? | Not a project path |
+| Skill bank | haipipe-discovery-search, -review, -synthesize, -inquiry at the root; 1_search and 2_review vendored originals; agents | Which capability or role is loaded? | Not a project path |
 
 The work hierarchy is structural. D1 and Page workflows are temporal. Skill
 folders are organizational. Page type is semantic. A name such as 2_review can
@@ -27,7 +27,7 @@ never be used to infer j02, and 01 OUTLINE can never be used to infer t01.
 ```text
 discoveries/                                  bank; no address segment
 └── b01_sleep-evidence/                       Block = Discovery Board
-    ├── board.md
+    ├── board.md                                Board head; board-kind: discovery-block
     └── j02_sleep-mechanisms/                 Job = inquiry/campaign group
         └── t03_circadian-review/             Task Page = one article question
             ├── t03_circadian-review.md       Page Face
@@ -58,9 +58,9 @@ and captured Trigger material are optional Result attachments.
 | 00/01/02/03/04 | Shared Page workflow records | haipipe-page-workflow and its phases | b00/b01/t01 or a Run |
 | 1_search | FIND and canonical-identity capability family | D1 ACQUIRE intake | Job j01, one Run, or a phase named “1” |
 | 2_review | Per-Subject review capability family | D1 ACQUIRE source review | Job j02 or one aggregate Run |
-| 3_synthesize | Cross-Result synthesis capability family | D1 SYNTHESIZE and Page CONTENT | r03 or a new hierarchy level |
-| 3_idea, 4_idea, or other old Idea labels | Unsupported retired labels | stop and request a new 3_synthesize Page or sibling haipipe-ideation unit | a live route, migration target, or inferred Run |
-| D1 SCOPE…CLOSE | Domain lifecycle | workflow-phases/haipipe-discovery-inquiry | b/j/t/r segments |
+| haipipe-discovery-synthesize | Cross-Result synthesis capability family | D1 SYNTHESIZE and Page CONTENT | r03 or a new hierarchy level |
+| 3_idea, 4_idea, or other old Idea labels | Unsupported retired labels | stop and request a new haipipe-discovery-synthesize Page or sibling haipipe-ideation unit | a live route, migration target, or inferred Run |
+| D1 SCOPE…CLOSE | Domain lifecycle | haipipe-discovery-inquiry | b/j/t/r segments |
 | runs/rNN_*.sh | Level-4 executable analysis ticket | D1 ACQUIRE only | search query, API call, or synthesis pass |
 | results/rNN_*/ | Paired Run readout | D1 ACQUIRE result contract | a second Run or a Page phase |
 
@@ -72,9 +72,9 @@ Run. No Idea compatibility route is provided.
 
 | Command | Address affected | Durable effect |
 |---|---|---|
-| open-block | bNN | Create or select a Discovery Board Block and board.md |
-| open-job | bNN/jNN | Create or select an inquiry/campaign Job under that Block |
-| open | bNN/jNN/tNN | Create one typed Task Page with both Faces |
+| open-block | bNN | Create or select a Discovery Board Block and form board.md |
+| open-job | bNN/jNN | Create or select an inquiry/campaign Job/Group and refresh the Board roster |
+| open | bNN/jNN/tNN | Create one typed Task/Page Folder with both Faces and rebuild the Board |
 | scope | tNN | Freeze question, discovery_type, boundary, and admission rule |
 | prepare | tNN | Optionally add a reusable script under scripts/ |
 | add / acquire | tNN → rNN | Resolve Triggers, admit Subjects, allocate paired Run/Result units |
@@ -104,8 +104,10 @@ old paper mention -> not a Run until a new Subject is admitted and analyzed
 The migrator never manufactures Runs from a PDF, source index, notes file, or
 old status. It makes the new b/j/t address explicit. Old skill directories are
 not project folders and must not be moved into discoveries/. Idea-typed legacy
-manifests are rejected; they are not converted or redirected. There is no need
-to rename 1_search, 2_review, or 3_synthesize to Block/Job/Task/Run directories.
+manifests are rejected; they are not converted or redirected. After a write,
+run `scripts/board_sync.py` on each new Block so migration also forms its
+`discovery-block` Board. There is no need to rename `1_search`, `2_review`, or the
+root-level capability skills to Block/Job/Task/Run directories.
 
 ## 6. Acceptance invariants
 
@@ -125,6 +127,9 @@ to rename 1_search, 2_review, or 3_synthesize to Block/Job/Task/Run directories.
 7. New semantic ideation consumes Task/Discovery evidence through
    haipipe-ideation and hands selected directions to Paper P0; Discovery keeps
    only the external evidence and cross-Result synthesis it owns.
+8. Every structural or terminal handoff refreshes the Block Board through
+   `scripts/board_sync.py`; `board.md` is the authored head, `board/` is
+   generated, and the direct `jNN_/tNN_` tree remains membership authority.
 
 ## 7. Worked route
 

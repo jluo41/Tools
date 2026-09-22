@@ -6,7 +6,7 @@ description: >-
   original positions. Pass `svg` to hand-vectorize each icon for full
   editability. Use for /figure-to-svg, replicate this figure as svg, turn this
   diagram into an editable svg, or vectorize a multi-item figure. Also home of
-  the plugin's lesson / feedback / digest verbs.
+  the workbench's lesson / feedback / digest verbs.
 
 ---
 

@@ -1,6 +1,6 @@
 """The `> ✎` diff has ONE computation, and this test is what keeps it one.
 
-`live/write.py` and `haipipe-writing/cli/wdiff.py` both used to compute the
+`servers/haipipe-board/write.py` and `haipipe-writing/cli/wdiff.py` both used to compute the
 word-level change record with difflib. On 260802 they produced byte-identical
 output on every case tried, which is agreement by luck: the next edit to either
 one splits them silently, and the record is a durable review trail that a

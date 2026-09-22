@@ -38,6 +38,33 @@ One Task Page holds MANY numbered Paper Runs. Each Run owns exactly one
 canonical paper/source subject and has an exact same-stem Result. Result is not
 a fifth hierarchy level. Full contract: `paper-run-contract.md`.
 
+## Block-as-Board projection
+
+The Block is a Board as soon as it exists. The source/projection split is:
+
+```text
+discoveries/b01_<block>/board.md      authored Board head
+discoveries/b01_<block>/jNN_*/        Board Groups / Jobs
+discoveries/b01_<block>/jNN_*/tNN_*/  Board Pages / Task Folders
+discoveries/b01_<block>/board/        generated Board site
+```
+
+`board.md` declares `board-kind: discovery-block`, `spine:`, `close:`, Topic,
+Pipeline, Board Map, and a managed Job roster. The direct `jNN_/tNN_` tree is
+membership and default order. Individual Task rows, Run records, Result prose,
+and Page state remain in their owning folders and are discovered by the Board
+engine; they are never copied into `board.md`.
+
+Use `scripts/board_sync.py` at `open-block`, `open-job`, and `open`, then after
+Run batches, Page CHECK, and before D1 CLOSE:
+
+~~~bash
+python3 scripts/board_sync.py <block> --build --check --strict
+~~~
+
+The helper is idempotent and preserves authored Board prose. The generated
+`board/` tree is disposable and must be rebuilt rather than edited.
+
 All four address-bearing levels use
 `<level-letter><NN>_<noun>_<qualifier>`. The path yields compact
 `b01j01t01r01` and readable `b01.j01.t01.r01`. Bare `01_` is invalid.
@@ -46,9 +73,9 @@ All four address-bearing levels use
 
 | Level | Discovery meaning | Owns |
 |---|---|---|
-| Block `bNN_` | broad evidence Board/program; prefer few and group related Jobs | Jobs |
-| Job `jNN_` | self-contained inquiry or discovery campaign group | related Task Pages |
-| Task `tNN_` | one question plus one `discovery_type` article | Page/Task Faces and local Runs |
+| Block `bNN_` | Discovery Board/program; prefer few and group related Jobs | Jobs/Groups and `board.md` |
+| Job `jNN_` | self-contained inquiry or discovery campaign Group | related Task Pages |
+| Task `tNN_` | one question plus one `discovery_type` article Page Folder | Page/Task Faces and local Runs |
 | Run `rNN_` | one analysis of one admitted canonical Subject | Ticket, Result, runtime receipt |
 
 ## The two Faces
@@ -87,7 +114,7 @@ inside a Paper Run receipt. They are not Level-4 Runs themselves.
 ## Workflow summary
 
 The complete contract table is owned by
-`../../workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md`. It also
+`../../haipipe-discovery-inquiry/ref/workflow-table.md`. It also
 contains the Runs Overview, Human Actions, exact skill chains, and Skill
 Coverage. The separate `haipipe-discovery-workflow` skill is retired; the
 Discovery controller owns the domain Run table while `haipipe-page-workflow`

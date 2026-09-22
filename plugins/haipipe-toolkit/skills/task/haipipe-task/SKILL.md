@@ -11,8 +11,8 @@ description: >-
   /haipipe-task.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-09-19"
+  version: "1.3.1"
+  last_updated: "2026-09-21"
   folder_owner: canonical
   folder_kind: task
   primary_face: task
@@ -191,38 +191,42 @@ type        specialist                         related Skill
 data        haipipe-task-for-data              haipipe-data
 raw         haipipe-task-for-raw               haipipe-data-raw
 algo        haipipe-task-for-algo              haipipe-nn-algo
-fit         haipipe-task-for-fit               haipipe-nn-tuner + instance
+fit         haipipe-task-for-fit               haipipe-nn-tuner + instance + fit-owned GPU companions
 eval        haipipe-task-for-eval              project-local evaluation
 display     haipipe-task-for-display           display family
 individual  haipipe-task-for-individual        haipipe-individual
 agent       haipipe-task-for-agent             haipipe-task-llm-engine
 endpoint    haipipe-task-for-endpoint          haipipe-end
 page        haipipe-task-for-page              one Board Page's evidence route
-gpu         haipipe-task-gpu                   GPU-bound queue and supervisor
 ```
 
 Stata execution routes wholly to `haipipe-task-for-stata`. A Block prefix does
 not encode type. Infer type from explicit input, then Task code, then request
-keywords. Route GPU scheduling to `haipipe-task-gpu`; keep model/training or
-evaluation semantics in the owning specialist. If none resolves, ask once or
-return `blocked` in auto mode.
+keywords. GPU is an execution modifier of a fit Task, not a separate Task
+type: route model fitting through `haipipe-task-for-fit`, which owns the
+`haipipe-task-gpu` and `haipipe-task-gpu-training` companions. Keep evaluation,
+serving, and engine semantics with their owning specialists. If none resolves,
+ask once or return `blocked` in auto mode.
 
 ## GPU-bound execution
 
-GPU scheduling is a cross-cutting execution concern, not a new hierarchy
-level. A GPU-bound Task keeps the normal `tNN`/`rNN` identity and may use a
+GPU scheduling is a fit execution concern, not a new hierarchy level. A
+GPU-bound fit Task keeps the normal `tNN`/`rNN` identity and may use a
 Task-local `sbatch/` or Job-level supervisor when several Runs must execute in
-order. The supervisor owns queue state and child-process teardown; each Run
-still owns its config, Ticket, `runtime.yaml`, Result gate, and failure record.
+order. The fit-owned supervisor owns queue state and child-process teardown;
+each Run still owns its config, Ticket, `runtime.yaml`, Result gate, and
+failure record.
 
-For GPU training, serving, sweeps, or evaluation, load
-`haipipe-task-gpu` before authoring the queue. Its required invariants are:
+For GPU training or fit sweeps, load the fit-owned
+`haipipe-task-gpu` companion before authoring the queue and add
+`haipipe-task-gpu-training` when checkpoint/resume semantics apply. The
+required invariants are:
 
 - preflight the exact GPU set and never kill an unowned process;
 - launch the next Ticket after the previous receipt is terminal and CUDA
   teardown is complete;
 - preserve failed Runs and use only finite, explicitly declared fallback
-  ladders for OOM or service failure;
+  ladders for OOM or training failure;
 - distinguish a workload-specific safe concurrency from a speed-only ceiling;
 - record queue order, GPU snapshots, timestamps, exit codes, and fallback
   decisions so “GPU stayed busy” never replaces evidence of correctness.

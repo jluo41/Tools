@@ -4,6 +4,16 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-09-21 — Make GPU execution companions fit-owned (JL)
+------------------------------------------------------------
+
+Moved `haipipe-task-gpu` and `haipipe-task-gpu-training` under
+`5_fit/haipipe-task-for-fit/`. Their public skill names stay unchanged, so
+invocation by name remains stable. GPU is an execution modifier of a Fit Task,
+not a separate Task domain. The generic companion now covers fit queue
+mechanics; evaluation, serving, and engine workloads remain with their owning
+specialists.
+
 2026-09-19 — Separate GPU-training lifecycle from LM-engine execution (JL)
 ----------------------------------------------------------------------------
 
@@ -312,7 +322,7 @@ Constitution: `probe/haipipe-probe/SKILL.md` v8.0.0.
 - **Shared knowledge packs:** `haipipe-task/ref/authoring-conventions.md` (4 sister files, `_meta` contract, heavy-artifact placement, reproducibility, first-run gate, builder!=judge, papermill/notebook) and `haipipe-task/ref/invocation-modes.md` (dual-mode contract + structured-return schema).
 - **Batch orchestrator** `haipipe-task-batch` — fan out N typed specs, each flowing author → GATE 1 → run → GATE 2. Two engines: native parallel Agent calls, or `batch-pipeline.workflow.js`.
 - **Notebook retention knob** `_meta.notebook: full | thin | off`.
-- **Top-level `agents/` registry** (plugin root, flat symlinks) for `subagent_type` addressing.
+- **Top-level `agents/` registry** (workbench root, flat symlinks) for `subagent_type` addressing.
 
 ### Changed
 - **Renamed 7 type skills** `haipipe-task-<type>` → `haipipe-task-for-<type>`. All 155 references updated.

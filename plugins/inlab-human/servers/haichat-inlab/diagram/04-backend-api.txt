@@ -1,0 +1,64 @@
+🔌  Backend — FastAPI: 4 routers over stores + engine
+═══════════════════════════════════════════════════════════════════
+
+main.py builds ONE app: mounts four APIRouters, then the built SPA at "/".
+Each router owns one surface and reads one kind of store. Only console_api
+touches the shared engine; the others read files directly.
+
+─§ main.py wiring ────────────────────────────────────────────────
+
+  🚀 FastAPI(app)
+   ├─ include  console_api.router     🔧 engine-backed (patients/models/predict)
+   ├─ include  labeling_api.router    ✏️ cases + subjective-label
+   ├─ include  tasks_api.router       📋 the haipipe task feed
+   ├─ include  haichat_api.router     🤖 WS /ws/haichat (Agent SDK)
+   ├─ GET /individual  ┐  client-side SPA routes → hand back index.html
+   ├─ GET /group       ┘  (a refresh on either must not 404)
+   └─ mount "/"  → web/dist  (503 with a fix hint if unbuilt)
+
+─§ The route map ─────────────────────────────────────────────────
+
+  +-------------------------------+------------------------------------------+
+  | 🌐 Route                      | 📤 Returns / reads                       |
+  +-------------------------------+------------------------------------------+
+  | GET /api/datasets             | data types available (patient stores)    |
+  | GET /api/patients             | roster (scoped by ?dataset=)             |
+  | GET /api/patients/{id}        | chart AS OF the index date               |
+  | GET /api/patients/{id}/raw    | source layer — every row, later FLAGGED  |
+  | GET /api/patients/{id}/layer/*| raw | record layer                        |
+  | GET /api/models[/{p}/card]    | packaged models + live? · the model card |
+  | POST /api/predict             | endpoint response + data-gap report      |
+  | GET /api/cases                | cases from the record (record-driven)    |
+  | GET /api/labeling/dimensions  | subjective-label projects mounted        |
+  | GET /api/labeling/{dim}       | guideline · gallery · trajectory · inbox |
+  | POST /api/labeling/{dim}/...  | the PI's decision → human_decisions.jsonl|
+  | GET /api/tasks                | Project-* task feed (by series / scope)  |
+  | GET /api/health               | resolved config + which endpoints answer |
+  | WS  /ws/haichat               | agent session (engine mounted as MCP)    |
+  +-------------------------------+------------------------------------------+
+
+─§ Router → store → source of truth ──────────────────────────────
+
+  console_api  ─▶ 🔧 endpoint-predict  ─▶ INLAB_PATIENT_STORE / _ENDPOINT / _REGISTRY
+  labeling_api ─▶ 🗂️ patient store (cases) + 🗂️ INLAB_LABEL_STORES (per-dataset map,
+                    authoritative) | INLAB_LABEL_STORE (legacy single, all datasets)
+  tasks_api    ─▶ 🗂️ INLAB_PROJECTS_ROOT  (examples/Project-*/tasks)
+  haichat_api  ─▶ 🤖 Claude Agent SDK + 🔧 the SAME engine as MCP tools
+
+─§ Multi-dataset: scoping the shared engine ──────────────────────
+
+  The engine reads ONE module-global PATIENT_STORE. To serve several data
+  types without forking it, console_api reassigns it PER REQUEST:
+
+    ?dataset=ACIBench_v0  ─▶  _scope()  ─▶  ep.PATIENT_STORE = <that dir>
+                                             ▼
+                              tool_list_patients / tool_get_patient
+
+  registry resolution order:
+    INLAB_DATASETS (json)  >  INLAB_DATASET_STORE (autodiscover <name>/patients)
+                           >  INLAB_PATIENT_STORE (single, back-compat)
+
+  ⚠️ single-user local console: the reassignment window is one sync call.
+
+     see 05-frontend-shell.txt  →  who calls these routes, and how state flows
+     see 06-data-lineage-views.txt / 07-case-builder.txt  →  what /api/cases means

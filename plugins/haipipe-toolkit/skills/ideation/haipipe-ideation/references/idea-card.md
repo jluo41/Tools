@@ -74,7 +74,8 @@ id: i01
 canonical_id: i01
 legacy_ids: []
 comparison_order: 1
-title: "..."
+title: "2–5 word handle derived from the question, for slugs"
+question: "the research question this Idea asks · one sentence ending in ? · the Idea's name everywhere"
 claim: "one falsifiable research proposition"
 method: "2–4 concrete steps"
 hypothesis: "one sentence"
@@ -132,6 +133,14 @@ Legacy cards with flat `novelty`, `closest_work`, `search_question`,
 `remaining_delta`, and `limitation` fields remain readable. Any new or revised
 card writes those fields inside `novelty_check` so the claim-level gate is one
 visible record rather than five parallel fields.
+
+`question` is the Idea's identity for readers: the Paper Ideation Page heads the
+Idea's division with it, its Ideas (ranked) row carries it, and the Paper
+Workbench's Idea Card leads with it. It names one object, one relation or
+contrast, one outcome, and the boundary it is asked inside, and it stays
+informative when the answer is no. `title` is a handle derived from it, never
+a substitute; a card with a title and a claim but no question is `unframed`
+and the checker reports `unframed-idea` when the question does not end in `?`.
 
 The fields intentionally retain the downstream Paper vocabulary: Method,
 Hypothesis, Minimum experiment, Expected outcome, Core Claims, Pilot result,

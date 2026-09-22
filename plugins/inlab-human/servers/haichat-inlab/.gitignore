@@ -1,0 +1,5 @@
+# runtime state written by the message pipeline on each ▶ Run — not source
+.runs/
+# build outputs — HAIChat-SPACE ignored these at its root; the rule moves with the folder
+web/node_modules/
+web/dist/

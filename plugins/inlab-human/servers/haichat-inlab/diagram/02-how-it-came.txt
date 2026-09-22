@@ -1,0 +1,59 @@
+🌱  How it came to be — the pipeline underneath
+═══════════════════════════════════════════════════════════════════
+
+The console did NOT invent a data model. It is a WINDOW onto the haipipe
+data pipeline that already exists in this repo. Every DATA view maps 1:1 to
+a pipeline stage / store. Understanding the console = understanding that the
+same dataset is shown at successive stages of transformation.
+
+─§ The haipipe stages the console sits on ────────────────────────
+
+  📁 0-RawDataStore     the files exactly as they arrived
+        │  SourceFn  (raw → standardized ProcName tables)
+        ▼
+  🗂️ 1-SourceStore      ProcName_to_ProcDf — parsed tables (payloads built here)
+        │  HumanFn + RecordFn  (assign HumanID, clean, bin, PID-key)
+        ▼
+  🧾 2-RecStore         one HUMAN's full timeline, as streams
+        │  TriggerFn + CaseFn  (cut anchor points, build facets)
+        ▼
+  📌 3-CaseStore        one CASE = one annotation/prediction point
+        │  TfmFn + SplitFn
+        ▼
+  🧪 4-AIDataStore  ─▶  🧠 5-ModelStore  ─▶  🚀 6-EndpointStore
+     (tensors)            (trained)            (packaged, servable)
+
+  DATA views  ──▶  0/1/2/3    (Raw · Source · Record · Case)
+  INSIGHT     ──▶  5/6 + tasks (Model card · run · the project's task feed)
+  ACTION      ──▶  the label / score the human earns
+
+─§ Why a console at all (the motivation) ─────────────────────────
+
+  🤔 problem                          ⚡ what the console gives
+  +--------------------------+       +----------------------------+
+  | a packaged model is a    | ─ ─▶ | pick a real human, SEE the |
+  | black box; "does it work | fixes| record it saw, press Run,  |
+  | on THIS patient?" is hard |      | read the score + data gaps |
+  +--------------------------+       +----------------------------+
+                    ⚠️ "a score whose author you can't see
+                        is exactly what this console prevents"
+
+─§ Why it lives inside HAI-Chat ──────────────────────────────────
+
+  HAI-Chat (a Mattermost fork) can render ANY url as a per-thread iframe
+  embed. So the console became a single page → it can sit beside a clinical
+  conversation, and an agent in the thread can narrate what it shows.
+
+─§ Two lineages converge here ────────────────────────────────────
+
+  🧠 prediction lineage        ✏️ labeling lineage
+  Source→Record→Case→Model     subjective-label panel (guideline+gallery)
+  →Endpoint→ ▶Run score        → a CASE earns a human/panel LABEL
+         └──────────┬───────────────────┘
+                    ▼
+        both attach to the SAME unit:  📌 a CASE
+        (score OR label — one anchor, two consumers)
+
+     see 06-data-lineage-views.txt  →  the stage↔view mapping in detail
+     see 07-case-builder.txt        →  how a case is actually cut
+     see 08-labeling-and-tasks.txt  →  the labeling side

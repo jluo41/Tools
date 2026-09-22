@@ -11,6 +11,9 @@ a small, reviewable port rather than a runtime import of those repositories.
 | `cli/anti_slop.py` | [`aashaexo/soundshuman`](https://github.com/aashaexo/soundshuman): rule-driven detection, pattern-density score, and prose statistics | MIT; Copyright (c) 2026 aasha |
 | `cli/anti_slop.py` | [`Aboudjem/humanizer-skill`](https://github.com/Aboudjem/humanizer-skill): deterministic preservation-sensitive fact comparison | MIT; Copyright (c) 2026 Adam Boudjemaa |
 | `ref/anti-slop-rules.json` | `soundshuman/rules/slop-rules.json`, which records its own adaptations from `blader/humanizer`, `hardikpandya/stop-slop`, and `brandonwise/humanizer` | MIT notices retained by the source project |
+| `ref/anti-slop-rules.json`, the `lang: zh` entries | [`VincentOld/stop-slop-zh`](https://github.com/VincentOld/stop-slop-zh): rules 1, 2, 3 and 6 (虚词与程度副词, 排比三件套, 名词化, 元评论与八股连接词) as substring phrases and four patterns | MIT |
+| `ref/ai-tells.md` §3 | [`Aboudjem/humanizer-skill`](https://github.com/Aboudjem/humanizer-skill): the two guardrail lists, what not to flag and what to preserve | MIT; Copyright (c) 2026 Adam Boudjemaa |
+| `ref/ai-tells.md` §3 and §4 | [`stephenturner/skills`](https://github.com/stephenturner/skills) `deslop`: "do not dilute" and "match register to context" | MIT |
 
 The corresponding upstream repositories and their license files remain under
 `Tools/references`. The active files above preserve the upstream copyright

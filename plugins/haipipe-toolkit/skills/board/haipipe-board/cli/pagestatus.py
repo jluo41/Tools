@@ -106,7 +106,7 @@ def _count(pd: Path, md: Path):
             if (u / "intake" / "inputs").is_dir() and any((u / "intake" / "inputs").iterdir()): frz += 1
     r["dsp"], r["ren"], r["acc"], r["frz"] = dec, ren, acc, frz
 
-    # ── the other plugins, present or absent
+    # ── the other workbenches, present or absent
     skill_dirs = outline_lane_dirs(pd, "skill")
     sk = ((skill_dirs[0] / f"{pd.name}.md") if skill_dirs
           else pd / "outline" / "skill" / f"{pd.name}.md")

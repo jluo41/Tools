@@ -186,7 +186,7 @@ def record_slot(lines, i):
 
     The rule is "directly under the sentence, at the end of any `>` run already
     there": a reader scans a sentence's apparatus top to bottom and the newest
-    record is the bottom one. Deliberately NOT imported from live/write.py: an
+    record is the bottom one. Deliberately NOT imported from servers/haipipe-board/write.py: an
     oracle that shares the implementation cannot catch the implementation."""
     j = i + 1
     while j < len(lines) and lines[j].lstrip().startswith(">"):
@@ -257,7 +257,7 @@ def cases(shape, endpoint):
     if endpoint == "edit-sentence":
         p = {"file": PAGE, "sentence": posted, "replacement": posted + " Edited.",
              "who": "CC", "when": WHEN}
-        # A markdown-carrying sentence is refused ON PURPOSE (live/write.py:191):
+        # A markdown-carrying sentence is refused ON PURPOSE (servers/haipipe-board/write.py:191):
         # the browser posts rendered text, so accepting it would silently drop
         # the link, the code span or the bold from the source.
         want = "refuse" if (dup or posted != source) else "undo"

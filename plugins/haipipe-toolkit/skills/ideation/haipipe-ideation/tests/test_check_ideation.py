@@ -95,6 +95,7 @@ class IdeationGateTest(unittest.TestCase):
             "id": "i01",
             "canonical_id": "i01",
             "title": "Idea",
+            "question": "Does the idea hold beyond the rating?",
             "claim": "falsifiable claim",
             "method": "steps",
             "hypothesis": "h",
@@ -888,6 +889,23 @@ class IdeationGateTest(unittest.TestCase):
         self.write_sync()
         result = self.run_gate("sync")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_generate_gate_reports_a_title_shaped_question_as_unframed(self) -> None:
+        # an Idea is the research question it asks; a topic label in `question` is not one
+        card = dict(self.card)
+        card["question"] = "Selection and ordering audit"
+        self.write("cards/i01_idea.yaml", card)
+        result = self.run_gate("generate")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("unframed-idea", result.stdout)
+
+    def test_generate_gate_requires_the_question(self) -> None:
+        card = dict(self.card)
+        del card["question"]
+        self.write("cards/i01_idea.yaml", card)
+        result = self.run_gate("generate")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("question", result.stdout)
 
     def test_sync_gate_rejects_selection_leak(self) -> None:
         self.write_sync()

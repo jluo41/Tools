@@ -295,8 +295,8 @@ def render_page(context):
             for key, value in old.items():
                 setattr(grammar, key, value)
     query = urlencode({"path": "/", "file": context.source.name})
-    plugins = [
-        {"id": "outline", "label": "🧭 Outline", "hint": "Draft, Evidence, and Run spaces",
+    workbenches = [
+        {"id": "outline", "label": "📃 Page", "hint": "Draft, Evidence, and Run spaces",
          "order": 10, "url": f"/_board/outline?{query}&lens=div"},
         {"id": "delivery", "label": "📤 Delivery", "hint": "What leaves this Page",
          "order": 40, "url": f"/_board/delivery?{query}"},
@@ -304,33 +304,33 @@ def render_page(context):
          "order": 50, "url": f"/_board/folderstat?{query}"},
     ]
     if (context.folder / "labeling").is_dir():
-        plugins.append(
+        workbenches.append(
             {"id": "labeling", "label": "🏷 Labeling",
              "hint": "Workflow, data, guideline, human, and quality",
              "order": 60, "url": f"/_board/labeling?{query}"}
         )
-    plugin_config = json.dumps({
+    workbench_config = json.dumps({
         "page": context.source.name,
         "default": "outline",
-        "plugins": plugins,
+        "workbenches": workbenches,
     }, ensure_ascii=False).replace("<", "\\u003c").replace("&", "\\u0026")
-    from .page_assets import css as page_css
-    css = page_css() + '\n' + (ENGINE / "assets/page.css").read_text(encoding="utf-8")
-    js = (ENGINE / "assets/page.js").read_text(encoding="utf-8")
-    js += (ENGINE / "assets/plugins.js").read_text(encoding="utf-8")
+    from .page_assets import ASSETS as page_assets, css as page_css
+    css = page_css() + '\n' + (page_assets / "page.css").read_text(encoding="utf-8")
+    js = (page_assets / "page.js").read_text(encoding="utf-8")
+    js += (page_assets / "workbenches.js").read_text(encoding="utf-8")
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{escape(context.title)} · Page</title><style>{css}</style></head>'
             '<body class="single split standalone" data-live="false"><header class="page-toolbar" id="top"><strong>haipipe / page</strong>'
             '<nav><a href="#reading">Page</a>'
-            '<button class="live-only" id="page-plugin-button" type="button" aria-expanded="false" aria-controls="page-plugin-menu">🔌 Plugins</button>'
-            '<div class="page-plugin-menu live-only" id="page-plugin-menu" role="menu" hidden></div></nav></header>'
+            '<button class="live-only" id="page-workbench-button" type="button" aria-expanded="false" aria-controls="page-workbench-menu">🔌 Workbenches</button>'
+            '<div class="page-workbench-menu live-only" id="page-workbench-menu" role="menu" hidden></div></nav></header>'
             '<div class="page-stage"><div class="page-primary">'
             f'<main id="reading" class="wrap">{content}</main>'
             '<footer class="page-footer">Page Folder · source-owned · Board optional</footer></div>'
-            '<aside class="page-plugin-pane live-only" id="page-plugin-pane" aria-label="Page plugins" hidden>'
-            '<div class="page-plugin-tabs" id="page-plugin-tabs" role="tablist"></div>'
-            '<div class="page-plugin-frames" id="page-plugin-frames"></div></aside></div>'
-            f'<script type="application/json" id="page-plugin-config">{plugin_config}</script>'
+            '<aside class="page-workbench-pane live-only" id="page-workbench-pane" aria-label="Page workbenches" hidden>'
+            '<div class="page-workbench-tabs" id="page-workbench-tabs" role="tablist"></div>'
+            '<div class="page-workbench-frames" id="page-workbench-frames"></div></aside></div>'
+            f'<script type="application/json" id="page-workbench-config">{workbench_config}</script>'
             f'<script>{js}</script></body></html>')
 
 
@@ -351,7 +351,7 @@ def build_page(context, output=None):
     # HTML is a read-only publication. Live workspaces belong to serve, not
     # a static host; disable deep links emitted by the shared Outline table.
     markup = re.sub(r'href="/_board/[^" ]*"', 'href="#static-workspace"', markup)
-    markup = re.sub(r'(?=<footer\b)', '<p id="static-workspace">Static reading export. Edit Page source on disk; use the Page server for live plugin workspaces.</p>', markup, count=1)
+    markup = re.sub(r'(?=<footer\b)', '<p id="static-workspace">Static reading export. Edit Page source on disk; use the Page server for live workbench workspaces.</p>', markup, count=1)
     files = dependency_files(context.content or context.source, context.folder)
     # The generated projection can add assets not named as raw Markdown links
     # (e.g. a Display preview). Include only visible files inside this Folder.

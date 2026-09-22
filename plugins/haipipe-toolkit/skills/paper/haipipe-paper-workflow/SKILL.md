@@ -1,24 +1,28 @@
 ---
 name: haipipe-paper-workflow
 description: >-
-  The Paper Workflow: bounded Run Specs, native Run receipts, dependencies,
-  and checkable human gates across Ideation, Story, Sections and delivery. Use when asking where a paper
-  is, how its research plan connects to execution, whether work may be released, or what may be
-  compiled next. Trigger: paper journey, workflow, Run routing, gate,
-  /haipipe-paper-workflow.
+  The Paper Runs layer: bounded Run Specs, native Run receipts, dependencies,
+  and checkable human gates across Ideation, Story, Sections and delivery. Use
+  when asking where a paper is, how its research plan connects to execution,
+  whether work may be released, or what may be compiled next. Trigger: paper
+  journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
   version: "1.4.0"
   last_updated: "2026-09-21"
 ---
 
-# /haipipe-paper-workflow · read the journey, test the gate, mint the next work
+# /haipipe-paper-workflow · govern Paper Runs, test gates, and route next work
 
 For a paper-journey question, enter through `haipipe-paper`; this file is the
 cross-paper authority. It says which artifact owns each decision and when the
 next artifact may be released. It does not write a Page, execute a Task or
 Discovery, run a Page lifecycle, or judge manuscript prose.
 
-## Workflow = a list of Runs
+## Paper Runs = a list of Runs
+
+`paper-runs` is the Paper-scoped execution layer. This skill owns its Run Specs,
+dependencies, native receipts, and G0–G5 controls. A PageType skill defines the
+content and ownership contract that a Run operates on; it is not itself a Run.
 
 A Workflow Definition lists bounded Run Specs and their dependency/Route graph.
 A Workflow Runtime lists the actual owner-native Runs selected from those Specs.
@@ -48,11 +52,11 @@ can be reused. Section work may proceed as soon as its row is released, while
 other research continues. A compile before the intended set is ready remains
 DRAFT. A full Page controller pass is a Workflow Runtime, not an RP Run.
 
-The physical `workflow-phases/` path is a retained compatibility address for
-four Paper PageType skills. P0–P4 labels are historical controller metadata;
-they do not define workflow units. Each Paper Workflow remains a list of
-owner-native Runs; Page controller steps and compatibility paths do not add
-Run identities.
+The former `workflow-phases/` path was only a compatibility address for the
+four Paper PageType skills; those skills now sit beside the other Paper
+entrypoints. P0–P4 labels are historical controller metadata and do not define
+workflow units. Each Paper Workflow remains a list of owner-native Runs; Page
+controller steps and compatibility labels do not add Run identities.
 
 ## 🧩 Ownership map
 

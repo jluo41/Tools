@@ -4,7 +4,7 @@ Date: 2026-09-04
 
 Scope: orchestrator, creator, reviewer, workers, and agent README
 
-Canonical authority: `../workflow-phases/haipipe-discovery-inquiry/ref/workflow-table.md`
+Canonical authority: `../haipipe-discovery-inquiry/ref/workflow-table.md`
 
 This file records the current agent-contract audit. It is not an alternate
 workflow declaration.

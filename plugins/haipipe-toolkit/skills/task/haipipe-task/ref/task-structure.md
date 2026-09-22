@@ -39,7 +39,7 @@ tasks/
 `Task Folder = Page Folder`. Do not create a second Page container for it.
 
 Because a Task Folder is a Board Page, it may hold the Page-owned `studio/`
-lane, whose storage and writer belong to `haipipe-plugin-studio`. A Task never
+lane, whose storage and writer belong to `haipipe-workbench-studio`. A Task never
 invents its own chat or diagram home, and `studio/` holds no executable
 material: no worker, ticket, config or Result lives there.
 

@@ -25,7 +25,7 @@
   plain words, the verb decides level, partitions and lineage, then writes the
   row through `python3 -m live.insightboard ask`.
 - `check|review` names `haipipe-page-check`; `for-question` is
-  `haipipe-insight-question`; the plugin's audit view is the Check Space.
+  `haipipe-insight-question`; the workbench's audit view is the Check Space.
 - Fix the bare `ref/partition.md` path: the file lives under haipipe-application.
 
 1.4.0 · 260916
@@ -87,7 +87,7 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
   mandatory after the GI5 export boundary.
 
 - 1.0.0 (260831): I0-I5 each own a Folder contract with Page Face, Task Face,
-  plugin profile, gate and handoff. The door retains lane-wide climb,
+  workbench profile, gate and handoff. The door retains lane-wide climb,
   register, partition and signing laws.
 
 - 0.6.0 (260828, page-type normalization): the door NAMES its six page types. Nine contracts share `application/page-types/`, so the folder cannot say which door owns which, and neither door named its own roster — this one named three of six, the design door two of three and not its namesake. The roster is names only: versions are read from disk by `/haipipe-skillset-status` and the dated family table lives in `application/README.md` §Family status, so nothing here can go stale. §The Climb Law also becomes the family's single statement of the chain: the four rung contracts now CITE it where they carried four byte-identical copies.
@@ -100,6 +100,6 @@ Recovered from the SKILL.md frontmatter summary on 260827, when the family retir
 
 - 0.3.0 (260828, fieldtest round 2): the F1 repair — 🟡 final joined the settle vocabulary in all four places that still said ✅/🚫 only (three pens, verbs, lap entry, lap ⑤); quiet passes DECLARED ("PROBE: zero cards"), F11; ⬜ annotations are register-pen state, F10; and the AUTO CHARTER: a person may pre-authorize classes (vocabulary re-marks, machine-quotable 🟡 finals, header re-derivations) for one bounded run — signatures and new-computation releases never charterable.
 
-- 0.4.0 (260828, fieldtest round 3): lap ③ POINTS at the probe plugin's card grammar instead of assuming it known (Fr1 — a field desk holding only this family could not raise a card); lap ② names the register pen's mint-time allocation write (Fr7); board.md's ## Pages roster and counts ruled disk-derived, completed by the mint act (Fr8); sibling citations unpinned (Fr9).
+- 0.4.0 (260828, fieldtest round 3): lap ③ POINTS at the probe workbench's card grammar instead of assuming it known (Fr1 — a field desk holding only this family could not raise a card); lap ② names the register pen's mint-time allocation write (Fr7); board.md's ## Pages roster and counts ruled disk-derived, completed by the mint act (Fr8); sibling citations unpinned (Fr9).
 
 - 0.5.0 (260828, fieldtest round 4): MATCH joined the lap — before raising AND again at dispatch, because a released card whose numbers the bank already holds dispatches NOTHING (round 4's field desk refused a false dispatch order on exactly this ground: the 260827 run had the grids, and a re-run would muddy the run identity closed pages bind). The designer's commission was wrong and the desk was right; now the law says so.

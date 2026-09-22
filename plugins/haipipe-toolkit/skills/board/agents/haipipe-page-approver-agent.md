@@ -150,7 +150,7 @@ the scope and judgment class:
 ```
 
 Never renumber existing rules; a rules file grows at the bottom, like the
-skill and pagex plugins' scan lists.
+skill and pagex workbenches' scan lists.
 
 ## 📤 Return contract
 

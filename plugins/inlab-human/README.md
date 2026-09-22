@@ -17,9 +17,11 @@ that takes a JSON payload and returns a score is a *config*, not code.
 Before a research model goes anywhere near production (Epic, SIP review, live FHIR), the
 agreed first step is an in-lab clinician pilot: does the score+explanation actually help a
 clinician, or mislead them? No platform for this exists (confirmed by JHU Health IT); every
-team hand-rolls it. This plugin is the reusable engine: no web app to build, host, or
-secure — the chat session **is** the interface, and the skills enforce the protocol
-(blinding, structured capture) that free-form chat would not.
+team hand-rolls it. This plugin is the reusable engine with two faces. In the Claude Code
+chat session the skills enforce the protocol (blinding, structured capture) that free-form
+chat would not. In the browser, `servers/haichat-inlab/` is the HAI-Chat In-Lab Console
+(FastAPI + React), which HAI-Chat embeds beside a thread and which reaches the endpoint
+through the same `endpoint-predict` engine as the chat.
 
 ## Architecture — skill → agent → tool
 
@@ -58,8 +60,9 @@ Two design rules the skills enforce:
 | `skills/inlab-human-report/` | metrics + pilot figures |
 | `agents/inlab-narrator-agent.md` | narrative writer (consumes score+SHAP; never scores) |
 | `mcp-servers/endpoint-predict/` | the endpoint URL as an MCP tool: `predict(payload) → {score, shap}` |
-| `ref/review-bundle-schema.md` | frozen-bundle contract |
-| `ref/feedback-form.md` | per-case + per-session response fields (`responses.jsonl` contract) |
+| `servers/haichat-inlab/` | the HAI-Chat In-Lab Console: FastAPI routers (patients · models · predict · cases · labeling · tasks · message · HaiChat WebSocket) + React SPA, embeddable as a per-thread iframe; imports the `endpoint-predict` engine, never reimplements it |
+| `skills/ref/review-bundle-schema.md` | frozen-bundle contract |
+| `skills/ref/feedback-form.md` | per-case + per-session response fields (`responses.jsonl` contract) |
 
 ## Wire-contract provenance
 

@@ -1,7 +1,7 @@
 # Board skill set
 
 The Board family turns one bounded work object into a readable, operable set
-of Folder-backed Pages. It separates container, Page lifecycle, plugins, and
+of Folder-backed Pages. It separates container, Page lifecycle, workbenches, and
 sentence work so each rule has one owner.
 
 ## Ownership map
@@ -11,34 +11,34 @@ sentence work so each rule has one owner.
 | Folder | `haipipe-folder` | neutral Page Face + Task Face contract |
 | Board | `haipipe-board` | container, Groups, roster, build, serve, aggregate close |
 | Page | `skills/page/haipipe-page` | readable frame, Folder-kind resolution, lifecycle entry |
-| Page workflow | `skills/page/page-workflows/haipipe-page-workflow` | CONTEXT → OUTLINE → EVIDENCE → CONTENT → CHECK router |
-| Plugin | `skills/page/haipipe-plugin` | plugin definition and roster law |
+| Page workflow | `skills/page/haipipe-page-workflow` | CONTEXT → OUTLINE → EVIDENCE → CONTENT → CHECK router |
+| Workbench | `skills/page/haipipe-workbench` | workbench definition and roster law |
 | Sentence | `skills/page/haipipe-sentence` | comment, edit, card, sentence-local record |
 | Write routing | `haipipe-board-routing` | propose Board shape or route one anchored Page write |
 
 Domain Page contracts live with their Folder or family owner. Task Pages are
 owned by `haipipe-task`; Paper Pages by the Paper family. Insight and Design
 are independent families: `haipipe-insight` owns InsightBoards and
-`haipipe-plugin-design-board` presents the Design family at Board grain.
+`haipipe-workbench-design/ref/design-board.md` presents the Design family at Board grain.
 Application is retired as their parent skill family. This folder does not
 maintain a duplicate Page Type set.
 
 ## Page workflow
 
 A Workflow is a list of Runs. Its definition is the Page owner's bounded
-[Run Spec graph](../page/page-workflows/haipipe-page-workflow/ref/workflow-table.md);
+[Run Spec graph](../page/haipipe-page-workflow/ref/workflow-table.md);
 actual instances retain their native identities and receipts. The table below
 maps controller coordinates to workspaces; its rows do not count Runs.
 
 | Controller coordinate | Skill | Primary work | Primary workspace |
 |---:|---|---|---|
-| 00 CONTEXT | `haipipe-page-context` | collect, resolve, freeze allowed context | off-stage Context record |
-| 01 OUTLINE | `haipipe-page-outline` | SHAPE bullets; SURVEY Evidence Items and Runs | Draft + Evidence Spaces |
-| 02 EVIDENCE | `haipipe-page-evidence` | LAND Supporting/Local Results; EMBED evidence | Evidence Space, then Draft Space |
-| 03 CONTENT | `haipipe-page-content` | WRITE from the approved plan and ready evidence | Page Content |
-| 04 CHECK | `haipipe-page-check` | check one whole Page version | workflow receipt |
+| context | `haipipe-page-context` | collect, resolve, freeze allowed context | off-stage Context record |
+| structure | `haipipe-page-structure` | SHAPE bullets; SURVEY Evidence Items and Runs | Draft + Evidence Spaces |
+| evidence | `haipipe-page-evidence` | LAND Supporting/Local Results; EMBED evidence | Evidence Space, then Draft Space |
+| writing | `haipipe-page-writing` | WRITE from the approved plan and ready evidence | Page Content |
+| check | `haipipe-page-check` | check one whole Page version | workflow receipt |
 
-CONTEXT, OUTLINE, and EVIDENCE all use `haipipe-plugin-outline` records.
+CONTEXT, OUTLINE, and EVIDENCE all use `haipipe-workbench-page` records.
 CONTENT realizes them on the Page. CHECK evaluates the complete Page rather
 than creating a second content surface.
 
@@ -56,20 +56,17 @@ The initial Structure Run is `rp-struct-01`; load
 [Page Run families](../page/haipipe-page/ref/page-run-families.md) for RP/RE/RD
 allocation. Historical compact `rp00_*`, `rpNN_pNN` and `prNN_*` records remain
 readable compatibility input. New writers use the canonical typed IDs.
-Serialized `phase`, `cycle` and `next_cycle` fields remain controller labels.
+Serialized `run`, `cycle` and `next_cycle` fields are Run names and step names, not authorities.
 
-## Public plugins
+## Public workbenches
 
-| Plugin | Lane |
+| Workbench | Lane |
 |---|---|
-| `haipipe-plugin-outline` | Context, Bullet, Evidence Item records |
-| `haipipe-plugin-studio` | Chat and Draw |
-| `haipipe-plugin-runs` | Execution, Discovery, and Page Run tickets/results |
-| `haipipe-plugin-delivery` | LaTeX, Word, Slides, Render |
-| `haipipe-plugin-folder` | Folder roster and meta-surface |
+| `haipipe-workbench-page` | Context, Bullet, Evidence Item records; Run Space (Execution, Discovery, and Page Run tickets/results); LaTeX, Word, Slides, Render; Folder roster and meta-surface. Served by `servers/workbench-page` |
+| `haipipe-workbench-studio` | Chat and Draw. Served by `servers/workbench-studio` |
 
 Evidence VALUE, CITE, DISPLAY, and historical Page-link outcomes are typed
-Evidence Items, not separate plugins. Supporting Runs come from Execution or
+Evidence Items, not separate workbenches. Supporting Runs come from Execution or
 Discovery; a Local Page Run turns their Results into one focal ready-to-use
 Evidence Item.
 
@@ -84,16 +81,17 @@ skills/
 │   ├── haipipe-board-routing/
 │   ├── agents/
 │   ├── haipipe-page/              compatibility links only
-│   ├── haipipe-plugin@            compatibility symlink
+│   ├── haipipe-workbench@            compatibility symlink
 │   ├── haipipe-sentence@          compatibility symlink
 │   ├── page-workflows@            compatibility symlink
-│   └── page-plugins@              compatibility symlink
+│   └── haipipe-workbench-page@       compatibility symlink
 └── page/                           canonical Page family
     ├── haipipe-page/
-    ├── haipipe-plugin/
+    ├── haipipe-workbench/              lane · surface · writer · boundary, ref/roster.md
+    ├── haipipe-workbench-page/         🧭 Outline · Run Space · Delivery · Folder
+    ├── haipipe-workbench-studio/       🎨 Chat and Draw
     ├── haipipe-sentence/
-    ├── page-workflows/
-    └── page-plugins/
+    └── page-workflows/
 ```
 
 The five Board-local Page entries are compatibility surfaces resolving into

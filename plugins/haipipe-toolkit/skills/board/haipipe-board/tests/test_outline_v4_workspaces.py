@@ -78,7 +78,8 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
         self.assertIn("workspace=1", body)
         for removed in ("Context Workspace", "Page Records", "What is left", "Page details"):
             self.assertNotIn(removed, body)
-        self.assertIn("logic-viewport", body)
+        self.assertIn('<details class="card structure-card"', body)
+        self.assertNotIn("logic-viewport", body)
         self.assertIn("paragraph-group", body)
 
     def test_evidence_is_result_first_and_minimal(self):
@@ -103,7 +104,8 @@ class OutlineV4WorkspaceTest(unittest.TestCase):
         self.assertIn(">Workflow map</button>", body)
         self.assertIn("Workflow by Space specification", body)
         self.assertIn("Spaces", body)
-        self.assertIn("OutlinePlan + Mermaid", body)
+        self.assertIn("OutlinePlan", body)
+        self.assertNotIn("Mermaid", body)
         self.assertIn("runs/rp-struct-", body)
         self.assertIn('class="run-space-tab on"', body)
         self.assertIn('class="run-pill total">', body)

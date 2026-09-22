@@ -20,9 +20,9 @@ field, the discovery.yaml schema, the stage strip, or genuinely unclassifiable),
 it lands in the orchestrator fallback `feedback/`. The folder a file lives in IS
 the record of which unit it concerns; there is no separate `skill:` field.
 
-The routable UNIT is the BUCKET FOLDER (each groups several capability skills),
+The routable UNIT is one of the three capability skills at the family root,
 plus the shared `agents/` folder. Four Discovery routable units total
-(1_search, 2_review, 3_synthesize, agents); the orchestrator fallback inbox is
+(haipipe-discovery-search, haipipe-discovery-review, haipipe-discovery-synthesize, agents); the orchestrator fallback inbox is
 the catch-all DESTINATION for cross-cutting items, not a fifth unit. Semantic
 ideation is a sibling skill, not a Discovery inbox: feedback about Direction
 Cards, evidence bundles, or Paper handoff belongs to `haipipe-ideation`.
@@ -52,7 +52,7 @@ Cards, evidence bundles, or Paper handoff belongs to `haipipe-ideation`.
       or new?" rather than guess. (Under digest, the confirm gate decides.)
 4. CONFIRM where it landed, whether it was MERGED (into <file>) or NEW, and how
    it matched; offer the one-line correction:
-   "filed -> 1_search/feedback/ NEW (matched keyword 'sources.md').
+   "filed -> haipipe-discovery-search/feedback/ NEW (matched keyword 'sources.md').
     wrong target? /haipipe-discovery feedback move <file> <unit>"
    (When invoked in BATCH by digest, SKIP this per-item confirm: digest's gate
    already approved and its step-6 report is the single confirmation.)
@@ -106,9 +106,9 @@ Keyword -> unit map (first/most-specific match wins; unit = the bucket folder):
 
 ```
 search, find paper, arxiv, semantic scholar, exa, sources.md,
-read, summarize paper, alphaxiv, deepxiv, analyze paper        -> 1_search/feedback/
+read, summarize paper, alphaxiv, deepxiv, analyze paper        -> haipipe-discovery-search/feedback/
 review, source reading, inspect Result, analyze source        -> 2_review/feedback/
-lit review, landscape, verdict, synthesize, combine papers    -> 3_synthesize/feedback/
+lit review, landscape, verdict, synthesize, combine papers    -> haipipe-discovery-synthesize/feedback/
 Direction Card, evidence bundle, semantic idea, Paper handoff -> haipipe-ideation owner (outside Discovery)
 creator/orchestrator/reviewer agent, dispatch                 -> agents/feedback/
 --------------------------------------------------------------------------------
@@ -155,9 +155,9 @@ pre-create empty inboxes; create one only when a file is actually filed there.
 
 ```
 1_search    (arxiv, semantic-scholar, exa-search, openalex,
-             gemini-search, alphaxiv, deepxiv, paper-analyzer) 1_search/feedback/
+             gemini-search, alphaxiv, deepxiv, paper-analyzer) haipipe-discovery-search/feedback/
 2_review    (source review, Result inspection)                  2_review/feedback/
-3_synthesize (research-lit, comm-lit-review, academic-research) 3_synthesize/feedback/
+haipipe-discovery-synthesize (research-lit, comm-lit-review, academic-research) haipipe-discovery-synthesize/feedback/
 ideation    (semantic direction, cards, bundle, handoff)      outside Discovery; route to haipipe-ideation
 agents      (creator / orchestrator / reviewer dispatch)       agents/feedback/
 ORCHESTRATOR FALLBACK                                          haipipe-discovery/feedback/
