@@ -26,9 +26,10 @@ what this replaces. Applies to any Board whose board.md declares
 `dialect: paper`; no Links key is needed.
 
 READ-ONLY. Every row links back to the record that owns it, normally the
-page's own 🧭 Outline route. Nothing here writes, allocates a Run, or infers
-a human tick: a gate shows a receipt when the named file exists and `⬜ open`
-otherwise.
+page's own 🧭 Outline route. The explicit copy controls write prompt text to
+the clipboard only; the surface does not write Paper files, allocate a Run,
+or infer a human tick. A gate shows a receipt when the named file exists and
+`⬜ open` otherwise.
 """
 import html
 import json
@@ -2551,6 +2552,182 @@ def _norm_status(st):
     return "✅ " + st if t in ("complete", "completed", "done") else ("⚠ " + st if t in ("running", "planned", "blocked") else st)
 
 
+def _run_request_entry(d, cells, target, owner, worker, matching, receipt, next_action):
+    """One target-bound clipboard request in the Paper Run map. This is UI-only:
+    it creates no Run and its script below can only write to the clipboard."""
+    spec = target.get("spec") or (cells[0].strip("`") if cells else "")
+    run_type = cells[1] if len(cells) > 1 else ""
+    prerequisites = cells[4] if len(cells) > 4 else ""
+    space = cells[5] if len(cells) > 5 else "Run"
+    matching_text = "\n".join(
+        "- %s · status: %s%s · %s" % (
+            r["run"], r.get("status") or "no runtime status",
+            (" · step: " + r["step"]) if r.get("step") else "",
+            r.get("result") or "ticket only")
+        for r in matching) or "None found for this exact target in the current Paper Run projection."
+    target_text = target.get("label") or target.get("id") or ""
+    page = target.get("page") or {}
+    page_path = str(page.get("rel") or "")
+    page_name = str(page.get("stem") or "")
+    related_page = target.get("related_page") or {}
+    related_path = str(related_page.get("rel") or "")
+    related_name = str(related_page.get("stem") or "")
+    target_id = target.get("id") or ""
+    wanted_gates = set(target.get("gate_ids", []))
+    gate_lines = []
+    for gate, name, status in d["gates"]:
+        if gate not in wanted_gates:
+            continue
+        suffix = " · aggregate only; verify this exact C8 row's human release" if gate == "G3" else ""
+        gate_lines.append("- %s · %s: %s%s" % (gate, name, status, suffix))
+    gate_text = "\n".join(gate_lines) or "No Paper gate is declared for this Spec."
+    prompt = (
+        "Handle this Paper Run request through its named owner workflow.\n\n"
+        "Board: %s\nBoard source: %s\nSpace: %s\n"
+        "Folder/Page: %s · %s (%s)%s\nTarget: %s%s\n"
+        "Spec: %s\nRun Type: %s\nOwner Skill: %s\nWorker Skill(s): %s\n"
+        "Actor and prerequisites: %s\n"
+        "Visible gate state:\n%s\n"
+        "Matching Run(s) and current status:\n%s\n"
+        "Expected receipt: %s\n"
+        "Next owner-permitted action: %s\n\n"
+        "Read the bound source and verify every prerequisite before acting. Reuse or resume an exact matching Run when the owner workflow permits; do not duplicate it. If a required gate or input is missing, report HOLD and name the missing receipt."
+        % (d["board"].name, _repo_rel(d, "board.md"), space,
+           str(Path(page_path).parent) if page_path else "(Page folder unresolved)", page_name, page_path,
+           ("\nRelated Page: %s (%s)" % (related_name, related_path)) if related_path else "",
+           target_id, (" · " + target_text) if target_text and target_text != target_id else "",
+           spec, run_type, owner, worker or "none separate from the owner",
+           prerequisites, gate_text, matching_text, receipt, next_action))
+    title = (target_id + (" · " + target_text if target_text and target_text != target_id else ""))
+    summary = '<summary>⧉ Copy Run request · <code>%s</code></summary>' % esc(title)
+    prompt_attr = esc(prompt).replace("\n", "&#10;")
+    detail = ('<div class="run-request-detail"><div class="brief">Owner: %s · Worker: %s<br>'
+              'Prerequisites: %s<br>Matching Run: %s</div>'
+              '<button type="button" class="run-request-copy" data-run-prompt="%s" '
+              'title="Copy this target-bound request only; it does not send or run anything">⧉ Copy Run request</button></div>'
+              % (esc(owner), esc(worker or "none separate from the owner"), esc(prerequisites),
+                 esc(", ".join(r["run"] + " · " + (r.get("status") or "no runtime status") for r in matching)
+                             or "none found for this exact target"), prompt_attr))
+    return '<details class="run-request">%s%s</details>' % (summary, detail)
+
+
+def _typed_judgment_runs(d, page, target, prefix):
+    """All exact typed Paper judgment Tickets for one Page and row, joined to
+    their current native Result/runtime receipt without crossing Run families."""
+    if not page.get("rel"):
+        return []
+    folder = (d["board"] / page["rel"]).parent
+    runs = folder / "runs"
+    out = []
+    if not runs.is_dir():
+        return out
+    for ticket in sorted(runs.iterdir()):
+        if ticket.is_dir() or not ticket.name.startswith(prefix):
+            continue
+        rid = ticket.name.split(".")[0]
+        if _frontmatter(read(ticket)).get("target", "").strip() != target:
+            continue
+        result = folder / "results" / rid
+        runtime = read(result / "runtime.yaml") if result.is_dir() else ""
+        out.append({"run": rid, "page": page["stem"], "status": scalar(runtime, "status", "no runtime"),
+                    "step": scalar(runtime, "step", ""),
+                    "result": "Result present" if result.is_dir() else "Result missing"})
+    return out
+
+
+def _request_targets(d, cells):
+    """Resolve Start-here cells only when their Paper target is concrete. Some
+    Specs remain prompt-free until a human selects their native owner/scope."""
+    spec = cells[0].strip("`") if cells else ""
+    space = cells[5] if len(cells) > 5 else ""
+    found = []
+    if spec == "idea.<idea>" and space == "Ideation":
+        i = d["ideation"]
+        page = d["story00"]
+        g0 = next((status for gate, _, status in d["gates"] if gate == "G0"), "")
+        if page and page["rel"] and g0.startswith("✅ I3 receipt"):
+            for idea in i.get("ideas", []):
+                if idea.get("went") in (None, "", "—", "-"):
+                    continue
+                target = {"id": idea["id"], "label": idea.get("title", ""), "page": page, "gate_ids": ["G0"],
+                          "spec": "idea." + idea["id"]}
+                matching = _typed_judgment_runs(d, page, idea["id"], "ridea-")
+                found.append(_run_request_entry(
+                    d, cells, target, "haipipe-paper-ideation", "none separate from the owner",
+                    matching,
+                    "`runs/ridea-NN_<slug>.md` with its native `results/<run>/` Result and runtime status.",
+                    "review this admitted Idea's exact card and its test Results; continue its matching discussion Run or commission the bounded judgment"))
+    elif spec == "claim.<story>.<claim>" and space == "Story":
+        for s in d["story"]:
+            for c in s["e"]:
+                m = re.match(r"E-?\d+", c[0])
+                if not m:
+                    continue
+                eid = m.group(0)
+                label = c[3] if len(c) > 3 else (c[1] if len(c) > 1 else "")
+                matching = _typed_judgment_runs(d, s, eid, "rclaim-")
+                found.append(_run_request_entry(
+                    d, cells, {"id": eid, "label": label, "page": s, "gate_ids": ["G1", "G2"],
+                               "spec": "claim.%s.%s" % (s["stem"], eid)},
+                    "haipipe-paper-story", "haipipe-paper-story",
+                    matching,
+                    "`runs/rclaim-NN_<slug>.md` with its native `results/<run>/` Result and runtime status.",
+                    "judge this frozen C5 proposition against the bound evidence and limits; route missing evidence to its owner after G1"))
+    elif spec == "obligation.<story>.<row>" and space == "Story":
+        for s in d["story"]:
+            for c in s["tt"]:
+                tid = c[0]
+                label = c[1] if len(c) > 1 else ""
+                matching = _typed_judgment_runs(d, s, tid, "rtask-")
+                found.append(_run_request_entry(
+                    d, cells, {"id": tid, "label": label, "page": s, "gate_ids": ["G1"],
+                               "spec": "obligation.%s.%s" % (s["stem"], tid)},
+                    "haipipe-paper-story", "haipipe-paper-story",
+                    matching,
+                    "`runs/rtask-NN_<slug>.md` with its native `results/<run>/` Result and runtime status.",
+                    "review this C7 obligation and candidate study plan; commission supporting work only after the applicable G1 release"))
+    elif spec == "narrative.<story>.<section>" and space == "Story":
+        for s in d["story"]:
+            for row in s["sections"]:
+                sid = row["id"]
+                label = row.get("question", "") or row.get("target", "")
+                bound_page = next((p for p in d["sections"] if p["stem"] == sid), None)
+                page = dict(s)
+                matching = _typed_judgment_runs(d, s, sid, "rnarra-")
+                found.append(_run_request_entry(
+                    d, cells, {"id": sid, "label": label, "page": page, "gate_ids": ["G3"],
+                               "related_page": bound_page,
+                               "spec": "narrative.%s.%s" % (s["stem"], sid)},
+                    "haipipe-paper-story", "haipipe-paper-story",
+                    matching,
+                    "`runs/rnarra-NN_<slug>.md` with its native `results/<run>/` Result and runtime status.",
+                    "review this exact C8 telling with the current Venue contract and its claim/evidence pointers; G3 release remains a human decision"))
+    return found
+
+
+_RUN_REQUEST_SCRIPT = """<style>
+.run-request{margin-top:5px}.run-request>summary{cursor:pointer;color:var(--acc);font-size:12.5px;line-height:1.5}
+.run-request-detail{padding:5px 8px 7px;border-left:2px solid var(--line)}
+.run-request-detail .brief{font-size:12px;line-height:1.45;margin:0 0 5px}
+.run-request-copy{font:600 12px -apple-system,sans-serif;border:1px solid var(--acc);border-radius:6px;background:var(--card);color:var(--acc);padding:4px 8px;cursor:pointer}
+#run-request-toast{position:fixed;left:50%;bottom:54px;transform:translateX(-50%);background:var(--fg);color:var(--bg);font:600 12px -apple-system,sans-serif;padding:7px 12px;border-radius:8px;opacity:0;transition:opacity .15s;pointer-events:none;z-index:61}
+#run-request-toast.on{opacity:.95}
+</style><div id="run-request-toast" role="status" aria-live="polite"></div>
+<script>(function(){
+  function put(t){
+    if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(t);
+    var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.focus();a.select();
+    var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(a);
+    return ok?Promise.resolve():Promise.reject();
+  }
+  function toast(msg){var n=document.getElementById('run-request-toast');n.textContent=msg;n.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){n.classList.remove('on')},1800)}
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('.run-request-copy');if(!b)return;e.preventDefault();e.stopPropagation();
+    put(b.dataset.runPrompt||'').then(function(){toast('Run request copied · paste it into chat when ready')},function(){toast('Copy failed · select and copy the request manually')});
+  },true);
+})();</script>"""
+
+
 def render_run(d):
     n_page = sum(1 for r in d["runs"] if r["family"] == "page")
     page_runs = _cards_card("Page Runs", "%d run(s)" % n_page,
@@ -2582,14 +2759,29 @@ def render_run(d):
     fm = folder_map(d)
     headers, body = fm["map"]
     mrows = []
+    mapped_types = set()
     for cells in body:
         rt = cells[0].strip("`") if cells else ""
-        folders = fm["by_runtype"].get(rt, [])
-        mrows.append([esc(c) for c in cells] + [("<br>".join('<span class="idtag">%s</span>' % esc(x) for x in folders)) if folders else '<span class="mut">—</span>'])
-    wmap = ('<div class="card"><h2>Workflow map</h2><div class="brief">Run Spec and control rows × Space columns, '
-            'projected from haipipe-plugin-paper/ref/space-mapping.md, plus the owning folder on this board. '
-            'Definition projection; controls allocate no Runs. Actual execution is recorded by native Tickets and receipts.</div>%s</div>'
-            % (_table(headers + ["folder on this board"], mrows) if headers else _empty("space-mapping.md has no table")))
+        # Space entries can repeat a Spec; show its folder join once, on the
+        # first matching row, instead of duplicating identical chips per Space.
+        folders = fm["by_runtype"].get(rt, []) if rt not in mapped_types else []
+        mapped_types.add(rt)
+        rendered = [esc(c) for c in cells]
+        if len(cells) > 6 and "Start here" in cells[6]:
+            controls = _request_targets(d, cells)
+            if controls:
+                rendered[6] += "<br>" + "".join(controls)
+        mrows.append(rendered + [("<br>".join('<span class="idtag">%s</span>' % esc(x) for x in folders)) if folders else '<span class="mut">—</span>'])
+    wmap = ('<div class="card" data-src="%s" data-ref="Paper Run Spec and control × Space map">'
+            '<h2>Workflow map</h2><div class="brief">Run Types/Specs name the bounded work, owner Skills, '
+            'prerequisites and read-only Space roles; entry requests go to the named owner in chat. '
+            'Controls have no Run Type. This definition map is read-only and never allocates work. '
+            '⧉ chat remains a separate source-grounded discussion snippet. Target-bound Run request controls only copy prompt text; '
+            'they do not send, start, allocate, or write. Unsupported or unbound cells have no request control. '
+            'Actual Ticket/Result identities and status '
+            'stay in the separate native Run inventory and owner records.</div>%s</div>'
+            % (esc(_repo_rel(d, _SPACE_MAP)),
+               (_table(headers + ["folder on this board"], mrows) + _RUN_REQUEST_SCRIPT) if headers else _empty("space-mapping.md has no table")))
     # the same map seen from disk: the REAL folder tree, each slot's Spec / controls shown once, on its node
     by_slot = {r["slot"]: r for r in fm["rows"]}
     roots, homes = build_tree(d)
@@ -2623,9 +2815,9 @@ def render_run(d):
                           ("gates", "Gates", gates), ("workflow", "Workflow map", wmap)], foot=_sources_html(d, "run"))
 
 
-# `copy to chat` · the plugin's only engagement, and it writes nothing: a card,
-# a row, or a selection becomes a chat-ready snippet that cites the Markdown it
-# was read from. The note is typed in the chat; the agent edits the Markdown.
+# `copy to chat` · the discussion/context engagement: a card, a row, or a
+# selection becomes a chat-ready snippet that cites the Markdown it came from.
+# Run-request copy is separate and offers only exact supported targets.
 # The reading pass (JL 260918: larger, and cell edges instead of text nested in text).
 # Label/value rows are a two-column table with borders; every grid table has
 # cell edges and a shaded header; long prose sits one sentence per line.

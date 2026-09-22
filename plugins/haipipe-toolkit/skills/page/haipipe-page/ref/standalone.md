@@ -27,10 +27,10 @@ python3 <page-engine>/cli/page.py build /absolute/my-page
 python3 <page-engine>/cli/page.py serve /absolute/my-page --host <configured-host> --port <available-port> --public-url <configured-origin>
 ```
 
-Use `PAGE_SERVER_TOKEN` for a remotely reachable writable server. Do not put a
+Use `PAGE_SERVER_TOKEN` for a remotely reachable server with plugin writes enabled. Do not put a
 real token into command history, logs, or the reply. The server supports a
-login URL/session cookie. A read-only site can use `--read-only`; this does not
-make private content appropriate for public publishing. Respect repository
+login URL/session cookie. Add `--read-only` to disable plugin writes too; this does
+not make private content appropriate for public publishing. Respect repository
 hosting policy; in Physician-SPACE use the configured Tailscale origin, not a
 reader-facing loopback link. Verify the exact public URL before sharing it.
 Do not occupy an existing server port or replace an unrelated listener.
@@ -102,18 +102,21 @@ static-site request; `serve` is a separate requested capability and, when used,
 must run under an authorized background process manager rather than holding the
 agent's foreground session open.
 
-The Source workspace edits UTF-8 files up to 2 MiB. Save includes the loaded
-SHA-256 hash; stale writes fail without replacing either version. The browser
-keeps unsaved text on conflict. Reopen/reconcile the source before retrying;
-never force-overwrite to make a test pass. Hidden files, external symlinks and
-runtime/private lanes are not web-editable. Registration is edited on disk.
+The Page website has no Source editor and refuses Page-source save requests.
+Edit the registered Markdown and imported material on disk. The browser still
+renders the current source and exposes read-only plugin projections. Draft
+Scratch note autosave and Finish remain available unless the server is started with
+`--read-only`; that flag disables plugin writes as well.
+The Page Face has no chat launcher or comment composer; authored comments stay
+readable as Notes, and copy-prompt controls remain inside the Draft/plugin
+surfaces.
 
 ## Read site versus working site
 
 | Surface | Capability |
 |---|---|
 | `build` → `delivery/web/index.html` | Static reading export and imported assets; no write-back |
-| `serve` → Page | Live source; category-plugin pane for Outline, Runs, Delivery and Folder, plus optional domain-owned Labeling when direct `labeling/` exists; Source editor only on writable hosts |
+| `serve` → Page | Read-only Page source; category-plugin pane for Outline, Runs, Delivery and Folder, plus optional domain-owned Labeling when direct `labeling/` exists; Scratch note autosave/Finish unless `--read-only` |
 | Board | Groups, membership, navigation and aggregate build over the same Face |
 
 No Board is required for these Page operations. The independent server keeps
@@ -150,7 +153,7 @@ acceptance or a hosted site.
 5. If editing was requested, save a scoped change and re-read the exact source;
    verify that the original is unchanged and the rendered Page reflects it.
 6. If hosting was requested, start/reuse an authorized listener and verify the
-   actual configured reader URL. Report static export versus live editing
+   actual configured reader URL. Report live serving versus static export
    explicitly. A build without a listener is not a hosted site.
 7. Return the Page Folder/source link and the verified working/reading URL when
    available. A technical import/build does not require the scholarly delivery

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.7.2 — 2026-09-21
+
+- Show the Design Run Type guide in each applicable Space, separate from
+  actual matching Run/status records and the full history ledger.
+- Item rows explain the next Run/actor, purpose, owner/worker Skills and
+  prerequisites, using the owning folder's context. Link to native item
+  controls; Board actions do not allocate Design Runs.
+- Offer contextual Generate/Verify chat copy for eligible items and compatible
+  queued Runs, using their own Folder/Page context and the Page prompt builder.
+  Copying only changes the clipboard; prompts preserve native owner/gate rules,
+  reuse queued identities and report actual receipts. Static views and unsafe
+  or nonactionable states have no prompt; the shared clipboard helper is unchanged.
+- Preserve the existing task/folder writes and read-only Delivery. Actual Run
+  rows additionally name their canonical Type and bounded target.
+- Tests were not added or run for this follow-up, as requested.
+
 ## 0.7.1 — 2026-09-20
 
 - Align current guidance with Verify-passed `ready` items and Delivery as a

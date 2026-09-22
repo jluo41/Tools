@@ -1,5 +1,30 @@
 # Design Board plugin · Space ↔ file map at board grain
 
+The folded Run Type guide is separate from current matching records. It uses
+the Page-level Design descriptions (name/canonical Type, bounded work,
+owner/worker Skills, actor, prerequisites); Board capability is
+`Shown here · read-only`, with `Copy request → paste and send` for eligible
+Generate/Verify work in Design Space. Matching records retain folder/item
+scope, real id, status, outcome and actor. Goal covers Commission;
+Design/Insight/Run cover all three current types; Delivery covers only the
+Generate/Verify support for ready items.
+
+Design Item rows explain the next eligible Run and link to **Open item
+controls** in the owning Page's Design Space. Native gates remain there;
+Board task/folder operations remain separate from Run allocation. Run Space
+keeps its history/status ledger.
+
+The per-item **Copy prompt to chat** action uses its Folder's Page snapshot
+and the same eligibility/prompt builder as the Page plugin. A reviewable prompt
+names the exact item, target, Type, Skills, prerequisites, Commission, matching
+Run/receipt and next action. It instructs chat to reread state, reuse an existing
+queued identity, preserve the human Commission and independent Verify gates,
+and report one Run's id/receipt. Copying changes only the clipboard; pasting and
+sending remain manual. Native controls stay on the owning Page. Commission,
+running, stale, blocked, unresolved, invalid, ready, retired or static states,
+folder audit findings and missing/blocked Insight bindings have no prompt.
+Revisions require native queueing with feedback first. Run/Delivery have no copy.
+
 | Space | Reads | Shows | Links down to |
 | --- | --- | --- | --- |
 | Goal Space | `0-BR-brief/*/BR00-brief.md` (the list of design tasks); `board.md` `reads:`; each folder's register and independent Verify results for the counts | one line per task, by its full name `<job> <venue> for <who>` (never its line id) · how many (wanted · registered · ready) · insight board · folder · status; folders the Brief does not list; the New design tasks form; the Insight board line | Page-level Goal Space of that folder |

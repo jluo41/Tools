@@ -1,5 +1,30 @@
 # Design plugin · Space ↔ file map and the state fold
 
+Each Space includes a read-only Run Type guide, followed by a separate latest
+matching-record list. Goal: Commission. Design/Insight/Run: Commission,
+Generate, Verify. Delivery: Generate/Verify for ready items. Each type names
+its canonical identity, bounded work, owner/worker Skills, actor and prerequisites.
+Only eligible native item controls in live Design Space are labeled `Start here`;
+eligible Generate/Verify items additionally offer `Copy request → paste and send`.
+Other guidance is `Shown here · read-only`. Expanding guidance has no side effects.
+
+Open item cards explain the next eligible Run (or current Run/repair wait),
+the released Commission and latest draft, then the latest matching record.
+This description reads the native action-state rules; it cannot authorize a
+Run. Run Space keeps the full ledger, including canonical Type and target;
+Delivery remains read-only. Static cards omit mutation forms and batch controls.
+
+**Copy prompt to chat** appears only in live Design Space for an eligible new
+Generate/Verify or a compatible planned Run. Its preview binds the Board,
+Folder, Page, item, target, Type, Skills, prerequisites, Commission, actual
+matching Run/receipt and next action. Copying only changes the clipboard.
+The prompt rereads state, reuses the queued identity, stops if state changes,
+keeps Commission human-only, requires a fresh independent Verify context,
+and reports one Run's id/receipt. No Commission, running, stale, blocked,
+unresolved, invalid, ready, retired or static state has a prompt. Folder audit
+findings or missing/blocked Insight bindings also suppress it. Revisions must
+first pin feedback/base through the native queue form. Run/Delivery offer no copy.
+
 | Space | Reads | Shows | Writes through |
 | --- | --- | --- | --- |
 | Goal Space | the Brief line whose `folder` names this folder (`0-BR-brief/*/BR00-brief.md`, the first table whose header names `audience`, `job` and `venue` together; columns `audience`, `job`, `venue`, `designs`, `insight`, `folder` by header word); `board.md` `reads:` | one sentence (N venue designs for who, their job) · venue · who · their job · how many (wanted · registered · ready, and declined when > 0) · from (the Brief file · design tasks) · the Insight board and its signed count | `haipipe-plugin-design-board` (adds the line, writes the folder cell), `haipipe-design-brief` (the Brief's prose), the owning board (`reads:`) |

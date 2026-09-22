@@ -138,6 +138,7 @@ html.no-popover .run-popover{display:none}html.no-popover .run-popover[data-fall
 .evidence-status.specified,.evidence-status.planned,.evidence-status.needs-review,.evidence-status.partial{color:var(--warn)}
 .evidence-detail{border-top:1px solid var(--line);padding:0 11px 10px}.evidence-detail-row{display:grid;
  grid-template-columns:8.5em minmax(0,1fr);gap:8px;padding:3px 0;font-size:12.5px;line-height:1.45}
+.evidence-prompt-actions{display:flex;justify-content:flex-end;margin:7px 0}
 .evidence-detail-label{color:var(--mut);font:650 10px -apple-system,sans-serif;text-transform:uppercase;
  letter-spacing:.035em;padding-top:2px}.evidence-detail-value{min-width:0;overflow-wrap:anywhere}
 .evidence-detail-value code{font-size:11.5px;background:none;padding:0;overflow-wrap:anywhere;word-break:break-word}
@@ -1387,6 +1388,14 @@ def _result_records(page_home: pathlib.Path) -> list[dict[str, object]]:
             label = _document_text(document, "label", text)
             expected = _document_text(document, "expected", text)
             acceptance = _document_text(document, "acceptance", text)
+            run_status = ""
+            runtime_receipt = manifest.parent / "runtime.yaml"
+            if runtime_receipt.is_file():
+                try:
+                    run_status = _top_field(runtime_receipt.read_text(
+                        encoding="utf-8", errors="replace"), "status")
+                except OSError:
+                    run_status = ""
             labels = parse_result_labels(text)
             for result_label in labels:
                 result_label.update({
@@ -1413,6 +1422,7 @@ def _result_records(page_home: pathlib.Path) -> list[dict[str, object]]:
                 "type": kind.upper(),
                 "status": status.lower(),
                 "run": run_id,
+                "run status": run_status,
                 "page_run": page_run,
                 "owner run": owner_run if page_run and owner_run != page_run else "",
                 "bullet": bullet,
@@ -1431,6 +1441,131 @@ def _result_records(page_home: pathlib.Path) -> list[dict[str, object]]:
             record["result_file"] = manifest
 
     return [records[item_id] for item_id in order]
+
+
+def _evidence_inventory(page_src: pathlib.Path,
+                        records: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Combine selected Results with eligible, not-yet-resulted ledger items.
+
+    The Evidence Space remains read-only. Ledger-only entries are explicitly
+    marked as planned/specified and never receive a fabricated Run or Result.
+    """
+    from src.item_table import read_items
+    try:
+        ledger = read_items(page_src)
+    except (OSError, ValueError):
+        ledger = {}
+    try:
+        from live.runs import local_runs
+        run_rows = local_runs(page_src)
+    except (OSError, ValueError):
+        run_rows = []
+
+    runs_by_item: dict[str, list[dict[str, object]]] = {}
+    for row in run_rows:
+        for item_id in row.get("refs", []):
+            runs_by_item.setdefault(str(item_id), []).append(row)
+
+    result_ids = {str(record.get("id", "")).strip() for record in records}
+    projected = list(records)
+    for record in projected:
+        item_id = str(record.get("id", "")).strip()
+        item = ledger.get(item_id, {})
+        fields = record.setdefault("fields", {})
+        fields.update({
+            "item expected": str(item.get("expected", "")).strip(),
+            "item acceptance": str(item.get("acceptance", "")).strip(),
+            "local input": str(item.get("local_input", "")).strip(),
+            "ledger local run": str(item.get("local_run", "")).strip(),
+            "ledger run action": str(item.get("action", "")).strip(),
+            "ledger run route": str(item.get("address", "")).strip(),
+            "ledger result binding": str(item.get("result", "")).strip(),
+            "decision": str(item.get("decision", "")).strip(),
+            "supporting runs valid": bool(item.get("supports_valid")),
+            "local run registered": bool(item.get("runs_registered")),
+            "supporting runs": (str(item.get("supporting_runs", "")).strip()
+                                 or str(fields.get("supporting runs", "")).strip()),
+        })
+        matched = runs_by_item.get(item_id, [])
+        fields["matching page runs"] = "; ".join(
+            "%s · %s" % (row.get("run_id", "unknown"), row.get("status", "unknown"))
+            for row in matched
+        )
+        current_run = str(fields.get("run", "")).strip()
+        exact = next((row for row in matched
+                      if str(row.get("run_id", "")).strip() == current_run), None)
+        if exact:
+            fields["run status"] = str(exact.get("status", "unknown"))
+
+    for item_id, item in ledger.items():
+        if item_id in result_ids or item.get("type") not in {"VALUE", "CITE", "DISPLAY"}:
+            continue
+        if item.get("decision") in {"defer", "drop"}:
+            continue
+        target = str(item.get("target", "")).strip()
+        if not target:
+            continue
+        decision = str(item.get("decision", "")).strip()
+        if decision == "make" and item.get("planned"):
+            status = "planned"
+        elif decision == "make":
+            status = "blocked"
+        else:
+            status = "specified"
+        matched = runs_by_item.get(item_id, [])
+        fields = {
+            "type": str(item.get("type", "")).upper(),
+            "status": status,
+            "item expected": str(item.get("expected", "")).strip(),
+            "item acceptance": str(item.get("acceptance", "")).strip(),
+            "local input": str(item.get("local_input", "")).strip(),
+            "ledger local run": str(item.get("local_run", "")).strip(),
+            "ledger run action": str(item.get("action", "")).strip(),
+            "ledger run route": str(item.get("address", "")).strip(),
+            "ledger result binding": str(item.get("result", "")).strip(),
+            "decision": decision,
+            "supporting runs valid": bool(item.get("supports_valid")),
+            "local run registered": bool(item.get("runs_registered")),
+            "supporting runs": str(item.get("supporting_runs", "")).strip(),
+            "matching page runs": "; ".join(
+                "%s · %s" % (row.get("run_id", "unknown"), row.get("status", "unknown"))
+                for row in matched
+            ),
+            "run": "; ".join(str(row.get("run_id", "unknown")) for row in matched),
+            "run status": "; ".join(str(row.get("status", "unknown")) for row in matched),
+            "result": "",
+            "no selected result": True,
+            "display_kind": "",
+        }
+        projected.append({
+            "id": item_id,
+            "address": target,
+            "title": str(item.get("name", "")).strip() or item_id,
+            "fields": fields,
+        })
+    return projected
+
+
+def _evidence_blockers(fields: dict[str, object]) -> list[str]:
+    """Name ledger gates that are visibly absent; never infer acceptance."""
+    blockers = []
+    for key, label in (("item expected", "item Expected contract"),
+                       ("item acceptance", "item Acceptance checks"),
+                       ("local input", "frozen Local Input")):
+        if not str(fields.get(key, "")).strip():
+            blockers.append(label + " not recorded")
+    if not str(fields.get("decision", "")).strip():
+        blockers.append("human Decide choice not recorded")
+    if not str(fields.get("ledger local run", "")).strip():
+        blockers.append("one local Page RE declaration not recorded")
+    elif (not str(fields.get("ledger run action", "")).strip()
+          or not str(fields.get("ledger run route", "")).strip()):
+        blockers.append("typed Local Run action/route is incomplete")
+    if not str(fields.get("supporting runs", "")).strip():
+        blockers.append("Supporting Runs not recorded; confirm [] when none are needed")
+    elif not fields.get("supporting runs valid") or not fields.get("local run registered"):
+        blockers.append("Supporting Run and Local Run declarations are not fully registered")
+    return blockers
 
 
 def _evidence_type(record: dict[str, object]) -> str:
@@ -1463,6 +1598,134 @@ def _detail_row(label: str, value: str, *, code: bool = False) -> str:
     return ('<div class=evidence-detail-row><span class=evidence-detail-label>%s</span>'
             '<span class=evidence-detail-value>%s</span></div>' %
             (html.escape(label), rendered))
+
+
+def _evidence_run_contract(kind: str) -> dict[str, str]:
+    """Reader-facing Run facts for an Evidence Result card, not a new spec."""
+    label = {"VALUE": "Value", "CITE": "Citation", "DISPLAY": "Display"}.get(kind, "Evidence")
+    work = {
+        "VALUE": "Make one focal value Result for this Evidence Item.",
+        "CITE": "Make one focal citation/source-bundle Result for this Evidence Item.",
+        "DISPLAY": "Make one focal figure, table, algorithm, or other declared display Result for this Evidence Item.",
+    }.get(kind, "Make one typed Result for this Evidence Item.")
+    worker = ("haipipe-plugin-outline owns VALUE/CITE/DISPLAY payload rules; use only the exact owner-native "
+              "Supporting Run worker(s) selected during SURVEY.")
+    if kind == "DISPLAY":
+        worker += " DISPLAY also uses the haipipe-display front door and the renderer Skill selected for its declared display kind."
+    return {
+        "name": label,
+        "work": work,
+        "owner": "haipipe-page-workflow → haipipe-page-evidence",
+        "workers": worker,
+        "actor": "agent / system / hybrid; any declared human verification remains a human decision",
+        "prerequisites": ("Fresh Page Context; accepted Shape and Survey contracts; this item's typed Expected/Acceptance; "
+                          "one frozen Local Input and its declared Supporting Runs; human verification when required."),
+    }
+
+
+def _evidence_copy_prompt(record: dict[str, object], page_src: pathlib.Path,
+                          root: pathlib.Path, board_path: str, page_path: str,
+                          status: str) -> str:
+    """Compose a copy-only request for the exact Evidence Item on this card."""
+    kind = _evidence_type(record)
+    contract = _evidence_run_contract(kind)
+    fields = record.get("fields", {})
+    item_id = str(record.get("id", "")).strip()
+    label = str(fields.get("label", record.get("title", ""))).strip()
+    target = str(record.get("address", fields.get("target", ""))).strip()
+    run_id = str(fields.get("run", "") or fields.get("local run", "")).strip()
+    run_status = str(fields.get("run status", "")).strip() or "not recorded"
+    owner_run = str(fields.get("owner run", "")).strip()
+    support = str(fields.get("supporting runs", "")).strip() or "none recorded"
+    matching_runs = str(fields.get("matching page runs", "")).strip()
+    if not matching_runs and run_id:
+        matching_runs = "%s · %s" % (run_id, run_status)
+    matching_runs = matching_runs or "none recorded"
+    blockers = _evidence_blockers(fields)
+    no_result = bool(fields.get("no selected result"))
+    decision = str(fields.get("decision", "")).strip() or "not recorded"
+    item_expected = str(fields.get("item expected", "")).strip() or "not recorded"
+    item_acceptance = str(fields.get("item acceptance", "")).strip() or "not recorded"
+    local_input = str(fields.get("local input", "")).strip() or "not recorded"
+    local_action = str(fields.get("ledger run action", "")).strip() or "not recorded"
+    local_route = str(fields.get("ledger run route", "")).strip() or "not recorded"
+    result_binding = str(fields.get("ledger result binding", "")).strip() or "not recorded"
+    try:
+        folder = page_src.parent.relative_to(root).as_posix()
+    except ValueError:
+        folder = page_src.parent.name
+    if folder in {"", "."}:
+        folder = page_src.parent.name
+    board = board_path.strip()
+    if board in {"", "/"}:
+        board = "Standalone Page (no Board)"
+    if no_result and decision != "make":
+        next_action = ("Resolve the required human Decide choice and the SHAPE/SURVEY gates first. Do not allocate or run "
+                       "an Evidence Run while this item is only specified.")
+    elif no_result and blockers:
+        next_action = ("Report these ledger blockers and ask the owner to complete SHAPE/SURVEY before any allocation: "
+                       + "; ".join(blockers) + ". Do not invent a Run or treat a planned route as an allocated Run.")
+    elif no_result and "; " in matching_runs:
+        next_action = ("Several Page Runs map to this item. Compare their Tickets, receipts, targets, and Results, then "
+                       "ask which unique lineage to resume; do not select one by ordering.")
+    elif no_result and matching_runs != "none recorded":
+        next_action = ("Resume only the one recorded matching Page RE after checking its Ticket, receipt, and the current "
+                       "owner gates. Do not allocate a second lineage.")
+    elif no_result:
+        next_action = ("The human has selected make and the ledger prerequisites are present. Recheck accepted Shape/Survey "
+                       "contracts, then the owner may allocate the next typed RE if no matching Run now exists.")
+    elif status.lower() in {"ready", "complete", "completed", "accepted", "resolved"}:
+        next_action = ("Reuse the recorded ready Result and let the Page Evidence owner decide whether EMBED is next. "
+                       "Do not create a new Evidence Run unless the owner identifies a new attempt or goal.")
+    elif status.lower() in {"needs review", "in progress", "planned", "specified"}:
+        next_action = ("Inspect the named item, its current Run/Result, and required human verification. Resume only the "
+                       "unique matching Run when its owner contract permits; otherwise name the blocker and hold.")
+    else:
+        next_action = ("Reconcile this item against the current Run/Result and its Acceptance. The owner must decide "
+                       "whether to resume, hold, or commission a new attempt; do not silently replace a Result.")
+    lines = [
+        "Use haipipe-page-workflow and haipipe-page-evidence for this one typed Page Evidence item.",
+        "Board: " + board,
+        "Folder: " + folder,
+        "Page: " + page_src.stem,
+        "Page source: " + (page_path.strip() or page_src.name),
+        "Evidence Item: " + item_id + (" · " + label if label else ""),
+        "Target: " + (target or "not recorded"),
+        "Run Type: Page.evidence-item · " + contract["name"],
+        "Run identity: " + {"VALUE": "re-value-NN_<slug>", "CITE": "re-cite-NN_<slug>",
+                            "DISPLAY": "re-display-NN_<slug>"}.get(kind, "owner-native Evidence identity"),
+        "Bounded work: " + contract["work"],
+        "Owner Skill(s): " + contract["owner"],
+        "Worker Skill(s): " + contract["workers"],
+        "Actor: " + contract["actor"],
+        "Prerequisites: " + contract["prerequisites"],
+        "Item Expected: " + item_expected,
+        "Item Acceptance: " + item_acceptance,
+        "Local Input declaration: " + local_input,
+        "Ledger Local Run: " + local_action + " · " + local_route,
+        "Ledger Result binding: " + result_binding,
+        "Decision: " + decision,
+        "Current matching Page Run/status: " + matching_runs,
+        "Current Result status: " + ("no selected Result" if no_result else status),
+        "Supporting Run references: " + support,
+        "Owner-native worker Run: " + (owner_run or "none recorded"),
+        "Next permitted action: " + next_action,
+        "Space affordance: Shown here · read-only; Copy prompt to chat. This copy action is inert until pasted and sent.",
+        "Re-read the current Page, selected Outline, Evidence Item ledger, matching Run ticket/receipt, and selected Result before acting. This prompt contains item metadata only: never copy protected payloads or raw rows into chat; use their owner-governed paths.",
+    ]
+    display_kind = str(fields.get("display_kind", "")).strip()
+    if kind == "DISPLAY" and display_kind:
+        lines.insert(lines.index("Actor: " + contract["actor"]),
+                     "Declared display kind: " + display_kind + "; select its renderer Skill through the Outline owner contract.")
+    return "\n".join(lines)
+
+
+def _copy_prompt_button(prompt: str) -> str:
+    label = "Copy prompt to chat"
+    return ('<button type="button" class="run-prompt-copy" aria-label="%s" title="%s" '
+            'data-run-prompt="%s">⧉ %s</button>' % (
+                html.escape(label, quote=True), html.escape(label, quote=True),
+                html.escape(prompt, quote=True), html.escape(label)))
 
 
 def _label_details(labels: object) -> str:
@@ -1887,6 +2150,11 @@ def _render_preview_artifact(path: pathlib.Path, data_url: str) -> str:
 def _result_preview(record: dict[str, object], page_home: pathlib.Path,
                     root: pathlib.Path | None) -> str:
     """Render substantive Result content, never the envelope metadata."""
+    fields = record.get("fields", {})
+    if fields.get("no selected result"):
+        return ('<section class=evidence-preview><div class=evidence-preview-label>Result</div>'
+                '<div class=evidence-preview-empty>No Result selected · %s</div></section>' %
+                html.escape(str(fields.get("status", "specified"))))
     document = record.get("result_document", {})
     if not isinstance(document, dict):
         document = {}
@@ -1974,10 +2242,11 @@ def _workspace_actions(path_q: str, file_q: str, run_id: str = "") -> str:
 def _evidence_sections(records: list[dict[str, object]],
                        page_home: pathlib.Path | None = None,
                        root: pathlib.Path | None = None,
-                       path_q: str = "", file_q: str = "") -> str:
+                       path_q: str = "", file_q: str = "",
+                       page_src: pathlib.Path | None = None) -> str:
     """Render compact typed sections with collapsed, progressive-disclosure cards."""
     if not records:
-        return '<div class=ghost>No Evidence Result yet.</div>'
+        return '<div class=ghost>No current Evidence Item or Result.</div>'
 
     if page_home is None:
         for record in records:
@@ -2026,6 +2295,40 @@ def _evidence_sections(records: list[dict[str, object]],
             display_title = title_text if title_text and title_text.lower() != label.lower() else ""
             label_html = _label_details(fields.get("labels", []))
             label_summary = _label_summary(fields.get("labels", []))
+            copy_prompt = (_copy_prompt_button(_evidence_copy_prompt(
+                record, page_src, root, path_q, file_q, status))
+                if (page_src is not None and kind in {"VALUE", "CITE", "DISPLAY"}
+                    and str(record.get("address", fields.get("target", ""))).strip()
+                    and not (fields.get("no selected result")
+                             and str(fields.get("decision", "")).strip() in {"drop", "defer"})) else "")
+            contract = _evidence_run_contract(kind) if kind in {"VALUE", "CITE", "DISPLAY"} else None
+            run_pattern = {
+                "VALUE": "re-value-NN_<slug>",
+                "CITE": "re-cite-NN_<slug>",
+                "DISPLAY": "re-display-NN_<slug>",
+            }.get(kind, "")
+            contract_details = ""
+            if contract:
+                matching = str(fields.get("matching page runs", "")).strip()
+                if not matching:
+                    matching = ("%s · %s" % (run_id, str(fields.get("run status", "")).strip() or "status not recorded")
+                                if run_id else "none recorded")
+                matching += " · Result status: " + ("no selected Result" if fields.get("no selected result") else status)
+                contract_rows = "".join((
+                    _detail_row("Run Type", "Page.evidence-item · " + contract["name"]),
+                    _detail_row("Run identity", run_pattern, code=True),
+                    _detail_row("Bounded work", contract["work"]),
+                    _detail_row("Owner Skill", contract["owner"]),
+                    _detail_row("Worker Skill(s)", contract["workers"]),
+                    _detail_row("Actor", contract["actor"]),
+                    _detail_row("Prerequisites", contract["prerequisites"]),
+                    _detail_row("Space affordance", "Shown here · read-only"),
+                    _detail_row("Matching Run / status", matching),
+                ))
+                contract_details = (
+                    '<details class=evidence-trace><summary>%s Run · Run Type and ownership</summary>'
+                    '<div class=evidence-trace-body>%s</div></details>' % (
+                        html.escape(contract["name"]), contract_rows))
             trace = "".join((
                 ('<div class=evidence-detail-row><span class=evidence-detail-label>'
                  'Evidence Labels</span><span class=evidence-detail-value>%s</span></div>'
@@ -2039,12 +2342,22 @@ def _evidence_sections(records: list[dict[str, object]],
                 _detail_row("Owner Run", str(fields.get("owner run", "")).strip(), code=True),
                 _detail_row("Supporting Runs", supporting or "none"),
                 _detail_row("Result", result_path or (result_note or "not ready"), code=bool(result_path)),
+                _detail_row("Item Expected", str(fields.get("item expected", "")).strip()),
+                _detail_row("Item Acceptance", str(fields.get("item acceptance", "")).strip()),
+                _detail_row("Local Input", str(fields.get("local input", "")).strip()),
+                _detail_row("Ledger Local Run", str(fields.get("ledger local run", "")).strip()),
+                _detail_row("Ledger Run action", str(fields.get("ledger run action", "")).strip()),
+                _detail_row("Ledger Run route", str(fields.get("ledger run route", "")).strip(), code=True),
+                _detail_row("Ledger Result binding", str(fields.get("ledger result binding", "")).strip(), code=True),
+                _detail_row("Decision", str(fields.get("decision", "")).strip()),
                 _detail_row("Expected", str(fields.get("expected", "")).strip()),
                 _detail_row("Acceptance", str(fields.get("acceptance", "")).strip()),
             ))
             detail = "".join((
                 label_summary,
+                contract_details,
                 _result_preview(record, page_home, root),
+                '<div class=evidence-prompt-actions>%s</div>' % copy_prompt if copy_prompt else "",
                 _workspace_actions(path_q, file_q, run_id),
                 '<details class=evidence-trace><summary>Traceability</summary>'
                 '<div class=evidence-trace-body>%s</div></details>' % trace,
@@ -2115,10 +2428,12 @@ def _migration_notice(page_home: pathlib.Path) -> str:
 def render(page_src: pathlib.Path, path_q: str, file_q: str,
            root: pathlib.Path | None = None) -> str:
     """Render the v4 Evidence Space as typed, Result-first disclosure cards."""
+    from live.outline_prompts import assets_html as prompt_assets_html
+
     page_home = page_src.parent
-    records = _result_records(page_home)
+    records = _evidence_inventory(page_src, _result_records(page_home))
     body = _evidence_sections(records, page_home=page_home, root=root or page_home,
-                               path_q=path_q, file_q=file_q)
+                               path_q=path_q, file_q=file_q, page_src=page_src)
     migration_notice = _migration_notice(page_home)
     counts = {kind: sum(1 for record in records if _evidence_type(record) == kind)
               for kind in ("DISPLAY", "CITE", "VALUE")}
@@ -2130,7 +2445,7 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str,
     )
     return f"""<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Evidence Space · {html.escape(page_src.stem)}</title><style>{_CSS}</style>
-<body class=embedded><header><h1>Evidence Space</h1></header>
+<body class=embedded>{prompt_assets_html()}<header><h1>Evidence Space</h1></header>
 <div id=evidence-items class=evidence-list><div class=evidence-overview>{overview}</div>{migration_notice}
 <details class=source-details><summary>Sources</summary><div class=source-body>Result <code>results/**/result.yaml</code>.</div></details>
 {body}</div>

@@ -20,8 +20,9 @@ from urllib.parse import parse_qs, quote, unquote, urlparse
 
 from live.design import (
     _declared_insight_boards, _handoff_says, _insight_bindings, _read, _short, _signal_line,
-    brief_page, brief_rows, design_picture, design_snapshot, design_title, insight_caption,
-    is_task_header, name_refs, shown_design, venue_word,
+    brief_page, brief_rows, design_chat_action, design_chat_copy, design_chat_copy_script, design_chat_prompt,
+    design_next_run, design_picture, design_run_guide, design_snapshot, design_title, insight_caption,
+    is_task_header, name_refs, plain_words, shown_design, venue_word,
 )
 
 _TITLE = re.compile(r"(?m)^#\s+(.+?)\s*$")
@@ -294,13 +295,17 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
     if selected not in ("goal", "design", "insight", "run", "delivery"):
         selected = "goal"
     human = snapshot["human"]
+    folder_humans = {folder["name"]: folder["human"] for folder in snapshot["folders"]}
+    folder_snapshots = {folder["name"]: folder for folder in snapshot["folders"]}
+    chat_prompts = {(i["folder"], i["id"]): design_chat_prompt(folder_snapshots[i["folder"]], i)
+                    if not snapshot["static"] else "" for i in snapshot["items"]}
     mine = [i for i in snapshot["waiting"] if not i["waiting"].startswith("agent")]
     totals = snapshot["totals"]
     header = (
         f'<h1>🎨 {_e(snapshot["title"])}</h1>'
         f'<div class=mut>Board level · {totals["lines"]} design task{"s" if totals["lines"] != 1 else ""} · {totals["wanted"]} wanted · '
         f'{totals["registered"]} registered · {totals["ready"]} ready · '
-        f'waiting on {_e(human)}: {len(mine)} · on agent: {len(snapshot["waiting"]) - len(mine)}</div>'
+        f'waiting on you: {len(mine)} · on agent: {len(snapshot["waiting"]) - len(mine)}</div>'
         + (f'<div class="mut bad">records check: {len(snapshot["audit"])} finding(s) across folders</div>' if snapshot["audit"] else "")
     )
 
@@ -356,10 +361,13 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
         f'<td><a href="{_e(_page_url(snapshot, i["rel"]))}"><code>{_e(i["folder"])}</code></a></td>'
         f'<td><a href="{_e(_page_url(snapshot, i["rel"], "design", i["id"]))}"><b>{_e(i["id"])}</b></a></td>'
         f'<td>{_e(i["title"])}<div class=mut>{_e(" ".join((shown_design(i) or {"text": "no draft yet"})["text"].split())[:140])}</div></td>'
-        f'<td>{_e(i["glyph"])} {_e(i["state"])}</td><td class=mut>{_e(i["waiting"] or "—")}</td></tr>'
+        f'<td>{_e(i["glyph"])} {_e(i["state"])}</td><td>'
+        f'{design_next_run(i, folder_humans.get(i["folder"], "person"), compact=True)}'
+        f'{design_chat_copy(chat_prompts[i["folder"], i["id"]])}'
+        f'<a href="{_e(_page_url(snapshot, i["rel"], "design", i["id"]))}">Open item controls</a></td></tr>'
         for i in snapshot["items"])
     design_html = ('<h2>Design Items · every folder</h2><table><tr><th>folder</th><th>item</th><th>design</th>'
-                   f'<th>state</th><th>waiting on</th></tr>{item_rows}</table>' if item_rows
+                   f'<th>state</th><th>next Run · who is waited on</th></tr>{item_rows}</table>' if item_rows
                    else '<h2>Design Items</h2><div class=empty>No Design Item registered in any folder.</div>')
 
     # Insight Space: the boards and pages the programme draws on -------------
@@ -394,7 +402,8 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
     run_rows = "".join(
         f'<tr><td class=mut>{_e(r["finished"] or r["started"] or "—")}</td>'
         f'<td><a href="{_e(_page_url(snapshot, next(f["rel"] for f in snapshot["folders"] if f["name"] == r["folder"]), "run", r["item"]))}"><code>{_e(r["folder"])}</code></a></td>'
-        f'<td><code>{_e(r["id"])}</code></td><td>{_e(r["step"])}</td>'
+        f'<td><code>{_e(r["id"])}</code></td><td>{_e(r["step"])}'
+        f'<div class=mut><code>Design.{_e(r["kind"])}</code> · {_e(r["item"])} · {_e(plain_words(r["target"]))}</div></td>'
         f'<td>{_e(r["actor"])} <span class=mut>{_e(r["mode"])}</span></td>'
         f'<td class="{"bad" if r["status"] in ("failed", "blocked") else "ok" if r["status"] == "complete" else ""}">{_e(r["status"])}</td>'
         f'<td>{_e({"adopt": "ready", "decline": "not delivered"}.get(r["outcome"], r["outcome"]))}</td></tr>' for r in snapshot["runs"])
@@ -439,6 +448,10 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
 
     panes = {"goal": goal_html, "design": design_html, "insight": "".join(insight_html),
              "run": run_html, "delivery": delivery_html}
+    for key in panes:
+        scope = snapshot["ready"] if key == "delivery" else snapshot["items"]
+        copy_kinds = {design_chat_action(i)[1] for i in scope if chat_prompts[i["folder"], i["id"]]}
+        panes[key] = design_run_guide(scope, key, copy_kinds=copy_kinds) + panes[key]
     tabs = "".join(f'<button type=button data-space="{k}"{" class=on" if k == selected else ""}>{v}</button>'
                    for k, v in (("goal", "Goal Space"), ("design", "Design Space"), ("insight", "Insight Space"),
                                 ("run", "Run Space"), ("delivery", "Delivery Space")))
@@ -464,7 +477,7 @@ def render_design_board(snapshot: dict, space: str = "goal") -> str:
         '<!doctype html><html lang=en><head><meta charset=utf-8>'
         '<meta name=viewport content="width=device-width,initial-scale=1">'
         f'<title>🎨 Design Board · {_e(snapshot["title"])}</title><style>{_CSS}</style></head><body>'
-        f'<header>{header}</header><nav class=tabs>{tabs}</nav><main>{pane_html}</main>{script}</body></html>'
+        f'<header>{header}</header><nav class=tabs>{tabs}</nav><main>{pane_html}</main>{script}{design_chat_copy_script()}</body></html>'
     )
 
 

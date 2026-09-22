@@ -10,8 +10,8 @@ description: >-
   Studio Chat opens separately. Use when designing, opening, diagnosing, or
   implementing the labeling plugin, tab, or folder, or /haipipe-plugin-labeling.
 metadata:
-  version: "0.18.0"
-  last_updated: "2026-09-20"
+  version: "0.19.0"
+  last_updated: "2026-09-21"
 ---
 
 # /haipipe-plugin-labeling · one job, one folder, one operated surface
@@ -100,6 +100,26 @@ projected from `ref/ref-space-mapping.md`. The current adapter shows P0-P5 in
 `Run → Phases` and the `Next:` header as compatibility capability tags. This
 projection and the legacy Space choice do not own Runs or authorize allocation,
 closure, or Workflow Routes.
+
+Treat the map as the Run Type catalogue, not the job's Run inventory. Today it
+shows the friendly operation name/type, where its action or result belongs,
+the output path, and a per-type count. `Run → Runs` is the actual inventory:
+one row per allocated Ticket with its runtime status and outcome. Do not infer
+a Run or status from the catalogue row or count. The current matrix does not
+render bounded target, owner/worker Skills, actor/prerequisites, or a link to a
+matching Ticket; `ref/ref-space-mapping.md` records this as a host-adapter
+gap, not as a capability the page already has.
+
+The supported first-use path is: create the Page-local job in Studio Chat from
+a real Page and eligible source, name the target, semantic human, and
+sealed-test custodian (the human may also be the custodian), confirm meaning
+in Data → Contract as the configured human, optionally build an embedding,
+release round 1, and label that round using its copied prompt in Studio Chat.
+The current engine stops after round 1 is fully judged because
+`guideline-learn`, `round-measure`, and `round-close` have no workers.
+Round 2+, handoff, test evaluation, production scanning, audit, and D*
+materialization are not operable. Keep the SOP limited to the supported path
+and label these later Run Types `not built yet`.
 
 The roster table (views, first question, canonical sources), the rule for
 which Space opens first, and the item-text rule live in
@@ -217,6 +237,25 @@ returns HTTP 409 with the engine's reason; a malformed value returns HTTP 400.
 
 There is still no approve, freeze, reveal-all, final-for-all, or run button.
 A new action ships only when its writer and authority check exist end to end.
+
+The `Copy chat prompt` controls in Labeling → Label and the open Rounds card
+copy text only. The round prompt currently includes the job folder, question
+and label names, round progress, pending first answers, the next items, and
+the JUDGE-by-chat instructions. It does not start a Run or write a judgment;
+the chat must call the permitted calibration actions. Offer a copy control
+only when there is a concrete next interaction, such as continuing an open
+round. A richer per-Run prompt should also bind the Board/Folder/Page, target,
+Run Type, relevant Skills, prerequisite state, matching Ticket/status when
+one exists, and the next allowed action. The repository does not define
+canonical per-Run owner/worker Skill fields today, so the surface must not
+invent those identities.
+The current round prompt still lacks a stable Board/Folder/Page identity, the
+exact target field, the matching Ticket id/status, and an explicit
+prerequisite result, so it does not yet satisfy the full context-card
+contract. Contract setup is supported through `/subjective-label` in Studio
+Chat, but the Page currently has no copy-prompt control for it; keep the map
+entry as a Chat start path until the host adapter adds a contextual,
+clipboard-only setup prompt.
 
 ## ⚙️ Relationship to Runs
 

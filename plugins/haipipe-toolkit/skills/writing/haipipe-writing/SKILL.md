@@ -8,8 +8,8 @@ description: >-
   academic voice, humanize, writing feedback and prose evaluation.
   Page owns planning, Run state and acceptance. Trigger: /haipipe-writing.
 metadata:
-  version: "0.20.0"
-  last_updated: "2026-09-20"
+  version: "0.21.0"
+  last_updated: "2026-09-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -88,6 +88,8 @@ Readability, with resolved host/venue/user criteria. Record actual spans,
 evidence, verdicts and the smallest fixes. A local edit checks its protected
 meaning and affected seam; a Section draft also checks coverage and argument
 across paragraphs. Do not turn a local check into a whole-Page review.
+Host-specific overlays, such as the Paper submission-readiness `SUB-*` rows,
+reuse this rubric and remain scoped to the host's requested artifact.
 
 Default: candidate → evaluate → at most one authorized revision pass →
 evaluate the revised candidate → return. The request can set another bounded

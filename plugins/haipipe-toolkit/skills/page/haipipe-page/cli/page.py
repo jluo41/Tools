@@ -52,7 +52,8 @@ def main(argv=None):
             sub.add_argument("--host", default="127.0.0.1")
             sub.add_argument("--port", type=int, default=8765)
             sub.add_argument("--token", help="Prefer PAGE_SERVER_TOKEN environment variable")
-            sub.add_argument("--read-only", action="store_true")
+            sub.add_argument("--read-only", action="store_true",
+                             help="Disable Page plugin writes too (the Page itself is always reader-only)")
             sub.add_argument("--public-url", help="Configured reader-facing origin")
     args = parser.parse_args(argv)
     try:

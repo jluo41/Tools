@@ -11,8 +11,8 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.110.0"
-  last_updated: "2026-09-20"
+  version: "0.112.0"
+  last_updated: "2026-09-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -267,8 +267,8 @@ process manager, verify the configured public URL, and return instead of
 blocking on the listener. One skill invocation performs all requested mechanical
 substeps; do not make the user request them separately.
 
-The built `delivery/web/` is a portable static reading site. The server adds
-the Source editor on writable hosts and the same category-plugin pane used by
+The built `delivery/web/` is a portable static reading site. The server always
+renders Page source read-only and adds the same category-plugin pane used by
 Board Pages. Standalone advertises only real top-level presenters: Outline,
 Delivery, Folder, plus an optional domain-owned Labeling presenter when a
 direct `labeling/` lane and the subjective-label plugin are present. The
@@ -276,10 +276,15 @@ standalone Labeling surface uses the current Codex task as its Chat transport;
 Studio remains Board-hosted until its chat/draw backend is extracted. Evidence
 and Run stay internal Outline workspaces, never duplicate top-level Plugins.
 Choose the configured
-reader-facing origin for links; exposing writable editing beyond loopback
-requires a token. Do not publish private inputs without the user's authority.
-Static files do not provide save-back. Report build, server reachability, and
-editing checks separately; do not claim hosting from a successful build alone.
+reader-facing origin for links; exposing plugin writes beyond loopback requires
+a token. The standalone Page Face has no Chat launcher, comment composer, or
+Page-source save control. Edit Markdown and imported material on disk. Bounded
+plugin read views remain available in either server mode. `--read-only`
+disables plugin writes; without it, Scratch notes autosave and Finish is a
+separate manual action. Do not publish private inputs without the user's
+authority. Static files do not provide save-back.
+Report build, server reachability, and plugin interaction mode separately; do
+not claim hosting from a successful build alone.
 
 Board registration is optional and separate: register the same Page Face,
 then let Board supply navigation. Moving/removing Board membership must not
@@ -287,7 +292,7 @@ move or replace the Page's source. Board Page group descriptions remain
 Board-owned and are outside this file-intake operation.
 
 Scratch is available as a small human-thinking capture once the selected
-Outline exists. Save keeps `rp-scratch-NN_<target>` open; the person manually
+Outline exists. Notes autosave to `rp-scratch-NN_<target>`; the person manually
 clicks Finish Scratch, which asks the AI to generate a concise Summary from
 the raw notes and closes the Run only after a non-empty Summary is returned.
 Scratch writes only the selected Outline's `## Scratch` registry plus its
@@ -474,7 +479,10 @@ For `page-type: ideation`, that is `haipipe-paper-ideation`; it delegates idea
 semantics to `haipipe-ideation` and keeps Page projection/release here. General
 Page work does not load Ideation or every Paper skill. Read the
 [Paper–Page adapter](../../paper/haipipe-paper/ref/page-integration.md) when a
-Paper Run or release is planned. The same owner is loaded only once.
+Paper Run or release is planned. At a Paper G4 Section CHECK, the Page CHECK
+owner also applies the section-scoped `SUB-*` rows from the Paper
+submission-readiness reference; cover-letter and whole-manuscript rows stay at
+Paper level. The same owner is loaded only once.
 
 ### A variant extends the base and never redefines it
 

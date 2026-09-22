@@ -101,7 +101,7 @@ class DesignItemsTest(unittest.TestCase):
             self.assertTrue(evidence[0]["pinned"])
             self.assertEqual(evidence[0]["signed"], "signed ✅ JL 260828")
             item02 = by_id["ITEM02"]
-            self.assertEqual((item02["state"], item02["waiting"]), ("generate failed", "JL · queue a revise"))
+            self.assertEqual((item02["state"], item02["waiting"]), ("generate failed", "you · queue a revise"))
             self.assertEqual(item02["mode"], "challenge")
             self.assertEqual(snapshot["insight"]["status"], "bound")
             self.assertEqual(snapshot["unassigned"], [])
@@ -136,7 +136,7 @@ class DesignItemsTest(unittest.TestCase):
                           "Page level", "Queue revise · agent", "New Design Item",
                           # the explanation reads as blocks, the insight as a flow (JL 260918)
                           "<th>Why this design</th>", "<th>From insight to design</th>", "<th>The bet</th>",
-                          "<th>Rules</th>", "<th>Runs</th>", "<table class=explain>",
+                          "<th>Rules</th>", "<table class=explain>",
                           "<span class=rung>Wisdom</span>", "<b>full-W01</b>", "✅ signed",
                           # named criteria (length, optout) still mark their rules: audit M5
                           "5 of 5 pass",
@@ -145,9 +145,11 @@ class DesignItemsTest(unittest.TestCase):
                           "<details class=itemfold open><summary><b>ITEM01", "<span class=peek>Hi, it&#x27;s Dr.",
                           "<details class=itemfold><summary><b>ITEM02", "data-fold=open", "class=itembody", ".itembody .pair .pic{position:sticky",
                           "expected</span>salience stays the best arm",
-                          "wrong if</span>a concurrently fielded", "Commission ✓ JL"):
+                          "wrong if</span>a concurrently fielded"):
                 self.assertIn(label, rendered)
-            for gone in ("<table class=kv><tr><th>goal</th>", "supported by FW01"):
+            # the strip of Runs and the all-items bar are gone (JL 260921)
+            for gone in ("<table class=kv><tr><th>goal</th>", "supported by FW01",
+                         "<th>Runs</th>", "class=steps", "Commission ✓", "For all items at once"):
                 self.assertNotIn(gone, rendered)
             for jargon in ("pinned in Ticket", "candidate text", "check_unit", "handoffs signed", "roster"):
                 self.assertNotIn(jargon, rendered)
@@ -156,7 +158,8 @@ class DesignItemsTest(unittest.TestCase):
             for label in ('<div class="pair text"><div class=pic><div class=phone>', "<div class=bubble>",
                           ": <span class=link>link</span> Reply STOP to opt-out</div>", "<div class=facts>"):
                 self.assertIn(label, rendered)
-            for noise in ("current Design Folder", "handoffs signed", "waiting on JL · adopt</div>", "register "):
+            # a step that needs a click says "you", never the reader's name (JL 260921)
+            for noise in ("current Design Folder", "handoffs signed", "waiting on JL", "register "):
                 self.assertNotIn(noise, rendered.split("<div class=tabs", 1)[0])
             for retired in ("Flow nodes", "Spaces: 4", "Anchor", "Trial", "Candidates:", "Signal Space"):
                 self.assertNotIn(retired, rendered)
@@ -183,7 +186,7 @@ class DesignItemsTest(unittest.TestCase):
             board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
             snapshot = design_snapshot(page, board)
             item = snapshot["items"][0]
-            self.assertEqual((item["state"], item["waiting"]), ("generated", "JL · queue the review"))
+            self.assertEqual((item["state"], item["waiting"]), ("generated", "you · queue the review"))
             self.assertIsNone(item["ready"])
             self.assertIn("Queue Verify · independent agent", render_design(snapshot))
 
@@ -225,14 +228,14 @@ class DesignActionsTest(unittest.TestCase):
             self.assertIsNone(err, err)
             self.assertEqual(out["item"], "ITEM03")
             item = {i["id"]: i for i in design_snapshot(page, board)["items"]}["ITEM03"]
-            self.assertEqual((item["state"], item["waiting"]), ("not commissioned", "JL · commission"))
+            self.assertEqual((item["state"], item["waiting"]), ("not commissioned", "you · commission"))
             out, err = perform_action(page, self.payload(page, action="commission-release", item="ITEM03",
                                                          actor="JL", words="Release ITEM03 for a first draft"))
             self.assertIsNone(err, err)
             self.assertTrue(out["run"].startswith("rd07_commission_"))
             snapshot = design_snapshot(page, board)
             item = {i["id"]: i for i in snapshot["items"]}["ITEM03"]
-            self.assertEqual((item["state"], item["waiting"]), ("commissioned", "JL · queue the draft"))
+            self.assertEqual((item["state"], item["waiting"]), ("commissioned", "you · queue the draft"))
             self.assertEqual(snapshot["audit"], [])
             config = acts._load(page.parent / "scripts" / "config" / f"{out['run']}.yaml")
             kinds = [c["kind"] for c in config["criteria"]]
@@ -320,7 +323,7 @@ class DesignActionsTest(unittest.TestCase):
             self.assertTrue(closed["problems"])
             item = design_snapshot(page, board)["items"][0]
             self.assertEqual(item["state"], "verify invalid")   # the review failed the gate
-            self.assertEqual(item["waiting"], "JL · queue the review again")  # redo the review, not the candidate
+            self.assertEqual(item["waiting"], "you · queue the review again")  # redo the review, not the candidate
 
     def test_decision_actions_are_removed_after_verify(self):
         with TemporaryDirectory() as td:
@@ -442,13 +445,20 @@ class OldLinkTest(unittest.TestCase):
 
 
 class BatchAndDraftTest(unittest.TestCase):
-    def test_batch_bar_shows_only_the_buttons_with_work(self):
+    def test_no_control_acts_on_every_item_at_once(self):
+        """One decision, one item, one sentence on the record (JL 260921)."""
         with TemporaryDirectory() as td:
-            board, page, _runs = v2_fixture(Path(td))
+            board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
+            for n in (2, 3):
+                acts.add_item(page.parent, page.stem, {
+                    "title": f"Card {n}", "goal": f"Try card {n}", "type": "ui-card",
+                    "audience": "patients due a refill", "job": "refill review", "stance": "generate",
+                    "basis": "brief-only", "acceptance": "\u2264 200 characters"})
             rendered = render_design(design_snapshot(page, board), "design")
-            self.assertNotIn("Release all", rendered)            # both items already commissioned
+            for gone in ("For all items at once", "Release all", "Queue all", "Adopt all",
+                         "release-all", "queue-all", "adopt-all", "batchfold"):
+                self.assertNotIn(gone, rendered)
             self.assertNotIn("data-action=adopt", rendered)     # historical labels are readable; no new decision button
-            self.assertNotIn("Queue all", rendered)              # ready + generate failed: nothing queueable
             self.assertNotIn("mode <b>", rendered)               # mode is not a reader word
 
     def test_a_renamed_folder_is_found_by_its_design_number(self):
@@ -468,7 +478,6 @@ class BatchAndDraftTest(unittest.TestCase):
             snapshot = design_snapshot(page, board)
             rendered = render_design(snapshot, "design")
             self.assertIn("<details class=decide><summary>Release or hold the commission</summary>", rendered)
-            self.assertIn("<details class=batchfold><summary>For all items at once: release 1, queue 1</summary>", rendered)
             self.assertIn('<div class=act><button class=do data-action=queue-verify>', rendered)   # one agent button stays in view
             self.assertIn("<details class=decide open>", render_design(snapshot, "design", "ITEM02"))
 
@@ -522,34 +531,24 @@ class BatchAndDraftTest(unittest.TestCase):
             "plain words a patient understands"])]
         self.assertEqual(kinds, ["visual", "contains", "semantic"])
 
-    def test_release_all_and_queue_all(self):
+    def test_every_all_items_action_is_refused(self):
+        """The surfaces went first (JL 260921); the endpoints follow, so nothing writes in bulk."""
         with TemporaryDirectory() as td:
             board, page, _runs = v2_fixture(Path(td), "Design-02-patients-refill-due-refill-review-ui-card")
             for n in (2, 3):
                 acts.add_item(page.parent, page.stem, {
-                    "title": f"Card {n}", "goal": f"Try card {n}", "type": "ui-card", "audience": "patients due a refill",
-                    "job": "refill review", "stance": "generate", "basis": "brief-only", "acceptance": "≤ 200 characters"})
-            snapshot = design_snapshot(page, board)
-            self.assertIn("Release all · 2", render_design(snapshot, "design"))
-            out, err = perform_action(page, {"path": "/board.md", "file": f"2-Design/{page.parent.name}/{page.name}",
-                                             "action": "release-all", "item": "__all__", "actor": "JL",
-                                             "words": "Release the new cards"})
-            self.assertIsNone(err, err)
-            self.assertEqual(out["items"], ["ITEM02", "ITEM03"])
-            snapshot = design_snapshot(page, board)
-            states = {i["id"]: i["state"] for i in snapshot["items"]}
-            self.assertEqual(states, {"ITEM01": "generated", "ITEM02": "commissioned", "ITEM03": "commissioned"})
-            self.assertIn("Queue all · 3 · agent", render_design(snapshot, "design"))
-            out, err = perform_action(page, {"path": "/board.md", "file": f"2-Design/{page.parent.name}/{page.name}",
-                                             "action": "queue-all", "item": "__all__"})
-            self.assertIsNone(err, err)
-            self.assertEqual(len(out["runs"]), 3)                # one verify + two generates
-            self.assertEqual(sorted(r.split("_")[1] for r in out["runs"]), ["generate", "generate", "verify"])
-            self.assertEqual(len(acts.planned_runs(page.parent)), 3)
-            self.assertEqual(snapshot["audit"], [])
-            _out, err = perform_action(page, {"path": "/board.md", "file": f"2-Design/{page.parent.name}/{page.name}",
-                                              "action": "adopt-all", "item": "__all__", "actor": "JL", "words": "x"})
-            self.assertEqual(err, "unknown action 'adopt-all'")
+                    "title": f"Card {n}", "goal": f"Try card {n}", "type": "ui-card",
+                    "audience": "patients due a refill", "job": "refill review", "stance": "generate",
+                    "basis": "brief-only", "acceptance": "\u2264 200 characters"})
+            base = {"path": "/board.md", "file": f"2-Design/{page.parent.name}/{page.name}",
+                    "item": "__all__", "actor": "JL", "words": "x"}
+            for action in ("release-all", "queue-all", "adopt-all"):
+                out, err = perform_action(page, {**base, "action": action})
+                self.assertIsNone(out)
+                self.assertEqual(err, f"unknown action {action!r}")
+            self.assertEqual(acts.planned_runs(page.parent), [])
+            self.assertEqual({i["id"]: i["state"] for i in design_snapshot(page, board)["items"]},
+                             {"ITEM01": "generated", "ITEM02": "not commissioned", "ITEM03": "not commissioned"})
 
     def test_name_worker_repins_the_receipt(self):
         with TemporaryDirectory() as td:
@@ -628,6 +627,14 @@ class AuditFixesTest(unittest.TestCase):
     def item(self, page: Path, board: Path, item_id: str) -> dict:
         return {i["id"]: i for i in design_snapshot(page, board)["items"]}[item_id]
 
+    def test_a_recorded_target_reads_in_plain_words(self):
+        """An old Run's target keeps `candidate` in its bytes; the surface says draft."""
+        from live.design import plain_words
+        self.assertEqual(plain_words("Send the winner · exact verified candidate"),
+                         "Send the winner · exact verified draft")
+        self.assertEqual(plain_words("two Candidates from one Ticket"), "two drafts from one run record")
+        self.assertEqual(plain_words("the candidate-facing copy"), "the candidate-facing copy")  # only whole words
+
     def test_rules_compile_by_what_they_say(self):
         got = lambda rule: [(c["kind"], c.get("value")) for c in acts.compile_criteria([rule])]
         self.assertEqual(got("does not use 'urgent'"), [("excludes", "urgent")])                    # H1
@@ -670,7 +677,7 @@ class AuditFixesTest(unittest.TestCase):
             insight = (page.parent / HANDOFF_REL).resolve()
             insight.write_text(insight.read_text(encoding="utf-8") + "\nedited after the queue\n", encoding="utf-8")
             item = self.item(page, board, item_id)
-            self.assertEqual((item["state"], item["waiting"]), ("queued run out of date", "JL · queue again"))   # H3
+            self.assertEqual((item["state"], item["waiting"]), ("queued run out of date", "you · queue again"))   # H3
             self.assertIn("data-action=requeue", render_design(design_snapshot(page, board), "design", item_id))
             out, err = perform_action(page, self.payload(page, action="requeue", item=item_id))
             self.assertIsNone(err, err)
@@ -684,7 +691,7 @@ class AuditFixesTest(unittest.TestCase):
             board, page, _runs = v2_fixture(Path(td))
             item_id = self.new_item(page)
             perform_action(page, self.payload(page, action="commission-release", item=item_id, actor="JL", words="go"))
-            self.assertEqual(self.item(page, board, item_id)["waiting"], "JL · queue the draft")        # H4
+            self.assertEqual(self.item(page, board, item_id)["waiting"], "you · queue the draft")        # H4
             _out, err = perform_action(page, self.payload(page, action="commission-release", item=item_id,
                                                           actor="JL", words="again"))
             self.assertIn('"commissioned"', err)                                                  # M14
@@ -708,7 +715,11 @@ class AuditFixesTest(unittest.TestCase):
             snapshot = design_snapshot(page, board)
             failed = next(i for i in snapshot["items"] if i["state"] == "generate failed")
             card = render_design(snapshot, "design", failed["id"]).split(f'id="item-{failed["id"]}"')[1].split("</section>")[0]
-            self.assertIn("Generate ✗", card)                                                     # N4
+            # N4: the card says the draft failed. Since 0.11.3 it says it on the item's own
+            # line ("✗ generate failed") instead of in a strip of Run chips (JL 260921).
+            self.assertIn("generate failed", card)
+            self.assertIn("✗", card)
+            self.assertNotIn("pass", card.split("<div class=itembody>")[0])
             self.assertIsNone(failed["latest"])                                                   # N8: no failed draft shown
 
     def test_rule_marks_belong_to_the_draft_on_the_card(self):

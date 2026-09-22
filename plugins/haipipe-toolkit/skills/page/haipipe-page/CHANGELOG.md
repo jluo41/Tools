@@ -1,3 +1,13 @@
+## 0.112.0 · 2026-09-21
+
+- Route Paper Section CHECKs to the Paper submission-readiness overlay while
+  keeping cover-letter and whole-manuscript checks at Paper level.
+
+## 0.111.0 · 2026-09-21
+
+- Make the standalone Page Face read-only on every host, keep Scratch notes
+  autosaving only in its plugin space, and reject browser Page-source saves.
+
 ## 0.110.0 · 2026-09-20
 
 - Add read-only Structure, Section, and Paragraph prompt copying in Draft Space; use exact ledger-selected Evidence Results for reading and delivery, and distinguish Ready Runs.

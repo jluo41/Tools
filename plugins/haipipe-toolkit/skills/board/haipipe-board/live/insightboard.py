@@ -23,6 +23,9 @@ from urllib.parse import parse_qs, quote, unquote, urlparse
 
 from src.folder_contract import resolved_folder_kind
 from .insight_handoff import eligibility as handoff_eligibility, watch_paths as handoff_watch_paths
+from .insight_run_specs import (definition as read_insight_definition, describe as describe_run_field,
+                                people as run_people, reader_name as run_reader_name,
+                                request_text as insight_request_text, selected_specs)
 
 
 _TITLE = re.compile(r"(?m)^#\s+(.+?)\s*$")
@@ -387,11 +390,19 @@ def _partitions(board_root: Path, pages: list[dict]) -> list[dict]:
     meta = next((p for p in pages if p["id"] == "MT00"), None)
     if meta:
         for row in rows:
-            m = re.search(rf"(?m)^{row['id']}\s+{re.escape(row['name'])}\s+(.+?)\s{{2,}}\S+\.yaml",
+            m = re.search(rf"(?m)^{row['id']}\s+{re.escape(row['name'])}\s+(.+?)\s{{2,}}(?:\S+\.yaml|\(none\))",
                           meta["text"])
             if m:
                 row["where"] = re.sub(r"^where:\s*\[\]\s*", "", m.group(1)).strip()
                 tail = meta["text"][m.end():m.end() + 600]
+                # the rule continues on the next lines ("AND age lte 35.0"), and a
+                # where read without them names the wrong population (JL 260921)
+                for line in tail.splitlines()[1:7]:
+                    clause = line.strip()
+                    if re.match(r"^(AND|OR)\b", clause):
+                        row["where"] += " " + clause
+                    elif re.match(r"^[\d,]+ of ", clause):
+                        break
                 n = re.search(r"([\d,]+) of [\d,]+ rows\s+·\s+([\d.]+%)", tail)
                 if n:
                     row["rows"], row["share"] = n.group(1), n.group(2)
@@ -616,6 +627,9 @@ table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}td,t
 .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:11.5px;color:var(--mut);white-space:nowrap}.pill.ok{color:var(--ok);border-color:var(--ok);background:var(--ok-soft)}.pill.warn{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}.pill.bad{color:var(--bad);border-color:var(--bad);background:var(--bad-soft)}.pill.acc{color:var(--acc);border-color:var(--acc);background:var(--acc-soft)}.pill.human{color:var(--human);border-color:var(--human);background:var(--human-soft)}
 .grid th .pn{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px}a.mono .pn{color:var(--mut);font-family:-apple-system,sans-serif;font-size:12px}.grid td.cell{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;padding:0;min-width:92px}.grid td.cell a{display:block;padding:7px 9px;color:inherit;text-decoration:none}.grid td.cell a:hover{background:var(--soft)}.grid td.cell.sel{outline:2px solid var(--acc);outline-offset:-2px;background:var(--acc-soft)}.grid td.q{max-width:300px;min-width:170px}.nw{white-space:nowrap}.grid tr.group td{background:var(--soft);color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:650;padding:5px 9px}
 .gates{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:8px;overflow:hidden}.gate{padding:8px 9px;border-right:1px solid var(--line);font-size:12px;min-width:0;overflow-wrap:anywhere}.gate:last-child{border-right:0}.gate .k{font:650 12px ui-monospace,Menlo,monospace}.gate .n{display:block;color:var(--mut)}.gate.passed{box-shadow:inset 0 3px 0 var(--ok)}.gate.held{box-shadow:inset 0 3px 0 var(--human)}.gate.refused{box-shadow:inset 0 3px 0 var(--bad)}.gate.pending,.gate.skipped{color:var(--mut)}.gate .who{display:block;margin-top:3px}
+.workline{margin:0 0 10px;padding:6px 0 8px;border-bottom:1px solid var(--line);color:var(--mut);font-size:12.5px;line-height:1.55}.workline .wl-count{color:var(--fg);opacity:.8}.workline .wl-more{margin-left:8px;white-space:nowrap}
+.who td{font-size:12.5px;overflow-wrap:break-word}.who td:first-child{font-weight:650;white-space:nowrap}
+.inputs td{overflow-wrap:anywhere}.inputs td:first-child{color:var(--mut)}.inputs code{overflow-wrap:anywhere}
 .opening{font-size:15.5px;max-width:70ch;padding:6px 0 10px;border-bottom:1px solid var(--line);margin-bottom:6px}.rows td:first-child{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;white-space:nowrap}.rows td.from{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--mut);white-space:nowrap}
 .rung{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.rung:last-child{border-bottom:0}.rung .lvl{font-weight:650;font-size:13px}.rung .lvl small{display:block;color:var(--mut);font-weight:500;font-size:12px}
 .trace{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line)}.trace li{display:grid;grid-template-columns:110px minmax(180px,260px) 1fr;gap:12px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}.trace li:last-child{border-bottom:0}
@@ -633,15 +647,22 @@ details.tn{margin:0;min-width:0}details.tn>summary,.tn-file{display:flex;align-i
 details.tn>summary .tn-name:before{content:'▸ ';color:var(--mut)}details.tn[open]>summary .tn-name:before{content:'▾ '}.tn-file .tn-name:before{content:'  ';white-space:pre}
 @media(max-width:820px){.wmap{table-layout:auto;min-width:780px}.treebox{--w:46%}}
 .taxis{display:flex;align-items:flex-end;gap:3px;height:72px;border-bottom:1px solid var(--line);margin:8px 0 3px}.tday{flex:1;min-width:4px;max-width:30px;height:100%;display:flex;flex-direction:column;justify-content:flex-end}.tday:not(.on)::after{content:'';height:3px;background:var(--line);border-radius:1px}.tday i{display:block;border-radius:2px 2px 0 0}.tday i.l{background:var(--acc)}.tday i.r{background:var(--ok)}.tday.on:hover i{opacity:.7}.taxis-lab{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-bottom:6px}.tsec h3{margin:20px 0 6px;font-size:14.5px}.tl{list-style:none;margin:0 0 0 5px;padding:0 0 0 16px;border-left:2px solid var(--line)}.tl li{padding:5px 0;font-size:13.5px;position:relative}.tl li::before{content:'';position:absolute;left:-21px;top:12px;width:8px;height:8px;border-radius:50%;background:var(--acc)}.tl li.trun::before{background:var(--ok)}.tl summary{cursor:pointer;list-style:none}.tl summary::-webkit-details-marker{display:none}.tl details[open]>summary{font-weight:600}.tl details p{margin:6px 0 6px 22px;max-width:95ch}.tl li.tgrp{padding:10px 0 2px;color:var(--mut);font:650 11px/1.4 -apple-system,sans-serif;text-transform:uppercase;letter-spacing:.05em}.tl li.tgrp::before{display:none}.tk{display:inline-block;width:20px;color:var(--mut)}.trun .tk{width:auto;margin-right:6px;color:var(--ok);font-weight:600}
-.boardsum{font-size:13.5px;margin:2px 0 1px}.strip-head{flex-basis:100%;font:650 12.5px -apple-system,sans-serif;color:var(--acc)}.strip-head .mut{font-weight:400}body[data-space=scope] main>.strip,body[data-space=run] main>.strip,body[data-space=delivery] main>.strip{display:none}
+.strip-head{flex-basis:100%;font:650 12.5px -apple-system,sans-serif;color:var(--acc)}.strip-head .mut{font-weight:400}body[data-space=scope] main>.strip,body[data-space=run] main>.strip,body[data-space=delivery] main>.strip{display:none}
 .legend{width:auto;margin-top:6px;font-size:12.5px}.legend td,.legend th{padding:3px 12px 3px 0;border:0}.legend td:first-child{white-space:nowrap;font-family:ui-monospace,Menlo,monospace}
 .timeline{list-style:none;margin:0;padding:0}.timeline li{display:grid;grid-template-columns:70px 70px 1fr;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}.timeline .d,.timeline .p{font:12.5px ui-monospace,Menlo,monospace;color:var(--mut)}
 .limits{border-left:3px solid var(--bad);padding-left:12px;font-size:13.5px}.limits p{margin:6px 0}.note{border:1px dashed var(--line);border-radius:8px;padding:10px 12px;color:var(--mut);font-size:13px}
 .source{margin-top:18px;color:var(--mut);font-size:12px}
+.source-short,.nav-short{display:none}
 .form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px;align-items:start}.form .full{grid-column:1/-1}.field{display:flex;flex-direction:column;gap:5px}.field label{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:650}.field input,.field select,.field textarea{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:7px;padding:8px;font:14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.field textarea{min-height:60px;resize:vertical}
 .btn{border:1px solid var(--acc);border-radius:8px;padding:8px 13px;background:var(--bg);color:var(--acc);font:650 14px -apple-system,sans-serif;cursor:pointer}.btn.primary{background:var(--acc);color:#fff}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.status{font-size:13px;color:var(--mut)}
 @media(max-width:820px){.form{grid-template-columns:1fr}}
 @media(max-width:820px){.gates{grid-template-columns:repeat(4,1fr)}.rung{grid-template-columns:1fr}.timeline li,.trace li{grid-template-columns:1fr}}
+@media(max-width:600px){
+body{padding:12px}h1{font-size:16px;line-height:1.3}.board-links .all-boards,.source-full,.nav-full{display:none}.source-short,.nav-short{display:inline}
+.spaces{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:8px 0 4px;padding:0 0 3px}.spaces::-webkit-scrollbar{display:none}.space{flex:0 0 auto;padding:5px 8px;font-size:11px}
+.strip{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;padding:7px 0;margin-bottom:5px;font-size:12px}.strip-head{display:none}.strip-field br{display:none}.strip-question{grid-column:1/-1;font-size:13px;line-height:1.4}.strip-question .eyebrow{display:none}.strip-data,.strip-answer{font-size:11.5px}.strip-data .eyebrow,.strip-answer .eyebrow{text-transform:none;letter-spacing:0;font-size:11px}.strip-data .eyebrow:after,.strip-answer .eyebrow:after{content:": "}.strip-next{grid-column:1/-1;margin-top:3px}
+.shell{border:0;border-radius:0;padding:0;background:transparent}.wtabs{gap:14px;padding:0 0 6px;margin:0 0 8px}.wtab{border:0;border-radius:0;padding:5px 1px;border-bottom:2px solid transparent;font-size:12px}.wtab.on{border:0;border-bottom:2px solid var(--acc)}.lead{font-size:13px;margin-bottom:8px}.note{border:0;border-radius:0;padding:4px 0}.source{margin-top:10px;font-size:11px}
+}
 """
 
 _JS = """<script>(function(){
@@ -651,6 +672,11 @@ sp.forEach(function(b){b.onclick=function(){sel(b.dataset.space,true)}});
 document.querySelectorAll('.shell').forEach(function(sh){var tabs=[].slice.call(sh.querySelectorAll('.wtab'));function sync(){var on=sh.querySelector('.wtab.on');sh.querySelectorAll('.view').forEach(function(v){v.classList.toggle('on',on&&v.dataset.view===on.dataset.view)})}tabs.forEach(function(t){t.onclick=function(){tabs.forEach(function(x){x.classList.toggle('on',x===t)});sync();try{var u=new URL(location.href);u.searchParams.set('view',t.dataset.view);history.replaceState({},'',u)}catch(e){}}});sync()});
 try{var vw=new URL(location.href).searchParams.get('view');if(vw==='folders')vw='wmap';if(vw){document.querySelectorAll('.pane[data-space="'+document.body.dataset.space+'"] .wtab[data-view="'+vw+'"]').forEach(function(t){t.click()})}}catch(e){}
 sel(document.body.dataset.space,false);
+document.querySelectorAll('[data-insight-copy]').forEach(function(b){b.onclick=function(){
+var box=b.closest('[data-insight-request]'),ta=box.querySelector('textarea'),st=box.querySelector('[role=status]');
+function fallback(){box.querySelector('details').open=true;ta.focus();ta.select();st.textContent='Select and copy the request, then paste and send it in your conversation.'}
+try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value).then(function(){st.textContent='Copied. Paste and send in your conversation. Nothing has started.'},fallback)}else{fallback()}}catch(e){fallback()}
+}});
 var f=document.getElementById('askform');if(f){f.onsubmit=function(ev){ev.preventDefault();var q=document.getElementById('ask-text').value.replace(/\\s+/g,' ').trim();if(!q)return;
 var cmd='/haipipe-insight application '+f.dataset.root+' question "'+q.replace(/"/g,"'")+'"';document.getElementById('ask-cmd').textContent=cmd;document.getElementById('ask-out').hidden=false;
 var st=document.getElementById('ask-status');if(navigator.clipboard){navigator.clipboard.writeText(cmd).then(function(){st.textContent='copied'},function(){st.textContent='select and copy the line below'})}else{st.textContent='select and copy the line below'}}}
@@ -731,6 +757,7 @@ def render_insight_board(snapshot: dict, space: str = "scope",
     qid = selected_question if selected_question in qids else ("QW1" if "QW1" in qids else (qids[0] if qids else ""))
     pid = selected_partition if selected_partition in pids else ("F" if "F" in pids else (pids[0] if pids else ""))
     view = _cell_view(snap, qid, pid) if qid else None
+    projection = selected_specs(snap, qid, pid)
     # Run Space and Delivery Space are always the last two (JL 260916).
     return _spell_ids(snap, "".join([
         '<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">',
@@ -738,13 +765,12 @@ def render_insight_board(snapshot: dict, space: str = "scope",
         _render_header(snap),
         _render_nav(),
         _render_strip(snap, view, qid, pid),
-        f'<section class="pane" data-space="scope"><div class="shell">{_render_scope(snap, qid, pid)}</div></section>',
-        f'<section class="pane" data-space="insight"><div class="shell">{_render_insight(snap, view, qid, pid)}</div></section>',
-        f'<section class="pane" data-space="evidence"><div class="shell">{_render_evidence(snap, view)}</div></section>',
-        f'<section class="pane" data-space="check"><div class="shell">{_render_check(snap, view, qid, pid)}</div></section>',
-        f'<section class="pane" data-space="run"><div class="shell">{_render_run(snap)}</div></section>',
-        f'<section class="pane" data-space="delivery"><div class="shell">{_render_delivery(snap)}</div></section>',
-        f'<p class=source>source <code>{_e(snap["relative"])}/board.md</code> · re-read on every request</p>',
+        f'<section class="pane" data-space="scope"><div class="shell">{_with_work_lines(_render_scope(snap, qid, pid), snap, "scope")}</div></section>',
+        f'<section class="pane" data-space="insight"><div class="shell">{_with_work_lines(_render_insight(snap, view, qid, pid, projection), snap, "insight")}</div></section>',
+        f'<section class="pane" data-space="evidence"><div class="shell">{_with_work_lines(_render_evidence(snap, view, projection), snap, "evidence")}</div></section>',
+        f'<section class="pane" data-space="check"><div class="shell">{_with_work_lines(_render_check(snap, view, qid, pid), snap, "check")}</div></section>',
+        f'<section class="pane" data-space="run"><div class="shell">{_with_work_lines(_render_run(snap, projection), snap, "run")}</div></section>',
+        f'<section class="pane" data-space="delivery"><div class="shell">{_with_work_lines(_render_delivery(snap, projection), snap, "delivery")}</div></section>',
         "</main>", _JS, "</body></html>",
     ]))
 
@@ -779,17 +805,14 @@ def _spell_ids(snap: dict, page_html: str) -> str:
 
 def _render_header(snap: dict) -> str:
     if snap["static"]:
-        links = '<a href="index.html">board index</a>'
+        links = '<a class=board-index href="index.html">board index</a>'
     else:
-        links = (f'<a href="/">all boards</a> · '
-                 f'<a href="/{_e(snap["relative"])}/board/index.html">board index</a>')
-    cells = [c for q in snap["questions"] for c in q["cells"].values() if c.get("mark", "·") != "·"]
-    count = {m: sum(c["mark"] == m for c in cells) for m in ("✅", "🟡", "🚫")}
-    summary = (f'{len(snap["questions"])} questions × {len(snap["partitions"])} data cuts · '
-               f'{len(snap["pages"])} pages · {len(cells)} cells asked: {count["✅"]} answered, '
-               f'{count["🟡"]} in part, {count["🚫"]} refused')
-    return (f'<header><h1>🔎 {_e(snap["title"])}</h1><div class=boardsum>{_e(summary)}</div>'
-            f'<div class=mut>{links}</div></header>')
+        links = (f'<a class=all-boards href="/">all boards</a> · '
+                 f'<a class=board-index href="/{_e(snap["relative"])}/board/index.html">board index</a>')
+    # JL 260921: the title and the two links, nothing else. The counts were a
+    # line nobody read; every count still stands where it is used.
+    return (f'<header><h1>🔎 {_e(snap["title"])}</h1>'
+            f'<div class="mut board-links">{links}</div></header>')
 
 
 def _render_pages(snap: dict) -> str:
@@ -827,27 +850,72 @@ def render_board_list(root: Path, raw: str = "") -> str:
             '</main></body></html>')
 
 
+def _copy_insight_request(prompt: str) -> str:
+    # Numeric entities keep the display-id formatter from rewriting identifiers
+    # in the copyable request. The browser decodes them into the original text.
+    encoded = "".join(f"&#{ord(char)};" for char in prompt)
+    return ('<div data-insight-request><button class=btn type=button data-insight-copy>'
+            'Copy request → paste and send</button> '
+            '<span class=status role=status aria-live=polite>Copying does not send, start, allocate, or write a Run.</span>'
+            '<details><summary>Request text</summary>'
+            f'<textarea readonly rows=10 cols=90 aria-label="Insight Run request">{encoded}</textarea></details></div>')
+
+
+def _render_selected_specs(snap: dict, projection: dict, space: str, *, read_only: bool = False) -> str:
+    items = [item for item in projection["items"] if space == "all" or item["space"] == space]
+    heading = f'Owed Run Specs · {projection["question"]} × {projection["partition"]}'
+    parts = [f'<h3>{_e(heading)}</h3><p class=mut>Selected by the frozen workflow for this cell. '
+             'A Spec describes work; the matching native Run, when allocated, is shown separately.</p>']
+    if not items:
+        parts.append('<p class=note>No owed Run Spec is recorded for this selection in this Space.</p>')
+    for item in items:
+        matches = '; '.join(f'{r["run_id"]} · {r["status"]} · {r.get("participation", "managed")}'
+                            for r in item["matches"]) or 'No matching native Run recorded'
+        allowed = 'Shown here · read-only' if read_only else 'Copy request → paste and send'
+        parts.append(f'<h4>{_e(item["name"])}</h4><p>Run Type: <code>{_e(item["type"])}</code> '
+                     f'· Spec: <code>{_e(item["spec"]["id"])}</code></p>'
+                     f'<p>{_e(item["purpose"])}</p><p>Target: {_e(item["target"])}</p>'
+                     f'<p>Owner Skill: <code>{_e(item["owner"])}</code> · '
+                     f'Worker Skill(s): <code>{_e(item["workers"])}</code> · Actor: {_e(item["actor"])}</p>'
+                     '<details><summary>Prerequisites and current work</summary><ul>'
+                     + ''.join(f'<li>{_e(text)}</li>' for text in item['prerequisites'])
+                     + f'</ul><p>Matching Run/status: {_e(matches)}</p><p>Workflow state: {_e(item["state"])}</p>'
+                     f'<p>Runtime: {_e(item["runtime"]["id"])} · Definition: {_e(item["runtime"]["definition"])}</p></details>'
+                     f'<p><b>{allowed}</b> · {_e(item["next_action"])}</p>')
+        if not read_only:
+            parts.append(_copy_insight_request(insight_request_text(snap, projection, item)))
+    parts.extend(f'<p class=note>{_e(note)}</p>' for note in projection['notes'])
+    return ''.join(parts)
+
+
 def _next_step(snap: dict, view: dict, qid: str, pid: str) -> str:
     """What to do about the selected cell, as one line: a page to open or a
     command to hand to Claude Code.  The page reads; the skill writes."""
     cell, page = view["cell"], view["page"]
     cmd = f"/haipipe-insight application {snap['relative']} chain {qid} {pid}"
     stop = next((g for g in view["gates"][1:] if g["state"] in {"held", "pending"}), None)
-    if cell["mark"] == "✅" and page:
-        return f'done · read {_link(snap, page)}'
+    if cell["mark"] == "✅":
+        return f'done · read {_link(snap, page)}' if page else 'answer recorded · resolve the missing Page reference'
+    if cell["mark"] == "🟡" and "final" in cell.get("note", ""):
+        return 'partial-final answer recorded · read its licensing reason and receipts'
     if cell["mark"] == "🚫":
         return f'refused: {_e(_REASONS.get(cell["note"], (cell["note"] or cell["raw"],))[0])} · nothing to run'
     if cell["mark"] == "·":
         return 'not asked on this data · use <b>Ask</b> in Scope Space'
     where = f' · stopped at {stop["key"]} {stop["name"]}' if stop else ""
-    return f'give Claude Code <code>{_e(cmd)}</code>{where}'
+    projection = selected_specs(snap, qid, pid)
+    return (f'Execution entry: <code>{_e(cmd)}</code>{where}'
+            + _copy_insight_request(insight_request_text(snap, projection)))
 
 
 def _render_nav() -> str:
-    tabs = (("scope", "Scope Space"), ("insight", "Insight Space"), ("evidence", "Evidence Space"),
-            ("check", "Check Space"), ("run", "Run Space"), ("delivery", "Delivery Space"))
+    tabs = (("scope", "Scope Space", "Scope"), ("insight", "Insight Space", "Insight"),
+            ("evidence", "Evidence Space", "Evidence"), ("check", "Check Space", "Check"),
+            ("run", "Run Space", "Runs"), ("delivery", "Delivery Space", "Delivery"))
     return '<nav class=spaces>' + "".join(
-        f'<button class=space type=button data-space="{k}">{v}</button>' for k, v in tabs) + '</nav>'
+        f'<button class=space type=button data-space="{k}" aria-label="{label}" title="{label}">'
+        f'<span class=nav-full>{label}</span><span class=nav-short>{short}</span></button>'
+        for k, label, short in tabs) + '</nav>'
 
 
 _HEADS = ("midlife", "young", "older", "old", "senior", "adult", "child", "teen")
@@ -883,12 +951,72 @@ def _render_strip(snap: dict, view: dict | None, qid: str, pid: str) -> str:
     answer = _cell_text(cell) if cell["mark"] != "·" else "not asked on this data"
     pick = ("" if snap["static"] else
             f' · <a href="{_e(_cell_url(snap, qid, pid, "scope"))}">pick another cell in Scope Space</a>')
+    terminal = cell["mark"] in {"✅", "🚫"} or (cell["mark"] == "🟡" and "final" in cell.get("note", ""))
+    next_step = ("" if terminal else
+                 f'<div class=strip-next><span class=eyebrow>Next</span><br>{_next_step(snap, view, qid, pid)}</div>')
     return (f'<div class=strip><div class=strip-head>Selected cell <span class=mut>· the one question × data cut '
             f'this Space is about{pick}</span></div>'
-            f'<span><span class=eyebrow>Question</span><br><span class=id>{_e(qid)}</span> · {_e(_LEVEL_LABEL.get(qid[1], ""))} · {_e(row["question"])}</span>'
-            f'<span><span class=eyebrow>Data</span><br>{_e(_partition_label(snap, pid))}</span>'
-            f'<span><span class=eyebrow>Answer</span><br>{_pill(cell["mark"], answer)}</span>'
-            f'<span><span class=eyebrow>Next</span><br>{_next_step(snap, view, qid, pid)}</span></div>')
+            f'<span class="strip-field strip-question"><span class=eyebrow>Question</span><br><span class=id>{_e(qid)}</span> · {_e(_LEVEL_LABEL.get(qid[1], ""))} · {_e(row["question"])}</span>'
+            f'<span class="strip-field strip-data"><span class=eyebrow>Data</span><br>{_e(_partition_label(snap, pid))}</span>'
+            f'<span class="strip-field strip-answer"><span class=eyebrow>Answer</span><br>{_pill(cell["mark"], answer)}</span>'
+            f'{next_step}</div>')
+
+
+_GRAIN = re.compile(r"One row is one [^.]+\.")
+_SHAPE = re.compile(r"([\d,]{5,})\s*[×x]\s*(\d{1,4})\b")
+_WINDOW = re.compile(r"(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})")
+_VARIANTS = re.compile(r"((?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen))\s+message variants", re.I)
+_ROWS = re.compile(r"([\d,]{5,})\s+(?:messaged|patient|message)\s+rows", re.I)
+_SIDECARS = ("data_dictionary.csv", "manifest.json", "Message-Content.md")
+
+
+def _input_facts(snap: dict) -> list[tuple[str, str]]:
+    """What the board reads, from MT00 and board.md: the one prepared extract,
+    its grain, its window and the files beside it.  A fact with no sentence on
+    either page is left out rather than guessed."""
+    meta = next((p for p in snap["pages"] if p["id"] == "MT00"), None)
+    meta_text = meta["text"] if meta else ""
+    text = meta_text + "\n" + _read(snap["board"] / "board.md")
+    facts: list[tuple[str, str]] = []
+    lines = text.splitlines()
+    file_line = next((i for i, line in enumerate(lines)
+                      if ".parquet" in line and "..." not in line), None)
+    if file_line is not None:
+        name = re.search(r"(\S+\.parquet)", lines[file_line]).group(1)
+        folder = next((lines[i].strip() for i in range(file_line - 1, -1, -1)
+                       if re.fullmatch(r"\S+/", lines[i].strip())), "")
+        shape = _SHAPE.search(lines[file_line])
+        where = f'<code>{_e(folder)}</code><br><code>{_e(name.split("/")[-1])}</code>' if folder \
+            else f'<code>{_e(name)}</code>'
+        facts.append(("extract", where + (f' · {shape.group(1)} rows × {shape.group(2)} columns'
+                                          if shape else "")))
+    grain = _GRAIN.search(text)
+    if grain:
+        facts.append(("one row", _inline(grain.group(0).rstrip("."))))
+    window = _WINDOW.search(text)
+    rows = _ROWS.search(text)
+    if window:
+        facts.append(("window", f'{window.group(1)} to {window.group(2)}'
+                      + (f' · {rows.group(1)} rows' if rows else "")))
+    variants = _VARIANTS.search(text)
+    if variants:
+        facts.append(("what varies", f'{variants.group(1)} message variants'))
+    beside = [name for name in _SIDECARS if name in text]
+    if beside:
+        facts.append(("beside it", " · ".join(f'<code>{_e(name)}</code>' for name in beside)))
+    if meta:
+        facts.append(("described by", _link(snap, meta) + ' <span class=mut>· sources, grain, population, freshness, limits</span>'))
+    facts.append(("results store", f'<code>{_e(snap["store"] or "not declared on board.md")}</code>'))
+    return facts
+
+
+def _render_input_data(snap: dict) -> str:
+    """Scope Space · Data: the one input every page on this board cites."""
+    facts = _input_facts(snap)
+    body = "".join(f'<tr><td>{_e(label)}</td><td>{value}</td></tr>' for label, value in facts)
+    return ('<h2>Input data</h2><p class=lead>The one prepared extract every page on this board reads. '
+            'The board reads it and never owns or changes it, and no page may cite a number that is not in it.</p>'
+            f'<table class="rows inputs">{body}</table>')
 
 
 def _render_scope(snap: dict, qid: str, pid: str) -> str:
@@ -913,19 +1041,17 @@ def _render_scope(snap: dict, qid: str, pid: str) -> str:
             on = " sel" if (q["id"] == qid and p == pid) else ""
             cells += f'<td class="cell{on}"><a href="{_e(_cell_url(snap, q["id"], p))}">{cell_html(c)}</a></td>'
         rows.append(f'<tr><td class=mono>{_e(q["id"])}</td><td class=q>{_e(q["question"])}</td>{cells}</tr>')
-    register = (f'<h2>Question register</h2><p class=lead>One row per question, one column per partition, as written in MT01 to MT04. Click a cell.</p>'
-                f'<div class=scroll><table class=grid><tr><th>Id</th><th>Question</th>{"".join(f"<th>{p}<br><span class=pn>{_e(_partition_name(snap, p) or p)}</span></th>" for p in cols)}</tr>{"".join(rows)}</table></div>'
-                '<p class=mut style="margin-top:8px">✅ answered · 🟡 answered in part · 🚫 refused, with the reason · &nbsp;·&nbsp; not asked there</p>'
-                '<table class="legend mut"><tr><th colspan=2>Why a cell is refused</th></tr>'
-                + "".join(f'<tr><td>🚫 {_e(short)}</td><td>{_e(long)}</td></tr>' for short, long in _REASONS.values())
-                + '</table>')
+    # JL 260921: the grid alone. The marks are read in the cells, and a refused
+    # cell already carries its reason beside it.
+    register = ('<h2>Question register</h2><p class=lead>One row per question, one column per partition, as written in MT01 to MT04. Click a cell.</p>'
+                f'<div class=scroll><table class=grid><tr><th>Id</th><th>Question</th>{"".join(f"<th>{p}<br><span class=pn>{_e(_partition_name(snap, p) or p)}</span></th>" for p in cols)}</tr>{"".join(rows)}</table></div>')
     prow = "".join(
         f'<tr><td><b>{_e(r["id"])}</b></td><td>{_e(_pretty(r["name"]))}</td><td class=mono>{_e(r["where"] or "—")}</td>'
         f'<td class=num>{_e(r["rows"] or "—")}</td><td class=num>{_e(r["share"] or "—")}</td><td class=num>{r["pages"]}</td></tr>'
         for r in snap["partitions"])
-    data = (f'<h2>Data scope</h2><p class=lead>From MT00. A partition is one config, never a code change.</p>'
-            f'<div class=scroll><table><tr><th>Id</th><th>Partition</th><th>Where</th><th>Rows</th><th>Share</th><th>Pages</th></tr>{prow}</table></div>'
-            f'<p class=mut style="margin-top:8px">extract <code>{_e(snap["context"].split(" · ")[0] if snap["context"] else "")}</code> · store <code>{_e(snap["store"] or "not declared")}</code></p>')
+    partition = ('<h2>Partitions</h2><p class=lead>How the extract is cut, from MT00. A partition is one config, never a code change. '
+                 'Every question is asked once per partition.</p>'
+                 f'<div class=scroll><table><tr><th>Id</th><th>Partition</th><th>Where</th><th>Rows</th><th>Share</th><th>Pages</th></tr>{prow}</table></div>')
     # One box.  The person asks in plain words; Claude Code decides the answer
     # level, the partitions and the lineage, then writes the register row
     # through `python3 -m live.insightboard ask ...`.
@@ -935,8 +1061,11 @@ def _render_scope(snap: dict, qid: str, pid: str) -> str:
         '<div class="field full"><textarea id=ask-text required placeholder="e.g. does the send hour change which message works best?"></textarea></div>'
         '<div class="full actions"><button class="btn primary" type=submit>Ask</button><span class=status id=ask-status></span></div></form>'
         '<div id=ask-out hidden><p class=mut>Give this to Claude Code (copied to your clipboard):</p><p><code id=ask-cmd></code></p></div>')
-    return (_tabs([("register", "Register"), ("ask", "Ask"), ("data", "Data"), ("pages", "Pages")])
-            + _view("register", register, True) + _view("ask", ask) + _view("data", data)
+    # JL 260921: the input data first, then the cut, then the questions.
+    return (_tabs([("data", "Data"), ("partition", "Partition"), ("register", "Register"),
+                   ("ask", "Ask"), ("pages", "Pages")])
+            + _view("data", _render_input_data(snap), True) + _view("partition", partition)
+            + _view("register", register) + _view("ask", ask)
             + _view("pages", _render_pages(snap)))
 
 
@@ -967,7 +1096,9 @@ def _workflow_runtimes(board: Path) -> list[dict]:
                 raise ValueError("runs and frontier must be lists")
             seen = set()
             for run in runs:
-                required = ("run_id", "run_spec_id", "owner", "status", "ticket", "result", "receipt")
+                required = ("run_id", "owner", "status", "result", "receipt")
+                if isinstance(run, dict) and run.get("participation") != "reused":
+                    required += ("run_spec_id", "ticket")
                 if not isinstance(run, dict) or any(
                     not isinstance(run.get(key), str) or not run[key].strip() for key in required
                 ):
@@ -983,6 +1114,8 @@ def _workflow_runtimes(board: Path) -> list[dict]:
                 raise ValueError("resource_controls must be control records")
             record.update({"status": data.get("status", "not recorded"),
                            "definition": data.get("definition_ref", "not recorded"),
+                           "definition_hash": data.get("definition_hash", ""),
+                           "requested_answer_targets": data.get("requested_answer_targets", []),
                            "runs": runs, "frontier": frontier,
                            "resource_controls": resource_controls})
         except (OSError, UnicodeError, ValueError, yaml.YAMLError) as exc:
@@ -1006,13 +1139,33 @@ def _render_runtime_inventory(snap: dict) -> str:
         parts.append(f'<p>Status: {_e(record["status"])} · Definition: {_e(record["definition"])} '
                      f'· {len(record["runs"])} recorded Runs</p>')
         if record["runs"]:
+            try:
+                specs = {spec["id"]: spec for spec in read_insight_definition(Path(snap["board"]), record)["run_specs"]}
+            except Exception as exc:
+                specs = {}
+                parts.append(f'<p class=note>Spec metadata unavailable: {_e(exc)}. Native inventory remains visible.</p>')
             rows = []
             for run in record["runs"]:
-                values = [run["run_id"], run["run_spec_id"], run["owner"], run.get("target", ""),
-                          run.get("participation", "not recorded"), run["status"],
-                          run.get("depends_on", []), run["result"], run["receipt"]]
-                rows.append('<tr>' + ''.join(f'<td>{_e(value)}</td>' for value in values) + '</tr>')
-            headings = ("Run", "Spec", "Owner", "Target", "Participation", "Status", "Dependencies", "Result", "Receipt")
+                spec = specs.get(run.get("run_spec_id"), {})
+                metadata = {**spec, **run}
+                workers, actor = run_people(metadata)
+                purpose = run.get("purpose") or spec.get("purpose") or spec.get("action") or run.get("target")
+                prerequisites = {"entry": spec.get("entry", "not recorded"),
+                                 "inputs": run.get("inputs", spec.get("inputs", "not recorded")),
+                                 "dependencies": run.get("depends_on", spec.get("depends_on", []))}
+                identity = (f'<b>{_e(run_reader_name(metadata))}</b><br>Run Type: '
+                            f'<code>{_e(run.get("run_type") or spec.get("run_type") or "not recorded")}</code>'
+                            f'<br><code>{_e(run["run_id"])}</code><br>Spec: '
+                            f'{_e(run.get("run_spec_id") or "reused external dependency")}')
+                owner = f'Owner: {_e(run["owner"])}<br>Worker Skill(s): {_e(workers)}<br>Actor: {_e(actor)}'
+                status = f'{_e(run["status"])} · {_e(run.get("participation", "not recorded"))}'
+                paths = (f'Ticket: {_e(run.get("ticket", "not recorded"))}<br>'
+                         f'Result: {_e(run["result"])}<br>Receipt: {_e(run["receipt"])}')
+                rows.append('<tr><td>' + identity + '</td><td>' + _e(describe_run_field(purpose))
+                            + '<br>Target: ' + _e(describe_run_field(run.get("target", spec.get("target"))))
+                            + '</td><td>' + owner + '</td><td>' + _e(describe_run_field(prerequisites))
+                            + '</td><td>Shown here · read-only</td><td>' + status + '</td><td>' + paths + '</td></tr>')
+            headings = ("Run name, Type and identity", "Bounded work", "Skills and actor", "Prerequisites", "This Space", "Recorded status", "Native records")
             parts.append('<div class=scroll><table><tr>' + ''.join(f'<th>{h}</th>' for h in headings)
                          + '</tr>' + ''.join(rows) + '</table></div>')
         else:
@@ -1034,7 +1187,7 @@ def _render_runtime_inventory(snap: dict) -> str:
     return ''.join(parts)
 
 
-def _render_run(snap: dict) -> str:
+def _render_run(snap: dict, projection: dict | None = None) -> str:
     runs = snap["runs"]
     if runs:
         body = "".join(
@@ -1047,12 +1200,14 @@ def _render_run(snap: dict) -> str:
     else:
         ledger = '<p class=note>No page on this board names a run receipt yet. A D page names one with a <code>run receipt</code> line or a <code>receipt:</code> header.</p>'
     ledger = (_render_runtime_inventory(snap) + '<h2>Page-referenced Supporting receipts</h2>'
-              '<p class=lead>Historical source receipts named by Pages, read from the store.</p>' + ledger)
+              '<p class=lead>Shown here · read-only. Historical source receipts named by Pages, read from the store. '
+              'Their canonical Run Type, owner/worker Skills, actor and prerequisites are not recorded in this legacy projection; '
+              'consult the native Ticket and receipt. These rows do not offer a new Run.</p>' + ledger)
     # The Folders table became the Workflow map's folder tree (the paper board's
     # shape); an old `view=folders` link opens the map.
-    return (_tabs([("ledger", "Runs"), ("timeline", "Timeline"), ("wmap", "Workflow map")])
+    return (_tabs([("ledger", "Runs"), ("timeline", "Timeline"), ("who", "Who does it"), ("wmap", "Workflow map")])
             + _view("ledger", ledger, True) + _view("timeline", _render_timeline(snap))
-            + _view("wmap", _render_workflow_map(snap)))
+            + _view("who", _render_who(snap)) + _view("wmap", _render_workflow_map(snap, projection)))
 
 
 def _render_timeline(snap: dict) -> str:
@@ -1420,7 +1575,115 @@ def _wbr(text: str) -> str:
     return "/<wbr>".join(_e(part) for part in text.split("/"))
 
 
-def _render_workflow_map(snap: dict) -> str:
+# Space · subspace → the work that lands there, and who does it.  Owners are the
+# Folder ownership table of haipipe-insight-workflow; the workers and agents are
+# the skills that actually run the work (haipipe-task, haipipe-discovery and the
+# Page workflow agents).  `count` names a live number read from this board.
+_WHO = (
+    ("Scope", "Data", "data", "none · the extract is prepared before this board reads it", "",
+     "haipipe-insight-meta", "haipipe-task · the prep job under tasks/", "Claude Code, outside this board"),
+    ("Scope", "Partition", "partition", "none · registering a partition is a control action", "",
+     "haipipe-insight-meta", "—", "a person, in MT00"),
+    ("Scope", "Register", "register", "none · registering a question is a control action", "",
+     "haipipe-insight-question", "—", "a person, in MT01 – MT04"),
+    ("Scope", "Ask", "ask", "none · the Ask box writes one register row", "",
+     "haipipe-insight-question", "haipipe-insight · the /haipipe-insight door", "a person asks, Claude Code writes the row"),
+    ("Scope", "Pages", "pages", "none · a list of every page", "", "—", "—", "—"),
+    ("Insight", "Answer", "answer", "Page Writing Runs · rp-sec-NN · rp-para-NN", "page",
+     "the level's folder skill: haipipe-insight-data · -information · -knowledge · -wisdom",
+     "haipipe-page-workflow · agent haipipe-page-content-agent", "the agent writes, a person accepts"),
+    ("Insight", "Ladder", "ladder", "none · reads D → I → K → W already answered", "", "—", "—", "—"),
+    ("Insight", "Limits", "limits", "none · reads the Wisdom page's limits", "", "—", "—", "—"),
+    ("Evidence", "Trace", "", "Page Evidence Runs · RE lineage", "page",
+     "the citing level's folder skill", "haipipe-page-evidence · agent haipipe-page-evidence-agent",
+     "the agent runs it, a person decides the item"),
+    ("Evidence", "Trace", "", "Supporting Runs · the numbers a data page cites", "support",
+     "haipipe-insight-data", "haipipe-task · haipipe-discovery", "Claude Code runs the task"),
+    ("Check", "Gates", "gates", "none · GI0 – GI6 are control actions, never Runs", "",
+     "haipipe-insight-workflow", "—", "a person signs GI5"),
+    ("Check", "Mechanical checks", "mech", "none · one script over the whole board", "",
+     "haipipe-board", "cli/check.py", "anyone, any time"),
+    ("Run", "Runs", "ledger", "every Supporting Run this board's pages name", "support",
+     "haipipe-insight-workflow", "reads runtime.yaml in the store", "read-only"),
+    ("Run", "Timeline", "timeline", "none · reads the same runs and the page logs", "", "—", "—", "—"),
+    ("Run", "Who does it", "who", "none · this table", "", "—", "—", "—"),
+    ("Run", "Workflow map", "wmap", "none · a definition view", "", "—", "—", "—"),
+    ("Delivery", "Delivery", "", "none · signing the handoff is a control action", "",
+     "haipipe-insight-wisdom", "—", "a person signs"),
+)
+
+
+def _live_counts(snap: dict) -> dict[str, str]:
+    """The two numbers the work lines quote, read from disk on every request."""
+    page_runs = sum(len(r["runs"]) for r in snap.get("workflow_runtimes", []) if not r.get("error"))
+    store = snap["store_path"]
+    receipts = sum(1 for _ in store.rglob("runtime.yaml")) if store and store.is_dir() else 0
+    return {"support": (f'{len(snap["runs"])} named by pages · {receipts} receipts in the store'
+                        if snap["runs"] or receipts else "none recorded yet"),
+            "page": (f'{page_runs} recorded' if page_runs else "none recorded yet"),
+            "": ""}
+
+
+def _work_line(snap: dict, space: str, tab: str, live: dict[str, str]) -> str:
+    """One quiet line under a tab: what runs land here, how many this board has,
+    and the skill or agent that does the work.  The full table is Run Space ›
+    Who does it; this line is the same row, where the person already is."""
+    rows = [r for r in _WHO if r[0].lower() == space and (r[2] == tab if tab else True)]
+    if not rows:
+        return ""
+    parts = []
+    for _, _, _, work, key, owner, worker, actor in rows:
+        count = live.get(key, "")
+        who = " · ".join(x for x in (worker if worker != "—" else "", actor if actor != "—" else "") if x)
+        if work.startswith("none"):
+            line = f'<b>No run here</b> · {_wbr(work[7:])}'
+        else:
+            line = f'<b>Runs here</b> · {_wbr(work)}' + (f' · <span class=wl-count>{_e(count)}</span>' if count else "")
+        parts.append(line + (f' · {_wbr(who)}' if who else ""))
+    link = ("" if snap["static"] else
+            f' <a class=wl-more href="{_e(_space_url(snap, "run", "who"))}">all runs and skills</a>')
+    return f'<p class=workline>{" <br>".join(parts)}{link}</p>'
+
+
+def _space_url(snap: dict, space: str, view: str) -> str:
+    return f'?board={quote(snap["board_arg"] or snap["board"].name)}&space={space}&view={view}'
+
+
+_VIEW_TAG = re.compile(r'(<div class="view(?: on)?" data-view="([a-z]+)">)')
+
+
+def _with_work_lines(html: str, snap: dict, space: str) -> str:
+    """Put each tab's work line right under its tab, without touching the
+    renderers that own those Spaces (several sessions edit this file)."""
+    live = _live_counts(snap)
+    if not _VIEW_TAG.search(html):                      # a Space with a single view
+        return _work_line(snap, space, "", live) + html
+    return _VIEW_TAG.sub(lambda m: m.group(1) + _work_line(snap, space, m.group(2), live), html)
+
+
+def _render_who(snap: dict) -> str:
+    """Run Space · Who does it: for every Space and tab, the runs that land
+    there and the skill or agent that does them.  Counts are read from disk."""
+    live = _live_counts(snap)
+    rows, last = [], ""
+    for space, tab, _, work, key, owner, worker, actor in _WHO:
+        if space != last:
+            rows.append(f'<tr class=group><td colspan=6>{_e(space)} Space</td></tr>')
+            last = space
+        none = work.startswith("none")
+        rows.append(f'<tr><td class=nw>{_e(tab)}</td>'
+                    f'<td class={"mut" if none else ""}>{_wbr(work)}</td>'
+                    f'<td class="mut nw">{_e(live.get(key, "—"))}</td>'
+                    f'<td>{_wbr(owner)}</td><td>{_wbr(worker)}</td><td>{_e(actor)}</td></tr>')
+    return ('<h2>Who does it</h2><p class=lead>Every Space and every tab: the runs that land there, how many this board '
+            'has, and the skill or agent that does the work. A control action (registering, checking, signing) is '
+            'a person\'s and never becomes a Run.</p>'
+            '<div class=scroll><table class=who><tr><th>Tab</th><th>Runs that land here</th><th>On this board</th>'
+            '<th>Owner skill</th><th>Worker skill or agent</th><th>Who acts</th></tr>'
+            + "".join(rows) + '</table></div>')
+
+
+def _render_workflow_map(snap: dict, projection: dict | None = None) -> str:
     where = _slot_folders(snap)
     head = "".join(f"<th>{s}</th>" for s in ("Folder resource", "Scope", "Insight", "Evidence", "Check", "Run", "Delivery",
                                                "Folder on this board"))
@@ -1441,20 +1704,10 @@ def _render_workflow_map(snap: dict) -> str:
                 f' · <span class=tn-note>counts</span></span></div>{tree}</div>')
 
     roots, homes = _board_tree(snap), _homes_tree(snap)
-    specs = (
-        ("support.<target>", "Task / Discovery", "one missing computation or source Result", "native producer id"),
-        ("evidence.<page>.<item>", "Page Evidence", "one decided VALUE / CITE / DISPLAY item", "RE lineage + native Ticket"),
-        ("structure.<page>", "Page Writing", "one selected whole-Page map", "rp-struct-NN"),
-        ("write.<page>.<scope>", "Page Writing", "one selected section or paragraph goal", "rp-sec-NN / rp-para-NN"),
-        ("deliver.<page>.<target>", "Page Delivery", "one declared delivery target", "RD lineage + native Ticket"),
-    )
-    spec_rows = "".join("<tr>" + "".join(f"<td>{_e(v)}</td>" for v in row) + "</tr>" for row in specs)
-    return ('<h2>Workflow map</h2><p class=lead>Each selected Run Spec has a bounded target and dependencies. '
-            'The runtime records actual native Runs, their Results, receipts, and ready or waiting work.</p>'
-            '<h3>Run Spec templates</h3><p>Templates describe available work. A Ticket and receipt establish an allocated Run. '
-            'Registration, Page checks, signatures and settlement are control actions.</p>'
-            '<div class=scroll><table><tr><th>Spec</th><th>Owner</th><th>Target</th><th>Native identity</th></tr>'
-            f'{spec_rows}</table></div>'
+    selected = (_render_selected_specs(snap, projection, "all", read_only=True) if projection else
+                '<p class=note>Select a question and partition to inspect its owed Specs.</p>')
+    return ('<h2>Workflow map</h2><p class=lead>Shown here · read-only. This map describes selected work; '
+            'the Runs view lists actual native executions.</p>' + selected +
             '<h3>Folder resources × Spaces</h3><p>The resources below hold questions and answers; their kinds do not count as Runs.</p>'
             f'<div class=scroll><table class=wmap><tr>{head}</tr>{body}</table></div>'
             f'<h2 class=tree-title>Folder tree × Folder kind <span class=mut>· {count(roots) + count(homes)} folders and files</span></h2>'
@@ -1472,18 +1725,22 @@ def _rows_table(rows: list[tuple[str, str, str]]) -> str:
         f'<tr><td>{_e(i)}</td><td>{_inline(t)}</td><td class=from>{_e(f)}</td></tr>' for i, t, f in rows) + '</table>'
 
 
-def _render_insight(snap: dict, view: dict | None, qid: str, pid: str) -> str:
+def _render_insight(snap: dict, view: dict | None, qid: str, pid: str,
+                    projection: dict | None = None) -> str:
     if not view or not view["row"]:
         return '<p class=note>No question selected.</p>'
     row, cell, page = view["row"], view["cell"], view["page"]
+    owed = _render_selected_specs(snap, projection, "insight") if projection else ""
     if not page:
         if cell["mark"] == "🚫":
             short, why = _REASONS.get(cell["note"], (cell["note"] or cell["raw"], ""))
             answer = (f'<h2>{_e(row["question"])}</h2><p class=opening>Refused on {_e(_partition_label(snap, pid))}: '
                       f'<b>{_e(short)}</b>{(", " + _e(why)) if why else ""}. A refusal is a recorded answer, not a gap.</p>')
+        elif cell["mark"] != "·":
+            answer = f'<h2>{_e(row["question"])}</h2><p class=opening>The answer Page is not allocated or recorded yet.</p>'
         else:
             answer = f'<h2>{_e(row["question"])}</h2><p class=opening>Not asked on partition {_e(pid)}. Pick another cell in the register.</p>'
-        return _tabs([("answer", "Answer")]) + _view("answer", answer, True)
+        return _tabs([("answer", "Answer")]) + _view("answer", answer + owed, True)
     opening = "".join(f'<p class=opening>{_inline(p)}</p>' for p in _opening(page["text"]))
     rows = _rows(page["text"])
     page_url = ("" if snap["static"] else
@@ -1509,12 +1766,12 @@ def _render_insight(snap: dict, view: dict | None, qid: str, pid: str) -> str:
     ladder = ('<h2>How the answer was built</h2><p class=lead>Top down, along the first citation at each level. Other cited pages are linked.</p>'
               + ("".join(rungs) or '<p class=note>No citations found.</p>'))
     limits = "".join(f'<p>{_inline(l)}</p>' for l in _limits(page["text"]))
-    limits = ('<h2>What this answer may not say</h2><div class=limits>' + limits + '</div>') if limits else '<p class=note>This page has no Forbidden Overreach section.</p>'
+    limits = ('<h2>What this answer may not say</h2><div class=limits>' + limits + '</div>') if limits else '<p class=note>No answer limits have been recorded.</p>'
     return (_tabs([("answer", "Answer"), ("ladder", "Ladder"), ("limits", "Limits")])
-            + _view("answer", answer, True) + _view("ladder", ladder) + _view("limits", limits))
+            + _view("answer", answer + owed, True) + _view("ladder", ladder) + _view("limits", limits))
 
 
-def _render_evidence(snap: dict, view: dict | None) -> str:
+def _render_evidence(snap: dict, view: dict | None, projection: dict | None = None) -> str:
     # One hop per line, read top to bottom; a wrapping row of arrows left an
     # arrow dangling at each line end.
     hops = []
@@ -1534,10 +1791,10 @@ def _render_evidence(snap: dict, view: dict | None) -> str:
              + '</ol>') if hops else '<p class=note>Select an answered cell to trace it.</p>'
     if view and view["page"] and not view["receipt"]:
         chain += '<p class=note style="margin-top:12px">No page in this chain names a run receipt, so the trace stops at the D page.</p>'
-    return chain
+    return chain + (_render_selected_specs(snap, projection, "evidence") if projection else "")
 
 
-def _render_delivery(snap: dict) -> str:
+def _render_delivery(snap: dict, projection: dict | None = None) -> str:
     """What leaves this board: person-signed Wisdom pages a DesignBoard may use."""
     hrows = "".join(
         f'<tr><td>{_link(snap, h["record"])} · {_e(h["title"])}</td><td class=mono>{_e(h["serves"])}</td>'
@@ -1548,7 +1805,8 @@ def _render_delivery(snap: dict) -> str:
     return (f'<h2>Delivery</h2><p class=lead>{ready} Wisdom page{"" if ready == 1 else "s"} ready for design'
             f'{f"; {waiting} need current signature/settlement evidence" if waiting else ""}. '
             f'Data, Information and Knowledge pages never leave the board directly.</p>'
-            f'<table><tr><th>Wisdom page</th><th>Serves</th><th>Current eligibility</th></tr>{hrows}</table>')
+            f'<table><tr><th>Wisdom page</th><th>Serves</th><th>Current eligibility</th></tr>{hrows}</table>'
+            + (_render_selected_specs(snap, projection, "delivery") if projection else ""))
 
 
 def _render_check(snap: dict, view: dict | None, qid: str, pid: str) -> str:
@@ -1560,7 +1818,7 @@ def _render_check(snap: dict, view: dict | None, qid: str, pid: str) -> str:
             f'<span class=who><span class="pill {"human" if g["who"] == "person" else "acc" if g["who"] == "agent" else ""}">{_e(g["who"])}</span> {_e(g["state"])}</span>'
             f'{("<span class=n title=" + chr(34) + _e(g["note"]) + chr(34) + ">" + _e(_clip(g["note"], 90)) + "</span>") if g["note"] else ""}</div>'
             for g in view["gates"]) + '</div>'
-    gates = f'<h2>Gates for {_e(qid)} × {_e(pid)}</h2><p class=lead>Applicable GI controls for this cell. Handoff signing needs a person; a permitted POOL deferral exports no handoff.</p>' + gates
+    gates = f'<h2>Gates for {_e(qid)} × {_e(pid)}</h2><p class=lead>Shown here · read-only. These are resource controls, with no Run allocation. Applicable GI controls for this cell. Handoff signing needs a person; a permitted POOL deferral exports no handoff.</p>' + gates
     groom = groom_snapshot(snap["board"], snap)
     crow = "".join(
         f'<tr><td>{_pill("🚫" if c["level"] == "FAIL" else "🟡" if c["level"] == "WARN" else "✅", c["level"])}</td>'
@@ -1616,6 +1874,7 @@ def render_page_insight(snap: dict, page: dict, board_path: str, view: str = "pa
     cells = page_cells(snap, page)
     qid, pid = cells[0] if cells else ("", page["partition"])
     cv = _cell_view(snap, qid, pid) if qid else None
+    projection = selected_specs(snap, qid, pid, page=page)
     board_url = _cell_url(snap, qid, pid) if qid else f"/_board/insight-board?board={quote(snap['board'].name)}"
     cited_by = [p for p in snap["pages"] if page["id"] in _parents(p["text"])]
     parents = [snap["by_id"][pid_] for pid_ in _parents(page["text"]) if pid_ in snap["by_id"]]
@@ -1643,6 +1902,7 @@ def render_page_insight(snap: dict, page: dict, board_path: str, view: str = "pa
     log = ('<h2>Log</h2><ul class=timeline>' + "".join(
         f'<li><span class=d>{_e(d)}</span><span class=p></span><span>{_inline(t[:240])}</span></li>' for d, t in reversed(log_lines))
         + '</ul>') if log_lines else '<h2>Log</h2><p class=note>No dated log line on this page.</p>'
+    this += _render_selected_specs(snap, projection, "all")
     shell = (_tabs([("page", "This page"), ("cites", "Cites"), ("by", "Cited by"), ("gates", "Gates"), ("log", "Log")])
              + _view("page", this, True) + _view("cites", cites) + _view("by", by) + _view("gates", gates) + _view("log", log))
     return _spell_ids(snap, "".join([

@@ -43,3 +43,14 @@ Each row records criterion id/source, target/quote, verdict, evidence/reason,
 smallest fix and owner. Report unresolved conflicts and coverage separately.
 Self-review readiness, independent review and the person's acceptance are
 distinct records. No evaluation alone changes the Run's human gate.
+
+## Specialized overlays
+
+Host workflows may add sourced criterion rows without changing this base
+rubric. The Paper submission-readiness overlay is the canonical example:
+`paper/haipipe-paper/ref/submission-readiness.md` defines the `SUB-*` rows for
+the final Introduction, Methods, Results, Discussion, cover-letter and
+whole-manuscript checks. Those rows still use these four axes and four verdicts;
+they are recorded with the same target, evidence, smallest-fix and owner
+fields. An overlay is not a numeric score, a replacement for Page CHECK, or a
+venue rule unless the current venue contract says so.

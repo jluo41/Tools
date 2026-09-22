@@ -1,3 +1,8 @@
+## 0.11.0 · 2026-09-21
+
+- Apply Paper submission-readiness overlay rows to their owning Section Pages
+  while keeping cover-letter and whole-paper checks at Paper level.
+
 ## 0.10.2 · 2026-09-20
 
 - Clarify that CHECK is dispatched by the Page Workflow and is not itself a Run.

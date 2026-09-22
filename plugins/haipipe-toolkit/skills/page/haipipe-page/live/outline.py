@@ -525,6 +525,12 @@ object.evfig{{height:32vh}}
  border:1px solid var(--line);border-radius:7px;padding:3px 9px;cursor:pointer;
  background:var(--card);color:var(--mut)}}
 .draft-mode-tab.on{{border-color:var(--acc);color:var(--acc)}}
+.scratch-run-note{{display:none;margin:-5px 0 12px;padding:7px 10px;border-left:2px solid var(--acc);
+ color:var(--mut);font-size:12px;line-height:1.5}}
+.draft-lens[data-draft-mode="scratch"] .scratch-run-note{{display:block}}
+.scratch-run-note b{{color:var(--fg)}}
+.scratch-run-meta{{display:none;color:var(--mut);font:10.5px/1.3 ui-monospace,Menlo,monospace}}
+.draft-lens[data-draft-mode="scratch"] .scratch-run-meta{{display:inline}}
 .paragraph-reading{{display:none}}
 .reading-line{{display:grid;grid-template-columns:2.6em minmax(0,1fr);gap:10px;
  padding:8px 0;border-bottom:1px solid var(--line);align-items:start}}
@@ -549,6 +555,7 @@ object.evfig{{height:32vh}}
 code{{font:12px ui-monospace,Menlo,monospace}}
 </style></head><body>
 <h1>🧭 {title}</h1>
+<div class=mut>Page level · <code>{page_stem}</code>{board_link}</div>
 <div class=spaces>
  <button class="space on" data-space=bullet data-default=div>Draft Space</button>
  <button class=space data-space=evidence data-default=evidence>Evidence Space</button>
@@ -562,6 +569,7 @@ code{{font:12px ui-monospace,Menlo,monospace}}
   <button type=button class="draft-mode-tab{reading_on}" data-draft-mode=reading>Reading</button>
   <button type=button class="draft-mode-tab{scratch_on}" data-draft-mode=scratch>Scratch</button>
  </div>
+ <div class=scratch-run-note><b>Scratch · Page.interactive-writing.scratch</b> · rough thinking for one Section or paragraph group. <b>Start here</b> after the selected Outline exists; actor: human, who owns Scratch notes and manually-triggered Finish. Notes autosave while typing. Owner Skill: haipipe-page-workflow; Finish uses the local summarizer, not a separate worker Skill. A current target Run and status appear beside its heading. Scratch does not edit Draft prose.</div>
  {by_div}
 </div>
 <div class=lens id=lens-evidence><iframe class=workspace-frame
@@ -889,6 +897,16 @@ def _e(s):
     return html.escape(s)
 
 
+def _scratch_run_meta(record):
+    if not record:
+        return ""
+    run_id = str(record.get("run", "")).strip()
+    status = str(record.get("status", "unknown")).strip().lower()
+    if not run_id:
+        return ""
+    return '<span class=scratch-run-meta>· %s · %s</span>' % (_e(run_id), _e(status))
+
+
 _LOGIC_NODE_RE = re.compile(
     r'^([A-Za-z][A-Za-z0-9_-]*)\s*\[\s*"((?:\\.|[^"])*)"\s*\]$'
 )
@@ -1130,11 +1148,11 @@ def _closed_page_run_paragraphs(page_src):
     return closed
 
 
-def _logic_map(page_src, root=None):
+def _logic_map(page_src, root=None, path_q="", file_q=""):
     """Render only the authored Mermaid map at the top of Draft Space."""
     if page_src is None:
         return ""
-    prompt = RunPrompts(page_src, root).button("structure")
+    prompt = RunPrompts(page_src, root, path_q, file_q).button("structure")
     toolbar = prompt_assets_html() + '<div class="structure-prompt">' + prompt + '</div>'
     logic = page_src.parent / "outline" / (page_src.stem + "-logic.mmd")
     review_open = _mermaid_structure_review_open(page_src)
@@ -2284,7 +2302,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
     outline_url = ("/_board/outline?path=%s&file=%s" % (quote(path_q), quote(file_q))
                    if path_q and file_q else "")
     txt = f.read_text(encoding="utf-8", errors="replace")
-    prompts = RunPrompts(page_src, root)
+    prompts = RunPrompts(page_src, root, path_q, file_q)
     # The Page paragraph index is global across Content divisions. The
     # historical Shape kept per-division P numbers, so translate those local
     # addresses only in this live presentation layer: source prose, Evidence
@@ -2406,7 +2424,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         rows.append(
             '<details class="paragraph-group" open data-paragraph="%s">'
             '<summary class="prow"%s><span class=addr>%s</span>'
-            '<span class=mut>%s</span>%s%s</summary>'
+            '<span class=mut>%s</span>%s%s%s</summary>'
             '<div class=paragraph-scratch>%s</div>'
             '<div class=paragraph-bullets><div class=preview-columns>'
             '<span>Bullet</span><span>Draft</span></div>%s</div>'
@@ -2418,6 +2436,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
                _e(display_paragraph),
                _e(re.sub(r"\s*·\s*S\d+\s+to\s+S\d+\s*$", "", current_paragraph_title)),
                prompts.button("paragraph", current_paragraph),
+               _scratch_run_meta(scratch_latest.get(("paragraph", current_paragraph))),
                scratch_flag_html("paragraph", current_paragraph,
                                  scratch_latest.get(("paragraph", current_paragraph)),
                                  read_only=read_only),
@@ -2452,13 +2471,14 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
             current_section = "C%d" % cn
             division_title = re.sub(r"^C\d+\s*·\s*", "", line[3:].strip())
             rows.append('<div class="row division-title"%s title="%s">'
-                        '<span class="addr sec">C%d</span><b>%s</b>%s%s</div>'
+                        '<span class="addr sec">C%d</span><b>%s</b>%s%s%s</div>'
                         '<div class=section-scratch>%s</div>'
                         % (scratch_heading_attr("section", current_section,
                                                 read_only=read_only),
                            _e(division_title), cn,
                            _e(division_title.split(" · ")[0]),
                            prompts.button("section", current_section),
+                           _scratch_run_meta(scratch_latest.get(("section", current_section))),
                            scratch_flag_html("section", current_section,
                                              scratch_latest.get(("section", current_section)),
                                              read_only=read_only),
@@ -3156,6 +3176,63 @@ def _lenses(page_src, root=None):
     """
     return "", "", "", "", ""
 
+# The page-level surface has to be able to get back to the board-level one.
+# `live/design.py` has carried `↑ Board level` on its Page surface since the
+# design plugin shipped (design.py, the `board_link` line), and its board
+# surface links back DOWN to each page. 🧭 Outline had only the downward half:
+# the Paper Plugin emits 202 links into page Outlines on one real board, and
+# the Outline page emitted zero links back (JL 260921). One breadcrumb closes
+# the loop for every board kind that HAS a board-level surface.
+_BOARD_LEVEL_ROUTES = {
+    "dialect": {"paper": ("paper", "\U0001F4C4")},
+    "board-kind": {"design-board": ("design-board", "\U0001F3A8"),
+                   "insight-board": ("insight-board", "\U0001F4A1"),
+                   "labeling-board": ("labeling-board", "\U0001F3F7")},
+}
+
+
+def board_level_link(page_src, root):
+    """`· ↑ Board level 📄` when this page's board has a board-level surface.
+
+    Returns "" for a standalone page, a page outside `--root`, or a board whose
+    declared dialect/kind has no board-level plugin. A board-level route always
+    takes `path=<board>/board.md&file=board.md`.
+    """
+    if page_src is None or root is None:
+        return ""
+    try:
+        root_p = Path(root).resolve()
+        here = Path(page_src).resolve().parent
+    except (OSError, RuntimeError, ValueError):
+        return ""
+    board = None
+    while here == root_p or root_p in here.parents:
+        if (here / "board.md").is_file():
+            board = here
+            break
+        if here == root_p:
+            break
+        here = here.parent
+    if board is None:
+        return ""
+    try:
+        text = (board / "board.md").read_text(encoding="utf-8", errors="replace")
+        rel = board.relative_to(root_p)
+    except (OSError, UnicodeError, ValueError):
+        return ""
+    route = mark = None
+    for key, table in _BOARD_LEVEL_ROUTES.items():
+        got = re.search(rf"(?m)^{re.escape(key)}:\s*(\S+)\s*$", text)
+        if got and got.group(1).strip() in table:
+            route, mark = table[got.group(1).strip()]
+            break
+    if not route:
+        return ""
+    path_param = quote(str(rel / "board.md"), safe="")
+    return (' \u00b7 <a href="/_board/%s?path=%s&file=board.md">'
+            '\u2191 Board level %s</a>' % (route, path_param, mark))
+
+
 def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=False,
            draft_mode="table"):
     """-> the full html page: both lenses rendered, chips toggle."""
@@ -3205,7 +3282,7 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
     plan = (plan_card(page_src, root, path_q, file_q, read_only=read_only,
                       minimal=True)
             if page_src is not None else "")
-    logic = _logic_map(page_src, root)
+    logic = _logic_map(page_src, root, path_q, file_q)
     by_div = logic + plan
 
     todo = [a for a in o["aims"] if not a["done"]]
@@ -3229,6 +3306,8 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
         run_url = "/_board/runs?path=%s&file=%s&embed=1" % encoded
         delivery_url = "/_board/delivery?path=%s&file=%s&workspace=1" % encoded
     return _PAGE.format(title=_e(title), lead=lead, tally=_tally(o),
+                        page_stem=_e(page_src.stem if page_src is not None else "standalone"),
+                        board_link=board_level_link(page_src, root),
                         chip=chip, by_div=by_div, by_prog="".join(prog),
                         draft_mode=draft_mode,
                         table_on=table_on,

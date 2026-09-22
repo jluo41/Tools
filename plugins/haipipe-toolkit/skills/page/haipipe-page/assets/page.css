@@ -14,14 +14,13 @@
 .page-plugin-tab-wrap{position:relative;display:flex;flex:0 0 auto}.page-plugin-tab{min-height:36px;padding:5px 11px;border:1px solid var(--line);border-bottom:0;border-radius:7px 7px 0 0;background:transparent;color:var(--mut);cursor:pointer;font:600 12px/1 ui-monospace,Menlo,monospace}
 .page-plugin-tab[aria-selected="true"]{margin-bottom:-1px;padding:5px 42px 6px 11px;background:var(--bg);color:var(--fg)}.page-plugin-close{display:none;position:absolute;right:0;top:0;bottom:0;width:36px;border:0;background:transparent;color:var(--mut);cursor:pointer;font-size:17px}.page-plugin-tab[aria-selected="true"]+.page-plugin-close{display:block}.page-plugin-close:hover{color:#c94a4a}
 .page-plugin-frames{flex:1;min-height:0;position:relative}.page-plugin-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--bg)}.page-plugin-frame[hidden]{display:none}
-#source-editor{max-width:1000px;margin:0 auto;padding:20px 26px 40px;border-top:1px solid var(--line)}
-#source-editor h2{font-size:20px}#source-editor p{color:var(--mut);font-size:14px}
 .page-footer{max-width:1000px;margin:auto;padding:16px 26px;font-size:12px;color:var(--mut)}
 .source-html{display:block;width:100%;min-height:650px;border:1px solid var(--line);border-radius:var(--radius-control)}
 .attached-source{margin:1.5rem 0}.source-code{max-height:60vh;overflow:auto}.source-caption{font-size:13px;color:var(--mut)}.source-error{color:var(--todo)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 body[data-live="false"] .live-only{display:none}
-body.standalone .q .nav,body.standalone .dadd{display:none}
-body[data-read-only="true"] #save-source{display:none}
+body.standalone .q .nav,body.standalone .dadd,
+body.standalone #chatfab,body.standalone #chatfabmore,
+body.standalone .chatbtn,body.standalone .schatbar{display:none!important}
 @media(max-width:800px){body.plugin-open .page-stage{display:block}.page-plugin-pane{position:fixed;inset:53px 0 0;z-index:35;height:auto;border-left:0;border-top:1px solid var(--line)}}
-@media(max-width:640px){.page-toolbar{padding:12px 16px}.page-toolbar nav{gap:12px}#source-editor{padding:16px}.source-html{min-height:450px}}
+@media(max-width:640px){.page-toolbar{padding:12px 16px}.page-toolbar nav{gap:12px}.source-html{min-height:450px}}

@@ -1,8 +1,54 @@
 # Submission-readiness reference
 
 Use this reference at the paper's final G4 pass. Treat it as a gate, not as a
-generic suggestion list. Record each item as `✅ closed`, `⚠️ human review`, or
-`⛔ blocker`, with an owner and evidence path when it is not closed.
+generic suggestion list. The 21-point overlay below is a heuristic adaptation
+of the user-provided [pre-submission checklist](http://xhslink.com/o/4GcLUMylKr1);
+venue instructions, evidence contracts, and Page ownership remain authoritative.
+
+The overlay uses the shared Writing rubric: **Mechanics, Function, Evidence,
+Readability**, with `MEETS`, `NEEDS WORK`, `N/A`, or `NOT VERIFIABLE`. Record the
+criterion id, target, evidence path, smallest fix, and owner. For the compact G4
+summary, map `MEETS` to `✅ closed`, `NOT VERIFIABLE` to `⚠️ human review`, and
+`NEEDS WORK` to `⛔ blocker` unless a permitted noncritical waiver is recorded.
+`N/A` requires a contract- or venue-based reason. The overlay is not a score and
+does not replace Page CHECK, the evidence lock, or human acceptance.
+
+## 0. Twenty-one-point narrative and submission overlay
+
+Run the section-scoped rows on the corresponding Section Pages. Run the
+whole-paper rows only after assembly, using the same checked build that will be
+submitted. The Methods and whole-paper retelling checks require independent human
+evidence; absent that evidence they remain `NOT VERIFIABLE`.
+
+| ID | Criterion | Rubric axes | Owner / timing |
+|---|---|---|---|
+| `SUB-INTRO-01` | First sentence establishes the subject and why it matters to the intended reader. | Function, Readability | Introduction Page CHECK |
+| `SUB-INTRO-02` | The introduction narrows from broad context to the study question without a missing logical step. | Mechanics, Function | Introduction Page CHECK |
+| `SUB-INTRO-03` | The gap states a supported unresolved question or limitation, rather than a generic novelty claim. | Function, Evidence | Introduction Page CHECK |
+| `SUB-INTRO-04` | The closing states the aim, question, or contribution and hands off cleanly to the Methods. | Function, Mechanics | Introduction Page CHECK |
+| `SUB-METHOD-01` | Design parameters, variables, timing, and analysis details are sufficient to reconstruct the study. | Mechanics, Evidence | Methods Page CHECK |
+| `SUB-METHOD-02` | Sample size, analytic N, exclusions, and denominators are explicit and consistent. | Evidence, Mechanics | Methods Page CHECK |
+| `SUB-METHOD-03` | Tests/models, estimands, uncertainty, and design alignment are stated without statistical overclaiming. | Mechanics, Evidence | Methods Page CHECK |
+| `SUB-METHOD-04` | Methods order lets a reader reconstruct the experiment or analysis and matches the Results order. | Mechanics, Readability | Methods Page CHECK plus retelling evidence |
+| `SUB-RESULT-01` | Each Results unit opens with the finding or answer it is reporting. | Function, Readability | Results Page CHECK |
+| `SUB-RESULT-02` | Quantitative findings provide values, relevant N/denominator, and uncertainty where applicable. | Evidence, Mechanics | Results Page CHECK |
+| `SUB-RESULT-03` | Results report observed findings; mechanism or interpretation is routed to Discussion unless directly tested. | Evidence, Function | Results and Discussion Page CHECKs |
+| `SUB-DISC-01` | The Discussion opening answers the research question using the accepted Results. | Function, Evidence | Discussion Page CHECK |
+| `SUB-DISC-02` | The finding is placed in dialogue with relevant cited prior work. | Function, Evidence | Discussion Page CHECK |
+| `SUB-DISC-03` | Verbs match the design, estimand, and uncertainty; causal strength is not inflated. | Evidence, Mechanics | Discussion Page CHECK |
+| `SUB-DISC-04` | Limitations, population boundaries, generalizability, and unsupported implications are explicit. | Evidence, Readability | Discussion Page CHECK |
+| `SUB-COVER-01` | The cover letter uses the exact target journal name and current submission metadata. | Mechanics | Paper delivery / venue CHECK |
+| `SUB-COVER-02` | The letter explains fit with the target venue's scope and audience using current instructions. | Function, Evidence | Paper delivery / venue CHECK |
+| `SUB-COVER-03` | The letter meets the target venue's length and format rule; a universal one-page cap is not assumed. | Mechanics | Paper delivery / venue CHECK |
+| `SUB-WHOLE-01` | The Introduction gap and first Discussion paragraph form a question-and-answer pair. | Function, Readability | Final Paper CHECK |
+| `SUB-WHOLE-02` | Figure/table order, callouts, and display-register order follow the manuscript narrative. | Mechanics, Evidence | Final Paper CHECK / assembly |
+| `SUB-WHOLE-03` | An independent reader can restate the question, methods, result, and meaning from the assembled paper. | Function, Readability, Evidence | Final Paper CHECK / human review |
+
+The Results/Discussion boundary is one cross-section finding: Results quantify
+what was observed, while Discussion interprets, compares, and bounds it. Fix the
+owning Section or upstream evidence/claim record rather than duplicating a new
+rubric for every venue. The whole-paper rows are aggregate checks and do not
+become paragraph-level requirements.
 
 ## 1. Evidence lock
 

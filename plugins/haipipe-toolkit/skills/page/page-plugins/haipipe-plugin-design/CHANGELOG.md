@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.11.3 — 2026-09-21
+
+- A card no longer carries the strip of Runs (`Commission ✓ JL → Generate ✓ →
+  Verify ✓ → next: …`). The card's own line says the state and what is waited
+  on; the Runs are Run Space's business. Asked for by JL.
+- No control acts on every item at once. The "For all items at once" bar is
+  gone from the surface and `perform_action` refuses `release-all`, `queue-all`
+  and `adopt-all`: one decision, one item, one sentence on the record.
+- A declined item no longer reappears in the Run-type block's per-item table:
+  Delivery folds its card away, so the fold is the whole promise.
+- A line that waits on a person says "you" and never the reader's name, on the
+  item line, in the next-Run guidance and in the board's waiting counter. A
+  name there read as the person who signed the last record, which is a
+  different fact.
+
+## 0.11.2 — 2026-09-21
+
+- Add Space-specific Run Type guidance with plain purpose, canonical Type,
+  actor, owner/worker Skills and prerequisites, separately from matching records.
+- Each item explains its next eligible native Run, or current Run/repair wait,
+  with its actual Commission, draft and matching record context. Preserve the
+  existing Commission and queue controls.
+- Add contextual Generate/Verify chat copy beside eligible item controls and
+  for compatible queued Runs. Copying only changes the clipboard; prompts
+  reread state, reuse Run ids, preserve Commission/reviewer gates, and report
+  the actual receipt. Reuse the existing clipboard helper unchanged.
+- Label native live starts and read-only views explicitly; retain Run Space
+  history and read-only Delivery. Static item cards now omit mutation controls.
+- Show canonical Type and target beside actual Run names. No shared helpers,
+  styles, central catalog, gate rules or dispatch implementation changed.
+- Tests were not added or run for this follow-up, as requested.
+
 ## 0.11.1 — 2026-09-20
 
 - Align current docs with Commission → Generate → independent Verify and ready

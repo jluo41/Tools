@@ -7,8 +7,8 @@ description: >-
   Use for paper setup, status, drafting, complete-paper assembly, compiling,
   or review rounds.
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-09-20"
+  version: "1.3.0"
+  last_updated: "2026-09-21"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---
 
@@ -330,6 +330,18 @@ own page PDF compiles. Old self-contained desk rooms (`<N>-<desk><year>/` with
 `sections/*.tex` as source of record) are outside the current runtime and must
 be migrated before current Paper commands are used.
 
+**Every group heading names its own folder (JL 260921)** — in `## Pages`, write
+`### Ba · Ba-ManSci-Main`, never `### Ba · ManSci Main`. The token after the
+separator is the directory name and carries no space, because the Paper Plugin
+binds a group row to disk by that token alone. A heading that spells a title
+there binds to nothing: the Board renders all its Pages, and the Paper Plugin
+simultaneously reports `no S- rows in C8` and `0 Section page(s)`, with no error
+anywhere. Two other same-family traps in the Story: a C8 row is only seen when
+the Section id is the FIRST cell (`| S-ManSci-Main-5-… (Main 5) | … |`), and the
+compile order is only read from `<!-- haipipe:compile-order:start -->` …
+`<!-- haipipe:compile-order:end -->` with `- ` prefixed ids, not from a fenced
+block. `cli/check.py` now gates the heading; the other two are still silent.
+
 **Group-name grammar (JL 260824; Section IDs re-ruled 260901)** — one `A` group
 carries the per-paper journey: `A1-Story` holds `Story00-ideation` (the pool)
 and one `Story<Letter>-<desk>-<idea-slug>` per surviving idea, the paper's prospective blueprint
@@ -422,12 +434,19 @@ Run the gate in this order:
    missingness, analytic N, uncertainty, clustering, multiplicity, ethics, and
    prespecified versus secondary analyses. Confirm that every table, figure,
    supplement item, legend, and checklist is final, cited, and rendered.
-4. **Check submission files.** Apply the venue's current limits and required
+4. **Apply the 21-point narrative overlay.** Load
+   `ref/submission-readiness.md` and record `SUB-INTRO-*`, `SUB-METHOD-*`,
+   `SUB-RESULT-*`, and `SUB-DISC-*` on their owning Section Pages. After
+   assembly, record `SUB-COVER-*` and `SUB-WHOLE-*` against the submission
+   build. Use the shared four-axis rubric and verdicts; this overlay is not a
+   numeric score. Keep the Results/reporting boundary explicit: Results report
+   and quantify, while Discussion interprets, compares, and bounds.
+5. **Check submission files.** Apply the venue's current limits and required
    structure to the title page, abstract, Key Points, main text, references,
    tables, figures, supplement, cover letter, reporting checklist, and metadata.
    Fill authorship, funding, conflicts, data/code sharing, consent/IRB, and AI
    disclosure fields; never leave placeholders in a submission package.
-5. **Run the final human pass.** Read the assembled document linearly for
+6. **Run the final human pass.** Read the assembled document linearly for
    clinical clarity, claim strength, citation support, AI-like promotional
    language, unexplained abbreviations, repetition, and formatting. A person
    must approve the evidence scope and the final build before G4 closes.
@@ -482,6 +501,9 @@ when those artifacts are actually authored, executed or built.
   output CHECK result; no generated Word file is used as an input.
 - G4 submission-readiness is either closed or explicitly recorded as a DRAFT
   with named hard blockers and a human owner.
+- The G4 record reports all applicable `SUB-*` criteria with shared rubric
+  verdicts, scope, evidence and owner; the two retelling criteria remain
+  `NOT VERIFIABLE` until independent human evidence is recorded.
 - Static skill validation, repository checks, and a fresh-context skill test
   have passed after any skill edit.
 

@@ -1,3 +1,9 @@
+## 1.4.0 · 2026-09-21
+
+- Route the final G4 pass through the Paper submission-readiness overlay,
+  separating Section-owned checks from Paper-level cover-letter and whole-paper
+  checks without adding a Workflow unit.
+
 ## 1.3.1 · 2026-09-20
 
 - Clarify that Paper Workflow units are owner-native Runs; compatibility controller labels do not add Runs.

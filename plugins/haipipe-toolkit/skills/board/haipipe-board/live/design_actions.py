@@ -251,17 +251,29 @@ def compile_criteria(acceptance: list[str]) -> list[dict]:
         if phrases:
             for n, (kind, phrase) in enumerate(phrases):
                 criteria.append({"id": cid + ("" if n == 0 else chr(ord("a") + n)), "kind": kind, "value": phrase})
-        elif _RENDER.search(rule):
-            raise ValueError(
-                f"acceptance rule {cid} is visual; use `visual: ... | observe: ... | "
-                "pass: ... | fail: ... | not-verifiable: ...`"
-            )
         else:
-            raise ValueError(
-                f"acceptance rule {cid} is semantic; use `semantic: ... | observe: ... | "
-                "pass: ... | fail: ... | not-verifiable: ...`"
-            )
+            # A rule no built-in check can compute is judged by a reader. The
+            # person writes it as a plain sentence; the method is derived from
+            # it, so nothing has to be re-typed. Spelling the method out
+            # (`semantic: … | observe: …`) stays available and wins.
+            criteria.append(_judged_criterion(cid, rule))
     return criteria
+
+
+def _judged_criterion(cid: str, rule: str) -> dict:
+    """A plain acceptance sentence as a judged criterion with its method named."""
+    visual = bool(_RENDER.search(rule))
+    return {
+        "id": cid, "kind": "visual" if visual else "semantic", "description": rule,
+        "observation": ("Look at the rendered screen of this draft and judge the rule as written."
+                        if visual else
+                        "Read this draft as its recipient and judge the rule as written."),
+        "pass_when": f"The draft does what the rule says: {rule}",
+        "fail_when": f"The draft does not do what the rule says: {rule}",
+        "not_verifiable_when": ("The render is missing or does not show what the rule names."
+                                if visual else
+                                "The draft does not show enough to judge the rule either way."),
+    }
 
 
 def split_evidence(line: str) -> tuple[str, str]:

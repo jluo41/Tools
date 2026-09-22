@@ -1,3 +1,8 @@
+## 0.21.0 · 2026-09-21
+
+- Document how host-specific submission-readiness overlays reuse the shared
+  four-axis rubric without becoming a second scoring system.
+
 ## 0.20.0 · 2026-09-20
 
 - Make Writing the common Section/Paragraph/file entry for draft, revise and evaluate.

@@ -10,8 +10,8 @@ description: >-
   plugin, outline tab, page outline, outline folder, plan file, record shape,
   evidence bundle, numbered discussion thread, /haipipe-plugin-outline.
 metadata:
-  version: "0.84.1"
-  last_updated: "2026-09-20"
+  version: "0.84.2"
+  last_updated: "2026-09-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -323,23 +323,30 @@ alignment, **Reading** for prose without the grid, and **Scratch** for the
 person's rough thinking. Table and Reading are read-only projections. Scratch
 is the only explicit browser writing lane: a tiny `+` appears only after the
 person enters Scratch, below a Section or paragraph heading. It opens an
-inline note form; `Save` keeps the Run open, and the person manually clicks
+inline note form; notes autosave while typing, and the person manually clicks
 `Finish Scratch` to ask the AI for a concise Summary from the notes and close
-that Scratch Run. Once saved, the raw Scratch is shown by default in Scratch
+that Scratch Run. Once autosaved, the raw Scratch is shown by default in Scratch
 Mode even if the underlying body is hidden. There is no old comments
 composer, feedback badge, or tap-to-edit Draft control.
 
-**Copy Run prompts:** the Structure/Mermaid area offers `⧉ Structure prompt`;
-each Section heading offers `⧉ Section prompt`; each paragraph heading offers
-`⧉ Paragraph prompt` in both Table and Reading. Each payload names the Page,
-selected Outline, source address and Page-global paragraph index, matching
-`rp-struct-*`, `rp-sec-*`, or `rp-para-*_Pxx[-Pyy]` Run, current Version/Step,
-and next action. Multiple open matches are reported as ambiguous. Missing
-Runs are labelled unallocated; copying never allocates, writes, or starts work.
-A Section/Paragraph prompt names the Structure blocker when `rp-struct-01`
-is not closed. Paste and send the prompt to select the bounded interaction.
-The agent rereads current records, reuses the matching Run, saves candidate
-Steps, and follows the Page release boundary for adoption/delivery.
+**Copy Run requests:** the Structure/Mermaid area offers `⧉ Structure request`;
+each Section heading offers `⧉ Section request`; each paragraph heading offers
+`⧉ Paragraph request` in both Table and Reading. Each copied request names the
+selected Board, Folder, Page, Outline, target and canonical Run Type; it also
+states bounded work, owner and worker Skills, actor, prerequisites, any unique
+matching Run/status/Version/Step, blockers, and the next permitted action.
+Multiple open matches are reported with their statuses and require the person
+to choose. Missing Runs say none recorded. The button copies only: it never
+sends, starts, allocates, or writes. Paste and send the request to select the
+bounded interaction; the agent rereads current records, reuses the matching
+Run, saves candidate Steps, and follows the Page release boundary for
+adoption/delivery.
+
+Scratch is a separate direct human lane, not a chat prompt: Scratch Mode names
+`Page.interactive-writing.scratch`, its owner Skill and human actor, and shows
+an existing target Run/status beside the heading. Notes autosave as the person
+types; the person explicitly clicks `Finish Scratch`. That local summary step
+does not edit Draft prose.
 
 The plan and candidate wording remain Markdown authorities under `outline/`:
 the UI keeps the selected Outline filename under a collapsed `Sources`
@@ -403,6 +410,15 @@ planning workspace.
   Runs, Result, Expected, and Acceptance. Thus Label, Item, and Run remain
   visibly different concepts; Supporting Runs remain inspectable references,
   never copied artifacts. Result paths live behind a small `Sources` disclosure.
+  Selected Result cards and eligible typed ledger Items without a selected
+  Result also have a collapsed Run-contract detail and, when the Bullet target
+  is known, a `Copy prompt to chat` control. A pending card explicitly says no
+  Result is selected; it never implies a Run exists. Its request binds the Item,
+  target, current Expected/Acceptance, Local Input declaration, Supporting Run
+  references, Local Run action/route, and any matching Page Run/status. It names
+  the owner/worker Skills, actor, prerequisites, visible ledger blockers, and
+  permitted next action. Copying does not send, start, allocate, execute, or
+  write; the card and any selected Result remain read-only.
   The standalone Evidence tab is retired; `/_board/evidence` is the current
   read-only Result-first renderer used by this Space.
 - **Each Run chip opens the exact Runs-lens card, not a file download or the
@@ -555,9 +571,9 @@ lane, not prose editing and not feedback. Its target can be a whole Section
 separate subsection node, so the UI shows one plus per visible target rather
 than duplicate Subsection/Paragraph buttons. Explicit subsection-scope records
 remain accepted for future Page schemas. The B rows inside that group are
-reading material, not Scratch targets. The
-first Save creates `runs/rp-scratch-NN_<target>.md` and
-`results/rp-scratch-NN_<target>/`; later Save updates the open record. Finish
+reading material, not Scratch targets. The first nonempty note autosave
+creates `runs/rp-scratch-NN_<target>.md` and
+`results/rp-scratch-NN_<target>/`; later autosaves update the open record. Finish
 requires a non-empty Summary and records the closed Run. The same selected
 Outline Markdown receives a `## Scratch` registry so the UI stays live and
 the rough thinking stays next to the plan. The paired receipt is

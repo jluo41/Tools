@@ -243,8 +243,15 @@ def context(ticket, historical=False):
             string(criterion.get("value"), "criterion.value")
         elif kind in {"semantic", "visual"}:
             string(criterion.get("description"), "criterion.description")
-            for key in ("observation", "pass_when", "fail_when", "not_verifiable_when"):
-                string(criterion.get(key), f"criterion.{key}")
+            method = ("observation", "pass_when", "fail_when", "not_verifiable_when")
+            # A closed run froze its config under the rule of its own day; the
+            # observation method became required later.  A historical record
+            # that names none of those keys is read as it was written, not
+            # called invalid.  Naming some but not all is still a defect, and a
+            # current Ticket always owes all four.
+            if not historical or any(criterion.get(key) for key in method):
+                for key in method:
+                    string(criterion.get(key), f"criterion.{key}")
     approval = data.get("approval", {})
     need(isinstance(approval, dict), "approval must be a mapping")
     string(approval.get("actor"), "approval.actor")

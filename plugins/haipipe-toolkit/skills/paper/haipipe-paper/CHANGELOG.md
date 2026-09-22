@@ -1,3 +1,8 @@
+## 1.3.0 · 2026-09-21
+
+- Add the sourced 21-point submission-readiness overlay to the G4 gate, with
+  section-owned and whole-paper criterion rows that reuse the shared rubric.
+
 ## 1.2.0 · 2026-09-20
 
 - Route Paper/Page requests through the current owner contracts and shared Ideation specialists. Publish the Run Spec inventory, conditional skill map and legacy path compatibility.

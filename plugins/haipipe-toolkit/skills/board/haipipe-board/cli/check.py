@@ -289,6 +289,71 @@ def check_group_order(d, text, rep):
                     f"board.md decides the order, the folder follows it")
 
 
+# `### <label> · <folder>` is how `## Pages` binds a group row to a directory,
+# and `live/paper.py:_GROUP_RE` reads the folder as ONE non-space token. A
+# heading that spells the folder with a space (`### Ba · ManSci Main`) therefore
+# matches nothing, the group vanishes, and every consumer downstream of it
+# reports zero: the paper plugin showed `no S- rows in C8` and
+# `0 Section page(s)` on a board whose static site had rendered all 21 pages
+# correctly, because build.py groups by a different rule and never noticed
+# (JL 260921). A heading that cannot bind is worse than a wrong one: nothing
+# says so. This gate makes both cases loud.
+PAGES_HEAD = re.compile(r"^###\s+(?P<label>.+?)\s+\u00b7\s+(?P<folder>\S+)\s*$")
+
+
+def check_pages_group_folders(d, text, rep):
+    """Every `### ` heading in `## Pages` must bind to a folder that exists.
+
+    Two defects, both silent before this check:
+
+    1. The heading does not parse as `<label> · <folder>` at all, usually
+       because the folder was written with a space or the separator is a
+       hyphen rather than `\u00b7`. The group is then invisible to every
+       reader that uses the group regex.
+    2. It parses, but the folder is not on disk, so the group is empty.
+
+    The label carries identity and may contain spaces; the folder is the
+    directory name and may not. A board with no `### ` headings under
+    `## Pages` is a flat board and is left alone.
+    """
+    names = "|".join(re.escape(n) for n in alias_names("Pages"))
+    m = re.search(rf"^##\s+({names})\s*$", text, re.M)
+    if not m:
+        return
+    end = text.find("\n## ", m.end())
+    body = text[m.end():end if end != -1 else len(text)]
+    heads = [l.rstrip() for l in body.splitlines() if l.startswith("### ")]
+    if not heads:
+        return
+    # A board that HAS a live plugin surface is broken by an unbindable heading;
+    # a Task or Discovery block has no such consumer today, so the same heading
+    # is a latent defect rather than a live one. Severity follows that, so the
+    # gate does not block boards whose convention predates the plugin.
+    dialect = re.search(r"^dialect:\s*(\S+)\s*$", text, re.M)
+    plugged = (dialect and dialect.group(1).strip() == "paper") or board_kind(d) in {
+        "design-board", "insight-board", "labeling-board"}
+    sev = ERROR if plugged else WARN
+    tail = ("" if plugged else " this board has no live plugin surface today, so"
+            " nothing is broken yet; it binds to nothing the moment it gets one")
+    for line in heads:
+        got = PAGES_HEAD.match(line)
+        if not got:
+            rep.add(sev, "pages-group-unbindable", f"board.md -> {line.strip()}",
+                    "a `## Pages` group heading must read `### <label> \u00b7 <folder>` "
+                    "with the folder as the directory name and no spaces in it; this "
+                    "one binds to nothing, so the group and every page under it "
+                    "disappear from the plugin and the roster without any error."
+                    + tail)
+            continue
+        folder = got.group("folder")
+        if not (d / folder).is_dir():
+            rep.add(sev, "pages-group-folder-missing",
+                    f"board.md -> {folder}",
+                    f"group {got.group('label')!r} names folder `{folder}`, which is "
+                    f"not a directory here; rename the heading to the real folder or "
+                    f"create it, or the group reads as empty." + tail)
+
+
 def check_board(d, rep):
     bmd = d / "board.md"
     if not bmd.exists():
@@ -323,6 +388,8 @@ def check_board(d, rep):
         if not has_section(text, canon):
             shown = " / ".join(alias_names(canon))
             rep.add(ERROR, "board-missing-section", "board.md", f"no `## {shown}` section")
+
+    check_pages_group_folders(d, text, rep)
 
     # Not every rule is universal. The haipipe-paper board rules that `state:`
     # is about the DECISION and implementation intent lives in Aims, so

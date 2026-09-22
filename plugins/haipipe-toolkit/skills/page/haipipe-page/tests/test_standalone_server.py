@@ -82,6 +82,8 @@ class StandaloneServerTests(unittest.TestCase):
         self.assertIn(b'data-live="true"', body)
         self.assertIn(b'id="page-plugin-button"', body)
         self.assertIn(b'id="page-plugin-pane"', body)
+        self.assertNotIn(b'id="source-editor"', body)
+        self.assertNotIn(b'href="#source-editor"', body)
         self.assertIn('🧭 Outline'.encode(), body)
         self.assertNotIn('⚙️ Runs'.encode(), body)
         self.assertIn('📤 Delivery'.encode(), body)
@@ -97,31 +99,32 @@ class StandaloneServerTests(unittest.TestCase):
             self.assertGreater(len(body), 100)
             self.assertEqual(self.request('HEAD', path)[2], b'')
 
-    def test_source_read_save_and_stale_conflict(self):
+    def test_source_read_is_allowed_but_source_save_is_rejected(self):
         code, _, body = self.request(path='/_page/source?file=' + self.source.name)
         self.assertEqual(code, 200)
         initial = json.loads(body)
         self.assertEqual(initial['text'], self.source.read_text())
         payload = self.source_payload()
         code, _, body = self.request('POST', '/_page/source', payload)
-        self.assertEqual(code, 200, body)
-        self.assertNotEqual(initial['sha256'], json.loads(body)['sha256'])
-        self.assertEqual(self.source.read_text(), payload['text'])
+        self.assertEqual(code, 403, body)
+        self.assertEqual(initial['sha256'], read_source(self.context, self.source.name)['sha256'])
+        self.assertNotEqual(self.source.read_text(), payload['text'])
         payload['text'] = 'stale replacement'
-        self.assertEqual(self.request('POST', '/_page/source', payload)[0], 409)
+        self.assertEqual(self.request('POST', '/_page/source', payload)[0], 403)
         self.assertNotEqual(self.source.read_text(), payload['text'])
 
-    def test_concurrent_saves_have_one_winner(self):
+    def test_concurrent_source_saves_are_rejected(self):
         payload = self.source_payload()
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
             futures = [pool.submit(self.request, 'POST', '/_page/source',
                                    {**payload, 'text': payload['text'] + str(index)}) for index in range(2)]
-            self.assertEqual(sorted(f.result()[0] for f in futures), [200, 409])
+            self.assertEqual(sorted(f.result()[0] for f in futures), [403, 403])
+        self.assertNotEqual(self.source.read_text(), payload['text'])
 
-    def test_invalid_face_save_is_rejected_without_losing_editor(self):
+    def test_page_source_save_is_rejected_without_losing_source(self):
         before = self.source.read_text()
         code, _, _ = self.request('POST', '/_page/source', self.source_payload('not a Page Face'))
-        self.assertEqual(code, 400)
+        self.assertEqual(code, 403)
         self.assertEqual(self.source.read_text(), before)
         self.assertEqual(self.request()[0], 200)
 
@@ -396,7 +399,7 @@ class StandaloneServerTests(unittest.TestCase):
         cookie = headers['Set-Cookie'].split(';', 1)[0]
         self.assertEqual(self.request(headers={'Cookie': cookie})[0], 200)
         self.assertEqual(self.request('POST', '/_page/source', self.source_payload(),
-                                      {'Cookie': cookie})[0], 200)
+                                      {'Cookie': cookie})[0], 403)
         self.assertEqual(self.request('POST', '/_page/source', self.source_payload(),
                                       {'Authorization': 'Bearer wrong'})[0], 401)
         self.assertEqual(self.request(headers={'Authorization': 'Bearer test-token'})[0], 200)

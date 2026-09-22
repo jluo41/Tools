@@ -57,6 +57,9 @@ nav button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
  border-radius:6px;padding:3px 10px;font-size:13px;cursor:pointer}
 #sbar .st{color:var(--mut);font-size:12px;max-width:40%}
 .ghost{color:var(--mut);padding:24px 16px;font-size:13.5px}
+.run-contract{margin:-2px 16px 10px;color:var(--mut);font-size:11.5px;line-height:1.5}
+.run-contract summary{cursor:pointer}.run-contract .facts{padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+.run-contract b{color:var(--fg)}
 """
 
 
@@ -67,6 +70,147 @@ _LANES = (
     ("slide", "🎞", "Slides"),
     ("render", "📱", "Render"),
 )
+
+_DELIVERY_RUN_TARGET = re.compile(r"rd\d{2,}_(web|latex|word|slide|render)(?:_|$)", re.I)
+
+
+def _delivery_run_instances(page_src: pathlib.Path) -> dict[str, list[tuple[str, str]]]:
+    """Project recorded Page Delivery Runs without copying the Run catalogue."""
+    from live.runs import local_runs
+
+    found = {lane: [] for lane in ("web", "latex", "word", "slide", "render")}
+    for row in local_runs(page_src):
+        ticket = row.get("ticket")
+        identity = ticket.stem if isinstance(ticket, pathlib.Path) else str(row.get("run_id", ""))
+        match = _DELIVERY_RUN_TARGET.match(identity)
+        if not match:
+            continue
+        lane = match.group(1).lower()
+        run_id = ticket.stem if isinstance(ticket, pathlib.Path) else identity.removeprefix("P ")
+        found[lane].append((run_id, str(row.get("status") or "unknown")))
+    for lane in found:
+        found[lane].sort(key=lambda item: (int(re.search(r"rd(\d+)", item[0], re.I)[1]), item[0]))
+    return found
+
+
+def _delivery_copy_prompt(page_src: pathlib.Path, lane: str,
+                          recorded: list[tuple[str, str]],
+                          board_path: str, page_path: str) -> str:
+    run_list = "; ".join("%s · %s" % pair for pair in recorded) or "none recorded"
+    if len(recorded) > 1:
+        next_action = ("Several matching RD instances exist. Compare each saved source fingerprint, target, and receipt "
+                       "with this Page version, then ask which Run to resume; do not pick one by sort order.")
+    elif recorded:
+        _run_id, status = recorded[0]
+        if status.lower() == "done":
+            next_action = ("Inspect whether this Run's artifact and receipt match the selected Page version. Reuse a current "
+                           "delivery; rebuild only if the owner contract or user request requires another attempt.")
+        elif status.lower() in {"running", "waiting", "ready"}:
+            next_action = "Resume only this recorded RD Run from its saved target and receipt, after checking its lane gate."
+        else:
+            next_action = ("Inspect this Run's saved failure or hold reason and route through the Page.delivery owner; "
+                           "do not replace its receipt silently.")
+    else:
+        next_action = ("Verify the selected Page version and its current required Evidence. If eligible, the owner may "
+                       "allocate the next canonical RD for this target before its lane's explicit build action.")
+    worker = {
+        "web": "No Web worker Skill is declared in this Page Delivery surface.",
+        "latex": "No separate worker Skill is declared; the lane calls its deterministic LaTeX writer.",
+        "word": "No separate worker Skill is declared; the lane calls its deterministic Word writer.",
+        "slide": "No separate worker Skill is declared; the lane invokes its explicit Claude authoring worker.",
+        "render": "No separate worker Skill is declared; the Folder-native render verb owns execution.",
+    }[lane]
+    try:
+        folder = page_src.parent.relative_to(page_src.parents[2]).as_posix()
+    except (ValueError, IndexError):
+        folder = page_src.parent.name
+    board = board_path.strip()
+    if board in {"", "/"}:
+        board = "Standalone Page (no Board)"
+    return "\n".join([
+        "Use haipipe-page-workflow and haipipe-plugin-delivery for one Page.delivery Run.",
+        "Board: " + board,
+        "Folder: " + folder,
+        "Page: " + page_src.stem,
+        "Page source: " + (page_path.strip() or page_src.name),
+        "Target: delivery/" + lane + " · selected Page version",
+        "Run Type: Page.delivery",
+        "Run identity pattern: rdNN_" + lane,
+        "Bounded work: " + {
+            "web": "produce and verify one Web artifact for this Page version",
+            "latex": "build and check one LaTeX artifact for this Page version",
+            "word": "build and check one Word artifact for this Page version",
+            "slide": "author and validate one deck for this Page version",
+            "render": "render the declared recipient preview for this Page version or division",
+        }[lane],
+        "Owner Skill(s): haipipe-page-workflow; haipipe-plugin-delivery owns the Delivery surface and lane contract.",
+        "Worker Skill(s): " + worker,
+        "Actor: agent / automatic under the Page.delivery Run Spec.",
+        "Prerequisites: inspect the exact selected Page version, current required Evidence bindings, and lane contract; close only with a current artifact and build receipt.",
+        "Matching Run/status: " + run_list,
+        "Next permitted action: " + next_action,
+        "Space affordance: the lane's listed control applies where present; Copy request → paste and send is a separate optional chat handoff.",
+        "Copy-only behavior: copying this text does not send, start, allocate, build, execute, or write anything. Wait for it to be pasted and sent before considering the request, then follow the owner gates.",
+        "Read the selected Page source, any matching rdNN ticket/runtime, current lane manifest, and artifact before acting. Preserve owner-native records and report blockers rather than inventing Run identities.",
+    ])
+
+
+def _copy_prompt_button(prompt: str) -> str:
+    label = "Copy prompt to chat"
+    return ('<button type="button" class="run-prompt-copy" aria-label="%s" title="%s" '
+            'data-run-prompt="%s">⧉ %s</button>' % (
+                html.escape(label, quote=True), html.escape(label, quote=True),
+                html.escape(prompt, quote=True), html.escape(label)))
+
+
+def _delivery_run_contract(lane: str, recorded: list[tuple[str, str]],
+                           page_src: pathlib.Path | None = None,
+                           board_path: str = "", page_path: str = "",
+                           read_only: bool = False) -> str:
+    labels = {
+        "web": ("Web", "one web artifact for the selected Page version", "Not built",
+                "No Web build or preview control is implemented in this Delivery Space."),
+        "latex": ("LaTeX", "one LaTeX artifact for the selected Page version", "Start here",
+                  "Explicit LaTeX build on the LaTeX segment."),
+        "word": ("Word", "one Word artifact for the selected Page version", "Start here",
+                 "Explicit Word build on the Word segment."),
+        "slide": ("Slides", "one authored deck for the selected Page version", "Start here",
+                  "Explicit authoring on the Slides segment."),
+        "render": ("Render", "recipient previews for the selected Page version or declared division", "Shown here · read-only",
+                   "This segment lists saved previews; the Folder-native render verb owns rendering."),
+    }
+    name, work, affordance, action = labels[lane]
+    worker = {
+        "web": "No worker Skill is bound to the current Delivery Space.",
+        "latex": "The deterministic LaTeX writer named by the haipipe-plugin-delivery lane contract.",
+        "word": "The deterministic Word writer named by the haipipe-plugin-delivery lane contract.",
+        "slide": "The explicit Page deck authoring worker invoked by the haipipe-plugin-delivery lane.",
+        "render": "The Folder-native render verb; this Page surface does not select a separate worker Skill.",
+    }[lane]
+    current = ("; ".join("%s · %s" % (run_id, status) for run_id, status in recorded)
+               if recorded else "none recorded")
+    prompt_button = (_copy_prompt_button(_delivery_copy_prompt(
+        page_src, lane, recorded, board_path, page_path))
+        if page_src and lane != "web" and not read_only else "")
+    if read_only:
+        affordance = "Shown here · read-only"
+        action = ("This inventory reports delivery state; no Web build or preview control is implemented."
+                  if lane == "web" else
+                  "This inventory reports delivery state; start work only from the owning lane control.")
+    affordance = html.escape(affordance)
+    chat_affordance = ("<br><b>Chat affordance</b> Copy request → paste and send; copying is inert."
+                       if prompt_button else "")
+    return (
+        '<details class=run-contract><summary>Page Delivery Run · Page.delivery · %s</summary>'
+        '<div class=facts><b>Run Type</b> Page.delivery · target rdNN_%s<br>'
+        '<b>Bounded work</b> %s<br><b>Owner Skill</b> haipipe-page-workflow; '
+        'Delivery surface: haipipe-plugin-delivery<br><b>Worker</b> %s<br>'
+        '<b>Actor</b> agent / automatic<br><b>Prerequisites</b> selected Page version and its current declared Evidence inputs; '
+        'a current lane artifact and build receipt are required to close this Run.<br>'
+        '<b>Space affordance</b> %s · %s%s<br><b>Recorded matching Run/status</b> %s%s</div></details>' % (
+            html.escape(name), html.escape(lane), html.escape(work), html.escape(worker),
+            affordance, html.escape(action), chat_affordance, html.escape(current), prompt_button)
+    )
 
 
 def _sha256(path: pathlib.Path) -> str:
@@ -307,6 +451,7 @@ def check_delivery(page_src: pathlib.Path):
 def render_workspace(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     """Render the internal read-only Delivery Workspace check."""
     receipt = check_delivery(page_src)
+    delivery_runs = _delivery_run_instances(page_src)
     state = receipt["overall"]
     state_icon = {"pass": "✅", "stale": "⚠️", "unverified": "❓"}[state]
     counts = receipt["counts"]
@@ -321,10 +466,14 @@ def render_workspace(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
             for row in lane["rows"])
         manifest = (" · manifest: <code>%s</code>" % html.escape(lane["manifest"])
                     if lane["manifest"] else " · no manifest")
+        run_contract = _delivery_run_contract(
+            lane["lane"], delivery_runs[lane["lane"]], page_src,
+            path_q, file_q, read_only=True)
         cards.append("<section class=card><h2>%s %s <span class=state-%s>%s</span></h2>"
-                     "<div class=mut>%s</div><ul>%s</ul></section>" %
+                     "<div class=mut>%s</div><ul>%s</ul>%s</section>" %
                      (lane["icon"], html.escape(lane["label"]), lane["state"],
-                      lane["state"], manifest, rows or "<li>no delivery files</li>"))
+                      lane["state"], manifest, rows or "<li>no delivery files</li>",
+                      run_contract))
     source = receipt["source"]
     return f"""<!doctype html><meta charset=utf-8>
 <title>📤 Delivery Space · {html.escape(page_src.stem)}</title>
@@ -347,6 +496,7 @@ h1{{font-size:18px;margin:0 0 3px}} h2{{font-size:14px;margin:0 0 4px}}
 <h1>📤 Delivery Space · {html.escape(page_src.stem)}</h1>
 <div class=mut>Read-only consistency projection · Page source is authoritative · this view never rebuilds or edits delivery files</div></header>
 <div class=source><div><b>Authority</b> <code>{html.escape(source["path"])}</code></div>
+<div><b>Board / Folder</b> {html.escape(path_q or 'standalone Page')} · {html.escape(page_src.parent.name)}</div>
 <div><b>SHA-256</b> <code>{source["sha256"]}</code></div><div><b>Result</b> {html.escape(summary)}</div></div>
 <main class=grid>{''.join(cards)}</main>
 """
@@ -361,16 +511,19 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str, *,
            interactive: bool = True, asset_base: str | None = None) -> str:
     stem = page_src.stem
     base = page_src.parent
+    delivery_runs = _delivery_run_instances(page_src)
 
-    def row(icon, name, rel, hint):
+    def row(icon, name, rel, hint, lane):
         p = base / rel
         if p.exists():
             state = "✅ built · %s" % _stamp(p)
         else:
             state = "⬜ not built — %s" % hint
         return ("<div class=row><b>%s %s</b><code>%s</code>"
-                "<span class=mut>%s</span></div>"
-                % (icon, name, html.escape(rel), html.escape(state)))
+                "<span class=mut>%s</span></div>%s"
+                % (icon, name, html.escape(rel), html.escape(state),
+                   _delivery_run_contract(lane, delivery_runs[lane], page_src,
+                                          path_q, file_q)))
 
     rn = base / "delivery" / "render"
     if not rn.is_dir() and (base / "render").is_dir():
@@ -378,17 +531,22 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str, *,
     render_files = sorted(f.name for f in rn.iterdir() if f.is_file()) if rn.is_dir() else []
     n_render = len(render_files)
     home = "\n".join([
+        row("🌐", "Web", f"delivery/web/index.html",
+            "no current web artifact exists", "web"),
         row("📜", "LaTeX", f"delivery/latex/{stem}.pdf",
-            "the delivery writer has not built it"),
+            "the delivery writer has not built it", "latex"),
         row("📝", "Word", f"delivery/word/{stem}.docx",
-            "the delivery writer has not built it"),
+            "the delivery writer has not built it", "word"),
         row("🎞", "Slides", f"delivery/slide/{stem}-deck.html",
-            "authored on the 🎞 tab's ✨ bar, never auto-built here"),
+            "authored on the 🎞 tab's ✨ bar, never auto-built here", "slide"),
         "<div class=row><b>📱 Render</b><code>delivery/render/</code>"
         "<span class=mut>%s</span></div>"
         % ("%d file(s) on disk · Folder-native writer live" % n_render if n_render
            else "empty · run the Folder-native render verb"),
+        _delivery_run_contract("render", delivery_runs["render"], page_src,
+                               path_q, file_q),
     ])
+    from live.outline_prompts import assets_html as prompt_assets_html
     ctx = json.dumps({
         "path": path_q, "file": file_q, "stem": stem,
         "render_files": render_files,
@@ -399,9 +557,11 @@ def render(page_src: pathlib.Path, path_q: str, file_q: str, *,
     return f"""<!doctype html><meta charset=utf-8>
 <title>📤 Delivery · {html.escape(stem)}</title>
 <style>{_CSS}</style>
+{prompt_assets_html()}
 <header><h1>📤 Delivery · {html.escape(stem)}</h1>
-<div class=mut>one surface, four lanes · what leaves the page · builders and
+<div class=mut>one surface · four interactive lanes plus Web status · what leaves the page · builders and
 storage stay with delivery/latex/ · delivery/word/ · delivery/slide/ · delivery/render/</div></header>
+<div class=mut style="padding:0 16px 5px">Board: {html.escape(path_q or 'standalone Page')} · Folder: {html.escape(base.name)} · Page: {html.escape(file_q or page_src.name)}</div>
 <nav>
 <button class=on data-seg=home>🏠 What's built</button>
 <button data-seg=latex>📜 LaTeX</button>

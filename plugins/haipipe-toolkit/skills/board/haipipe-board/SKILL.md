@@ -127,10 +127,20 @@ close: <the observable condition that closes the Board>
 <optional ASCII relationship map; never a second roster>
 
 ## Pages
-### QA · <group title>
+### QA · QA-group-folder
 <optional group introduction>
 QA1-example.md
 ```
+
+**The token after `·` is the group's FOLDER, not its prose title.** It is
+the directory name exactly as it sits on disk, and it may not contain a space:
+`live/paper.py:_GROUP_RE` reads the heading as `^###\s+(.+?)\s+·\s+(\S+)$`, so
+`### Ba · ManSci Main` matches nothing at all. The group then vanishes silently
+and every consumer under it reports zero rows while the generated site still
+looks right, because `cli/build.py` groups by a different rule (JL 260921). Put
+the human title in the optional introduction line below the heading. `cli/check.py`
+gates both halves: `pages-group-unbindable` for a heading that cannot parse,
+`pages-group-folder-missing` for one that parses but names no directory.
 
 `## Pages` groups and orders Pages. It does not copy their titles, state, or
 body. A Task Block may list only Job headings because the Task tree already

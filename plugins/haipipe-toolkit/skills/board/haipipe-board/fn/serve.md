@@ -150,13 +150,52 @@ reply; never substitute `localhost`, `127.0.0.1`, or `file://`.
   edit; name the watcher or explicit build that made the projection current.
 - Do not return a Board URL until its exact configured route has been checked.
 
+## Two URLs, always both
+
+A served Board answers at two different addresses and a reply that gives only
+one is incomplete. The reader wants the Board; the person doing the work wants
+the plugin surface that shows the Board's own journey.
+
+| URL | What it is | Shape |
+|---|---|---|
+| board | the generated static site, wrapped in the reader shell | `<origin>/<board-path>/board/index.html` |
+| plugin | the live, storage-less plugin surface for this Board kind | `<origin>/_board/<route>?path=<board-path>/board.md&file=board.md` |
+
+`<board-path>` is the Board folder relative to the server's `--root`, with no
+leading slash. `file=board.md` is mandatory on every plugin route: the handler
+returns 400 without it, and 400 again when `board.md` does not declare the
+dialect or kind that route serves.
+
+Pick the plugin route from what `board.md` declares:
+
+| board.md declares | Plugin route |
+|---|---|
+| `dialect: paper` | `/_board/paper` |
+| `board-kind: design-board` | `/_board/design-board` |
+| `board-kind: insight-board` | `/_board/insight-board` |
+| `board-kind: labeling-board` | `/_board/labeling-board` |
+| none of the above | no board-level plugin; return `plugin-url: none` |
+
+A page-level surface is a different thing and is not this field. 🧭 Outline
+answers at
+`/_board/outline?path=<board-path>/<page-rel>&file=<page-rel>`, where
+`<page-rel>` is the Page Face relative to the BOARD root, not a bare basename;
+it belongs to one Page, not to the Board. `haipipe-page/fn/serve.md` owns it.
+
+Verify both by request, not by construction. A plugin URL that was assembled
+from a template and never fetched is not a verified URL: the common failure is
+a 200 that renders every count as zero because `board.md` does not bind, which
+no amount of string-building can detect. Fetch it, and read one number off the
+response before reporting it.
+
 ## Return packet
 
 ```text
 BOARD · SERVE
 root:         <selected root>
 boards:       <Board scope or list>
-url:          <verified configured URL>
+board-url:    <verified configured URL of board/index.html>
+plugin-url:   <verified /_board/<route> URL, or none for this board kind>
 auth:         loopback | auth-file | trusted-private exception
 build:        current | rebuilt | stale | blocked
 watchers:     <active Board watchers, or none>

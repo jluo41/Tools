@@ -339,15 +339,6 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
                                    '', match.group(1), flags=re.I)
                     return f'<body{attrs} data-live="true" data-read-only="{str(self.server.read_only).lower()}">'
                 document = re.sub(r'<body\b([^>]*)>', live_body, document, count=1, flags=re.I)
-                if self.server.read_only:
-                    # A reading host has no Source workspace: hiding only the
-                    # Save button still presented a large editor-shaped field.
-                    document = document.replace(
-                        '<a class="live-only" href="#source-editor">Source</a>', '')
-                    document = re.sub(
-                        r'<section id="source-editor"[^>]*>.*?</section>', '', document,
-                        count=1, flags=re.I | re.S,
-                    )
                 return self._send(200, document)
             if parsed.path == '/_page/source':
                 relative = parse_qs(parsed.query).get('file', [''])[0]
@@ -400,16 +391,7 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
                 raise ValueError('Expected a JSON object')
             with self.server.write_lock:
                 if path == '/_page/source':
-                    relative = payload.get('file')
-                    self._source_path(relative)
-                    if not all(isinstance(payload.get(k), str) for k in ('text', 'sha256')):
-                        raise ValueError('text and sha256 must be strings')
-                    try:
-                        result = page_workspace.save_source(self.server.context, relative,
-                                                            payload['text'], payload['sha256'])
-                    except page_workspace.SourceConflictError as exc:
-                        return self._error(409, str(exc))
-                    return self.reply(200, {'ok': True, **result})
+                    return self._error(403, 'The Page website is read-only; edit Page source outside the reader')
                 route = path.replace('/_page/', '/_board/', 1)
                 plugins = {'/_board/outline': self.plug_outline,
                            '/_board/evidence': self.plug_evidence,

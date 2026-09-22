@@ -12,8 +12,8 @@ description: >-
   Folder for one line. Trigger: design board, board-level design, design
   tasks, all design items, who is waiting, /haipipe-plugin-design-board.
 metadata:
-  version: "0.7.1"
-  last_updated: "2026-09-20"
+  version: "0.7.2"
+  last_updated: "2026-09-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -55,6 +55,33 @@ add Runs. Folders carry their full name: the group is
 its `Design-NN` number, and an old link finds it by that number.
 
 ## The five Spaces at board grain
+
+Each Space includes the Design family's folded **Run types in this Space**
+guide: plain name and canonical Type, bounded purpose, owner and worker
+Skills, actor and prerequisites. The type catalogue is separate from a list
+of current matching records, scoped by folder/item and showing each actual
+Run's id, actor, status and outcome. Goal covers Commission; Design/Insight/Run
+cover Commission, Generate and Verify; Delivery covers Generate/Verify for
+ready items only. The historical Run ledger remains complete.
+
+For Design Runs, Board guidance says **Shown here · read-only**, or
+**Copy request → paste and send** for eligible worker work in Design Space.
+Each Design Item has an expandable next-Run explanation using that folder's
+human context and an **Open item controls** link to its Page-level Design
+Space. There, eligible native controls say **Start here**. Commission belongs
+to a person, Generate to an agent, and Verify to an independent agent, under
+`haipipe-design-workflow`; Generate/Verify workers use `haipipe-design-unit`.
+Each eligible item has **Copy prompt to chat** and a reviewable prompt using
+its own Folder/Page/item context. It covers a new Generate/Verify or reuse of
+one compatible queued Run, with its exact id, Commission and receipt paths.
+Copy only changes the clipboard; the person must paste and send in chat.
+The prompt rereads state, prevents duplicate allocation, preserves the human
+Commission and independent Verify gates, and reports the resulting Run/receipt.
+No prompt is offered for running, stale, blocked, unresolved, invalid, ready,
+retired or static states, folder audit findings, missing/blocked Insight
+bindings, or Commission decisions. Revisions become copyable only after the
+native queue form pins feedback and base. Run and Delivery Spaces stay
+read-only. Existing task-list/folder writes do not become Design Runs.
 
 **Goal Space** answers "what has this programme promised to design, and is
 each promise started?" It is the list of design tasks read from the Brief:

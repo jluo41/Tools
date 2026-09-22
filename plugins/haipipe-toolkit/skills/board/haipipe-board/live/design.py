@@ -310,30 +310,31 @@ def _load_runs(folder: Path) -> list[dict]:
 def _fold_state(runs: list[dict], human: str = "person") -> tuple[str, str, str]:
     """Walk an item's Runs in order and return (state, glyph, waiting-on).
 
-    "agent" is waited on only while a run is queued or running; a step that
-    needs a click names the person (audit H4, 260918)."""
-    state, glyph, waiting = "not commissioned", "⬜", f"{human} · commission"
+    "agent" is waited on only while a run is queued or running; a step that needs a
+    click says "you" and never a name (JL 260921: a name here reads as the person who
+    signed the last record, which is a different fact). `human` is kept for callers
+    that still pass it and is no longer written to a surface."""
+    state, glyph, waiting = "not commissioned", "⬜", "you · commission"
     for run in runs:
-        owner = run["actor"] if run["actor"] != "not recorded" else human
         if run["status"] == "superseded":
             continue
         if run["status"] == "blocked":
-            state, glyph, waiting = "blocked", "⏸", f"{human} · resolve {run['id']}: {run['failure'] or 'blocked; inspect the Run record'}"
+            state, glyph, waiting = "blocked", "⏸", f"you · resolve {run['id']}: {run['failure'] or 'blocked; inspect the Run record'}"
             continue
         if run["kind"] == "commission":
             if run["outcome"] == "release":
-                state, glyph, waiting = "commissioned", "⬜", f"{owner} · queue the draft"
+                state, glyph, waiting = "commissioned", "⬜", "you · queue the draft"
             elif run["outcome"] == "hold":
-                state, glyph, waiting = "commission held", "⏸", f"{owner} · release or hold"
+                state, glyph, waiting = "commission held", "⏸", "you · release or hold"
             else:
-                state, glyph, waiting = "commission open", "⬜", f"{owner} · release or hold"
+                state, glyph, waiting = "commission open", "⬜", "you · release or hold"
         elif run["kind"] == "generate":
             if run["status"] == "complete":
-                state, glyph, waiting = "generated", "⬜", f"{human} · queue the review"
+                state, glyph, waiting = "generated", "⬜", "you · queue the review"
             elif run["status"] == "failed":
-                state, glyph, waiting = "generate failed", "✗", f"{human} · queue a revise"
+                state, glyph, waiting = "generate failed", "✗", "you · queue a revise"
             elif run["status"] == "planned" and run.get("stale"):
-                state, glyph, waiting = "queued run out of date", "⚠", f"{human} · queue again"
+                state, glyph, waiting = "queued run out of date", "⚠", "you · queue again"
             elif run["status"] == "planned":
                 state, glyph, waiting = "generate queued", "⬜", "agent · generate"
             else:
@@ -344,17 +345,17 @@ def _fold_state(runs: list[dict], human: str = "person") -> tuple[str, str, str]
             elif run["status"] == "complete" and run["verdict"] == "unresolved":
                 owners = sorted({str(c.get("next_owner")) for c in run["checks"]
                                  if c.get("status") == "unresolved" and c.get("next_owner")})
-                owner_text = ", ".join(owners) if owners else human
+                owner_text = ", ".join(owners) if owners else "you"
                 state, glyph, waiting = "verify unresolved", "⏸", (
                     f"{owner_text} · resolve the recorded evidence/criterion gap; "
                     "preserve this Result and review only after inputs or criteria change")
             elif run["status"] == "complete":
-                state, glyph, waiting = "verify failed", "✗", f"{human} · queue a revise"
+                state, glyph, waiting = "verify failed", "✗", "you · queue a revise"
             elif run["status"] == "failed":
                 # The review itself did not pass the gate: redo the review, not the candidate.
-                state, glyph, waiting = "verify invalid", "✗", f"{human} · queue the review again"
+                state, glyph, waiting = "verify invalid", "✗", "you · queue the review again"
             elif run["status"] == "planned" and run.get("stale"):
-                state, glyph, waiting = "queued run out of date", "⚠", f"{human} · queue again"
+                state, glyph, waiting = "queued run out of date", "⚠", "you · queue again"
             elif run["status"] == "planned":
                 state, glyph, waiting = "verify queued", "⬜", "agent · verify"
             else:
@@ -367,11 +368,11 @@ def _fold_state(runs: list[dict], human: str = "person") -> tuple[str, str, str]
             elif run["outcome"] == "decline":
                 state, glyph, waiting = "declined", "🚫", ""
             elif run["outcome"] == "revise":
-                state, glyph, waiting = "generated", "⬜", f"{human} · queue the review"
+                state, glyph, waiting = "generated", "⬜", "you · queue the review"
             elif run["outcome"] == "hold":
-                state, glyph, waiting = "legacy hold", "⏸", f"{owner} · historical decision; register a new item to continue"
+                state, glyph, waiting = "legacy hold", "⏸", "you · historical decision; register a new item to continue"
             else:
-                state, glyph, waiting = "generated", "⬜", f"{human} · queue the review"
+                state, glyph, waiting = "generated", "⬜", "you · queue the review"
     return state, glyph, waiting
 
 
@@ -775,7 +776,7 @@ def design_snapshot(page_src: Path, server_root: Path | None = None) -> dict:
             item["ready"], delivery_error = None, str(exc)
         if delivery_error:
             item["state"], item["glyph"] = "records invalid", "⚠"
-            item["waiting"] = f"{human} · inspect recorded candidate and review: {delivery_error}"
+            item["waiting"] = f"you · the records for this item do not line up: {delivery_error}"
         item["adopted"] = None
         shown = shown_design(item)
         item["render"] = _render_for(renders.get(item["id"], []), shown["run"]) if shown else None
@@ -819,8 +820,8 @@ table.kv{margin:6px 0}table.kv th{width:88px;text-transform:none;letter-spacing:
 table.kv td{border-bottom:0;padding:3px 0}
 .card{border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:8px 0}
 .card .head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.act{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}.act.batch{margin:8px 0 4px;padding:8px 10px;background:var(--soft);border-radius:6px}
-table.designs td.who{width:230px}.design{white-space:pre-wrap;word-break:break-word;font-size:14.5px}details.decide{margin-top:8px}details.decide .act{margin-top:6px}details.batchfold{margin:8px 0 4px}details.batchfold .act.batch{margin:6px 0 0}
+.act{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+table.designs td.who{width:230px}.design{white-space:pre-wrap;word-break:break-word;font-size:14.5px}details.decide{margin-top:8px}details.decide .act{margin-top:6px}
 .act input,.act textarea,.form input,.form textarea,.form select{font:13px -apple-system,sans-serif;border:1px solid var(--line);border-radius:4px;padding:4px 6px;background:var(--bg);color:var(--fg)}
 .act input.name{width:90px}.act input.words{width:min(420px,100%)}
 button.do{font:600 12.5px -apple-system,sans-serif;border:1px solid var(--acc);border-radius:4px;padding:4px 10px;background:var(--bg);color:var(--acc);cursor:pointer}
@@ -850,7 +851,6 @@ ol.flow .rung{flex:0 0 96px;font-size:11.5px;color:var(--mut)}ol.flow .nodes{fle
 ol.flow li.down{padding-left:118px;color:var(--mut);font-size:12px;line-height:1.2}ol.flow li.me .rung{color:var(--acc);font-weight:600}
 .betl{display:flex;gap:10px;margin:2px 0;line-height:1.45}.betl .k{flex:0 0 64px;font-size:12px;font-weight:600}
 ul.checks{list-style:none;margin:0;padding:0}ul.checks li{margin:2px 0;padding-left:20px;text-indent:-20px;line-height:1.4}ul.checks .g{display:inline-block;width:20px;text-indent:0;font-weight:700}
-.steps{line-height:1.8}.steps .s{white-space:nowrap;background:var(--soft);border-radius:10px;padding:1px 8px;font-size:12.5px}.steps .s.next{background:none;color:var(--acc);font-weight:600}
 @media(max-width:720px){.pair{display:block}.itembody .pair .pic{position:static;max-height:none}
 main table:not(.explain){display:block;max-width:100%;overflow-x:auto}main table:not(.explain) code{white-space:nowrap;word-break:normal}.peek{display:none}
 details.itemfold>summary b{max-width:none;flex:1 1 auto}}
@@ -873,6 +873,28 @@ def _href(root: Path, path: Path | None, label: str) -> str:
 
 def _short(sha: str) -> str:
     return sha[:12] if sha else ""
+
+
+def _whole_word(word: str, flags: int = 0) -> re.Pattern:
+    """The word standing alone, never a piece of a hyphenated compound."""
+    return re.compile(rf"(?<![\w-]){word}(?![\w-])", flags)
+
+
+_CONTRACT_WORDS = ((_whole_word("candidates", re.I), "drafts"),
+                   (_whole_word("candidate", re.I), "draft"),
+                   (_whole_word("Tickets"), "run records"),
+                   (_whole_word("Ticket"), "run record"))
+
+
+def plain_words(recorded: str) -> str:
+    """Read a recorded sentence in the reader's words.
+
+    A Run's target, written when the files said `candidate`, keeps its own
+    bytes; the surface says `draft` (JL 260916).
+    """
+    for pattern, word in _CONTRACT_WORDS:
+        recorded = pattern.sub(word, recorded or "")
+    return recorded
 
 
 def _signal_line(insight: dict) -> str:
@@ -955,7 +977,8 @@ def _run_rows(root: Path, runs: list[dict], acceptance: list[str] | None = None)
             detail = f'<div class=mut>“{_escape(run["words"])}”</div>' + detail
         rows.append(
             f'<tr><td>{_href(root, run["ticket_path"], run["id"])}</td>'
-            f'<td>{_escape(run["step"])}{(" · revise of " + _escape(base.split("_")[0])) if base else ""}</td>'
+            f'<td>{_escape(run["step"])}{(" · revise of " + _escape(base.split("_")[0])) if base else ""}'
+            f'<div class=mut><code>Design.{_escape(run["kind"])}</code> · {_escape(plain_words(run["target"]))}</div></td>'
             f'<td>{_escape(run["actor"])} <span class=mut>{_escape(run["mode"])}</span></td>'
             f'<td class=mut>{_escape(run["finished"] or run["started"] or "—")}</td>'
             f'<td class="{status_cls}">{_escape(status_text)}</td><td class="{"bad" if run["verdict"] == "fail" else ""}">{_escape(outcome)}</td>'
@@ -975,6 +998,262 @@ def _held_at(item: dict) -> str:
 
 def _stale_names(item: dict) -> list[str]:
     return [name for r in item["runs"] for name in r.get("stale") or []]
+
+
+# Design-only presentation of the owner contract; these are types, not allocated Runs.
+_DESIGN_RUN_GUIDE = {
+    "commission": {
+        "name": "Commission", "type": "Design.commission", "actor": "person",
+        "purpose": "Release or hold one item's exact goal, rules and source inputs.",
+        "worker": "none · the named person decides",
+        "requires": "A registered item, explicit goal and rules, allowed sources, and a named person. At most one release per item.",
+    },
+    "generate": {
+        "name": "Generate", "type": "Design.generate", "actor": "agent",
+        "purpose": "Create or revise the commissioned design and check it against every released rule.",
+        "worker": "haipipe-design-unit · through haipipe-designer-agent",
+        "requires": "A released Commission, frozen config and current input hashes. A revision also needs its exact base and feedback; no second open Run for the item.",
+    },
+    "verify": {
+        "name": "Verify", "type": "Design.verify", "actor": "independent agent",
+        "purpose": "Review the exact completed draft against every released rule and record pass, fail or unresolved gaps.",
+        "worker": "haipipe-design-unit · through a fresh haipipe-designer-agent context",
+        "requires": "A complete Generate Result, pinned sources and criteria, and a reviewer independent of its producer. An already completed valid review cannot be repeated unchanged.",
+    },
+}
+
+
+def _next_design_run(item: dict) -> tuple[str, str]:
+    """Return the native action and Run kind its state exposes; never allocate."""
+    if _held_at(item) == "commission":
+        return "commission-release", "commission"
+    for action, kind in (("commission-release", "commission"), ("queue-generate", "generate"),
+                         ("queue-revise", "generate"), ("queue-verify", "verify")):
+        if item["state"] in _ALLOWED[action]:
+            return action, kind
+    if item["state"] in _ALLOWED["requeue"]:
+        stale = next((r for r in reversed(item["runs"])
+                      if r["status"] == "planned" and r.get("stale")), None)
+        if stale and stale["kind"] in ("generate", "verify"):
+            return "requeue", stale["kind"]
+    return "", ""
+
+
+def design_chat_action(item: dict) -> tuple[str, str]:
+    queued_kind = {"generate queued": "generate", "verify queued": "verify"}.get(item["state"])
+    return ("dispatch-existing", queued_kind) if queued_kind else _next_design_run(item)
+
+
+def design_chat_prompt(snapshot: dict, item: dict) -> str:
+    """A bounded chat request for safe worker work; constructing it only reads the snapshot."""
+    if (not snapshot.get("current") or not snapshot.get("yaml") or snapshot.get("static")
+            or snapshot.get("audit") or snapshot["insight"]["status"] in ("blocked", "missing")):
+        return ""
+    action, kind = design_chat_action(item)
+    if action not in ("queue-generate", "queue-verify", "dispatch-existing"):
+        return ""
+    opened = [r for r in item["runs"] if r["status"] in ("planned", "running")]
+    if opened and (len(opened) != 1 or opened[0]["status"] != "planned"
+                   or opened[0]["kind"] != kind or opened[0].get("stale")):
+        return ""
+    if action == "dispatch-existing" and not opened:
+        return ""
+    released = next((r for r in reversed(item["runs"]) if r["kind"] == "commission"
+                     and r["status"] == "complete" and r["outcome"] == "release"), None)
+    if released is None or (kind == "verify" and not item.get("latest")):
+        return ""
+    matched = next((r for r in reversed(item["runs"]) if r["kind"] == kind), None)
+    board = snapshot["insight"].get("design_board")
+    if board is None:
+        return ""
+    def record(run):
+        return ({"id": run["id"], "status": run["status"], "actor": run["actor"],
+                 "ticket": str(run["ticket_path"]), "receipt": str(run["result_dir"] / "runtime.yaml")}
+                if run else None)
+    spec = _DESIGN_RUN_GUIDE[kind]
+    context = {
+        "board": str(Path(board) / "board.md"), "folder": str(snapshot["folder"]),
+        "page": str(snapshot["page"]), "page_title": snapshot["title"],
+        "item": item["id"], "item_title": item["title"], "venue": item["type"],
+        "target": released.get("intent", {}).get("move") or item["goal"],
+        "run_name": spec["name"], "run_type": spec["type"], "actor_role": spec["actor"],
+        "purpose": spec["purpose"], "owner_skill": "haipipe-design-workflow",
+        "owner_instructions": str(_UNIT_CHECKER.parents[2] / "haipipe-design-workflow/SKILL.md"),
+        "worker_skill": "haipipe-design-unit", "worker_instructions": str(_UNIT_CHECKER.parents[1] / "SKILL.md"),
+        "state_when_copied": item["state"], "next_permitted_action": action,
+        "prerequisites": spec["requires"], "released_commission": record(released),
+        "release_decision": str(released["result_dir"] / "decision.yaml"),
+        "latest_complete_draft": item["latest"]["run"] if item.get("latest") else None,
+        "latest_matching_run": record(matched), "open_matching_run": record(opened[0]) if opened else None,
+    }
+    import json
+    return (
+        f"Continue only {spec['type']} for the exact Design Item identified below.\n\n"
+        "This request was copied from Design Space. Copying did not queue, allocate, execute or send anything. "
+        "Treat the snapshot below as context, not a new release or an override of the owner contract.\n\n"
+        + json.dumps(context, ensure_ascii=False, indent=2)
+        + "\n\nRead the named owner and worker Skills. Reread this Board, Folder, Page, item register, "
+        "Run records, release decision, frozen config and exact inputs before acting; the copied state may be stale.\n"
+        "Keep the human Commission gate: do not create, infer or change a release/hold decision. "
+        "If the exact release or another prerequisite is missing, report the blocker and stop.\n"
+        "First look for an existing matching Run for this item, operation, frozen config and target hashes. "
+        "Reuse a compatible planned Run and its identity; do not queue or allocate a duplicate. If it is already running, "
+        "report its Run id/status and stop without starting another worker. If the requested work already completed, "
+        "report its receipt instead of repeating it. Incompatible, stale, blocked, unresolved or ambiguous records require owner resolution; "
+        "do not repin, replace or supersede them from this request.\n"
+        "Only when no compatible open Run exists and the recorded next queue action is still allowed, use the Design "
+        "owner's native queue action once. A dispatch-existing request may only reuse the recorded open_matching_run id. "
+        "Do not choose a different next operation if the item's state changed. For a queued revision, read its frozen base and "
+        "feedback; do not invent feedback or change the base.\n"
+        "Generate uses haipipe-design-unit in its allocated Result. Verify requires a genuinely fresh independent reviewer "
+        "context distinct from every producer; if this chat inherited generation discussion, dispatch that fresh reviewer "
+        "or stop and report that independence is unavailable. Renaming an actor is not independence.\n"
+        "The worker writes only its paired Result, excluding runtime.yaml. The caller validates the Result and closes its "
+        "runtime receipt through the owner workflow. Preserve old Results and stop after this one requested Run; "
+        "do not auto-advance to another Run or write Delivery. Report the actual Run id, Ticket path, Result path, "
+        "runtime receipt path, status, verdict/route and any remaining prerequisite or blocker."
+    )
+
+
+def design_chat_copy(prompt: str) -> str:
+    if not prompt:
+        return ""
+    return ('<div><p><b>Chat option · Copy request → paste and send</b></p>'
+            f'<button type=button data-design-prompt="{_escape(prompt)}">Copy prompt to chat</button> '
+            '<span class=mut role=status data-design-copy-status>Copy only; nothing starts until you paste and send.</span>'
+            f'<details><summary>Review chat prompt</summary><pre class=text>{_escape(prompt)}</pre></details></div>')
+
+
+def design_chat_copy_script() -> str:
+    """Reuse the existing clipboard helper unchanged; no action endpoint is involved."""
+    helper = _read(Path(__file__).resolve().parents[1] / "assets/js/05-prompt-copy.js")
+    return ('<script>' + helper + '\n'
+            "document.querySelectorAll('button[data-design-prompt]').forEach(function(b){"
+            "b.onclick=async function(){var st=b.parentNode.querySelector('[data-design-copy-status]');"
+            "if(!window.__boardCopyPrompt){st.textContent='Copy unavailable; select the reviewed prompt manually.';return}"
+            "var ok=await window.__boardCopyPrompt(b,b.dataset.designPrompt);"
+            "st.textContent=ok?'Copied. Paste and send in chat; nothing has started here.':'Copy failed; select the reviewed prompt manually.'"
+            "}});</script>")
+
+
+_RUNNING_STATES = ("generate queued", "generating", "verify queued", "verifying")
+
+
+def design_next_run(item: dict, human: str, *, writable: bool = False, compact: bool = False) -> str:
+    """Explain this item's next native action, separately from its actual history.
+
+    An item with nothing to start says nothing here (JL 260921): its own line
+    already carries the state, and its Runs are Run Space's business.
+    """
+    action, kind = _next_design_run(item)
+    if not action and item["state"] not in _RUNNING_STATES:
+        return ""
+    latest = next((r for r in reversed(item["runs"]) if r["status"] != "superseded"), None)
+    lead = "Next eligible Run" if action else "Current Run"
+    if not kind:
+        kind = latest["kind"] if latest else ""
+    spec = _DESIGN_RUN_GUIDE.get(kind)
+    capability = "Start here" if action and writable else "Shown here · read-only"
+    heading = (f'{lead}: {spec["name"]} · {spec["actor"]}' if spec and (action or lead == "Current Run") else lead)
+    matches = [r for r in item["runs"] if r["kind"] == kind]
+    match = matches[-1] if matches else None
+    current = (f'{match["id"]} · {match["status"]} · {match["outcome"] or "no outcome yet"} · {match["actor"]}'
+               if match else "none allocated for this type")
+    if action:
+        instruction = {
+            "commission-release": "You record Release or Hold with the native controls; a held decision stays on record.",
+            "queue-generate": "The person queues Generate; the dispatcher assigns the agent before it works.",
+            "queue-revise": "Supply feedback and queue a new Generate Run; keep the previous draft unchanged.",
+            "queue-verify": "The person queues Verify; the dispatcher assigns a fresh independent reviewer.",
+            "requeue": "Queue again replaces the stale queued Run and keeps its superseded record.",
+        }[action]
+        if not writable:
+            instruction += " Open this item's Design Space for its native control."
+    else:
+        instruction = item.get("waiting") or "The agent is working; nothing to start here."
+    facts = (f'<p><b>{_escape(heading)}</b><br>{_escape(capability)}</p>'
+             f'<p>{_escape(instruction)}</p>')
+    # Everything a reader needs to start is above; the type, the Skills and the
+    # exact run ids sit behind one fold, so a card is not a wall of records.
+    detail = f'<div class=mut>{_escape(spec["purpose"])}</div>' if spec else ""
+    if spec:
+        detail += (f'<p>Run Type: <code>{_escape(spec["type"])}</code><br>'
+                   f'Target: {_escape(item["id"])} · {_escape(item["title"])}</p>'
+                   '<p>Owner Skill: <code>haipipe-design-workflow</code><br>'
+                   f'Worker Skill: {_escape(spec["worker"])}</p>'
+                   f'<p>Prerequisites: {_escape(spec["requires"])}</p>'
+                   '<p>The native control checks these prerequisites again before writing.</p>')
+    released = next((r for r in reversed(item["runs"])
+                     if r["kind"] == "commission" and r["outcome"] == "release"), None)
+    if spec and kind in ("generate", "verify"):
+        detail += f'<div class=mut>Released Commission: {_escape(released["id"] if released else "none recorded")}</div>'
+        if item.get("latest"):
+            detail += f'<div class=mut>Latest complete draft: {_escape(item["latest"]["run"])}</div>'
+    detail += f'<div class=mut>Latest matching record: {_escape(current)}</div>'
+    facts += f'<details><summary>Run type, Skills and prerequisites</summary>{detail}</details>'
+    return f'<details><summary>{_escape(heading)}</summary>{facts}</details>' if compact else facts
+
+
+def design_run_guide(items: list[dict], space: str, *, writable: bool = False,
+                     copy_kinds: set[str] | None = None) -> str:
+    """Space-specific type catalogue with a separate summary of matching instances."""
+    kinds = {"goal": ("commission",), "design": ("commission", "generate", "verify"),
+             "insight": ("commission", "generate", "verify"), "run": ("commission", "generate", "verify"),
+             "delivery": ("generate", "verify")}[space]
+    notes = {
+        "goal": "Commission uses each registered item's goal and rules. Adding a task, folder or item does not allocate a Design Run.",
+        "design": "Use each item's native controls for its next eligible Run. Queueing records work for the agent dispatcher.",
+        "insight": "These Design Runs consume allowed sources. Insight signing and evidence repair stay with their native owners.",
+        "run": "This Space is the history and status ledger. Start actions remain in the item's Design Space.",
+        "delivery": "Delivery reads the exact Generate Result and passed independent Verify. It allocates no Run and offers no start action.",
+    }
+    # One row per item, one column per Run type: an item's title is read once
+    # and where it stands reads across (JL 260921: the old list repeated every
+    # title once per type, and every type repeated the same closing sentence).
+    rows, starts = [], []
+    for item in items:
+        # A declined item is retired: Delivery folds its card away, so its title must
+        # not come back in this table underneath (JL 260918, the fold is the promise).
+        if item["state"] == "declined":
+            continue
+        cells = ""
+        for kind in kinds:
+            found = [r for r in item["runs"] if r["kind"] == kind]
+            latest = found[-1] if found else None
+            if latest is None:
+                cells += '<td><span class=mut>—</span></td>'
+                continue
+            outcome = latest["outcome"] or latest["status"]
+            mark = "ok" if outcome in ("pass", "release", "complete") else "bad" if latest["status"] == "failed" else "mut"
+            cells += (f'<td><span class={mark}>{_escape(outcome)}</span> '
+                      f'<span class=mut>{_escape(latest["id"].split("_")[0])}</span></td>')
+        name = " · ".join(x for x in (item.get("folder"), item["id"]) if x)
+        rows.append(f'<tr><td><b>{_escape(name)}</b><div class=mut>{_escape(item["title"])}</div></td>{cells}</tr>')
+    for kind in kinds:
+        spec = _DESIGN_RUN_GUIDE[kind]
+        startable = writable and any(_next_design_run(item)[1] == kind for item in items)
+        copyable = space == "design" and kind in (copy_kinds or set())
+        if startable or copyable:
+            starts.append(spec["name"])
+    types = "".join(
+        f'<li><b>{_escape(_DESIGN_RUN_GUIDE[kind]["name"])} · {_escape(_DESIGN_RUN_GUIDE[kind]["actor"])}</b> — '
+        f'{_escape(_DESIGN_RUN_GUIDE[kind]["purpose"])}</li>' for kind in kinds)
+    needs = "".join(
+        f'<li><b>{_escape(_DESIGN_RUN_GUIDE[kind]["name"])}</b> · <code>{_escape(_DESIGN_RUN_GUIDE[kind]["type"])}</code> · '
+        f'worker {_escape(_DESIGN_RUN_GUIDE[kind]["worker"])}<br>'
+        f'<span class=mut>{_escape(_DESIGN_RUN_GUIDE[kind]["requires"])}</span></li>' for kind in kinds)
+    head = "".join(f'<th>{_escape(_DESIGN_RUN_GUIDE[kind]["name"])}</th>' for kind in kinds)
+    where = (f'You can start {" and ".join(starts)} on an eligible item below.' if starts
+             else "Nothing starts here; an item's own controls in Design Space do that.")
+    return ('<details><summary>Run types in this Space</summary>'
+            f'<p>{_escape(notes[space])} {_escape(where)}</p>'
+            f'<ul class=rules>{types}</ul>'
+            + (f'<table><tr><th>item</th>{head}</tr>{"".join(rows)}</table>'
+               if rows else '<p class=mut>No item records in this scope.</p>')
+            + '<p class=mut>The latest record of each type; every Run, including superseded ones, is in Run Space.</p>'
+            + f'<details><summary>What each Run needs</summary><ul class=rules>{needs}</ul>'
+            '<p class=mut>Owner Skill: <code>haipipe-design-workflow</code>. '
+            'The native control checks these again before it writes.</p></details></details>')
 
 
 def _actions(item: dict, human: str) -> tuple[str, str]:
@@ -1158,29 +1437,13 @@ def _bet_changed(item: dict, released: dict) -> bool:
         or (frozen_rules is not None and list(frozen_rules) != list(item["acceptance"])))
 
 
-def _run_chain(item: dict) -> str:
-    """Actual Runs in order, retaining historical identities, then who is waited on."""
-    chips = []
-    for r in item["runs"]:
-        if r["status"] == "superseded":
-            continue
-        out = str(r["outcome"] or r["verdict"] or r["status"] or "")
-        glyph = ("✗" if r["status"] in ("failed", "blocked") else
-                 "…" if r["status"] in ("planned", "running") else
-                 "✓" if out in ("release", "pass", "adopt", "complete") else
-                 "✗" if out in ("fail", "failed", "decline", "blocked") else
-                 "↺ revise" if out == "revise" else "⏸ hold" if out == "hold" else "…")
-        who = f' {_escape(r["actor"])}' if r["mode"] == "human" else ""
-        chips.append(f'<span class=s title="{_escape(r["id"])}">{_escape(r["step"])} {glyph}{who}</span>')
-    if item["waiting"]:
-        chips.append(f'<span class="s next">next: {_escape(item["waiting"])}</span>')
-    return " → ".join(chips) or '<span class=mut>not started</span>'
-
-
 def _explain(item: dict, root: Path | None = None) -> str:
     """The right-hand side of a card, as a two-column table (JL 260918): a small label on
     the left, the content on the right: why this design, where its insight came from,
-    the bet, the rules, the steps."""
+    the bet, the rules.
+
+    No strip of Runs: JL asked on 260921 for it to go. The card's own line already says
+    the state and who is waited on, and the Runs themselves belong to the Run Space."""
     pairs = [(k, v) for k, v in (("stance", item["stance"]), ("basis", item["basis"])) if v]
     why = " · ".join(_PLAIN.get((k, v), f"{k} {_escape(v)}") for k, v in pairs)
     rows = [("Why this design",
@@ -1196,7 +1459,6 @@ def _explain(item: dict, root: Path | None = None) -> str:
         rows.append(("The bet", bet))
     head, rules = _rule_checks(item)
     rows.append(("Rules", f'<div class=mut>{head}</div><ul class=checks>{rules}</ul>'))
-    rows.append(("Runs", f'<div class=steps>{_run_chain(item)}</div>'))
     return ("<table class=explain>" + "".join(f"<tr><th>{k}</th><td>{v}</td></tr>" for k, v in rows)
             + "</table>")
 
@@ -1213,7 +1475,7 @@ def _sms_bubble(text: str) -> str:
     return body[:cut] + ': <span class=link>link</span> ' + body[cut + 2:]
 
 
-def _item_card(root: Path, item: dict, human: str, selected: bool) -> str:
+def _item_card(root: Path, item: dict, human: str, selected: bool, *, writable: bool = True, chat_prompt: str = "") -> str:
     meta = " · ".join(x for x in (item["type"], item["audience"], item["job"]) if x)
     if item.get("ready"):
         ready = item["ready"]
@@ -1238,7 +1500,7 @@ def _item_card(root: Path, item: dict, human: str, selected: bool) -> str:
                   f'<div class=mut>{note}</div>')
     else:
         design = (f'<pre class=text>{_escape(text)}</pre>' if text else "") + f'<div class=mut>{note}</div>'
-    actions, fold = _actions(item, human)
+    actions, fold = _actions(item, human) if writable else ("", "")
     facts = _explain(item, root)
     # The design on the left, its explanation on the right (JL 260918): a screen as its
     # picture, a text design (an SMS) as the message itself. The design stays in view while
@@ -1261,32 +1523,15 @@ def _item_card(root: Path, item: dict, human: str, selected: bool) -> str:
         f'<b>{_escape(item["id"])} · {_escape(item["title"])}</b><span class=peek>{peek}</span>'
         f'<span class="mut st">{_escape(item["glyph"])} {_escape(item["state"])}'
         f'{(" · waiting on " + _escape(item["waiting"])) if item["waiting"] else ""}</span></summary>'
-        f'<div class=itembody><div class=mut>{_escape(meta)}</div>{body}</div></details></section>'
+        f'<div class=itembody><div class=mut>{_escape(meta)}</div>'
+        f'{design_next_run(item, human, writable=writable)}{design_chat_copy(chat_prompt)}{body}</div></details></section>'
     )
 
 
-def _batch_bar(items: list[dict], human: str) -> str:
-    """One row of batch buttons: each appears only when it has something to act on."""
-    releasable = [i for i in items if i["state"] in ("not commissioned", "commission open")]
-    queueable = [i for i in items if i["state"] in ("commissioned", "revise requested", "generated",
-                                                     "verify invalid", "queued run out of date")]
-    if not (releasable or queueable):
-        return ""
-    person = f'<input class=name name=actor placeholder="your name" value="{_escape(human if human != "person" else "")}">'
-    words = '<input class=words name=words placeholder="one sentence for all of them (kept on record)">'
-    parts, names = [], []
-    if releasable:
-        parts.append(f'<button class=do data-action=release-all>Release all · {len(releasable)}</button>')
-        names.append(f"release {len(releasable)}")
-    if queueable:
-        parts.append(f'<button class=do data-action=queue-all>Queue all · {len(queueable)} · agent</button>')
-        names.append(f"queue {len(queueable)}")
-    needs_person = bool(releasable)
-    bar = (f'<div class="act batch" data-item="__all__">{(person + words) if needs_person else ""}'
-           + "".join(parts) + '<span class=msg></span></div>')
-    if not needs_person:
-        return bar
-    return f'<details class=batchfold><summary>For all items at once: {", ".join(names)}</summary>{bar}</details>'
+# There is no bar that acts on every item at once. JL asked on 260921 for it to go:
+# one decision, one item, one sentence on the record. The all-items writers in
+# design_actions are no longer reachable from a surface, and perform_action refuses
+# the `-all` actions the way it already refuses `adopt-all`.
 
 
 def _new_item_form(next_id: str) -> str:
@@ -1388,18 +1633,21 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         goal_html += f'<h2>Insight board</h2><div class={"bad" if ins["status"] == "blocked" else "mut"}>{_signal_line(ins)}</div>'
 
     # Design Space -----------------------------------------------------------
-    design_html = _batch_bar(items, human) if (items and snapshot["current"] and not snapshot.get("static")) else ""
+    writable = snapshot["current"] and not snapshot.get("static")
+    chat_prompts = {item["id"]: design_chat_prompt(snapshot, item) for item in items}
+    design_html = ""
     if items:
         # A declined item is retired: its card stays for the record, folded after the live ones.
         live = [item for item in items if item["state"] != "declined"]
         retired = [item for item in items if item["state"] == "declined"]
         design_html += ('<div class="mut foldbar"><a href=# data-fold=open>open all</a> · '
                         '<a href=# data-fold=close>close all</a></div>')
-        design_html += "".join(_item_card(root, item, human, item["id"] == selected_item) for item in live)
+        design_html += "".join(_item_card(root, item, human, item["id"] == selected_item, writable=writable,
+                                         chat_prompt=chat_prompts[item["id"]]) for item in live)
         if retired:
             opened = " open" if selected_item in {item["id"] for item in retired} else ""
             design_html += (f'<details class=retired{opened}><summary>Declined, kept for the record · {len(retired)}</summary>'
-                            + "".join(_item_card(root, item, human, item["id"] == selected_item) for item in retired)
+                            + "".join(_item_card(root, item, human, item["id"] == selected_item, writable=writable) for item in retired)
                             + '</details>')
     else:
         design_html = (f'<div class=empty>No Design Item register yet. Add the first item below; it writes '
@@ -1408,7 +1656,7 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         design_html += ('<h2>Runs without an item</h2>'
                         '<table><tr><th>run</th><th>Run type</th><th>who</th><th>when</th><th>status</th><th>outcome</th><th>next</th></tr>'
                         f'{_run_rows(root, snapshot["unassigned"])}</table>')
-    if snapshot["current"]:
+    if writable:
         numbers = [int(i[4:]) for i in ids if i[4:].isdigit()]
         design_html += _new_item_form(f"ITEM{max(numbers, default=0) + 1:02d}")
 
@@ -1506,6 +1754,12 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
 
     panes = {"goal": goal_html, "design": design_html, "insight": "".join(insight_html),
              "run": "".join(run_html), "delivery": "".join(delivery_html)}
+    for key in panes:
+        scope = [item for item in items if not selected_item or item["id"] == selected_item]
+        if key == "delivery":
+            scope = [item for item in scope if item.get("ready")]
+        copy_kinds = {design_chat_action(item)[1] for item in scope if chat_prompts[item["id"]]}
+        panes[key] = design_run_guide(scope, key, writable=writable and key == "design", copy_kinds=copy_kinds) + panes[key]
     tabs = "".join(f'<button type=button data-space="{key}"{" class=on" if key == selected else ""}>{label}</button>'
                    for key, label in (("goal", "Goal Space"), ("design", "Design Space"), ("insight", "Insight Space"),
                                       ("run", "Run Space"), ("delivery", "Delivery Space")))
@@ -1535,7 +1789,7 @@ def render_design(snapshot: dict, space: str = "goal", selected_item: str = "",
         '<!doctype html><html lang=en><head><meta charset=utf-8>'
         '<meta name=viewport content="width=device-width,initial-scale=1">'
         f'<title>🎨 Design · {_escape(snapshot["title"])}</title><style>{_CSS}</style></head><body>'
-        f'<header>{header}</header><nav class=tabs>{tabs}</nav><main>{pane_html}</main>{script}</body></html>'
+        f'<header>{header}</header><nav class=tabs>{tabs}</nav><main>{pane_html}</main>{script}{design_chat_copy_script()}</body></html>'
     )
 
 
@@ -1726,7 +1980,7 @@ def perform_action(page_src: Path, payload: dict) -> tuple[dict | None, str | No
     folder = page_src.parent
     stem = page_src.stem
     action = str(payload.get("action") or "")
-    if action in {"adopt", "decline", "revise", "hold", "adopt-all"}:
+    if action in {"adopt", "decline", "revise", "hold", "adopt-all", "release-all", "queue-all"}:
         return None, f"unknown action {action!r}"
     snapshot = design_snapshot(page_src, folder)
     items = {item["id"]: item for item in snapshot["items"]}
@@ -1738,12 +1992,6 @@ def perform_action(page_src: Path, payload: dict) -> tuple[dict | None, str | No
         if action == "add-item":
             out = acts.add_item(folder, stem, payload)
             return {"item": out["item"], "register": out["register"], "audit": _audit(folder)}, None
-        if action == "release-all":
-            out = acts.release_all(folder, stem, snapshot["items"], actor, words)
-            return {**out, "item": "", "audit": _audit(folder)}, None
-        if action == "queue-all":
-            out = acts.queue_all(folder, stem, snapshot["items"])
-            return {**out, "item": "", "audit": _audit(folder)}, None
         if action == "draft-request":
             goal = snapshot["goal"]
             rows = [r for block in snapshot["insight_space"]["items"] for r in block["rows"]]

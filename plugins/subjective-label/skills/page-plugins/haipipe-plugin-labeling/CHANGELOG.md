@@ -1,5 +1,15 @@
 # haipipe-plugin-labeling · CHANGELOG
 
+## 0.19.0 · 2026-09-21
+
+Make the first-use SOP stop at the supported round-1 frontier. Distinguish the
+Run Type catalogue from actual Tickets and runtime status, mark unbuilt
+operations without implying their results exist, and correct production
+human-review and candidate-reconcile placement. Record the owner/worker Skill
+and contextual-copy fields required by a future host map. Record that the
+current round prompt is copy-only but lacks full Page/target/Ticket/gate
+context, and that contract setup has no in-page copy affordance yet.
+
 ## 0.18.0 · 2026-09-20
 
 Show P2-P5 as unimplemented and held instead of presenting them as future

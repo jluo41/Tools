@@ -1,5 +1,26 @@
 # CHANGELOG · haipipe-plugin-paper
 
+## 0.4.1 · 2026-09-21
+
+- Add separate `⧉ Copy Run request` clipboard controls to bound Paper judgment
+  entries for admitted Ideas, C5 claims, C7 obligations, and C8 narratives.
+  Prompts carry the exact Page/target, instantiated Spec, Run Type, owner,
+  prerequisites, family-filtered matching Ticket/Result/status, expected
+  receipt, and next permitted owner action.
+- Keep `⧉ chat` as source-grounded discussion context. Run-request controls
+  only copy text; they never send, start, allocate, or write. Leave unsupported
+  Page, Evidence, Support, Delivery, Compile, and Response entries prompt-free.
+
+## 0.4.0 · 2026-09-21
+
+- Expand the Run map with reader-facing names, canonical Types/Specs, bounded
+  work, owner/worker Skills, actors, prerequisites, and per-Space role/entry.
+- Keep controls distinct from Specs and actual native Runs. Preserve source-
+  grounded copy-to-chat as discussion context; identify the separate Run-
+  request prompt control as not built.
+- Cite the map's Markdown when copying selected map text and avoid repeating
+  folder chips across the normalized Spec × Space entries.
+
 ## 0.3.0 · 2026-09-20
 
 - Align the Space/folder map with the canonical Run Specs and explicit controls. Present all five Spaces and owner-native receipts without allocating wrapper Runs.

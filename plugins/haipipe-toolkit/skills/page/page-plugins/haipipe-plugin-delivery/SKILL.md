@@ -9,8 +9,8 @@ description: >-
   show the pdf docx deck together,
   /haipipe-plugin-delivery.
 metadata:
-  version: "0.6.1"
-  last_updated: "2026-09-20"
+  version: "0.6.2"
+  last_updated: "2026-09-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -74,6 +74,16 @@ In the Run Workflow model, each RD is a Page Delivery Run Spec/Run Instance
 whose bounded target is one delivery lane. Its build/inspect result is the
 lane-local exit-gate input; the Workflow Runtime still owns cross-Run routing
 and whole-Page completion.
+
+The Page Delivery Run view lists the Page.delivery target beside each lane,
+with its bounded work, owner/presenter Skills, actor, prerequisites, and any
+recorded `rdNN_<target>` identity/status. The active LaTeX, Word, Slides, and
+Render lane entries can copy a context-bound request to chat; Web has no
+build/preview control in this surface and is labelled `Not built`. Copying a
+request never sends, starts, allocates, builds, executes, or writes. The
+embedded Delivery Workspace remains an inventory: it shows matching RD
+records and statuses as `Shown here · read-only` and has no chat launch
+buttons.
 
 ## 🗺 Status · 🟢 built 260831
 

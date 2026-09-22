@@ -7,8 +7,8 @@ description: >-
   compiled next. Trigger: paper journey, workflow, Run routing, gate,
   /haipipe-paper-workflow.
 metadata:
-  version: "1.3.1"
-  last_updated: "2026-09-20"
+  version: "1.4.0"
+  last_updated: "2026-09-21"
 ---
 
 # /haipipe-paper-workflow · read the journey, test the gate, mint the next work
@@ -134,7 +134,11 @@ G4  Section → Compile
     Every Section admitted to a ready build has an approved outline, accepted
     evidence bindings, current delivery output, and Page CHECK closure. The
     assembler may run earlier, but the receipt must say DRAFT until the full
-    intended set is closed; only a human may label the build ready.
+    intended set is closed; only a human may label the build ready. At the final
+    G4 pass, apply the Paper submission-readiness reference: Section Pages own
+    the `SUB-INTRO-*`, `SUB-METHOD-*`, `SUB-RESULT-*`, and `SUB-DISC-*` rows;
+    Paper owns `SUB-COVER-*` and `SUB-WHOLE-*` after assembly. These rows reuse
+    the shared four-axis rubric and do not add a Workflow unit or numeric score.
 
 G5  Round → next route
     Each concern in the feedback batch appears once, is routed once to the

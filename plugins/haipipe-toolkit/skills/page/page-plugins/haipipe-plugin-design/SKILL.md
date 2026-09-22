@@ -15,8 +15,8 @@ description: >-
   skills. Trigger: design plugin, design tab, design items, design folder,
   goal space, insight space, /haipipe-plugin-design.
 metadata:
-  version: "0.11.1"
-  last_updated: "2026-09-20"
+  version: "0.11.3"
+  last_updated: "2026-09-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -61,8 +61,12 @@ unrelated designs. A folder no board holds gets the list of boards.
 
 Every word a reader sees must be understood at first glance. `Space` is the
 only word for a plugin surface. The Runs list shows **Commission, Generate, Verify** under their real ids.
-Delivery is the ready projection; Steps are actions inside a Run. On screen every
-contract word is translated, and the contract word never appears beside it:
+Delivery is the ready projection. A line that waits on a person says **you**,
+never the reader's name (JL 260921: a name there reads as the person who signed
+the last record, a different fact). Explain the
+work in plain language. Run guidance also names the canonical Run Type and
+owner/worker Skills so the reader can identify the exact operation. Other
+contract words use these reader-facing translations:
 
 | in the files | on the screen |
 |---|---|
@@ -88,6 +92,53 @@ Data → Information). Run slugs follow the id: `rd02_generate_item01`. The
 Run may be `rd05`.
 
 ## The five Spaces, in time order
+
+Each Space has a folded **Run types in this Space** guide. Its type catalogue
+is separate from **Current matching records**, which lists the latest actual
+Run per item/type with id, actor, status and outcome. Goal shows Commission;
+Design, Insight and Run show Commission/Generate/Verify; Delivery shows the
+Generate/Verify records supporting ready items. A selected item scopes the
+guide. The Run Space ledger retains all actual records, including history.
+
+| Run name / canonical Type | Bounded work | Actor | Owner Skill | Worker Skill |
+|---|---|---|---|---|
+| Commission / `Design.commission` | release or hold one item's exact goal, rules and inputs | named person | `haipipe-design-workflow` | none; human decision |
+| Generate / `Design.generate` | create or revise the released design and self-check every rule | agent | `haipipe-design-workflow` | `haipipe-design-unit` via `haipipe-designer-agent` |
+| Verify / `Design.verify` | independently review exact completed drafts against released criteria | independent agent | `haipipe-design-workflow` | `haipipe-design-unit` via a fresh designer-agent context |
+
+Every open Design Item states its next eligible Run and actor, purpose,
+canonical Type, Skills, prerequisites, released Commission, latest complete
+draft and latest matching record when available. Eligibility follows the
+native action-state rules, including held Commission decisions and stale
+queued-Run replacement. A queued/running Run shows its current actor role;
+blocked, unresolved, invalid-record and ready items gain no start operation.
+
+**Start here** means the item's existing native action is available, subject
+to its gate: the person records Commission release/hold, or queues Generate,
+revision or independent Verify. Queueing does not claim the agent already ran.
+Other Spaces and static views say **Shown here · read-only**. Static views
+hide the item mutation forms. Run Space stays the
+history/status ledger; Delivery stays a read-only projection.
+
+Eligible Generate/Verify items also offer **Copy request → paste and send**,
+with a **Copy prompt to chat** button and a reviewable prompt. It names the
+exact Board, Folder, Page, item, target, Run Type, owner/worker Skills,
+prerequisites, released Commission, matching Run/receipt and next permitted
+action. The button only copies text; the person must paste and send it in chat.
+Reading, expanding or copying never allocates, queues, executes or sends work.
+
+Offer copy for an eligible new Generate/Verify or one compatible planned Run.
+Do not offer it for Commission, running, stale, blocked, unresolved, invalid,
+ready or retired states, a folder with audit findings, missing/blocked Insight
+bindings, or a static view. A revision first uses the native feedback/queue
+form; its queued Run can then be copied with its frozen base and feedback.
+
+The prompt requires a fresh state read, reuses a compatible queued Run instead
+of allocating a duplicate, and stops on changed or ambiguous state. An
+existing-Run request names the exact Run to reuse. It cannot create or change
+the human Commission decision; Verify requires a genuinely fresh independent
+reviewer context. Work stops after one Run and reports its id and receipt.
+Native controls retain their gates. Run and Delivery Spaces offer no copy action.
 
 ```text
 🎨 Design
@@ -202,9 +253,8 @@ wall:
    criteria in words instead. When the register changed after release, the
    line says "the register changed after release; drafts still follow the
    released goal and rules".
-5. **Runs**: the item's Runs as chips in order (historical Adopt keeps its original id and is labeled historical), `✗` for a run that failed
-   the records check, superseded runs skipped, ending in `next: <who is
-   waited on>`.
+A card carries no strip of Runs and no chain of steps (JL 260921). Its own line
+   already says the state and what is waited on; the Runs themselves live in Run Space.
 
 A screen shows as its rendered picture; an SMS shows as one message bubble
 on a phone, with a `link` mark where the sending system inserts the link
@@ -418,7 +468,6 @@ waited on:
 | ready | ready for Delivery | no decision Run; the passed Verify pins the exact candidate for handoff |
 | generate queued · verify queued · generating · verifying | none ("queued for the agent") | — |
 | any | New Design Item | one block appended to the register, after the binding check above |
-| several items at once | Release all · N (name + words) · Queue all · N | the same per-item writes, one Commission decision or planned run record per item; each button appears only when it has work |
 | register short of the Brief's count | Ask the agent to draft the missing N (Goal Space) | `outline/<stem>-draft-request.md`: the goal, the insights with FINDING / CONSEQUENCE / DO / DO NOT lines, and how many items to draft. The queue runner only lists open requests; a Claude session appends the items with `add_item` and removes the file |
 
 The independent Verify is the Delivery gate. A passed candidate is ready
@@ -436,11 +485,11 @@ invalid`; Page/Board ready counts, Delivery and CSV all exclude that candidate.
 
 Any form that asks for a name, words, or feedback is folded by default under
 one line that names the choice (`Release or hold the commission`, `Queue a
-revise, with feedback`, `For all items at once: …`); it opens on click, and is already open for the item selected with
+revise, with feedback`); it opens on click, and is already open for the item selected with
 `?item=`. A single agent-queue button needs no typing and stays in view. On a
 card every form and button sits in the design column, which stays in view.
-Batch buttons sit in one grey bar above the cards; a batch shares one name
-and one sentence, recorded on every Commission it writes. After a click,
+No control acts on every item at once (JL 260921): one decision, one item, one
+sentence on the record. After a click,
 every item button lands back on Design Space at that item; a draft request
 lands on Goal Space.
 

@@ -9,8 +9,8 @@ description: >-
   Trigger: page check, CHECK phase, quality gate, review version, check the
   pdf, /haipipe-page-check.
 metadata:
-  version: "0.10.2"
-  last_updated: "2026-09-20"
+  version: "0.11.0"
+  last_updated: "2026-09-21"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -333,6 +333,16 @@ contract. Judge Readability for the intended reader using a fresh context.
 Writing's self-review is input evidence, never this CHECK's verdict. Preserve
 the different-actor and immutable-version requirements above; review all
 required Page units even if a previous Writing Step checked only a local seam.
+
+For a Paper Section Page at G4, also load
+`../../../paper/haipipe-paper/ref/submission-readiness.md` and apply only the
+section-scoped `SUB-INTRO-*`, `SUB-METHOD-*`, `SUB-RESULT-*`, or `SUB-DISC-*`
+rows that belong to that Page. These rows use the shared four axes and verdicts;
+they do not create a second Page checklist, score, manifest field, or lifecycle
+phase. `SUB-COVER-*` and `SUB-WHOLE-*` remain Paper-level checks after assembly.
+Keep the Results/Discussion seam explicit: report and quantify observations in
+Results, then interpret, compare, and bound them in Discussion. A retelling
+criterion without independent human evidence is `NOT VERIFIABLE`, never a pass.
 
 The review units are every present `##` section, every direct `###` Content
 division, and every `####` paragraph whose job must be tested. Four verdicts

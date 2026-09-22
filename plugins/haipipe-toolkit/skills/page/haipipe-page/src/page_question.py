@@ -921,6 +921,11 @@ def render_subsections(sections, open_first=False, flat=False):
         rendered = body(merge_prose_lines(md) if flat else md,
                         register=bool(heading and _bd.EVIDENCE
                                       and _bd.EDIV_TITLE.match(heading)))
+        # Page content is a reading surface. Keep authored comment text inside
+        # its disclosure, but render the count as a plain Notes label rather
+        # than a chat/comment glyph that looks like a live affordance.
+        rendered = rendered.replace('<span class="sbadge">💬 ',
+                                    '<span class="sbadge">Notes ')
         if heading and flat:
             out.append(f'<div class="fh">{inline(heading)}</div>'
                        f'<div class="cbody flat">{rendered}</div>')
@@ -1328,6 +1333,7 @@ def _render_question(q, prv, nxt):
     # 领句的排版跟原版一模一样：<summary> 里仍然是那个 <p class="qlead">，
     # 所以 `.q p` 的 serif 和 `.ask>p:first-of-type` 的字号都照旧命中（JL 260725：
     # 「I want the original font size and font type」—— 把 class 挪到 summary 上就丢了这两条）。
+    lead_kind = "Notes" if lead_kind == "💬" else lead_kind
     lead_p = (f'<p class="qlead"><span class="qt">{qlead}</span>'
               + (f'<span class="sbadge">{lead_kind} {lead_heads}</span>' if lead_heads else "")
               + '<span class="cv"></span></p>')
@@ -1370,7 +1376,7 @@ def _render_question(q, prv, nxt):
     ndisc = len(re.findall(r"^>+\s*[A-Z]{1,4}\d{0,4}\s*[「\"：:]", disc, re.M))
     # Historical discussion remains readable; the Page has no writing form.
     folds = "" if has_outline_folder else det(
-        f"💬 Discussion ({ndisc})",
+        f"Discussion ({ndisc})",
         render_thread(disc) if disc else '<p class="mut">No discussion yet.</p>')
     # Why here 不再上台面（它的活并进 ## Question 的要点）；老板子里还写着的收进折叠区
     folds += det("💡 Why here", body(why, apparatus=False))

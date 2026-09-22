@@ -7,8 +7,8 @@ description: >-
   than one Page's outline. Trigger: Paper Plugin, paper plugin, paper console,
   paper work console, paper spaces, /haipipe-plugin-paper.
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-20"
+  version: "0.4.1"
+  last_updated: "2026-09-21"
 ---
 
 # /haipipe-plugin-paper · the Paper-level work console
@@ -140,9 +140,9 @@ does not create a new folder.
 The current Paper Plugin is a read-only projection. It reads Paper sources on
 each open and routes actions to the owner that is allowed to write them.
 
-**Its one engagement is `⧉ copy to chat`, and it writes nothing.** Every card
+**The Paper Plugin has two separate copy-only engagements.** Every card
 summary, every Spine row, and any text selection inside a Space carries a
-`⧉ chat` control. It puts a chat-ready snippet on the clipboard:
+`⧉ chat` control. It puts a discussion/context snippet on the clipboard:
 
 ```text
 [paper board · <Paper>] <Space> › <view> › <card> › <row>
@@ -164,6 +164,23 @@ its own, so feedback can never fork the truth into a second store. A browser
 `(+)` writer, if added later, must append to the card's judgment Run journal
 (`results/<run>/v<NNN>.md`, run-naming.md §8) exactly as Outline's Draft Space
 composer does, never to a Plugin file.
+
+Selecting text in the Workflow map cites `ref/space-mapping.md`, its source of
+Run definitions. This remains a discussion/context snippet, not a Run request.
+The Run map is a read-only catalogue; actual Tickets, Results, and status stay
+in the separate native Run inventory. A distinct `⧉ Copy Run request` control
+appears in `Start here` cells only for exact Paper judgment targets currently
+bound to an admitted Idea, C5 claim, C7 obligation, or C8 narrative row. Its
+copied prompt names the Board, source Page and item, instantiated Spec and Run
+Type, owner, prerequisites, exact typed matching Run/status, expected receipt,
+and next owner-permitted action. It may ask the owner to inspect or commission
+that bounded judgment, but clicking it only copies the text: it does not send,
+start, allocate, or write. Page Structure/Writing, Evidence, Delivery, Support,
+Compile, and Response targets stay prompt-free until this view can bind their
+required owner/worker, scope, input, and gate state. Setup Apply remains not
+built. Never show a Run prompt where the target or owner workflow is unresolved;
+the receiving owner must verify prerequisites and HOLD when a gate or required
+input fails.
 
 | Surface | Authority / writer | Plugin behavior |
 |---|---|---|
@@ -318,7 +335,9 @@ Supporting Runs   owner-native Runs cited on an item's `Supporting Runs:` line,
 Gates             G0–G5 read from the files haipipe-paper-workflow names
                   (I3 receipt · C8 rows vs minted pages · build-manifest.json
                   · Round pages); a gate no file answers says so
-Workflow map      Run-Type rows × Space columns projected from
+                  Workflow map      Run Type / Spec / control entries by Space,
+                                    including purpose, owner/worker Skill,
+                                    actor, prerequisites and entry path
                   ref/space-mapping.md, plus a `folder on this board` column;
                   under it Folder tree × Run-Type, two boxes of two aligned
                   columns: box 1 the paper folder, box 2 the project homes
@@ -374,10 +393,12 @@ compatibility map. A Workflow Definition lists bounded Run Specs and routes;
 its Runtime lists actual native Runs and receipts. Run Types are reusable
 contracts. Spaces/Workspaces present these records. A Step stays inside a Run.
 
-The map at `ref/space-mapping.md` projects the canonical Spec templates and
-explicit control actions across the five Spaces. It does not allocate work
-or prove execution. Resolve actual target, owner, type, dependency and receipt
-from the Runtime/native owner; keep planned, managed and reused records distinct.
+The map at `ref/space-mapping.md` names each Run's reader-facing name,
+canonical Type and Spec, bounded purpose, owner/worker Skills, actor,
+prerequisites, and Space role/entry. Its four control rows have no Run Type.
+The map is read-only and does not allocate work or prove execution. Resolve
+actual target, owner, type, dependency, matching native Run and status from the
+Runtime/native owner; keep planned, managed and reused records distinct.
 
 Paper judgment Specs are `idea`, `claim`, `obligation`, and `narrative`; shared
 native Specs are `support`, `structure`, `write`, `evidence`, and `deliver`;
@@ -387,7 +408,11 @@ setup, G0–G5, sync and Story/Section routes remain control actions. In particu
 not a missing extra Run or a replacement for Section writing.
 
 Keep the definition view separate from allocated native Runs. A visible row
-never creates a receipt. The old `paper.*` Run-Type labels remain explained by
+never creates a receipt. The board's existing `⧉ chat` cites its source and
+copies discussion context only. The separate Run-request control is available
+only on exact, supported Paper judgment targets; all other cells remain
+prompt-free until their target and prerequisites can be resolved.
+The old `paper.*` Run-Type labels remain explained by
 the canonical compatibility table; do not use Phase records as workflow units.
 
 ## 🚦 Gates and ownership
@@ -432,8 +457,11 @@ Run-Type row marked `recorded`.
   whose board.md says `dialect: paper` with no other file present.
 - Setup, Ideation, Story, Run, and Delivery are visible Spaces; their subspaces remain
   views over authority records.
-- Every executable row names a Run-Type and a native owner; no row implies
-  that a Run exists merely because it is planned.
+- Every Spec row names its canonical Run Type and owner; controls are visibly
+  separate and have no Run Type. No row implies that a Run exists merely
+  because it is planned.
+- The map is source-grounded in `ref/space-mapping.md`; actual matching Run
+  identities and status remain with native inventories.
 - StoryA remains the sole prospective Paper blueprint, and Section Pages keep
   their own Page/Outline lifecycle.
 - The route reads no `console/`, `data.js`, or other per-paper projection;

@@ -187,9 +187,9 @@ def create_page(input_file, destination, title=None):
                     f'input_sha256 = "{sha256(original.read_bytes()).hexdigest()}"\n')
         (stage / "page.toml").write_text(manifest, encoding="utf-8")
         face = (f"# {title}\nstate: 🟡\nowner: unassigned\nsource-content: {content}\n\n"
-                f"## Opening\n\nWorking Page for {original.name}. The imported copy is editable; the original file is unchanged.\n\n"
+                f"## Opening\n\nWorking Page for {original.name}. Edit the imported copy on disk; the original file is unchanged.\n\n"
                 "## Content\n\n### 1 · Source\n\n"
-                "The attached source is rendered here directly. Edit its file in the Source workspace.\n\n"
+                "The attached source is rendered here directly. Edit its file outside the Page reader.\n\n"
                 "## Aims\n\n### A1 · Source\n\n"
                 "- ⬜ A1.1 · Review and refine the imported source.\n"
                 "  **Done when:** the owner has reviewed the edited source and its rendered Page.\n"
@@ -223,7 +223,7 @@ def source_files(context):
 def read_source(context, relative):
     path = confined(context.folder, relative)
     if path not in source_files(context) or path.stat().st_size > MAX_SOURCE_BYTES:
-        raise ValueError("File is not an editable Page source")
+        raise ValueError("File is not an allowed Page source")
     data = path.read_bytes()
     return {"path": path.relative_to(context.folder).as_posix(),
             "text": data.decode("utf-8"), "sha256": sha256(data).hexdigest()}
@@ -294,8 +294,6 @@ def render_page(context):
         finally:
             for key, value in old.items():
                 setattr(grammar, key, value)
-    selected = context.content or context.source
-    options = ''.join(f'<option value="{escape(p.relative_to(context.folder).as_posix())}"{" selected" if p == selected else ""}>{escape(p.relative_to(context.folder).as_posix())}</option>' for p in source_files(context) if p.name != "page.toml")
     query = urlencode({"path": "/", "file": context.source.name})
     plugins = [
         {"id": "outline", "label": "🧭 Outline", "hint": "Draft, Evidence, and Run spaces",
@@ -318,22 +316,16 @@ def render_page(context):
     }, ensure_ascii=False).replace("<", "\\u003c").replace("&", "\\u0026")
     from .page_assets import css as page_css
     css = page_css() + '\n' + (ENGINE / "assets/page.css").read_text(encoding="utf-8")
-    css += (ENGINE / "assets/workspace.css").read_text(encoding="utf-8")
-    js = (ENGINE / "assets/workspace.js").read_text(encoding="utf-8")
-    js += (ENGINE / "assets/page.js").read_text(encoding="utf-8")
+    js = (ENGINE / "assets/page.js").read_text(encoding="utf-8")
     js += (ENGINE / "assets/plugins.js").read_text(encoding="utf-8")
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{escape(context.title)} · Page</title><style>{css}</style></head>'
             '<body class="single split standalone" data-live="false"><header class="page-toolbar" id="top"><strong>haipipe / page</strong>'
-            '<nav><a href="#reading">Page</a><a class="live-only" href="#source-editor">Source</a>'
+            '<nav><a href="#reading">Page</a>'
             '<button class="live-only" id="page-plugin-button" type="button" aria-expanded="false" aria-controls="page-plugin-menu">🔌 Plugins</button>'
             '<div class="page-plugin-menu live-only" id="page-plugin-menu" role="menu" hidden></div></nav></header>'
             '<div class="page-stage"><div class="page-primary">'
-            f'<main id="reading" class="wrap">{content}</main><section id="source-editor" class="live-only">'
-            '<h2>Source workspace</h2><p>Save edits to the Page Folder. Generated HTML is not an edit target.</p>'
-            f'<label for="source-file">File</label><select id="source-file">{options}</select>'
-            '<button id="save-source" disabled>Save source</button><span id="editor-status"></span>'
-            '<label for="source-text" class="sr-only">Source code</label><textarea id="source-text" spellcheck="false"></textarea></section>'
+            f'<main id="reading" class="wrap">{content}</main>'
             '<footer class="page-footer">Page Folder · source-owned · Board optional</footer></div>'
             '<aside class="page-plugin-pane live-only" id="page-plugin-pane" aria-label="Page plugins" hidden>'
             '<div class="page-plugin-tabs" id="page-plugin-tabs" role="tablist"></div>'
@@ -359,7 +351,7 @@ def build_page(context, output=None):
     # HTML is a read-only publication. Live workspaces belong to serve, not
     # a static host; disable deep links emitted by the shared Outline table.
     markup = re.sub(r'href="/_board/[^" ]*"', 'href="#static-workspace"', markup)
-    markup = re.sub(r'(?=<footer\b)', '<p id="static-workspace">Static reading export. Use the Page server for editing and Outline/Evidence workspaces.</p>', markup, count=1)
+    markup = re.sub(r'(?=<footer\b)', '<p id="static-workspace">Static reading export. Edit Page source on disk; use the Page server for live plugin workspaces.</p>', markup, count=1)
     files = dependency_files(context.content or context.source, context.folder)
     # The generated projection can add assets not named as raw Markdown links
     # (e.g. a Display preview). Include only visible files inside this Folder.

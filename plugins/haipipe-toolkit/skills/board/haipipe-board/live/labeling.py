@@ -670,9 +670,38 @@ def _card(title: str, body: str, extra: str = "") -> str:
 def _hold_words(reason) -> str:
     """Why a job is read-only, in words; the engine's reason names the missing authority."""
     reason = str(reason or "")
+    if "imported source labels only" in reason:
+        return "this job preserves imported source ratings; it does not collect local labels"
     if "human authority" in reason:
-        return "no labeler is named for this job, so nobody can label or confirm here"
+        return "no identified human labeler is assigned to this job"
     return reason
+
+
+def _imported_reference_only(vm: dict) -> bool:
+    """An import-only lane is a reference view, not a failed local labeling job."""
+    state = vm.get("state") or {}
+    if not state.get("authority_hold"):
+        return False
+    config = vm.get("config") or {}
+    authority = config.get("authority") if isinstance(config.get("authority"), dict) else {}
+    canonical = vm.get("canonical") or {}
+    reason = str(canonical.get("hold_reason") or state.get("authority_reason") or "")
+    return (
+        authority.get("mode") == "external_annotation_import"
+        or "imported source labels only" in reason
+    )
+
+
+def _import_source_name(config: dict) -> str:
+    """Find the human-readable source name without treating it as an authority."""
+    imported = config.get("import") if isinstance(config.get("import"), dict) else {}
+    source = imported.get("source_name")
+    corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
+    if not source:
+        source = corpus.get("source")
+    if isinstance(source, dict):
+        source = source.get("name")
+    return str(source or "external source").strip()
 
 
 def _later(phase: str) -> str:
@@ -763,10 +792,17 @@ def _next_step(vm: dict) -> tuple[str, str]:
     root = vm["root"]
     if not root.exists():
         return "No labeling job on this Page yet. Ask Claude in Studio Chat to start one (/subjective-label).", "data"
-    if state["authority_hold"]:
-        return "Read-only: " + _hold_words(canonical.get("hold_reason") or state["authority_reason"]) + ".", "data"
     if state["canonical_integrity_errors"]:
         return "Repair needed: " + state["canonical_integrity_errors"][0], "run"
+    if _imported_reference_only(vm):
+        source = _import_source_name(vm["config"])
+        return (
+            f"{source}'s released ratings are here for reference. "
+            "To collect new labels, use a separate job.",
+            "data",
+        )
+    if state["authority_hold"]:
+        return "Read-only: " + _hold_words(canonical.get("hold_reason") or state["authority_reason"]) + ".", "data"
     if canonical and canonical.get("phase") == "P0":
         if canonical.get("first_blocked_frontier") == "G0 · human meaning confirmation":
             return "Step 1: read the label meanings and confirm them.", "data"
@@ -817,7 +853,11 @@ def _data_space(vm: dict) -> dict[str, str]:
          f'{_esc(uncertainty.get("meaning") or "")}</p>') if uncertainty.get("levels") else "",
     ]))
 
-    if state["authority_hold"]:
+    if _imported_reference_only(vm):
+        # The header carries the single source-only status. This job has no
+        # local meaning gate to confirm, so don't repeat it as an alarm card.
+        gate = ""
+    elif state["authority_hold"]:
         gate = _card("Meaning", f'<p class=warn>Read-only: {_esc(_hold_words(canonical.get("hold_reason") or state["authority_reason"]))}.</p>'
                      '<p class=mut>Method state: <code>HOLD</code>.</p>'
                      '<p class=mut>No one can confirm a meaning or label on this job.</p>')
@@ -1553,6 +1593,50 @@ def _definition_prompt(vm: dict, focus: str | None = None) -> str:
     return "\n".join(lines)
 
 
+def _label_discussion_prompt(vm: dict) -> str:
+    """A full, copyable brief for discussing this task in the user's chat."""
+    config = vm.get("config") or {}
+    project = config.get("project") if isinstance(config.get("project"), dict) else {}
+    corpus = config.get("corpus") if isinstance(config.get("corpus"), dict) else {}
+    source = corpus.get("source") if isinstance(corpus.get("source"), dict) else {}
+    construct = config.get("construct") if isinstance(config.get("construct"), dict) else {}
+    labels = config.get("labels") if isinstance(config.get("labels"), dict) else {}
+    reveal = config.get("reveal") if isinstance(config.get("reveal"), dict) else {}
+    reference = reveal.get("reference_observations")
+    reference = reference if isinstance(reference, dict) else {}
+    meanings = labels.get("meanings") if isinstance(labels.get("meanings"), dict) else {}
+    task = project.get("board_page") or vm["root"].parent.name
+    dataset = source.get("name") or corpus.get("source_name") or "the configured corpus"
+    question = construct.get("question") or construct.get("name") or "the label question"
+    lines = [
+        "I want to discuss this labeling task with you, not label the whole dataset.",
+        f"Task: {task}",
+        f"Dataset: {dataset}",
+    ]
+    if corpus.get("population"):
+        lines.append(f"Example unit: {corpus['population']}")
+    lines.append(f"Question: {question}")
+    if construct.get("seed"):
+        lines.append(f"Judging instruction: {construct['seed']}")
+    if construct.get("scope"):
+        lines.append(f"Scope: {construct['scope']}")
+    lines.append("Current labels and meanings:")
+    lines.extend(
+        f"- {value}: {meanings.get(value) or 'no meaning written yet'}"
+        for value in labels.get("values") or []
+    )
+    if reference.get("label"):
+        lines.append(
+            f"Reference only: {reference['label']}; it is comparison data, not gold."
+        )
+    lines.extend([
+        "Please help me discuss whether these definitions and boundaries are clear. "
+        "Ask one question at a time. If I paste an example, discuss how the current "
+        "definitions apply; do not record a label or change the labels, data, or guideline.",
+    ])
+    return "\n".join(str(line) for line in lines)
+
+
 def _chat_icon(prompt: str, title: str) -> str:
     return f'<button class=cc type=button title="{_esc(title)}" data-copy="{_esc(prompt)}">⧉ chat</button>'
 
@@ -1582,13 +1666,13 @@ def _label_definitions(vm: dict) -> str:
         for r in between)
     return _card("Label definitions", "".join([
         _row("question", _esc(construct.get("question") or construct.get("name") or "")),
+        '<div class=chatcopy><button class=primary type=button '
+        'aria-label="Copy prompt to discuss here" title="Copy this prompt for your Codex chat" '
+        f'data-copy="{_esc(_label_discussion_prompt(vm))}">⧉ Copy prompt to discuss here</button>'
+        '<span class=mut>Copy, then paste into this Codex chat. Nothing is sent automatically.</span></div>',
         _row("judge", _esc(construct.get("seed"))) if construct.get("seed") else "",
         _row("scope", _esc(construct.get("scope"))) if construct.get("scope") else "",
         _row("confirmed", confirmed),
-        '<div class=chatcopy><button class=primary type=button '
-        f'data-copy="{_esc(_definition_prompt(vm))}">Copy chat prompt</button>'
-        '<span class=mut>Paste it into a Claude chat to define the labels better; '
-        'each ⧉ chat copies a prompt about one label.</span></div>',
         '<div class=scroll><table class=defs><thead><tr><th>Label</th><th>What it means</th><th>Chat</th></tr></thead>'
         f'<tbody>{rows}</tbody></table></div>',
         (f'<h3 class=sub>In-between cases {_chat_icon(_definition_prompt(vm, "between"), "Copy a chat prompt about in-between cases")}</h3>'
@@ -2205,7 +2289,7 @@ def render(page_src: Path, path_q: str, file_q: str, page_q: str, board_dir: Pat
         f'<div class=planmeta><a class=back href="/_board/labeling-board?path={_esc(quote(path_q))}">← All labeling jobs</a>'
         f'<span class=sep>·</span><span>{_esc(page_src.stem)}</span>'
         f'<span class=sep>·</span><a href="{_esc(chat_url)}" target=_blank rel=noopener>Open Studio Chat</a></div>'
-        f'<p class="lead next{" hold" if hold else ""}"><b>Next:</b> {_esc(next_line)}</p>'
+        f'<p class="lead next{" hold" if hold and not _imported_reference_only(vm) else ""}"><b>Next:</b> {_esc(next_line)}</p>'
         '</header>'
         f'<nav class=spaces role=tablist aria-label="Labeling Spaces">{space_buttons}</nav>'
         + "".join(sections) +
@@ -2735,13 +2819,15 @@ if(attest&&confirmBtn){attest.addEventListener('change',function(){confirmBtn.di
 /* chat prompts: any [data-copy] button copies its text; plain http needs the textarea fallback */
 function toast(m,bad){var t=$('#cc-toast');if(!t){t=document.createElement('div');t.id='cc-toast';t.setAttribute('role','status');document.body.appendChild(t);}
  t.textContent=m;t.className='on'+(bad?' bad':'');clearTimeout(toast.t);toast.t=setTimeout(function(){t.className='';},2400);}
-function copyText(t){
- if(navigator.clipboard&&window.isSecureContext){return navigator.clipboard.writeText(t);}
+function legacyCopy(t){
  var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);
  a.focus();a.select();var ok=false;try{ok=document.execCommand('copy');}catch(e){}document.body.removeChild(a);
- return ok?Promise.resolve():Promise.reject();}
+ return ok?Promise.resolve():Promise.reject(new Error('Legacy clipboard copy failed'));}
+function copyText(t){
+ if(navigator.clipboard&&window.isSecureContext){return navigator.clipboard.writeText(t).catch(function(){return legacyCopy(t);});}
+ return legacyCopy(t);}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy]');if(!b){return;}
- copyText(b.dataset.copy).then(function(){toast('Copied. Paste it into a Claude chat.');},function(){toast('Copy failed. Select the prompt text and copy it by hand.',true);});});
+ copyText(b.dataset.copy).then(function(){toast('Copied — paste it into this chat to discuss.');},function(){toast('Copy failed. Check clipboard access and try again.',true);});});
 var app=$('#label-app');
 var AI_NAMES=/^(lamda|assistant|bot|chatbot|ai|model|system|gpt|chatgpt|claude|bard|gemini|agent)$/i;
 function who(tag){return AI_NAMES.test(String(tag||'').trim())?'AI':String(tag||'');}

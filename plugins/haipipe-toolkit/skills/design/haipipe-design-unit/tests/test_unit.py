@@ -185,6 +185,16 @@ class DesignUnitGateTest(unittest.TestCase):
         self.dump(result, manifest)
         self.assert_bad(ticket, result, "unresolved check needs a valid unresolved_reason")
 
+    def test_semantic_rule_written_before_the_method_rule_stays_readable(self):
+        """A closed run keeps the config it froze; the observation method came later."""
+        old = {"id": "tone", "kind": "semantic", "description": "Respectful"}
+        ticket = self.ticket(updates={"criteria": [old]})
+        self.assertIn("criterion.observation", " ".join(gate.validate(ticket)))
+        self.assertEqual(gate.validate(ticket, historical=True), [])
+        half = self.ticket(2, updates={"criteria": [
+            {**old, "observation": "Read as the intended recipient."}]})
+        self.assertIn("criterion.pass_when", " ".join(gate.validate(half, historical=True)))
+
     def test_verify_can_complete_with_rejecting_verdict(self):
         generation = self.ticket()
         du = self.result(generation)
