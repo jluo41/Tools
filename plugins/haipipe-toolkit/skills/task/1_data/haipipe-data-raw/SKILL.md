@@ -13,7 +13,7 @@ Skill: haipipe-data-raw
 =======================
 
 Stage 0' (raw cohort) specialist.
-Owns the raw-extract folders under `_WorkSpace/0-RawDataStore/<cohort>/` and the practice of writing a single-data-point lifecycle diagram BEFORE the cohort is wrapped into SourceFn (Stage 1).
+Owns the raw-extract folders under `_WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/` and the practice of writing a single-data-point lifecycle diagram BEFORE the cohort is wrapped into SourceFn (Stage 1).
 
 Domain-agnostic: a "raw cohort" can be a CGM stream, an EHR encounter table, a claims/billing line, a sensor session log, a messaging / engagement extract, or any vendor delivery.
 The 5-zone timeline shape applies equally to all.
@@ -77,7 +77,7 @@ Step 1: Parse args after /haipipe-data-raw. First positional = function,
 Step 2: Read this skill's ref/concepts.md for the 5-zone timeline shape +
         understand/review/hand-off procedures.
 Step 3: Read additional refs / templates per the dispatch table.
-Step 4: Execute, scoped to _WorkSpace/0-RawDataStore/<cohort>/.
+Step 4: Execute, scoped to _WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/.
 Step 5: Emit the structured tail (status / summary / artifacts / next).
 ```
 
@@ -108,8 +108,12 @@ extraction was launched, typed once as `raw_data_name` in the extraction Job's
 no extraction writes into another version's folder. In Task folders the name
 drops its hyphens: `jNN_reachpd2d_v260922_raw`.
 
+A finished version is frozen (`_FROZEN.yaml`) and never rewritten. To know a
+new one is due, rerun the table census and diff its per-table `n_rows`: see
+`haipipe-task-for-raw` § Dataset versions: name, freeze, refresh.
+
 Owns:
-  - `_WorkSpace/0-RawDataStore/<cohort>/` folders (and their
+  - `_WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/` folders (and their
     volume-resident equivalents for PHI cohorts, as above)
   - The discipline of writing a single-data-point lifecycle diagram
   - The hand-off contract from Stage 0' → Stage 1

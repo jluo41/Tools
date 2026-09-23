@@ -15,7 +15,7 @@ Architecture Position
 A raw cohort lives at `_WorkSpace/0-RawDataStore/<cohort_name>/` as a single extract from upstream — vendor delivery, internal ETL run, partner data drop, device export, registry pull, etc. The skill is domain-agnostic: a cohort can be a CGM stream, an EHR encounter table, a claims line file, a sensor / wearable session log, a messaging or engagement extract, a survey panel, etc. Typical contents:
 
 ```
-_WorkSpace/0-RawDataStore/<cohort>/
+_WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/
 ├── *.parquet              ← actual rows (or .csv, multi-parquet)
 ├── data_description*.txt  ← what was extracted, by whom, with what
 ├── protocol_*.txt         ← study/extraction protocol, design notes

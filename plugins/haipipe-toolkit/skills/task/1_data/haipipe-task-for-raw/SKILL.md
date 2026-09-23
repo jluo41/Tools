@@ -10,8 +10,8 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.0"
-  last_updated: "2026-09-22"
+  version: "0.4.1"
+  last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,7 +19,7 @@ Skill: haipipe-task-for-raw
 =================================
 
 Scaffolds a **raw extraction job** — a runnable example that extracts source tables from a Databricks catalog as wide parquet files.
-In **Pattern 1** (non-PHI) the parquet is then processed locally with Python (pandas) and heavy outputs land in `_WorkSpace/0-RawDataStore/<cohort>/`; in **Pattern 2** (PHI, server-resident — see below) everything stays on the catalog volume.
+In **Pattern 1** (non-PHI) the parquet is then processed locally with Python (pandas) and heavy outputs land in `_WorkSpace/0-RawDataStore/<raw_data_name>/`; in **Pattern 2** (PHI, server-resident — see below) everything stays on the catalog volume.
 The job keeps scripts, configs, and convert-only notebooks either way.
 
 **Invocation modes (see `../../haipipe-task/ref/invocation-modes.md`):** interactive (a human steers; missing fields get ASKed) OR headless (a full spec → run silently, no ASK).
@@ -82,7 +82,7 @@ number ranges):
 - **Raw understanding Block `b00`**: in every Project that USES the data, one
   Job per dataset version reads what the extraction wrote. It never extracts
   and never writes RawStore. See § Raw understanding Block below.
-Heavy outputs land in: `_WorkSpace/0-RawDataStore/<cohort>/` (or the catalog-volume equivalent for server-resident cohorts — see Pattern 2).
+Heavy outputs land in: `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the catalog-volume equivalent for server-resident cohorts — see Pattern 2).
 
 
 Raw understanding Block (`b00`)
@@ -118,6 +118,52 @@ b00_rawdata/
   routed ProcName.
 
 
+Dataset versions: name, freeze, refresh
+---------------------------------------
+
+One extraction is one dataset version, and the version lives on the dataset
+folder, never on the workspace (JL, 260922):
+
+```
+_WorkSpace/                                   fixed, un-dated
+├── 0-RawDataStore/
+│   ├── reach-pd2d-v260922/                   one extraction; _FROZEN.yaml once done
+│   └── reach-pd2d-v261015/                   the next refresh, beside it
+└── task-results/<raw_data_name>/<block>/<job>/<task>/<run>/   receipts, per version
+```
+
+- **Name**: `<cohort>-v<yymmdd>`, lowercase, the date the extraction STARTED
+  (`[a-z0-9]+(-[a-z0-9]+)*-v\d{6}`). Typed by hand, once, as `raw_data_name:`
+  in the extraction Job's `src/config-defaults.yaml`. Never auto-generated: a
+  date computed at run time would split one extraction that crosses midnight,
+  or a resumed one, across two folders.
+- **One source of the name**: the Job runner builds
+  `raw_root = <volume_base>/0-RawDataStore/<raw_data_name>` and hands it to
+  every worker; a worker never spells a store path, and a Run config never
+  names the dataset. A Ticket carries no parameters, so the date is never a
+  command-line argument.
+- **Freeze**: the runner writes `<raw_root>/_FROZEN.yaml` after the Run named
+  by `freeze_after:` (the last Run of the Job). Any later Run against that
+  dataset is refused. A partial extraction stays open, so a failed Run is
+  resumed (`run_all.cmd resume`), not renamed.
+- **Refresh** = edit the one `raw_data_name` line to a new date, push, pull,
+  run the whole Job without `resume`. The old version is untouched and every
+  downstream store that names it stays reproducible.
+- Downstream (`b00` understanding Job, SourceFn config) names the exact
+  version it reads; `b00` gets a new Job per new version.
+
+**Knowing when to refresh.** The operational database gives no update
+notice, and its table-timestamp catalog (`information_schema`) is
+permission-denied on REACH. The signal is the table census: rerun the census
+Run that records `n_rows` per source table (REACH:
+`Project-0-EHR-Description/tasks/b01_reach_jhu/j01_table_census/t01_table_catalog`,
+Run `r01_deid_derived`), fetch it, and `git diff` its committed
+`table_catalog.csv`. Changed `n_rows` on the tables the extraction reads means
+the source was refreshed: cut a new version. No change means no new data. It
+reads metadata and counts only, so it is safe to run on a schedule (monthly),
+and asking the data owner for a refresh notice is the second channel.
+
+
 Two patterns — pick by data-governance
 ---------------------------------------
 
@@ -141,7 +187,7 @@ Every such task MUST follow it:
   2. **Save parquet to Databricks catalog volume.**
      Path pattern: `/Volumes/<catalog>/<schema>/<volume>/<cohort>/<table>.parquet`
 
-  3. **Download/sync parquet to local `_WorkSpace/0-RawDataStore/<cohort>/`.**
+  3. **Download/sync parquet to local `_WorkSpace/0-RawDataStore/<raw_data_name>/`.**
      One parquet file per source table. No partitioned directories.
 
   4. **Process with Python (pandas), NOT Spark.**
@@ -174,9 +220,9 @@ Rules:
   - Stages can be all-Spark (the local-pandas rule of Pattern 1 does not
     apply — nothing comes local).
   - **Output path MUST align to what the Stage-1 SourceFn reads**:
-    `<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/...` with the exact
-    `<cohort-slug>` the SourceFn config expects (e.g. `reach-adhd`, not
-    `REACH-ADHD`). Misalignment here is the classic silent failure.
+    `<VOLUME_BASE>/0-RawDataStore/<raw_data_name>/...` with the exact
+    `<raw_data_name>` the SourceFn config expects (e.g. `reach-adhd-v260922`,
+    not `REACH-ADHD` or the unversioned `reach-adhd`). Misalignment here is the classic silent failure.
   - Orchestration + stage launching (jobs vs inline exec, sequential-only
     caveats, widget params): `../../haipipe-task/ref/databricks-execution.md`.
   - Only aggregated/derived summaries may move off-server; raw and
@@ -199,7 +245,7 @@ Extraction Run procedure:
      of individual notebooks)
   4. Extracted parquet files land in the catalog volume
   5. Pattern 1 only: user syncs parquet to local
-     `_WorkSpace/0-RawDataStore/<cohort>/` (Pattern 2 skips this — PHI
+     `_WorkSpace/0-RawDataStore/<raw_data_name>/` (Pattern 2 skips this — PHI
      stays on the volume and Stage 1 reads it there)
 
 The run-script template is `ref/run-databricks-sh-template.sh`: conversion is a Step inside the extraction Run.
@@ -283,7 +329,7 @@ MUST NOT
 ---------
 
 - Place heavy artifacts (`.parquet`, `.csv` > 1 MB) in `results/`.
-  Heavy outputs land in `_WorkSpace/0-RawDataStore/<cohort>/` (or the
+  Heavy outputs land in `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the
   catalog volume for Pattern 2).
 - Write complex multi-table JOINs in SQL — extract tables separately,
   join in Python downstream.

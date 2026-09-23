@@ -16,7 +16,7 @@ PHI      →  Pattern 2  server-resident              (Steps 1-7 with the P2 del
                                                      marked ⚡ below)
 ```
 
-Pattern 2 in one line: nothing comes local — all stages are Spark on the cluster, output goes to `<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/`, and the group carries an orchestrator + `_databricks/` bundle.
+Pattern 2 in one line: nothing comes local — all stages are Spark on the cluster, output goes to `<VOLUME_BASE>/0-RawDataStore/<raw_data_name>/`, and the group carries an orchestrator + `_databricks/` bundle.
 Full contract: `../SKILL.md` "Pattern 2" + `../../../haipipe-task/ref/databricks-execution.md`.
 Live example: `examples/Project-REACH-ADHD/tasks/A00_rawstore_reachadhd/`.
 
@@ -86,9 +86,9 @@ Fill in:
   Databricks params (catalog, schema, volume) for stage1; local params
   (raw_store_path, cohort) for stage2+.
 - ⚡ P2: `execution: databricks` for EVERY stage; output path =
-  `<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/` where `<cohort-slug>` is
-  EXACTLY what the Stage-1 SourceFn config reads (e.g. `reach-adhd`, not
-  `REACH-ADHD`); OMIT the `local:` block entirely.
+  `<VOLUME_BASE>/0-RawDataStore/<raw_data_name>/` where `<raw_data_name>` is
+  `<cohort>-v<yymmdd>` and EXACTLY what the Stage-1 SourceFn config reads
+  (e.g. `reach-adhd-v260922`, not `REACH-ADHD`); OMIT the `local:` block entirely.
 
 
 Step 5 — Run-script

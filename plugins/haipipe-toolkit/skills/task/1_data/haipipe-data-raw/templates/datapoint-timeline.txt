@@ -94,7 +94,7 @@
 
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════
 🗒️ Sources (raw store):
-    _WorkSpace/0-RawDataStore/<cohort>/
+    _WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/
     ├── 📄 <description file 1>     (what each fact came from)
     ├── 📄 <description file 2>
     └── 📄 <description file 3>

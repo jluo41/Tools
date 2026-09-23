@@ -234,7 +234,7 @@ Validate a new cohort end-to-end**
 **16.
 Understand a new raw cohort BEFORE pipeline-building**
 
-  Situation:  A new raw extract just landed in _WorkSpace/0-RawDataStore/<cohort>/
+  Situation:  A new raw extract just landed in _WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/
               (parquet/csv + description .txts). The extract can be from any
               domain -- CGM stream, EHR encounter table, claims lines, sensor
               session log, messaging / engagement extract, vendor drop, etc.

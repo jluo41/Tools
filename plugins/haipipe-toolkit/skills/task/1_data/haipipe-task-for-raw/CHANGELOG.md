@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.4.1] — 2026-09-23
+
+- New § Dataset versions: name, freeze, refresh. The version lives on the dataset folder (`_WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/`), never on the workspace; typed once as `raw_data_name`, the start date; the runner hands `raw_root` to workers and writes `_FROZEN.yaml` after `freeze_after`; a refresh is one line. How to know a refresh is due: rerun the table census (`n_rows` per source table) and `git diff` its `table_catalog.csv`. Every `0-RawDataStore/<cohort>` path in SKILL, scaffold and config seed now reads `<raw_data_name>`.
+
 ## [0.4.0] — 2026-09-22
 
 - Corrects 0.3.0: `b00` never extracts. Two kinds of raw Job: the Extraction Job (own extraction Project, versioned `raw_data_name` typed once) and the new Raw understanding Block `b00` (WellDoc shape: intake, catalog, one profile Task per table, routing, timeline, gated source hand-off). Example back to `b01_prediabetes_raw`.

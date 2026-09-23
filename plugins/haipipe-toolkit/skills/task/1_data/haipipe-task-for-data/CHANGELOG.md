@@ -5,6 +5,14 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.2] — 2026-09-22
+
+- A PHI SPACE runs EVERY Run as a `.cmd` Databricks ticket (J21 shape): one
+  entry per Task over `haiutils.haistep.task_entry`, `main(ctx)` workers, a
+  `run_all.cmd` per Job, generated bundle jobs. Build Runs check the committed
+  Fn instead of writing it. The synthetic twin moved from a Run to a laptop
+  selftest through the real inline runner (JL: "we cannot run with sh").
+
 ## [0.5.1] — 2026-09-22
 
 - SourceFn Block pattern: the SourceFn is generated from the `j00` contracts;

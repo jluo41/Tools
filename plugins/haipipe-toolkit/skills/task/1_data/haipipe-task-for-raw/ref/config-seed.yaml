@@ -56,9 +56,9 @@ databricks:
 # =============================================================================
 
 local:
-  raw_store_path: "_WorkSpace/0-RawDataStore/<cohort>/"
+  raw_store_path: "_WorkSpace/0-RawDataStore/<raw_data_name>/"   # <cohort>-v<yymmdd>
   cohort: <cohort_name>                 # e.g. prediabetes, adhd
 
 # Pattern 2 output instead goes to the catalog volume, aligned to what the
 # Stage-1 SourceFn config reads (cohort-slug case matters):
-#   volume_path: "<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/"   # e.g. reach-adhd
+#   volume_path: "<VOLUME_BASE>/0-RawDataStore/<raw_data_name>/"   # e.g. reach-adhd-v260922

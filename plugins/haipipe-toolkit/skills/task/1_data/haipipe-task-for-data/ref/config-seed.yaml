@@ -22,7 +22,7 @@ _meta:
 # SourceArgs:
 #   SourceFnName: "<SourceFnClassName>"
 #   raw_data_name: "<cohort_name>"
-#   raw_data_path: "_WorkSpace/0-RawDataStore/<cohort>/"
+#   raw_data_path: "_WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/"
 #   use_cache: true
 #   save_cache: true
 # external_version: "@<release>"          # required when SourceFn uses ExternalStore
