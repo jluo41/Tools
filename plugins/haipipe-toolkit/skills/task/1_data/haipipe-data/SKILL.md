@@ -3,7 +3,7 @@ name: haipipe-data
 description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and dispatches to the right specialist (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, runs, dashboards, reviews, or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -36,7 +36,7 @@ haipipe-data-source     Stage 1: SourceFn, 1-SourceStore
 haipipe-data-record     Stage 2: HumanFn, RecordFn, 2-RecStore
 haipipe-data-case       Stage 3: TriggerFn, CaseFn, 3-CaseStore
 haipipe-data-aidata     Stage 4: TfmFn, SplitFn, 4-AIDataStore
-haipipe-data-external   Versioned external data (ZIP/NPI/NDC/NCPDP/engagement): acquire/build/preview, ExternalStore
+haipipe-data-external   External assets (ZIP/NPI/NDC/NCPDP/engagement, feature store, APIs): contract, build/freeze/lock/parity, lookup preview, ExternalStore
 haipipe-data-remote     Remote storage sync (rclone/GDrive): status/pull/push, all stores
 ```
 
@@ -115,6 +115,8 @@ RecordFn, TriggerFn, record, record-centered          -> record
 CaseFn, case, cohort, sampling, trigger event         -> case
 TfmFn, SplitFn, AIData, tensor, split, model input    -> aidata
 external, NDC, NPI, reference data, join external     -> external
+asset, asset.yaml, lock, feature store, vendor API    -> external
+obs_dt, ValidFromDT, snapshot version, backfill       -> external
 remote, rclone, gdrive, sync, pull, push              -> remote
 ```
 
@@ -147,7 +149,14 @@ status, dashboard, what's there               -> dashboard
 explain, what is, why, how does               -> explain (umbrella inline)
 understand, frame, lifecycle, walk through    -> understand (raw-only)
 hand off, handoff, downstream contract        -> hand-off (raw-only)
+freeze, snapshot a pull, freeze feature store -> freeze   (external-only)
+lock, pin versions, lock file                 -> lock     (external-only)
+parity, frozen vs live                        -> parity   (external-only)
+join, preview join, lookup preview            -> join     (external-only)
+refresh, rebuild stale                        -> refresh  (external-only)
 ```
+
+An external-only verb with no stage resolves to `external` without asking.
 
 ---
 
@@ -169,7 +178,8 @@ Step 3: Decide handling:
   - stage resolved, no function               -> dispatch to <stage> with arg "(none)"
                                                  -> specialist returns ref-only summary
   - both resolved                             -> dispatch to specialist
-  - function resolved, no stage               -> ASK which stage (don't guess)
+  - function resolved, no stage               -> ASK which stage (don't guess),
+                                                 except external-only verbs -> external
 
 Step 4: Dispatch:
     Skill("haipipe-data-<stage>", args="<function> <remaining_args>")

@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.1] — 2026-09-23
+
+- External fields at serving: same `enrich_<table>()` as training with `env='serve'`, `obs_dt='now'`; live providers called inside the endpoint; fallback with `_matched=False`; `max_staleness`; `log_responses`; roundtrip test uses packaged versions.
+
 ## [0.2.1] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 2.1.0; older entries below keep their original numbers).

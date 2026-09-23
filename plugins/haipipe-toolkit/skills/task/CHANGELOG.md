@@ -4,6 +4,23 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-09-23 — External asset model and the b51 Block (JL)
+---------------------------------------------------------
+
+`hierarchy.md`: an external-store Block (`b51`-`b59`) uses the same Job
+ranges: `j01`-`j48` one Job per asset (`t01_contract`, `t02_build_<Version>`
+or `t02_freeze_<SDate>`, `t03_validate`, `t04_parity`), `j49_external_locks`,
+and a legacy release as `j51_release_<tag>`. `haipipe-data-external` 0.3.0
+(new `ref/asset-model.md`; `freeze`, `lock`, `parity`), `haipipe-data-source`
+0.3.1 and `haipipe-data-case` 0.3.1 (external fields enter only through an
+explicit SourceFn lookup), `haipipe-data` 0.3.1 (overview principle 7),
+`haipipe-task-for-data` 0.8.3 (Source Tasks use the asset model),
+`haipipe-end-endpointset` 0.2.1 (package only the lock's versions) and
+`haipipe-end-input2src` 0.3.1 (same `enrich_<table>()` at serving, fallback,
+staleness, response logging), `haipipe-data-remote` 0.1.4 (per-asset sync).
+`haipipe-task-for-data` 0.8.3 also requires workers to read `RUN_CONFIG` and
+adds the checklist for adding a dataset by copying a Job.
+
 2026-09-23 — WellDoc Proj01 migrated to b00-b04 (JL)
 ----------------------------------------------------
 

@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.1] — 2026-09-23
+
+- Feature boundary: CaseFns never open ExternalStore or call `context.get_external_path`; external fields come only from Source (`haipipe-data-external/ref/asset-model.md`). Legacy CaseFns stay valid until migrated.
+
 ## [0.3.0] — 2026-09-23
 
 - Facts, not labels: outcome-event CaseFns, labels move to b04; trigger kinds (first signal, `all_visit`); CaseSet version = one Run per TriggerFn; `h<HumanFn>.r<RecordFn>` rebind for a project's own HumanFn; Fns generated from Run configs with a committed-file check. Reference REACH PD2D b03 (JL 260923).

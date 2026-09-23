@@ -5,6 +5,11 @@ Stage reference for the External pantry.
 Externals are versioned reference assets that SourceFn may attach to cohort data.
 They are NOT a layer in series with Source -> Record -> Case -> AIData -- they are a governed input to Source.
 
+**Read first:** `ref/asset-model.md` (JL, 260923) is the authority for
+contracts, per-asset versions, locks, providers, the obs_dt time rule, the
+lookup interface, and the b51 build Block. Where this file disagrees, the
+asset model wins; this file keeps the asset file format and legacy detail.
+
 **Scope:** Framework patterns and the current implementation reality.
 Does not catalog which specific assets exist (that lives in ref/asset-catalog.md, discovered at runtime from _WorkSpace/ExternalStore/).
 
@@ -42,20 +47,18 @@ Cooking Metaphor
 ```
 Concept    Pipeline Term              Location
 ---------  -------------------------  ------------------------------------------
-Pantry     ExternalStore              _WorkSpace/ExternalStore/@{version}/
-Recipe     e_build_external_*.py      code-dev/0-EXTERNAL/ (WellDoc; else project task folder)
-Pantry     ExternalFn                 (NOT YET A CLASS -- Phase 2 promotion)
-  Chef                                Currently: top-level scripts that import
-                                      from haipipe.base
+Pantry     ExternalStore              _WorkSpace/ExternalStore/<asset>/<version>/
+Label      asset.yaml                 _WorkSpace/ExternalStore/<asset>/asset.yaml
+Recipe     build script               b51 Block: j0N_asset_<asset>/t02_build_<Version>/scripts/
+                                      (legacy: code-dev/0-EXTERNAL/e{N}_build_external_*.py)
+Order      lock                       _WorkSpace/ExternalStore/_locks/<LockName>.yaml
 Output     ExternalAsset triplet      df_{asset}_id.parquet +
                                       column_to_{asset}_li.pkl +
-                                      README.md
+                                      README.md (+ version.yaml)
 ```
 
-In Phase 1, "Chef" is metaphorical -- there is no `ExternalFn` class.
-Each `e{N}_build_external_<asset>.py` is a self-contained build script that imports `setup_workspace` from haipipe.base, defines its inputs, and writes the asset triplet.
-Phase 2 (deferred) would promote these to generated `ExternalFn` modules under `code/haifn/fn_external/`.
-
+Builders are Task scripts in the b51 Block, one Task per version; there is no
+generated `ExternalFn` class. A build writes one immutable version folder.
 ---
 
 What Is an ExternalAsset
@@ -130,23 +133,24 @@ The skill's `review` and `refresh` verbs check both kinds of staleness.
 Versioning
 ==========
 
+Current model (`ref/asset-model.md`): each ASSET is versioned on its own.
+
 ```
 _WorkSpace/ExternalStore/
-  @{version}/                e.g. @260104R4 (date-tagged release)
-    {asset}/...
+  <asset>/<version>/         e.g. npi/NPPES202507, npi_engagement/S20260104
+    version.yaml             ValidFromDT, ValidToDT, RefPeriod, source, builder, sha256
+  _locks/<LockName>.yaml     asset -> version pins for one SourceFn
 ```
 
-  - `@{version}/` is a **release**: a frozen set of assets cooked
-    together at a point in time. Treat as immutable once published.
-  - The `EXTERNAL_VERSION` env var (env.sh) names the active default
-    release. The skill defaults to that release; pin a different one
-    with `--version @{tag}`.
-  - Old releases are kept for reproducibility (SourceFn configs and endpoint
-    manifests pin the release). Never overwrite an existing release
-    folder without explicit user confirmation.
-  - WellDoc used `@{YYMMDD}R{N}` tags (e.g. @260104R4). Not enforced —
-    discover the active tag via `echo $EXTERNAL_VERSION` (e.g. `@v1215`).
+  - A version is immutable once published. Never overwrite one without
+    explicit user confirmation.
+  - A lock replaces the old "one release for everything" default.
+  - Lookups choose the version valid at each row's `obs_dt`.
 
+Legacy model: `@{version}/` folders (e.g. `@260104R4`) froze many assets
+together and the `EXTERNAL_VERSION` env var named the active one. They stay
+readable for SourceFns and CaseFns that still pin them; build nothing new on
+them.
 ---
 
 Concrete Code
@@ -187,45 +191,30 @@ Each builder is self-contained: it reads its raw inputs, writes the asset triple
 How Externals Get Used Downstream
 ==================================
 
-SourceFn is the attachment boundary. It combines Raw Data with a pinned
-ExternalStore release and emits stable ProcessDF fields. Those fields may be
-scalars, structured lists, or fixed-order vectors. They remain data
-representations: they are not the final model vector.
+SourceFn is the attachment boundary. It looks up each asset explicitly and
+assigns every field by name (`ref/asset-model.md` § SourceFn pattern):
 
-RecordFn does not independently rebuild or rejoin the external representation.
-It preserves the Source fields while aligning entity and time. For engagement
-assets, SourceFn must carry `snapshot_as_of` (and any window bounds) so RecordFn
-can select only the snapshot valid at the observation time. CaseFn then applies
-feature semantics such as windows, aggregation, and encoding.
-
-A typical join (illustrative):
-
-```
-SourceFn config:
-  external_version: '@260104R4'
-  externals:
-    npi:
-      version: '@260104R4'
-      source:  ExternalStore/@260104R4/npi
-      join_key: prescriber_npi -> NPI_original
-      columns:  [Specialty, Credential, Big5*, MIPS_score]
+```python
+npi = lock.asset('npi', env='train').lookup(
+    keys=df_rx['prescriber_npi'], obs_dt=df_rx['DT'], fields=['Specialty'])
+df_rx['npi_specialty'] = npi['Specialty']
+df_rx['npi_matched']   = npi['_matched']
 ```
 
-  - `join_key` left side is the cohort column (`Rx.prescriber_npi`).
-  - Right side is the external's `_original` column (the un-mapped
-    string version of the primary key).
-  - `columns` selects which external columns to add. Defaults to all
-    if omitted.
+- Fields are data representations (scalars, lists, fixed-order vectors), not
+  the final model vector.
+- RecordFn preserves them while aligning entity and time; it never re-joins.
+- CaseFn applies windows, aggregation, and encoding; it never opens
+  ExternalStore (`context.get_external_path` is legacy).
+- `Input2SrcFn` calls the same `enrich_<table>()` with `env='serve'` and
+  `obs_dt='now'`.
+- Vector fields declare stable ordering, dtype, missing behavior, and the
+  version they came from.
 
-The skill's `join` verb does NOT execute this -- it only previews: match rate,
-top unmatched keys, columns that would be added, vector metadata that must be
-preserved, and the config snippet to paste into the SourceFn recipe/builder.
-
-External vectors must declare stable ordering, dtype, missing-value behavior,
-and release identity. Recommended companion fields are
-`<name>_vector_version`, `<name>_missing_mask`, and `snapshot_as_of` when the
-asset changes over time.
-
+Legacy (v4 contract, until external_base exists): SourceFns attach with
+`attach_external_fields` from a contract dict and emit `<field>_ids`,
+`<field>_matched`, and `external_release`. `ref/join-contract.md` documents
+that form.
 ---
 
 Discovering Available Assets
@@ -234,14 +223,15 @@ Discovering Available Assets
 Always discover at runtime; the catalog can grow:
 
 ```bash
-ls _WorkSpace/ExternalStore/                          # available releases
-ls _WorkSpace/ExternalStore/{EXTERNAL_VERSION}/       # assets in active release
-ls code-dev/0-EXTERNAL/                               # registered builder scripts
-cat _WorkSpace/ExternalStore/{EXTERNAL_VERSION}/{asset}/README.md
+ls _WorkSpace/ExternalStore/                          # assets (topic folders) + legacy @{tag}
+ls _WorkSpace/ExternalStore/<asset>/                  # asset.yaml + versions
+cat _WorkSpace/ExternalStore/<asset>/asset.yaml
+cat _WorkSpace/ExternalStore/<asset>/<version>/version.yaml
+ls _WorkSpace/ExternalStore/_locks/
+ls examples*/*/tasks/b51_*/j*_asset_*/                # asset build Jobs
 ```
 
 For the canonical catalog (asset name, primary key, source, columns), see ref/asset-catalog.md.
-
 ---
 
 Prerequisites
@@ -270,6 +260,8 @@ MUST DO
 4. **Distinguish dimension vs engagement** when reasoning about
    staleness -- they have different rebuild triggers
 5. **Present plan to user and get approval** before any code changes
+6. **Carry `obs_dt` on every lookup** and choose versions by `ValidFromDT`
+7. **Freeze before training** on any feature-store or API data
 
 ---
 
@@ -278,15 +270,18 @@ MUST NOT
 
 1. **NEVER edit** assets under `_WorkSpace/ExternalStore/@{version}/`
    directly -- they are builder outputs
-2. **NEVER edit** `code/haifn/fn_external/` (does not exist in Phase 1;
-   if Phase 2 promotion happens, it becomes generated and read-only)
+2. **NEVER treat builders as generated Fns** -- they are b51 Task scripts;
+   there is no `code/haifn/fn_external/` (if one appears, it is generated
+   and read-only)
 3. **NEVER materialize** a cohort join inside this skill -- the `join` verb is
    preview-only. Put the real attachment in a SourceFn builder.
 4. **NEVER assume** an asset's primary key from its folder name --
    read the README or the builder script.
-5. **NEVER mix** vocabularies across releases -- the integer IDs in
+5. **NEVER mix** vocabularies across versions -- the integer IDs in
    df_{asset}_id.parquet are only valid against the column_to_*_li.pkl
-   from the same release.
+   from the same version.
+6. **NEVER call a live provider for training**, and never send a
+   `patient_id` key to a third-party or local-service provider.
 
 ---
 
@@ -294,11 +289,14 @@ Key File Locations
 ==================
 
 ```
-Builder scripts:      code-dev/0-EXTERNAL/e{N}_build_external_*.py   <- discover with ls
-Helpers (Phase 1):    duplicated inside each builder script
-                      (build_vocabulary, convert_to_ids, generate_readme)
-Asset outputs:        _WorkSpace/ExternalStore/@{version}/{asset}/
-Active release:       env var EXTERNAL_VERSION (set in env.sh)
-Raw vendor inputs:    _WorkSpace/ExternalStore/@raw/
+Asset model:          ref/asset-model.md                              <- authority
+Builder scripts:      b51 Block, j0N_asset_<asset>/t02_build_<Version>/scripts/
+                      (legacy: code-dev/0-EXTERNAL/e{N}_build_external_*.py)
+Shared build helpers: b51 Block src/ (build_vocabulary, convert_to_ids, generate_readme)
+Asset contract:       _WorkSpace/ExternalStore/<asset>/asset.yaml
+Asset versions:       _WorkSpace/ExternalStore/<asset>/<version>/ (+ version.yaml)
+Locks:                _WorkSpace/ExternalStore/_locks/<LockName>.yaml
+Raw vendor inputs:    _WorkSpace/ExternalStore/<asset>/@raw/  (legacy: ExternalStore/@raw/)
+Legacy releases:      _WorkSpace/ExternalStore/@{tag}/ ; env var EXTERNAL_VERSION
 Inference samples:    _WorkSpace/ExternalStore/@inference/
 ```

@@ -3,7 +3,7 @@ name: haipipe-data-case
 description: "Stage 3 (Case) specialist: builds/runs/reviews TriggerFn / CaseFn, inspects 3-CaseStore, loads case-layer assets, runs multi-partition in parallel (embarrassingly parallel). Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -91,6 +91,12 @@ Feature boundary:
   It may consume scalar or list/vector data preserved from Source through
   Record, then select/window/aggregate/encode it into `--tid`, `--wgt`, and
   `--val`. Do not rename CaseFn without an explicit migration plan.
+  External fields arrive only through Source (`../haipipe-data-external/ref/
+  asset-model.md` § Downstream boundaries). A CaseFn never opens ExternalStore
+  and never calls `context.get_external_path`; it encodes the Source fields
+  it is given. Legacy CaseFns that read `@{tag}` folders directly stay valid
+  until their SourceFn moves to the lookup model, proven by an identical
+  AIDataSet.
 
 Facts, not labels (REACH PD2D, JL 260923):
   - The CaseSet holds FACTS. An outcome is an event CaseFn over ONE signal

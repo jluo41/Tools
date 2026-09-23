@@ -3,7 +3,7 @@ name: haipipe-end-input2src
 description: "Input2SrcFn specialist -- designs/reviews the wire-payload-to-record function in an Endpoint_Set (deserializes a JSON request into a ProcessedDF row). Platform-specific: one impl per deploy platform (SageMaker flat JSON vs Databricks dataframe_records); --platform picks (default sagemaker). Called by /haipipe-end when intent references Input2SrcFn, payload-to-record deserialization, or input2src."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-09-13"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -116,6 +116,17 @@ same logical raw values and pinned ExternalStore release, both paths must emit
 the same ProcessNames, columns, dtypes, list/vector ordering, missing masks,
 and representation versions. Share pure transformation helpers where possible;
 platform-specific wrappers should own only wire-envelope decoding.
+
+External fields at serving (`../../1_data/haipipe-data-external/ref/asset-model.md`):
+Input2SrcFn builds the same tables from the payload, then calls the SAME
+`enrich_<table>()` functions as the training SourceFn with `env='serve'` and
+`obs_dt='now'`. Assets whose `providers.serve` is live (feature store, API)
+are called here, inside the endpoint, never by the caller before the payload
+arrives. A miss, outage, timeout, or answer older than `max_staleness`
+returns defaults with `_matched=False` so the model still scores; with
+`log_responses` on, live answers are logged to a governed store (no values in
+plain logs). The roundtrip test runs with external lookups against the
+packaged versions (`env='train'`), so it stays deterministic.
 
 Roundtrip test (REQUIRED for design and review)
 -------------------------------------------------

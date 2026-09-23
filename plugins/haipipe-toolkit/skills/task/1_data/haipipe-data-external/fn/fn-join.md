@@ -3,7 +3,11 @@ fn-join: Preview joining an external asset into a cohort set
 
 NEVER materializes a join.
 Always preview-only.
-Outputs match-rate diagnostics + a config snippet to paste into the consuming layer.
+Outputs match-rate diagnostics + a snippet to paste into the consuming layer:
+for topic-layout assets, the explicit `lookup` block for the SourceFn's
+`enrich_<table>()` (`ref/asset-model.md` § SourceFn pattern), with `obs_dt`
+set to the target table's row-time column; for legacy `@{tag}` assets, the
+v4 contract entry (`ref/join-contract.md`).
 
 ---
 

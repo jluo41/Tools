@@ -4,6 +4,13 @@ External Join Contract
 Defines how an external asset is attached to a cohort SourceSet.
 The `join` verb in this skill **previews** the operation; the actual join happens in SourceFn.
 
+**Status (260923).** This file documents the legacy config-driven form (the v4
+contract dict, `attach_external_fields`, `<field>_ids` / `<field>_matched` /
+`external_release`), which SourceFns keep until `code/haipipe/external_base/`
+exists. The adopted form is an explicit `lookup` per asset with fields
+assigned by name: `ref/asset-model.md` § SourceFn pattern. Key normalization
+and match-rate rules below apply to both.
+
 ---
 
 Mechanics

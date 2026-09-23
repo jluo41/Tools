@@ -4,6 +4,14 @@ fn-refresh: Rebuild stale external assets
 Composite verb: runs `review` to detect staleness, then `cook` for each stale asset.
 Always confirms before rebuilding.
 
+Topic layout (`ref/asset-model.md`): a refresh never rebuilds in place. Each
+stale asset gets a NEW version (a new `t02_build_<Version>` or
+`t02_freeze_<SDate>` Task), then `t03_validate`, then a NEW lock that pins
+it. Existing versions and locks stay untouched, so every earlier SourceSet
+still reproduces. For engagement assets the new version names its data
+cutoff; a cutoff inside a cohort's modeled period is refused for that
+cohort (leak).
+
 ---
 
 Step 1: Resolve scope

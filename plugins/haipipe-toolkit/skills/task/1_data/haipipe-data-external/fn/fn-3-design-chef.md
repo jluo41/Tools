@@ -5,8 +5,17 @@ fn-3-design-chef: Scaffold a new external builder
 > without it (e.g. REACH-SPACE — zero external builders on disk) host any new
 > external builder in a project task folder, same `e{N}_build_external_*` naming.
 
-Creates a new `e{N+1}_build_external_<asset>.py` under `code-dev/0-EXTERNAL/`.
-In Phase 1 (no helper extraction yet), this copies the closest existing builder and customizes it.
+Topic layout (0.3.0, `ref/asset-model.md` § Build Block): scaffold a new b51
+topic Job `j0N_asset_<asset>/` with `t01_contract/` (writes
+`ExternalStore/<asset>/asset.yaml`), `t02_build_<Version>/` (the builder,
+writing one immutable `<asset>/<Version>/` with `version.yaml`), and
+`t03_validate/`; add `t04_parity/` if the asset serves live. Shared helpers
+(`build_vocabulary`, `convert_to_ids`, `generate_readme`) live once in the
+Block's `src/`, not copied into each builder. Start the builder from the
+closest existing one.
+
+Legacy workspaces: the steps below create `e{N+1}_build_external_<asset>.py`
+under `code-dev/0-EXTERNAL/` writing into a release-wide `@{tag}` folder.
 
 ---
 
@@ -92,8 +101,9 @@ Then update:
   - The metadata dict that feeds `generate_readme()` -- title,
     description, source, columns, stats, usage_example
 
-Do NOT extract or refactor the duplicated helpers (`build_vocabulary`, `convert_to_ids`, `generate_readme`) -- Phase 1 keeps them inline.
-Note the duplication with a `# TODO: extract helpers (Phase 2)` comment near each.
+Topic layout: import `build_vocabulary`, `convert_to_ids`, `generate_readme`
+from the b51 Block's `src/`. Legacy `code-dev/0-EXTERNAL/` builders keep
+their inline copies; do not refactor those.
 
 ---
 
@@ -142,4 +152,5 @@ MUST NOT
 - Do NOT scaffold without confirming the user's Q1-Q7 answers.
 - Do NOT skip Step 5 -- a new builder without a catalog entry is
   invisible to dashboard / review / refresh.
-- Do NOT extract helpers in this step (Phase 2 deferred).
+- Do NOT copy the shared helpers into a topic-layout builder; import them
+  from the Block's `src/`.

@@ -102,6 +102,27 @@ Report:
 
 ---
 
+Step 4b: Contract and time audit (topic layout)
+-----------------------------------------------
+
+For assets in the topic layout (`<asset>/asset.yaml` present;
+`ref/asset-model.md`):
+
+- asset.yaml: key kind, fields, family, `temporal`, `leak_policy`, and
+  `providers.train` = `local_external_store`. A `patient_id` key bound to
+  `third_party_api` or `local_service` is a FAIL (PHI).
+- Every version has `version.yaml` with `ValidFromDT`, `RefPeriod`,
+  `source`, `builder`, and `sha256` that matches the files.
+- `fields` in asset.yaml all exist in the version's parquet and vocabulary.
+- Engagement versions: `ValidFromDT` is on or after the build's data
+  cutoff, and `source` names the cohort the stats came from. A version built
+  from data that overlaps a cohort it serves is a FAIL for that cohort.
+- Live-serving assets: a passing `t04_parity` Run exists for the version.
+- Legacy `@{tag}` assets have none of this; report them as `legacy`, not as
+  failures.
+
+---
+
 Step 5: Return tail
 --------------------
 

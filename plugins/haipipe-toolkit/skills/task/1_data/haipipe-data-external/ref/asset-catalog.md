@@ -8,19 +8,27 @@ ExternalStore Asset Catalog
 Lightweight index of the externally-built assets.
 Schemas live in each asset's auto-generated README; this file carries only what the skill needs to dispatch (slug, family, primary key, builder).
 
-Always discover the active release at runtime:
+Always discover at runtime. Topic layout (`ref/asset-model.md`):
 
 ```bash
-ls _WorkSpace/ExternalStore/                    # all releases
-echo $EXTERNAL_VERSION                           # active release (from env.sh)
-ls _WorkSpace/ExternalStore/$EXTERNAL_VERSION/   # assets in active release
+ls _WorkSpace/ExternalStore/                         # assets + _locks/ + legacy @{tag}/
+cat _WorkSpace/ExternalStore/{asset}/asset.yaml       # contract: key, fields, family, providers
+ls _WorkSpace/ExternalStore/{asset}/                  # versions
+cat _WorkSpace/ExternalStore/{asset}/{version}/version.yaml
+cat _WorkSpace/ExternalStore/{asset}/{version}/README.md
 ```
 
-For full schema of an asset, read its README:
+Legacy release-wide folders:
 
 ```bash
+echo $EXTERNAL_VERSION                                # active legacy release (env.sh)
+ls _WorkSpace/ExternalStore/$EXTERNAL_VERSION/        # assets in that release
 cat _WorkSpace/ExternalStore/$EXTERNAL_VERSION/{asset}/README.md
 ```
+
+The table below lists what each asset IS (slug, family, key). In the topic
+layout that is recorded in `asset.yaml`; the builder column then names a b51
+Task instead of a `code-dev/0-EXTERNAL/` script.
 
 ---
 

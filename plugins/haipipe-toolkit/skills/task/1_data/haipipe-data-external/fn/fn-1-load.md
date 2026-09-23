@@ -9,6 +9,19 @@ Prints shape, schema, vocabulary sizes, primary-key uniqueness, and a sample row
 Step 1: Resolve the asset path
 -------------------------------
 
+Topic layout (`ExternalStore/{asset}/asset.yaml` exists): the version is
+`--version`, else the lock's pin when a lock is named, else the version with
+the latest `ValidFromDT`. Say which rule chose it.
+
+```bash
+source .venv/bin/activate && source env.sh
+ASSET_DIR="_WorkSpace/ExternalStore/{asset}/{version}"
+cat "_WorkSpace/ExternalStore/{asset}/asset.yaml" "$ASSET_DIR/version.yaml"
+ls "$ASSET_DIR"
+```
+
+Legacy release-wide layout:
+
 ```bash
 source .venv/bin/activate && source env.sh
 ASSET_DIR="_WorkSpace/ExternalStore/${EXTERNAL_VERSION}/{asset}"

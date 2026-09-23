@@ -103,6 +103,13 @@ SourceFn may attach pinned ZIP/NPI/NDC/NCPDP and engagement snapshots to
 ProcessDFs. RecordFn aligns those fields in entity/time; CaseFn gives them
 feature semantics; AIData assembles the final model vector.
 
+Each external asset has one contract (`asset.yaml`) and its own versions
+(`ExternalStore/<asset>/<version>/`); a lock pins the versions a SourceFn
+uses. SourceFn looks each asset up explicitly by key and `obs_dt` and assigns
+the fields by name. Training reads frozen versions only; live feature-store
+or API providers are reached only when serving. Model:
+`haipipe-data-external/ref/asset-model.md`.
+
 ---
 
 The 6-Layer Pipeline
@@ -273,7 +280,7 @@ Snapshot (as of 2026-02-21):
 _WorkSpace/
 +-- 0-RawDataStore/         Raw input files (CSV, XML, Parquet)
 +-- ExternalStore/          Versioned reusable data inputs to SourceFn
-+       @raw/ vendor/API landings; @{version}/ immutable built assets
+|       <asset>/asset.yaml + <asset>/<version>/ ; _locks/ ; legacy @{tag}/
 +-- 1-SourceStore/          Layer 1 output: SourceSets
 |       {CohortName}/@{SourceFnName}/
 +-- 2-RecStore/             Layer 2 output: RecordSets

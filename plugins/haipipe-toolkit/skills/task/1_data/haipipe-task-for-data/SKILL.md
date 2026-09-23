@@ -3,7 +3,7 @@ name: haipipe-task-for-data
 description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.8.2"
+  version: "0.8.3"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -81,6 +81,26 @@ Two execution paths:
   ```
 
 See `fn/execute.md` for the detailed stage-aware execution protocol.
+
+Config binding (DrFirst 260923). A Ticket exports `RUN_CONFIG` (its own
+config). The worker MUST read it: `CONFIG = os.environ.get("RUN_CONFIG",
+CONFIG)` right after the `# %% [parameters]` cell, so the hard-coded default
+only serves plain `python` runs. A worker that ignores `RUN_CONFIG` silently
+reruns its default config for every new Run (a new dataset's Run rebuilt the
+old one). The materialize Ticket checks the output it wrote names the
+config's `cohort:` / target and fails otherwise. Review a shared materialize
+worker for this before adding a Run to it.
+
+Adding a dataset by copying a Job. Copy code, configs, Tickets, and Task
+pages; never `results/`, `notebooks/`, outline logs, or another Job's
+review. Then, before the first Run:
+  1. Retarget the one dataset-defaults file (`src/config-defaults.yaml`) and
+     rename Job/Task strings; grep the old dataset name to zero hits.
+  2. Every Task Folder has its same-stem page (`tNN_<task>/tNN_<task>.md`);
+     Tickets refuse to run without it.
+  3. Write a fresh `CODE_REVIEW.md` at the current `git_sha`, stating what was
+     diffed against the source Job; a copied review is stale and blocks.
+  4. Check config binding (above) for every worker the new Runs use.
 
 
 Partition support
@@ -220,10 +240,14 @@ b01_sourcestore/
   columns from `b00`, invented values). REACH:
   `safer/selftest/pd2d_inline_contract.py`.
 
-Source Tasks may attach pinned ExternalStore data and emit list/vector-valued
-data. Their contract records dtype, ordering, missing mask, external release,
-and snapshot metadata. Record/Case tasks consume that contract rather than
-rebuilding the external representation.
+Source Tasks attach external data through the asset model
+(`haipipe-data-external/ref/asset-model.md`): an explicit `lookup` per asset
+with `obs_dt`, versions pinned by a lock, and a shared `enrich_<table>()`.
+Their contract records dtype, ordering, missing behavior, and the lock and
+asset versions (`external-dependency.json`). Record/Case tasks consume those
+fields and never reopen ExternalStore. External assets themselves are built,
+frozen, validated, and locked in the auxiliary `b51` Block (§ Build Block of
+the asset model), not in a data stage Block.
 
 - Builder reference templates at `code/scripts/haibuilder/{1-source,2-record,3-case,4-aidata}/`.
 - D-prefix dictionary tables (`DRGCode`, `DIcdDiagnoses`, `DLabItems`,

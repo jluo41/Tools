@@ -149,6 +149,15 @@ b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
   t01_coverage_matrix`, only with 2+ datasets. `b02` and `b03` need none,
   because each dataset Job's materialize Run counts its own records or cases.
 - Source Blocks follow `haipipe-task-for-data` § SourceFn Block pattern.
+- An external-store Block is auxiliary (`b51`-`b59`) and keeps the same two
+  Job ranges (JL 260923). Topic Jobs `j01_asset_<asset>` to `j48` hold one
+  asset each, with Tasks `t01_contract`, `t02_build_<Version>` (or
+  `t02_freeze_<SDate>` for a feature-store or API pull), `t03_validate`, and
+  `t04_parity` for live-serving assets. `j49_external_locks` spans every
+  asset, as `b01/j49_procdf_coverage` spans every dataset. A legacy
+  release-wide folder is a dated frozen thing, so it takes the `j5N` range
+  (`j51_release_260104R4`, audit only). Layout and rules:
+  `haipipe-data-external/ref/asset-model.md` § Build Block.
 
 ## Job = submittable unit
 

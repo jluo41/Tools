@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.1] — 2026-09-23
+
+- External-data contract points to `haipipe-data-external/ref/asset-model.md`: explicit per-asset `lookup` with `obs_dt`, lock-pinned versions, shared `enrich_<table>()` with Input2SrcFn, `external-dependency.json`, frozen versions only in training; v4 attach helpers kept until `external_base` exists.
+
 ## [0.3.0] — 2026-09-23
 
 - Contract-generated SourceFn with committed-file check; `load_tables=[]` for huge stores; schema-superset question recorded as open (JL 260923).

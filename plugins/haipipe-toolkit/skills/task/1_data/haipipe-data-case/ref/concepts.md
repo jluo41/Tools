@@ -92,8 +92,10 @@ Trigger vs CaseFn Separation
 CaseFn currently fulfills the conceptual FeatFn role. Source may already carry
 model-independent ZIP/NPI/NDC/NCPDP or engagement vectors. CaseFn consumes
 those values through Record, applies observation windows/selection/aggregation,
-and emits model-facing feature tokens and weights. It must not reload a
-different ExternalStore release or silently change the Source vector ordering.
+and emits model-facing feature tokens and weights. It must not open
+ExternalStore at all (no `context.get_external_path` in new CaseFns) or
+silently change the Source vector ordering; external data comes from Source
+(`../../haipipe-data-external/ref/asset-model.md`).
 
 
 Concrete Code

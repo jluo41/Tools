@@ -3,7 +3,7 @@ name: haipipe-data-source
 description: "Stage 1 (Source) specialist: builds/runs/reviews SourceFn, maps Raw Data plus pinned ExternalStore assets into stable ProcessName-to-ProcessDF tables, and inspects 1-SourceStore. Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -126,13 +126,30 @@ Hand-off contract (Stage 1 -> 2):
   records. Confirm by reading `../haipipe-data-record/ref/concepts.md` before
   finalizing any SourceFn.
 
-External-data contract:
-  SourceFn is the cohort attachment boundary for pinned ZIP, NPI, NDC, NCPDP,
-  and engagement assets. It may emit scalar, list, or fixed-order vector fields
-  when they are stable data representations. Declare dtype, ordering, missing
-  mask/behavior, release identity, and `snapshot_as_of` for time-varying data.
-  Do not perform uncontrolled live API calls inside SourceFn; ingestion must
-  first create a versioned ExternalStore snapshot.
+External-data contract (model: `../haipipe-data-external/ref/asset-model.md`):
+  STATUS: `code/haipipe/external_base/` is NOT built yet. Check
+  (`ls code/haipipe/external_base`) before writing a lookup block; if absent,
+  use the v4 attach helpers (`<field>_ids`, `<field>_matched`,
+  `external_release`) against a pinned legacy `@{tag}` release. The rules
+  below are the target and apply once it exists.
+  SourceFn is the only place external fields enter the pipeline (ZIP, NPI,
+  NDC, NCPDP, engagement, feature-store, third-party assets).
+  - One explicit lookup block per asset, every field assigned by name:
+    `lock.asset('npi', env=env).lookup(keys=..., obs_dt=df['DT'], fields=[...])`
+    then `df['npi_specialty'] = f['Specialty']`. No generic attach loop.
+  - `obs_dt` is each row's time; temporal assets attach only to tables with a
+    row time, and a one-row-per-patient table uses the first observation time.
+  - Versions come from a lock (`ExternalStore/_locks/<LockName>.yaml`) named by
+    the builder; every new column is listed in `ProcName_to_columns`.
+  - Put the blocks in one plain `enrich_<table>()` per table so Input2SrcFn
+    reuses them with `env='serve'`, `obs_dt='now'`.
+  - Write `external-dependency.json` beside the SourceSet (lock, versions,
+    provider, match rate, leak-dropped count).
+  - Emit scalar, list, or fixed-order vector fields as stable data
+    representations; declare dtype, ordering, and missing behavior.
+  - Training reads frozen local versions only. No live API or feature-store
+    call inside a training SourceFn; freeze the pull into ExternalStore first
+    (`/haipipe-data-external freeze`).
 
 Contract-generated SourceFn (REACH PD2D, JL 260923):
   - With written ProcName contracts (b01 topic Jobs), the SourceFn is

@@ -5,6 +5,11 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.8.3] — 2026-09-23
+
+- Source Tasks attach external data through `haipipe-data-external/ref/asset-model.md` (explicit lookup, `obs_dt`, lock, shared `enrich_<table>()`); assets are built in the auxiliary `b51` Block.
+- Config binding: workers read `RUN_CONFIG` from the Ticket; materialize Tickets check the output names the config's cohort (a DrFirst worker ignored it and reran its default). Checklist for adding a dataset by copying a Job (same-stem pages, fresh `CODE_REVIEW.md`, retarget defaults).
+
 ## [0.8.2] — 2026-09-23
 
 - Probe a new cluster first (runtime, packages, Volume round-trip, raw frozen);

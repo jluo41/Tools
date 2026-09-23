@@ -4,7 +4,7 @@ description: "Cross-stage transport specialist: pushes/pulls cohort assets betwe
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "0.1.3"
+  version: "0.1.4"
   last_updated: "2026-07-08"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -25,6 +25,18 @@ Rules baked in:
   - All push / pull / plan operations dry-run first, then confirm.
   - All discovery (status, ls-equivalent) uses
     `hai-remote-sync --dry-run` -- no direct `aws s3 ls` calls.
+  - ExternalStore in the topic layout (`../haipipe-data-external/ref/
+    asset-model.md`) moves per asset: `--path ExternalStore/<asset>` (its
+    `asset.yaml` and versions) and `--path ExternalStore/_locks`. A version
+    is immutable: a push never replaces a remote version that differs;
+    stop and report. `<asset>/@raw/` landings are large and pushed only
+    when asked.
+  - `hai-remote-sync: command not found` right after activating the venv
+    usually means the venv was moved or its folder renamed: `activate`, the
+    console-script shebangs, and the editable-install `.pth` still name the
+    old path. Check `grep VIRTUAL_ENV= .venv/bin/activate`; repair with
+    `.venv/bin/python -m pip install -e . --no-deps` and rewrite the old
+    path in `.venv/bin/*`. Do not fall back to raw `aws s3` silently.
 
 ---
 

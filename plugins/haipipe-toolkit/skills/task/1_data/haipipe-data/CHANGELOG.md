@@ -5,6 +5,11 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.1] — 2026-09-23
+
+- Routing: external-only verbs `freeze`, `lock`, `parity`, `join`, `refresh` and external keywords (asset, lock, feature store, vendor API, obs_dt) route to `haipipe-data-external`.
+- Overview principle 7 and the ExternalStore tree follow the external asset model (per-asset contract and versions, locks, explicit SourceFn lookup, frozen versions in training); external specialist line lists freeze/lock/parity.
+
 ## [0.3.0] — 2026-09-23
 
 - PHI SPACE note: no `.ipynb`, `.cmd` tickets only; stage skills 0.3.0/0.2.0 carry the REACH PD2D b01-b04 rules (JL 260923).
