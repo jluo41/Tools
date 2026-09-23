@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.8.1] — 2026-09-23
+
+- WellDoc Proj01 is migrated (260923) and is now the many-dataset reference for the Source Block: five topic Jobs, fixed card numbers `t11`-`t26`, cross-dataset checks in `j49_procdf_coverage`.
+
 ## [0.8.0] — 2026-09-23
 
 - Dataset Jobs share a number in `b00` to `b03` only. New Case Block tree (topic Jobs `triggerfn_`/`casefn_`, one `j5N_…_case` per raw dataset) and AIData Block tree: each `j5N_<aidataset>_aidata` is one AIDataSet that merges several raw datasets, with its own number and `record_set_names:` in its defaults (JL 260923).

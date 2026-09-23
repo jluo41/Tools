@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.2] — 2026-09-23
+
+- WellDoc Proj01 `b00_rawdata` (14 datasets, Jobs `j51`-`j96`) is now a second reference implementation, migrated 260923.
+
 ## [0.5.1] — 2026-09-23
 
 - Pattern 2 names the current J21/J22 `.cmd` extraction shape ahead of the legacy A00 `.ipynb` one.

@@ -10,7 +10,7 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.1"
+  version: "0.5.2"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -88,10 +88,9 @@ Heavy outputs land in: `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the cata
 Raw understanding Block (`b00`)
 -------------------------------
 
-Reference implementation: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b00_rawdata/`.
-WellDoc-SPACE `examples-1-data/Proj01-CGM-RawData/tasks/b01_rawdata/` has 14
-datasets in the older numbering (Block `b01`, Jobs `j01`-`j46`, tables from
-`t03`); it migrates to this one.
+Reference implementations: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b00_rawdata/`
+(one dataset) and WellDoc-SPACE `examples-1-data/Proj01-CGM-RawData/tasks/b00_rawdata/`
+(14 datasets in seven raw families, Jobs `j51`-`j96`; migrated 260923).
 
 ```
 b00_rawdata/

@@ -87,9 +87,10 @@ b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
   `b01/j51_reachpd2d_v260922_source`. The next extraction is `j52_…` in
   `b00` to `b03`. `j00` and `j50` stay unused, as `b10` and `b50` do. So the
   Job number alone says whether a Job is built once or once per dataset.
-  Datasets take numbers in extraction-date order (the `v<yymmdd>`). Several
-  dataset families in one Project keep their family in the last digits
-  (WellDoc `j51`-`j57`, AI-READI `j62`, external `j81`-`j86`).
+  Datasets take numbers in extraction-date order (the `v<yymmdd>`). A Project
+  that grouped datasets by family under the old numbering keeps its family
+  digits by adding 50 (WellDoc Proj01: WellDoc `j51`-`j57`, AI-READI `j72`,
+  external `j91`-`j96`).
 - A raw dataset is named `<cohort>-v<yymmdd>`, the day its extraction was
   launched (`haipipe-data-raw` § Dataset naming); the Job drops the hyphens.
 - A range above the data stages starts at `x1`: `b11` is the first model
@@ -129,8 +130,8 @@ b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
   `jNN` in all (`b02/j51_reachpd2d_v260922_record`). Its per-item Tasks exist
   only where items differ by dataset: `b01`'s per-table cards, yes; `b02`'s
   per-record cards, no. A `b02` dataset Job is one Task with one Run that
-  builds and counts the RecordSet. (WellDoc and DrFirst make each dataset a
-  Run of one materialize Task instead; both shapes are one ticket per dataset.)
+  builds and counts the RecordSet. (DrFirst still makes each dataset a
+  Run of one materialize Task; both shapes are one ticket per dataset.)
 - Case Block: one topic Job per Fn family with one Task per Fn
   (`j01_triggerfn_visit`, `j02_casefn_diab_event`, `j03_casefn_feature`),
   then one dataset Job

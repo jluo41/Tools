@@ -4,6 +4,14 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-09-23 — WellDoc Proj01 migrated to b00-b04 (JL)
+----------------------------------------------------
+
+`hierarchy.md`: the family-digit example is now Proj01's real numbering (old
+number + 50: WellDoc `j51`-`j57`, AI-READI `j72`, external `j91`-`j96`), and
+only DrFirst still keeps one materialize Task per Block. `haipipe-task-for-data`
+0.8.1 and `haipipe-task-for-raw` 0.5.2 name Proj01 as a migrated reference.
+
 2026-09-23 — AIData merges datasets; Fn locations in haipipe-data (JL)
 ----------------------------------------------------------------------
 
