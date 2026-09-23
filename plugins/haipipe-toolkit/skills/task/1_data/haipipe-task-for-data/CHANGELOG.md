@@ -5,6 +5,14 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.8.2] — 2026-09-23
+
+- Probe a new cluster first (runtime, packages, Volume round-trip, raw frozen);
+  every receipt records `env`.
+- Stage packages via `task_entry.ensure_packages`, driver-local, never the
+  cluster's Python.
+- Generated Fns carry no data counts; size decisions are made at run time.
+
 ## [0.8.1] — 2026-09-23
 
 - WellDoc Proj01 is migrated (260923) and is now the many-dataset reference for the Source Block: five topic Jobs, fixed card numbers `t11`-`t26`, cross-dataset checks in `j49_procdf_coverage`.

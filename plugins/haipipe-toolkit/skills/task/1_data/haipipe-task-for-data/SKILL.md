@@ -3,7 +3,7 @@ name: haipipe-task-for-data
 description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.8.1"
+  version: "0.8.2"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -201,6 +201,19 @@ b01_sourcestore/
   present in EVERY RawName a RecordFn lists, so a RecordFn over two tables
   silently drops patients. Signal tables kept apart in Source become one
   RecordFn each; the TriggerFn or CaseFn combines them.
+- A cluster the stages never ran on gets a probe Run FIRST (PD2D
+  `b00/j01_probe_cluster/t01_probe_cluster_env`, about two minutes): runtime and
+  package versions in `probe.json`, a `datasets` save/load round-trip on the
+  Volume, and whether the raw dataset is `_FROZEN`. Every receipt also records
+  `env` (runtime, pandas, pyarrow, datasets) from `task_entry.env_versions()`.
+- A stage that needs packages beyond the runtime lists them as `pip:` in its
+  Job's `src/config-defaults.yaml`; the worker calls
+  `task_entry.ensure_packages` BEFORE anything imports pandas or pyarrow. What
+  is missing installs into a driver-local folder, never into the cluster's own
+  Python, which the Spark extraction Runs share.
+- A generated Fn never embeds a count from the data (rows, patients): only
+  contracts and schema. A size decision (chunking) is made when the Fn runs,
+  from the parquet footer, so a new extraction does not make the committed Fn stale.
 - Prove the wiring on the laptop with a selftest, not a Run: drive every entry
   through `safer/cluster/run_inline.py` with stand-in dbutils and Spark against
   a scratch Volume holding a synthetic twin of the dataset (real stems and
