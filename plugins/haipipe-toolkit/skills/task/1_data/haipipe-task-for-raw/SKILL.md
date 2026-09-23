@@ -1,15 +1,17 @@
 ---
 name: haipipe-task-for-raw
 description: >-
-  Raw extraction Job specialist: scaffolds canonical BJTR Tasks that move
-  cohort data from an operational database into RawStore. Two patterns:
-  extract-wide-process-local (non-PHI) and server-resident all-Spark (PHI
-  cohorts). Called by /haipipe-task when task-type=raw. Cross-references
-  /haipipe-data-raw.
+  Raw-stage Task specialist with two kinds of Job. Extraction Job: moves
+  cohort data from an operational database into RawStore as a versioned
+  dataset <cohort>-v<yymmdd> (extract-wide-process-local for non-PHI,
+  server-resident all-Spark for PHI). Raw understanding Block b00: one Job per
+  dataset version that inventories, profiles each table, routes tables to
+  ProcNames, and hands off to Source with a gated readiness. Called by
+  /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-13"
+  version: "0.4.0"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -70,10 +72,50 @@ tasks/bNN_<raw_block>/
         └── notebooks/rNN_<run>.ipynb
 ```
 
-Group letter default: **R** (raw extraction).
-When raw extraction is embedded in a cohort project as pipeline stage 0, the group is commonly named `A00_rawstore_<cohort>/` (e.g.
-Project-REACH-ADHD) — the letter is project-specific either way.
+Two kinds of raw Job, never in one Block (see `haipipe-task/ref/hierarchy.md` § Block
+number ranges):
+- **Extraction Job**: pulls tables from an operational database into
+  `0-RawDataStore/<dataset>/`. It lives in its own extraction Project, e.g.
+  REACH `Project-0-EHR-Description/tasks/b01_reach_jhu/j22_pd2d_raw_extraction`.
+  The Job's `src/config-defaults.yaml` types `raw_data_name` once; a refresh
+  changes that line and never writes into another version's folder.
+- **Raw understanding Block `b00`**: in every Project that USES the data, one
+  Job per dataset version reads what the extraction wrote. It never extracts
+  and never writes RawStore. See § Raw understanding Block below.
 Heavy outputs land in: `_WorkSpace/0-RawDataStore/<cohort>/` (or the catalog-volume equivalent for server-resident cohorts — see Pattern 2).
+
+
+Raw understanding Block (`b00`)
+-------------------------------
+
+Reference implementations: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b00_rawdata/`
+and WellDoc-SPACE `examples-1-data/Proj01-CGM-RawData/tasks/b01_rawdata/`
+(numbered before the ranges were fixed).
+
+```
+b00_rawdata/
+└── jNN_<cohort>_v<yymmdd>_raw/           one raw dataset version = one Job
+    ├── src/config-defaults.yaml          raw_data_name, upstream extraction, store path, min_cell
+    ├── t01_intake_inventory/             every table: rows, columns, size; every upstream Run ok?
+    ├── t02_table_catalog_schema/         per table: subject key, time columns, schema family
+    ├── t03_profile_<table>/ …            ONE Task per observed table, from the inventory
+    ├── tNN_audit_file_routing/           each raw table → exactly one ProcName
+    ├── tNN_datapoint_timeline/           date ranges (years) + open questions with evidence
+    └── tNN_source_handoff/               preserve / derive / ask lists + gated readiness
+```
+
+- Table Tasks come from the observed inventory, never a fixed topic list.
+- Runs are passes: `r01_structure_schema` (local, from receipts or headers),
+  `r02_profile_semantics` (types, nulls, distincts, year ranges), `full_scan`
+  only where needed. Only the passes that apply exist.
+- Privacy: metadata only. For PHI the profile pass is a server `.cmd` Run;
+  dates leave as years, counts 1 to 10 as `<11`, and no row value leaves.
+- `datapoint_timeline` and `source_handoff` are `haipipe-data-raw`'s
+  `understand` and `hand-off` as Tasks. Readiness is computed from gates
+  (every table routed once, every table profiled, no blocking question), never
+  declared: `ready_for_sourcefn_review` or `blocked` with the failing gate.
+- `b01_sourcestore` starts from `audit_file_routing`: one contract Task per
+  routed ProcName.
 
 
 Two patterns — pick by data-governance

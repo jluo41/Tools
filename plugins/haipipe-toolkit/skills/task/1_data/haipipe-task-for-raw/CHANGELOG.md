@@ -6,6 +6,14 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.4.0] — 2026-09-22
+
+- Corrects 0.3.0: `b00` never extracts. Two kinds of raw Job: the Extraction Job (own extraction Project, versioned `raw_data_name` typed once) and the new Raw understanding Block `b00` (WellDoc shape: intake, catalog, one profile Task per table, routing, timeline, gated source hand-off). Example back to `b01_prediabetes_raw`.
+
+## [0.3.0] — 2026-09-22
+
+- Raw is Block `b00`, in two uses: extract (writes RawStore) or inspect (extraction lives in another Project; reads its receipts, same `jNN`). Replaces the `A00_rawstore_<cohort>` group-letter note; example renamed `b00_prediabetes_raw`.
+
 ## [0.1.4] — 2026-07-24
 
 Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 1.4.0; older entries below keep their original numbers).

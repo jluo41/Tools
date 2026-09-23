@@ -5,6 +5,21 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.1] — 2026-09-22
+
+- SourceFn Block pattern: the SourceFn is generated from the `j00` contracts;
+  `origin: not_extracted` grades a table `partial`; a RecordFn reads one
+  ProcName (the record framework intersects patients across RawNames); a PHI
+  dataset gets a synthetic laptop twin with `_SYNTHETIC.yaml`. Learned building
+  REACH PD2D `REACHPD2DV260922` and its 15 signal RecordFns.
+
+## [0.5.0] — 2026-09-22
+
+- Dataset Job is `jNN_<cohort>_v<yymmdd>_source`, same `jNN` as its `b00` Job; `j00` order follows `b00` routing; contract columns keep the SourceFn's existing names else CamelCase, and carry every raw column; card Tasks only for stored tables.
+
+## [0.4.0] — 2026-09-22
+
+- SourceFn Job pattern replaced by the SourceFn Block pattern: Source is Block `b01`; `j00_procname_to_procdf_contract` holds one Task per ProcName; one Job per dataset holds `t00_sourcefn_develop_and_use` (build, materialize, inventory Runs) plus one card Task per stored ProcName. A new SourceFn version is a Run, named `<Family>V<yymmdd>`. One ProcName per raw table; Source never merges tables or applies thresholds.
 
 ## [0.2.3] — 2026-07-24
 

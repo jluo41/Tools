@@ -3,8 +3,8 @@ name: haipipe-task-for-data
 description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-13"
+  version: "0.5.1"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -104,26 +104,62 @@ Stage    Partitions     CLI flags                                    Notebook pa
 - Partition naming: `@i{i}n{n}` (1-based). Discovery: glob `@i*n*`.
 
 
-SourceFn Job pattern
---------------------
+SourceFn Block pattern
+----------------------
 
-One Job represents one version/family of shared SourceFn logic. Every raw name
-that owns a distinct ProcessDF output contract gets one plainly named Task.
-Reserve the final Tasks for integration:
+Source is Block `b01` (see `haipipe-task/ref/hierarchy.md` § Block number
+ranges). Its output is `ProcName_to_ProcDf`: one table (ProcDf) per ProcName.
+Reference implementation: WellDoc-SPACE
+`examples-1-data/Proj01-CGM-RawData/tasks/b02_sourcestore/` (numbered before
+the ranges were fixed).
 
 ```
-j01_source_contract_<family>/
-├── t01_<raw_name_one>_processdf/
-├── t02_<raw_name_two>_processdf/
-├── t03_<raw_name_three>_processdf/
-├── ...
-├── t51_sourcefn_<family>/          build the generated SourceFn
-└── t52_source_pipeline_<family>/   run and validate the HAI pipeline
+b01_sourcestore/
+├── j00_procname_to_procdf_contract/      the written contract, one Task per ProcName
+│   ├── t01_procdf_<procname>/            config rNN_<procname>_card.yaml IS the contract
+│   ├── ...
+│   ├── tNN_coverage_matrix/              only when two or more datasets
+│   └── tNN_conformance_check/            every SourceSet vs every contract
+└── jNN_<cohort>_v<yymmdd>_source/       one Job per dataset version; same jNN as its b00 Job
+    ├── t00_sourcefn_develop_and_use/
+    │   ├── runs/r01_build_<sourcefn>.sh         regenerates code/haifn/fn_source/<SourceFn>.py
+    │   ├── runs/r02_materialize_<dataset>.sh    fills 1-SourceStore/<dataset>/@<SourceFn>/
+    │   └── runs/r03_inventory_<dataset>.sh      declared ProcNames vs tables actually stored
+    ├── t01_procdf_<procname>/            card of a STORED table, numbered like j00; none for an unstored one
+    └── ...
 ```
 
-If later Raw Data has a different structure or needs a different shared
-transformation, create `j02_*`; do not hide a new SourceFn version inside a Run.
-Within each Task, cohorts/parameters become `rNN_*` Runs.
+- `j00` Task order follows `b00`'s `audit_file_routing`; a contract column
+  follows the SourceFn's existing name where there is one, else CamelCase
+  (`cohort_id` → `PatientID`). Every raw column is in the contract, so
+  nothing is dropped silently.
+- One ProcName per raw table. Source renames and types; it never merges tables,
+  drops rows, or applies a clinical threshold. Those belong to the Fn that uses
+  the decision (a CaseFn label, a TriggerFn cohort).
+- A contract config states `row`, `grain`, `read_by` (the RecordFn), and per
+  column `meaning`, `type`, `origin` (raw, derived, external) and `required`.
+  Required = the RecordFn lists the column in `raw_columns`; everything else is
+  carried. A missing required column fails the table; a missing carried column
+  makes it partial.
+- A new SourceFn version is a new `r0N_build_<sourcefn>` Run in `t00` of the
+  first dataset Job it serves, never a new Task or Job. Name it
+  `<Family>V<yymmdd>`, e.g. `WellDocDataV251226`. Older versions stay as Runs.
+- Ticket suffix says where a Run executes: `.sh` on the local machine, `.cmd`
+  on a remote server (e.g. Databricks inline). Server Runs bring back counts and
+  cards only.
+- Generate the SourceFn FROM the `j00` contracts (a `t00` build Run reads every
+  contract config and writes `code/haifn/fn_source/<SourceFn>.py`), so the Fn
+  cannot drift from what `tNN_conformance_check` grades. A column the RecordFn
+  needs but the extraction leaves out on purpose is `origin: not_extracted`:
+  Source writes it as null and the card grades the table `partial`, not failed.
+- A RecordFn reads ONE ProcName. The record framework keeps only the patients
+  present in EVERY RawName a RecordFn lists, so a RecordFn over two tables
+  silently drops patients. Signal tables kept apart in Source become one
+  RecordFn each; the TriggerFn or CaseFn combines them.
+- A PHI dataset gets a laptop twin for wiring: a `t00` simulate Run writes
+  `_WorkSpace/0-RawDataStore/<dataset>/` with the real stems and columns (from
+  `b00`), invented values, and `_SYNTHETIC.yaml`. Local Runs prove the code;
+  only the `.cmd` server Runs make the real store.
 
 Source Tasks may attach pinned ExternalStore data and emit list/vector-valued
 data. Their contract records dtype, ordering, missing mask, external release,

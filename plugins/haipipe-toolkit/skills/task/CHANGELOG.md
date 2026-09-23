@@ -4,6 +4,28 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-09-22 — `b00` understands, never extracts (JL)
+---------------------------------------------------
+
+Corrects the same-day Block-range entry below. `b00` only understands each
+extracted raw dataset (WellDoc raw-data shape, `haipipe-task-for-raw` § Raw
+understanding Block); extraction lives in its own Project. One Job per raw
+dataset version, `jNN` local to the Project and shared by `b00` and `b01`,
+never copied from the extraction Project. Raw datasets are named
+`<cohort>-v<yymmdd>` (`haipipe-data-raw` § Dataset naming).
+
+2026-09-22 — Block numbers are stage ranges (JL)
+------------------------------------------------
+
+`haipipe-task/ref/hierarchy.md` now fixes Block numbers across Projects and
+SPACEs: `b00` raw (extract, or read-only inspect), `b01` source, `b02` record,
+`b03` case, `b04` aidata, `b11`-`b19` model, `b21`-`b29` evaluation,
+`b31`-`b39` endpoint, `b51`-`b59` auxiliary; a range above the data stages
+starts at `x1`, as `b51` already did in WellDoc and DrFirst. One stage is one Block, never a Job
+of a whole-pipeline Block. `haipipe-task-for-data` replaces its SourceFn Job
+pattern with the SourceFn Block pattern (j00 contract + one Job per dataset,
+WellDoc-SPACE shape); `haipipe-task-for-raw` names raw `b00`.
+
 2026-09-21 — Make GPU execution companions fit-owned (JL)
 ------------------------------------------------------------
 

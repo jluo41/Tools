@@ -52,6 +52,45 @@ Block = Board  →  Job = Group  →  Task Folder = Page Folder = Page
 Prefer a few coherent Blocks. Split when the Jobs no longer share one topic,
 dependency boundary, or Board narrative.
 
+### Block number ranges (JL, 260922)
+
+The Block number says which lifecycle stage the Block belongs to, so the same
+number means the same stage in every Project and every SPACE:
+
+```text
+b00          raw          understand each extracted dataset, read-only; never extracts
+b01          source       SourceFn + SourceStore          (Stage 1)
+b02          record       HumanFn/RecordFn + RecordStore  (Stage 2)
+b03          case         TriggerFn/CaseFn + CaseStore    (Stage 3)
+b04          aidata       TfmFn/SplitFn + AIDataStore     (Stage 4)
+b11 to b19   model        one Block per prediction question; one Job per model
+b21 to b29   evaluation   fairness, calibration, external validation of a model
+b31 to b39   endpoint     inference Fns, Endpoint_Set packaging, deployment
+b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
+```
+
+- One stage is one Block. Source, Record, Case, and AIData are never Jobs of a
+  single "data pipeline" Block: each stage has two axes of its own (datasets or
+  Fn families as Jobs, tables or Fns as Tasks), and a Job has room for only one.
+- Extraction from an operational database is never a stage Block. It lives in
+  its own extraction Project and writes `0-RawDataStore/<dataset>/`
+  (`haipipe-task-for-raw` § Extraction Job). Every Project that uses the data
+  understands it in its own `b00` (§ Raw understanding Block), which never
+  writes RawStore.
+- One Job per raw dataset VERSION, in `b00` and again in `b01`, with the same
+  `jNN` in both and numbered inside the Project, never copied from the
+  extraction Project: `b00/j01_reachpd2d_v260922_raw` hands off to
+  `b01/j01_reachpd2d_v260922_source`. The next extraction is `j02_…` in both.
+- A raw dataset is named `<cohort>-v<yymmdd>`, the day its extraction was
+  launched (`haipipe-data-raw` § Dataset naming); the Job drops the hyphens.
+- A range above the data stages starts at `x1`: `b11` is the first model
+  Block, `b12` the next question, `b31` the first endpoint Block, as `b51`
+  already is in WellDoc and DrFirst. `b10`, `b20`, `b30`, `b50` stay unused. A
+  range with no work has no Block.
+- Record, Case, and AIData Blocks open with `j01_<stage>store_materialize`,
+  then one Job per Fn family with one Task per Fn.
+- Source Blocks follow `haipipe-task-for-data` § SourceFn Block pattern.
+
 ## Job = submittable unit
 
 ```text

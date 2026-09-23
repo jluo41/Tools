@@ -4,8 +4,8 @@ description: "Stage 0' (raw cohort) specialist: builds a business-readable pictu
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.1.2"
-  last_updated: "2026-07-08"
+  version: "0.2.0"
+  last_updated: "2026-09-22"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -96,6 +96,17 @@ VOLUME-RESIDENT COHORTS (PHI): some raw cohorts never exist under the local `_Wo
 For those cohorts, `dashboard`/`load` must look at the volume path (run on the Databricks side, or work from schema docs) — a missing local folder does NOT mean the cohort doesn't exist.
 Only aggregated/derived summaries may come local.
 See `../haipipe-task-for-raw/SKILL.md` "Pattern 2".
+
+Dataset naming
+--------------
+
+A raw dataset is `<cohort>-v<yymmdd>`, e.g. `reach-pd2d-v260922`: the day its
+extraction was launched, typed once as `raw_data_name` in the extraction Job's
+`src/config-defaults.yaml` before it runs. Its folder is
+`0-RawDataStore/<dataset>/`, and every downstream store inherits the name
+(`1-SourceStore/<dataset>/@<SourceFn>/` …). A new extraction is a new dataset;
+no extraction writes into another version's folder. In Task folders the name
+drops its hyphens: `jNN_reachpd2d_v260922_raw`.
 
 Owns:
   - `_WorkSpace/0-RawDataStore/<cohort>/` folders (and their

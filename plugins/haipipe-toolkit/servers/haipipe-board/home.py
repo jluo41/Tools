@@ -422,6 +422,11 @@ def resolve_short(root: Path, slug: str, anchor: str = "") -> str | None:
     if anchor:
         for page in sorted(site.glob("*/*.html")):
             aliases = {page.stem.lower(), page.stem.split("-")[0].lower()}
+            # a Task Board page is built as `b01j21t01-adhd_cohort_universe`,
+            # but people link it by its Task FOLDER, `t01_adhd_cohort_universe`
+            task = re.fullmatch(r"b\d+j\d+(t\d+)-(.+)", page.stem.lower())
+            if task:
+                aliases.add(f"{task.group(1)}_{task.group(2)}")
             if anchor.lower() in aliases:
                 return "/" + quote(f"{rel}/board/{page.parent.name}/{page.name}",
                                    safe="/")
