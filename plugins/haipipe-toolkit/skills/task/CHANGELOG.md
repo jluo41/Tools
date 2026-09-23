@@ -4,6 +4,20 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+2026-09-23 — AIData merges datasets; Fn locations in haipipe-data (JL)
+----------------------------------------------------------------------
+
+`hierarchy.md`: dataset Jobs `j51`-`j99` share a number in `b00` to `b03`;
+in `b04` each `j5N` is one AIDataSet merging several raw datasets. Coverage
+matrix goes in `b01/j49_procdf_coverage`; table numbers line up between `b00`
+and `b01` only for one-to-one raw-to-ProcName data. `haipipe-task-for-data`
+0.8.0 (Case and AIData trees), `haipipe-task-for-raw` 0.5.0 (`b00` renumbered),
+and the haipipe-data family now point each Fn kind at its Block and Job.
+After a cold read by a fresh agent: datasets need not share ProcNames; `j01`
+is always the cohort topic (roster ProcName, HumanFn); `b03` families are
+`triggerfn_`, `casefn_label`, `casefn_feature`; dataset numbers follow
+extraction date; the coverage matrix is `b01` only.
+
 2026-09-22 — `b00` understands, never extracts (JL)
 ---------------------------------------------------
 
@@ -173,6 +187,11 @@ keeps working untouched. A declared store mirrors the task tree inside itself,
   to another's.
 - The task layer is handed a PATH and never a consumer identity, so a
   dispatching probe supplies the store without breaching the stake wall.
+
+
+## 2026-09-23
+
+- hierarchy.md: `j00` holds a Block's project-wide piece; a dataset version is a Job in b00, b01 and b02; b02 dataset Jobs are one build-and-count Run.
 
 ## [Unreleased] — 2026-07-14 — the task layer becomes consumer-unaware
 

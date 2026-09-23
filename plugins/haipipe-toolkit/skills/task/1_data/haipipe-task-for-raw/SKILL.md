@@ -10,7 +10,7 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.4.1"
+  version: "0.5.1"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -88,22 +88,26 @@ Heavy outputs land in: `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the cata
 Raw understanding Block (`b00`)
 -------------------------------
 
-Reference implementations: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b00_rawdata/`
-and WellDoc-SPACE `examples-1-data/Proj01-CGM-RawData/tasks/b01_rawdata/`
-(numbered before the ranges were fixed).
+Reference implementation: REACH-SPACE `examples/Project-REACH-PD2D/tasks/b00_rawdata/`.
+WellDoc-SPACE `examples-1-data/Proj01-CGM-RawData/tasks/b01_rawdata/` has 14
+datasets in the older numbering (Block `b01`, Jobs `j01`-`j46`, tables from
+`t03`); it migrates to this one.
 
 ```
 b00_rawdata/
-└── jNN_<cohort>_v<yymmdd>_raw/           one raw dataset version = one Job
+└── j51_<cohort>_v<yymmdd>_raw/           one raw dataset version = one Job (j51-j99)
     ├── src/config-defaults.yaml          raw_data_name, upstream extraction, store path, min_cell
     ├── t01_intake_inventory/             every table: rows, columns, size; every upstream Run ok?
     ├── t02_table_catalog_schema/         per table: subject key, time columns, schema family
-    ├── t03_profile_<table>/ …            ONE Task per observed table, from the inventory
-    ├── tNN_audit_file_routing/           each raw table → exactly one ProcName
-    ├── tNN_datapoint_timeline/           date ranges (years) + open questions with evidence
-    └── tNN_source_handoff/               preserve / derive / ask lists + gated readiness
+    ├── t11_profile_<table>/ …            ONE Task per observed table, from the inventory
+    ├── t91_audit_file_routing/           each raw table → exactly one ProcName
+    ├── t92_datapoint_timeline/           date ranges (years) + open questions with evidence
+    └── t93_source_handoff/               preserve / derive / ask lists + gated readiness
 ```
 
+- The Job number is the dataset's number in `b01` to `b03` too
+  (`b01/j51_<cohort>_v<yymmdd>_source`); see `haipipe-task/ref/hierarchy.md`.
+  `t01`-`t09` cover the whole dataset, `t11` onward its tables, `t91`+ close it.
 - Table Tasks come from the observed inventory, never a fixed topic list.
 - Runs are passes: `r01_structure_schema` (local, from receipts or headers),
   `r02_profile_semantics` (types, nulls, distincts, year ranges), `full_scan`
@@ -115,7 +119,7 @@ b00_rawdata/
   (every table routed once, every table profiled, no blocking question), never
   declared: `ready_for_sourcefn_review` or `blocked` with the failing gate.
 - `b01_sourcestore` starts from `audit_file_routing`: one contract Task per
-  routed ProcName.
+  routed ProcName, in the topic Jobs `j01_procdf_<topic>` onward.
 
 
 Dataset versions: name, freeze, refresh
@@ -201,6 +205,14 @@ Pattern 2: Server-resident rawstore (PHI cohorts)
 
 When the cohort is PHI, step 3 above is FORBIDDEN — raw data never leaves the server.
 The whole extraction pipeline runs on Databricks and writes to the catalog volume.
+Current shape: REACH-SPACE Project-0-EHR-Description
+`tasks/b01_reach_jhu/j21_adhd_raw_extraction/` (and `j22_pd2d_...`). One
+extraction Job; `src/config-defaults.yaml` holds `volume_base` and the ONE
+versioned `raw_data_name` (`reach-adhd-v260922`), so a refresh is one edit;
+each Task has one entry `scripts/run_<task>.py` and `runs/rNN_<run>.cmd`
+tickets; `sbatch/run_all.cmd` runs the Job and writes `_FROZEN.yaml` after
+the last Run. No `.ipynb`, no `.sh`.
+
 Legacy example: Project-REACH-ADHD `tasks/A00_rawstore_reachadhd/`.
 
 Legacy shape (readable, never scaffolded for new work):

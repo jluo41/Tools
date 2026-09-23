@@ -64,7 +64,7 @@ The Kitchen (Pipeline) does the rest.
 Builder pattern -- generated code, never edited directly**
 
 All domain-specific functions (SourceFn, HumanFn, RecordFn, TriggerFn, CaseFn, TfmFn, SplitFn, EndpointFn) live in code/haifn/ as generated Python files.
-The source of truth is the builder scripts in the project's NN_<stage>_fn_develop_<cohort>/ task folders (legacy workspaces: code-dev/1-PIPELINE/).
+The source of truth is each Fn's Run config in a topic Job of its stage Block (`bNN_<stage>/j0N_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/config/r01_build.yaml`) plus the Block's shared generator in `bNN_<stage>/src/`; the build Run regenerates the Fn and fails unless the committed file matches (legacy workspaces: code-dev/1-PIPELINE/).
 
 ```
 Developer edits builder -> runs builder -> production Fn is regenerated
@@ -205,8 +205,29 @@ ls examples/*/tasks/b*/j*/t*/scripts/    # all canonical Task script lanes
 ```
 
 ```text
-tasks/bNN_<data_block>/jNN_<logic_version>/tNN_<fn_task>/scripts/<builder>.py
+tasks/bNN_<stage>store/jNN_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/<builder>.py
 ```
+
+Where each Fn kind lives (rule and reasons: `haipipe-task/ref/hierarchy.md`
+§ Block number ranges; Block trees: `haipipe-task-for-data` § SourceFn Block
+pattern):
+
+```text
+Fn kind     Block             topic Job (j01-j49, built once)   dataset Job (j51-j99)
+raw         b00_rawdata       none                              j5N_<cohort>_v<yymmdd>_raw
+SourceFn    b01_sourcestore   j0N_procdf_<topic> (contracts)    j5N_<cohort>_v<yymmdd>_source (t01 builds the SourceFn)
+HumanFn     b02_recordstore   j01_recordfn_cohort, t01_humanfn  j5N_<cohort>_v<yymmdd>_record
+RecordFn    b02_recordstore   j0N_recordfn_<topic>              (same as above)
+TriggerFn   b03_casestore     j0N_triggerfn_<name>              j5N_<cohort>_v<yymmdd>_case
+CaseFn      b03_casestore     j0N_casefn_<family>               (same as above)
+TfmFn       b04_aidatastore   j0N_tfmfn_<name>                  j5N_<aidataset>_aidata (merges datasets)
+SplitFn     b04_aidatastore   j0N_splitfn_<name>                (same as above)
+```
+
+A `j5N` number is the same raw dataset in `b00` to `b03`. In `b04` it names an
+AIDataSet that merges several raw datasets, so it has its own number. Task
+folders keep the real CamelCase Fn name (`t02_recordfn_REACHPatientUniverse`).
+Reference: REACH-SPACE `examples/Project-REACH-PD2D/tasks/`.
 
 The following pre-BJTR tree is a legacy snapshot and remains readable only:
 

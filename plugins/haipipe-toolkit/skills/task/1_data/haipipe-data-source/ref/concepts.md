@@ -307,7 +307,7 @@ Large Tables That Don't Fit in RAM
 ===================================
 
 When a raw table is bigger than available memory (hundreds of millions of rows; typical on small Databricks nodes with 16 GB), the SourceFn must stream it instead of loading it wholesale.
-Canonical reference implementation: Project-EHR-Mimic `.../01_source_fn_develop_mimic/c7_build_source_mimiciv31.py`.
+Canonical reference implementation: REACH-SPACE `examples/Project-EHR-Mimic/tasks/b01_data_pipeline_mimic/j01_source_fn_develop_mimic/c7_build_source_mimiciv31.py` (a pre-Block-range project; the streaming code is what counts, not its folder).
 
 The pattern:
 

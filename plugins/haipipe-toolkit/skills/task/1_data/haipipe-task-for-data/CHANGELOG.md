@@ -5,6 +5,31 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.8.0] — 2026-09-23
+
+- Dataset Jobs share a number in `b00` to `b03` only. New Case Block tree (topic Jobs `triggerfn_`/`casefn_`, one `j5N_…_case` per raw dataset) and AIData Block tree: each `j5N_<aidataset>_aidata` is one AIDataSet that merges several raw datasets, with its own number and `record_set_names:` in its defaults (JL 260923).
+- Coverage matrix is `b01/j49_procdf_coverage` (2+ datasets only). `t11` table numbers match `b00` only when raw tables map one to one onto ProcNames.
+- Reference implementation is now REACH PD2D; WellDoc Proj01 named as the older shape that migrates.
+
+## [0.7.0] — 2026-09-23
+
+- Jobs in two ranges: topic Jobs `j01`-`j49` named by Fn kind first
+  (`j01_procdf_cohort`, `j01_recordfn_cohort`); dataset Jobs `j51`-`j99`,
+  same number in every Block. `j00` retired.
+- b01 contracts split into topic Jobs; the conformance check moves into the
+  dataset Job as `t02`. b02 RecordFns follow b01's topic numbers.
+- Task folders keep the real CamelCase Fn or ProcName; Runs name only the
+  action (`r01_build`, `r01_card`, `r01_table`, `r02_materialize`).
+- Shared code and rules of a Block's topic Jobs live in the Block's `src/`.
+
+## [0.6.0] — 2026-09-23
+
+- Record Block pattern: `b02/j00_<project>_recordfn` (HumanFn + RecordFns,
+  built once) and one `jNN_<dataset>_record` Job per dataset holding one
+  materialize Task whose single Run builds and counts the RecordSet. Event
+  RecordFns keep a date window. (JL: a dataset is a Job, and b02 needs no
+  per-record Tasks because b01 already unified the ProcNames.)
+
 ## [0.5.2] — 2026-09-22
 
 - A PHI SPACE runs EVERY Run as a `.cmd` Databricks ticket (J21 shape): one

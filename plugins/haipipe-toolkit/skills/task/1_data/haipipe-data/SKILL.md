@@ -3,8 +3,8 @@ name: haipipe-data
 description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and dispatches to the right specialist (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, runs, dashboards, reviews, or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-13"
+  version: "0.3.0"
+  last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -77,6 +77,15 @@ Recipe — create a job instance:
 The `.py` is source of truth.
 The `.ipynb` is auto-generated at runtime by `convert_to_notebooks.py` — it is intermediate output, not source.
 
+In a PHI SPACE (REACH) none of this applies: no `.ipynb` is ever made. Every
+Run is a `.cmd` Databricks ticket running the Task's one entry
+`scripts/run_<task>.py` inline (see `haipipe-task-for-data` § SourceFn Block
+pattern). The Fns of b01 to b04 are generated from Run configs; each stage
+skill names its generator. Topic Jobs share a generator through the Block's
+`src/`: `code/haiutils/haistep/task_entry.py` merges the Block's
+`src/config-defaults.yaml` under the Job's own and puts the Block's `src/`
+on `sys.path`.
+
 CLI alternative (supports `--num-workers` for parallel execution):
 ```
 python -m scripts.haistepcli.record --config <config> --num-partitions 20 --use-cache
@@ -85,7 +94,9 @@ python code/scripts/haistepcli/aidata.py --config <config>
 ```
 
 Legacy examples may use pre-BJTR paths; new work uses
-`tasks/bNN_<block>/jNN_<job>/tNN_<task>/`.
+`tasks/bNN_<block>/jNN_<job>/tNN_<task>/`: Blocks `b00` raw to `b04` aidata,
+topic Jobs `j01`-`j49` for Fns, dataset Jobs `j51`-`j99` (see
+`haipipe-data/ref/0-overview.md` § Current Builder Structure).
   - `02_record_mimiciv/2_record_mimiciv31.py` (from `a2_record_nb.py`, 80 partitions)
   - `03_case_mimiciv_mortality/3_case_mimiciv31_mortality.py` (from `a3_case_nb.py`, auto-discover)
 

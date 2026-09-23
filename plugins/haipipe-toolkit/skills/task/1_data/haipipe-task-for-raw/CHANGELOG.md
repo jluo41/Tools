@@ -5,6 +5,14 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.1] — 2026-09-23
+
+- Pattern 2 names the current J21/J22 `.cmd` extraction shape ahead of the legacy A00 `.ipynb` one.
+
+## [0.5.0] — 2026-09-23
+
+- `b00` tree renumbered to the PD2D shape: dataset Job `j51`-`j99` (same number in `b01` to `b03`), `t01`-`t02` dataset-wide, `t11`+ one per table, `t91`-`t93` routing, timeline, hand-off. Reference is REACH PD2D; WellDoc Proj01 `b01_rawdata` named as the older shape that migrates.
+
 
 ## [0.4.1] — 2026-09-23
 

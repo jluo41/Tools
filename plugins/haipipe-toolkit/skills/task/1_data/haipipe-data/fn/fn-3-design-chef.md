@@ -10,11 +10,12 @@ Edit builders in the BUILDER HOME, run them, and the output lands in `code/haifn
 
 **BUILDER HOME** — where builder scripts live; resolve once, then substitute for the `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` paths in the examples below:
   - Project-local (current convention): a canonical Task Folder,
-    `examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<fn-task>/scripts/`.
+    `examples/<Project>/tasks/bNN_<stage>store/jNN_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/`
+    (table of Fn kind to Block and Job: `ref/0-overview.md` § Current Builder Structure).
   - Legacy central (e.g. WellDoc-SPACE): `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/`.
   Seed library (copy sources, all workspaces): `code/scripts/haibuilder/<N>-<stage>/`
   — real builders (MIMIC, Ohio, CGM...) to copy as starting points.
-  Discover with: `ls examples/*/tasks/*/*_fn_develop_*/` or `ls code/scripts/haibuilder/`.
+  Discover with: `ls examples/*/tasks/b0[1-4]_*/j[0-4][0-9]_*/t*/scripts/` or `ls code/scripts/haibuilder/`.
 
 ---
 
@@ -23,10 +24,10 @@ Overview: The Builder Pattern
 
 ```
 BUILDER HOME                  <-- SOURCE OF TRUTH (edit here)
-    NN_source_fn_develop_*/       (or 1-Source-WorkSpace/)
-    NN_record_fn_develop_*/       (or 2-Record-WorkSpace/)
-    NN_case_fn_develop_*/         (or 3-Case-WorkSpace/)
-    NN_aidata_fn_develop_*/       (or 4-AIData-WorkSpace/)
+    b01_sourcestore/j5N_*_source/t01_sourcefn_*/     (or 1-Source-WorkSpace/)
+    b02_recordstore/j0N_recordfn_*/tNN_*/            (or 2-Record-WorkSpace/)
+    b03_casestore/j0N_{triggerfn,casefn}_*/tNN_*/    (or 3-Case-WorkSpace/)
+    b04_aidatastore/j0N_{tfmfn,splitfn}_*/tNN_*/     (or 4-AIData-WorkSpace/)
          |
          | (run builder script)
          v
@@ -51,10 +52,10 @@ Apply these steps regardless of which stage you are building.
 **Step 0: Inspect Existing Builders and Source Table**
 
 ```bash
-ls examples/*/tasks/*/01_source_fn_develop_*/   # stage 1 project builders
-ls examples/*/tasks/*/02_record_fn_develop_*/   # stage 2
-ls examples/*/tasks/*/03_case_fn_develop_*/     # stage 3
-ls examples/*/tasks/*/04_aidata_fn_develop_*/   # stage 4
+ls examples/*/tasks/b01_sourcestore/j5*_source/t01_sourcefn_*/scripts/   # stage 1 project builders
+ls examples/*/tasks/b02_recordstore/j[0-4]*/t*/scripts/                  # stage 2
+ls examples/*/tasks/b03_casestore/j[0-4]*/t*/scripts/                    # stage 3
+ls examples/*/tasks/b04_aidatastore/j[0-4]*/t*/scripts/                  # stage 4
 ls code/scripts/haibuilder/<N>-<stage>/         # cross-project SEED LIBRARY
                                                 # (real builders: MIMIC, Ohio, CGM...)
 ```
@@ -172,7 +173,7 @@ engagement snapshots).
 
 **Builder Location**:
 ```
-<BUILDER_HOME>  (01_source_fn_develop_*/; seeds: code/scripts/haibuilder/1-source/)
+<BUILDER_HOME>  (b01_sourcestore/j5N_*_source/t01_sourcefn_*/scripts/; seeds: code/scripts/haibuilder/1-source/)
 ```
 
 **Builder Naming**:
@@ -641,7 +642,7 @@ Three separate types.
 
 **Builder Location**:
 ```
-<BUILDER_HOME>  (04_aidata_fn_develop_*/; seeds: code/scripts/haibuilder/4-aidata/)
+<BUILDER_HOME>  (b04_aidatastore/j0N_{tfmfn,splitfn}_*/tNN_*/scripts/; seeds: code/scripts/haibuilder/4-aidata/)
   c<N>_build_transforms_<type>.py    (Input/Output TfmFn builders -- discover with ls)
   s<N>_build_splitfn_<method>.py     (SplitFn builders -- discover with ls)
 ```
@@ -790,14 +791,14 @@ Quick Reference: Stage Summary
 ================================
 
 ```
-Stage | What You Build         | Builder Home (fn_develop)     | Generated In
-------+------------------------+-------------------------------+---------------------------
-  1   | SourceFn               | 01_source_fn_develop_*/       | fn_source/
-  2   | HumanFn or RecordFn    | 02_record_fn_develop_*/       | fn_record/human/ or record/
-  3   | TriggerFn or CaseFn    | 03_case_fn_develop_*/         | fn_case/fn_trigger/ or
-      |                        |                               |   case_casefn/
-  4   | InputTfmFn, OutputTfmFn| 04_aidata_fn_develop_*/       | fn_aidata/entryinput/,
-      | or SplitFn             |                               |   entryoutput/, or split/
+Stage | What You Build         | Builder Home (Task scripts/)          | Generated In
+------+------------------------+---------------------------------------+---------------------------
+  1   | SourceFn               | b01 j5N_*_source/t01_sourcefn_*/      | fn_source/
+  2   | HumanFn or RecordFn    | b02 j0N_recordfn_<topic>/tNN_*/       | fn_record/human/ or record/
+  3   | TriggerFn or CaseFn    | b03 j0N_{triggerfn,casefn}_*/tNN_*/   | fn_case/fn_trigger/ or
+      |                        |                                       |   case_casefn/
+  4   | InputTfmFn, OutputTfmFn| b04 j0N_{tfmfn,splitfn}_*/tNN_*/      | fn_aidata/entryinput/,
+      | or SplitFn             |                                       |   entryoutput/, or split/
 Seeds for every stage: code/scripts/haibuilder/<N>-<stage>/
 ```
 

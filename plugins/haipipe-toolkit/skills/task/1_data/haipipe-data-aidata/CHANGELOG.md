@@ -5,6 +5,14 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.2.0] — 2026-09-23
+
+- Labels live in b04: label/tte Fns over b03 event lists (censored = -1), SplitFn reads `label_status`, AIDataSet version = Run, generated Fns with committed-file check. Reference REACH PD2D b04 (JL 260923).
+
+## [0.1.6] — 2026-09-23
+
+- Builder location line names the exact Block, Job and Task (rule: `haipipe-task/ref/hierarchy.md`).
+
 
 ## [0.1.4] — 2026-07-24
 

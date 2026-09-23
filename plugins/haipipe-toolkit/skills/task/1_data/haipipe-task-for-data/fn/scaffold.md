@@ -87,7 +87,7 @@ After scaffolding, suggest one of:
 - `/haipipe-data-case`     (stage 3)
 - `/haipipe-data-aidata`   (stage 4)
 
-These specialists author the actual builder logic in the group's paired `NN_<stage>_fn_develop_<cohort>/` task folder.
+These specialists author the actual builder logic in the stage Block's topic Job Task, `b0N_<stage>store/j0N_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/` (table: `haipipe-data/ref/0-overview.md` § Current Builder Structure).
 
 
 Step 7 — Report

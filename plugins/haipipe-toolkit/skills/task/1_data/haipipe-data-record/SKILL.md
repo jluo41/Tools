@@ -3,8 +3,8 @@ name: haipipe-data-record
 description: "Stage 2 (Record) specialist: builds/runs/reviews HumanFn / RecordFn, inspects 2-RecStore, loads record-layer assets, supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-13"
+  version: "0.3.0"
+  last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -75,7 +75,7 @@ Stage Scope
 ------------
 
 Owns:
-  - HumanFn / RecordFn builders in canonical `tasks/bNN_*/jNN_*/tNN_*/scripts/` Task Folders (legacy workspaces: `code-dev/1-PIPELINE/2-Record-WorkSpace/`)
+  - HumanFn / RecordFn builders in `tasks/b02_recordstore/j01_recordfn_<topic>/tNN_{humanfn,recordfn}_<Fn>/scripts/` (same topic number as `b01`); materialize in `b02_recordstore/j5N_<cohort>_v<yymmdd>_record/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/2-Record-WorkSpace/`)
   - Generated `code/haifn/fn_record/`
   - `_WorkSpace/2-RecStore/` records
   - `templates/config.yaml` for Record_Pipeline runs
@@ -93,6 +93,24 @@ External-data boundary:
 Hand-off contract (Stage 2 -> 3):
   Each Record's columns and time grid must match the keys CaseFn samples on.
   Verify against `../haipipe-data-case/ref/concepts.md` before locking schema.
+
+Record rules (REACH PD2D, JL 260923):
+  - One ProcName per RecordFn. The framework keeps only patients present in
+    EVERY RawName a RecordFn lists and joins them on patient, so two tables
+    in one RecordFn silently drop patients and multiply rows. Combining is
+    b03's job.
+  - Each project owns its HumanFn (`HmREACHPD2DPtt`): roster = one ProcName,
+    and its `Excluded_RawNameList` is generated from the b01 contracts, so a
+    new ProcName never changes who counts as a patient.
+  - An event RecordFn keeps a date window (`date_min` in
+    `b02_recordstore/src/config-defaults.yaml`, up to now): out-of-range
+    dates such as 1900 are dropped and counted, not passed through.
+  - One Run builds the WHOLE RecordSet (every RecordFn under `HumanRecords`)
+    and counts it into `records.json`; the per-Fn Tasks only regenerate and
+    check code, they touch no data.
+  - Memory on big stores: `RecordArgs.load_read_tables_only: true` loads just
+    the ProcNames some RecordFn reads (opt-in, in
+    `code/haiutils/haistep/record_utils.py`).
 
 
 Partition Support

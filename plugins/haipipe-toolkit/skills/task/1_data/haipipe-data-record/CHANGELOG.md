@@ -5,6 +5,14 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.0] — 2026-09-23
+
+- Record rules from REACH PD2D: one ProcName per RecordFn, project-owned HumanFn with generated exclusions, event date window, one Run builds the whole RecordSet, `load_read_tables_only` (JL 260923).
+
+## [0.2.1] — 2026-09-23
+
+- Builder location line names the exact Block, Job and Task (rule: `haipipe-task/ref/hierarchy.md`).
+
 
 ## [0.1.3] — 2026-07-24
 

@@ -3,8 +3,8 @@ name: haipipe-data-source
 description: "Stage 1 (Source) specialist: builds/runs/reviews SourceFn, maps Raw Data plus pinned ExternalStore assets into stable ProcessName-to-ProcessDF tables, and inspects 1-SourceStore. Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-13"
+  version: "0.3.0"
+  last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -112,7 +112,7 @@ Stage Scope
 ------------
 
 Owns:
-  - SourceFn builders in canonical `tasks/bNN_*/jNN_*/tNN_*/scripts/` Task Folders (legacy workspaces: `code-dev/1-PIPELINE/1-Source-WorkSpace/`)
+  - SourceFn builders in `tasks/b01_sourcestore/j5N_<cohort>_v<yymmdd>_source/t01_sourcefn_develop_and_use/scripts/`; ProcName contracts in `b01_sourcestore/j01_procdf_<topic>/tNN_procdf_<ProcName>/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/1-Source-WorkSpace/`)
   - Generated `code/haifn/fn_source/`
   - `_WorkSpace/1-SourceStore/` typed frames
   - `templates/config.yaml` for Source_Pipeline runs
@@ -133,3 +133,15 @@ External-data contract:
   mask/behavior, release identity, and `snapshot_as_of` for time-varying data.
   Do not perform uncontrolled live API calls inside SourceFn; ingestion must
   first create a versioned ExternalStore snapshot.
+
+Contract-generated SourceFn (REACH PD2D, JL 260923):
+  - With written ProcName contracts (b01 topic Jobs), the SourceFn is
+    GENERATED from them instead of hand-editing a seed builder; the test is
+    the build Run's committed-file check plus a selftest, not `RUN_TEST`.
+    Name it `<Family>V<yymmdd>` (`REACHPD2DV260922`).
+  - Do not read a huge store back: `Source_Pipeline.run(load_tables=[])`
+    writes the tables and returns without loading them (default None = load
+    all; `code/haipipe/source_base/source_pipeline.py`).
+  - Open question, not settled: PD2D's shared tables (Encounter, Dx, Social,
+    Questionnaire) carry more columns than ADHD's. That breaks MUST rule 3
+    below until JL rules on supersets.

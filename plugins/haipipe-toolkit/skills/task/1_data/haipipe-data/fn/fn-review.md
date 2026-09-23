@@ -5,7 +5,7 @@ fn-review: Structural Code Review for haipipe-data Pipeline Functions
 Reports PASS / WARN / FAIL per criterion.
 Read-only: does NOT modify any files.
 
-**Scope**: Generated Fns in code/haifn/, builder scripts in the project's `*_fn_develop_*` task folders (legacy: code-dev/1-PIPELINE/), and YAML pipeline configs.
+**Scope**: Generated Fns in code/haifn/, builder scripts in the project's `tasks/b0[1-4]_*/j*/t*/scripts/` Task Folders (legacy: code-dev/1-PIPELINE/), and YAML pipeline configs.
 
 ---
 
@@ -39,13 +39,13 @@ If the path does not match any pattern, go to Step R1-B and ask the user to clar
   code/haifn/fn_aidata/entryinput/*.py       InputTfmFn
   code/haifn/fn_aidata/entryoutput/*.py      OutputTfmFn
   code/haifn/fn_aidata/split/*.py            SplitFn
-  */01_source_fn_develop_*/c*.py             SourceFn builder
-  */02_record_fn_develop_*/h*.py             HumanFn builder
-  */02_record_fn_develop_*/r*.py             RecordFn builder
-  */03_case_fn_develop_*/a*.py               TriggerFn builder
-  */03_case_fn_develop_*/c*.py               CaseFn builder
-  */04_aidata_fn_develop_*/c*.py             TfmFn builder
-  */04_aidata_fn_develop_*/s*.py             SplitFn builder
+  b01_sourcestore/j5*_source/t01_sourcefn_*/scripts/*.py    SourceFn builder
+  b02_recordstore/j*/t*_humanfn_*/scripts/*.py              HumanFn builder
+  b02_recordstore/j*/t*_recordfn_*/scripts/*.py             RecordFn builder
+  b03_casestore/j*/t*_triggerfn_*/scripts/*.py              TriggerFn builder
+  b03_casestore/j*/t*_casefn_*/scripts/*.py                 CaseFn builder
+  b04_aidatastore/j*/t*_tfmfn_*/scripts/*.py                TfmFn builder
+  b04_aidatastore/j*/t*_splitfn_*/scripts/*.py              SplitFn builder
   code-dev/1-PIPELINE/**/*.py                any builder (legacy home)
   **/scripts/config/**/*.yaml                 YAML config in a Task Folder (stage auto-detected)
 
@@ -341,7 +341,7 @@ ___________________________________________________________________________ CHEC
   SP-5   Function returns the modified df_tag            return contract
          (NOT a dict of split DataFrames)
 
-___________________________________________________________________________ CHECKLIST: Builder script (*_fn_develop_*/ or legacy code-dev/1-PIPELINE/) ___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: Builder script (tasks/b0[1-4]_*/j*/t*/scripts/ or legacy code-dev/1-PIPELINE/) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------

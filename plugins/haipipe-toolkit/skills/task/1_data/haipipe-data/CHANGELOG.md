@@ -5,6 +5,14 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.0] — 2026-09-23
+
+- PHI SPACE note: no `.ipynb`, `.cmd` tickets only; stage skills 0.3.0/0.2.0 carry the REACH PD2D b01-b04 rules (JL 260923).
+
+## [0.2.1] — 2026-09-23
+
+- Builder locations now follow the Block/Job rule: each stage skill names its exact Task path (topic Job `j01`-`j49` for Fns, dataset Job `j51`-`j99`); `ref/0-overview.md` § Current Builder Structure has the Fn kind to Block and Job table and drops the wrong `jNN_<logic_version>` line. AIData is where raw datasets merge (JL 260923). `fn/fn-3-design-chef.md` (BUILDER HOME, discover globs, stage table), `fn/fn-review.md` (path patterns) and `README.md` swept off the retired `NN_<stage>_fn_develop_*` folders.
+
 
 ## [0.1.3] — 2026-07-24
 

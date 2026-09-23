@@ -77,18 +77,76 @@ b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
   (`haipipe-task-for-raw` § Extraction Job). Every Project that uses the data
   understands it in its own `b00` (§ Raw understanding Block), which never
   writes RawStore.
-- One Job per raw dataset VERSION, in `b00` and again in `b01`, with the same
-  `jNN` in both and numbered inside the Project, never copied from the
-  extraction Project: `b00/j01_reachpd2d_v260922_raw` hands off to
-  `b01/j01_reachpd2d_v260922_source`. The next extraction is `j02_…` in both.
+- Jobs split into two ranges in every data Block (JL 260923). `j01`-`j49`
+  are TOPIC Jobs: project-wide, built once, named by Fn kind first
+  (`j01_procdf_cohort`, `j03_recordfn_diab_signal`, `j01_triggerfn_visit`,
+  `j02_casefn_diab_event`, `j01_tfmfn_label`). `j51`-`j99` are DATASET Jobs, one per raw dataset
+  version, with the same number in `b00` to `b03` and numbered inside the
+  Project, never copied from the extraction Project:
+  `b00/j51_reachpd2d_v260922_raw` hands off to
+  `b01/j51_reachpd2d_v260922_source`. The next extraction is `j52_…` in
+  `b00` to `b03`. `j00` and `j50` stay unused, as `b10` and `b50` do. So the
+  Job number alone says whether a Job is built once or once per dataset.
+  Datasets take numbers in extraction-date order (the `v<yymmdd>`). Several
+  dataset families in one Project keep their family in the last digits
+  (WellDoc `j51`-`j57`, AI-READI `j62`, external `j81`-`j86`).
 - A raw dataset is named `<cohort>-v<yymmdd>`, the day its extraction was
   launched (`haipipe-data-raw` § Dataset naming); the Job drops the hyphens.
 - A range above the data stages starts at `x1`: `b11` is the first model
   Block, `b12` the next question, `b31` the first endpoint Block, as `b51`
   already is in WellDoc and DrFirst. `b10`, `b20`, `b30`, `b50` stay unused. A
   range with no work has no Block.
-- Record, Case, and AIData Blocks open with `j01_<stage>store_materialize`,
-  then one Job per Fn family with one Task per Fn.
+- A topic Job groups the Fns that change together: the ProcName contracts of
+  one topic in `b01`, the RecordFns of the same topic in `b02` with the SAME
+  number (`b01/j03_procdf_diab_signal` and `b02/j03_recordfn_diab_signal`),
+  one Fn family per Job in `b03`. Built once, it serves every dataset that
+  stores its ProcNames; datasets need not share ProcNames (a CGM dataset and
+  an EHR dataset in one Project each use only their own topics, and a dataset
+  Job cards only the ProcNames it stores). Topics are by what changes
+  together, never by dataset.
+  - `j01` is always the cohort topic in `b01` and `b02`: the patient roster
+    ProcName (`Ptt`, `PatientUniverse`) and its contract in `b01`, the HumanFn
+    as `t01_humanfn_<HumanFn>` in `b02`. There is one per Project.
+  - `b03` families: `j01_triggerfn_<name>` (who and when a case is), then
+    `casefn_label` for outcome CaseFns and `casefn_feature` for input
+    CaseFns, split further by topic only when one Job holds too many
+    (`casefn_feature_cgm`).
+  Code the topic Jobs of a Block share lives in the Block's
+  `src/`, and rules they share in the Block's `src/config-defaults.yaml`,
+  under each Job's own (task_entry reads both).
+- A Task folder names its Fn or ProcName exactly, CamelCase kept
+  (`t02_recordfn_REACHPatientUniverse`, `t05_procdf_Social`), and its Runs
+  name only the action (`r01_build`, `r01_card`, `r02_materialize`): the
+  Task already says what they act on.
+- In a dataset Job, `t01`-`t09` cover the whole dataset (build, materialize,
+  conformance) and `t11` onward are its tables in ONE fixed topic order;
+  `t91`+ close the dataset (routing, hand-off). When raw tables map one to
+  one onto ProcNames (REACH), b00 and b01 share the numbers: b00 `t14`
+  profile and b01 `j51/t14` card are the same table. When several raw tables
+  feed one ProcName (WellDoc: 50 raw tables, 16 ProcNames), b00 numbers raw
+  tables and b01 numbers ProcNames, and the numbers do not line up.
+- A dataset version is a Job in `b00`, `b01`, `b02` and `b03`, with the same
+  `jNN` in all (`b02/j51_reachpd2d_v260922_record`). Its per-item Tasks exist
+  only where items differ by dataset: `b01`'s per-table cards, yes; `b02`'s
+  per-record cards, no. A `b02` dataset Job is one Task with one Run that
+  builds and counts the RecordSet. (WellDoc and DrFirst make each dataset a
+  Run of one materialize Task instead; both shapes are one ticket per dataset.)
+- Case Block: one topic Job per Fn family with one Task per Fn
+  (`j01_triggerfn_visit`, `j02_casefn_diab_event`, `j03_casefn_feature`),
+  then one dataset Job
+  per raw dataset (`j51_<cohort>_v<yymmdd>_case/t01_casestore_materialize`).
+  A CaseSet is still per dataset (`3-CaseStore/<RecordSet>/...`).
+- AIData Block is where datasets MERGE (JL 260923): one AIDataSet reads the
+  CaseSets of several raw datasets. Topic Jobs `j01`-`j49` hold the TfmFns
+  and SplitFns (`j01_tfmfn_<name>`, `j02_splitfn_<name>`); each `j51`-`j99`
+  is one AIDataSet (`j51_welldocglucose_aidata/t01_aidatastore_materialize`),
+  with its own number, matching no raw dataset Job. Its
+  `src/config-defaults.yaml` lists every dataset it merges
+  (`record_set_names:`).
+- The one piece that spans datasets before `b04` is the Source coverage
+  matrix (which dataset stores which ProcName): `b01/j49_procdf_coverage/
+  t01_coverage_matrix`, only with 2+ datasets. `b02` and `b03` need none,
+  because each dataset Job's materialize Run counts its own records or cases.
 - Source Blocks follow `haipipe-task-for-data` § SourceFn Block pattern.
 
 ## Job = submittable unit

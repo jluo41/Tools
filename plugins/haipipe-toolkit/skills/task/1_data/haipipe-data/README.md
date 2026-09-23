@@ -116,7 +116,7 @@ Onboard a new raw dataset (new cohort)**
               see use case 16.)
   Command:    /haipipe-data design-chef 1-source
   What it does: Guides you through creating and running the builder script
-                in the project's NN_source_fn_develop_<cohort>/ task folder
+                in the project's b01_sourcestore/j5N_<cohort>_v<yymmdd>_source/t01_sourcefn_develop_and_use/ Task
                 that generates the SourceFn in code/haifn/fn_source/.
 
 **5.
@@ -174,7 +174,7 @@ Review a file before committing**
   Situation:  You've written a new CaseFn or RecordFn builder and want to
               check it for structural issues before running it.
   Command:    /haipipe-data review code/haifn/fn_case/case_casefn/MyFn.py
-              /haipipe-data review examples/<Project>/tasks/<pipe-group>/03_case_fn_develop_<cohort>/c5_build_casefn_myfeature.py
+              /haipipe-data review examples/<Project>/tasks/b03_casestore/j02_casefn_<family>/t01_casefn_MyFeature/scripts/build_casefn_MyFeature.py
               /haipipe-data review <task>/scripts/config/my_caseset.yaml
   What it does: Auto-detects the file type, applies the matching checklist
                 (70+ criteria across all Fn types), and reports
@@ -304,6 +304,6 @@ Key Files (codebase)
   AIData_Pipeline:    code/haipipe/aidata_base/aidata_pipeline.py
   Asset base:         code/haipipe/assets.py
   Generated Fns:      code/haifn/        (NEVER edit directly)
-  Builder scripts:    examples/<Project>/tasks/*/*_fn_develop_*/  (legacy: code-dev/1-PIPELINE/)
+  Builder scripts:    examples/<Project>/tasks/b0[1-4]_*/j*/t*/scripts/  (legacy: code-dev/1-PIPELINE/)
 
   Always activate .venv first: source .venv/bin/activate && source env.sh
