@@ -13,7 +13,7 @@ Cooking Metaphor
 
 ```
 Kitchen  = Record_Pipeline class      (code/haipipe/record_base/)
-Chef     = HumanFn + RecordFn         (code/haifn/fn_record/)  GENERATED
+Chef     = HumanFn + RecordFn         (code/haifn/fn_record/[<fn_version>/])  GENERATED
 Recipe   = YAML config file           (the Task's scripts/config/)
 Dish     = RecordSet asset            (_WorkSpace/2-RecStore/)
 Academy  = Builder scripts            (tasks/bNN_*/jNN_*/tNN_<recordfn>/scripts/)
@@ -101,7 +101,7 @@ record_set.info()
 HumanFn Module Structure
 ------------------------
 
-File: `code/haifn/fn_record/human/<HumanFnName>.py`
+File: `code/haifn/fn_record/[<fn_version>/]human/<HumanFnName>.py`
 
 ```python
 OneHuman_Args = {
@@ -121,7 +121,7 @@ MetaDict = {...}
 RecordFn Module Structure
 --------------------------
 
-File: `code/haifn/fn_record/record/<RecordFnName>.py`
+File: `code/haifn/fn_record/[<fn_version>/]record/<RecordFnName>.py`
 
 ```python
 OneRecord_Args = {
@@ -175,8 +175,8 @@ Discovering Available Fns
 --------------------------
 
 ```bash
-ls code/haifn/fn_record/human/
-ls code/haifn/fn_record/record/
+ls code/haifn/fn_record/human/ code/haifn/fn_record/*/human/
+ls code/haifn/fn_record/record/ code/haifn/fn_record/*/record/
 find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*human*.py
 find examples -path '*/tasks/b*/j*/t*/scripts/*' -name '*record*.py
 ```
@@ -230,8 +230,9 @@ Pipeline framework:   code/haipipe/record_base/record_pipeline.py
                       code/haipipe/assets.py
 Fn loaders:           code/haipipe/record_base/builder/human.py
                       code/haipipe/record_base/builder/record.py
-Generated HumanFns:   code/haifn/fn_record/human/     (discover with ls)
-Generated RecordFns:  code/haifn/fn_record/record/    (discover with ls)
+Generated HumanFns:   code/haifn/fn_record/[<fn_version>/]human/     (discover with ls)
+Generated RecordFns:  code/haifn/fn_record/[<fn_version>/]record/    (discover with ls)
+([<fn_version>/] is set by the Run config's fn_version:; see haipipe-data/ref/0-overview.md § Fn Versions)
 Builders (edit here): examples/<Project>/tasks/bNN_<block>/jNN_<job>/tNN_<recordfn>/scripts/
                       (legacy workspaces: code-dev/1-PIPELINE/2-Record-WorkSpace/)
 Store path:           _WorkSpace/2-RecStore/

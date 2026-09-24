@@ -170,6 +170,52 @@ Serving: staleness, fallback, logging
   instead of re-deriving it; such a log is frozen into `<asset>/S<date>/`
   like any other pull.
 
+Serving: the endpoint bundle (local_external_store)
+---------------------------------------------------
+
+An endpoint that serves pinned local versions ships them in its package
+(`external/`), and the same `ExternalLock` resolves them there. Full tables
+make the container slow to start and heavy per worker (DrFirst OptTime: 17 s
+for the first request, 4.0 GB per worker). Stage the bundle this way:
+
+- **Only the lock.** Copy `_locks/<lock>.yaml`, and for each pinned asset its
+  `asset.yaml` and `<version>/`. An asset the SourceFn never looked up is not
+  shipped.
+- **Only the fields training used.** The training SourceSet's
+  `external-dependency.json` lists, per asset, its lock, pinned version and
+  every lookup's fields. Keep the key plus the union of those fields. The
+  shipped `asset.yaml` lists only them. The shipped `version.yaml` has the
+  trimmed table's `sha256`, with the original `sha256` and the kept columns
+  under `trimmed_from`, so the loader's checks run unchanged. Stop if the
+  dependency's lock or version differs from the bundle's.
+- **Pre-keyed.** For a number-like key (zip3, zip5, npi, ndc, ncpdp), store
+  `__key__` = `haipipe.external_base.keys.normalize_keys(key, kind)` as int64,
+  with invalid keys dropped and the first row per key kept (what the loader
+  would compute), and write `key_normalized: int64` in `version.yaml`. The
+  loader then indexes `__key__` directly instead of re-keying at start
+  (DrFirst `ext_npi`: about 9 s down to about 1 s).
+- **A record.** `external/_bundle.yaml` lists every asset: shipped or not
+  (and why), columns before and after, and size before and after.
+
+Loading at serving:
+
+- **Once per process, never per request.** `lock.asset()` builds a new
+  provider on every call, so the Input2SrcFn keeps one `ExternalAsset` per
+  `(asset, env)` for the life of the process.
+- **At container start.** The Input2SrcFn exports `Warmup(SPACE)`, which runs
+  one lookup per shipped asset. `Endpoint_Set.warmup()` calls it, so the
+  first request pays nothing.
+- **Memory is per worker.** Each gunicorn worker loads its own copy. Size the
+  instance as workers × peak per worker, and set `MODEL_SERVER_WORKERS` when
+  the CPU count would oversubscribe memory (DrFirst: 2 workers at about
+  1.3 GB each on 8 GB).
+
+Reference implementation: DrFirst-SPACE
+`examples-3-model/Project-ExpModel-OptTime/tasks/b03_C_optimal_timing_serving/j01_opttime_endpoint_package/t01_endpoint_package/scripts/stage_external_bundle.py`
+(`--dependency` trims and pre-keys) and
+`t02_input2src_ext/scripts/build_input2src_extv260924.py` (asset cache and
+`Warmup`).
+
 ---
 
 Time rule

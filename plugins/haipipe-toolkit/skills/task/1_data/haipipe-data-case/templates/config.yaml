@@ -22,6 +22,12 @@
 #     +-- manifest.json
 # ==============================================================================
 
+# Fn version (optional). Set it to load the Fns from code/haifn/fn_<stage>/<fn_version>/
+# instead of the flat folders. One version is shared by fn_source, fn_record and fn_case,
+# and every b01-b03 Run of one dataset uses the same one
+# (haipipe-data/ref/0-overview.md § Fn Versions).
+# fn_version: "vDfExt260923"
+
 # External data version
 external_version: "@v1215"
 

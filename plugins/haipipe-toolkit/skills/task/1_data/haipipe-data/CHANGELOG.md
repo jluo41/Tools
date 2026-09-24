@@ -5,6 +5,11 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.2] — 2026-09-24
+
+- Fn versions (JL 260924): Source, Record and Case Fns may share one folder, `code/haifn/fn_<stage>/<fn_version>/`, picked by the Run config's `fn_version:` and resolved by `haipipe.base.fn_dir()`. New `ref/0-overview.md` § Fn Versions (selection, when to make a new version, rules, builder pattern); stage tree, `fn/fn-review.md` path patterns, `fn/fn-4-design-kitchen.md` loader rule and `README.md` show the optional version folder. Flat folders remain the default.
+- New `ref/migration.md`: what another SPACE does to follow (pull + install, the code it needs, how to move a dataset onto a version, the external serving bundle).
+
 ## [0.3.1] — 2026-09-23
 
 - Routing: external-only verbs `freeze`, `lock`, `parity`, `join`, `refresh` and external keywords (asset, lock, feature store, vendor API, obs_dt) route to `haipipe-data-external`.

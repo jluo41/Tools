@@ -3,8 +3,8 @@ name: haipipe-data-record
 description: "Stage 2 (Record) specialist: builds/runs/reviews HumanFn / RecordFn, inspects 2-RecStore, loads record-layer assets, supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-23"
+  version: "0.3.1"
+  last_updated: "2026-09-24"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -75,8 +75,8 @@ Stage Scope
 ------------
 
 Owns:
-  - HumanFn / RecordFn builders in `tasks/b02_recordstore/j01_recordfn_<topic>/tNN_{humanfn,recordfn}_<Fn>/scripts/` (same topic number as `b01`); materialize in `b02_recordstore/j5N_<cohort>_v<yymmdd>_record/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/2-Record-WorkSpace/`)
-  - Generated `code/haifn/fn_record/`
+  - HumanFn / RecordFn builders in `tasks/b02_recordstore/j01_recordfn_<topic>/tNN_{humanfn,recordfn}_<Fn>/scripts/` (same topic number as `b01`); the RecordSet is cooked in `b02_recordstore/j5N_<cohort>_v<yymmdd>_record/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/2-Record-WorkSpace/`)
+  - Generated `code/haifn/fn_record/{human,record}/`, or `code/haifn/fn_record/<fn_version>/{human,record}/` when the Run config sets `fn_version:` (the same version as the dataset's SourceFn; see `haipipe-data/ref/0-overview.md` § Fn Versions)
   - `_WorkSpace/2-RecStore/` records
   - `templates/config.yaml` for Record_Pipeline runs
 

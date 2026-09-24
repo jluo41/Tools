@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.1] — 2026-09-24
+
+- HumanFn / RecordFn paths show the optional `<fn_version>/` folder (SKILL.md, `ref/concepts.md`, `templates/config.yaml`), the same version as the dataset's SourceFn. "materialize" -> "cooked" in prose.
+
 ## [0.3.0] — 2026-09-23
 
 - Record rules from REACH PD2D: one ProcName per RecordFn, project-owned HumanFn with generated exclusions, event date window, one Run builds the whole RecordSet, `load_read_tables_only` (JL 260923).

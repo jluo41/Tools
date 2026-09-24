@@ -100,7 +100,7 @@ code/haipipe/source_base/builder/sourcefn.py  — dynamic SourceFn loader
 
 ```
 Source_Pipeline
-    |-- dynamically loads SourceFn module from code/haifn/fn_source/
+    |-- dynamically loads SourceFn module from code/haifn/fn_source/[<fn_version>/]
     |-- calls process_Source_to_Processed(...)
     |-- wraps result in SourceSet
     v
@@ -147,6 +147,15 @@ asset_name = f"{raw_data_name}/@{SourceFnName}"
 - SourceSet serialization format changes
 - SourceFn loader contract changes (requires updating ALL SourceFn builders)
 
+**Fn version rule (all of Source, Record, Case)**: a loader never joins
+`SPACE['CODE_FN']` with a stage folder by hand. It calls
+`haipipe.base.fn_dir(SPACE, '<fn_stage>/<sub>')`, which adds
+`<SPACE['FN_VERSION']>/` when a Run set `fn_version:` and returns the flat
+folder otherwise. The loaders that follow it: `source_base/builder/sourcefn.py`,
+`record_base/builder/{human,record}.py`, `case_base/builder/{triggerfn,casefn}.py`.
+A new loader or Asset manifest follows it too, and writes `fn_version` into
+the manifest. See `ref/0-overview.md` § Fn Versions.
+
 ---
 
 Stage Reference: 2-record
@@ -165,8 +174,8 @@ code/haipipe/record_base/builder/record.py    — RecordFn loader
 
 ```
 Record_Pipeline
-    |-- loads HumanFn from code/haifn/fn_record/human/
-    |-- loads RecordFn from code/haifn/fn_record/record/
+    |-- loads HumanFn from code/haifn/fn_record/[<fn_version>/]human/
+    |-- loads RecordFn from code/haifn/fn_record/[<fn_version>/]record/
     |-- partitions processing across CPUs
     |-- aligns signals to 5-minute time grid
     v
@@ -240,9 +249,9 @@ code/haipipe/case_base/builder/rotools.py      — Record Object windowing utili
 
 ```
 Case_Pipeline
-    |-- loads TriggerFn from code/haifn/fn_case/fn_trigger/
+    |-- loads TriggerFn from code/haifn/fn_case/[<fn_version>/]fn_trigger/
     |-- calls get_CaseTrigger_from_RecordBase -> {df_case, df_lts, df_Human_Info}
-    |-- loads CaseFns from code/haifn/fn_case/case_casefn/
+    |-- loads CaseFns from code/haifn/fn_case/[<fn_version>/]case_casefn/
     |-- for each case row: assembles ROName_to_ROData, calls fn_CaseFn(...)
     |-- prepends CaseFnName to each returned key
     |-- supports multiprocessing via CaseProgressPipeline

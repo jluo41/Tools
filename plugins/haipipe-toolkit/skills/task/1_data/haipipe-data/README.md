@@ -117,7 +117,8 @@ Onboard a new raw dataset (new cohort)**
   Command:    /haipipe-data design-chef 1-source
   What it does: Guides you through creating and running the builder script
                 in the project's b01_sourcestore/j5N_<cohort>_v<yymmdd>_source/t01_sourcefn_develop_and_use/ Task
-                that generates the SourceFn in code/haifn/fn_source/.
+                that generates the SourceFn in code/haifn/fn_source/ (or
+                fn_source/<fn_version>/ when the Run config sets fn_version:).
 
 **5.
 Add a new patient record type (new sensor / new data stream)**

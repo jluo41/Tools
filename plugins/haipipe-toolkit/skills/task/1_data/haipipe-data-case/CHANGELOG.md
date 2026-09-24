@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.2] — 2026-09-24
+
+- TriggerFn / CaseFn paths show the optional `code/haifn/fn_case/<fn_version>/` folder; the CaseSet cook Run carries the dataset's `fn_version:`. `templates/config.yaml` shows it.
+
 ## [0.3.1] — 2026-09-23
 
 - Feature boundary: CaseFns never open ExternalStore or call `context.get_external_path`; external fields come only from Source (`haipipe-data-external/ref/asset-model.md`). Legacy CaseFns stay valid until migrated.

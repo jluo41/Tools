@@ -6,6 +6,10 @@ Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
 
+## [0.3.1] — 2026-09-24
+
+- New `ref/asset-model.md` § Serving: the endpoint bundle: ship only the lock's versions, trimmed to the fields in the training SourceSet's `external-dependency.json`, pre-keyed (`__key__` int64, `key_normalized: int64` in `version.yaml`), recorded in `external/_bundle.yaml`; one `ExternalAsset` per process, loaded by the Input2SrcFn's `Warmup(SPACE)` at container start; memory is per gunicorn worker (`MODEL_SERVER_WORKERS`). DrFirst OptTime: first request 17 s -> ~0.5 s, 4.0 -> 1.3 GB per worker.
+
 ## [0.3.0] — 2026-09-23
 
 - New `ref/asset-model.md`, the single authority for external data (JL 260923): contract vs data (`asset.yaml` per asset), topic-wise ExternalStore (`<asset>/<version>/` + `version.yaml`, `_locks/`), four providers selected per env (`local_external_store`, `feature_store`, `third_party_api`, `local_service`), record-and-replay (training reads frozen versions only), the `obs_dt` time rule with `ValidFromDT` / `RefPeriod` and `strict` / `nearest_allowed`, the PHI key rule, the `ExternalAsset.lookup` target interface (explicit per-field assignment in SourceFn, shared `enrich_<table>()` with Input2SrcFn), and the b51 build Block layout.

@@ -3,8 +3,8 @@ name: haipipe-data
 description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and dispatches to the right specialist (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, runs, dashboards, reviews, or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-09-23"
+  version: "0.3.2"
+  last_updated: "2026-09-24"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -97,6 +97,14 @@ Legacy examples may use pre-BJTR paths; new work uses
 `tasks/bNN_<block>/jNN_<job>/tNN_<task>/`: Blocks `b00` raw to `b04` aidata,
 topic Jobs `j01`-`j49` for Fns, dataset Jobs `j51`-`j99` (see
 `haipipe-data/ref/0-overview.md` § Current Builder Structure).
+
+Source, Record and Case Fns may share one version folder,
+`code/haifn/fn_<stage>/<fn_version>/`, picked by the Run config's
+`fn_version:`. Every b01-b03 Run of one dataset Job carries the same one; a
+changed `ProcName_to_ProcDf` shape means a new version for all three stages.
+Without `fn_version:` the flat folders are used. Rules and the builder
+pattern: `haipipe-data/ref/0-overview.md` § Fn Versions. What another SPACE
+does to follow a change like this: `haipipe-data/ref/migration.md`.
   - `02_record_mimiciv/2_record_mimiciv31.py` (from `a2_record_nb.py`, 80 partitions)
   - `03_case_mimiciv_mortality/3_case_mimiciv31_mortality.py` (from `a3_case_nb.py`, auto-discover)
 

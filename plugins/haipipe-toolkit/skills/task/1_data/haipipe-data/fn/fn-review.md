@@ -31,11 +31,14 @@ If the path does not match any pattern, go to Step R1-B and ask the user to clar
 
   Path pattern                               Fn type
   -----------------------------------------  -------------------
-  code/haifn/fn_source/*.py                  SourceFn
-  code/haifn/fn_record/human/*.py            HumanFn
-  code/haifn/fn_record/record/*.py           RecordFn
-  code/haifn/fn_case/fn_trigger/*.py         TriggerFn
-  code/haifn/fn_case/case_casefn/*.py        CaseFn
+  code/haifn/fn_source/[<v>/]*.py            SourceFn
+  code/haifn/fn_record/[<v>/]human/*.py      HumanFn
+  code/haifn/fn_record/[<v>/]record/*.py     RecordFn
+  code/haifn/fn_case/[<v>/]fn_trigger/*.py   TriggerFn
+  code/haifn/fn_case/[<v>/]case_casefn/*.py  CaseFn
+  ([<v>/] = optional Fn version folder, e.g. vDfExt260923/; see
+   ref/0-overview.md § Fn Versions. A versioned Fn is checked against its
+   version's builder Run, the one whose config has that fn_version:.)
   code/haifn/fn_aidata/entryinput/*.py       InputTfmFn
   code/haifn/fn_aidata/entryoutput/*.py      OutputTfmFn
   code/haifn/fn_aidata/split/*.py            SplitFn
@@ -71,11 +74,11 @@ Present this message:
   Please provide the file path you want me to review. I can check:
 
   Generated Fns (code/haifn/)
-    SourceFn       code/haifn/fn_source/<SourceFnName>.py
-    HumanFn        code/haifn/fn_record/human/<HumanFnName>.py
-    RecordFn       code/haifn/fn_record/record/<RecordFnName>.py
-    TriggerFn      code/haifn/fn_case/fn_trigger/<TriggerFnName>.py
-    CaseFn         code/haifn/fn_case/case_casefn/<CaseFnName>.py
+    SourceFn       code/haifn/fn_source/[<fn_version>/]<SourceFnName>.py
+    HumanFn        code/haifn/fn_record/[<fn_version>/]human/<HumanFnName>.py
+    RecordFn       code/haifn/fn_record/[<fn_version>/]record/<RecordFnName>.py
+    TriggerFn      code/haifn/fn_case/[<fn_version>/]fn_trigger/<TriggerFnName>.py
+    CaseFn         code/haifn/fn_case/[<fn_version>/]case_casefn/<CaseFnName>.py
     InputTfmFn     code/haifn/fn_aidata/entryinput/<TfmFnName>.py
     OutputTfmFn    code/haifn/fn_aidata/entryoutput/<TfmFnName>.py
     SplitFn        code/haifn/fn_aidata/split/<SplitFnName>.py

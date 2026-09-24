@@ -10,8 +10,8 @@ description: >-
   engagement snapshot, vendor data.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.0"
-  last_updated: "2026-09-23"
+  version: "0.3.1"
+  last_updated: "2026-09-24"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -175,6 +175,9 @@ MUST DO / MUST NOT
   explicit user confirmation -- versions are reproducibility anchors.
 - Training reads frozen local versions only; a live provider (feature store,
   third-party API) is reached only with env=serve. Freeze first (`freeze`).
+- An endpoint ships only its lock's versions, trimmed to the fields training
+  looked up and pre-keyed, and loads them once per worker at warmup
+  (`ref/asset-model.md` § Serving: the endpoint bundle).
 - NEVER bind a `patient_id`-keyed asset to `third_party_api` or
   `local_service` (PHI).
 - Every lookup carries `obs_dt`; temporal assets use `leak_policy: strict`.

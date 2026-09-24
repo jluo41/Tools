@@ -3,8 +3,8 @@ name: haipipe-data-case
 description: "Stage 3 (Case) specialist: builds/runs/reviews TriggerFn / CaseFn, inspects 3-CaseStore, loads case-layer assets, runs multi-partition in parallel (embarrassingly parallel). Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.3.1"
-  last_updated: "2026-09-23"
+  version: "0.3.2"
+  last_updated: "2026-09-24"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -74,7 +74,7 @@ Stage Scope
 
 Owns:
   - TriggerFn / CaseFn builders in `tasks/b03_casestore/jNN_{triggerfn,casefn}_<family>/tNN_{triggerfn,casefn}_<Fn>/scripts/`; one CaseSet per raw dataset in `b03_casestore/j5N_<cohort>_v<yymmdd>_case/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/3-Case-WorkSpace/`)
-  - Generated `code/haifn/fn_case/`
+  - Generated `code/haifn/fn_case/{fn_trigger,case_casefn}/`, or `code/haifn/fn_case/<fn_version>/{fn_trigger,case_casefn}/` when the Run config sets `fn_version:` (the same version as the dataset's SourceFn and RecordFns; the CaseSet cook Run sets it too; see `haipipe-data/ref/0-overview.md` § Fn Versions)
   - `_WorkSpace/3-CaseStore/` cases (cohort sampling)
   - `templates/config.yaml` for Case_Pipeline runs
 

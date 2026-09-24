@@ -11,6 +11,12 @@
 #   python -m scripts.haistepcli.record --config <this_file>.yaml
 # ==============================================================================
 
+# Fn version (optional). Set it to load the Fns from code/haifn/fn_<stage>/<fn_version>/
+# instead of the flat folders. One version is shared by fn_source, fn_record and fn_case,
+# and every b01-b03 Run of one dataset uses the same one
+# (haipipe-data/ref/0-overview.md § Fn Versions).
+# fn_version: "vDfExt260923"
+
 # External data version (from env.sh)
 external_version: "@v1215"
 
@@ -36,6 +42,7 @@ RecordArgs:
   #   To see what HumanFns and RecordFns are available:
   #     ls code/haifn/fn_record/human/    # HumanFns
   #     ls code/haifn/fn_record/record/   # RecordFns
+  #     ls code/haifn/fn_record/<fn_version>/{human,record}/   # with fn_version: set
   #
   #   The mapping is fully domain-configurable.
   #   Include only the RecordFns relevant to your task.

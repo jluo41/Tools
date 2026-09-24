@@ -120,15 +120,15 @@ Raw Data ----------------+
                          v
 ExternalStore ------> Layer 1: Source  -- Raw + pinned external -> SourceSet tables
     |                    (code/haipipe/source_base/)
-    |                    Chefs: code/haifn/fn_source/
+    |                    Chefs: code/haifn/fn_source/[<fn_version>/]
     v
 Layer 2: Record  ------  SourceSet -> temporally-aligned RecordSet
     |                    (code/haipipe/record_base/)
-    |                    Chefs: code/haifn/fn_record/
+    |                    Chefs: code/haifn/fn_record/[<fn_version>/]
     v
 Layer 3: Case  --------  RecordSet -> event-triggered CaseSet
     |                    (code/haipipe/case_base/)
-    |                    Chefs: code/haifn/fn_case/
+    |                    Chefs: code/haifn/fn_case/[<fn_version>/]
     v
 Layer 4: AIData  ------  CaseSet -> ML-ready AIDataSet (train/val/test)
     |                    (code/haipipe/aidata_base/)
@@ -181,12 +181,15 @@ code/
 |
 +-- haifn/                          GENERATED production functions (DO NOT EDIT)
     +-- fn_source/                  SourceFn: raw data extractors
+    |   +-- <fn_version>/           optional version folder (see Fn Versions below)
     +-- fn_record/                  HumanFn + RecordFn: entity + record processors
     |   +-- human/                  HumanFn files
     |   +-- record/                 RecordFn files
+    |   +-- <fn_version>/{human,record}/
     +-- fn_case/                    TriggerFn + CaseFn: feature extractors
     |   +-- fn_trigger/             TriggerFn files
     |   +-- case_casefn/            CaseFn files
+    |   +-- <fn_version>/{fn_trigger,case_casefn}/
     +-- fn_aidata/                  TfmFn + SplitFn: ML transforms
     |   +-- entryinput/             Input TfmFn files
     |   +-- entryoutput/            Output TfmFn files
@@ -235,6 +238,63 @@ A `j5N` number is the same raw dataset in `b00` to `b03`. In `b04` it names an
 AIDataSet that merges several raw datasets, so it has its own number. Task
 folders keep the real CamelCase Fn name (`t02_recordfn_REACHPatientUniverse`).
 Reference: REACH-SPACE `examples/Project-REACH-PD2D/tasks/`.
+
+---
+
+Fn Versions
+===========
+
+One dataset's Source, Record and Case Fns can live in ONE shared version
+folder, so a set of Fns that belong together changes together:
+
+```text
+code/haifn/fn_source/<fn_version>/<SourceFnName>.py
+code/haifn/fn_record/<fn_version>/human/<HumanFnName>.py
+code/haifn/fn_record/<fn_version>/record/<RecordFnName>.py
+code/haifn/fn_case/<fn_version>/fn_trigger/<TriggerFnName>.py
+code/haifn/fn_case/<fn_version>/case_casefn/<CaseFnName>.py
+```
+
+Name it `v<Label><yymmdd>`. The first one is `vDfExt260923` (DrFirst
+OptTimeR1 Extended).
+
+Selection. A Run config says `fn_version: vDfExt260923` at its top level.
+A haistep cook Run (`haistep-source`, `-record`, `-case`) gets it from the
+step bootstrap, which copies it into `SPACE['FN_VERSION']`. Every Fn loader
+then resolves its folder with `haipipe.base.fn_dir(SPACE, '<fn_stage>/<sub>')`.
+With `FN_VERSION` unset, `fn_dir` returns the flat folder. The flat folders stay the default,
+so a project that never sets `fn_version` is unchanged. SourceSet, RecordSet
+and CaseSet manifests record the `fn_version` they were built with.
+
+When to make a new version. The version is the contract of the
+`ProcName_to_ProcDf` a SourceFn returns. While the SourceFn's output keeps the
+same ProcNames and columns, keep the version, even if its code changes. When
+that shape changes, make a new version and rebuild the SourceFn, RecordFns and
+CaseFns into it together. They share one version because the RecordFns read
+the ProcDf columns and the CaseFns read the RecordFn outputs. `fn_aidata`,
+`fn_endpoint` and `fn_model` are not versioned this way.
+
+Rules.
+- Every b01, b02 and b03 Run of one dataset Job (`j5N_*`) carries the same
+  `fn_version:`.
+- A builder writes to `fn_dir(SPACE, '<fn_stage>/<sub>')` and never hard-codes
+  the flat path. A builder Run sets `fn_version:` in its own config and reads
+  it itself:
+
+  ```python
+  from haipipe.base import fn_dir, fn_version_from_config
+  FN_VERSION = fn_version_from_config()          # top-level fn_version: of $RUN_CONFIG
+  if FN_VERSION:
+      SPACE['FN_VERSION'] = FN_VERSION
+  output_dir = fn_dir(SPACE, 'fn_record/record')  # fn_record/<fn_version>/record
+  ```
+
+- One builder serves both layouts: its flat Run (`r01_regen_fn`) has no
+  `fn_version:`, and its version Run (`r02_build_<fn_version>`) has one.
+- A new version starts as a copy of the builders, never a hand-edit of
+  generated Fns.
+- An endpoint Input2SrcFn that reuses a versioned SourceFn loads it from
+  `fn_source/<fn_version>/` by name and records the version it expects.
 
 The following pre-BJTR tree is a legacy snapshot and remains readable only:
 

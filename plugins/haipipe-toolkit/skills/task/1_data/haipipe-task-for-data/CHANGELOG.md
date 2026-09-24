@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.8.4] — 2026-09-24
+
+- Dataset-copy checklist step 5: pick the dataset's Fn version; every b01-b03 Run of the `j5N` Job (builder and cook) carries the same `fn_version:`. "materialize Ticket" -> "cook Ticket (`t01_*_materialize`)" in prose; Task folder names unchanged.
+
 ## [0.8.3] — 2026-09-23
 
 - Source Tasks attach external data through `haipipe-data-external/ref/asset-model.md` (explicit lookup, `obs_dt`, lock, shared `enrich_<table>()`); assets are built in the auxiliary `b51` Block.
