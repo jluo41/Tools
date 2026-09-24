@@ -5,6 +5,10 @@ What a SPACE that shares these skills (REACH-SPACE, WellDoc SPACE, a fresh
 clone) does to follow a change made in another SPACE. Newest first. Each
 note says what changed, whether anything breaks, and the steps to adopt it.
 
+Whether a SPACE is behind: run `/haipipe-data space-check` there (or
+`python3 <haipipe-data>/cli/space_check.py`). It is read-only and names the
+note and the next step for every item that is not up to date.
+
 ---
 
 2026-09-24 · Fn versions and the external serving bundle
@@ -13,6 +17,9 @@ note says what changed, whether anything breaks, and the steps to adopt it.
 From: DrFirst-SPACE (OptTimeR1 Extended). Skills: haipipe-data 0.3.2,
 -source 0.3.2, -record 0.3.1, -case 0.3.2, -external 0.3.1,
 haipipe-task-for-data 0.8.4. Code: haipipe-code `27b1525` on `code-drfirst`.
+Check: space-check items `code: fn_dir`, `code: loaders`, `trap: fn_version
+ignored`, `haifn: <version>`, `config -> version`, `dataset <project> j5N`,
+`code: external bundle`.
 
 What changed
 ------------
@@ -34,7 +41,8 @@ a version card without `key_normalized` loads as before.
 
 One trap: **code older than `27b1525` ignores `fn_version:` silently** and
 loads the flat Fns. Never set `fn_version:` in a SPACE whose `code/` lacks
-`haipipe.base.fn_dir`. Check first:
+`haipipe.base.fn_dir`. space-check reports it as RISK (`trap: fn_version
+ignored`); by hand:
 
 ```bash
 grep -n "def fn_dir" code/haipipe/base.py    # must print one line
@@ -60,6 +68,7 @@ Steps: every SPACE
 3. Check a flat Run still works: cook one existing small dataset stage and
    compare its row counts with the last Result. Nothing else is needed to
    stay on the flat folders.
+4. Run `/haipipe-data space-check`: `code: fn_dir` and `code: loaders` are OK.
 
 Steps: moving a dataset onto a version (optional)
 -------------------------------------------------

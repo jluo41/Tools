@@ -3,7 +3,7 @@ name: haipipe-data
 description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and dispatches to the right specialist (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, runs, dashboards, reviews, or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.3.2"
+  version: "0.3.3"
   last_updated: "2026-09-24"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -22,6 +22,7 @@ The user types one of:
 /haipipe-data <fn> <stage> [args]   -> same (flexible order)
 /haipipe-data <fn>                  -> run <fn> with no stage scoping
 /haipipe-data explain [question]    -> handled inline (cross-stage)
+/haipipe-data space-check [--root P] -> is this SPACE up to date? (inline, read-only)
 /haipipe-data "<natural language>"  -> infer stage + fn from keywords, dispatch
 ```
 
@@ -104,7 +105,8 @@ Source, Record and Case Fns may share one version folder,
 changed `ProcName_to_ProcDf` shape means a new version for all three stages.
 Without `fn_version:` the flat folders are used. Rules and the builder
 pattern: `haipipe-data/ref/0-overview.md` § Fn Versions. What another SPACE
-does to follow a change like this: `haipipe-data/ref/migration.md`.
+does to follow a change like this: `haipipe-data/ref/migration.md`; whether a
+SPACE is behind: `/haipipe-data space-check`.
   - `02_record_mimiciv/2_record_mimiciv31.py` (from `a2_record_nb.py`, 80 partitions)
   - `03_case_mimiciv_mortality/3_case_mimiciv31_mortality.py` (from `a3_case_nb.py`, auto-discover)
 
@@ -151,7 +153,9 @@ build, create, design, scaffold, new          -> design-chef
 modify pipeline, change pipeline, kitchen     -> design-kitchen
 run, execute, cook, process                   -> cook
 notebook, nb, papermill, databricks notebook   -> notebook-wrapper (see ★ section; code/scripts/haistepnb/ — workspace-dependent, absent in some repos)
-review, audit, check, validate, verify        -> review
+review, audit, check, validate, verify        -> review   (needs a path; bare "check" -> space-check)
+space-check, space check, up to date, behind,
+  follow other SPACE, what to update          -> space-check (umbrella inline)
 load, inspect, show, view, look               -> load
 status, dashboard, what's there               -> dashboard
 explain, what is, why, how does               -> explain (umbrella inline)
@@ -183,6 +187,7 @@ Step 2: Resolve (stage, function):
 Step 3: Decide handling:
   - No args                                   -> CROSS-STAGE DASHBOARD (inline)
   - function = explain                        -> EXPLAIN (inline)
+  - function = space-check                    -> SPACE CHECK (inline, fn/fn-space-check.md)
   - stage resolved, no function               -> dispatch to <stage> with arg "(none)"
                                                  -> specialist returns ref-only summary
   - both resolved                             -> dispatch to specialist
@@ -201,7 +206,15 @@ Step 5: Capture the specialist's structured tail (status / summary /
 Cross-Stage Dashboard (no-arg case)
 ------------------------------------
 
-When invoked with no arguments, fan out to every specialist's dashboard in a single message (parallel) and concatenate their summary tails:
+When invoked with no arguments, first print the SPACE status line, then fan out to every specialist's dashboard in a single message (parallel) and concatenate their summary tails:
+
+```bash
+python3 <this skill's dir>/cli/space_check.py --brief    # one line, local, read-only
+```
+
+Put that line above the stage summaries. If it is not `OK`, the header's
+next-command pointer is `/haipipe-data space-check`.
+
 
 ```
 Skill("haipipe-data-raw",     args="dashboard")
@@ -285,6 +298,9 @@ fn/fn-3-design-chef.md  design-chef procedure
 fn/fn-4-design-kitchen.md   design-kitchen procedure
 fn/fn-explain.md        explain procedure (used inline by this skill)
 fn/fn-review.md         review procedure
+fn/fn-space-check.md    SPACE up-to-date check (used inline by this skill)
+cli/space_check.py      the check itself (stdlib, read-only; --brief for the dashboard)
+ref/migration.md        what another SPACE does to follow a change
 ```
 
 These fn docs are SHARED across specialists.

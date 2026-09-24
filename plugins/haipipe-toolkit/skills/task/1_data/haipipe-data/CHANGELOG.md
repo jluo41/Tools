@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.3] — 2026-09-24
+
+- New `space-check` (JL 260924): read-only check of whether a SPACE is up to date with `ref/migration.md`, detected from the SPACE itself (no state file). `cli/space_check.py` (stdlib; `--brief` for one line, `--root` for another SPACE) checks Tools vs remote, `code/` has `fn_dir` and every loader uses it, the silent `fn_version:` trap, version folders present in all three stages, configs naming unbuilt versions, one version per j5N dataset Job, external bundle support, and the `code/` checkout vs the SPACE's pin. `fn/fn-space-check.md` has the procedure and how to add a check for a new note. The no-arg dashboard prints the brief line first. Bare "check" (no path) routes here; "check <path>" is still review.
+
 ## [0.3.2] — 2026-09-24
 
 - Fn versions (JL 260924): Source, Record and Case Fns may share one folder, `code/haifn/fn_<stage>/<fn_version>/`, picked by the Run config's `fn_version:` and resolved by `haipipe.base.fn_dir()`. New `ref/0-overview.md` § Fn Versions (selection, when to make a new version, rules, builder pattern); stage tree, `fn/fn-review.md` path patterns, `fn/fn-4-design-kitchen.md` loader rule and `README.md` show the optional version folder. Flat folders remain the default.
