@@ -6,7 +6,7 @@ import fcntl
 from contextlib import contextmanager
 from pathlib import Path
 
-from src.plan_shape import iter_plan_bullets, split_embedded_draft
+from src.plan_shape import iter_plan_bullets, render_bullet, split_bullet_block
 from src.outline_version import latest_outline, version_tag
 
 
@@ -108,7 +108,7 @@ def record_token(record):
 
 
 def _write_embedded_drafts(plan, records):
-    """Atomically update Draft fields while preserving the rest of the plan."""
+    """Atomically update Draft fields, writing drafted Bullets Draft-first."""
     lines = plan.read_text(encoding="utf-8", errors="replace").splitlines()
     output, cn, pn, i = [], 0, 0, 0
     while i < len(lines):
@@ -130,19 +130,13 @@ def _write_embedded_drafts(plan, records):
         while j < len(lines) and lines[j].startswith("  ") and not re.match(r"^- ", lines[j]):
             continuation.append(lines[j].strip())
             j += 1
-        plan_lines, _old_draft, _old_reviews = split_embedded_draft(continuation)
-        output.append(line)
-        output.extend("  " + item for item in plan_lines if item)
-        record = records.get(address)
-        if record is not None:
-            draft = str(record.get("text", "")).strip()
-            if draft:
-                draft_lines = draft.splitlines()
-                output.append("  Draft: " + draft_lines[0])
-                output.extend("  " + item for item in draft_lines[1:])
-            reviews = str(record.get("reviews", "")).strip()
-            if reviews:
-                output.extend("  " + item for item in reviews.splitlines())
+        prefix, tag, point, plan_lines, _old_draft, _old_reviews = split_bullet_block(line, continuation)
+        record = records.get(address) or {}
+        # A drafted Bullet is written Draft-first: the sentence on the dash
+        # line, the planned point in `Point:`, so the folded Outline reads as prose.
+        output.extend(render_bullet(prefix, tag, point, plan_lines,
+                                    str(record.get("text", "")).strip(),
+                                    str(record.get("reviews", "")).strip()))
         i = j
     text = "\n".join(output).rstrip() + "\n"
     with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=plan.parent,

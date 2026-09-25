@@ -152,7 +152,7 @@ each Section and whole paragraph group. The current Outline grammar has no
 separate subsection node, so it avoids a duplicate Subsection plus; explicit
 subsection-scope records remain accepted for future Page schemas. B/symbol rows
 have no Scratch control. The form captures rough notes
-without changing the `Draft:` field. `Save` creates or updates
+without changing the Draft. `Save` creates or updates
 `rp-scratch-NN_<target>` and its `## Scratch` registry record; the person
 manually clicks `Finish Scratch` to ask the AI for a concise Summary from the
 notes and close the Run. There is no `💬 Notes` thread,

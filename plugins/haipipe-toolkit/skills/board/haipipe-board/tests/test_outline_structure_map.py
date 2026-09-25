@@ -125,7 +125,7 @@ class SaveStructureTest(unittest.TestCase):
         self.assertIsNone(err, err)
         self.assertTrue(result["changed"])
         plan = self.plan.read_text(encoding="utf-8")
-        self.assertIn("### C1.P1 · Why prescribing varies\n- B1 · [Phenomenon] Physician behavior varies.\n  Draft: Physicians vary.\n", plan)
+        self.assertIn("### C1.P1 · Why prescribing varies · S1 to S2\n- B1 · [Phenomenon] Physician behavior varies.\n  Draft: Physicians vary.\n", plan)
         self.assertIn("## C2 · Agreeableness matters\n### C2.P1 · Clinical relevance\n", plan)
         self.assertIn("## Aims\n- A1 · not a division\n", plan)
         self.assertEqual(plan.count("- B"), 3)
@@ -170,6 +170,23 @@ class SaveStructureTest(unittest.TestCase):
         self.assertEqual(self.plan.read_text(encoding="utf-8"), PLAN)
         self.assertEqual(save_structure(self.page, {"text": TEXT}, read_only=True)[1],
                          "This host is read-only; Structure edits are disabled")
+
+    def test_an_unaddressed_heading_stays_off_the_text_and_travels_with_its_paragraph(self):
+        plan = PLAN.replace("## C2 · Agreeableness", "### Cut · detail that moves downstream\n- Keep the ladder in Results.\n\n## C2 · Agreeableness")
+        self.plan.write_text(plan, encoding="utf-8")
+        self.assertEqual(structure_text(plan), TEXT)
+        result, err = self.save(TEXT)
+        self.assertIsNone(err, err)
+        self.assertFalse(result["changed"])
+        result, err = self.save(TEXT.replace("Empty paragraph", "Now named"))
+        self.assertIsNone(err, err)
+        text = self.plan.read_text(encoding="utf-8")
+        self.assertIn("### C1.P2 · Now named\n### Cut · detail that moves downstream\n- Keep the ladder in Results.\n", text)
+
+    def test_rename_keeps_the_sentence_span(self):
+        result, err = self.save(TEXT.replace("Variation and consequences", "Why prescribing varies"))
+        self.assertIsNone(err, err)
+        self.assertIn("### C1.P1 · Why prescribing varies · S1 to S2\n", self.plan.read_text(encoding="utf-8"))
 
     def test_post_action_structure_reaches_save(self):
         page = self.page

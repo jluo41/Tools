@@ -1,3 +1,16 @@
+## 0.117.0 · 2026-09-25
+
+- Draft-first Bullets: a drafted Bullet carries its Draft on the dash line and its planned point
+  in `Point:`, so the folded Outline reads as prose. `src/plan_shape.py` adds `split_bullet_block`,
+  `render_bullet`, `canonical_plan` (every reader sees the classic shape) and `draft_first_plan`;
+  `item_table` and every plan check read through `canonical_plan`. Page setup writes Draft-first.
+- `cli/page.py outline-tidy <page>`: rewrites the current Outline Draft-first (refuses if any
+  Bullet would change), moves superseded versions into `outline/previous/`, and repoints
+  `outline/<old file>` citations in the Page's own text files, Run scripts included. Blank lines
+  inside a multi-line Draft (display equations) are kept in both shapes.
+  `src/outline_version.py` adds `retire_superseded` and `find_version`; `latest_outline` falls
+  back to `previous/` only when `outline/` holds no plan.
+
 ## 0.116.1 · 2026-09-22
 
 - Docs: the structure review artifact is the Structure card (text list from the Outline), not

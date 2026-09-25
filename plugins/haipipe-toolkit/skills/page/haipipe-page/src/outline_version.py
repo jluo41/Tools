@@ -111,4 +111,47 @@ def latest_outline(outline_dir: Path, stem=None):
         return None
     pattern = f"{stem}-outline-*.md" if stem else "*-outline-*.md"
     plans = list(outline_dir.glob(pattern))
+    if not plans and (outline_dir / PREVIOUS).is_dir():
+        # Only superseded versions left: the newest of them is still current.
+        plans = list((outline_dir / PREVIOUS).glob(pattern))
     return max(plans, key=version_key) if plans else None
+
+
+# Superseded Outline versions live in `outline/previous/`, so `outline/`
+# holds exactly one plan: the current one. Every reader globs `outline/`
+# only, and a named older version is still found under `previous/`.
+PREVIOUS = "previous"
+
+
+def retire_superseded(outline_dir: Path, stem=None) -> list[Path]:
+    """Move every Outline version except the newest into `outline/previous/`.
+
+    Returns the moved files' new paths. Never overwrites a file already in
+    `previous/`; a name clash is left in place and reported by the caller.
+    """
+    outline_dir = Path(outline_dir)
+    pattern = f"{stem}-outline-*.md" if stem else "*-outline-*.md"
+    stems = {}
+    for plan in outline_dir.glob(pattern):
+        stems.setdefault(plan.name.split("-outline-")[0], []).append(plan)
+    moved = []
+    for plans in stems.values():
+        newest = max(plans, key=version_key)
+        for plan in sorted(plans, key=version_key):
+            if plan == newest:
+                continue
+            target = outline_dir / PREVIOUS / plan.name
+            if target.exists():
+                continue
+            target.parent.mkdir(exist_ok=True)
+            plan.rename(target)
+            moved.append(target)
+    return moved
+
+
+def find_version(outline_dir: Path, name: str) -> Path | None:
+    """Return a named Outline version from `outline/` or `outline/previous/`."""
+    for folder in (Path(outline_dir), Path(outline_dir) / PREVIOUS):
+        if (folder / name).is_file():
+            return folder / name
+    return None

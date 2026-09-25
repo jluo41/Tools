@@ -1,3 +1,8 @@
+## 0.49.0 · 2026-09-25
+
+- Writes Drafts Draft-first (sentence on the dash line, `Point:` below) and moves the
+  superseded plan into `outline/previous/` when it writes a new version.
+
 ## 0.48.0 · 2026-09-22
 
 - The Structure Run no longer writes or reviews `outline/<stem>-logic.mmd`. Its review projection

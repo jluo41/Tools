@@ -52,7 +52,7 @@ Run identity.
 🖥 SPACE    Draft · Scratch view; Run Space
 ```
 
-Scratch does not edit the Outline's `Draft:` prose. The registry is a live
+Scratch does not edit the Outline's Draft prose. The registry is a live
 index beside the plan, while the paired Result is the durable interaction
 receipt. A closed Scratch Run is immutable.
 

@@ -23,7 +23,7 @@ primary Evidence link.
 - Review the two-column Draft Space: Bullet/Evidence beside actual
   candidate prose, then `Read paragraph` for continuity and voice. Name the
   paragraph where the intended point and the written sentence diverge. The
-  candidate in the selected Outline Markdown's `Draft:` field may be revised during SHAPE before approval;
+  candidate in the selected Outline Markdown's Draft may be revised during SHAPE before approval;
   see `content-preview.md`. Label missing-evidence placeholders and stale
   Bullet bindings. Preview review does not approve or promote Page Content.
 

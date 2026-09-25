@@ -8,7 +8,7 @@ versions and a recorded release instruction.
 
 The plan is `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`: what the page WILL say,
 agreed before it says it. This file is the grammar every plan obeys, and the
-one `checks/outline.py`, `src/plan_shape.py` and the 🧭 tab parse. A Run Spec
+one `checks/outline.py`, `src/plan_shape.py` and the 📃 Page tab parse. A Run Spec
 owner loads THIS file, not the workbench skill. The approved example is
 `ref/specimen-section-plan.md`.
 
@@ -85,6 +85,46 @@ renumbers the source or silently retargets an existing Run.
   Evidence: none · <reason>               alternative when this Bullet needs no
                                           citation, value, figure, or table
 ```
+
+### Draft-first Bullets
+
+A drafted Bullet puts its Draft on the dash line, so the Outline reads as
+prose when folded in any Markdown editor. The planned point moves to the first
+continuation line, `Point:`, and the other fields follow unchanged:
+
+```markdown
+- B1 · S1 · Physicians treating clinically comparable patients can make markedly different opioid-prescribing decisions.
+  Point: [Problem] Comparable patients can receive different physician decisions.
+  Note: The first move opens with physician decision variation.
+  Transition: phenomenon → gap
+  Evidence: E01-CITE-prescribing-decision-problem · comparable physician decisions
+  Accept: background support remains in the Introduction evidence record.
+- B2 · S2 · [Gap] Physician interpersonal orientation remains underexamined.
+  Note: Not drafted yet, so the point stays on the dash line.
+```
+
+- A Bullet with a `Point:` line is Draft-first: the text after `B<k> · [S<n> · ]`
+  is its Draft, and `Point:` holds `[Role] statement` exactly as the classic
+  dash line would. Lines between the dash line and `Point:` continue the Draft.
+- A Bullet without `Point:` is classic: the dash line holds the point, and an
+  optional `Draft:` field holds the Draft. Every reader accepts both shapes;
+  `src/plan_shape.py::canonical_plan` turns Draft-first into classic for them.
+- Every Draft save (Draft Space Revise, Page setup) writes drafted Bullets
+  Draft-first. An undrafted Bullet stays classic until its first Draft lands.
+- `page.py outline-tidy <page>` rewrites the current Outline Draft-first and
+  checks that every Bullet's address, point, fields and Draft are unchanged.
+- The Bullet's address, Role, head-length checks and Evidence rules all read
+  `Point:`; the Draft on the dash line is never counted as the head.
+
+### One current version; older ones in `previous/`
+
+`outline/` holds exactly one `<stem>-outline-v*.md`: the current plan.
+Whoever writes a new version moves the superseded file into
+`outline/previous/` in the same step (`page.py outline-tidy <page>` does it,
+and never overwrites a file already there). Every reader resolves the current
+plan from `outline/` alone; a named older version is still found under
+`previous/` (`src/outline_version.py::find_version`), and path citations in
+records point at `outline/previous/<file>`.
 
 ### Reader-facing Point form
 

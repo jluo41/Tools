@@ -46,7 +46,7 @@ from src.item_table import (
     repo_root,
     wall_label,
 )
-from src.plan_shape import iter_plan_bullets, presentation_point
+from src.plan_shape import canonical_plan, iter_plan_bullets, presentation_point
 from live.outline_preview import (draft_path, read_drafts, bullet_token, record_token,
                                   reader_prose, read_opening_draft)
 from live.outline_scratch import (read_scratch, save_scratch,
@@ -1238,7 +1238,8 @@ def _edit_plan_bullet(page_src, action, paragraph, bullet, head,
     raw_head = _normalise_head(head)
     if not raw_head:
         return None, "Bullet text is empty"
-    text = plan.read_text(encoding="utf-8", errors="replace")
+    # This legacy editor rewrites dash lines, so it works on the classic shape.
+    text = canonical_plan(plan.read_text(encoding="utf-8", errors="replace"))
     # Validate the address before making any working copy. A mistyped mobile
     # submission must be a no-op, including when the current plan is approved.
     pre_region, pre_err = _plan_region(text.splitlines(), paragraph)
@@ -2041,7 +2042,7 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         return ""
     outline_url = ("/_board/outline?path=%s&file=%s" % (quote(path_q), quote(file_q))
                    if path_q and file_q else "")
-    txt = f.read_text(encoding="utf-8", errors="replace")
+    txt = canonical_plan(f.read_text(encoding="utf-8", errors="replace"))
     prompts = RunPrompts(page_src, root, path_q, file_q)
     # The Page paragraph index is global across Content divisions. The
     # historical Shape kept per-division P numbers, so translate those local

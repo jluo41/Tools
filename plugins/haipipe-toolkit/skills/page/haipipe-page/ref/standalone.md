@@ -72,7 +72,7 @@ application deployment system.
 populates the Page's real working records: source-specific Opening,
 backstage requirements/targets,
 `outline/<stem>-outline-v0.1.md`, matching reader-move
-`outline/<stem>-outline-v<G>.<S>[.<E>].md` with embedded `Draft:` fields,
+`outline/<stem>-outline-v<G>.<S>[.<E>].md` with embedded Drafts,
 Context/Files projections, and a completed
 `rNN_page-setup` Task Run with a Result report. The Shape is intentionally
 `approved: ⬜`; automatic setup cannot impersonate human review. Its semantic

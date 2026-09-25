@@ -50,7 +50,7 @@ the Page release can close.
 | Judge whole-Page completion | `haipipe-page-check`, not the writer |
 
 A candidate may be drafted while Shape is unapproved or evidence is missing.
-It stays in the selected Outline Markdown as each Bullet's `Draft:` field.
+It stays in the selected Outline Markdown as each Bullet's Draft.
 Those discussions do not have to wait for CONTENT's publication gates.
 Conversely, a saved Draft alone is not human
 acceptance or a completed Writing Result.

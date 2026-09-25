@@ -16,6 +16,68 @@ from src.page_setup import run_setup
 from src.page_migration import migrate_embedded_drafts, migrate_global_paragraphs
 
 
+def _repoint_citations(folder: Path, names: set) -> int:
+    """Rewrite `outline/<moved file>` to `outline/previous/<moved file>` in the Page's text files."""
+    if not names:
+        return 0
+    pattern = re.compile(r"(?<!previous/)outline/([A-Za-z0-9_.-]+-outline-v[0-9][0-9._]*\.md)")
+    count = 0
+    for path in folder.rglob("*"):
+        if not path.is_file() or "previous" in path.relative_to(folder).parts:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        hits = [0]
+
+        def swap(match):
+            if match.group(1) in names:
+                hits[0] += 1
+                return "outline/previous/" + match.group(1)
+            return match.group(0)
+
+        new = pattern.sub(swap, text)
+        if hits[0]:
+            path.write_text(new, encoding="utf-8")
+            count += hits[0]
+    return count
+
+
+def outline_tidy(target: Path, dry_run: bool = False) -> dict:
+    """Current Outline Draft-first; superseded versions under outline/previous/."""
+    from src.outline_version import latest_outline, retire_superseded, version_key, PREVIOUS
+    from src.plan_shape import draft_first_plan, iter_plan_bullets
+
+    target = target.expanduser().resolve()
+    outline = (target if target.name == "outline" else
+               (target if target.is_dir() else target.parent) / "outline")
+    if not outline.is_dir():
+        raise ValueError(f"No outline/ folder at {outline}")
+    stem = target.stem if target.is_file() else None
+    current = latest_outline(outline, stem)
+    if current is None or current.parent != outline:
+        raise ValueError(f"No current Outline version in {outline}")
+    old = current.read_text(encoding="utf-8")
+    new = draft_first_plan(old)
+    shape = lambda text: [(b["address"], b["head"], b["draft"], b["continuation"])
+                          for b in iter_plan_bullets(text)]
+    if shape(new) != shape(old):
+        raise ValueError(f"{current.name}: Draft-first rewrite would change a Bullet; nothing written")
+    pattern = f"{stem}-outline-*.md" if stem else "*-outline-*.md"
+    older = sorted((p for p in outline.glob(pattern) if p != current), key=version_key)
+    result = {"current": current.name, "draft_first": new != old,
+              "to_previous": [p.name for p in older], "dry_run": dry_run}
+    if not dry_run:
+        if new != old:
+            current.write_text(new, encoding="utf-8")
+        moved = retire_superseded(outline, stem)
+        result["moved"] = [str(p.relative_to(outline)) for p in moved]
+        result["repointed"] = _repoint_citations(outline.parent, {p.name for p in moved})
+        result["left_in_place"] = sorted(p.name for p in outline.glob(pattern) if p != current)
+    return result
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -43,6 +105,12 @@ def main(argv=None):
         help="Embed a legacy standalone Draft Markdown into the current Outline",
     )
     migrate_drafts.add_argument("page", type=Path)
+    tidy = commands.add_parser(
+        "outline-tidy",
+        help="Write the current Outline Draft-first and move older versions to outline/previous/",
+    )
+    tidy.add_argument("page", type=Path, help="Page Face .md, Page Folder, or its outline/ folder")
+    tidy.add_argument("--dry-run", action="store_true")
     for command in ("inspect", "build", "serve"):
         sub = commands.add_parser(command)
         sub.add_argument("page", type=Path)
@@ -106,6 +174,9 @@ def main(argv=None):
         elif args.command == "migrate-addresses":
             context = load_page(args.page)
             print(json.dumps(migrate_global_paragraphs(context), indent=2))
+            return
+        elif args.command == "outline-tidy":
+            print(json.dumps(outline_tidy(args.page, dry_run=args.dry_run), indent=2))
             return
         elif args.command == "migrate-drafts":
             context = load_page(args.page)

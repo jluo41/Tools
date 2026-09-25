@@ -1,8 +1,9 @@
 # Draft inside the Outline Markdown
 
-Draft Space is a read-only projection of the selected Outline Markdown. The
-Outline is the only authoring source for the Shape, Bullet, tag, Draft prose,
-and Evidence decision shown in the space.
+Draft Space projects the selected Outline Markdown. The Outline is the only
+authoring source for the Shape, Bullet, tag, Draft prose, and Evidence decision
+shown in the space; Table and Reading are read-only, Scratch and Revise write
+through their own Save.
 
 ## Single-file contract
 
@@ -12,19 +13,23 @@ One Page has one selected Outline file:
 outline/<stem>-outline-v<version>.md
 ```
 
-Each Bullet keeps its planning metadata and its candidate prose together:
+Each Bullet keeps its planning metadata and its candidate prose together. A
+drafted Bullet is written Draft-first, so the folded Outline reads as prose:
 
 ```markdown
 ### C1.P1 · Measurement
 
-- B1 · [Evidence] Report the validated measure
+- B1 · Across six language models, mean absolute error ranges from ... .
+  Point: [Evidence] Report the validated measure
   Note: Keep the reported range and denominator explicit.
   Evidence: E11 · validation result
-  Draft: Across six language models, mean absolute error ranges from ... .
 ```
 
-`Draft:` may wrap across indented lines. It is part of the same Bullet record;
-it is not a second Markdown file. An optional page-level Opening candidate is
+An undrafted Bullet keeps its point on the dash line (`- B1 · [Evidence] …`).
+The older classic form, point on the dash line plus a `Draft:` field, is still
+read. The Draft may wrap across indented lines above `Point:`. It is part of
+the same Bullet record; it is not a second Markdown file. Grammar:
+`plan-grammar.md` § Draft-first Bullets. An optional page-level Opening candidate is
 stored under `## Opening Draft` in that same Outline.
 
 ## Space behavior

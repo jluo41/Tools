@@ -7,7 +7,7 @@ between Page Runs, and while preparing the next review packet.
 
 An ordinary wording-feedback Step is a small interactive edit with a target of
 under two minutes. Its normal write set is the current Version journal,
-`working.md`, `runtime.yaml`, and the embedded `Draft:` field only when the live
+`working.md`, `runtime.yaml`, and the embedded Draft only when the live
 Draft Space needs that projection. A wording-only Step does not touch the
 Page source, outline plan, evidence-item contracts, delivery, receipts,
 changelogs, or skills. Make one bounded patch and do not create or wait for a

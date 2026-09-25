@@ -49,11 +49,11 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   candidate prose; human approval licenses later published Content. `<page>/outline/<stem>-outline-v<G>.<S>[.<E>].md`
 - **Draft Space** — the reader-facing projection of the selected Markdown
   plan: Structure list plus Table, Reading, Scratch, and Revise views. The selected
-  Outline Markdown contains both the plan and each `Draft:` field; Page/Run
+  Outline Markdown contains both the plan and each Draft; Page/Run
   workflow writers update that one file. Table and Reading never edit the plan
   through the browser. Scratch is the separate, bounded human-thinking lane
   that writes only the plan's `## Scratch` registry and a paired
-  `rp-scratch-NN_<target>` receipt; it never edits `Draft:` prose.
+  `rp-scratch-NN_<target>` receipt; it never edits Draft prose.
 - **Scratch Mode** — the Draft view where a person captures rough thinking at
   Section (`C1`) or whole paragraph-group (`C1.P1`) scope. The current Outline
   grammar has no separate subsection node, so it renders one plus per visible

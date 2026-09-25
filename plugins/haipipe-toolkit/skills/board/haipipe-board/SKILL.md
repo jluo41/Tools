@@ -270,7 +270,7 @@ never writes a Board roster into Project or SPACE metadata.
 
 The live Draft Space presents the selected Outline's Bullet/Draft table in two
 columns, grouped by paragraph. `servers/workbench-page/outline_preview.py` reads and writes
-embedded `Draft:` fields in `outline/<stem>-outline-v*.md`; the selected
+embedded Drafts in `outline/<stem>-outline-v*.md`; the selected
 Outline remains the sole Shape, tag, evidence-decision, and Draft authority.
 Do not render a `+ Bullet` button, append form, editor, or separate Comments
 composer. Draft Space is read-only; candidate changes belong to the owning

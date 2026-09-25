@@ -46,7 +46,7 @@ Run and `contributors` on each Step; joining the review does not allocate a
 new RP. `rp-struct-02` and later ids are optional independent post-closure
 structural goals, not separate Survey Runs. Scratch is available as
 a small human planning capture once the selected Outline exists; it does not
-write `Draft:` prose or bypass later Structure or evidence gates. Only after
+write Draft prose or bypass later Structure or evidence gates. Only after
 the Structure contract is closed may the workflow propose Section Runs in
 `rp-sec-NN` or paragraph Runs in `rp-para-NN_Pxx[-Pyy]`.
 
@@ -99,7 +99,7 @@ The workflow owns the conversation history and review state. It invokes:
 
 - `haipipe-page-context`: resolve applicable constraints, style and exemplars;
 - `haipipe-page-structure`: change Bullets, Evidence Item requirements, and the
-  embedded `Draft:` fields in the selected Outline Markdown under SHAPE
+  embedded Drafts in the selected Outline Markdown under SHAPE
   authority;
 - `haipipe-writing`: produce, revise or evaluate scoped prose under the shared
   request, selected methods and rubric described below;
@@ -143,8 +143,8 @@ without changing prose; no-op acceptance/navigation creates no change card.
 ```text
 <folder>/
 ├── outline/                         current editable planning authority
-│   ├── <stem>-outline-v1.2.md        unapproved working Shape (if needed)
-│   ├── <stem>-outline-v1.2.md        current Shape + embedded `Draft:` fields
+│   ├── <stem>-outline-v1.2.md        current Shape + embedded Drafts (Draft-first)
+│   ├── previous/                     superseded versions (v1.1, v1.0, …)
 │   └── <stem>-evidence-items.md     requirements and Supporting/Local graph
 ├── runs/rp-struct-01.md             initial Structure Run: SHAPE + SURVEY
 ├── runs/rp-struct-NN.md             structure/Bullet refinement Run
@@ -176,7 +176,7 @@ the AI to generate a concise non-empty Summary from the raw notes, writes
 `AI generated the Scratch Summary and the person closed the Run.` to the Result,
 and closes the Run. A closed Scratch Run is immutable; later thinking starts a
 new Scratch Run. Scratch Mode keeps saved raw Scratch visible by default even
-when the underlying body is hidden. This capture never edits `Draft:` prose.
+when the underlying body is hidden. This capture never edits Draft prose.
 Ordinary feedback
 still enters a Page Writing Run as a pending `### Human feedback` Step, but it
 is not a Draft-space composer.

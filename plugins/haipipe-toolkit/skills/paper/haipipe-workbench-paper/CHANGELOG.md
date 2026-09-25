@@ -2,6 +2,9 @@
 
 ## 0.6.0 · 2026-09-22
 
+- Story Space reads legacy numbered Story pages (`Story01-seed`, `Story02-roadmap`,
+  `Story03-narrative-MISQ`) as Stories beside canonical `Story<Letter>`; before, a board
+  with only numbered Stories showed "no Story yet" and none of their cards or Runs (JL 260925).
 - Story Space: the `Claims & Hypothesis` view is now `Research Questions`
   (`#story/questions`; `#story/claims` still lands there). The card grain is
   the C3 research question; its C5 propositions (the claims) sit inside as

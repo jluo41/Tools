@@ -606,6 +606,8 @@ def bullets(plan_text: str):
     folded)``. Several Evidence Items may share one bullet. ``folded`` is
     item-specific: its id must appear on an Answered or Drawn line.
     """
+    from .plan_shape import canonical_plan
+    plan_text = canonical_plan(plan_text)
     lines = plan_text.splitlines()
     c = p = 0
     i = 0
@@ -659,6 +661,8 @@ def evidence_none_targets(plan_text: str) -> dict[str, str]:
     them distinguish an intentional source-free reader move from a missing
     SHAPE decision.
     """
+    from .plan_shape import canonical_plan
+    plan_text = canonical_plan(plan_text)
     lines = plan_text.splitlines()
     c = p = b = 0
     found: dict[str, str] = {}

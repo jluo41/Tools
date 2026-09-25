@@ -1,3 +1,17 @@
+## 0.91.0 · 2026-09-25
+
+- The Draft writer (`servers/workbench-page/outline_preview.py`) saves drafted Bullets
+  Draft-first; Revise and Scratch saves keep that shape. The Structure card counts drafted
+  points in either shape. The UI is unchanged: Table, Reading, Scratch and Revise render
+  byte-identically for a Draft-first and a classic Outline, except the run-paragraph copy
+  prompt, which quotes the file as it reads.
+- `outline/` holds one current plan; superseded versions live in `outline/previous/`
+  (`ref/plan-grammar.md` § Draft-first Bullets, § One current version).
+- Structure card: an unaddressed `### ` heading (e.g. `### Cut · …`) is a side note, so it
+  stays off the Structure text and moves with the paragraph above it; before, the card showed
+  it as a line that its own Save then rejected. A renamed paragraph keeps its `· S<a> to S<b>`
+  sentence span.
+
 ## 0.90.0 · 2026-09-22
 
 - Draft Space gets a fourth view, **Revise** (JL: "我想让每一个 paragraph 是一个方框，然后你把

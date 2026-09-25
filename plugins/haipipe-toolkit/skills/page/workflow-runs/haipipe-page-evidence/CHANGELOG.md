@@ -1,3 +1,7 @@
+## 0.29.0 · 2026-09-25
+
+- EMBED moves the source plan into `outline/previous/` when it writes `v<G>.<S>.<E+1>`.
+
 ## 0.28.0 · 2026-09-22
 
 - Moved to `skills/page/workflow-runs/`; the description leads with the Runs (`re-*`).

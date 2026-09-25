@@ -208,6 +208,13 @@ def make_board(root):
 
 
 class PaperWorkbenchTest(unittest.TestCase):
+    def test_legacy_numbered_stories_are_read_as_stories(self):
+        from live.paper import STORY_STEM
+        for stem in ("StoryA-desk-idea", "StoryB", "Story01-seed", "Story03-narrative-MISQ"):
+            self.assertTrue(STORY_STEM.match(stem), stem)
+        for stem in ("Story00-ideation", "Storyline", "S-MISQ-Main-Intro"):
+            self.assertIsNone(STORY_STEM.match(stem), stem)
+
     def test_collects_the_spaces_from_markdown_only(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -372,7 +379,7 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn("t01_prior_work", page)
             self.assertIn("discoveries%2Fb01_evidence_board%2Fboard.md", page)   # Outline link into the Discovery Board
             self.assertIn('id="section-S-DESK-Main-2-Results"', page)
-            self.assertIn("no rnarra Run yet", page)
+            self.assertIn('class="sec-row" id="section-S-DESK-Main-2-Results"', page)   # one line per Section
             self.assertIn('id="hero-E01-DISPLAY-hero-figure"', page)   # hero: a Main-page DISPLAY
             self.assertNotIn('id="hero-E02-CITE-prior"', page)         # not hero: a CITE
             self.assertIn("Research Questions", page)

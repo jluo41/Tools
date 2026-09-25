@@ -10,8 +10,8 @@ description: >-
   evidence, evidence Run, land evidence items, make supporting runs, make the
   local run, embed the result, fold evidence, /haipipe-page-evidence.
 metadata:
-  version: "0.28.0"
-  last_updated: "2026-09-22"
+  version: "0.29.0"
+  last_updated: "2026-09-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -322,7 +322,8 @@ Results. For each ready item:
 If a ready Result contradicts the outline, open a `D<nn>` thread and route to
 SHAPE. Otherwise preserve the Shape exactly and write the next evidence
 revision `v<G>.<S>.<E+1>`. The two-part source `v<G>.<S>` has implicit
-`E=0`. Set `supersedes:` to the exact source version. For `G=0`, keep
+`E=0`. Set `supersedes:` to the exact source version, and move the source
+file into `outline/previous/` (`page.py outline-tidy <page>`). For `G=0`, keep
 `approved: ⬜` and return to SHAPE; CONTENT remains closed. For `G>=1`, add
 `shape-base: v<G>.<S>`, transcribe `approved: ✅ inherited from v<G>.<S> · …`
 from that approved Shape, and route to CONTENT so every changed evidence

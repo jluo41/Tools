@@ -16,7 +16,7 @@ import re
 import tomllib
 
 from live.outline_preview import bullet_token, read_drafts
-from src.plan_shape import iter_plan_bullets
+from src.plan_shape import iter_plan_bullets, render_bullet
 
 
 SETUP_MARKER = "setup: semantic-markdown-v1"
@@ -304,12 +304,11 @@ def _plan(stem: str, divisions: tuple[DraftDivision, ...], date: str) -> str:
             paragraph_number += 1
             out.append(f"### C{ci}.P{paragraph_number} · {paragraph.label}")
             for bi, bullet in enumerate(paragraph.bullets, 1):
-                out.extend([
-                    f"- B{bi} · [{bullet.role}] {bullet.point}",
-                    f"  Note: Maps {bullet.source_sentences} source sentence{'s' if bullet.source_sentences != 1 else ''}; review the reader move before approval. 🎯 A{ci}.1",
-                    "  Evidence: none · source-contained expository move; external support was not assessed during setup.",
-                    f"  Draft: {bullet.draft}",
-                ])
+                out.extend(render_bullet(
+                    f"- B{bi} · ", "", f"[{bullet.role}] {bullet.point}",
+                    [f"Note: Maps {bullet.source_sentences} source sentence{'s' if bullet.source_sentences != 1 else ''}; review the reader move before approval. 🎯 A{ci}.1",
+                     "Evidence: none · source-contained expository move; external support was not assessed during setup."],
+                    bullet.draft, ""))
             out.append("")
     return "\n".join(out).rstrip() + "\n"
 

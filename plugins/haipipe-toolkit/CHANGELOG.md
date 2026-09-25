@@ -3,6 +3,15 @@ haipipe-toolkit — Changelog
 
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
+### page: Draft-first Bullets and outline/previous/ · 2026-09-25
+
+- A drafted Bullet puts its Draft on the dash line and its planned point in `Point:`, so the
+  Outline Markdown reads as prose when folded; the served UI is unchanged. Every reader accepts
+  both shapes; every Draft save writes Draft-first (`haipipe-page` 0.117.0,
+  `haipipe-workbench-page` 0.91.0).
+- `outline/` keeps one current plan; superseded versions move to `outline/previous/`
+  (`page.py outline-tidy <page>`; `haipipe-page-structure` 0.49.0, `haipipe-page-evidence` 0.29.0).
+
 ### paper-ideation: an Idea is a research question · 2026-09-22
 
 - `haipipe-paper-ideation` 1.1.0: the research question is the Idea's name (division heading,

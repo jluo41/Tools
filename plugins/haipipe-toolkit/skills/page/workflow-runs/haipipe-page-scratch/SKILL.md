@@ -4,7 +4,7 @@ description: >-
   The Scratch Run of a Board Page (`rp-scratch-NN_<target>`): a person's rough
   thinking for one Section (`C1`) or whole paragraph group (`C1.P1`), captured
   from Draft Space, saved as often as they like, and closed by a manually
-  triggered Finish that asks the AI for a Summary. It edits no `Draft:` prose
+  triggered Finish that asks the AI for a Summary. It edits no Draft prose
   and replaces no Structure, Section, or Paragraph Run. Trigger: scratch,
   scratch note, rough thinking, finish scratch, scratch summary,
   /haipipe-page-scratch.
@@ -60,7 +60,7 @@ new `rp-scratch-NN_<target>`, never a reopened Version.
 
 ## 🔒 Boundaries
 
-- It edits no `Draft:` prose, no Bullet, no Evidence Item, no Content.
+- It edits no Draft prose, no Bullet, no Evidence Item, no Content.
 - It does not replace the Structure, Section, or Paragraph Run that will write
   the passage; those Runs read the Summary as input.
 - The browser writes only the selected Outline's `## Scratch` registry and the

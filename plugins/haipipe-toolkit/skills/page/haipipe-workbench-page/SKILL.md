@@ -13,8 +13,8 @@ description: >-
   status, delivery tab, LaTeX, Word, slide deck, folder tab, stale workbench,
   /haipipe-workbench-page.
 metadata:
-  version: "0.90.0"
-  last_updated: "2026-09-22"
+  version: "0.91.0"
+  last_updated: "2026-09-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -99,10 +99,10 @@ Folder-owner's resolved canonical Result path, plus payload files.
 ```text
 <page>/outline/
 ├── <stem>-outline-v<G>.<S>[.<E>].md
-│                              generation · Shape · optional evidence revision · authored · versioned
+│                             the ONE current plan · generation · Shape · optional evidence revision
+│                             drafted Bullets Draft-first: the sentence on the dash line, `Point:` below
+├── previous/                 every superseded plan version, moved here when a new one is written
 ├── <stem>-context.md         what Runs MAY USE generated · CONTEXT/PREPARE
-├── <stem>-outline-v<G>.<S>[.<E>].md
-│                             plan fields + embedded `Draft:` candidate prose · SHAPE authority
 ├── <stem>-evidence-items.md  authored Evidence Item contracts · Outline authority
 ├── <stem>-requirement.md     what we MUST obey   V<n> generated venue · W<n> authored writing
 │                             cli/requirement.py refreshes V and preserves W
@@ -280,7 +280,7 @@ The full grammar is `ref/plan-grammar.md`; the approved example is
   through a new unapproved Shape. The presenter never infers a Role and does
   not create a generic `Boundary` role.
 - **The Bullet head stays concise.** Actual candidate sentences may be written
-  during SHAPE in the selected Outline Markdown's `Draft:` field. Promoted
+  during SHAPE in the selected Outline Markdown's Draft. Promoted
   sentences live on the Page. A Note
   is at most 30 words (a wrapped source line is still one Note); a Note that
   carries prose is CONTENT leaking upward.
@@ -519,7 +519,7 @@ Outline POST remains a shell-registration compatibility route; `edit-preview`,
 edited in the Revise view, Bullets and structure through `run-structure`.
 
 The owning Page/Run workflow writes the selected
-`outline/<stem>-outline-v*.md`, including its `Draft:` fields, then
+`outline/<stem>-outline-v*.md`, including its Drafts, then
 the next GET refreshes the projection. Generated HTML is never an edit target,
 and a stale browser form cannot bypass this boundary. The underlying Markdown
 writer contracts and approved-Shape immutability still apply outside the

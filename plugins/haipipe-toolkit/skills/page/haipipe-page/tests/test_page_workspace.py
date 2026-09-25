@@ -12,6 +12,7 @@ sys.path.insert(0, str(ENGINE))
 from src.page_workspace import (build_page, create_page, load_page, read_source,
                                 render_page, save_source)
 from src.page_setup import run_setup, setup_markdown_page
+from src.plan_shape import canonical_plan
 from src.page_setup_check import validate_setup
 from src.page_migration import migrate_embedded_drafts, migrate_global_paragraphs
 from live.outline_preview import bullet_token, read_drafts
@@ -295,7 +296,8 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
     assert "<h1>A Useful Argument</h1>" not in markup
     assert "<summary>When revisions lose context</summary>" in markup
     assert "Consider a narrow sentence edit" in markup
-    assert "Draft:" in (page.folder / result["draft"]).read_text(encoding="utf-8")
+    # setup writes drafted Bullets Draft-first: the sentence on the dash line, the point in `Point:`
+    assert "\n  Point: [" in (page.folder / result["draft"]).read_text(encoding="utf-8")
     assert "A Useful Argument" in build_page(page).read_text(encoding="utf-8")
 
 
@@ -330,7 +332,7 @@ def test_migrate_legacy_preview_into_outline_is_content_preserving(tmp_path):
     plan = page.folder / "outline/page-outline-v0.1.md"
     records = read_drafts(page.source)
     plan.write_text(
-        "\n".join(line for line in plan.read_text().splitlines()
+        "\n".join(line for line in canonical_plan(plan.read_text()).splitlines()
                   if not line.startswith("  Draft:")) + "\n"
     )
     legacy = page.folder / "outline/page-preview.md"
@@ -488,7 +490,7 @@ def test_setup_resume_fails_gate_and_records_audit_when_content_draft_is_missing
     page = load_page(page.folder)
     plan = page.folder / "outline/page-outline-v0.1.md"
     plan.write_text(
-        "\n".join(line for line in plan.read_text().splitlines()
+        "\n".join(line for line in canonical_plan(plan.read_text()).splitlines()
                   if not line.startswith("  Draft:")) + "\n"
     )
 

@@ -11,8 +11,8 @@ description: >-
   run page lifecycle, Page Face, Folder kind, legacy Page Type, Run Spec,
   /haipipe-page.
 metadata:
-  version: "0.116.1"
-  last_updated: "2026-09-22"
+  version: "0.117.0"
+  last_updated: "2026-09-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -229,7 +229,7 @@ owns the URL. Choose the intake depth explicitly:
 - `setup` is the normal Markdown file-to-working-Page route. It preserves the
   imported source, reads its H1/H2/prose structure, creates a Page-specific
   Opening and backstage requirement/target records, and writes an unapproved semantic Shape plus reader-move
-  embedded `Draft:` fields in the Outline Markdown, Context/Files records, and
+  embedded Drafts in the Outline Markdown, Context/Files records, and
   a completed setup Task Run. A
   non-Section Bullet may map to several sentences; punctuation does not decide
   outline grain. Paragraph identity is one Page-global `P1..PN` sequence and
@@ -248,6 +248,7 @@ python3 <toolkit>/skills/page/haipipe-page/cli/page.py setup <input.md> [--dest 
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py setup <existing-page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py migrate-addresses <existing-page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py migrate-drafts <existing-page-folder>
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py outline-tidy <page.md | page-folder> [--dry-run]
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py inspect <page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py build <page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py serve <page-folder>
@@ -257,6 +258,10 @@ Markdown `setup` already performs `build`; do not run a redundant second build.
 Use `migrate-addresses` explicitly for a pre-0.81 Shape whose paragraph number
 resets inside each division; it preserves prose and rewrites active Page-owned
 references before `setup` revalidates and rebuilds the Page.
+`outline-tidy` rewrites the current Outline Draft-first, moves every older
+version into `outline/previous/`, and repoints `outline/<old file>` citations in
+the Page's own files (records, Run scripts). It refuses when a Bullet would
+change, and works on Board Pages too, not only standalone folders.
 After it returns, inspect the generated Page Face, Shape/Draft coverage, setup
 Result checklist (`checks.json` and `report.md`), and `delivery/web/index.html`.
 Setup fails when a blocking mechanical check is missing; semantic judgment and
@@ -300,7 +305,7 @@ Outline exists. Notes autosave to `rp-scratch-NN_<target>`; the person manually
 clicks Finish Scratch, which asks the AI to generate a concise Summary from
 the raw notes and closes the Run only after a non-empty Summary is returned.
 Scratch writes only the selected Outline's `## Scratch` registry plus its
-paired `runs/` and `results/` receipt; it never edits `Draft:` prose. In
+paired `runs/` and `results/` receipt; it never edits Draft prose. In
 Scratch Mode, saved raw Scratch remains visible by default even when the
 underlying body is hidden; `+` reopens its editor. The Board-hosted Page Chat
 and terminal read the current Scratch registry at connect time, and a saved
@@ -312,7 +317,7 @@ The reader-facing completion packet is defined in
 `ref/user-check-packet.md`. The Draft Space includes a read-only Draft
 projection beside each Bullet during SHAPE. The selected
 `outline/<stem>-outline-v<G>.<S>[.<E>].md` is the sole Draft authority: each
-Bullet stores its planning fields and `Draft:` candidate in that same file.
+Bullet stores its planning fields and Draft candidate in that same file.
 The candidate may exist before Shape approval and becomes exact adoption input
 for CONTENT when explicitly accepted. The Page/Run Workflow is the writer of
 the plan, the Page, and every Result; the reader-facing Table and Reading
@@ -357,6 +362,8 @@ uses. The roster of legal folder names is `haipipe-workbench/ref/roster.md`.
 ├── page.toml     optional standalone registration: source + imported content
 ├── <page>.md      Opening · Content                         THIS reader contract
 ├── outline/       HUMAN process: plan and durable process records
+│   ├── <stem>-outline-v<G>.<S>[.<E>].md  the ONE current plan, Bullets Draft-first
+│   ├── previous/  superseded plan versions, moved here when a new one is written
 │   ├── <stem>-context.md  generated context projection for all Page Run Specs
 │   ├── <stem>-evidence-items.md  authored Evidence Item contracts
 │   └── _archive/legacy-outline-evidence/  retired folder material only

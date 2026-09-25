@@ -168,6 +168,7 @@ def _has_marker(path: pathlib.Path, marker: str) -> bool:
 
 def check(page_src: pathlib.Path, plan_text: str, skills_root: pathlib.Path):
     """Return findings when a plan violates its Folder's Page Face shape."""
+    plan_text = canonical_plan(plan_text)
     current = folder_kind(page_src)
     legacy = page_type(page_src)
     kind = current or legacy
@@ -349,6 +350,7 @@ def plan_addresses(plan_text: str) -> set:
     divisions, `### ` opens a paragraph, and the explicit ``B<n>`` token is
     the Bullet identity.  Unnumbered ``-`` rows are not addressable and are
     intentionally omitted from the returned set."""
+    plan_text = canonical_plan(plan_text)
     out, cn, pn = set(), 0, 0
     for line in plan_text.splitlines():
         if line.startswith("## ") and not re.match(r"^## C\d+\b", line):
@@ -376,6 +378,7 @@ def check_serves(page_src: pathlib.Path, plan_text: str):
     tool noticed. An address is FROZEN before a card points at it, so a stale one
     means either the card is wrong or the plan was edited after `approved: ✅`.
     """
+    plan_text = canonical_plan(plan_text)
     have = plan_addresses(plan_text)
     if not have:
         return []
@@ -412,6 +415,7 @@ def check_bullet_grammar(plan_text: str):
     fold freezes it. Found on `QC1-visitlbp` 260819: a
     fold pass appended Answered:/Drawn: onto 260817 long-sentence bullets and
     every check stayed green."""
+    plan_text = canonical_plan(plan_text)
     out, cn, pn, sn = [], 0, 0, 0
     lines = plan_text.splitlines()
     for i, line in enumerate(lines):
@@ -468,6 +472,7 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
     ``<stem>-evidence-items.md``. Integer-only plans retain the legacy icon/card
     fallback only until their mandatory version migration.
     """
+    plan_text = canonical_plan(plan_text)
     current_grammar = bool(
         re.search(r"(?m)^outline-version:\s*v\d+\.\d+(?:\.\d+)?\s*$", plan_text)
         or re.search(r"(?m)^\s*Evidence:", plan_text)
@@ -832,7 +837,7 @@ def presentation_point(head: str, continuation_lines=(), number=None) -> dict:
 
 _DRAFT_START = re.compile(r"^Draft:\s*(.*)$", re.I)
 _DRAFT_STOP = re.compile(
-    r"^(?:Note|Annotation|More|Role|Transition|Evidence|Accept|Answered|Drawn|Routed|Status|Tag|Supports|Target):\s*",
+    r"^(?:Point|Note|Annotation|More|Role|Transition|Evidence|Accept|Answered|Drawn|Routed|Status|Tag|Supports|Target):\s*",
     re.I,
 )
 
@@ -871,6 +876,111 @@ def split_embedded_draft(continuation):
     return plan_lines, "\n".join(draft_lines).strip(), "\n".join(review_lines).rstrip()
 
 
+# ── Draft-first Bullets ─────────────────────────────────────────────────────
+# A drafted Bullet may carry its Draft on the dash line, so the Outline reads
+# as prose when folded; the planned point then moves to an indented `Point:`:
+#
+#   - B1 · S1 · Physicians treating comparable patients decide differently.
+#     Point: [Problem] Comparable patients can receive different decisions.
+#     Note: …
+#
+# Every reader sees the classic shape through `canonical_plan`; the Draft
+# writer emits the Draft-first shape for every drafted Bullet.
+
+_POINT_LINE = re.compile(r"^Point:\s*(.*)$", re.I)
+_SENTENCE_TAG = re.compile(r"^(S\d+[a-z]?\s*·\s*)")
+_BULLET_LINE = re.compile(r"^(- (?:\[[ xX]\]\s*)?(?:B|S)\d+\s*·\s*)(.*)$")
+
+
+def split_bullet_block(head_line, continuation):
+    """-> (prefix, tag, point, plan_lines, draft, reviews) for either Bullet shape.
+
+    `prefix` is `- B<n> · `, `tag` the optional `S<n> · ` sentence tag, `point`
+    the planned statement (`[Role] …`). A Bullet is Draft-first when one of its
+    continuation lines is `Point:`; the dash line and any lines before `Point:`
+    are then its Draft.
+    """
+    match = _BULLET_LINE.match(head_line)
+    prefix, rest = (match.groups() if match else ("", head_line))
+    tag_match = _SENTENCE_TAG.match(rest)
+    tag = tag_match.group(1) if tag_match else ""
+    rest = rest[len(tag):].strip()
+    lines = [str(raw).strip() for raw in continuation or ()]
+    at = next((k for k, line in enumerate(lines) if _POINT_LINE.match(line)), None)
+    if at is None:
+        plan_lines, draft, reviews = split_embedded_draft(lines)
+        return prefix, tag, rest, plan_lines, draft, reviews
+    point = _POINT_LINE.match(lines[at]).group(1).strip()
+    plan_lines, stray, reviews = split_embedded_draft(lines[at + 1:])
+    draft = "\n".join([rest] + lines[:at]).strip() or stray
+    return prefix, tag, point, plan_lines, draft, reviews
+
+
+def render_bullet(prefix, tag, point, plan_lines, draft, reviews, *, draft_first=True):
+    """-> lines of one Bullet; Draft-first when it has a Draft and `draft_first`."""
+    # Blank lines inside a Draft (a display equation, a list) are kept as "  ".
+    draft_lines = [x.strip() for x in (draft or "").strip().splitlines()]
+    more = ["  " + x if x else "  " for x in draft_lines[1:]]
+    plan = ["  " + x for x in plan_lines if x]
+    if draft_first and draft_lines:
+        out = [prefix + tag + draft_lines[0]] + more + ["  Point: " + point] + plan
+    else:
+        out = [prefix + tag + point] + plan
+        if draft_lines:
+            out += ["  Draft: " + draft_lines[0]] + more
+    return out + ["  " + x for x in (reviews or "").splitlines() if x.strip()]
+
+
+def canonical_plan(plan_text: str) -> str:
+    """Rewrite Draft-first Bullets into the classic shape every parser reads.
+
+    Classic Bullets and every other line pass through unchanged, so this is
+    idempotent and safe on any plan.
+    """
+    if not plan_text or not re.search(r"(?mi)^\s+Point:", plan_text):
+        return plan_text
+    lines = plan_text.split("\n")
+    out, i = [], 0
+    while i < len(lines):
+        line = lines[i]
+        if not _BULLET_LINE.match(line):
+            out.append(line)
+            i += 1
+            continue
+        j = i + 1
+        while j < len(lines) and lines[j].startswith("  ") and not re.match(r"^- ", lines[j]):
+            j += 1
+        block = lines[i + 1:j]
+        if any(_POINT_LINE.match(x.strip()) for x in block):
+            out.extend(render_bullet(*split_bullet_block(line, block), draft_first=False))
+        else:
+            out.extend(lines[i:j])
+        i = j
+    return "\n".join(out)
+
+
+def draft_first_plan(plan_text: str) -> str:
+    """Rewrite every drafted Bullet Draft-first; the inverse of `canonical_plan`.
+
+    Undrafted Bullets and every other line pass through unchanged.
+    """
+    lines = (plan_text or "").split("\n")
+    out, i = [], 0
+    while i < len(lines):
+        line = lines[i]
+        if not _BULLET_LINE.match(line):
+            out.append(line)
+            i += 1
+            continue
+        j = i + 1
+        while j < len(lines) and lines[j].startswith("  ") and not re.match(r"^- ", lines[j]):
+            j += 1
+        parts = split_bullet_block(line, lines[i + 1:j])
+        out.extend(render_bullet(*parts) if parts[4] else lines[i:j])
+        i = j
+    return "\n".join(out)
+
+
 def iter_plan_bullets(plan_text: str):
     """Yield stable, presentation-ready Bullet blocks in plan order.
 
@@ -879,6 +989,7 @@ def iter_plan_bullets(plan_text: str):
     explicit ``B<n>`` identities, and treats indented ``-`` lines as
     annotations rather than new Bullets.
     """
+    plan_text = canonical_plan(plan_text)
     lines = (plan_text or "").splitlines()
     blocks, cn, pn, sn = [], 0, 0, 0
     division_title = paragraph_title = ""
@@ -957,6 +1068,7 @@ def _bullets_with_notes(plan_text: str):
     """-> [(address, head, note_lines, extra_lines)] for every bullet: the head,
     the labelled continuation lines, and the indented lines that follow a Note
     WITHOUT a label (a Note that wrapped onto a second source line)."""
+    plan_text = canonical_plan(plan_text)
     out, cn, pn, sn = [], 0, 0, 0
     lines = plan_text.splitlines()
     i = 0
@@ -1009,6 +1121,7 @@ def check_head_style(plan_text: str):
     gaps   `head-too-short`    a head under 4 words (`Trait relevance`): the
                                code-word style, reported so the migration debt
                                is visible without failing every old plan"""
+    plan_text = canonical_plan(plan_text)
     fails, gaps = [], []
     for addr, head, notes, extra in _bullets_with_notes(plan_text):
         n = len(_head_words(head))
@@ -1043,6 +1156,7 @@ def check_note_quotes_page(page_src: pathlib.Path, plan_text: str, window: int =
     own sentence (any run of `window` consecutive words found verbatim in the
     page's Content). The plan says what a sentence must DO; the sentence lives
     on the page."""
+    plan_text = canonical_plan(plan_text)
     content = _content_text(page_src)
     if not content:
         return []

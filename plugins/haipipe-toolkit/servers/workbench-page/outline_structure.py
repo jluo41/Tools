@@ -25,6 +25,7 @@ import tempfile
 from pathlib import Path
 
 from src.outline_version import latest_outline
+from src.plan_shape import canonical_plan
 from live.outline_preview import page_lock
 
 _DIVISION_RE = re.compile(r"^## C(\d+)\b\s*(?:·\s*(.*))?$")
@@ -47,6 +48,7 @@ def structure_rows(plan_text: str) -> list[dict]:
     plan's structure (Aims, Scratch and Notes follow it). Paragraph titles drop
     the `· S1 to S3` sentence-span suffix the Shape keeps for its own bookkeeping.
     """
+    plan_text = canonical_plan(plan_text)
     rows: list[dict] = []
     division = paragraph = None
     index = 0
@@ -67,7 +69,13 @@ def structure_rows(plan_text: str) -> list[dict]:
             continue
         if line.startswith("### "):
             match = _PARAGRAPH_RE.match(line)
-            title = ((match.group(2) or "") if match else line[4:]).strip()
+            if not match:
+                # An unaddressed `### ` (e.g. `### Cut · …`) is a side note, not a
+                # paragraph: it stays off the Structure text and moves with the
+                # paragraph above it.
+                paragraph = None
+                continue
+            title = (match.group(2) or "").strip()
             title = _SPAN_RE.sub("", title)
             index += 1
             paragraph = {"address": match.group(1) if match else "",
@@ -186,10 +194,6 @@ def _parse_plan(lines: list[str]) -> tuple[list[str], list[dict], list[str]]:
                          "heading": line, "body": []}
             division["paragraphs"].append(paragraph)
             continue
-        if line.startswith("### "):
-            paragraph = {"address": "", "title": line[4:].strip(), "heading": line, "body": []}
-            division["paragraphs"].append(paragraph)
-            continue
         (paragraph["body"] if paragraph is not None else division["body"]).append(line)
     return lines[:first], blocks, lines[end:]
 
@@ -277,8 +281,11 @@ def save_structure(page_src: Path, payload: dict, *, read_only: bool = False) ->
                     continue
                 _block, old_p = previous
                 if paragraph["title"] != old_p["title"]:
-                    out.append("### %s · %s" % (paragraph["address"], paragraph["title"]) if paragraph["title"]
-                               else "### " + paragraph["address"])
+                    # Keep the Shape's own `· S<a> to S<b>` span on a renamed heading.
+                    span = _SPAN_RE.search(old_p["heading"])
+                    span = span.group(0) if span else ""
+                    out.append(("### %s · %s" % (paragraph["address"], paragraph["title"]) if paragraph["title"]
+                                else "### " + paragraph["address"]) + span)
                     changes["renamed"] += 1
                 else:
                     out.append(old_p["heading"])

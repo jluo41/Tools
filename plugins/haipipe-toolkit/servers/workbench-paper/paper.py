@@ -155,6 +155,10 @@ def board_url(path_param, rel):
 
 
 # ---------------------------------------------------------------- collectors
+SECTION_ROW = r"S-[\w-]+(?:\s*(?:\(.*\)|·.*))?"
+STORY_STEM = re.compile(r"^Story(?:[A-Z]|(?!00)\d{2})(?:\b|-)")
+
+
 def collect(board, path_param):
     """Read everything the five Spaces show. Pure: no writes, no network."""
     board = Path(board)
@@ -167,7 +171,9 @@ def collect(board, path_param):
             pages.append({"group": g, "stem": stem, "rel": rel,
                           "text": read(board / rel) if rel else ""})
     story00 = next((p for p in pages if p["stem"].startswith("Story00")), None)
-    stories = [p for p in pages if re.match(r"^Story[A-Z]\b", p["stem"])]
+    # Story<Letter> is canonical; legacy numbered Stories (Story01-seed, Story02-roadmap,
+    # Story03-narrative-MISQ) stay readable per haipipe-paper-ideation, so they are Stories too
+    stories = [p for p in pages if STORY_STEM.match(p["stem"])]
     sections = [p for p in pages if p["stem"].startswith("S-")]
     rounds = [p for p in pages if p["stem"].startswith("RD")]
     d = {
@@ -797,13 +803,21 @@ def story(d, p):
          "dd": table_rows(t, r"D\d+"), "dd_h": _table_headers(t, r"D\d+") or [],
          "tt": table_rows(t, r"[TB]\d+"), "tt_h": _table_headers(t, r"[TB]\d+") or [],
          "sections": [], "sec_h": [], "order": []}
-    s["sec_h"] = _table_headers(t, r"S-[\w-]+(?:\s*\(.*\))?") or []
+    s["sec_h"] = _table_headers(t, SECTION_ROW) or []
+    # the Spine is C1 Identity, C2 Pitch, C4 Stakes; matched by title so a legacy numbered
+    # Story part (Story02-roadmap's `1 · Mission`) does not pose as an Identity
     s["spine"] = [(n, title, parse_division(division_body(t, n)))
-                  for n, title in s["divisions"] if n in (1, 2, 4)]
-    for c in table_rows(t, r"S-[\w-]+(?:\s*\(.*\))?"):
-        sid = c[0].split(" (")[0].strip()
+                  for n, title in s["divisions"]
+                  if re.match(r"(identity|pitch|stakes)\b", title.strip().lower())]
+    seen = set()
+    for c in table_rows(t, SECTION_ROW):
+        # `S-<id>`, `S-<id> (label)` or `S-<id> · §0 label` (JL 260925: MISQ's main rows)
+        sid = re.split(r"\s*[(·]", c[0], maxsplit=1)[0].strip()
+        if sid in seen:              # the same Section listed again in a later table
+            continue
+        seen.add(sid)
         page = next((x for x in d["sections"] if x["stem"] == sid), None)
-        s["sections"].append({"id": sid, "target": c[0][len(sid):].strip(" ()"),
+        s["sections"].append({"id": sid, "target": c[0][len(sid):].strip(" ()·"),
                               "question": c[1] if len(c) > 1 else "", "cells": c,
                               "rel": page["rel"] if page else None,
                               "page_state": clean(scalar(page["text"], "state", "")) if page else ""})
@@ -1172,6 +1186,10 @@ table.grid th{{text-align:left;font:600 11px -apple-system,sans-serif;color:var(
 table.grid td{{padding:4px 8px 4px 0;border-bottom:1px solid var(--line);vertical-align:top}}
 table.grid tr:last-child td{{border-bottom:0}}
 .idtag,.path{{font:500 12px ui-monospace,Menlo,monospace;color:var(--mut)}}
+.sec-list{{display:grid;gap:2px}}
+.sec-row{{display:grid;grid-template-columns:2.6em minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 10px;border-radius:7px;color:inherit;text-decoration:none}}
+a.sec-row:hover{{background:var(--soft,#f4f5f7)}} a.sec-row:hover .sec-name{{color:var(--acc)}}
+.sec-num{{font:500 12px ui-monospace,Menlo,monospace;color:var(--mut)}} .sec-name{{font-weight:600}} .sec-state{{font-size:12.5px;white-space:nowrap}}
 .path{{overflow-wrap:anywhere}}
 .evtag{{display:inline;white-space:nowrap;font:12px/1.45 ui-monospace,Menlo,monospace;
  border:1px dashed color-mix(in srgb,currentColor 26%,transparent);
@@ -1993,18 +2011,24 @@ def _disc_card(d):
 
 
 def _section_cards(d, s):
-    cards = []
+    """One line per C8 row: number, name, state; the line opens that Section's Page
+    workbench. Nothing else (JL 260925: "to be as simple as possible"); the C8 detail
+    stays on the Story page."""
+    rows = []
     for r in s["sections"]:
-        rows = _fields(s["sec_h"], r["cells"], {0, 1})
-        rows.append(("Page", (_link(d, r["rel"], "open " + r["id"]) + (" · " + esc(r["page_state"]) if r["page_state"] else ""))
-                     if r["rel"] else '<span class="warn">not minted</span>'))
-        rows.append(("Story row", _link(d, s["rel"], "C8 on " + s["stem"], focus="C8")))
-        rows.append(_judge_row(d, s["stem"], r["id"], "rnarra"))
-        state = (r["page_state"].split("·")[0].strip() if r["page_state"] else ("open" if r["rel"] else "not minted"))
-        cards.append(_srcd(d, s["rel"], "C8 · " + r["id"], _card("section-" + r["id"], r["target"] or "§", r["id"], esc(r["question"]),
-                           "", state, "ok" if r["rel"] else "warn", rows)))
-    return cards
-
+        tail = re.sub(r"^S-[^-]+-(Main-|Appendix-)?", "", r["id"]).replace("-", " ")
+        label = r["target"] if r["target"].startswith("§") else tail   # `(folded)` is a note, not a name
+        m = re.match(r"(§\S+)\s+(.*)", label)
+        num, name = (m.group(1), m.group(2)) if m else ("A" if "-Appendix-" in r["id"] else "", label)
+        state = r["page_state"].split("·")[0].strip() if r["page_state"] else ("open" if r["rel"] else "not minted")
+        inner = ('<span class="sec-num">%s</span><span class="sec-name">%s</span><span class="sec-state %s">%s</span>'
+                 % (esc(num), esc(name), _status_cls(state) if r["rel"] else "warn", esc(state)))
+        if r["rel"]:
+            rows.append('<a class="sec-row" id="section-%s" href="%s" title="%s">%s</a>'
+                        % (esc(r["id"]), esc(outline_url(d["path"], r["rel"])), esc(r["id"]), inner))
+        else:
+            rows.append('<div class="sec-row" id="section-%s" title="%s">%s</div>' % (esc(r["id"]), esc(r["id"]), inner))
+    return rows
 
 def _hero_cards(d):
     cards = []
@@ -2034,6 +2058,7 @@ def render_story(d):
         return _views("story", [("spine", "Spine", card), ("tasks", "Task Roadmap", _tree_card(d) + _disc_card(d)),
                                 ("evidence", "Evidence Items", hero)], foot=_sources_html(d, "story"))
     spine, questions, tasks, secs = [], [], [], []
+    rq_pool = []
     for s in d["story"]:
         # the Story's `state:` line is not shown here (JL 260919: not needed on the Spine); it stays on the Story page
         spine.append('<div class="card"><h2>%s<span class="tally">%d RQ · %d E · %d T · %d sections</span></h2></div>'
@@ -2051,30 +2076,47 @@ def render_story(d):
             spine.append('<div class="card">%s</div>' % _empty("no C1 Identity, C2 Pitch or C4 Stakes division under Content"))
         spine.append('<div class="card"><details><summary>compile order</summary><div class="path">%s</div></details></div>'
                      % esc(" → ".join(s["order"]) if s["order"] else "no haipipe:compile-order block"))
-        questions.append(_cards_card("%s · Research Questions" % s["stem"], "%d RQ · %d claim(s)" % (len(s["rq"]), len(s["e"])),
-                                     "One card per C3 research question; its C5 propositions (the claims) sit inside it, each with its "
-                                     "rclaim discussion Run. Judge support here; the Story page stays the authority.",
-                                     _rq_cards(d, s), "no | RQn | rows in C3 and no | En | rows in C5"))
+        many = len(d["story"]) > 1       # a legacy numbered Story is one Story in parts
+        # name the Story in a heading only when the paper has several selected Stories
+        # (StoryA, StoryB); legacy numbered pages are parts of ONE Story, and a file
+        # name like `Story03-narrative-MISQ` only confuses the reader (JL 260925)
+        who = (s["stem"] + " · ") if sum(1 for x in d["story"] if re.match(r"^Story[A-Z]", x["stem"])) > 1 else ""
+        # one Research Questions card per Story; the parts of one legacy Story pool into one
+        rq_pool.append((who, s))
         blocks = d["blocks"]
         if not tasks:
             tasks.append(_tree_card(d))
-        tasks.append(_cards_card("%s · Task Roadmap" % s["stem"], "%d obligation(s)" % len(s["tt"]),
+        if not (many and not s["tt"]):
+          tasks.append(_cards_card(who + "Task Roadmap", "%d obligation(s)" % len(s["tt"]),
                                  "One card per C7 row: what the study must produce. A row joins the Task home above through a "
                                  "bNN[.jNN[.tNN]] address in one of its cells; %s." % (
                                      esc("%d block(s) on disk" % len(blocks["tree"])) if blocks["tree"] else esc(blocks["label"])),
                                  _task_cards(d, s), "no C7 rows"))
         if s["dd"]:
-            tasks.append('<div class="card"><h2>%s · Discovery needs<span class="tally">%d</span></h2>'
+            tasks.append('<div class="card"><h2>%sDiscovery needs<span class="tally">%d</span></h2>'
                          '<div class="brief">One row per C6 D-row. The discovery column is the inquiry the row names by address; '
                          'the inquiry itself stays in the Discovery home below.</div>%s</div>'
-                         % (esc(s["stem"]), len(s["dd"]),
+                         % (esc(who), len(s["dd"]),
                             _table(["D", "what the paper must learn", "feeds", "discovery"],
                                    [('<span class="idtag">%s</span>' % esc(c[0]), esc(c[1] if len(c) > 1 else ""), esc(c[-1] if len(c) > 2 else ""),
                                      _disc_join(d, c) or '<span class="mut">no address yet</span>') for c in s["dd"]])))
-        tasks.append(_disc_card(d))
-        secs.append(_cards_card("%s · Sections" % s["stem"], "%d row(s)" % len(s["sections"]),
-                                "One card per C8 row: what that section must express, before anyone drafts it.",
-                                _section_cards(d, s), "no S- rows in C8"))
+        if not (many and not s["sections"]):
+          rows = _section_cards(d, s)
+          secs.append('<div class="card"><h2>%sSections<span class="tally">%d</span></h2><div class="sec-list">%s</div></div>'
+                      % (esc(who), len(rows), "".join(rows) or _empty("no S- rows in C8")))
+    tasks.append(_disc_card(d))      # once, after every Story part's C6/C7 cards
+    groups = {}
+    for who, s in rq_pool:
+        groups.setdefault(who, []).append(s)
+    for who, parts in groups.items():
+        cards = [c for s in parts for c in _rq_cards(d, s)]
+        n_rq, n_e = sum(len(s["rq"]) for s in parts), sum(len(s["e"]) for s in parts)
+        questions.append(_cards_card(who + "Research Questions", "%d RQ · %d claim(s)" % (n_rq, n_e), "",
+                                     cards, "no | RQn | rows in C3 and no | En | rows in C5"))
+    if not questions:
+        questions.append('<div class="card">%s</div>' % _empty("no | RQn | rows in C3 and no | En | rows in C5 on any Story page"))
+    if not secs:
+        secs.append('<div class="card">%s</div>' % _empty("no S- rows in C8 on any Story page"))
     hero = _cards_card("Evidence Items · hero", "%d" % len(d["hero"]),
                        "Every DISPLAY item on a Main page and every VALUE item on the Abstract page; each Section keeps its full Evidence Space in Outline.",
                        _hero_cards(d), "no hero evidence yet · no Main Section page carries a DISPLAY or Abstract VALUE item")
@@ -2119,7 +2161,7 @@ def _slot_actual(d, slot):
     if slot == "story00":
         return rows_where(lambda n: n.startswith("A1-Story/Story00"))
     if slot == "story":
-        return rows_where(lambda n: re.match(r"^A1-Story/Story[A-Z]", n))
+        return rows_where(lambda n: n.startswith("A1-Story/") and STORY_STEM.match(n.split("/")[1]))
     if slot in ("main", "appendix", "round"):
         kind = {"main": "Main", "appendix": "Appendix", "round": "Round"}[slot]
         return rows_where(lambda n: re.match(r"^B[abc]-.+-%s/$" % kind, n))
@@ -2170,7 +2212,7 @@ def _slot_of(rel, is_dir):
         second = rel.split("/")[1] if "/" in rel else ""
         if second.startswith("Story00"):
             return "story00"
-        if re.match(r"^Story[A-Z]", second):
+        if STORY_STEM.match(second):
             return "story"
         return ""
     if re.match(r"^Ba-.+-Main$", top):

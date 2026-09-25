@@ -87,7 +87,9 @@ def test_save_maps_lines_to_bullets_and_opens_a_revise_run_with_a_ledger(tmp_pat
     assert drafts['C1.P1.B2']['text'] == 'Second draft.'
     assert result['bullets'][0]['record'] == record_token(drafts['C1.P1.B1'])
     plan = (tmp_path / 'outline' / 'Page-outline-v1.1.md').read_text()
-    assert '  Draft: First draft, sharpened.\n' in plan and 'approved: ✅' in plan
+    # a saved Bullet is written Draft-first; an undrafted one keeps its point on the dash line
+    assert '- B1 · First draft, sharpened.\n  Point: [Point] First point\n' in plan and 'approved: ✅' in plan
+    assert '- B1 · [Point] Third point\n' in plan and 'Draft:' not in plan
     ledger = (tmp_path / 'results' / 'rp-revise-01_C1.P1' / 'v001.md').read_text()
     for needle in ('## Step s001', '#### Track changes', '##### R01 · wording', '###### Before\nFirst draft.\n',
                    '###### After\nFirst draft, sharpened.\n', '###### Why\nSharper claim.\n', '###### Decision\naccept\n'):
@@ -184,3 +186,86 @@ def test_sentences_get_their_own_lines_and_blank_lines_separate_points(tmp_path)
     assert err is None and [c['address'] for c in result['changed']] == ['C1.P1.B1']
     assert read_drafts(page)['C1.P1.B1']['text'] == 'First one. First two, edited.'
     assert result['text'] == 'First one.\nFirst two, edited.\n\nSecond draft.'
+
+
+DRAFT_FIRST = '''# Plan
+approved: ✅
+## C1 · First
+### C1.P1 · First paragraph
+- B1 · S1 · Physicians treating comparable patients decide differently.
+  Point: [Problem] Comparable patients can receive different decisions.
+  Note: Opens with the phenomenon.
+  Evidence: none · paper-owned framing
+- B2 · S2 · [Gap] Interpersonal orientation is underexamined.
+  Note: Not drafted yet.
+'''
+
+
+def test_draft_first_bullets_read_like_classic_ones_and_survive_a_save(tmp_path):
+    from src.plan_shape import canonical_plan, split_bullet_block, render_bullet
+    classic = canonical_plan(DRAFT_FIRST)
+    assert ('- B1 · S1 · [Problem] Comparable patients can receive different decisions.\n'
+            '  Note: Opens with the phenomenon.\n  Evidence: none · paper-owned framing\n'
+            '  Draft: Physicians treating comparable patients decide differently.\n') in classic
+    assert canonical_plan(classic) == classic
+    assert '- B2 · S2 · [Gap] Interpersonal orientation is underexamined.\n  Note: Not drafted yet.' in classic
+    # the round trip back to Draft-first is exact
+    lines = DRAFT_FIRST.splitlines()
+    assert render_bullet(*split_bullet_block(lines[4], lines[5:8])) == lines[4:8]
+    page = page_fixture(tmp_path)
+    plan = tmp_path / 'outline' / 'Page-outline-v1.1.md'
+    plan.write_text(DRAFT_FIRST)
+    blocks = {b['address']: b for b in iter_plan_bullets(plan.read_text())}
+    assert blocks['C1.P1.B1']['head'] == 'S1 · [Problem] Comparable patients can receive different decisions.'
+    assert blocks['C1.P1.B1']['draft'] == 'Physicians treating comparable patients decide differently.'
+    assert blocks['C1.P1.B2']['draft'] == ''
+    body = plan_card(page, path_q='/Board/board.md', file_q='Page.md')
+    assert '>Physicians treating comparable patients decide differently.</textarea>' in body
+    result, err = save_revise(page, payload(page, 'C1.P1', 'Physicians decide differently.\n\nInterpersonal orientation is overlooked.'))
+    assert err is None, err
+    text = plan.read_text()
+    assert ('- B1 · S1 · Physicians decide differently.\n'
+            '  Point: [Problem] Comparable patients can receive different decisions.\n'
+            '  Note: Opens with the phenomenon.\n  Evidence: none · paper-owned framing\n'
+            '- B2 · S2 · Interpersonal orientation is overlooked.\n'
+            '  Point: [Gap] Interpersonal orientation is underexamined.\n  Note: Not drafted yet.\n') in text
+    assert 'Draft:' not in text
+
+
+def test_outline_tidy_writes_draft_first_and_moves_old_versions_to_previous(tmp_path):
+    import importlib.util
+    from src.outline_version import latest_outline, find_version
+    spec = importlib.util.spec_from_file_location('page_cli', Path(__file__).resolve().parents[1] / 'cli' / 'page.py')
+    cli = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    page = page_fixture(tmp_path)
+    outline = tmp_path / 'outline'
+    (outline / 'Page-outline-v1.0.md').write_text('# old\n')
+    (outline / 'Page-outline-v0.1.md').write_text('# older\n')
+    (tmp_path / 'runs').mkdir(exist_ok=True)
+    (tmp_path / 'runs' / 'rp-sec-01.sh').write_text('--plan "$PAGE_DIR/outline/Page-outline-v1.0.md"\n')
+    dry = cli.outline_tidy(page, dry_run=True)
+    assert dry['draft_first'] and dry['to_previous'] == ['Page-outline-v0.1.md', 'Page-outline-v1.0.md']
+    assert (outline / 'Page-outline-v1.0.md').exists()
+    result = cli.outline_tidy(page)
+    assert sorted(result['moved']) == ['previous/Page-outline-v0.1.md', 'previous/Page-outline-v1.0.md']
+    assert sorted(p.name for p in outline.glob('*-outline-*.md')) == ['Page-outline-v1.1.md']
+    assert result['repointed'] == 1
+    assert 'outline/previous/Page-outline-v1.0.md' in (tmp_path / 'runs' / 'rp-sec-01.sh').read_text()
+    assert latest_outline(outline, 'Page').name == 'Page-outline-v1.1.md'
+    assert find_version(outline, 'Page-outline-v1.0.md') == outline / 'previous' / 'Page-outline-v1.0.md'
+    text = (outline / 'Page-outline-v1.1.md').read_text()
+    assert '- B1 · First draft.\n  Point: [Point] First point\n' in text and 'Draft:' not in text
+    assert read_drafts(page)['C1.P1.B2']['text'] == 'Second draft.'
+    again = cli.outline_tidy(page)
+    assert again['draft_first'] is False and again['moved'] == []
+
+
+def test_blank_lines_inside_a_multi_line_draft_survive_both_shapes():
+    from src.plan_shape import draft_first_plan, canonical_plan
+    classic = ('## C1 · A\n### C1.P1 · B\n- B1 · [Model] The model is stated.\n  Note: n\n'
+               '  Draft: We estimate:\n  \n  $$\n  Y = X\n  $$\n')
+    first = draft_first_plan(classic)
+    assert first.startswith('## C1 · A\n### C1.P1 · B\n- B1 · We estimate:\n  \n  $$\n  Y = X\n  $$\n  Point: [Model] The model is stated.\n  Note: n')
+    assert [b['draft'] for b in iter_plan_bullets(first)] == [b['draft'] for b in iter_plan_bullets(classic)] == ['We estimate:\n\n$$\nY = X\n$$']
+    assert draft_first_plan(first) == first and canonical_plan(canonical_plan(first)) == canonical_plan(first)

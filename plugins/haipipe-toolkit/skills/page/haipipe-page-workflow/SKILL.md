@@ -156,7 +156,7 @@ Scratch is available once a selected Outline exists. It records a person's
 rough thinking at Section (`C1`) or whole paragraph group (`C1.P1`) in the
 current Outline grammar; there is no separate subsection node, and the B rows
 are reading material only. Save keeps the Scratch Run open,
-and a manually triggered AI Summary closes it. Scratch does not edit `Draft:` prose
+and a manually triggered AI Summary closes it. Scratch does not edit Draft prose
 and does not replace the later Structure, Section, or Paragraph Run.
 Human feedback advances Steps inside the selected Run's Version. A chat turn
 or review window alone does not create another Run. A later independently
