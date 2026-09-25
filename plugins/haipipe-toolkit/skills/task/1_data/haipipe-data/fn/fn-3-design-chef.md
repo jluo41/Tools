@@ -27,7 +27,7 @@ BUILDER HOME                  <-- SOURCE OF TRUTH (edit here)
     b01_sourcestore/j5N_*_source/t01_sourcefn_*/     (or 1-Source-WorkSpace/)
     b02_recordstore/j0N_recordfn_*/tNN_*/            (or 2-Record-WorkSpace/)
     b03_casestore/j0N_{triggerfn,casefn}_*/tNN_*/    (or 3-Case-WorkSpace/)
-    b04_aidatastore/j0N_{tfmfn,splitfn}_*/tNN_*/     (or 4-AIData-WorkSpace/)
+    b10_aidatastore/j0N_{tfmfn,splitfn}_*/tNN_*/     (or 4-AIData-WorkSpace/)
          |
          | (run builder script)
          v
@@ -55,7 +55,7 @@ Apply these steps regardless of which stage you are building.
 ls examples/*/tasks/b01_sourcestore/j5*_source/t01_sourcefn_*/scripts/   # stage 1 project builders
 ls examples/*/tasks/b02_recordstore/j[0-4]*/t*/scripts/                  # stage 2
 ls examples/*/tasks/b03_casestore/j[0-4]*/t*/scripts/                    # stage 3
-ls examples/*/tasks/b04_aidatastore/j[0-4]*/t*/scripts/                  # stage 4
+ls examples/*/tasks/b10_aidatastore/j[0-4]*/t*/scripts/                  # stage 4
 ls code/scripts/haibuilder/<N>-<stage>/         # cross-project SEED LIBRARY
                                                 # (real builders: MIMIC, Ohio, CGM...)
 ```
@@ -642,7 +642,7 @@ Three separate types.
 
 **Builder Location**:
 ```
-<BUILDER_HOME>  (b04_aidatastore/j0N_{tfmfn,splitfn}_*/tNN_*/scripts/; seeds: code/scripts/haibuilder/4-aidata/)
+<BUILDER_HOME>  (b10_aidatastore/j0N_{tfmfn,splitfn}_*/tNN_*/scripts/; seeds: code/scripts/haibuilder/4-aidata/)
   c<N>_build_transforms_<type>.py    (Input/Output TfmFn builders -- discover with ls)
   s<N>_build_splitfn_<method>.py     (SplitFn builders -- discover with ls)
 ```
@@ -797,7 +797,7 @@ Stage | What You Build         | Builder Home (Task scripts/)          | Generat
   2   | HumanFn or RecordFn    | b02 j0N_recordfn_<topic>/tNN_*/       | fn_record/human/ or record/
   3   | TriggerFn or CaseFn    | b03 j0N_{triggerfn,casefn}_*/tNN_*/   | fn_case/fn_trigger/ or
       |                        |                                       |   case_casefn/
-  4   | InputTfmFn, OutputTfmFn| b04 j0N_{tfmfn,splitfn}_*/tNN_*/      | fn_aidata/entryinput/,
+  4   | InputTfmFn, OutputTfmFn| b10 j0N_{tfmfn,splitfn}_*/tNN_*/      | fn_aidata/entryinput/,
       | or SplitFn             |                                       |   entryoutput/, or split/
 Seeds for every stage: code/scripts/haibuilder/<N>-<stage>/
 ```

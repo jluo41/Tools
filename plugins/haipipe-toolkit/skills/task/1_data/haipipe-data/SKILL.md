@@ -3,8 +3,8 @@ name: haipipe-data
 description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and dispatches to the right specialist (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, runs, dashboards, reviews, or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "0.3.3"
-  last_updated: "2026-09-24"
+  version: "0.3.4"
+  last_updated: "2026-09-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -81,7 +81,7 @@ The `.ipynb` is auto-generated at runtime by `convert_to_notebooks.py` — it is
 In a PHI SPACE (REACH) none of this applies: no `.ipynb` is ever made. Every
 Run is a `.cmd` Databricks ticket running the Task's one entry
 `scripts/run_<task>.py` inline (see `haipipe-task-for-data` § SourceFn Block
-pattern). The Fns of b01 to b04 are generated from Run configs; each stage
+pattern). The Fns of b01 to b03 and b10 are generated from Run configs; each stage
 skill names its generator. Topic Jobs share a generator through the Block's
 `src/`: `code/haiutils/haistep/task_entry.py` merges the Block's
 `src/config-defaults.yaml` under the Job's own and puts the Block's `src/`
@@ -95,7 +95,7 @@ python code/scripts/haistepcli/aidata.py --config <config>
 ```
 
 Legacy examples may use pre-BJTR paths; new work uses
-`tasks/bNN_<block>/jNN_<job>/tNN_<task>/`: Blocks `b00` raw to `b04` aidata,
+`tasks/bNN_<block>/jNN_<job>/tNN_<task>/`: Blocks `b00` raw to `b03` case (per dataset) and `b10` aidata (per question),
 topic Jobs `j01`-`j49` for Fns, dataset Jobs `j51`-`j99` (see
 `haipipe-data/ref/0-overview.md` § Current Builder Structure).
 

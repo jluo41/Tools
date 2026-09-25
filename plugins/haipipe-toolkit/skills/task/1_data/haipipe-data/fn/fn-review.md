@@ -47,8 +47,8 @@ If the path does not match any pattern, go to Step R1-B and ask the user to clar
   b02_recordstore/j*/t*_recordfn_*/scripts/*.py             RecordFn builder
   b03_casestore/j*/t*_triggerfn_*/scripts/*.py              TriggerFn builder
   b03_casestore/j*/t*_casefn_*/scripts/*.py                 CaseFn builder
-  b04_aidatastore/j*/t*_tfmfn_*/scripts/*.py                TfmFn builder
-  b04_aidatastore/j*/t*_splitfn_*/scripts/*.py              SplitFn builder
+  b10_aidatastore/j*/t*_tfmfn_*/scripts/*.py                TfmFn builder
+  b10_aidatastore/j*/t*_splitfn_*/scripts/*.py              SplitFn builder
   code-dev/1-PIPELINE/**/*.py                any builder (legacy home)
   **/scripts/config/**/*.yaml                 YAML config in a Task Folder (stage auto-detected)
 

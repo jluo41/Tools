@@ -284,7 +284,7 @@ Always chain: `source .venv/bin/activate && source env.sh && python <script>` Or
 MUST NOT
 ========
 
-1. NEVER edit `code/haifn/` directly -- edit builders in the project's `b04_aidatastore/j0N_{tfmfn,splitfn}_<name>/tNN_*/scripts/` Task
+1. NEVER edit `code/haifn/` directly -- edit builders in the project's `b10_aidatastore/j0N_{tfmfn,splitfn}_<name>/tNN_*/scripts/` Task
 2. NEVER run Python without `.venv` activated
 3. NEVER invent CaseFn names that don't exist in the CaseSet
 4. NEVER assume a `vocab/` subdirectory exists (files are at ROOT)

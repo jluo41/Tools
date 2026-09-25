@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.2.1] — 2026-09-25
+
+- AIData Block renumbered `b04` -> `b10` (JL 260925): `b00`-`b03` are per dataset (same `j5N` = same raw dataset), `b10`+ per question (`b10` builds training sets, `b11`+ models), so an AIDataSet's own `j5N` is never read as a dataset. `b04`-`b09` stay free. AIData pages name their inputs (`inputs: [b03/j58]`).
+
 ## [0.2.0] — 2026-09-23
 
 - Labels live in b04: label/tte Fns over b03 event lists (censored = -1), SplitFn reads `label_status`, AIDataSet version = Run, generated Fns with committed-file check. Reference REACH PD2D b04 (JL 260923).

@@ -62,13 +62,20 @@ b00          raw          understand each extracted dataset, read-only; never ex
 b01          source       SourceFn + SourceStore          (Stage 1)
 b02          record       HumanFn/RecordFn + RecordStore  (Stage 2)
 b03          case         TriggerFn/CaseFn + CaseStore    (Stage 3)
-b04          aidata       TfmFn/SplitFn + AIDataStore     (Stage 4)
+b10          aidata       TfmFn/SplitFn + AIDataStore     (Stage 4)
 b11 to b19   model        one Block per prediction question; one Job per model
 b21 to b29   evaluation   fairness, calibration, external validation of a model
 b31 to b39   endpoint     inference Fns, Endpoint_Set packaging, deployment
 b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
 ```
 
+- Single digits `b00`-`b03` are PER DATASET: one raw dataset in, one store
+  out, the same `j5N` number meaning the same dataset in all four. From `b10`
+  on, Blocks are PER QUESTION: `b10` builds the training sets (an AIDataSet
+  chooses features, label, rows and split, and may merge several datasets),
+  and `b11`+ train on them. AIData is `b10`, not `b04`, so its `j5N` Jobs are
+  never read as datasets (JL 260925). `b04`-`b09` stay free for a future
+  per-dataset stage.
 - One stage is one Block. Source, Record, Case, and AIData are never Jobs of a
   single "data pipeline" Block: each stage has two axes of its own (datasets or
   Fn families as Jobs, tables or Fns as Tasks), and a Job has room for only one.
@@ -85,7 +92,7 @@ b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
   Project, never copied from the extraction Project:
   `b00/j51_reachpd2d_v260922_raw` hands off to
   `b01/j51_reachpd2d_v260922_source`. The next extraction is `j52_…` in
-  `b00` to `b03`. `j00` and `j50` stay unused, as `b10` and `b50` do. So the
+  `b00` to `b03`. `j00` and `j50` stay unused, as `b20` and `b50` do. So the
   Job number alone says whether a Job is built once or once per dataset.
   Datasets take numbers in extraction-date order (the `v<yymmdd>`). A Project
   that grouped datasets by family under the old numbering keeps its family
@@ -95,8 +102,9 @@ b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
   launched (`haipipe-data-raw` § Dataset naming); the Job drops the hyphens.
 - A range above the data stages starts at `x1`: `b11` is the first model
   Block, `b12` the next question, `b31` the first endpoint Block, as `b51`
-  already is in WellDoc and DrFirst. `b10`, `b20`, `b30`, `b50` stay unused. A
-  range with no work has no Block.
+  already is in WellDoc and DrFirst. `b10` is the one exception: it is the
+  AIData Block, just before the models it feeds. `b20`, `b30`, `b50` stay
+  unused. A range with no work has no Block.
 - A topic Job groups the Fns that change together: the ProcName contracts of
   one topic in `b01`, the RecordFns of the same topic in `b02` with the SAME
   number (`b01/j03_procdf_diab_signal` and `b02/j03_recordfn_diab_signal`),
@@ -137,14 +145,15 @@ b51 to b59   auxiliary    external stores, benchmarks, shared vocabularies
   then one dataset Job
   per raw dataset (`j51_<cohort>_v<yymmdd>_case/t01_casestore_materialize`).
   A CaseSet is still per dataset (`3-CaseStore/<RecordSet>/...`).
-- AIData Block is where datasets MERGE (JL 260923): one AIDataSet reads the
-  CaseSets of several raw datasets. Topic Jobs `j01`-`j49` hold the TfmFns
+- AIData Block `b10` is where datasets MERGE (JL 260923): one AIDataSet
+  reads the CaseSets of one or more raw datasets. Its page says which b03 Job
+  each AIDataSet reads (`inputs: [b03/j58]`), since its numbers are its own. Topic Jobs `j01`-`j49` hold the TfmFns
   and SplitFns (`j01_tfmfn_<name>`, `j02_splitfn_<name>`); each `j51`-`j99`
   is one AIDataSet (`j51_welldocglucose_aidata/t01_aidatastore_materialize`),
   with its own number, matching no raw dataset Job. Its
   `src/config-defaults.yaml` lists every dataset it merges
   (`record_set_names:`).
-- The one piece that spans datasets before `b04` is the Source coverage
+- The one piece that spans datasets before `b10` is the Source coverage
   matrix (which dataset stores which ProcName): `b01/j49_procdf_coverage/
   t01_coverage_matrix`, only with 2+ datasets. `b02` and `b03` need none,
   because each dataset Job's materialize Run counts its own records or cases.

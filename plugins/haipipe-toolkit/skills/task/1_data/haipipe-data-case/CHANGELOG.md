@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.3] — 2026-09-25
+
+- AIData Block renumbered `b04` -> `b10` (JL 260925): `b00`-`b03` are per dataset (same `j5N` = same raw dataset), `b10`+ per question (`b10` builds training sets, `b11`+ models), so an AIDataSet's own `j5N` is never read as a dataset. `b04`-`b09` stay free. AIData pages name their inputs (`inputs: [b03/j58]`).
+
 ## [0.3.2] — 2026-09-24
 
 - TriggerFn / CaseFn paths show the optional `code/haifn/fn_case/<fn_version>/` folder; the CaseSet cook Run carries the dataset's `fn_version:`. `templates/config.yaml` shows it.

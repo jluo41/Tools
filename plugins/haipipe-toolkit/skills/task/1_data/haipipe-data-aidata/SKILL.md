@@ -3,8 +3,8 @@ name: haipipe-data-aidata
 description: "Stage 4 (AIData) specialist: builds/runs/reviews TfmFn / SplitFn, inspects 4-AIDataStore, loads AIData-layer assets + tensors, merges multi-partition CaseSets via streaming HF Dataset. Called by /haipipe-data; direct invocation works stage-scoped."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "0.2.0"
-  last_updated: "2026-09-23"
+  version: "0.2.1"
+  last_updated: "2026-09-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -74,7 +74,7 @@ Stage Scope
 ------------
 
 Owns:
-  - TfmFn / SplitFn builders in `tasks/b04_aidatastore/jNN_{tfmfn,splitfn}_<name>/tNN_{tfmfn,splitfn}_<Fn>/scripts/`; each AIDataSet, which merges several raw datasets, is `b04_aidatastore/j5N_<aidataset>_aidata/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/4-AIData-WorkSpace/`)
+  - TfmFn / SplitFn builders in `tasks/b10_aidatastore/jNN_{tfmfn,splitfn}_<name>/tNN_{tfmfn,splitfn}_<Fn>/scripts/`; each AIDataSet, which merges several raw datasets, is `b10_aidatastore/j5N_<aidataset>_aidata/` (rule: `haipipe-task/ref/hierarchy.md` § Block number ranges) (legacy workspaces: `code-dev/1-PIPELINE/4-AIData-WorkSpace/`)
   - Generated `code/haifn/fn_aidata/`
   - `_WorkSpace/4-AIDataStore/` tensors and split definitions
   - `templates/config.yaml` for AIData_Pipeline runs
@@ -94,7 +94,7 @@ Hand-off contract (Stage 4 -> 5):
   classes expect (layout is workspace-dependent; see /haipipe-nn).
 
 Labels live here (REACH PD2D, JL 260923):
-  - b03 stores outcome events as lists; a label Fn in b04
+  - b03 stores outcome events as lists; a label Fn in b10
     (`j01_tfmfn_label/tNN_tfmfn_Output<Name>`) turns them into Y; it exposes
     `label_of(case)` and `tfm_fn`. Kinds:
     `label` = 1 when a POSITIVE event falls on days 1..horizon, 0 when none
@@ -110,14 +110,14 @@ Labels live here (REACH PD2D, JL 260923):
   - An AIDataSet version is a Run of `j5N_<aidataset>_aidata/
     t01_aidatastore_materialize/` (one per label x CaseSet, e.g.
     `r01_diabaf1y`, `r04_diabaf1y_allvisit`); the Job's
-    `src/config-defaults.yaml` lists `record_set_names:` because b04 may merge
+    `src/config-defaults.yaml` lists `record_set_names:` because b10 may merge
     several raw datasets. Stored as `<aidata_name>/@<aidata_version>`; the
     Run stem names what differs (`r03_diabtte`).
   - Merging CaseSet partitions: a CaseFn column that is all empty in one
     partition comes out null-typed; `_align_features()` in
     `code/haipipe/aidata_base/aidata_pipeline.py` casts it to the typed
     schema before `concatenate_datasets`, else the join fails.
-  - Generated from Run configs by `b04_aidatastore/src/aidatafn_build.py`;
+  - Generated from Run configs by `b10_aidatastore/src/aidatafn_build.py`;
     the build Run fails unless the committed `code/haifn/fn_aidata/` file
     matches.
 

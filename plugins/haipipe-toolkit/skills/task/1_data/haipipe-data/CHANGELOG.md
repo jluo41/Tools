@@ -5,6 +5,11 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.4] — 2026-09-25
+
+- AIData Block renumbered `b04` -> `b10` (JL 260925): `b00`-`b03` are per dataset (same `j5N` = same raw dataset), `b10`+ per question (`b10` builds training sets, `b11`+ models), so an AIDataSet's own `j5N` is never read as a dataset. `b04`-`b09` stay free. AIData pages name their inputs (`inputs: [b03/j58]`).
+- `space-check` flags a data Project that still has a `b04_*aidata*` Block; `ref/migration.md` note 2026-09-25.
+
 ## [0.3.3] — 2026-09-24
 
 - New `space-check` (JL 260924): read-only check of whether a SPACE is up to date with `ref/migration.md`, detected from the SPACE itself (no state file). `cli/space_check.py` (stdlib; `--brief` for one line, `--root` for another SPACE) checks Tools vs remote, `code/` has `fn_dir` and every loader uses it, the silent `fn_version:` trap, version folders present in all three stages, configs naming unbuilt versions, one version per j5N dataset Job, external bundle support, and the `code/` checkout vs the SPACE's pin. `fn/fn-space-check.md` has the procedure and how to add a check for a new note. The no-arg dashboard prints the brief line first. Bare "check" (no path) routes here; "check <path>" is still review.

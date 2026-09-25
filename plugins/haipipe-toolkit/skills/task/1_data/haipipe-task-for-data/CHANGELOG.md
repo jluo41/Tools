@@ -5,6 +5,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.8.5] — 2026-09-25
+
+- AIData Block renumbered `b04` -> `b10` (JL 260925): `b00`-`b03` are per dataset (same `j5N` = same raw dataset), `b10`+ per question (`b10` builds training sets, `b11`+ models), so an AIDataSet's own `j5N` is never read as a dataset. `b04`-`b09` stay free. AIData pages name their inputs (`inputs: [b03/j58]`).
+
 ## [0.8.4] — 2026-09-24
 
 - Dataset-copy checklist step 5: pick the dataset's Fn version; every b01-b03 Run of the `j5N` Job (builder and cook) carries the same `fn_version:`. "materialize Ticket" -> "cook Ticket (`t01_*_materialize`)" in prose; Task folder names unchanged.

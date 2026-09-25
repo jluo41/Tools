@@ -230,12 +230,14 @@ HumanFn     b02_recordstore   j01_recordfn_cohort, t01_humanfn  j5N_<cohort>_v<y
 RecordFn    b02_recordstore   j0N_recordfn_<topic>              (same as above)
 TriggerFn   b03_casestore     j0N_triggerfn_<name>              j5N_<cohort>_v<yymmdd>_case
 CaseFn      b03_casestore     j0N_casefn_<family>               (same as above)
-TfmFn       b04_aidatastore   j0N_tfmfn_<name>                  j5N_<aidataset>_aidata (merges datasets)
-SplitFn     b04_aidatastore   j0N_splitfn_<name>                (same as above)
+TfmFn       b10_aidatastore   j0N_tfmfn_<name>                  j5N_<aidataset>_aidata (merges datasets)
+SplitFn     b10_aidatastore   j0N_splitfn_<name>                (same as above)
 ```
 
-A `j5N` number is the same raw dataset in `b00` to `b03`. In `b04` it names an
-AIDataSet that merges several raw datasets, so it has its own number. Task
+A `j5N` number is the same raw dataset in `b00` to `b03`. In `b10` it names an
+AIDataSet, which may merge several raw datasets, so it has its own number;
+the AIData Block is `b10`, not `b04`, so the numbers are never read as the
+same dataset (JL 260925). Task
 folders keep the real CamelCase Fn name (`t02_recordfn_REACHPatientUniverse`).
 Reference: REACH-SPACE `examples/Project-REACH-PD2D/tasks/`.
 

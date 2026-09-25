@@ -11,6 +11,50 @@ note and the next step for every item that is not up to date.
 
 ---
 
+2026-09-25 · AIData Block is b10, not b04
+=========================================
+
+From: DrFirst-SPACE. Skills: haipipe-task 1.4.2, haipipe-data 0.3.4,
+-aidata 0.2.1, -case 0.3.3, haipipe-task-for-data 0.8.5. No code change.
+Check: space-check item `aidata Block`.
+
+What changed
+------------
+
+The AIData Block of a data Project is `b10_<L>_<name>aidatastore` (was
+`b04_...`). `b00`-`b03` are per dataset: one raw dataset in, one store out,
+and the same `j5N` number is the same dataset in all four. From `b10` on,
+Blocks are per question: `b10` builds training sets (features, label, rows,
+split; it may merge datasets) and `b11`+ train on them. An AIDataSet's `j5N`
+is its own number, and at `b10` it is no longer mistaken for b03's `j5N`
+(`haipipe-task/ref/hierarchy.md` § Block number ranges).
+
+Does anything break?
+--------------------
+
+No. Stores on disk (`_WorkSpace/4-AIDataStore/`) keep their names, and a
+Ticket resolves its paths from its own location, so every Run still works
+from the renamed folder. Only text that names the Block path needs updating.
+
+Steps
+-----
+
+1. Rename the Block, keeping its letter and name, e.g.:
+   ```bash
+   git mv tasks/b04_A_sms_aidatastore tasks/b10_A_sms_aidatastore
+   ```
+2. Update text that names the old path (model Project configs and pages,
+   READMEs, `TASK-TABLE.md`). Find them with:
+   ```bash
+   grep -rl "b04_A_sms_aidatastore" --include='*.md' --include='*.yaml' --include='*.sh' --include='*.py' examples*/
+   ```
+   Old `runtime.yaml` receipts and logs may keep the old path; they record
+   what ran.
+3. On each AIDataSet Job page, name its inputs by b03 Job (`inputs: [b03/j58]`).
+4. Run `/haipipe-data space-check`: `aidata Block` is OK.
+
+---
+
 2026-09-24 · Fn versions and the external serving bundle
 =========================================================
 

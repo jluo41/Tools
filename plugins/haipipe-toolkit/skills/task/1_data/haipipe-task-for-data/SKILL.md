@@ -3,8 +3,8 @@ name: haipipe-task-for-data
 description: "Data-pipeline Job specialist: scaffolds and executes canonical BJTR Jobs whose Task Folders build or run Stage 1-4 Source/Record/Case/AIData work, including Source raw-name coverage and external-data contracts. Called by /haipipe-task when task-type=data."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.8.4"
-  last_updated: "2026-09-24"
+  version: "0.8.5"
+  last_updated: "2026-09-25"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -217,7 +217,7 @@ b01_sourcestore/
   reads in `src/config-defaults.yaml` (`record_set_names:`):
 
   ```
-  b04_aidatastore/
+  b10_aidatastore/
   ├── j01_tfmfn_<name>/t01_tfmfn_<TfmFn>/                 r01_build
   ├── j02_splitfn_<name>/t01_splitfn_<SplitFn>/           r01_build
   └── j51_<aidataset>_aidata/t01_aidatastore_materialize/ r01_<version>, e.g. j51_welldocglucose_aidata

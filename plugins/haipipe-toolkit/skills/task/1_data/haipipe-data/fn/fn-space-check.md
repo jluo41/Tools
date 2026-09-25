@@ -52,6 +52,7 @@ haifn: <version>           a version folder is missing from fn_source, fn_record
 config -> version          a Run config names a version that is not built
 dataset <project> j5N      the b01-b03 Runs of one dataset Job disagree on fn_version
 code: external bundle      external_base cannot load pre-keyed versions (key_normalized)
+aidata Block               BEHIND: a Project still has a b04_*aidata* Block (AIData is b10)
 code: checkout             INFO: checked-out code/ differs from the commit the SPACE pins,
                            or has uncommitted edits
 ```

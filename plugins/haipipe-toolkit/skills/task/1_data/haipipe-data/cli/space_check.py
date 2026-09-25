@@ -22,6 +22,7 @@ import re
 import subprocess
 
 NOTE = 'ref/migration.md § 2026-09-24 · Fn versions and the external serving bundle'
+NOTE_B10 = 'ref/migration.md § 2026-09-25 · AIData Block is b10, not b04'
 CODE_COMMIT = '27b1525'          # haipipe-code code-drfirst: fn_dir / fn_version, external_base
 LOADERS = ['haipipe/source_base/builder/sourcefn.py', 'haipipe/record_base/builder/record.py',
            'haipipe/record_base/builder/human.py', 'haipipe/case_base/builder/triggerfn.py',
@@ -152,7 +153,19 @@ def check(root):
         items.append(('BEHIND', 'code: external bundle', 'external_base predates pre-keyed bundles',
                       f'bring code/ to {CODE_COMMIT} before shipping a trimmed, pre-keyed external/'))
 
-    # 8. the checked-out code/ vs the commit this SPACE pins (a drift explains odd behaviour)
+    # 8. AIData Block number: b10, not b04 (per dataset b00-b03 | per question b10+)
+    old = sorted({os.path.relpath(p, root) for tr in task_roots(root)
+                  for p in glob.glob(os.path.join(tr, 'b04_*aidata*')) if os.path.isdir(p)})
+    new = [p for tr in task_roots(root) for p in glob.glob(os.path.join(tr, 'b10_*aidata*')) if os.path.isdir(p)]
+    if old:
+        items.append(('BEHIND', 'aidata Block', f'{len(old)} Block(s) still b04: ' + ', '.join(old),
+                      f'git mv to b10_<same name> and update references ({NOTE_B10})'))
+    elif new:
+        items.append(('OK', 'aidata Block', f'AIData at b10 ({len(new)} Block(s))', '-'))
+    else:
+        items.append(('N/A', 'aidata Block', 'no AIData Block in any Project', '-'))
+
+    # 9. the checked-out code/ vs the commit this SPACE pins (a drift explains odd behaviour)
     pinned = (git(root, 'ls-tree', 'HEAD', 'code') or '').split()
     head = git(code, 'rev-parse', 'HEAD')
     if len(pinned) >= 3 and head:
@@ -181,7 +194,7 @@ def main():
               + '  (details: /haipipe-data space-check)')
         return
     print(f'SPACE check: {root}')
-    print(f'notes: haipipe-data/{NOTE}')
+    print('notes: haipipe-data/ref/migration.md')
     print()
     w = max(len(i[1]) for i in items)
     for s, item, ev, nxt in items:

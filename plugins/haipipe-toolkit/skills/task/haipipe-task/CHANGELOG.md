@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2 — 2026-09-25
+
+- `ref/hierarchy.md` § Block number ranges: AIData Block renumbered `b04` -> `b10` (JL 260925): `b00`-`b03` are per dataset (same `j5N` = same raw dataset), `b10`+ per question (`b10` builds training sets, `b11`+ models), so an AIDataSet's own `j5N` is never read as a dataset. `b04`-`b09` stay free. AIData pages name their inputs (`inputs: [b03/j58]`).
+
 ## 1.2.2 — 2026-09-18
 
 - Rewrite `ref/databricks-execution.md` from what a live workspace proved
