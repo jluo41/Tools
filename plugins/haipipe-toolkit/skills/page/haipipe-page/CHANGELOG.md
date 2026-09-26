@@ -7,6 +7,9 @@
   the overview, Scratch notes and trailing sections, carries a paragraph rename into all three
   sections), `to_sectioned`, and Scratch notes in section 2 (`scratch_notes`, `write_scratch`).
   Round trips are byte for byte; `draft_first_plan` leaves a three-section file as it is.
+- Structure Overview entries: `- C<n> · title` per division, then per paragraph a title line
+  (`- C1.P1 · title`), `→ S1 to S6 · job`, and `→ C1.P2: question` to the next paragraph;
+  `overview_entries` writes the first two lines for a migrated Page.
 - `draft/` replaces `outline/`: `outline_version.plan_dir` finds `draft/` first, and
   `latest_outline`, `retire_superseded`, `outline-tidy` and the health check read
   `<stem>-draft-v*.md` and `<stem>-outline-v*.md` alike. All 47 plan-folder lookups in the Page

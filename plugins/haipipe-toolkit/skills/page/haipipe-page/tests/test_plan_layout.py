@@ -157,3 +157,9 @@ def test_draft_layout_moves_a_draft_first_page_to_the_three_section_layout(tmp_p
     assert (page / "runs" / "draft-manual-run" / "rp-para-01_P01.md").is_file()
     assert "runs/draft-manual-run/rp-para-01_P01.md" in (page / "runs" / "delivery-run" / "rd01_latex.md").read_text()
     assert draft_layout(page)["plan"].endswith("already three sections")
+
+
+def test_generated_overview_gives_each_paragraph_a_title_line_and_a_span_line():
+    out = to_sectioned(DRAFT_FIRST)
+    overview = out.split("### Structure Overview")[1].split("## 2 ·")[0]
+    assert "- C1 · Answer\n- C1.P1 · State the answer\n  → S1 to S2" in overview

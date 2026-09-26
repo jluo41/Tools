@@ -7,7 +7,13 @@
 
 Every section repeats the same `### C<n>.P<m>` headings and `- B<k>` numbers,
 so a Bullet's Point (section 1) and its sentence (section 3) share one address.
-The Structure Overview declares each division as `- C<n> · <title>`.
+The Structure Overview declares each division as `- C<n> · <title>` and gives
+each paragraph a three-line entry: its title, then its sentences and job, then
+the question that leads to the next paragraph:
+
+    - C1.P1 · Physician prescribing behavior
+      → S1 to S6 · quality and spending · comparable decisions · opioid example
+      → C1.P2: Could interpersonal dispositions help explain variation?
 
 Readers keep one grammar: `to_canonical` folds the Draft section back into the
 Draft-first plan every parser already reads. Writers edit that plan and hand it
@@ -222,17 +228,36 @@ def from_canonical(original: str, canonical: str) -> str:
     return "\n".join(out) + "\n"
 
 
+def overview_entries(divisions, paragraphs) -> list[str]:
+    """Each division line, then its paragraphs as `- C.P · title` / `→ S.. to S..`.
+
+    The job and the question to the next paragraph are the person's words, so
+    a generated entry leaves them for the person to add after the span.
+    """
+    out = []
+    for division, title in divisions:
+        out.append("- %s · %s" % (division, title) if title else "- " + division)
+        for heading, address, _b in paragraphs:
+            if address.split(".")[0] != division:
+                continue
+            parts = heading[4:].split(" · ")
+            out.append("- %s · %s" % (address, parts[1]) if len(parts) > 1 else "- " + address)
+            span = next((x for x in parts[2:] if x.startswith("S")), "")
+            if span:
+                out.append("  → " + span)
+    return out
+
+
 def to_sectioned(canonical: str, *, scratch: dict | None = None,
                  overview: list[str] | None = None) -> str:
     """Lay a Draft-first plan out in three sections (the migration writer).
 
-    `overview` defaults to one division line per `## C<n>` heading and one line
-    per paragraph heading; `scratch` maps a paragraph address to note lines.
+    `overview` defaults to `overview_entries`; `scratch` maps a paragraph
+    address to note lines.
     """
     header, divisions, paragraphs, tail = _canonical_blocks(canonical)
     if overview is None:
-        overview = ["- %s · %s" % (d, t) if t else "- " + d for d, t in divisions]
-        overview += ["- %s" % heading[4:] for heading, _a, _b in paragraphs]
+        overview = overview_entries(divisions, paragraphs)
     skeleton = "\n".join(
         ["## 1 · Structure · Bullet Point Table", "", "### Structure Overview", ""]
         + overview

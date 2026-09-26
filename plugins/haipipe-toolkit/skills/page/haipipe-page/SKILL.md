@@ -453,11 +453,20 @@ The plan is one Markdown a person can read and edit by hand: three sections
 that repeat one skeleton (`### C<n>.P<m>` headings, `- B<k>` numbers).
 
 ```text
-## 1 · Structure · Bullet Point Table   ### Structure Overview (`- C1 · title`, one line
-                                        per paragraph), then per paragraph each
+## 1 · Structure · Bullet Point Table   ### Structure Overview, then per paragraph each
                                         Bullet's Point and its plan/evidence lines
 ## 2 · Scratch · What to write here     rough notes under each paragraph heading
 ## 3 · Draft · Reading and Revise       the sentences, one line per Bullet
+```
+
+The Structure Overview declares each division, then gives each paragraph a
+title line, its sentences and job, and the question that leads to the next:
+
+```text
+- C1 · Introduction · six paragraphs, thirty-three sentences
+- C1.P1 · Physician prescribing behavior
+  → S1 to S6 · quality and spending · comparable decisions · opioid example
+  → C1.P2: Could interpersonal dispositions help explain variation?
 ```
 
 `src/plan_layout.py` folds the Draft section back into the Draft-first plan
