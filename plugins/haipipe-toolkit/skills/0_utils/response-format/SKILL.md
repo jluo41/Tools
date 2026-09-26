@@ -3,15 +3,16 @@ name: response-format
 description: >-
   Canonical spec for the assistant's chat reply format in this workspace: the
   answer on line 1, then sections whose numbered one-line scan points state the
-  takeaways, with plain prose paragraphs underneath carrying the detail. Turns that change
-  files end with a git-derived file-change section, as a flat dash list. This is
+  takeaways, with plain prose paragraphs underneath carrying the detail. A section
+  whose work changed files ends with those files, one short line each saying what
+  changed; a closing file section appears only for leftovers git shows. This is
   a reference spec and does not self-activate. Trigger: response format, reply
   format, outline format, bullet points, section headers, emoji headers, 回复格式.
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "0.5.1"
-  last_updated: "2026-09-20"
+  version: "0.6.1"
+  last_updated: "2026-09-26"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -68,12 +69,14 @@ Inside one section: scan, then explain
 
 Every section has two layers in THIS order. First a numbered scan layer of
 one-line points. Then plain prose for whatever needs more context. A reader who
-stops after the numbers already has the point.
+stops after the numbers already has the point. A section whose work changed files
+adds a third layer last: its file lines (see "Files live in their section").
 
 ```
 scan point   N. **Short title**: one takeaway. ONE line, <= 14 words
 prose        plain paragraphs after the whole list. no keys, no titles.
              as detailed as the point deserves. skip it when it adds nothing
+file lines   - `name` (where): change in <= 8 words. only if the section changed files
 ```
 
 1. **Numbers, not dashes**: the scan layer is `1.` `2.` `3.`, never `-`.
@@ -101,16 +104,16 @@ which put the same words on the page twice and made the section look like a
 form. Plain paragraphs read better, and the reader can already see which points
 they answer.
 
-Dashes now mean something: a dash list is an inventory of paths or names, a
-numbered list is an argument. That is why 📁 File Changes and 👀 Files To Review
-keep their dashes and take no prose. Never nest anything under a point, either.
-Multiple takeaways are multiple numbers.
+Dashes now mean something: a dash list is a list of files or names, a numbered
+list is an argument. File lines keep their dashes, but a bare path is not
+information: every file line says what changed. Never nest anything under a point,
+either. Multiple takeaways are multiple numbers.
 
 Rules, all countable
 --------------------
 
 ```
-scan -> explain                  that ORDER, in every section
+scan -> explain -> files         that ORDER; files only if the section changed some
 1. 2. 3. not -                   numbered scan layer; dashes mean inventory
 1 line per scan point            it wraps, it is too long. cut it
 <= 14 words per scan point       title included. count them
@@ -120,7 +123,7 @@ plain prose after the list       no keys, no titles repeated from above
 prose runs as long as it needs   this layer is where detail belongs
 0 nested children                multiple takeaways are multiple numbers
 prose is allowed HERE ONLY       under a scan list. never as the whole reply
-inventory lists keep dashes      File Changes and Files To Review are exempt
+a file line says what changed    `name` (where): change, <= 8 words, one line
 ```
 
 One count does the work: 14 words caps the scan point. The prose below it has no
@@ -134,7 +137,8 @@ Sections
   headline in title case. Not kebab-case; write it like a headline a human scans.
 - **Emoji palette**, suggestive and not fixed — 🧩 short answer · 🎯 recommendation ·
   ⚠️ caveat or risk · 🛠️ how-to · 📋 summary · 🔍 findings · ✅ done ·
-  🙋 question for you · 📁 file changes · 👀 files to review · 🧪 experiment ·
+  🙋 question for you · 📁 leftover file changes (only if any) ·
+  👀 (a mark on a file line: read this one) · 🧪 experiment ·
   💡 idea · 📊 results · 🚧 in progress.
 - **How many** — 2 to 5 for a typical reply, ordered most important first. One
   section is fine for a small reply. A trivial reply can be the answer line alone.
@@ -168,32 +172,49 @@ Carried over, unchanged
   through without translating it first.
 - **No em-dashes.** Use a colon, a semicolon, a comma, parentheses, or a new sentence.
 
-File changes (📁)
------------------
+Files live in their section (JL 260926)
+---------------------------------------
 
-End ANY turn that changed files with a `## 📁 File Changes` section, as a flat
-DASH list, derived from git and never from memory:
+A list of bare paths at the end of a reply answers "which files" and nothing else.
+So a changed file is written down next to the work that changed it, as short as it
+can be while still saying what changed.
+
+1. **In the section**: a section whose work changed files ends with those files.
+2. **Name, where, change**: ``- `name` (where): change``, the change in 8 words or fewer.
+3. **👀 means read it**: add `Check:` and what to confirm, 8 words or fewer.
+4. **Outputs too**: a notebook or result goes under the section that made it.
+5. **End only for leftovers**: `📁 File Changes` appears only if git shows unclaimed files.
+
+A file line is ONE line; if it wraps, cut it. `name` is the file name, or the
+shortest path that is unique in the reply; never an absolute path. When the reader
+needs the folder, say it once in the section's prose, not on every line. "Where" is
+a line range, a function, or `new`. The change is a verb and an object (`added
+hourly reader`), never what the file is for. Files that share one change share one
+line.
+
+```
+- 👀 `serialize_windows.py` (~141-180): added hourly format and reader. Check: NA rule
+- `r05_hourly_start_delta.yaml`, `.sh` (new): b02's fifth Run
+- `r09_pt_hourly_start_delta.ipynb` (generated, git-ignored): format on real windows
+```
+
+Mark 👀 only on what really deserves a human read: hand-written logic, prose and
+docs, the largest diff, the highest transcription risk. Derived and generated files
+get no mark.
+
+Before writing the reply, run the git check; it is never written from memory:
 
 ```
 git status --short
 git -C <submodule> status --short      # if a submodule such as Tools/ was touched
 ```
 
-- **Group them** — code and scripts · generated artifacts (`.ipynb`, results,
-  build output) · data side effects (`_WorkSpace/…`, `local/…`).
-- **Flag the dangerous** — anything NOT git-ignored that must not be committed,
-  such as a data store.
-- **Keep it dashed and flat**: an inventory is not an argument, so it takes no
-  numbers and no explanation paragraphs. The paths and statuses are the content.
-
-Files to review (👀), conditional
----------------------------------
-
-- **Only when** files really changed AND some warrant a human read. Skip it for
-  trivial, mechanical or no-op turns. It is not mandatory.
-- **Rank by** what most needs a human eye: hand-written logic, prose and docs,
-  the largest diff, the highest transcription risk.
-- **Mark the rest** `derived — skip`, so the user knows not to bother.
+Every path git shows for this turn must sit in some section's file lines. Only
+what no section claims goes into a closing `## 📁 File Changes`, one short line
+each: a side effect (`_WorkSpace/...` written or deleted), or ⚠️ anything NOT
+git-ignored that must not be committed. When nothing is left over, there is no
+closing section at all. Other sessions' changes are mentioned only when they could
+end up in a commit by mistake.
 
 Example
 -------
@@ -209,19 +230,21 @@ A skill runs only when it is invoked or explicitly loaded by another active
 instruction. To make this format always-on, an active global instruction must
 load it; this checkout currently has no root `CLAUDE.md` pointer.
 
-## 🎯 My Recommendation
-1. **Back-test first**: 20 minutes decides the next week
-2. **Both outcomes act**: no wasted branch either way
+## 🛠️ What I Changed
+1. **Builder fixed**: the trigger now skips days with no readings
+2. **Rebuilt**: the generated function matches the builder again
 
-Flat kills the build before anything is spent, and positive hands it a target it
-already chose. Nothing here is exploratory.
+The builder counted empty days as windows, so every empty day produced a case with
+no readings. It now skips them, and the rebuild picked that up.
+
+- 👀 `builder_x.py` (`build_cases`): skip days with zero readings. Check: skip before window cut
+- `fn_case/x.py`: regenerated from the builder
 
 ## 🙋 What I Need From You
 1. **Pick the model**: Bedrock (BAA-covered), or a local in-VPC model
 
 ## 📁 File Changes
-- **code**: `code-dev/1-PIPELINE/3-Case-WorkSpace/builder_x.py`
-- **derived**: `code/haifn/fn_case/x.py`, rebuilt from the builder, skip
+- `_WorkSpace/3-CaseStore/x/@v0002/`: rebuilt by the builder (git-ignored)
 ```
 
 ## 📎 "Show me" means in the reply (JL 260904)

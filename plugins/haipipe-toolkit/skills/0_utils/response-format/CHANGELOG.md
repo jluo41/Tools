@@ -2,6 +2,34 @@ response-format — Changelog
 ===========================
 
 
+## [0.6.1] - 2026-09-26
+
+As concise as possible. JL: "I want the file changes to be in each sections, and
+make the files changes to be as concise as possible."
+
+- A file line is one line: file name (or the shortest unique path, never absolute),
+  where, and the change in 8 words or fewer; `Check:` also 8 words or fewer.
+- Files with one shared change share one line; the folder is said once in prose.
+- Generated outputs go under the section that made them.
+- The closing `📁 File Changes` appears only when git shows unclaimed files or a
+  dangerous one; otherwise it is left out. Other sessions' changes are mentioned
+  only when they could slip into a commit.
+
+## [0.6.0] - 2026-09-26
+
+Files live in their section. JL, reading a reply whose last two sections were bare
+path lists: "could we [attach] this to each section? ... because changes and file
+to review these two are just without information."
+
+- A section whose work changed files ends with those files, after its prose.
+- Every file line says what changed and where: ``- `path` (where): the change``.
+- 👀 is now a mark on a file line with `Check:` and what to look for; the separate
+  "Files To Review" section is gone.
+- `## 📁 File Changes` stays, still derived from git, but holds only what no section
+  claimed (generated outputs, side effects, other sessions' changes, dangerous
+  files), each with what it is; one line when nothing is left over.
+- Worked example updated to show both.
+
 ## [0.5.1] - 2026-09-20
 
 - Limit the reply format to chat; artifact headings follow their own template or directory rules.
