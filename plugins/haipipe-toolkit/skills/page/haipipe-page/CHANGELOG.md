@@ -10,6 +10,10 @@
 - Structure Overview entries: `- C<n> · title` per division, then per paragraph a title line
   (`- C1.P1 · title`), `→ S1 to S6 · job`, and `→ C1.P2: question` to the next paragraph;
   `overview_entries` writes the first two lines for a migrated Page.
+- Workbench Structure card: a three-section plan's card shows the Structure Overview (each
+  paragraph's title, sentences and job, next question) and edits it as text; Save renames or
+  reorders headings as before and writes the overview (`overview_lines`, `normalize_overview`,
+  `set_overview`).
 - `draft/` replaces `outline/`: `outline_version.plan_dir` finds `draft/` first, and
   `latest_outline`, `retire_superseded`, `outline-tidy` and the health check read
   `<stem>-draft-v*.md` and `<stem>-outline-v*.md` alike. All 47 plan-folder lookups in the Page

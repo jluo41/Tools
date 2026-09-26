@@ -469,6 +469,10 @@ title line, its sentences and job, and the question that leads to the next:
   → C1.P2: Could interpersonal dispositions help explain variation?
 ```
 
+In the workbench the Structure card shows these entries, and clicking it edits
+them as text: renaming or reordering a `C1.P1` line moves its headings in all
+three sections, and the `→` lines are saved into the overview.
+
 `src/plan_layout.py` folds the Draft section back into the Draft-first plan
 for every reader (`canonical_plan` calls `to_canonical`), and every workbench
 writer hands its edited plan to `from_canonical`, which rewrites sections 1

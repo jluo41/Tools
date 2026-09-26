@@ -348,3 +348,67 @@ def write_scratch(text: str, target: str, notes: str, *, run: str, scope: str,
         end = next((i for i in range(at + 1, len(body)) if body[i].startswith("### ")), len(body))
         body[at + 1:end] = block + [""]
     return _assemble(header, sections, order, tail)
+
+
+# ── Structure Overview entries ──────────────────────────────────────────────
+# The overview block holds prose (kept as is) and entries: `- C<n> · title`,
+# `- C<n>.P<m> · title`, and each entry's `→` lines. The workbench Structure
+# card shows the entries and edits them as text.
+
+OVERVIEW_ENTRY = re.compile(r"^- (C\d+(?:\.P\d+)?)\b")
+
+
+def _overview_span(body: list[str]):
+    """-> (start, end) of the lines under `### Structure Overview`, or None."""
+    start = next((i for i, line in enumerate(body) if line.startswith("### Structure Overview")), None)
+    if start is None:
+        return None
+    end = next((i for i in range(start + 1, len(body)) if body[i].startswith("### ")), len(body))
+    return start + 1, end
+
+
+def overview_lines(text: str) -> list[str]:
+    """The overview's entry lines: each `- C…` line and the `→` lines under it."""
+    _h, sections, _o, _t = _sections(text)
+    body = sections.get("structure", ["", []])[1]
+    span = _overview_span(body)
+    out = []
+    for line in body[span[0]:span[1]] if span else []:
+        if OVERVIEW_ENTRY.match(line) or (out and line.strip().startswith("→")):
+            out.append(line.rstrip())
+    return out
+
+
+def normalize_overview(text: str) -> list[str]:
+    """Typed overview text → entry lines (`C1.P1 · x` gains its `- `; `→` lines indent)."""
+    out = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        if line.startswith("→"):
+            out.append("  " + line)
+        elif re.match(r"^-?\s*C\d+", line):
+            out.append("- " + line.lstrip("- ").strip())
+        else:
+            raise ValueError("an overview line starts with C<n>, C<n>.P<m> or →: %s" % line[:60])
+    return out
+
+
+def set_overview(text: str, entries: list[str]) -> str:
+    """Replace the overview's entry lines; the prose around them stays."""
+    header, sections, order, tail = _sections(text)
+    body = sections["structure"][1]
+    span = _overview_span(body)
+    if span is None:
+        body[0:0] = ["", "### Structure Overview", ""] + entries
+        return _assemble(header, sections, order, tail)
+    block = body[span[0]:span[1]]
+    marks = [i for i, line in enumerate(block)
+             if OVERVIEW_ENTRY.match(line) or line.strip().startswith("→")]
+    if marks:
+        block[marks[0]:marks[-1] + 1] = entries
+    else:
+        block[len(_trim(block)):] = ([""] if _trim(block) else []) + entries + [""]
+    body[span[0]:span[1]] = block
+    return _assemble(header, sections, order, tail)

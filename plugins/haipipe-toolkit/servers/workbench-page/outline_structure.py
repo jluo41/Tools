@@ -26,13 +26,14 @@ from pathlib import Path
 
 from src.outline_version import plan_dir, latest_outline, record_path
 from src.plan_shape import canonical_plan
-from src.plan_layout import from_canonical, to_canonical
+from src.plan_layout import (from_canonical, is_sectioned, normalize_overview, overview_lines,
+                             set_overview, to_canonical)
 from live.outline_preview import page_lock
 
 _DIVISION_RE = re.compile(r"^## C(\d+)\b\s*(?:·\s*(.*))?$")
 _PARAGRAPH_RE = re.compile(r"^### (C\d+\.P\d+)\b\s*(?:·\s*(.*))?$")
 _SPAN_RE = re.compile(r"\s*·\s*S\d+\s+to\s+S\d+\s*$")
-_LINE_RE = re.compile(r"^\s*(C\d+(?:\.P\d+)?)\s*(?:·\s*(.*?))?\s*$")
+_LINE_RE = re.compile(r"^\s*(?:-\s*)?(C\d+(?:\.P\d+)?)\s*(?:·\s*(.*?))?\s*$")
 MAX_TEXT = 20000
 
 
@@ -111,9 +112,13 @@ def structure_card_html(page_src: Path, *, read_only: bool = False,
     plan = latest_outline(plan_dir(page_src.parent), page_src.stem)
     if plan is None or not plan.is_file():
         return ""
-    text = structure_text(plan.read_text(encoding="utf-8", errors="replace"))
+    raw = plan.read_text(encoding="utf-8", errors="replace")
+    text = structure_text(raw)
     if not text:
         return ""
+    entries = overview_lines(raw) if is_sectioned(raw) else []
+    if entries:
+        text = overview_box_text(entries)
     editor = "" if read_only else (
         '<form class="structure-form" hidden data-path="%s" data-file="%s" autocomplete="off">'
         '<textarea name="text" class="structure-box" aria-label="Structure text" '
@@ -123,13 +128,54 @@ def structure_card_html(page_src: Path, *, read_only: bool = False,
         '<span class="structure-status" role="status" aria-live="polite"></span></div></form>'
         % (_e(path_q), _e(file_q), _e(text)))
     hint = "" if read_only else '<span class="structure-hint">click to edit</span>'
+    edit = "" if read_only else ' data-structure-edit tabindex="0"'
+    shown = ('<div class="structure-text structure-overview"%s data-text="%s">%s</div>'
+             % (edit, _e(text), overview_html(entries)) if entries else
+             '<pre class="structure-text"%s>%s</pre>' % (edit, _e(text)))
     return (
         '<details class="card structure-card" open aria-label="Structure">'
         '<summary class="structure-heading"><span>Structure</span>%s<code>%s</code></summary>'
-        '<div class="structure-body"><pre class="structure-text"%s>%s</pre>%s</div></details>'
-        % (hint, _e(plan.parent.name + "/" + plan.name), "" if read_only else ' data-structure-edit tabindex="0"',
-           _e(text), editor)
+        '<div class="structure-body">%s%s</div></details>'
+        % (hint, _e(plan.parent.name + "/" + plan.name), shown, editor)
     )
+
+
+def overview_box_text(entries: list[str]) -> str:
+    """The Structure Overview as the box edits it: `C…` lines, `→` lines indented."""
+    return "\n".join(line[2:] if line.startswith("- ") else line for line in entries)
+
+
+def overview_html(entries: list[str]) -> str:
+    """Division lines, then one block per paragraph: title, sentences and job, next question."""
+    out, current = [], None
+    for line in entries:
+        entry = re.match(r"^- (C\d+(?:\.P\d+)?)\s*(?:·\s*(.*))?$", line)
+        if entry:
+            address, rest = entry.group(1), (entry.group(2) or "").strip()
+            if "." not in address:
+                title, _, note = rest.partition(" · ")
+                out.append('<div class=sov-division><span class=sov-addr>%s</span><b>%s</b>'
+                           '<span class=sov-mut>%s</span></div>' % (_e(address), _e(title), _e(note)))
+                current = None
+                continue
+            current = [('<div class=sov-title><span class=sov-addr>%s</span><b>%s</b></div>'
+                        % (_e(address), _e(rest)))]
+            out.append(current)
+            continue
+        note = line.strip().lstrip("→").strip()
+        if current is None:
+            continue
+        span = re.match(r"^(S\d+(?:\s+to\s+S\d+)?)\s*(?:·\s*(.*))?$", note)
+        nxt = re.match(r"^(C\d+\.P\d+)\s*:\s*(.*)$", note)
+        if span:
+            current.append('<div class=sov-job><span class=sov-span>%s</span>%s</div>'
+                           % (_e(span.group(1)), _e(span.group(2) or "")))
+        elif nxt:
+            current.append('<div class=sov-next>→ <span class=sov-addr>%s</span>%s</div>'
+                           % (_e(nxt.group(1)), _e(nxt.group(2))))
+        else:
+            current.append('<div class=sov-job>%s</div>' % _e(note))
+    return "".join(x if isinstance(x, str) else '<div class=sov-para>%s</div>' % "".join(x) for x in out)
 
 
 # ------------------------------------------------------------------- saving
@@ -138,8 +184,8 @@ def _parse_text(text: str) -> list[dict]:
     """-> [{address, title, paragraphs: [{address, title}]}] from the box's lines."""
     rows: list[dict] = []
     for number, raw in enumerate(text.splitlines(), 1):
-        if not raw.strip():
-            continue
+        if not raw.strip() or raw.strip().startswith("→"):
+            continue  # a `→` line is a Structure Overview note, not a heading
         match = _LINE_RE.match(raw)
         if not match:
             raise ValueError("line %d must start with C<n> or C<n>.P<m>: %s" % (number, raw.strip()[:60]))
@@ -231,8 +277,20 @@ def save_structure(page_src: Path, payload: dict, *, read_only: bool = False) ->
             return None, "Outline source must be a local Markdown file"
         raw_source = plan.read_text(encoding="utf-8", errors="replace")
         source = to_canonical(raw_source)
+        entries = None
+        if is_sectioned(raw_source) and overview_lines(raw_source):
+            try:
+                entries = normalize_overview(text)
+            except ValueError as exc:
+                return None, str(exc)
         if _parse_text(structure_text(source)) == wanted:
-            return {"text": structure_text(source), "changed": False, "summary": "nothing changed"}, None
+            if entries is None or entries == overview_lines(raw_source):
+                return {"text": text if entries else structure_text(source), "changed": False,
+                        "summary": "nothing changed"}, None
+            # Only the jobs and next questions changed: rewrite the overview alone.
+            _atomic_write(plan, set_overview(raw_source, entries))
+            return {"text": overview_box_text(entries), "changed": True,
+                    "summary": "overview updated", "outline": str(plan)}, None
         lines = source.splitlines()
         preamble, blocks, tail = _parse_plan(lines)
         old_divisions = {b["address"]: b for b in blocks}
@@ -303,6 +361,8 @@ def save_structure(page_src: Path, payload: dict, *, read_only: bool = False) ->
                               + len([a for a in old_divisions if a not in kept_divisions]))
         out.extend(tail)
         updated = from_canonical(raw_source, "\n".join(out).rstrip("\n") + "\n")
+        if entries is not None:
+            updated = set_overview(updated, entries)
         with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=plan.parent,
                                          prefix=plan.name + ".structure-", delete=False) as tmp:
             tmp.write(updated)
@@ -315,8 +375,16 @@ def save_structure(page_src: Path, payload: dict, *, read_only: bool = False) ->
             with log.open("a", encoding="utf-8") as fh:
                 fh.write("\n### %s · Structure text edited in Draft Space\n- **Headings**: %s\n"
                          % (dt.datetime.now().strftime("%y%m%d %H%M"), summary))
-    return {"text": structure_text(updated), "changed": True, "summary": summary,
-            "outline": str(plan)}, None
+    return {"text": overview_box_text(entries) if entries is not None else structure_text(updated),
+            "changed": True, "summary": summary, "outline": str(plan)}, None
+
+
+def _atomic_write(plan: Path, text: str) -> None:
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=plan.parent,
+                                     prefix=plan.name + ".structure-", delete=False) as tmp:
+        tmp.write(text)
+        temporary = Path(tmp.name)
+    temporary.replace(plan)
 
 
 # ------------------------------------------------------------------- assets
@@ -348,13 +416,23 @@ STRUCTURE_CSS = r'''
 .structure-status{font:12px system-ui,sans-serif;color:var(--mut)}
 .structure-status.err{color:var(--warn)}
 .run-structure pre.structure-text{border-color:transparent}
+.structure-overview{font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:6px 8px}
+.sov-division{display:flex;gap:8px;align-items:baseline;margin:0 0 8px}
+.sov-para{padding:6px 0 7px 12px;border-left:2px solid var(--line);margin:0 0 6px}
+.sov-title{display:flex;gap:8px;align-items:baseline}
+.sov-addr{font:500 11.5px ui-monospace,Menlo,monospace;color:var(--mut)}
+.sov-mut{color:var(--mut);font-size:12.5px}
+.sov-job{color:var(--fg);font-size:13px;margin-top:2px}
+.sov-span{font:500 11.5px ui-monospace,Menlo,monospace;color:var(--mut);margin-right:6px}
+.sov-next{color:var(--acc);font-size:13px;margin-top:2px}
+.sov-next .sov-addr{color:var(--acc);margin-right:5px}
 '''
 
 STRUCTURE_JS = r'''<script>
 (function(){
  if(window.__structureEdit)return; window.__structureEdit=true;
  function card(el){return el.closest('.structure-card');}
- function open(c){var form=c.querySelector('.structure-form');if(!form)return;form.hidden=false;c.classList.add('editing');var box=form.querySelector('.structure-box');box.value=c.querySelector('.structure-text').textContent;box.focus();}
+ function open(c){var form=c.querySelector('.structure-form');if(!form)return;form.hidden=false;c.classList.add('editing');var box=form.querySelector('.structure-box');var shown=c.querySelector('.structure-text');box.value=shown.dataset.text||shown.textContent;box.focus();}
  function close(c){var form=c.querySelector('.structure-form');if(!form)return;form.hidden=true;c.classList.remove('editing');var s=form.querySelector('.structure-status');if(s){s.textContent='';s.classList.remove('err');}}
  document.addEventListener('click',function(e){
   var pre=e.target.closest&&e.target.closest('.structure-text[data-structure-edit]');
@@ -377,10 +455,10 @@ STRUCTURE_JS = r'''<script>
   status.textContent='Saving…';status.classList.remove('err');
   fetch('/_board/outline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
    .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok)throw new Error(j.err||'Unable to save');return j;});})
-   .then(function(j){c.querySelector('.structure-text').textContent=j.text;close(c);
+   .then(function(j){var shown=c.querySelector('.structure-text');if(shown.dataset.text!==undefined){if(j.changed){location.reload();return;}shown.dataset.text=j.text;}else{shown.textContent=j.text;}close(c);
      if(j.changed){var s=c.querySelector('.structure-hint');if(s)s.textContent='saved · '+j.summary+' · reload to refresh the table';}})
    .catch(function(err){status.textContent=String(err.message||err);status.classList.add('err');});
  });
- window.addEventListener('beforeunload',function(e){var c=document.querySelector('.structure-card.editing');if(!c)return;var box=c.querySelector('.structure-box');if(box&&box.value.trim()!==c.querySelector('.structure-text').textContent.trim()){e.preventDefault();e.returnValue='';}});
+ window.addEventListener('beforeunload',function(e){var c=document.querySelector('.structure-card.editing');if(!c)return;var box=c.querySelector('.structure-box');var shown=c.querySelector('.structure-text');if(box&&box.value.trim()!==(shown.dataset.text||shown.textContent).trim()){e.preventDefault();e.returnValue='';}});
 })();
 </script>'''

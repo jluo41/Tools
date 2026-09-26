@@ -163,3 +163,12 @@ def test_generated_overview_gives_each_paragraph_a_title_line_and_a_span_line():
     out = to_sectioned(DRAFT_FIRST)
     overview = out.split("### Structure Overview")[1].split("## 2 ·")[0]
     assert "- C1 · Answer\n- C1.P1 · State the answer\n  → S1 to S2" in overview
+
+
+def test_overview_entries_are_read_normalized_and_replaced():
+    from src.plan_layout import normalize_overview, overview_lines, set_overview
+    assert overview_lines(SECTIONED) == ["- C1 · Answer", "- C1.P1 · State the answer · S1 to S2"]
+    entries = normalize_overview("C1 · Answer\nC1.P1 · State the answer\n→ S1 to S2 · the job\n→ C1.P2: next?")
+    assert entries == ["- C1 · Answer", "- C1.P1 · State the answer", "  → S1 to S2 · the job", "  → C1.P2: next?"]
+    out = set_overview(SECTIONED, entries)
+    assert overview_lines(out) == entries and rows(out) == rows(SECTIONED)
