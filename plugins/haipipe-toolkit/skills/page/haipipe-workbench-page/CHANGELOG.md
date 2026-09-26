@@ -11,6 +11,8 @@
   stays off the Structure text and moves with the paragraph above it; before, the card showed
   it as a line that its own Save then rejected. A renamed paragraph keeps its `· S<a> to S<b>`
   sentence span.
+- `outline/` shows two authored files; the process records are in `outline/records/` and the
+  Folder tab lists `outline/records` and `outline/previous` as their own rows.
 
 ## 0.90.0 · 2026-09-22
 

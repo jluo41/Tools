@@ -16,6 +16,8 @@ import pathlib
 import re
 
 from .common import evidence_lane_dirs
+from .outline_version import plan_dir
+from .plan_layout import is_sectioned, to_canonical
 from .folder_contract import resolve as resolve_folder_contract
 
 _DIV = re.compile(r"(?m)^##\s+C\d+\s*·\s*(.+?)\s*$")
@@ -533,7 +535,7 @@ def check_coverage(page_src: pathlib.Path, plan_text: str):
             if kinds.count("none") > 1:
                 out.append(f"{target} declares Evidence none more than once")
 
-        table = page_src.parent / "outline" / f"{page_src.stem}-evidence-items.md"
+        table = plan_dir(page_src.parent) / f"{page_src.stem}-evidence-items.md"
         records = {}
         if table.is_file():
             record_re = re.compile(
@@ -937,6 +939,8 @@ def canonical_plan(plan_text: str) -> str:
     Classic Bullets and every other line pass through unchanged, so this is
     idempotent and safe on any plan.
     """
+    if is_sectioned(plan_text):
+        plan_text = to_canonical(plan_text)
     if not plan_text or not re.search(r"(?mi)^\s+Point:", plan_text):
         return plan_text
     lines = plan_text.split("\n")
@@ -962,8 +966,12 @@ def canonical_plan(plan_text: str) -> str:
 def draft_first_plan(plan_text: str) -> str:
     """Rewrite every drafted Bullet Draft-first; the inverse of `canonical_plan`.
 
-    Undrafted Bullets and every other line pass through unchanged.
+    Undrafted Bullets and every other line pass through unchanged; a
+    three-section Draft Markdown already keeps its drafts apart and is returned
+    as it is.
     """
+    if is_sectioned(plan_text):
+        return plan_text
     lines = (plan_text or "").split("\n")
     out, i = [], 0
     while i < len(lines):

@@ -34,7 +34,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
 from src.common import evidence_lane_dirs
-from src.outline_version import latest_outline, version_tag
+from src.outline_version import plan_dir, latest_outline, record_path, version_tag
 from src.item_table import (
     ITEM_TYPES,
     LADDER as ITEM_LADDER,
@@ -47,6 +47,7 @@ from src.item_table import (
     wall_label,
 )
 from src.plan_shape import canonical_plan, iter_plan_bullets, presentation_point
+from src.plan_layout import from_canonical, is_sectioned, to_canonical
 from live.outline_preview import (draft_path, read_drafts, bullet_token, record_token,
                                   reader_prose, read_opening_draft)
 from live.outline_scratch import (read_scratch, save_scratch,
@@ -487,6 +488,7 @@ object.evfig{{height:32vh}}
 .workspace-frame{{display:block;width:100%;height:calc(100vh - 150px);
  min-height:180px;border:1px solid var(--line);border-radius:10px;background:var(--card)}}
 {structure_css}
+{runs_css}
 .source-map{{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 10px;color:var(--mut);
  font:11px/1.45 ui-monospace,Menlo,monospace}}
 .source-map code{{font-size:11px;color:var(--fg)}}
@@ -533,6 +535,7 @@ code{{font:12px ui-monospace,Menlo,monospace}}
 </style></head><body>
 <h1>📃 {title}</h1>
 <div class=mut>Page level · <code>{page_stem}</code>{board_link}</div>
+{page_bar}
 <div class=spaces>
  <button class="space on" data-space=bullet data-default=div>Draft Space</button>
  <button class=space data-space=evidence data-default=evidence>Evidence Space</button>
@@ -550,13 +553,14 @@ code{{font:12px ui-monospace,Menlo,monospace}}
  <div class=scratch-run-note><b>Scratch · Page.interactive-writing.scratch</b> · rough thinking for one Section or paragraph group. <b>Start here</b> after the selected Outline exists; actor: human, who owns Scratch notes and manually-triggered Finish. Notes autosave while typing. Owner Skill: haipipe-page-workflow; Finish uses the local summarizer, not a separate worker Skill. A current target Run and status appear beside its heading. Scratch does not edit Draft prose.</div>
  <div class=revise-run-note><b>Revise · Page.interactive-writing.revise</b> · edit the Draft sentences of one paragraph in place, one box per Bullet, one Save per paragraph. Each Save writes the Outline Drafts and appends a change ledger Step to that paragraph's <code>rp-revise-NN_&lt;C.P&gt;</code> Run (Run Space → Page Writing → Revise). Merging or splitting sentences belongs to run-structure.</div>
  {by_div}
+ {runs_draft}
 </div>
 <div class=lens id=lens-evidence><iframe class=workspace-frame
- title="Evidence Space" data-src="{evidence_url}"></iframe></div>
+ title="Evidence Space" data-src="{evidence_url}"></iframe>{runs_evidence}</div>
 <div class=lens id=lens-run><iframe class=workspace-frame
  title="Run Space" data-src="{run_url}"></iframe></div>
 <div class=lens id=lens-delivery><iframe class=workspace-frame
- title="Delivery Space" data-src="{delivery_url}"></iframe></div>
+ title="Delivery Space" data-src="{delivery_url}"></iframe>{runs_delivery}</div>
 <script>
 var SPACE_FOR={{div:'bullet',evidence:'evidence',run:'run',delivery:'delivery',workspace:'evidence'}};
 var params=new URLSearchParams(location.search), requested=params.get('lens')||'',
@@ -706,6 +710,7 @@ activateDraftMode(requestedDraftMode,false);
 if(requestedFocus&&requested==='div')setTimeout(function(){{
   focusRecord(requestedFocus);}},0);
 </script>
+<script>{runs_js}</script>
 </body></html>"""
 
 
@@ -1133,7 +1138,7 @@ _MARK = {"🎯": "aim", "📚": "cite", "📮": "probe",
 
 def _latest_plan(page_src):
     """-> (Path, version) of the highest outline file, or (None, '')."""
-    d = page_src.parent / "outline"
+    d = plan_dir(page_src.parent)
     best = latest_outline(d, page_src.stem)
     if best is None:
         return None, ""
@@ -1239,7 +1244,8 @@ def _edit_plan_bullet(page_src, action, paragraph, bullet, head,
     if not raw_head:
         return None, "Bullet text is empty"
     # This legacy editor rewrites dash lines, so it works on the classic shape.
-    text = canonical_plan(plan.read_text(encoding="utf-8", errors="replace"))
+    raw_source = plan.read_text(encoding="utf-8", errors="replace")
+    text = canonical_plan(raw_source)
     # Validate the address before making any working copy. A mistyped mobile
     # submission must be a no-op, including when the current plan is approved.
     pre_region, pre_err = _plan_region(text.splitlines(), paragraph)
@@ -1262,14 +1268,15 @@ def _edit_plan_bullet(page_src, action, paragraph, bullet, head,
     created = False
     if approved:
         new_tag = _next_shape_version(old_tag)
-        destination = plan.parent / ("%s-outline-%s.md" % (page_src.stem, new_tag))
+        kind = "draft" if "-draft-v" in plan.name else "outline"
+        destination = plan.parent / ("%s-%s-%s.md" % (page_src.stem, kind, new_tag))
         # Never overwrite an existing plan while resolving a concurrent request;
         # advance until a free Shape filename is found rather than ever
         # mutating an already-approved file.
         if destination.exists():
             while destination.exists():
                 new_tag = _next_shape_version(new_tag)
-                destination = plan.parent / ("%s-outline-%s.md" % (page_src.stem, new_tag))
+                destination = plan.parent / ("%s-%s-%s.md" % (page_src.stem, kind, new_tag))
             text = _working_plan_text(text, old_tag, new_tag, action, paragraph, bullet)
             created = True
         else:
@@ -1365,11 +1372,13 @@ def _edit_plan_bullet(page_src, action, paragraph, bullet, head,
     if not changed:
         return None, "nothing changed"
     updated = "\n".join(lines) + ("\n" if text.endswith("\n") else "")
+    updated = from_canonical(raw_source, updated)  # a three-section file stays three sections
     # Atomic replace keeps a mobile double-tap from leaving a truncated plan.
     tmp = destination.with_name(destination.name + ".tmp-%d" % id(lines))
     tmp.write_text(updated, encoding="utf-8")
     tmp.replace(destination)
-    log = page_src.parent / "outline" / (page_src.stem + "-log.md")
+    log = record_path(plan_dir(page_src.parent), page_src.stem, "log")
+    log.parent.mkdir(parents=True, exist_ok=True)
     if created and log.is_file():
         stamp = dt.datetime.now().strftime("%y%m%d %H%M")
         with log.open("a", encoding="utf-8") as fh:
@@ -2577,9 +2586,9 @@ def plan_card(page_src, root=None, path_q="", file_q="", read_only=False,
         '<details class=source-details>'
         '<summary>Sources</summary>'
         '<div class=source-map aria-label="Draft Space sources">'
-        '<span>Plan <code>outline/%s</code></span>'
-        '<span>Draft <code>outline/%s</code></span>'
-        '</div></details>' % (_e(f.name), _e(f.name))
+        '<span>Plan <code>%s/%s</code></span>'
+        '<span>Draft <code>%s/%s</code></span>'
+        '</div></details>' % (_e(f.parent.name), _e(f.name), _e(f.parent.name), _e(f.name))
     )
     if minimal:
         return '<div class="card plan-card minimal-plan">%s%s</div>' % (
@@ -3073,7 +3082,37 @@ def render(title, o, page_src=None, root=None, path_q="", file_q="", read_only=F
                         structure_css=STRUCTURE_CSS,
                         evidence_url=html.escape(evidence_url, quote=True),
                         run_url=html.escape(run_url, quote=True),
-                        delivery_url=html.escape(delivery_url, quote=True))
+                        delivery_url=html.escape(delivery_url, quote=True),
+                        **_runs_parts(page_src))
+
+
+def _runs_parts(page_src):
+    """The Page bar and one Runs panel per Space (Page 0.118); blank without a Page."""
+    blank = {"page_bar": "", "runs_draft": "", "runs_evidence": "", "runs_delivery": "",
+             "runs_css": "", "runs_js": ""}
+    if page_src is None:
+        return blank
+    from live.runs import local_runs
+    from live.runs_panel import (PANEL_CSS, PANEL_JS, page_bar_html, panel_html, readiness,
+                                 run_types)
+    try:
+        rows = local_runs(page_src)
+    except Exception:  # a broken ticket must not blank the Draft Space
+        rows = []
+    types = run_types()
+    plan = latest_outline(plan_dir(page_src.parent), page_src.stem)
+    plan_name = ("%s/%s" % (plan.parent.name, plan.name)) if plan else "no plan yet"
+    item_filter = '<input class=runs-filter placeholder="E40 or C1.P1.B2" aria-label="Filter runs">'
+    return {
+        "page_bar": page_bar_html(page_src, types, rows, plan_name=plan_name,
+                                  readiness=readiness(page_src)),
+        "runs_draft": panel_html(page_src, "draft", rows, types, plan_name=plan_name),
+        "runs_evidence": panel_html(page_src, "evidence", rows, types, plan_name=plan_name,
+                                    extra=item_filter),
+        "runs_delivery": panel_html(page_src, "delivery", rows, types, plan_name=plan_name),
+        "runs_css": PANEL_CSS,
+        "runs_js": PANEL_JS,
+    }
 
 
 class OutlineMixin:

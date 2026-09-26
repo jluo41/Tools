@@ -33,7 +33,7 @@ regenerate: cli/context-record.py haipipe-page-guide.md
 - **Status**: resolved
 - **Rows**: 6 Files rows
 - **Packet**: `cli/pagecontext.py haipipe-page-guide.md --run context`
-- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/outline/haipipe-page-guide-files.md` · sha256:540fafa93cab
+- **Sources**: `Tools/plugins/haipipe-toolkit/skills/page/pages-example/haipipe-page-guide/outline/records/haipipe-page-guide-files.md` · sha256:540fafa93cab
 
 ### CTX5 · Feedback and open decisions
 - **Status**: not-applicable

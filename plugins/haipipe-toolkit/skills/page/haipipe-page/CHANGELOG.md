@@ -1,5 +1,43 @@
+## 0.118.0 · 2026-09-26
+
+- Draft Markdown: the plan can be one three-section file, `## 1 · Structure · Bullet Point
+  Table` (a `### Structure Overview`, then each Bullet's Point and plan lines), `## 2 · Scratch`
+  and `## 3 · Draft` (the sentences), all on one `C.P`/`B` skeleton. `src/plan_layout.py`:
+  `to_canonical` (every reader, through `canonical_plan`), `from_canonical` (every writer; keeps
+  the overview, Scratch notes and trailing sections, carries a paragraph rename into all three
+  sections), `to_sectioned`, and Scratch notes in section 2 (`scratch_notes`, `write_scratch`).
+  Round trips are byte for byte; `draft_first_plan` leaves a three-section file as it is.
+- `draft/` replaces `outline/`: `outline_version.plan_dir` finds `draft/` first, and
+  `latest_outline`, `retire_superseded`, `outline-tidy` and the health check read
+  `<stem>-draft-v*.md` and `<stem>-outline-v*.md` alike. All 47 plan-folder lookups in the Page
+  skill and `servers/workbench-page` go through `plan_dir`.
+- Runs by Space: `src/run_folders.py` (`runs/draft-manual-run/`, `draft-auto-run/`,
+  `evidence-run/`, `supporting-run/`, `delivery-run/`). New Scratch, Revise and feedback tickets go
+  to their Space folder; run numbering and the feedback run list read subfolders (they read flat
+  `runs/` only, so a sorted Page restarted numbering at 01).
+- Workbench: a Runs panel under each Space's content (`servers/workbench-page/runs_panel.py`):
+  run types from the Run cards' new `🔘 BUTTON` lines, the selected run with Rerun, a prompt to
+  copy (`💬 PROMPT`), its process and its result files; a selected paragraph or an item filter
+  narrows it; it folds to one line; the new Page bar has Focus (key F), readiness, and the
+  Context and Check prompts. Labels name the real plan folder.
+- Run cards: `🔘 BUTTON` and `💬 PROMPT` lines on every card, and two new cards,
+  `Page.auto-writing` (`rp-auto-NN`) and `Page.evidence-embed` (`rp-embed-NN`); the Run Space
+  accepts both names.
+- `cli/page.py draft-layout <page> [--sort-runs] [--dry-run]` (`src/draft_migration.py`) moves a
+  Page to this layout and refuses if any Bullet would change.
+- Tests: `tests/test_plan_layout.py` (10), `servers/haipipe-page/tests/test_runs_panel.py` (3).
+
 ## 0.117.0 · 2026-09-25
 
+- `cli/page.py health <page-folder>...`: a mechanical Folder self-consistency check
+  (`src/folder_health.py`). Layout (one current plan, records placement, retired Outline
+  evidence other than the live `bibex/` lane), header (`approved:`, `status:`, `arc:` within
+  the 1,500 characters check.py reads, version policy), Bullet parse (unindented continuation
+  lines, Bullets that parse empty), Draft-to-Page sync by `realizes:` address (orphan
+  addresses FAIL, differing or unadopted Drafts WARN, a stale "adoption pending" header WARN),
+  Evidence ids declared and bound Result paths present, delivery older than the Page, and open
+  `D<nn>` threads. Exit 1 on any FAIL; `--json` for callers. Closing checks and
+  `ref/page-checklist.md` run it first. Tests: `tests/test_folder_health.py`.
 - Draft-first Bullets: a drafted Bullet carries its Draft on the dash line and its planned point
   in `Point:`, so the folded Outline reads as prose. `src/plan_shape.py` adds `split_bullet_block`,
   `render_bullet`, `canonical_plan` (every reader sees the classic shape) and `draft_first_plan`;
@@ -8,6 +46,11 @@
   Bullet would change), moves superseded versions into `outline/previous/`, and repoints
   `outline/<old file>` citations in the Page's own text files, Run scripts included. Blank lines
   inside a multi-line Draft (display equations) are kept in both shapes.
+- The six process records (context, requirement, discussion, feedback, files, log) live in
+  `outline/records/`, so `outline/` opens on the current plan and the Evidence Item contract.
+  `src/outline_version.py::record_path` resolves a record (still finding a flat one in an
+  unmigrated Page) and every reader and writer uses it; `outline-tidy` also moves flat records
+  and retired `-logic.mmd` maps and repoints their citations.
   `src/outline_version.py` adds `retire_superseded` and `find_version`; `latest_outline` falls
   back to `previous/` only when `outline/` holds no plan.
 

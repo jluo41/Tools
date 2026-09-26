@@ -16,9 +16,25 @@ VERSION_RE = re.compile(
 )
 
 
+PLAN_KINDS = ("outline", "draft")
+
+
+def plan_dir(page_folder) -> Path:
+    """The folder that holds a Page's plan: ``draft/`` since 0.118, else ``outline/``.
+
+    A real ``draft/`` wins; an ``outline`` link that points at it is only kept
+    for older readers.
+    """
+    page_folder = Path(page_folder)
+    draft = page_folder / "draft"
+    if draft.is_dir() and not draft.is_symlink():
+        return draft
+    return page_folder / "outline"
+
+
 def version_tag(path: Path) -> str:
-    """Return the filename's outline version tag, or an empty string."""
-    match = re.search(r"-outline-(v\d+(?:\.\d+){0,2})\.md$", Path(path).name)
+    """Return the filename's plan version tag (``-outline-`` or ``-draft-``), or ''."""
+    match = re.search(r"-(?:outline|draft)-(v\d+(?:\.\d+){0,2})\.md$", Path(path).name)
     return match.group(1) if match else ""
 
 
@@ -42,7 +58,7 @@ def version_key(path: Path) -> tuple[int, int, int, int, int]:
 
     # Legacy ``*-outline-v_0707.md`` files remain readable. Any standard
     # approved/revision lineage outranks this migration-only shape.
-    legacy_tag = Path(path).stem.split("-outline-")[-1]
+    legacy_tag = re.split(r"-(?:outline|draft)-", Path(path).stem)[-1]
     digits = re.sub(r"\D", "", legacy_tag)
     return (1, int(digits or 0), 0, 0, 0)
 
@@ -109,12 +125,18 @@ def latest_outline(outline_dir: Path, stem=None):
     outline_dir = Path(outline_dir)
     if not outline_dir.is_dir():
         return None
-    pattern = f"{stem}-outline-*.md" if stem else "*-outline-*.md"
-    plans = list(outline_dir.glob(pattern))
+    plans = plan_files(outline_dir, stem)
     if not plans and (outline_dir / PREVIOUS).is_dir():
         # Only superseded versions left: the newest of them is still current.
-        plans = list((outline_dir / PREVIOUS).glob(pattern))
+        plans = plan_files(outline_dir / PREVIOUS, stem)
     return max(plans, key=version_key) if plans else None
+
+
+def plan_files(folder: Path, stem=None) -> list[Path]:
+    """Every plan version in one folder: `<stem>-outline-*.md` and `<stem>-draft-v*.md`."""
+    prefix = stem or "*"
+    return sorted(set(Path(folder).glob(f"{prefix}-outline-*.md"))
+                  | set(Path(folder).glob(f"{prefix}-draft-v*.md")))
 
 
 # Superseded Outline versions live in `outline/previous/`, so `outline/`
@@ -130,10 +152,9 @@ def retire_superseded(outline_dir: Path, stem=None) -> list[Path]:
     `previous/`; a name clash is left in place and reported by the caller.
     """
     outline_dir = Path(outline_dir)
-    pattern = f"{stem}-outline-*.md" if stem else "*-outline-*.md"
     stems = {}
-    for plan in outline_dir.glob(pattern):
-        stems.setdefault(plan.name.split("-outline-")[0], []).append(plan)
+    for plan in plan_files(outline_dir, stem):
+        stems.setdefault(re.split(r"-(?:outline|draft)-", plan.name)[0], []).append(plan)
     moved = []
     for plans in stems.values():
         newest = max(plans, key=version_key)
@@ -145,6 +166,39 @@ def retire_superseded(outline_dir: Path, stem=None) -> list[Path]:
                 continue
             target.parent.mkdir(exist_ok=True)
             plan.rename(target)
+            moved.append(target)
+    return moved
+
+
+# The six process records sit in `outline/records/`, so `outline/` opens on the
+# two authored files: the current plan and the Evidence Item contract.
+RECORDS = "records"
+RECORD_KINDS = ("context", "requirement", "discussion", "feedback", "files", "log")
+
+
+def record_path(outline_dir: Path, stem: str, kind: str) -> Path:
+    """Return `outline/records/<stem>-<kind>.md`, or the old flat file while it exists.
+
+    New records are always created under `records/`; a caller that writes must
+    create the parent folder.
+    """
+    outline_dir = Path(outline_dir)
+    new = outline_dir / RECORDS / f"{stem}-{kind}.md"
+    old = outline_dir / f"{stem}-{kind}.md"
+    return old if old.is_file() and not new.is_file() else new
+
+
+def retire_records(outline_dir: Path) -> list[Path]:
+    """Move flat `<stem>-<kind>.md` process records into `outline/records/`."""
+    outline_dir = Path(outline_dir)
+    moved = []
+    for kind in RECORD_KINDS:
+        for old in sorted(outline_dir.glob(f"*-{kind}.md")):
+            target = outline_dir / RECORDS / old.name
+            if "-outline-" in old.name or target.exists():
+                continue
+            target.parent.mkdir(exist_ok=True)
+            old.rename(target)
             moved.append(target)
     return moved
 

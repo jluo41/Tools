@@ -51,7 +51,7 @@ chat honest is the same three things that keep a Run honest:
   `discussion-settled-thread`, `sentence-without-realizes`,
   `number-without-lane`; the chat runs `check.py` scoped to the page after a
   write and clears what its pen owns.
-- **The record**: every write leaves one record in `outline/<stem>-log.md`
+- **The record**: every write leaves one record in `outline/records/<stem>-log.md`
   (`### YYMMDD HHMM · chat: <what changed>`) naming the file, even when the
   file is a task folder or another page; the page is the join.
 
@@ -72,7 +72,7 @@ what you type                         lands in                                gr
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 "this sentence overclaims"  comment   page.md · under that sentence           > Comment JL · text · YYMMDD HHMM       none · haipipe-sentence
 "why 8.69 million?"  answerable       the reply + a reply lane                >> CC<MMDD>: answer · source path       none · haipipe-sentence
-"should the title get a subtitle?"    outline/<stem>-discussion.md            ### D<nn> · Ask · Options · We lean ·   OUTLINE · workbench-outline
+"should the title get a subtitle?"    outline/records/<stem>-discussion.md            ### D<nn> · Ask · Options · We lean ·   OUTLINE · workbench-outline
   an open question                                                            Decide (board-wide id)                    ref/record-shape.md
 "make S6 shorter"  wording            page.md · the sentence itself           new sentence + > ✎ ~old~ *new* · CC · date   CONTENT/WRITE · haipipe-page-writing
 "add a sentence on X" · "drop S7"     outline/<stem>-outline-v<G>.<S>[.<E>].md  a Shape revision `v<G>.<S+1>`; evidence resets to zero  OUTLINE · haipipe-page-structure
@@ -91,7 +91,7 @@ what you type                         lands in                                gr
   the numbers, as code                  owning task Folder; bind at SURVEY/LAND  bound to the Evidence Item               haipipe-task-for-page
 feedback · requirement · evidence     never by hand                           regenerated                              cli/feedback.py collect ·
                                                                                                                         cli/requirement.py · cli/evidence-status.py
-every row above                       outline/<stem>-log.md                   ### YYMMDD HHMM · chat: <headline>       append
+every row above                       outline/records/<stem>-log.md                   ### YYMMDD HHMM · chat: <headline>       append
 ```
 
 - **The chat is a router over the same authorities the Runs use**; it never
@@ -176,7 +176,7 @@ targets the nested Studio lane directly.
 - `../../../../servers/workbench-studio/term.py` · the TUI form: the PTY, parking,
   reattachment
 - `../../../../servers/haipipe-board/write.py` · the pens the drawer calls: comment,
-  edit-sentence, discuss (a `D<nn>` record into `outline/<stem>-discussion.md`)
+  edit-sentence, discuss (a `D<nn>` record into `outline/records/<stem>-discussion.md`)
 - `../../../../servers/_host/serve.py` · `/_board/chat`, `/_board/chat-keep`
 - `../../haipipe-workbench-page/ref/record-shape.md` · the `D<nn>` and log record
   grammar the chat writes

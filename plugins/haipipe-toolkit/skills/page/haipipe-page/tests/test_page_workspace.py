@@ -273,8 +273,8 @@ def test_markdown_setup_populates_real_page_records(tmp_path):
     assert "It can unexpectedly undo settled choices" in blocks[0]["head"]
     assert "[Example]" in plan.read_text(encoding="utf-8")
     assert "[Requirement]" in plan.read_text(encoding="utf-8")
-    assert (page.folder / "outline/argument-page-context.md").is_file()
-    assert (page.folder / "outline/argument-page-files.md").is_file()
+    assert (page.folder / "outline/records/argument-page-context.md").is_file()
+    assert (page.folder / "outline/records/argument-page-files.md").is_file()
     assert (page.folder / "results/r01_page-setup/report.md").is_file()
     audit = json.loads((page.folder / "results/r01_page-setup/checks.json").read_text())
     assert audit["blocking_gate"] == "pass"

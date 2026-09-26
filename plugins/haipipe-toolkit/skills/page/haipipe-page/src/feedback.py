@@ -8,7 +8,7 @@ A Round page carries two tables this reads and nothing else:
   §2B  #### S<x> (<page ids>) · <title>
        - **<id> · <head>** (parent <R..>; <anchors>). **Feedback:** … **State:** <s>.
 
-The register a page keeps is `outline/<stem>-feedback.md`, one file grouped by Round: rows DERIVED from the
+The register a page keeps is `outline/records/<stem>-feedback.md`, one file grouped by Round: rows DERIVED from the
 Round (never paraphrased), one field the page authors, `landed:`.
 
 A row carries the Round's WORDS, not only its head: the `**Feedback:**` and
@@ -19,6 +19,8 @@ verbatim and regenerated whole, so it cannot drift from its source.
 """
 import re
 from pathlib import Path
+
+from .outline_version import plan_dir
 
 LEGACY_PAGE_ID = r"[A-Z]{2}\d{2}"
 SEMANTIC_SECTION_ID = (
@@ -115,7 +117,8 @@ def register_path(page_md, round_md=None):
     """ONE file per page, `<stem>-feedback.md`, grouped by Round inside (JL
     260831: "or we just have feedback.md"). Fully DERIVED except `landed:`, so
     whole-file regeneration is safe and no generated-block fence is needed."""
-    return page_md.parent / "outline" / f"{page_md.stem}-feedback.md"
+    from .outline_version import record_path
+    return record_path(plan_dir(page_md.parent), page_md.stem, "feedback")
 
 
 def read_landed(reg):

@@ -16,7 +16,9 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from src.outline_version import latest_outline
+from src.outline_version import plan_dir, latest_outline
+from src.run_folders import ticket_dir, ticket_rel
+from src.plan_layout import is_sectioned, scratch_notes, to_canonical, write_scratch
 
 
 SCOPES = ("section", "subsection", "paragraph")
@@ -84,14 +86,14 @@ def ai_summarize_scratch(page_src: Path, scope: str, target: str, notes: str) ->
 
 
 def _plan(page_src: Path) -> Path:
-    plan = latest_outline(page_src.parent / "outline", page_src.stem)
+    plan = latest_outline(plan_dir(page_src.parent), page_src.stem)
     if plan is None:
         raise ValueError("This Page has no selected Outline Markdown")
     return plan
 
 
 def _target_exists(page_src: Path, scope: str, target: str) -> bool:
-    text = _plan(page_src).read_text(encoding="utf-8", errors="replace")
+    text = to_canonical(_plan(page_src).read_text(encoding="utf-8", errors="replace"))
     sections = set(re.findall(r"^##\s+C(\d+)\b", text, re.M))
     subsections = set(re.findall(r"^###\s+(C\d+\.P\d+)\b", text, re.M))
     if scope == "section":
@@ -148,6 +150,11 @@ def read_scratch(page_src: Path) -> dict:
     """Return all records plus the latest record for each target."""
     plan = _plan(page_src)
     text = plan.read_text(encoding="utf-8", errors="replace")
+    if is_sectioned(text):
+        # Three-section Draft Markdown: notes sit under their heading in `## 2`.
+        records = [dict(r, started="", updated="", text=r["notes"]) for r in scratch_notes(text)]
+        return {"records": records,
+                "latest": {(r["scope"], r["target"]): r for r in records}}
     start, end = _scratch_section(text)
     if start is None or end is None:
         return {"records": [], "latest": {}}
@@ -214,7 +221,11 @@ def _update_plan(plan: Path, record: dict) -> None:
     text = plan.read_text(encoding="utf-8", errors="replace")
     start, end = _scratch_section(text)
     block = _format_block(record).rstrip() + "\n"
-    if start is None or end is None:
+    if is_sectioned(text):
+        text = write_scratch(text, record["target"], record["notes"], run=record["run"],
+                             scope=record["scope"], status=record["status"],
+                             summary=record.get("summary", ""))
+    elif start is None or end is None:
         text = text.rstrip() + "\n\n## Scratch\n\n" + block
     else:
         section = text[start:end]
@@ -235,7 +246,7 @@ def _update_plan(plan: Path, record: dict) -> None:
 
 def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
     base = page_src.parent
-    runs = base / "runs"
+    runs = ticket_dir(base, record["run"])
     result = base / "results" / record["run"]
     runs.mkdir(parents=True, exist_ok=True)
     result.mkdir(parents=True, exist_ok=True)
@@ -249,13 +260,13 @@ def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
         "target_scope: {scope}\n"
         "target: {target}\n"
         "run: {run}\n"
-        "ticket: runs/{run}.md\n"
+        "ticket: {ticket}\n"
         "result: results/{run}\n"
         "---\n\n"
         "# {run}\n\n"
         "- Purpose: capture the person's rough thinking for {scope} {target}.\n"
         "- Close rule: Finish asks the AI for a concise Summary.\n"
-    ).format(**record)
+    ).format(ticket=ticket_rel(base, record["run"]), **record)
     (runs / (record["run"] + ".md")).write_text(ticket, encoding="utf-8")
     version = "v001"
     version_file = result / (version + ".md")
@@ -289,11 +300,12 @@ def _write_run(page_src: Path, record: dict, *, closed: bool) -> dict:
         "run: {run}\nfamily: page\noperation: interactive-writing\n"
         "interaction: human-scratch\nmode: scratch\n"
         "target_scope: {scope}\ntarget: {target}\n"
-        "ticket: runs/{run}.md\nresult: results/{run}\n"
+        "ticket: {ticket}\nresult: results/{run}\n"
         "status: {status}\nversion: v001\nstep: s001\n"
         "version_file: results/{run}/v001.md\n"
         "summary: {summary}\n".format(
             run=record["run"], scope=record["scope"], target=record["target"],
+            ticket=ticket_rel(base, record["run"]),
             status=status, summary=record.get("summary", "") or "pending",
         )
     )
@@ -343,6 +355,9 @@ def save_scratch(page_src: Path, payload: dict, *, read_only: bool = False,
                 raise ValueError("closed Scratch Runs are immutable; start a new one")
         elif current and current["status"].lower() != "closed":
             record = current
+            if not record.get("run"):
+                # Notes typed by hand in `## 2 · Scratch` get their first Run now.
+                record = dict(record, run=_run_id(_next_run_id(page_src), target), started=_now())
         else:
             record = {"run": _run_id(_next_run_id(page_src), target),
                       "scope": scope, "target": target,

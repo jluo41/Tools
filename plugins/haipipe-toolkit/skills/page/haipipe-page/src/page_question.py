@@ -14,6 +14,7 @@ from .item_table import (action_label, compact_global_run, compact_paper_run,
                          readable_global_run, readable_paper_route, repo_root,
                          readable_task, run_registry, wall_label)
 from .plan_shape import iter_plan_bullets
+from .outline_version import plan_dir
 
 STAGE_LABELS = {
     "seed": "SEED PAGE",
@@ -662,7 +663,7 @@ def has_outline_plan(page_src):
     page_src = pathlib.Path(page_src)
     return (page_src.is_file()
             and ((page_src.parent / "workflow/insight.yaml").is_file()
-                 or any((page_src.parent / "outline").glob(
+                 or any((plan_dir(page_src.parent)).glob(
                      f"{page_src.stem}-outline-v*.md"))))
 
 
@@ -1361,7 +1362,7 @@ def _render_question(q, prv, nxt):
     # Page therefore renders only the product and compact Outline projection;
     # Files, Discussion, and Log belong to the Outline workbench workspaces.
     has_outline_folder = bool(
-        page_src and (page_src.parent / "outline").is_dir()
+        page_src and (plan_dir(page_src.parent)).is_dir()
     )
     flb = render_subsections(parse_content_sections(sec(q["sec"], "Files")))
     fls = "" if has_outline_folder else sect("📁 Files", flb, cls="fls")

@@ -224,14 +224,14 @@ may reuse the same source or Supporting Run.
 Q        what will this page say, division by division, bullet by bullet;
          what does each bullet owe; and where in tasks/ does each owed thing
          come from?
-READS    outline/<stem>-requirement.md (V1 to V4) · outline/<stem>-feedback.md
+READS    outline/records/<stem>-requirement.md (V1 to V4) · outline/records/<stem>-feedback.md
          (open rows) · outline/<stem>-evidence-items.md (the authored Item
          contract) · the owning Run Workflow/Run Spec outline policy · the page · the current plan ·
          the project's Execution/Discovery Run inventories (SURVEY only) ·
-         outline/<stem>-context.md · declared sibling Pages' approved arcs and
+         outline/records/<stem>-context.md · declared sibling Pages' approved arcs and
          decisions + the Story Section Narrative row through Context · outline/skill/<stem>.md when present
 WRITES   outline/<stem>-outline-v<G>.<S>[.<E>].md · outline/<stem>-evidence-items.md ·
-         outline/<stem>-discussion.md (D<nn>) · outline/<stem>-log.md (one
+         outline/records/<stem>-discussion.md (D<nn>) · outline/records/<stem>-log.md (one
          record) · current `runs/` tickets and `results/` manifests ·
          embedded Drafts in the selected Outline Markdown (Draft-first) ·
          the superseded plan moved to outline/previous/ · never the page
@@ -466,7 +466,7 @@ measured authority is `not specified`, never recalled from memory.
 
 ### ③ Threads and the log record
 
-- **Every open ask becomes a `D<nn>` record** in `outline/<stem>-discussion.md`
+- **Every open ask becomes a `D<nn>` record** in `outline/records/<stem>-discussion.md`
   (Ask · Options · We lean · Decide), id allocated board-wide
   (`ref/record-shape.md`); a settled one is a log record. An ask with no Aim
   is a thread, never a minted Aim.

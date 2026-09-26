@@ -30,7 +30,8 @@ import secrets
 from pathlib import Path
 
 from live.outline_preview import page_lock
-from src.outline_version import latest_outline
+from src.outline_version import plan_dir, latest_outline
+from src.run_folders import ticket_dir, ticket_rel
 
 KINDS = ("explore", "wording", "accept")
 OPEN_STATUSES = {"", "ready", "running", "waiting-for-feedback", "open"}
@@ -62,7 +63,7 @@ def _read(path: Path) -> str:
 
 
 def plan_path(page: Path) -> Path | None:
-    return latest_outline(page.parent / "outline", page.stem)
+    return latest_outline(plan_dir(page.parent), page.stem)
 
 
 # ── the plan's paragraphs ──────────────────────────────────────────────────
@@ -148,7 +149,7 @@ def run_rows(page: Path, every: set[int]) -> list[dict]:
     rows = []
     if not runs_dir.is_dir():
         return rows
-    for ticket in sorted(runs_dir.glob("rp-*.md")):
+    for ticket in sorted(runs_dir.rglob("rp-*.md")):
         stem = ticket.stem
         kind = _kind_of(stem)
         if not kind:
@@ -569,13 +570,13 @@ def _write_runtime(row: dict, page: Path, version: str, step: str, vfile: Path,
     else:
         text = (
             "run: %s\nfamily: page\noperation: interactive-writing\ninteraction: human-feedback\n"
-            "target: %s\nparagraphs: %s\nticket: runs/%s.md\nresult: %s\n"
+            "target: %s\nparagraphs: %s\nticket: %s\nresult: %s\n"
             "status: ready\nversion: %s\nstep: s000\nversion_file: %s/%s.md\nversion_sha256: null\n"
             "worker:\n  kind: skill\n  name: haipipe-writing\n"
             "started_at: null\nfinished_at: null\nsupersedes: null\nfailure: null\n"
             "analysis:\n  status: deferred\n  task_run: null\n  input_sha256: null\n  result: null\n"
-            % (row["id"], row.get("target", ""), row.get("paragraphs", ""), row["id"], rel_result,
-               version, rel_result, version))
+            % (row["id"], row.get("target", ""), row.get("paragraphs", ""),
+               ticket_rel(page.parent, row["id"]), rel_result, version, rel_result, version))
     text = _set_yaml_key(text, "status", "waiting-for-feedback")
     text = _set_yaml_key(text, "version", version)
     text = _set_yaml_key(text, "step", step)
@@ -630,7 +631,7 @@ def _write_working(row: dict, version: str, step: str, label: str, kind: str, pa
 def _allocate(page: Path, paragraph: str, para: dict, rows: list[dict], author: str, now: str) -> dict:
     nn = max([r["nn"] for r in rows if r["kind"] == "para"], default=0) + 1
     run_id = "rp-para-%02d_P%02d" % (nn, para["p"])
-    ticket = page.parent / "runs" / ("%s.md" % run_id)
+    ticket = ticket_dir(page.parent, run_id) / ("%s.md" % run_id)
     ticket.parent.mkdir(parents=True, exist_ok=True)
     plan = plan_path(page)
     ticket.write_text(

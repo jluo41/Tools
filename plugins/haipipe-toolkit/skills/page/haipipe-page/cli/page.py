@@ -16,14 +16,17 @@ from src.page_setup import run_setup
 from src.page_migration import migrate_embedded_drafts, migrate_global_paragraphs
 
 
-def _repoint_citations(folder: Path, names: set) -> int:
-    """Rewrite `outline/<moved file>` to `outline/previous/<moved file>` in the Page's text files."""
-    if not names:
+def _repoint_citations(folder: Path, moves: dict) -> int:
+    """Rewrite `outline/<name>` to `outline/<sub>/<name>` in the Page's text files.
+
+    `moves` maps a moved file name to its subfolder (`previous` or `records`).
+    """
+    if not moves:
         return 0
-    pattern = re.compile(r"(?<!previous/)outline/([A-Za-z0-9_.-]+-outline-v[0-9][0-9._]*\.md)")
+    pattern = re.compile(r"(outline|draft)/([A-Za-z0-9_.-]+\.(?:md|mmd))")
     count = 0
     for path in folder.rglob("*"):
-        if not path.is_file() or "previous" in path.relative_to(folder).parts:
+        if not path.is_file() or {"previous", "_archive"} & set(path.relative_to(folder).parts):
             continue
         try:
             text = path.read_text(encoding="utf-8")
@@ -32,9 +35,9 @@ def _repoint_citations(folder: Path, names: set) -> int:
         hits = [0]
 
         def swap(match):
-            if match.group(1) in names:
+            if match.group(2) in moves:
                 hits[0] += 1
-                return "outline/previous/" + match.group(1)
+                return "%s/%s/%s" % (match.group(1), moves[match.group(2)], match.group(2))
             return match.group(0)
 
         new = pattern.sub(swap, text)
@@ -46,12 +49,14 @@ def _repoint_citations(folder: Path, names: set) -> int:
 
 def outline_tidy(target: Path, dry_run: bool = False) -> dict:
     """Current Outline Draft-first; superseded versions under outline/previous/."""
-    from src.outline_version import latest_outline, retire_superseded, version_key, PREVIOUS
+    from src.outline_version import (latest_outline, plan_files, retire_superseded, retire_records,
+                                     version_key, PREVIOUS, RECORD_KINDS)
     from src.plan_shape import draft_first_plan, iter_plan_bullets
 
     target = target.expanduser().resolve()
-    outline = (target if target.name == "outline" else
-               (target if target.is_dir() else target.parent) / "outline")
+    from src.outline_version import plan_dir
+    outline = (target if target.name in ("outline", "draft") else
+               plan_dir(target if target.is_dir() else target.parent))
     if not outline.is_dir():
         raise ValueError(f"No outline/ folder at {outline}")
     stem = target.stem if target.is_file() else None
@@ -64,17 +69,28 @@ def outline_tidy(target: Path, dry_run: bool = False) -> dict:
                           for b in iter_plan_bullets(text)]
     if shape(new) != shape(old):
         raise ValueError(f"{current.name}: Draft-first rewrite would change a Bullet; nothing written")
-    pattern = f"{stem}-outline-*.md" if stem else "*-outline-*.md"
-    older = sorted((p for p in outline.glob(pattern) if p != current), key=version_key)
+    older = sorted((p for p in plan_files(outline, stem) if p != current), key=version_key)
+    records = sorted(p for kind in RECORD_KINDS for p in outline.glob(f"*-{kind}.md")
+                     if not re.search(r"-(?:outline|draft)-v\d", p.name))
+    maps = sorted(outline.glob("*-logic.mmd"))  # retired Mermaid maps: nothing reads them
     result = {"current": current.name, "draft_first": new != old,
-              "to_previous": [p.name for p in older], "dry_run": dry_run}
+              "to_previous": [p.name for p in older + maps],
+              "to_records": [p.name for p in records], "dry_run": dry_run}
     if not dry_run:
         if new != old:
             current.write_text(new, encoding="utf-8")
         moved = retire_superseded(outline, stem)
+        for old_map in maps:
+            target = outline / PREVIOUS / old_map.name
+            if not target.exists():
+                target.parent.mkdir(exist_ok=True)
+                old_map.rename(target)
+                moved.append(target)
+        moved += retire_records(outline)
         result["moved"] = [str(p.relative_to(outline)) for p in moved]
-        result["repointed"] = _repoint_citations(outline.parent, {p.name for p in moved})
-        result["left_in_place"] = sorted(p.name for p in outline.glob(pattern) if p != current)
+        result["repointed"] = _repoint_citations(
+            outline.parent, {p.name: p.parent.name for p in moved})
+        result["left_in_place"] = sorted(p.name for p in plan_files(outline, stem) if p != current)
     return result
 
 
@@ -107,10 +123,24 @@ def main(argv=None):
     migrate_drafts.add_argument("page", type=Path)
     tidy = commands.add_parser(
         "outline-tidy",
-        help="Write the current Outline Draft-first and move older versions to outline/previous/",
+        help="Current Outline Draft-first; old versions to outline/previous/, records to outline/records/",
     )
     tidy.add_argument("page", type=Path, help="Page Face .md, Page Folder, or its outline/ folder")
     tidy.add_argument("--dry-run", action="store_true")
+    layout = commands.add_parser(
+        "draft-layout",
+        help="Move a Page to draft/ with a three-section Draft Markdown (0.118)",
+    )
+    layout.add_argument("page", type=Path, help="Page Folder or Page Face .md")
+    layout.add_argument("--sort-runs", action="store_true",
+                        help="Also move each ticket in runs/ into its Space folder")
+    layout.add_argument("--dry-run", action="store_true")
+    health = commands.add_parser(
+        "health",
+        help="Check that each Page Folder agrees with itself; exit 1 on any FAIL",
+    )
+    health.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
+    health.add_argument("--json", action="store_true")
     for command in ("inspect", "build", "serve"):
         sub = commands.add_parser(command)
         sub.add_argument("page", type=Path)
@@ -177,6 +207,21 @@ def main(argv=None):
             return
         elif args.command == "outline-tidy":
             print(json.dumps(outline_tidy(args.page, dry_run=args.dry_run), indent=2))
+            return
+        elif args.command == "draft-layout":
+            from src.draft_migration import draft_layout
+            print(json.dumps(draft_layout(args.page, sort_runs=args.sort_runs,
+                                          dry_run=args.dry_run), indent=2, ensure_ascii=False))
+            return
+        elif args.command == "health":
+            from src.folder_health import FAIL, folder_health, render
+            reports = [folder_health(page) for page in args.pages]
+            if args.json:
+                print(json.dumps(reports, indent=2, ensure_ascii=False))
+            else:
+                print("\n\n".join(render(report) for report in reports))
+            if any(report["verdict"] == FAIL for report in reports):
+                sys.exit(1)
             return
         elif args.command == "migrate-drafts":
             context = load_page(args.page)

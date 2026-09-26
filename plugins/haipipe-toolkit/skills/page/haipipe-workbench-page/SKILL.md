@@ -101,20 +101,27 @@ Folder-owner's resolved canonical Result path, plus payload files.
 ├── <stem>-outline-v<G>.<S>[.<E>].md
 │                             the ONE current plan · generation · Shape · optional evidence revision
 │                             drafted Bullets Draft-first: the sentence on the dash line, `Point:` below
-├── previous/                 every superseded plan version, moved here when a new one is written
-├── <stem>-context.md         what Runs MAY USE generated · CONTEXT/PREPARE
 ├── <stem>-evidence-items.md  authored Evidence Item contracts · Outline authority
-├── <stem>-requirement.md     what we MUST obey   V<n> generated venue · W<n> authored writing
-│                             cli/requirement.py refreshes V and preserves W
-├── <stem>-discussion.md      what is still ASKED authored · open D<nn> threads · never versioned
-├── <stem>-feedback.md        what OTHERS said    generated · cli/feedback.py collect · page writes Landed
-├── <stem>-files.md           what it READS/WRITES authored · F<n> records · Path + Role
-├── <stem>-log.md             what CHANGED        authored · dated records · append-only · newest first
+├── records/                  the six process records, kept off the top of outline/
+│   ├── <stem>-context.md     what Runs MAY USE generated · CONTEXT/PREPARE
+│   ├── <stem>-requirement.md what we MUST obey   V<n> generated venue · W<n> authored writing
+│   │                         cli/requirement.py refreshes V and preserves W
+│   ├── <stem>-discussion.md  what is still ASKED authored · open D<nn> threads · never versioned
+│   ├── <stem>-feedback.md    what OTHERS said    generated · cli/feedback.py collect · page writes Landed
+│   ├── <stem>-files.md       what it READS/WRITES authored · F<n> records · Path + Role
+│   └── <stem>-log.md         what CHANGED        authored · dated records · append-only · newest first
+├── previous/                 every superseded plan version, moved here when a new one is written
 ├── skill/                    ranked Page Skills; one primary store + derived editor
 │   ├── <stem>.md             PRIMARY · one name per row · order is the person's rank
 │   └── <stem>-skill.html     DERIVED · embedded editor
 └── _archive/legacy-outline-evidence/  old Evidence material; migration only
 ```
+
+The top of `outline/` holds only the two authored files, the current plan and
+the Evidence Item contract. Every reader finds a record through
+`src/outline_version.py::record_path`, which also still finds a flat record
+in an unmigrated Page; `page.py outline-tidy <page>` moves flat records into
+`records/`.
 
 Do not create new files under `outline/evidence/` or `<page>/evidence/`.
 ### V/C/D label identity
@@ -225,7 +232,7 @@ read the retired folder or generated snapshot as a compatibility path.
   Aims, and every other fold start shut. This folder
   remains the only authority for all nine records. A manuscript Section keeps
   no `### Writing Style` block in its product source; its page-owned writing
-  rules are `W<n>` records inside `outline/<stem>-requirement.md`.
+  rules are `W<n>` records inside `outline/records/<stem>-requirement.md`.
   Opening and Outline use distinct icons because the former orients the reader
   and the latter exposes the plan. `check.py` reports a surviving
   `## States`, `## Files`, `## Log` or `## Discussion` as `retired-section`.

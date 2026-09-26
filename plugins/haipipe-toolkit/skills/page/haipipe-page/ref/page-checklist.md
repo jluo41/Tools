@@ -11,6 +11,8 @@ declared Page owner before applying its additional requirements.
 
 ## 1. Declare what is being checked
 
+- [ ] Run `cli/page.py health <page-folder>` first and carry its FAIL and WARN
+      rows into the result; a FAIL blocks a completion claim.
 - [ ] Identify the existing Page Face/Folder, or the input and new destination.
       Do not wrap an existing Page in another Page Folder.
 - [ ] State the operation: technical file intake, authored Page creation,

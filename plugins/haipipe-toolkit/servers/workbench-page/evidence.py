@@ -21,6 +21,7 @@ import sys
 from urllib.parse import quote
 
 from src.common import evidence_run_dirs
+from src.outline_version import plan_dir
 from src.evidence_labels import parse_result_labels
 from src.item_table import (readable_global_run, readable_paper_route,
                             readable_task, wall_label)
@@ -1052,8 +1053,8 @@ def _legacy_render(page_src: pathlib.Path, path_q: str, file_q: str) -> str:
     stem = page_src.stem
     folded = page_src.parent.name == stem
     folder = page_src.parent if folded else None
-    ev = (folder / "outline" / f"{stem}-evidence.md") if folder else \
-         (page_src.parent / "outline" / f"{stem}-evidence.md")
+    ev = (plan_dir(folder) / f"{stem}-evidence.md") if folder else \
+         (plan_dir(page_src.parent) / f"{stem}-evidence.md")
     page_home = folder or page_src.parent
     runmap = next((d / f"{stem}-run-bindings.md"
                    for d in evidence_run_dirs(page_home)
@@ -2397,7 +2398,7 @@ def _minimal_table(records: list[dict[str, object]]) -> str:
 
 def _retired_evidence_paths(page_home: pathlib.Path) -> list[str]:
     """Return only the presence of retired Evidence paths, never their content."""
-    outline = page_home / "outline"
+    outline = plan_dir(page_home)
     found = []
     if outline.is_dir():
         found.extend(sorted(

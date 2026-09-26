@@ -316,7 +316,7 @@ durable passed evidence routes to HOLD.
 
 Requirements resolve in the order `haipipe-page` §🔍 states (base and
 template → Page Face owner → current Run Spec owner → the page's authored W records in
-`outline/<stem>-requirement.md` and Stage Contract → the division purpose
+`outline/records/<stem>-requirement.md` and Stage Contract → the division purpose
 and each paragraph's job line); a conflict between two sources is reported
 and that criterion is not judged. A non-Section compatibility page may still
 carry `## Writing Style` in its source.

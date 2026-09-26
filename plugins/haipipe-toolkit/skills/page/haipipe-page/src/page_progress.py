@@ -6,7 +6,7 @@ both call `run_progress()` here. Never writes.
 
 The Runs, in list order, and what each state is read from:
 
-    🧭 context    outline/<stem>-context.md exists as the current preflight projection
+    🧭 context    outline/records/<stem>-context.md exists as the current preflight projection
     🧩 structure  newest outline/<stem>-outline-v<G>.<S>[.<E>].md and Shape approval
                  (SHAPE step), plus the Evidence Item table's Decide per item (SURVEY step)
     🃏 evidence   the Evidence Item table joined to local Results: ready · folded (LAND,
@@ -36,7 +36,7 @@ from .folder_contract import (
     folder_identity_path,
     resolve as resolve_folder_contract,
 )
-from .outline_version import latest_outline, version_tag
+from .outline_version import plan_dir, latest_outline, version_tag
 
 
 SKILLS_ROOT = Path(__file__).resolve().parents[3]
@@ -121,7 +121,7 @@ def run_of(token):
 
 
 def _latest_outline(pd):
-    od = pd / "outline"
+    od = plan_dir(pd)
     best = latest_outline(od)
     tag = version_tag(best) if best else ""
     return best, tag.removeprefix("v")
@@ -323,7 +323,8 @@ def run_progress(page_md, board=None):
     ic = items["counts"] if items else {}
     live_rows = (items["marks"] - ic.get("deferred", 0) - ic.get("dropped", 0)) if items else 0
     folded_rows = ic.get("folded", 0) + ic.get("accepted", 0)
-    context_file = pd / "outline" / f"{page_md.stem}-context.md"
+    from .outline_version import record_path
+    context_file = record_path(plan_dir(pd), page_md.stem, "context")
     context_state = "done" if context_file.is_file() else "owed"
     content_ready = bool(divs and md_m >= ap_m and (not tex_dirs or pdf_fresh))
 

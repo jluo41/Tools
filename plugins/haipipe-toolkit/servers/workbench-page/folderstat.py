@@ -214,6 +214,9 @@ def folder_status(page_src):
         # material and avoids counting the same files twice.
         if d.name == "outline":
             rows.append(row_for(d, "outline", recursive=False))
+            for sub in ("records", "previous"):
+                if (d / sub).is_dir() and not (d / sub).is_symlink():
+                    rows.append(row_for(d / sub, "outline/%s" % sub))
             skill = d / "skill"
             if skill.is_dir() and not skill.is_symlink():
                 rows.append(row_for(skill, "outline/skill"))

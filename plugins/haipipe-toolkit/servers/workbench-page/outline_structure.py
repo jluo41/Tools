@@ -24,8 +24,9 @@ import re
 import tempfile
 from pathlib import Path
 
-from src.outline_version import latest_outline
+from src.outline_version import plan_dir, latest_outline, record_path
 from src.plan_shape import canonical_plan
+from src.plan_layout import from_canonical, to_canonical
 from live.outline_preview import page_lock
 
 _DIVISION_RE = re.compile(r"^## C(\d+)\b\s*(?:·\s*(.*))?$")
@@ -107,7 +108,7 @@ def structure_text(plan_text: str) -> str:
 def structure_card_html(page_src: Path, *, read_only: bool = False,
                         path_q: str = "", file_q: str = "") -> str:
     """The Structure card: the text, and (unless read-only) the box behind it."""
-    plan = latest_outline(page_src.parent / "outline", page_src.stem)
+    plan = latest_outline(plan_dir(page_src.parent), page_src.stem)
     if plan is None or not plan.is_file():
         return ""
     text = structure_text(plan.read_text(encoding="utf-8", errors="replace"))
@@ -126,7 +127,7 @@ def structure_card_html(page_src: Path, *, read_only: bool = False,
         '<details class="card structure-card" open aria-label="Structure">'
         '<summary class="structure-heading"><span>Structure</span>%s<code>%s</code></summary>'
         '<div class="structure-body"><pre class="structure-text"%s>%s</pre>%s</div></details>'
-        % (hint, _e("outline/" + plan.name), "" if read_only else ' data-structure-edit tabindex="0"',
+        % (hint, _e(plan.parent.name + "/" + plan.name), "" if read_only else ' data-structure-edit tabindex="0"',
            _e(text), editor)
     )
 
@@ -223,12 +224,13 @@ def save_structure(page_src: Path, payload: dict, *, read_only: bool = False) ->
     except ValueError as exc:
         return None, str(exc)
     with page_lock(page_src):
-        plan = latest_outline(page_src.parent / "outline", page_src.stem)
+        plan = latest_outline(plan_dir(page_src.parent), page_src.stem)
         if plan is None or not plan.is_file():
             return None, "No Outline Markdown exists for this Page"
         if plan.is_symlink() or plan.parent.is_symlink():
             return None, "Outline source must be a local Markdown file"
-        source = plan.read_text(encoding="utf-8", errors="replace")
+        raw_source = plan.read_text(encoding="utf-8", errors="replace")
+        source = to_canonical(raw_source)
         if _parse_text(structure_text(source)) == wanted:
             return {"text": structure_text(source), "changed": False, "summary": "nothing changed"}, None
         lines = source.splitlines()
@@ -300,14 +302,15 @@ def save_structure(page_src: Path, payload: dict, *, read_only: bool = False) ->
         changes["removed"] = (len(old_paragraphs) - len([a for a in old_paragraphs if a in kept_paragraphs])
                               + len([a for a in old_divisions if a not in kept_divisions]))
         out.extend(tail)
-        updated = "\n".join(out).rstrip("\n") + "\n"
+        updated = from_canonical(raw_source, "\n".join(out).rstrip("\n") + "\n")
         with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=plan.parent,
                                          prefix=plan.name + ".structure-", delete=False) as tmp:
             tmp.write(updated)
             temporary = Path(tmp.name)
         temporary.replace(plan)
         summary = ", ".join("%d %s" % (n, k) for k, n in changes.items() if n) or "headings rewritten"
-        log = page_src.parent / "outline" / (page_src.stem + "-log.md")
+        log = record_path(plan_dir(page_src.parent), page_src.stem, "log")
+        log.parent.mkdir(parents=True, exist_ok=True)
         if log.is_file():
             with log.open("a", encoding="utf-8") as fh:
                 fh.write("\n### %s · Structure text edited in Draft Space\n- **Headings**: %s\n"

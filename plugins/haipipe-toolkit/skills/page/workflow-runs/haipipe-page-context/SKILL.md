@@ -38,7 +38,7 @@ source records           remain authoritative and physically separate
 
 This skill supplies a context-resolution controller adapter, outside the Run list. It
 freezes inputs for the Page Run Workflow, but does not mint a Level-4 Run;
-`outline/<stem>-context.md` and its compatibility receipt are planning inputs
+`outline/records/<stem>-context.md` and its compatibility receipt are planning inputs
 for later Run Specs.
 
 ## ⚡ Brief
@@ -50,7 +50,7 @@ ASKS     what exact context may the selected Page Run rely on?
 READS    Page + Folder identity · Folder owner · Page Face owner · policy ·
          requirement · feedback · discussion · files · log · ranked skills ·
          related Page fragments · current plan/evidence/run state
-WRITES   outline/<stem>-context.md, generated; one context Run receipt
+WRITES   outline/records/<stem>-context.md, generated; one context Run receipt
 EXITS    every required authority is named, conflicts and missing inputs are
          explicit, and every frozen source has an address plus freshness fact
 ROUTES   OUTLINE · CONTEXT again · HOLD
@@ -60,7 +60,7 @@ RUNS     none. PREPARE is planning/context resolution, not a Level-4 Run
 ## 🧭 Context is a record, not a fourth Space
 
 The three reader-facing Spaces are Draft, Evidence, and Run. CONTEXT writes
-`outline/<stem>-context.md` for later Runs and Folder inspection; it does not
+`outline/records/<stem>-context.md` for later Runs and Folder inspection; it does not
 add a Context tab, card group, or fourth workspace. Do not concatenate the
 source files, move them into a new folder, or make the generated Context record
 a second source of truth. The record points to the sources and states how they
@@ -128,7 +128,7 @@ Resolve the five facts later Runs need:
 
 ## ③ Freeze
 
-Write `outline/<stem>-context.md` using `ref/context-record.md`. Every source
+Write `outline/records/<stem>-context.md` using `ref/context-record.md`. Every source
 row carries a repository-relative path, role, and freshness fact. Use a
 SHA-256 when stable bytes matter; use a durable version/receipt identifier
 when the source owns its own version grammar.
@@ -166,10 +166,10 @@ A content-only edit under the same frozen authority does not reopen CONTEXT.
 ```text
 Run: CONTEXT
 cycle: PREPARE
-context: outline/<stem>-context.md
+context: outline/records/<stem>-context.md
 sources: n resolved · n missing · n conflicting · n stale
 identity: <Folder kind> · <Folder owner> · <Page Face owner or none>
-artifacts: ["outline/<stem>-context.md"]
+artifacts: ["outline/records/<stem>-context.md"]
 evidence: [<authority paths and version/hash facts>]
 route: OUTLINE | CONTEXT | HOLD
 next_cycle: SHAPE | PREPARE       # omit when route is HOLD

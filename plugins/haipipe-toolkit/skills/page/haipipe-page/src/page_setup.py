@@ -16,6 +16,7 @@ import re
 import tomllib
 
 from live.outline_preview import bullet_token, read_drafts
+from .outline_version import plan_dir
 from src.plan_shape import iter_plan_bullets, render_bullet
 
 
@@ -325,7 +326,7 @@ def _replace_manifest_title(manifest: Path, title: str) -> None:
 
 def _context_files(page, title: str, divisions: tuple[DraftDivision, ...], bullets: int,
                    source_sentences: int, date: str) -> None:
-    outline = page.folder / "outline"
+    outline = plan_dir(page.folder)
     stem = page.source.stem
     context = (
         f"# {stem} · Context\npage: {page.source.name}\nkind: generated setup context\n"
@@ -349,8 +350,10 @@ def _context_files(page, title: str, divisions: tuple[DraftDivision, ...], bulle
         f"- **Path:** outline/{stem}-outline-v0.1.md\n"
         "- **Role:** reader moves and matching Draft prose awaiting review.\n"
     )
-    (outline / f"{stem}-context.md").write_text(context, encoding="utf-8")
-    (outline / f"{stem}-files.md").write_text(files, encoding="utf-8")
+    from src.outline_version import record_path
+    record_path(outline, stem, "context").parent.mkdir(parents=True, exist_ok=True)
+    record_path(outline, stem, "context").write_text(context, encoding="utf-8")
+    record_path(outline, stem, "files").write_text(files, encoding="utf-8")
 
 
 def _setup_run(page, title: str, divisions: int, bullets: int, source_sentences: int,
@@ -429,8 +432,8 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
     if page.content is None or page.content.suffix.lower() not in {".md", ".markdown"}:
         raise ValueError("Automatic semantic setup currently requires imported Markdown content")
     existing = page.source.read_text(encoding="utf-8")
-    plan_glob = list((page.folder / "outline").glob(f"{page.source.stem}-outline-v*.md")) \
-        if (page.folder / "outline").is_dir() else []
+    plan_glob = list((plan_dir(page.folder)).glob(f"{page.source.stem}-outline-v*.md")) \
+        if (plan_dir(page.folder)).is_dir() else []
     is_scaffold = "Working Page for " in existing or SETUP_MARKER in existing
     fresh_intake = "Working Page for " in existing and not plan_glob
     if (not is_scaffold or plan_glob) and not force:
@@ -448,7 +451,7 @@ def setup_markdown_page(page, *, force: bool = False, input_file: Path | None = 
         for bullet in paragraph.bullets
     )
     date = datetime.now().strftime("%y%m%d")
-    outline = page.folder / "outline"
+    outline = plan_dir(page.folder)
     outline.mkdir(exist_ok=True)
     plan = outline / f"{page.source.stem}-outline-v0.1.md"
     if force:
@@ -494,7 +497,7 @@ def _existing_setup(page, *, input_file: Path | None = None):
     from src.outline_version import latest_outline, version_tag
     from src.page_workspace import build_page
 
-    plan = latest_outline(page.folder / "outline", page.source.stem)
+    plan = latest_outline(plan_dir(page.folder), page.source.stem)
     drafts = read_drafts(page.source)
     divisions = paragraphs = bullets = 0
     plan_text = ""
@@ -533,7 +536,7 @@ def _existing_setup(page, *, input_file: Path | None = None):
 def run_setup(page, *, force: bool = False, input_file: Path | None = None):
     """One setup door: initialize a scaffold, or safely resume an existing Page."""
     face = page.source.read_text(encoding="utf-8")
-    outline = page.folder / "outline"
+    outline = plan_dir(page.folder)
     plans = list(outline.glob(f"{page.source.stem}-outline-v*.md")) if outline.is_dir() else []
     scaffold = "Working Page for " in face
     if force or (scaffold and not plans):

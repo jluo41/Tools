@@ -74,7 +74,7 @@ operations outside this Run Spec table. Their records remain inspectable:
 
 | Controller operation | Records and coverage |
 |---|---|
-| Context | `outline/<stem>-context.md` and the selected Folder identity/owner contract |
+| Context | `outline/records/<stem>-context.md` and the selected Folder identity/owner contract |
 | Adoption | Accepted Writing Results → `<stem>.md`, plus release provenance |
 | Check | Selected Draft/version, bound Evidence Results, Run acceptance and Step integrity, and Delivery build/source agreement; owner ruling when required |
 
@@ -99,7 +99,8 @@ model for these Spaces.
 ├── outline/
 │   ├── <stem>-outline-v*.md           Draft plan + candidate prose / Shape authority
 │   ├── <stem>-evidence-items.md       authored Item contracts for Outline/Evidence
-│   └── <stem>-context.md, ...         durable process records; off-stage
+│   ├── records/<stem>-context.md, ... durable process records; off-stage
+│   └── previous/                      superseded plan versions
 ├── runs/
 │   ├── rp-struct-NN.md, rp-scratch-NN_<target>.md, rp-sec-NN.md,
 │   │   rp-para-NN_Pxx[-Pyy].md          Run P Markdown tickets

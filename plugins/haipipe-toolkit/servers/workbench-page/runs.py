@@ -24,6 +24,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
 from live.outline_structure import STRUCTURE_CSS
+from src.outline_version import plan_dir
 from src.item_table import (compact_global_run, compact_paper_run, read_items,
                             readable_global_run, readable_paper_route, repo_root,
                             run_registry)
@@ -42,6 +43,7 @@ _TICKET_NAME = re.compile(
     r"(?:^rp-(?:struct|sec|para)-\d{2}(?:_P\d{2}(?:-P\d{2})?)?"
     r"|^rp-scratch-\d{2}_[A-Za-z0-9._-]+"
     r"|^rp-revise-\d{2}_[A-Za-z0-9._-]+"
+    r"|^rp-(?:embed|auto)-\d{2}(?:_[A-Za-z0-9._-]+)?"
     r"|^re-(?:value|display|cite)-\d{2}(?:_[a-z0-9][a-z0-9_-]*)?"
     r"|^r(?:idea|claim|task|narra|response)-\d+"
     r"|^rp\d+|^rl\d+|^ri\d+|^rd\d+|^r\d+|^run[-_]"
@@ -956,7 +958,7 @@ def _structure_run_visual(page_src: Path, row: dict) -> str:
         return ""
     from src.outline_version import latest_outline
     from live.outline_structure import structure_text
-    plan = latest_outline(page_src.parent / "outline", page_src.stem)
+    plan = latest_outline(plan_dir(page_src.parent), page_src.stem)
     if plan is None or not plan.is_file():
         return '<p class=note>No Outline exists yet; the Structure Run has nothing to show.</p>'
     text = structure_text(_preview_text(plan, plan.parent))
@@ -965,7 +967,7 @@ def _structure_run_visual(page_src: Path, row: dict) -> str:
     return ('<div class=run-structure><h4>Structure</h4>'
             '<div class=run-structure-source><code>%s</code></div>'
             '<pre class="structure-text">%s</pre></div>'
-            % (html.escape("outline/" + plan.name), html.escape(text)))
+            % (html.escape(plan.parent.name + "/" + plan.name), html.escape(text)))
 
 
 def _scratch_run_detail(row: dict, root: Path, page_src: Path) -> str:
@@ -1991,8 +1993,9 @@ def _workflow_map_rows(page_src: Path) -> list[tuple[str, str, list[tuple[str, s
     stem so the same view works for every file-backed Page.
     """
     stem = page_src.stem
-    outline = f"outline/{stem}-outline-v*.md"
-    evidence_items = f"outline/{stem}-evidence-items.md"
+    folder = plan_dir(page_src.parent).name
+    outline = f"{folder}/{stem}-{'draft' if folder == 'draft' else 'outline'}-v*.md"
+    evidence_items = f"{folder}/{stem}-evidence-items.md"
     product = f"{stem}.md"
     return [
         (

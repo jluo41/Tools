@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from src.outline_version import latest_outline
+from src.outline_version import plan_dir, latest_outline
 from src.plan_shape import iter_plan_bullets
 from src.plan_shape import global_paragraph_mapping, rewrite_paragraph_addresses
 from live.outline_preview import (
@@ -22,7 +22,7 @@ def migrate_global_paragraphs(page) -> dict:
     records. Static delivery is rebuilt separately; delegated Task histories
     are deliberately outside this address authority.
     """
-    plan = latest_outline(page.folder / "outline", page.source.stem)
+    plan = latest_outline(plan_dir(page.folder), page.source.stem)
     if plan is None:
         raise ValueError("Page has no current Shape to migrate")
     mapping = global_paragraph_mapping(plan.read_text(encoding="utf-8"))
@@ -31,7 +31,7 @@ def migrate_global_paragraphs(page) -> dict:
         return {"paragraphs": len(mapping), "changed_addresses": 0, "files": []}
 
     candidates = {page.source, plan}
-    for directory in (page.folder / "outline", page.folder / "runs"):
+    for directory in (plan_dir(page.folder), page.folder / "runs"):
         if directory.is_dir():
             candidates.update(path for path in directory.rglob("*") if path.is_file())
     results = page.folder / "results"
@@ -69,10 +69,10 @@ def migrate_embedded_drafts(page, *, archive_legacy: bool = True) -> dict:
     selected Outline keeps its existing version and shape; only its embedded
     Draft fields are added.
     """
-    plan = latest_outline(page.folder / "outline", page.source.stem)
+    plan = latest_outline(plan_dir(page.folder), page.source.stem)
     if plan is None:
         raise ValueError("Page has no current Outline Markdown")
-    legacy = page.folder / "outline" / (page.source.stem + "-preview.md")
+    legacy = plan_dir(page.folder) / (page.source.stem + "-preview.md")
     records = read_legacy_previews(page.source)
     opening = read_legacy_opening(page.source)
     if not records and not opening:
@@ -90,7 +90,7 @@ def migrate_embedded_drafts(page, *, archive_legacy: bool = True) -> dict:
             write_opening_draft(page.source, opening)
         archived = None
         if archive_legacy and legacy.is_file():
-            archive_dir = page.folder / "outline" / "_archive" / "legacy-outline-preview"
+            archive_dir = plan_dir(page.folder) / "_archive" / "legacy-outline-preview"
             archive_dir.mkdir(parents=True, exist_ok=True)
             target = archive_dir / legacy.name
             if target.exists():

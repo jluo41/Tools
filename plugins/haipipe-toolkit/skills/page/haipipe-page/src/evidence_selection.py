@@ -1,6 +1,8 @@
 """Select current Evidence Results from the authored Item ledger, never file order."""
 from pathlib import Path
 
+from .outline_version import plan_dir
+
 
 class EvidenceSelectionError(ValueError):
     pass
@@ -118,7 +120,7 @@ def selected_results(page_src, *, strict=True, errors=None):
 def selected_for_home(page_home):
     """Read-only projections tolerate missing Results but never bind an older one."""
     home = Path(page_home)
-    ledgers = list((home / "outline").glob("*-evidence-items.md"))
+    ledgers = list((plan_dir(home)).glob("*-evidence-items.md"))
     if not ledgers:
         return _unbound_manifests(home)
     if len(ledgers) != 1:

@@ -13,6 +13,8 @@ import re
 from functools import lru_cache
 from pathlib import Path
 
+from .outline_version import plan_dir
+
 LADDER = (
     "specified", "planned", "ready", "folded", "accepted", "stale",
     "deferred", "dropped", "blocked",
@@ -410,7 +412,7 @@ def repo_root(start: Path) -> Path:
 
 
 def items_path(page_md: Path) -> Path:
-    return page_md.parent / "outline" / f"{page_md.stem}-evidence-items.md"
+    return plan_dir(page_md.parent) / f"{page_md.stem}-evidence-items.md"
 
 
 def _parse_local(value: str) -> tuple[str, str, str]:

@@ -124,7 +124,9 @@ Whoever writes a new version moves the superseded file into
 and never overwrites a file already there). Every reader resolves the current
 plan from `outline/` alone; a named older version is still found under
 `previous/` (`src/outline_version.py::find_version`), and path citations in
-records point at `outline/previous/<file>`.
+records point at `outline/previous/<file>`. The six process records (context,
+requirement, discussion, feedback, files, log) live in `outline/records/`, so
+`outline/` itself shows only the current plan and the Evidence Item contract.
 
 ### Reader-facing Point form
 

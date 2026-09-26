@@ -30,8 +30,8 @@ Do not author ## Outline or ## Diagram. The current versioned plan under
 outline/ produces the Outline projection. Drawings live in studio/draw/.
 
 Do not create Page-level States, Files, Discussion, or Log sections. Use the
-matching records under outline/, including outline/<stem>-files.md and
-outline/<stem>-log.md.
+matching records under outline/, including outline/records/<stem>-files.md and
+outline/records/<stem>-log.md.
 
 Q may omit Content. S must contain Content. Stage contracts, requirements,
 and targets are backstage records, not additional Page Face sections.

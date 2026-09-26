@@ -26,7 +26,7 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   `board/page-types/haipipe-page-for-*` remain fallbacks.
 - **Context record** — the generated PREPARE projection of the governing
   identity, ownership, policy, requirements, related information, feedback,
-  decisions, and Page records. `<page>/outline/<stem>-context.md`
+  decisions, and Page records. `<page>/outline/records/<stem>-context.md`
 - **Writing DNA packet** — a frozen, versioned, style-only profile passed from
   the resolved Context into the current Writing Run. It may describe
   language, rhythm, compatible structure, and selected exemplars; it never

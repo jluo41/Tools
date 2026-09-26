@@ -16,6 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from src.outline_version import plan_dir, plan_files
 from src.common import (delivery_lane_dirs, evidence_lane_dirs,
                         outline_lane_dirs)  # noqa: E402
 
@@ -109,11 +110,11 @@ def _count(pd: Path, md: Path):
     # ── the other workbenches, present or absent
     skill_dirs = outline_lane_dirs(pd, "skill")
     sk = ((skill_dirs[0] / f"{pd.name}.md") if skill_dirs
-          else pd / "outline" / "skill" / f"{pd.name}.md")
+          else plan_dir(pd) / "skill" / f"{pd.name}.md")
     r["skl"] = len(re.findall(r"^- \S", sk.read_text(errors="replace"), re.M)) if sk.exists() else 0
-    r["out"] = len(list((pd / "outline").glob("*-outline-v*.md"))) if (pd / "outline").is_dir() else 0
+    r["out"] = len(plan_files(plan_dir(pd))) if plan_dir(pd).is_dir() else 0
     r["apv"] = 0
-    for o in ((pd / "outline").glob("*-outline-v*.md") if (pd / "outline").is_dir() else []):
+    for o in (plan_files(plan_dir(pd)) if plan_dir(pd).is_dir() else []):
         if re.search(r"^approved:\s*✅", o.read_text(errors="replace"), re.M): r["apv"] += 1
     r["tex"] = 1 if delivery_lane_dirs(pd, "latex") else 0
     r["doc"] = 1 if delivery_lane_dirs(pd, "word") else 0

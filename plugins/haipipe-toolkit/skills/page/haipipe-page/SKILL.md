@@ -249,6 +249,8 @@ python3 <toolkit>/skills/page/haipipe-page/cli/page.py setup <existing-page-fold
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py migrate-addresses <existing-page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py migrate-drafts <existing-page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py outline-tidy <page.md | page-folder> [--dry-run]
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py draft-layout <page-folder> [--sort-runs] [--dry-run]
+python3 <toolkit>/skills/page/haipipe-page/cli/page.py health <page-folder>... [--json]
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py inspect <page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py build <page-folder>
 python3 <toolkit>/skills/page/haipipe-page/cli/page.py serve <page-folder>
@@ -259,8 +261,9 @@ Use `migrate-addresses` explicitly for a pre-0.81 Shape whose paragraph number
 resets inside each division; it preserves prose and rewrites active Page-owned
 references before `setup` revalidates and rebuilds the Page.
 `outline-tidy` rewrites the current Outline Draft-first, moves every older
-version into `outline/previous/`, and repoints `outline/<old file>` citations in
-the Page's own files (records, Run scripts). It refuses when a Bullet would
+version (and any retired `-logic.mmd`) into `outline/previous/`, moves the six
+process records into `outline/records/`, and repoints `outline/<file>`
+citations in the Page's own files (records, Run scripts). It refuses when a Bullet would
 change, and works on Board Pages too, not only standalone folders.
 After it returns, inspect the generated Page Face, Shape/Draft coverage, setup
 Result checklist (`checks.json` and `report.md`), and `delivery/web/index.html`.
@@ -361,17 +364,20 @@ uses. The roster of legal folder names is `haipipe-workbench/ref/roster.md`.
 <page>/
 ├── page.toml     optional standalone registration: source + imported content
 ├── <page>.md      Opening · Content                         THIS reader contract
-├── outline/       HUMAN process: plan and durable process records
-│   ├── <stem>-outline-v<G>.<S>[.<E>].md  the ONE current plan, Bullets Draft-first
+├── draft/         HUMAN process (`outline/` on Pages not yet moved; see below)
+│   ├── <stem>-draft-v<G>.<S>[.<E>].md  the ONE current plan: Draft Markdown,
+│   │                                   three sections on one skeleton
+│   ├── <stem>-evidence-items.md  Evidence Markdown: ## Citations · Displays · Values
+│   ├── records/   context, requirement, discussion, feedback, files, log, inputs
 │   ├── previous/  superseded plan versions, moved here when a new one is written
-│   ├── <stem>-context.md  generated context projection for all Page Run Specs
-│   ├── <stem>-evidence-items.md  authored Evidence Item contracts
-│   └── _archive/legacy-outline-evidence/  retired folder material only
+│   └── _archive/  retired folder material only
 ├── workflow/      MACHINE process: Workflow Runtime/compatibility receipts
 │              ─── the LOWER, TASK-side part ───
 ├── scripts/       optional owned implementation, any language; shared Task
 │   └── config/    Job code stays one level up in `src/`
-├── runs/          authored RP, RE, and RD tickets; THE ONE execution door
+├── runs/          authored RP, RE, and RD tickets; THE ONE execution door, by Space:
+│                  draft-manual-run/ · draft-auto-run/ · evidence-run/ ·
+│                  supporting-run/ (generated BJTR index) · delivery-run/
 ├── results/       canonical Page Evidence Results and Folder-local Results.
 │                  A canonical Task Page resolves
 │                  generated output at `$OUTPUT_ROOT/results/<task>/<run>/`
@@ -440,6 +446,49 @@ the `outline/` process files, their ids, labels and writers are
 Outline-workbench refs it needs as schema/material contracts. The Page surface installs
 `haipipe-workbench-page` once as the presenter; the presenter skill is not
 appended to each Run's execution dependency chain.
+
+## 📄 The Draft Markdown and Runs beside the content (0.118)
+
+The plan is one Markdown a person can read and edit by hand: three sections
+that repeat one skeleton (`### C<n>.P<m>` headings, `- B<k>` numbers).
+
+```text
+## 1 · Structure · Bullet Point Table   ### Structure Overview (`- C1 · title`, one line
+                                        per paragraph), then per paragraph each
+                                        Bullet's Point and its plan/evidence lines
+## 2 · Scratch · What to write here     rough notes under each paragraph heading
+## 3 · Draft · Reading and Revise       the sentences, one line per Bullet
+```
+
+`src/plan_layout.py` folds the Draft section back into the Draft-first plan
+for every reader (`canonical_plan` calls `to_canonical`), and every workbench
+writer hands its edited plan to `from_canonical`, which rewrites sections 1
+and 3 and keeps the Structure Overview, Scratch notes and any trailing
+section; a renamed paragraph is renamed in all three sections. A Scratch save
+writes the notes under their heading with one hidden marker line
+(`<!-- rp-scratch-NN_C1.P2 · paragraph · open -->`); notes typed by hand are
+read too. No run list, date or history belongs in either Markdown.
+
+`src/outline_version.py::plan_dir` finds `draft/` first and `outline/` on
+older Pages; `latest_outline` and `retire_superseded` read both `-draft-v` and
+`-outline-v` names. New tickets go to their Space folder
+(`src/run_folders.py`); `results/` stays flat and the Run Space pairs
+`runs/<folder>/<run>` with `results/<run>/`.
+
+The workbench shows each Space's runs under its content: run types on the left
+(the `🔘 BUTTON` lines of `haipipe-page-workflow/ref/run-cards.md`), the
+selected run on the right with Rerun, a prompt to copy, its process and its
+results. Selecting a paragraph or filtering by item (`E40`) narrows the panel;
+a panel folds to one line, and the Page bar's Focus (key F) hides every panel.
+The Page bar also shows the plan file, Drafts on the Page and Evidence
+readiness, and the Page-level Context and Check prompts. Buttons copy prompts;
+they never start a run by themselves.
+
+`page.py draft-layout <page> [--sort-runs]` moves a Page to this layout: it
+renames `outline/` to `draft/`, writes the three-section plan as the next
+version (refusing if any Bullet would change), and with `--sort-runs` moves
+each ticket into its Space folder, fixes moved scripts' paths, and repoints
+`runs/<name>` citations.
 
 ## 🧬 One owner claims the Page Face
 
@@ -632,7 +681,7 @@ must not add another main Page section.
 Each section answers one reader question, and a sentence answering another
 section's question is misplaced: substance in Opening moves to Content.
 Inherited inputs and venue move to backstage contract records, page-owned prose
-rules to authored W records in `outline/<stem>-requirement.md`, intended
+rules to authored W records in `outline/records/<stem>-requirement.md`, intended
 outcomes to backstage target records, current facts to their Run/CHECK
 receipts, and a question for a person to a `D<nn>` record.
 There is no `## Boundary` section: what a page covers is the Opening's job,
@@ -668,7 +717,7 @@ secondary compact handle, such as `primary total-MME association
 
 A manuscript `page-type: section` tightens the reader surface: `🚪 Opening`
 renders exactly one paragraph and has no reader drawer. Its page-owned prose
-rules live as authored `W<n>` records in `outline/<stem>-requirement.md`, after
+rules live as authored `W<n>` records in `outline/records/<stem>-requirement.md`, after
 its generated venue `V<n>` records. The Outline workbench exposes both through
 one `📏 Requirement` lens to CONTEXT, OUTLINE, CONTENT, and CHECK. The Section
 product source carries no `### Writing Style`; post-paragraph notes and Stage
@@ -807,7 +856,7 @@ requested · pick the id and copy `ref/page-template.md`, never
 retype the shape · a three-to-five-word title stating the purpose · the
 Opening as one visible paragraph above the first blank line · Content as
 numbered parts, each with a caption, a figure and a short intro · Aims with
-their `Now:` lines · `outline/<stem>-files.md` with any Related Board Page row
+their `Now:` lines · `outline/records/<stem>-files.md` with any Related Board Page row
 the current Run needs · register in `board.md` only if requested · build, check, read the
 RENDER, report the finding count.
 
@@ -914,7 +963,7 @@ requirements, never whether the reviewer likes the format, and the
 requirements resolve in this order: this contract and `ref/page-template.md`
 → the Folder-owned Page Face or declared Page Type → the selected Run profile
 and Page controller operation → the page's own
-authored W records in `outline/<stem>-requirement.md` (and `## Stage Contract` on S) → the local division
+authored W records in `outline/records/<stem>-requirement.md` (and `## Stage Contract` on S) → the local division
 purpose and each paragraph's job line. A more specific source refines a
 broader one and never silently contradicts it; a conflict is reported and
 that criterion is not judged until the owner resolves it. The rubric (four
@@ -947,6 +996,16 @@ Every id inside a fenced figure renders as a link.
 
 ## ✅ Closing checks
 
+- Before any claim that a Page Folder is current or complete, run
+  `cli/page.py health <page-folder>` (several folders in one call are fine).
+  It checks that the Folder agrees with itself: one current Outline, records
+  in `outline/records/`, the `approved:`/`status:`/`arc:` header, every Bullet
+  parseable (an unindented line silently empties a Bullet), each Page
+  `realizes:` sentence equal to its Draft, Evidence ids declared and bound
+  Result paths present, and delivery newer than the Page. Exit 1 on any FAIL;
+  report its WARN rows rather than calling the Folder done. It judges no prose:
+  Page CHECK still does that. `outline/evidence/bibex/` is live export output
+  (`src/common.py::evidence_lane_dir`) and is not flagged as retired.
 - For Page creation or whole-Page completion, apply `ref/page-checklist.md`
   and name unmet, deferred or untested checks; never promote a scaffold,
   a static build or an inferred human approval into completion.

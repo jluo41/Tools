@@ -14,7 +14,7 @@ import html
 import re
 from pathlib import Path
 
-from src.outline_version import latest_outline
+from src.outline_version import plan_dir, latest_outline
 from src.plan_shape import global_paragraph_mapping
 from live.runs import local_runs
 
@@ -39,7 +39,7 @@ class RunPrompts:
         self.board_path = board_path.strip() or "current Board"
         self.page_path = page_path.strip() or self.path(page)
         self.rows = local_runs(page)
-        self.plan = latest_outline(page.parent / "outline", page.stem)
+        self.plan = latest_outline(plan_dir(page.parent), page.stem)
         self.text = self.plan.read_text(encoding="utf-8") if self.plan else ""
         self.mapping_error = ""
         try:

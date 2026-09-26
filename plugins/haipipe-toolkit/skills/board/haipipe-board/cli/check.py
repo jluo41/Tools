@@ -1012,7 +1012,7 @@ _NUM_RE = re.compile(r"\d{1,3}(?:,\d{3})+|\b\d+\.\d+\b|\b\d+(?:\.\d+)?\s*(?:mill
 
 def _latest_approved_plan(path):
     """Return the newest plan only when it carries ``approved: ✅``."""
-    o = path.parent / "outline"
+    o = plan_dir(path.parent)
     plan = latest_outline(o, path.stem)
     if plan is None:
         return None
@@ -1203,7 +1203,7 @@ def _files_record_text(path):
     rewritten as a bare `- `x`` row so the Files path checks read it unchanged."""
     if not path:
         return ""
-    p = Path(path); f = p.parent / "outline" / f"{p.stem}-files.md"
+    p = Path(path); f = plan_dir(p.parent) / f"{p.stem}-files.md"
     if not f.is_file():
         return ""
     t = f.read_text(encoding="utf-8", errors="replace")
@@ -1366,7 +1366,7 @@ def check_generated_block(text, name, rep, path=None):
     # a check lost its input is worse than the finding (field test, JL 260830).
     log = section_text(text, "Log")
     if path is not None:
-        side = path.parent / "outline" / f"{path.stem}-log.md"
+        side = plan_dir(path.parent) / f"{path.stem}-log.md"
         if side.exists():
             log += "\n" + side.read_text(encoding="utf-8", errors="replace")
     latest = max((_ymd(d) for d in ANY_DATE.findall(log)), default="")
@@ -1404,7 +1404,7 @@ def check_evidence_file(path, name, rep):
     no file (JL 260831)."""
     if path is None:
         return
-    ev = path.parent / "outline" / f"{path.stem}-evidence.md"
+    ev = plan_dir(path.parent) / f"{path.stem}-evidence.md"
     if not ev.exists():
         return
     text = ev.read_text(encoding="utf-8", errors="replace")
@@ -1417,7 +1417,7 @@ def check_evidence_file(path, name, rep):
     import datetime as _dt
     measured = _dt.datetime.strptime(stamp.group(1) + (stamp.group(2) or "0000"), "%y%m%d%H%M").timestamp()
     newest, newest_name = 0.0, ""
-    lanes = [path.parent / "outline", path.parent / "probe", path.parent / "bibex",
+    lanes = [plan_dir(path.parent), path.parent / "probe", path.parent / "bibex",
              path.parent / "display", path.parent / "pagex"]
     for lane in lanes:
         if not lane.is_dir():
@@ -1440,7 +1440,7 @@ def check_discussion_file(path, name, rep):
     is the one nobody could read."""
     if path is None:
         return
-    f = path.parent / "outline" / f"{path.stem}-discussion.md"
+    f = plan_dir(path.parent) / f"{path.stem}-discussion.md"
     if not f.exists():
         return
     text = f.read_text(encoding="utf-8", errors="replace")
@@ -1464,7 +1464,7 @@ def check_requirement_file(text, path, name, rep):
         return
     if not re.search(r"(?m)^structure-source:\s*\S", text[:3000]):
         return
-    f = path.parent / "outline" / f"{path.stem}-requirement.md"
+    f = plan_dir(path.parent) / f"{path.stem}-requirement.md"
     if not f.exists():
         rep.add(WARN, "requirement-missing", name,
                 f"this page binds a venue division and `outline/{f.name}` "
@@ -1506,12 +1506,12 @@ def check_section_writing_requirements(text, path, name, rep):
                 "a manuscript Section stores writing rules in "
                 f"`outline/{path.stem}-requirement.md` as W<n> records; remove the Page's "
                 "`Writing Style` block after migrating each instruction to a W<n> record")
-    retired = path.parent / "outline" / f"{path.stem}-writing.md"
+    retired = plan_dir(path.parent) / f"{path.stem}-writing.md"
     if retired.exists():
         rep.add(WARN, "writing-file-retired", name,
                 f"`outline/{retired.name}` is a redundant sidecar; move its W<n> "
                 f"records into `outline/{path.stem}-requirement.md`")
-    f = path.parent / "outline" / f"{path.stem}-requirement.md"
+    f = plan_dir(path.parent) / f"{path.stem}-requirement.md"
     if not f.exists():
         # check_requirement_file already reports the missing shared file.
         return
@@ -1561,7 +1561,7 @@ def page_aims_text(text, path):
     on_page = section_text(text, "Done when")
     if on_page.strip() or path is None:
         return on_page, False
-    d = path.parent / "outline"
+    d = plan_dir(path.parent)
     plan = latest_outline(d, path.stem)
     if plan is None:
         return on_page, False
@@ -1578,7 +1578,7 @@ def check_plan_arc(path, name, rep):
     parsed by nothing until NA01's field desk grepped for it (260831)."""
     if path is None:
         return
-    for plan in sorted((path.parent / "outline").glob("*-outline-v*.md")):
+    for plan in sorted(plan_files(plan_dir(path.parent))):
         head = plan.read_text(encoding="utf-8", errors="replace")[:1500]
         if not re.search(r"(?m)^arc:\s*\S", head):
             rep.add(WARN, "plan-no-arc", f"{name} · {plan.name}",
@@ -1616,7 +1616,7 @@ def check_feedback_coverage(path, text, name, rep):
         # declined in the plan's header (`declined: <RD> <id> · <reason>`).
         # NA01's field desk (260831) found this tooth missing while the workbench
         # text claimed "both directions".
-        latest = latest_outline(path.parent / "outline", path.stem)
+        latest = latest_outline(plan_dir(path.parent), path.stem)
         plan = latest.read_text(encoding="utf-8", errors="replace") if latest else ""
         rdid = rd.stem.split("-")[0]
         # One grammar with the Page's Feedback column (src/feedback.py):
@@ -2155,7 +2155,7 @@ def check_insight_family(d, rep):
                     rep.add(ERROR, "partial-final-ghost-page", name,
                             f"`🟡 {pid} final` cites a page this board does not hold")
                 else:
-                    log_path = (cited.parent / "outline" /
+                    log_path = (plan_dir(cited.parent) /
                                 f"{cited.stem}-log.md")
                     log = (log_path.read_text(encoding="utf-8", errors="replace")
                            if log_path.is_file() else "")

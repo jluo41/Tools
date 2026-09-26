@@ -7,7 +7,8 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from src.plan_shape import iter_plan_bullets, render_bullet, split_bullet_block
-from src.outline_version import latest_outline, version_tag
+from src.plan_layout import from_canonical, to_canonical
+from src.outline_version import plan_dir, latest_outline, version_tag
 
 
 def digest(text):
@@ -27,7 +28,7 @@ def page_lock(page):
 
 def draft_path(page):
     """Return the current Outline Markdown, the sole Draft authority."""
-    return latest_outline(page.parent / "outline", page.stem)
+    return latest_outline(plan_dir(page.parent), page.stem)
 
 
 def preview_path(page):
@@ -55,7 +56,7 @@ def read_drafts(page):
 
 def read_legacy_previews(page):
     """Read a retired standalone preview for the one-time migration only."""
-    path = page.parent / "outline" / (page.stem + "-preview.md")
+    path = plan_dir(page.parent) / (page.stem + "-preview.md")
     if not path.is_file():
         return {}
     text = path.read_text(encoding="utf-8", errors="replace")
@@ -91,7 +92,7 @@ def read_opening_draft(page):
 
 def read_legacy_opening(page):
     """Read the retired C0/P00 Opening candidate for migration only."""
-    path = page.parent / "outline" / (page.stem + "-preview.md")
+    path = plan_dir(page.parent) / (page.stem + "-preview.md")
     if not path.is_file():
         return ""
     text = path.read_text(encoding="utf-8", errors="replace")
@@ -109,7 +110,8 @@ def record_token(record):
 
 def _write_embedded_drafts(plan, records):
     """Atomically update Draft fields, writing drafted Bullets Draft-first."""
-    lines = plan.read_text(encoding="utf-8", errors="replace").splitlines()
+    raw = plan.read_text(encoding="utf-8", errors="replace")
+    lines = to_canonical(raw).splitlines()
     output, cn, pn, i = [], 0, 0, 0
     while i < len(lines):
         line = lines[i]
@@ -138,7 +140,7 @@ def _write_embedded_drafts(plan, records):
                                     str(record.get("text", "")).strip(),
                                     str(record.get("reviews", "")).strip()))
         i = j
-    text = "\n".join(output).rstrip() + "\n"
+    text = from_canonical(raw, "\n".join(output).rstrip() + "\n")
     with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=plan.parent,
                                      prefix=".outline-", delete=False) as handle:
         handle.write(text)
@@ -259,7 +261,7 @@ def save_preview(page, address, text, expected_bullet, expected_record):
     if text and is_section(page) and sentence_count(text) != 1:
         return None, "One Bullet needs one sentence; split the points or remove repeated sentences before saving"
     with page_lock(page):
-        plan = latest_outline(page.parent / "outline", page.stem)
+        plan = latest_outline(plan_dir(page.parent), page.stem)
         if plan is None:
             return None, "No Shape exists for this Page"
         blocks = {b["address"]: b for b in iter_plan_bullets(plan.read_text(encoding="utf-8"))}

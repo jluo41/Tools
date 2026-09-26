@@ -27,7 +27,8 @@ import json
 import re
 from pathlib import Path
 
-from src.outline_version import latest_outline, version_tag
+from src.outline_version import plan_dir, latest_outline, version_tag
+from src.run_folders import ticket_dir, ticket_rel
 from src.plan_shape import iter_plan_bullets
 from live.outline_preview import (bullet_token, draft_path, page_lock, read_drafts,
                                   reader_prose, record_token, write_drafts)
@@ -213,7 +214,8 @@ def _open_run(page_src: Path, target: str) -> tuple[str, bool]:
     for folder in (base / "runs", base / "results"):
         if not folder.is_dir():
             continue
-        for path in folder.iterdir():
+        # Tickets may sit in a Space folder (runs/draft-manual-run/); results stay flat.
+        for path in (folder.rglob("*") if folder.name == "runs" else folder.iterdir()):
             match = _RUN_RE.match(path.stem if path.is_file() else path.name)
             if not match:
                 continue
@@ -246,7 +248,7 @@ def _card(number: int, address: str, before: str, after: str, why: str) -> str:
 def _write_ledger(page_src: Path, run_id: str, existing: bool, target: str, display: str,
                   plan: Path, changes: list[dict], why: str) -> dict:
     base = page_src.parent
-    runs = base / "runs"
+    runs = ticket_dir(base, run_id)
     result = base / "results" / run_id
     runs.mkdir(parents=True, exist_ok=True)
     result.mkdir(parents=True, exist_ok=True)
@@ -284,13 +286,13 @@ def _write_ledger(page_src: Path, run_id: str, existing: bool, target: str, disp
             "---\n"
             "family: page\noperation: interactive-writing\ninteraction: human-revise\n"
             "mode: revise\ntarget_scope: paragraph\ntarget: %s\nrun: %s\n"
-            "ticket: runs/%s.md\nresult: results/%s\n"
+            "ticket: %s\nresult: results/%s\n"
             "---\n\n# %s\n\n"
             "- Purpose: the person revises the Draft of %s in place; every Save appends one Step "
             "with a change ledger.\n"
             "- Close rule: the person closes the Run when the paragraph reads right; the accepted "
             "Drafts stay in the Outline for the writing Run to adopt.\n"
-            % (target, run_id, run_id, run_id, run_id, display), encoding="utf-8")
+            % (target, run_id, ticket_rel(base, run_id), run_id, run_id, display), encoding="utf-8")
     total = len(re.findall(r"(?m)^##### R\d+ ·", text))
     summary = "%d change%s over %d Step%s" % (total, "s"[:total != 1], step_number, "s"[:step_number != 1])
     (result / "working.md").write_text(
@@ -301,9 +303,9 @@ def _write_ledger(page_src: Path, run_id: str, existing: bool, target: str, disp
     (result / "runtime.yaml").write_text(
         "run: %s\nfamily: page\noperation: interactive-writing\ninteraction: human-revise\n"
         "mode: revise\ntarget_scope: paragraph\ntarget: %s\n"
-        "ticket: runs/%s.md\nresult: results/%s\nstatus: running\nversion: v001\nstep: %s\n"
+        "ticket: %s\nresult: results/%s\nstatus: running\nversion: v001\nstep: %s\n"
         "version_file: results/%s/v001.md\nsummary: %s\n"
-        % (run_id, target, run_id, run_id, step, run_id, summary), encoding="utf-8")
+        % (run_id, target, ticket_rel(base, run_id), run_id, step, run_id, summary), encoding="utf-8")
     return {"run": run_id, "step": step, "summary": summary,
             "result": str(result.relative_to(base))}
 
@@ -355,7 +357,7 @@ def save_revise(page_src: Path, payload: dict, *, read_only: bool = False) -> tu
     if not all(_BULLET_RE.match(a) and a.startswith(paragraph + ".") for a in addresses):
         return None, "every listed Bullet must sit inside %s" % paragraph
     with page_lock(page_src):
-        plan = latest_outline(page_src.parent / "outline", page_src.stem)
+        plan = latest_outline(plan_dir(page_src.parent), page_src.stem)
         if plan is None or not plan.is_file():
             return None, "No Outline Markdown exists for this Page"
         if plan.is_symlink() or plan.parent.is_symlink():

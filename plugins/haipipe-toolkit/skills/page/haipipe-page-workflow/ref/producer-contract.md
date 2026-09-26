@@ -101,7 +101,7 @@ being guessed.
    Run/authority boundary being crossed rather than a stylistic choice:
 
    ```text
-   context   ─▶ <page>/outline/<stem>-context.md, generated. It points to
+   context   ─▶ <page>/outline/records/<stem>-context.md, generated. It points to
                 source authorities and writes no plan, evidence, or Page prose.
    outline   ─▶ versioned plan and authored Evidence Item specifications/routes
                 under outline/. No Page prose; transcribe only durable human approvals.
@@ -141,7 +141,7 @@ being guessed.
   is visibly broken on the page.
 - No em-dashes. Use a colon, semicolon, comma, parentheses, or a new sentence.
 - English only.
-- Real citations. A file path in `outline/<stem>-files.md` is a file you read, and every row
+- Real citations. A file path in `outline/records/<stem>-files.md` is a file you read, and every row
   says what that file does for this page.
 - The page's own words, not coined labels. Use the board's existing vocabulary.
 - On a Q or S Page, each Aim has a stable id, one status emoji, its target,

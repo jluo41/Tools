@@ -26,6 +26,8 @@ Run identity.
 🔀 ROUTE    SELF · Page.structure · HOLD
 🧾 RECEIPT  Context record and controller/Run receipt
 🖥 SPACE    Folder inspection; Runtime only when independently commissioned
+🔘 BUTTON   Context · Page · ^rp-context-
+💬 PROMPT   /haipipe-page run {page} from CONTEXT: refresh the Context record of {page}.
 ```
 
 ## `Page.interactive-writing.structure` · `rp-struct-01`
@@ -38,6 +40,8 @@ Run identity.
 🔀 ROUTE    SELF/next Step · NEW_VERSION · writing/evidence Run · NEW_RUN · HOLD
 🧾 RECEIPT  runs/rp-struct-01.md + results/rp-struct-01/runtime.yaml + Version journal
 🖥 SPACE    Draft · Evidence · Runtime
+🔘 BUTTON   Structure revise · Draft · ^rp-struct-
+💬 PROMPT   /haipipe-page run {page} rp-struct: revise ## 1 Structure of {plan} (headings, paragraph jobs, Bullet Points); no sentence changes.
 ```
 
 ## `Page.interactive-writing.scratch` · `rp-scratch-NN_<target>`
@@ -50,6 +54,8 @@ Run identity.
 🔀 ROUTE    SELF · CLOSE / owning Run Spec · NEW_RUN
 🧾 RECEIPT  selected Outline `## Scratch` registry + paired ticket/result/runtime.yaml
 🖥 SPACE    Draft · Scratch view; Run Space
+🔘 BUTTON   Scratch · Draft · ^rp-scratch-
+💬 PROMPT   /haipipe-page scratch {page} {target}: read my notes under {target} in ## 2 Scratch of {plan} and summarize what to write there.
 ```
 
 Scratch does not edit the Outline's Draft prose. The registry is a live
@@ -66,6 +72,8 @@ receipt. A closed Scratch Run is immutable.
 🔀 ROUTE    SELF · NEW_VERSION · evidence/delivery Run · NEW_RUN · HOLD
 🧾 RECEIPT  paired Version/Step journal + runtime receipt
 🖥 SPACE    Draft · Runtime
+🔘 BUTTON   Section revise · Draft · ^rp-sec-.*\.md$
+💬 PROMPT   /haipipe-page revise {page} {target}: review the whole section in ## 3 Draft of {plan}; keep every Point; show Before / After per paragraph.
 ```
 
 ## `Page.interactive-writing.paragraph` · `rp-para-NN_Pxx[-Pyy]`
@@ -78,6 +86,8 @@ receipt. A closed Scratch Run is immutable.
 🔀 ROUTE    SELF · NEW_VERSION · evidence/delivery Run · NEW_RUN · HOLD
 🧾 RECEIPT  paired Version/Step journal + runtime receipt
 🖥 SPACE    Draft · Evidence · Runtime
+🔘 BUTTON   Paragraph revise · Draft · ^rp-para-
+💬 PROMPT   /haipipe-page revise {page} {target}: revise the sentences of {target} in ## 3 Draft of {plan}; keep each Point; show Before / After per sentence.
 ```
 
 Ordinary feedback is a Step. Same-target reopening is a Version. Changed goal
@@ -93,6 +103,10 @@ or target is a new Run.
 🔀 ROUTE    SELF · writing/delivery Run · NEW_RUN · HOLD
 🧾 RECEIPT  owner-native Ticket/Result + Page RE runtime receipt
 🖥 SPACE    Evidence · Runtime
+🔘 BUTTON   Citation · Evidence · ^re-cite-
+🔘 BUTTON   Value · Evidence · ^re-value-
+🔘 BUTTON   Display · Evidence · ^re-display-
+💬 PROMPT   /haipipe-page evidence {page} {target}: land and verify this evidence item against its Acceptance line in the Evidence Markdown, then bind its Result.
 ```
 
 ## `Page.delivery` · `rdNN_<target>`
@@ -105,7 +119,48 @@ or target is a new Run.
 🔀 ROUTE    SELF · Page.check · NEW_RUN · HOLD
 🧾 RECEIPT  delivery artifact fingerprint + runtime/build receipt
 🖥 SPACE    Delivery · Runtime
+🔘 BUTTON   Web · Delivery · ^rd\d+_web
+🔘 BUTTON   LaTeX · Delivery · ^rd\d+_latex
+🔘 BUTTON   Word · Delivery · ^rd\d+_word
+🔘 BUTTON   Slides · Delivery · ^rd\d+_slides
+💬 PROMPT   /haipipe-page build {page} {button}: build the {button} output from the accepted Page, then run the consistency checks.
 ```
+
+## `Page.auto-writing` · `rp-auto-NN_<target>`
+
+```text
+🎯 TARGET   one paragraph or Section whose Points are settled
+👤 ACTOR    agent, then the person
+⚙ ACTION   write → review against the rubric → rewrite, then hand Before / After back
+🚪 GATE     the person accepts or sends it to a manual revise
+🔀 ROUTE    SELF · Page.interactive-writing.paragraph · NEW_VERSION · HOLD
+🧾 RECEIPT  runs/draft-auto-run/<run>.md + results/<run>/ (versions, rubric, runtime)
+🖥 SPACE    Draft · Runtime
+🔘 BUTTON   Auto write · Draft · ^rp-auto-|^rp-sec-.*\.sh$
+💬 PROMPT   /haipipe-page auto-write {page} {target}: write the sentences of {target} from its Points, review them against the rubric, rewrite, then show me Before / After.
+```
+
+## `Page.evidence-embed` · `rp-embed-NN_<target>`
+
+```text
+🎯 TARGET   one paragraph or the whole Page whose evidence is accepted
+👤 ACTOR    agent, then the person
+⚙ ACTION   take accepted Evidence Results; write Answered lines into ## 1 Structure
+           and citation keys or values into ## 3 Draft; show Before / After
+🚪 GATE     the person accepts; the plan moves one evidence version (v2.5 → v2.5.1)
+🔀 ROUTE    SELF · NEW_VERSION · Page.interactive-writing.paragraph · HOLD
+🧾 RECEIPT  runs/draft-auto-run/<run>.md + results/<run>/ + the new plan version
+🖥 SPACE    Draft · Evidence · Runtime
+🔘 BUTTON   Evidence embed · Draft · ^rp-embed-
+💬 PROMPT   /haipipe-page embed {page} {target}: take the accepted evidence for {target} from the Evidence Markdown; write its Answered lines into ## 1 Structure and its citation keys into ## 3 Draft of {plan}; show Before / After; save as an evidence version.
+```
+
+`🔘 BUTTON` lines are what the workbench shows: `label · Space · ticket
+pattern`. The Space is Draft, Evidence, Delivery or Page (the Page bar); the
+pattern matches a run's ticket file name, so each Space's Runs panel can count
+and list the runs behind a button. `💬 PROMPT` is the text a person copies to
+start that run in a Claude or Codex session; the panel fills in `{page}`,
+`{plan}`, `{target}`, `{button}` and `{run}`.
 
 ## `Page.check`
 
@@ -117,6 +172,8 @@ or target is a new Run.
 🔀 ROUTE    CLOSE · owning Run Spec · HOLD
 🧾 RECEIPT  check Result and Workflow Runtime route record
 🖥 SPACE    read-only Draft · Evidence · Runtime · Delivery
+🔘 BUTTON   Check · Page · ^rp-check-
+💬 PROMPT   /haipipe-page check {page}: judge the current built version read-only and route any finding.
 ```
 
 The current automated controller may keep CHECK as its terminal Gate rather

@@ -5,6 +5,8 @@ import json
 import re
 from pathlib import Path
 
+from .outline_version import plan_dir
+
 
 EVIDENCE_LANES = frozenset({"bibex", "display", "materials"})
 LEGACY_EVIDENCE_LANES = frozenset({"probe", "pagex"})
@@ -24,7 +26,7 @@ def outline_lane_dirs(page_dir, lane):
         raise ValueError("not an outline lane: %s" % lane)
     page_dir = Path(page_dir)
     out, seen = [], set()
-    for candidate in (page_dir / "outline" / lane, page_dir / lane):
+    for candidate in (plan_dir(page_dir) / lane, page_dir / lane):
         if not candidate.is_dir():
             continue
         key = candidate.resolve()
@@ -39,7 +41,7 @@ def outline_lane_dir(page_dir, lane):
     """The canonical destination for one Outline-owned lane."""
     if lane not in OUTLINE_LANES:
         raise ValueError("not an outline lane: %s" % lane)
-    return Path(page_dir) / "outline" / lane
+    return plan_dir(Path(page_dir)) / lane
 
 
 def evidence_lane_dirs(page_dir, lane):
@@ -56,7 +58,7 @@ def evidence_lane_dirs(page_dir, lane):
     out, seen = [], set()
     candidates = [page_dir / "evidence" / lane, page_dir / lane]
     if lane in EVIDENCE_LANES:
-        candidates.insert(0, page_dir / "outline" / "evidence" / lane)
+        candidates.insert(0, plan_dir(page_dir) / "evidence" / lane)
     for candidate in candidates:
         if not candidate.is_dir():
             continue
@@ -74,7 +76,7 @@ def evidence_lane_dir(page_dir, lane):
     if dirs:
         return dirs[0]
     if lane in EVIDENCE_LANES:
-        return Path(page_dir) / "outline" / "evidence" / lane
+        return plan_dir(Path(page_dir)) / "evidence" / lane
     return Path(page_dir) / "evidence" / lane
 
 
@@ -87,8 +89,8 @@ def evidence_run_dirs(page_dir):
     page_dir = Path(page_dir)
     out, seen = [], set()
     for candidate in (
-        page_dir / "outline" / "evidence" / "supporting-runs",
-        page_dir / "outline" / "evidence" / "runs",
+        plan_dir(page_dir) / "evidence" / "supporting-runs",
+        plan_dir(page_dir) / "evidence" / "runs",
         page_dir / "evidence" / "runs",
     ):
         if not candidate.is_dir():
@@ -105,7 +107,7 @@ def evidence_run_dir(page_dir):
     """Canonical generated Supporting-Run lineage directory."""
     dirs = evidence_run_dirs(page_dir)
     return (dirs[0] if dirs else
-            Path(page_dir) / "outline" / "evidence" / "supporting-runs")
+            plan_dir(Path(page_dir)) / "evidence" / "supporting-runs")
 
 
 def delivery_lane_dirs(page_dir, lane):

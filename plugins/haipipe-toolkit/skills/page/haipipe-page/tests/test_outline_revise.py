@@ -244,13 +244,18 @@ def test_outline_tidy_writes_draft_first_and_moves_old_versions_to_previous(tmp_
     (outline / 'Page-outline-v0.1.md').write_text('# older\n')
     (tmp_path / 'runs').mkdir(exist_ok=True)
     (tmp_path / 'runs' / 'rp-sec-01.sh').write_text('--plan "$PAGE_DIR/outline/Page-outline-v1.0.md"\n')
+    (outline / 'Page-log.md').write_text('# log\n')
+    (outline / 'Page-logic.mmd').write_text('flowchart TD\n')
+    (tmp_path / 'runs' / 'rp-sec-02.sh').write_text('see outline/Page-log.md\n')
     dry = cli.outline_tidy(page, dry_run=True)
-    assert dry['draft_first'] and dry['to_previous'] == ['Page-outline-v0.1.md', 'Page-outline-v1.0.md']
+    assert dry['draft_first'] and dry['to_previous'] == ['Page-outline-v0.1.md', 'Page-outline-v1.0.md', 'Page-logic.mmd']
+    assert dry['to_records'] == ['Page-log.md']
     assert (outline / 'Page-outline-v1.0.md').exists()
     result = cli.outline_tidy(page)
-    assert sorted(result['moved']) == ['previous/Page-outline-v0.1.md', 'previous/Page-outline-v1.0.md']
+    assert sorted(result['moved']) == ['previous/Page-logic.mmd', 'previous/Page-outline-v0.1.md', 'previous/Page-outline-v1.0.md', 'records/Page-log.md']
+    assert 'outline/records/Page-log.md' in (tmp_path / 'runs' / 'rp-sec-02.sh').read_text()
     assert sorted(p.name for p in outline.glob('*-outline-*.md')) == ['Page-outline-v1.1.md']
-    assert result['repointed'] == 1
+    assert result['repointed'] == 2
     assert 'outline/previous/Page-outline-v1.0.md' in (tmp_path / 'runs' / 'rp-sec-01.sh').read_text()
     assert latest_outline(outline, 'Page').name == 'Page-outline-v1.1.md'
     assert find_version(outline, 'Page-outline-v1.0.md') == outline / 'previous' / 'Page-outline-v1.0.md'
