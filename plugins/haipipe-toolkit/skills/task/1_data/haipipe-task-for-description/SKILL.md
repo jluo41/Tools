@@ -16,7 +16,7 @@ description: >-
   row, describe every column.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.2.0"
+  version: "0.3.1"
   last_updated: "2026-09-27"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -120,9 +120,10 @@ The full-read route (reference: WellDoc-SPACE Proj01 `b00_rawdata`,
   (`column_dictionary:`); each column's documented meaning goes into the card.
 - The Run fails when `check_card` finds an open question, and its Ticket
   requires `description.json`.
-- The table notebook shows the card first: the seven answers, a table of
-  every column, then one small picture per column (values by count for
-  categories and flags; a min-to-max range with the median for numbers).
+- The table notebook asks one question per section, the card's answers first:
+  what one row is, a table of every column, then one small picture per column
+  (values by count for categories and flags; a min-to-max range with the median
+  for numbers).
 
 
 Where it sits
@@ -236,6 +237,20 @@ Rules
 8. **A raw table is described from its full read**, never from a sample: the
    400-row sample of a schema pass misjudged how empty 21 of MetaboNet's 37
    columns are.
+9. **Every section answers one question, named in its title, answer first.**
+   A reader jumps to the question they have ("What is one row?", "Whose data
+   is it, and when?", "What does each column hold?", "What should Source watch
+   out for?", "How was it read?") and reads the bold first line. A section
+   that tells a story instead makes the reader follow it to the end (JL 260927).
+10. **Keep only what helps a person read the data.** The page leads with its
+   notebook link; a Run or file that only the code needs (file lists, sample
+   passes, placeholders for tables a drop lacks) stays out of the reader's way
+   (JL 260927).
+11. **A notebook is named for what it shows** (`<dataset>_<table>.ipynb`,
+   `<dataset>_overview.ipynb`), never after its Run, so two open notebooks never
+   share a name. Its cells stay short: the drawing code lives in the Block's
+   `src/` (WellDoc: `table_views.py`, `dataset_views.py`) and each cell is one
+   call under its question, so the notebook reads from top to bottom (JL 260927).
 
 
 Related

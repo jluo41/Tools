@@ -107,7 +107,9 @@ b00_rawdata/
 - The Job number is the dataset's number in `b01` to `b03` too
   (`b01/j51_<cohort>_v<yymmdd>_source`); see `haipipe-task/ref/hierarchy.md`.
   `t01`-`t09` cover the whole dataset, `t11` onward its tables, `t91`+ close it.
-- Table Tasks come from the observed inventory, never a fixed topic list.
+- Table Tasks come from the observed inventory, never a fixed topic list. A table the
+  family's catalog expects but a drop lacks gets no Task: the intake Run lists it
+  (`absent_tables` in its config) and fails if a file named after it turns up.
 - Runs are passes: `r01_structure_schema` (local, from receipts or headers),
   `r02_profile_semantics` (types, nulls, distincts, year ranges), `full_scan`
   only where needed. Only the passes that apply exist.

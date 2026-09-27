@@ -9,6 +9,7 @@ Newest first.
 
 - `b00` names the Table Card Task (`tNN_describe_<table>`, skill `haipipe-task-for-description`) and its Block-level column dictionary. `ref/run-databricks-sh-template.sh` writes the receipt `cmd` SPACE-relative.
 - A raw table in a non-parquet format gets the same card from its `r07_full_scan` (`description.json`); the Run fails when the card leaves a question open (WellDoc Proj01, 280 tables).
+- A catalog table a drop lacks is listed by the intake Run, not given a Task (WellDoc Proj01: 123 placeholder Tasks removed, 1,155 Runs down to 629).
 
 ## [0.5.2] — 2026-09-23
 

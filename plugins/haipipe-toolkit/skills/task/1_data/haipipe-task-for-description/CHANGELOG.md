@@ -5,6 +5,17 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.3.1] — 2026-09-27
+
+- `templates/describe_table.py`: real `##` section headings numbered in plain digits (`## 1. Grain`), and `# notebook: hide-code`, so the Table Card notebook opens on its outputs (notebook-cell-python 0.4.1, rules 2 and 7).
+
+## [0.3.0] — 2026-09-27
+
+- Rule 9: every section of a card page or notebook answers one question, named in its title,
+  answer first. Rule 10: keep only what helps a person read the data; the page leads with its
+  notebook link. Rule 11: a notebook is named for what it shows and keeps one short call per
+  question, its drawing code in the Block's `src/`. WellDoc Proj01 `b00` follows all three.
+
 ## [0.2.0] — 2026-09-27
 
 - "What every card answers": seven questions every card answers in order (files, row, people,

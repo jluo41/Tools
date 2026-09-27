@@ -30,14 +30,15 @@ Rules
     typical values and is never copied from a real row.
     Every path written or shown is SPACE-relative.
 """
+# notebook: hide-code          # a reader-facing notebook: outputs only
 
 # %% [markdown]
 # # Table Card · what one row is, what each column means
 #
 # ```txt
-#    table ──► the table ──► ① grain ──► ② columns by meaning
-#          ──► ③ made-up example row ──► ④ gotchas ──► ⑤ where columns go
-#          ──► ⑥ changes since the earlier version
+#    table ──► the table ──► 1 grain ──► 2 columns by meaning
+#          ──► 3 made-up example row ──► 4 gotchas ──► 5 where columns go
+#          ──► 6 changes since the earlier version
 # ```
 
 # %% Setup
@@ -346,7 +347,7 @@ CARD += head
 show("\n".join(head[3:5]), identity, column_map)
 
 # %% [markdown]
-# ## ① Grain: what one row is, proven by counting
+# ## 1. Grain: what one row is, proven by counting
 
 # %% Grain
 declared = list(CFG.get("grain") or TABLE_INFO.get("grain") or [])
@@ -422,7 +423,7 @@ if len(plot):
     plt.close(fig)
 
 show_cols = [c for c in ["key", "declared", "distinct_keys", "unique", "rows_sharing_a_key", "pct_rows_unique", "note"] if c in GRAIN]
-grain_md = ["① Grain: what one row is", "-" * 40, "", f"**One row is:** {row_text}", "", verdict, dup_text, "",
+grain_md = ["1. Grain: what one row is", "-" * 40, "", f"**One row is:** {row_text}", "", verdict, dup_text, "",
             md_table(GRAIN[show_cols]), ""]
 if grain_fig:
     grain_md += ["![grain](figures/01_grain.png)", ""]
@@ -430,7 +431,7 @@ CARD += grain_md
 show("\n".join(grain_md[3:7]), GRAIN[show_cols], grain_fig)
 
 # %% [markdown]
-# ## ② Columns by meaning: one table and one picture per group
+# ## 2. Columns by meaning: one table and one picture per group
 
 # %% Columns by meaning
 def group_figure(group, names):
@@ -471,8 +472,8 @@ def group_figure(group, names):
     return path
 
 
-CARD += ["② Columns by meaning", "-" * 40, ""]
-show("**② Columns by meaning.** Meaning is typed in the dictionary; every other column is computed. "
+CARD += ["2. Columns by meaning", "-" * 40, ""]
+show("**2. Columns by meaning.** Meaning is typed in the dictionary; every other column is computed. "
      "`filled_pct` counts rows that are neither null nor blank.")
 for group in group_order:
     part = FACTS[FACTS["group"] == group]
@@ -488,14 +489,14 @@ for group in group_order:
     show(lead, shown, fig_path)
 
 # %% [markdown]
-# ## ③ A made-up example row
+# ## 3. A made-up example row
 #
 # Each value is the most common one (or the median) of its own column, so the row shows what values look like. It is not a real row, and the combination may never occur.
 
 # %% Example row
 example = FACTS[["group", "column", "meaning"]].copy()
 example.insert(2, "example value", [TYPICAL[c] for c in example["column"]])
-example_md = ["③ A made-up example row", "-" * 40, "",
+example_md = ["3. A made-up example row", "-" * 40, "",
               "Each value is the most common value (or the median) of its own column, and identifying "
               "columns show a placeholder. It shows what values look like; it is not a real row, and "
               "the combination may never occur.", ""]
@@ -506,7 +507,7 @@ CARD += example_md
 show("\n".join(example_md[3:-2]), example)
 
 # %% [markdown]
-# ## ④ Gotchas: what to watch out for
+# ## 4. Gotchas: what to watch out for
 
 # %% Gotchas
 GOTCHAS = []
@@ -542,7 +543,7 @@ for name in NAMES:
     for note in entry(name).get("notes") or []:
         gotcha(f"note · {name}", note, "dictionary")
 
-# ⑥ Changes since the earlier version, cheap: schema plus parquet null counts.
+# 6. Changes since the earlier version, cheap: schema plus parquet null counts.
 CHANGES = pd.DataFrame()
 if COMPARE:
     cpf = pq.ParquetFile(COMPARE)
@@ -570,17 +571,17 @@ if COMPARE:
     CHANGES = pd.DataFrame(rows)
     if len(CHANGES):
         counts = CHANGES["change"].value_counts()
-        gotcha(f"since {COMPARE_LABEL}", ", ".join(f"{n} {k}" for k, n in counts.items()) + " (section ⑥)")
+        gotcha(f"since {COMPARE_LABEL}", ", ".join(f"{n} {k}" for k, n in counts.items()) + " (section 6)")
 
 GOTCHAS = pd.DataFrame(GOTCHAS, columns=["kind", "detail", "found_by"])
 GOTCHAS.to_csv(OUT / "gotchas.csv", index=False)
-gotcha_md = ["④ Gotchas: what to watch out for", "-" * 40, "",
+gotcha_md = ["4. Gotchas: what to watch out for", "-" * 40, "",
              md_table(GOTCHAS) if len(GOTCHAS) else "Nothing found.", ""]
 CARD += gotcha_md
-show("**④ Gotchas.** Found by counting, or typed in the dictionary.", GOTCHAS)
+show("**4. Gotchas.** Found by counting, or typed in the dictionary.", GOTCHAS)
 
 # %% [markdown]
-# ## ⑤ Where the columns go, ⑥ changes since the earlier version
+# ## 5. Where the columns go, 6. changes since the earlier version
 
 # %% Where columns go and changes
 feeds = []
@@ -590,19 +591,19 @@ for _, r in FACTS.iterrows():
 feeds = pd.DataFrame(feeds)
 where = (feeds.groupby("read by")["column"].agg(lambda s: f"{len(s)}: " + ", ".join(s)).reset_index()
          .rename(columns={"column": "columns"}))
-where_md = ["⑤ Where the columns go", "-" * 40, "",
+where_md = ["5. Where the columns go", "-" * 40, "",
             "The downstream reader of each column, typed as `feeds:` in the dictionary.", "",
             md_table(where), ""]
 CARD += where_md
-show("**⑤ Where the columns go.** " + where_md[3], where)
+show("**5. Where the columns go.** " + where_md[3], where)
 
 if COMPARE:
-    change_md = [f"⑥ Changes since {COMPARE_LABEL}", "-" * 40, "",
+    change_md = [f"6. Changes since {COMPARE_LABEL}", "-" * 40, "",
                  f"Compared with `{space_rel(COMPARE)}` by schema and parquet null counts "
                  "(`nonnull_pct` counts non-null rows; blanks are not seen here). Only changed columns are listed.", "",
                  md_table(CHANGES) if len(CHANGES) else "No column was added, removed, retyped, or moved 20 points in fill.", ""]
     CARD += change_md
-    show(f"**⑥ Changes since {COMPARE_LABEL}.** " + change_md[3], CHANGES if len(CHANGES) else None)
+    show(f"**6. Changes since {COMPARE_LABEL}.** " + change_md[3], CHANGES if len(CHANGES) else None)
 
 # %% Done
 (OUT / "table_card.md").write_text("\n".join(CARD) + "\n")
