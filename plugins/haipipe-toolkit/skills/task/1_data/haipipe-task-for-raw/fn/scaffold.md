@@ -60,7 +60,7 @@ bNN_<raw_block>/
         ├── runs/r01_base.sh
         ├── results/
         ├── notebooks/
-        ├── outline/
+        ├── draft/
         └── workflow/
 ```
 

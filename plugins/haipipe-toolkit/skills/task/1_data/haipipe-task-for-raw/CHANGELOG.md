@@ -5,6 +5,11 @@ Skill-scoped changelog (never loaded at invocation; read on demand).
 Versions match SKILL.md frontmatter `version:`.
 Newest first.
 
+## [0.5.3] — 2026-09-27
+
+- `b00` names the Table Card Task (`tNN_describe_<table>`, skill `haipipe-task-for-description`) and its Block-level column dictionary. `ref/run-databricks-sh-template.sh` writes the receipt `cmd` SPACE-relative.
+- A raw table in a non-parquet format gets the same card from its `r07_full_scan` (`description.json`); the Run fails when the card leaves a question open (WellDoc Proj01, 280 tables).
+
 ## [0.5.2] — 2026-09-23
 
 - WellDoc Proj01 `b00_rawdata` (14 datasets, Jobs `j51`-`j96`) is now a second reference implementation, migrated 260923.

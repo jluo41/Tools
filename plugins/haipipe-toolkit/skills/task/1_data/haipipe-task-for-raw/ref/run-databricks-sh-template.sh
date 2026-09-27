@@ -101,7 +101,20 @@ GIT_DIRTY=$([ -n "$(git -C "$JOB_FOLDER" status --porcelain 2>/dev/null)" ] && e
 CONFIG_SHA256="$(shasum -a 256 "$CONFIG" 2>/dev/null | awk '{print $1}')"
 CONFIG_SHA256="${CONFIG_SHA256:-unknown}"
 HOST="$(hostname)/$(whoami)"
-CMD="bash $TICKET"
+# Receipts and notebooks carry SPACE-relative paths: the user name and the
+# checkout folder differ per machine, so an absolute path is wrong on the next one.
+REPO_ROOT_PHYS="$(cd -P "$REPO_ROOT" && pwd)"
+space_rel() {
+  local root
+  for root in "$REPO_ROOT" "$REPO_ROOT_PHYS"; do
+    case "$1" in
+      "$root") echo .; return ;;
+      "$root"/*) echo "${1#"$root"/}"; return ;;
+    esac
+  done
+  echo "$1"
+}
+CMD="bash $(space_rel "$TICKET")"
 TICKET_ARGS_JSON="$(python3 -c 'import json, sys; print(json.dumps(sys.argv[1:]))' "$@")"
 RESULT_PATH="${RESULTS_DIR#"$OUTPUT_ROOT"/}"
 

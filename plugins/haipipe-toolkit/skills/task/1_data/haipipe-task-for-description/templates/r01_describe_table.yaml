@@ -1,0 +1,13 @@
+# What is one row of this table, and what does each column mean?
+# Paths are SPACE-relative. {key} is filled from the Job's src/config-defaults.yaml
+# and the Task's _defaults.yaml; {job} and {block} are the Job and Block folders.
+question: "What is one row of this table, and what does each column mean?"
+notebook: full
+table: "{raw_store}/{cohort}/{parquet}"
+dictionary: "{block}/src/column_dictionary.yaml"
+compare_to: null            # an earlier version of the same table, for the changes section
+compare_label: null
+grain_candidates: []        # extra keys to test, beside the dictionary's
+min_cell: 11                # a count below this shows as <11
+top_k: 8                    # values per category panel
+max_value_width: 60         # longer strings are text: lengths only

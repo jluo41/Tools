@@ -10,7 +10,7 @@ description: >-
   /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.5.2"
+  version: "0.5.3"
   last_updated: "2026-09-23"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -113,6 +113,12 @@ b00_rawdata/
   only where needed. Only the passes that apply exist.
 - Privacy: metadata only. For PHI the profile pass is a server `.cmd` Run;
   dates leave as years, counts 1 to 10 as `<11`, and no row value leaves.
+- A table's reader-facing description (what one row is, what each column means, pictures
+  of the values) is a `tNN_describe_<table>` Task from `haipipe-task-for-description`,
+  beside the profile passes; its column dictionary lives in the Block's `src/`. A raw
+  table in a non-parquet format gets the same card from its `r07_full_scan` Run
+  (`description.json`, built while every row is read once); the Run fails when the card
+  leaves a question open.
 - `datapoint_timeline` and `source_handoff` are `haipipe-data-raw`'s
   `understand` and `hand-off` as Tasks. Readiness is computed from gates
   (every table routed once, every table profiled, no blocking question), never
@@ -318,7 +324,7 @@ Summary:
   1. Identify project + block.
   2. Collect metadata (NN, name, stage number, _meta block).
   3. Create canonical Task skeleton (`scripts/`, `scripts/config/`, `runs/`,
-     `results/`, `notebooks/`, `outline/`, `workflow/`).
+     `results/`, `notebooks/`, `draft/`, `workflow/`).
   4. Seed config from `ref/config-seed.yaml`.
   5. Copy run-script from `ref/run-databricks-sh-template.sh`.
   6. Suggest next via cross-skill link.
