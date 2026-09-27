@@ -107,6 +107,10 @@ b00_rawdata/
 - The Job number is the dataset's number in `b01` to `b03` too
   (`b01/j51_<cohort>_v<yymmdd>_source`); see `haipipe-task/ref/hierarchy.md`.
   `t01`-`t09` cover the whole dataset, `t11` onward its tables, `t91`+ close it.
+- Keep only Tasks a person reads. WellDoc Proj01 has three kinds per dataset: `t01` for its
+  files (`r01` what is there, `r04` where each goes), one Task per table it carries, and `t93`
+  for the dataset (`r05` when its rows fall, `r06` whether it is ready, plus the dataset
+  notebook). A catalog-sample Task or a separate routing or timeline Task is not kept.
 - Table Tasks come from the observed inventory, never a fixed topic list. A table the
   family's catalog expects but a drop lacks gets no Task: the intake Run lists it
   (`absent_tables` in its config) and fails if a file named after it turns up.
